@@ -1,0 +1,135 @@
+@startuml
+'==== Title ====
+title MiteLovers – OOA-G3
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'==== entities ====
+together {
+object user {
+- name
+- address
+- email
+- phoneNumber
+}
+object buyer {
+- activityHistory
+}
+object seller {
+- activityHistory
+-rating
+}
+object supportService {
+-customerSupport
+-disputeMediation
+}
+object appraisalService {
+- appraisalEntity
+}
+object communityMember{
+}
+}
+object bidder {
+}
+object logisticService {
+-package
+}
+together {
+object publicationInfo{
+- title
+- publication date
+- genre
+- binding
+- ISBN
+- ISSN
+- author
+- ...
+
+}
+object book {
+- condition
+}
+object magazine {
+- condition
+}
+object item {
+}
+object listing{
+-date
+-price
+}
+object shoppingCart {
+- totalPrice
+}
+object transaction{
+- date
+- finalPrice
+-auctionTransactionLimit
+- paymentProcessing
+- shippingLabel
+}
+}
+object auction {
+-minPrice
+-reservePrice
+-outrightPrice
+-auctionStartDate
+-auctionEndDate
+}
+object bid {
+- offerPrice
+}
+
+'=== OBJECTS IN DOUBT===
+'object directSale
+'object paymentProcessing
+'object lineOfSale
+'object activityHistory
+
+'=== LISTING RELATIONS ===
+publicationInfo "1" -- "*" book: < contains
+publicationInfo "1" -- "*" magazine: < contains
+book "0..1" --- "1" item: < represents
+magazine "0..1" --- "1" item: < represents
+item "1" -- "0..1" listing: < contains
+listing "1" - "0..1" auction: < has
+listing "*" -- "*" shoppingCart: < has
+shoppingCart "1" -- "0..1" transaction: < processes
+
+'===USER RELATIONS===
+user "1" -- "0..1" bidder: < is a
+user "1" -- "0..1" seller: < is a
+user "1" -- "0..1" buyer: < is a
+user "1" -- "0..1" supportService: < supports
+user "1" - "0..1" communityMember: < is a
+buyer "*" - "0..1" logisticService: < delivers to
+buyer "0..1" - "*" auction: < bought outright by
+seller "*" - "0..1" logisticService: < collects from
+'logisticServices "1" --- "*" logisticAgent: manages
+
+'===OTHER RELATIONS===
+appraisalService "*" - "1" seller: < requests
+appraisalService "*" -- "*" item: > appraises
+seller "1" --- "1..*" listing:  > creates
+supportService "1" -- "*" appraisalService: > manages
+seller"*" -- "0..1" supportService: < supports
+buyer "*" -- "0..1" supportService: < supports
+bidder "*" -- "0..1" supportService: < supports
+buyer "1" - "1" shoppingCart: > owns
+bidder "1" --- "1..*" bid: < placed by
+bid "*" ----- "1" auction: < holds
+auction "1" -- "0..1" transaction: < processes
+'logisticAgent "1" -- "1" transaction: handles
+transaction "*" - "1" logisticService: < handles
+
+@enduml
