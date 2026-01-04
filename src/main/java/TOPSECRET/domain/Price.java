@@ -3,13 +3,13 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 public class Price {
-    private final int _value;
+    private final double _value;
     private final Currency _currency;
 
     //Public constructor to allow instantiation from other classes
     //Value validation: must be greater than 0, otherwise an exception is thrown
     //Currency validation: the field cannot be null
-    public Price(int value, Currency currency) {
+    public Price(double value, Currency currency) {
         if (value <= 0) {
             throw new IllegalArgumentException("Invalid price value, must be greater than zero");
         }
@@ -20,7 +20,7 @@ public class Price {
         _currency = currency;
     }
 
-    public int getValue() {
+    public double getValue() {
         return _value;
     }
 
