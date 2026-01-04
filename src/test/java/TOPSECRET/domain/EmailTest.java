@@ -2,8 +2,7 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EmailTest {
 
@@ -74,7 +73,45 @@ class EmailTest {
 
     // Test equals method
     @Test
-    void test_equals() {
+    void test_equals_should_return_true_for_same_object() {
+        // arrange and act
+        Email email = new Email("test@testing.com");
+
+        // assert
+        assertEquals(email, email);
+    }
+
+    @Test
+    void test_equals_should_return_false_for_null_object() {
+        // arrange and act
+        Email email = new Email("test@testing.com");
+
+        // assert
+        assertNotEquals(email, null);
+    }
+
+    @Test
+    void test_equals_should_return_false_for_different_classes() {
+        // arrange and act
+        Email email = new Email("test@testing.com");
+        String differentClass = "differentClass";
+
+        // assert
+        assertNotEquals(email, differentClass);
+    }
+
+    @Test
+    void test_equals_should_return_false_for_different_emails() {
+        // arrange and act
+        Email email1 = new Email("test1@testing.com");
+        Email email2 = new Email("test2@testing.com");
+
+        // assert
+        assertNotEquals(email1, email2);
+    }
+
+    @Test
+    void test_equals_should_return_true_for_same_email() {
 
         // arrange
         String email1 = "IamAeMaIL@TESting.COM";
@@ -86,28 +123,43 @@ class EmailTest {
 
         // assert
         assertEquals(emailTest1, emailTest2);
-
     }
+
+
 
     // Test toString method
     @Test
     void test_toString() {
 
+        // arrange
         String email1 = "testing@123.com";
         String email2 = "TESTING@123.com";
 
         String email3 = "test@testing.com";
         String email4 = "test@testing.com";
 
+        // act
         Email emailTest1 = new Email(email2);
         Email emailTest2 = new Email(email3);
 
+        // assert
         assertEquals(email1, emailTest1.toString());
         assertEquals(email4, emailTest2.toString());
 
     }
 
     // Test hash equals method
+    @Test
+    void test_different_hashes_should_not_be_same() {
+        // act and arrange
+        Email email1 = new Email("test1@testing.com");
+        Email email2 = new Email("test2@testing.com");
+
+        // assert
+        assertNotEquals(email1.hashCode(), email2.hashCode());
+    }
+
+
     @Test
     void test_hash_equals() {
 
@@ -121,7 +173,6 @@ class EmailTest {
 
         // assert
         assertEquals(emailTest1.hashCode(), emailTest2.hashCode());
-
     }
 
 }
