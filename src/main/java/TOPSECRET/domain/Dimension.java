@@ -2,46 +2,38 @@ package TOPSECRET.domain;
 
 public class Dimension {
 
-    private double width;
-    private double height;
-    private double thickness;
-    private double weight;
+    private double _width;
+    private double _height;
+    private double _thickness;
+    private double _weight;
 
     public Dimension(double width, double height, double thickness, double weight) {
         if (width <= 0 || height <= 0 || thickness <= 0 || weight <= 0) {
             throw new IllegalArgumentException("All dimensions and weight must be greater than zero.");
         }
-        this.width = width;
-        this.height = height;
-        this.thickness = thickness;
-        this.weight = weight;
+        this._width = width;
+        this._height = height;
+        this._thickness = thickness;
+        this._weight = weight;
     }
 
-    public double getWidth() {
-        return width;
+    public double get_width() {
+        return _width;
     }
 
-    public double getHeight() {
-        return height;
+    public double get_height() {
+        return _height;
     }
 
-    public double getThickness() {
-        return thickness;
+    public double get_thickness() {
+        return _thickness;
     }
 
-    public double getWeight() {
-        return weight;
+    public double get_weight() {
+        return _weight;
     }
 
     public double calculateVolume() {
-        return width * height * thickness;
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Dimensions: %.2f x %.2f x %.2f cm | Weight: %.2f kg",
-                width, height, thickness, weight
-        );
+        return _width * _height * _thickness;
     }
 }

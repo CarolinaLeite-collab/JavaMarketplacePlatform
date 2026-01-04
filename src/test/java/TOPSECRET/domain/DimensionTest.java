@@ -12,10 +12,10 @@ class DimensionTest {
         Dimension dim = new Dimension(10, 20, 3, 0.5);
 
         // act
-        double width = dim.getWidth();
-        double height = dim.getHeight();
-        double thickness = dim.getThickness();
-        double weight = dim.getWeight();
+        double width = dim.get_width();
+        double height = dim.get_height();
+        double thickness = dim.get_thickness();
+        double weight = dim.get_weight();
 
         // assert
         assertEquals(10, width);
