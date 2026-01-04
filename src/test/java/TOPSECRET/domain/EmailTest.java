@@ -59,12 +59,12 @@ class EmailTest {
         // arrange
         String email1 = "TEST@SOMETHING.COM";
         String email2 = " TEST@SOMETHING.COM ";
-        Email email = new Email(email1);
-        Email email2 = new Email(email1);
+        Email emailTest = new Email(email1);
+        Email email2Test = new Email(email1);
 
         // act
-        String emailToTest = email.getValue();
-        String emailToTest2 = email.getValue();
+        String emailToTest = emailTest.getValue();
+        String emailToTest2 = email2Test.getValue();
 
         // assert
         assertEquals(emailToTest, "test@something.com");

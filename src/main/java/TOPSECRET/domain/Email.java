@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * for safe use in collections.
  */
 
-public class Email {
+public final class Email {
 
     // Establishing a regex to guarantee emails in the format: local@domain with subdomains
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9-.]+(\\.[A-Za-z0-9-]+)+$");
@@ -26,7 +26,7 @@ public class Email {
         }
 
         // Trim extra blank spaces from beginning or end before validating format
-        _email = _email.trim();
+        String trimmed = _email.trim();
 
         // Throws exception if email has invalid format
         if (!EMAIL_PATTERN.matcher(_email).matches()) {
@@ -34,7 +34,7 @@ public class Email {
         }
 
         // Emails are case-insensitive, normalize to lowercase
-        this._email = _email.toLowerCase();
+        this._email = trimmed.toLowerCase();
     }
 
     public String getValue() {
