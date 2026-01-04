@@ -1,0 +1,59 @@
+package TOPSECRET.domain;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class DimensionUnitTest {
+
+    @Test
+    void allDimensionUnitConstantsExist(){
+        DimensionUnit[] dimensionUnits = DimensionUnit.values();
+        assertEquals(2, dimensionUnits.length);
+
+        for (DimensionUnit dimensionUnit : dimensionUnits){
+            assertNotNull(dimensionUnit); // checks both dimension units are not null
+            assertNotNull(dimensionUnit.toString()); // checks both dimension units in String format are not null
+            assertEquals(DimensionUnit.valueOf(dimensionUnit.name()), dimensionUnit); // 'round-trip' validation (DimensionUnit -> String -> DimensionUnit)
+        }
+
+    }
+
+    @Test
+    void toStringRoundtripAllDimensionUnits() {
+        // toString() → fromString() → original DimensionUnit
+        // E.g., INCHES -> "inches" -> INCHES
+        for (DimensionUnit dimensionUnit: DimensionUnit.values()) {
+            assertEquals(dimensionUnit, DimensionUnit.fromString(dimensionUnit.toString()));
+        }
+    }
+
+    @Test
+    void dimensionUnitOrdinalOrderIsStable() {
+        assertEquals(0, DimensionUnit.CENTIMETERS.ordinal());
+        assertEquals(1, DimensionUnit.INCHES.ordinal());
+    }
+
+    @Test
+    void differentDimensionUnitsAreNotEqual() {
+        assertNotEquals(DimensionUnit.CENTIMETERS, DimensionUnit.INCHES);
+    }
+
+    @Test
+    void fromStringHandlesDifferentValidInputs() {
+        assertEquals(DimensionUnit.CENTIMETERS, DimensionUnit.fromString(" centimetres "));
+        assertEquals(DimensionUnit.CENTIMETERS, DimensionUnit.fromString("CEnt"));
+        assertEquals(DimensionUnit.INCHES, DimensionUnit.fromString("INchEs"));
+        assertEquals(DimensionUnit.INCHES, DimensionUnit.fromString("ins"));
+    }
+
+    @Test
+    void fromStringInvalidInputs(){
+        assertThrows(IllegalArgumentException.class, () -> DimensionUnit.fromString(""));
+        assertThrows(IllegalArgumentException.class, () -> DimensionUnit.fromString(" "));
+        assertThrows(IllegalArgumentException.class, () -> DimensionUnit.fromString(null));
+        assertThrows(IllegalArgumentException.class, () -> DimensionUnit.fromString("invalid"));
+        assertThrows(IllegalArgumentException.class, () -> DimensionUnit.fromString("millimeters"));
+    }
+
+}
