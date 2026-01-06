@@ -18,23 +18,29 @@ public class Magazine {
     private Condition _condition;
     private final List<Appraisal> _appraisals;
 
-    public Magazine(Condition _condition, PublicationInfo _publicationInfo) {
+    public Magazine(PublicationInfo publicationInfo, Condition condition) {
+
 
         // Throws exception if condition is null
-        if (_condition == null) {
+        if (condition == null) {
             throw new IllegalArgumentException("Condition cannot be null!");
         }
 
         // Throws exception if publication info is null
-        if (_publicationInfo == null) {
+        if (publicationInfo == null) {
             throw new IllegalArgumentException("Publication Info cannot be null!");
         }
 
-        this._condition = _condition;
-        this._publicationInfo = _publicationInfo;
+        // Throws exception if publicationInfo has ISBN
+        if (publicationInfo.getISBN() != null) {
+            throw new IllegalArgumentException("Magazine cannot have a ISBN number!");
+        }
+
+        _condition = condition;
+        _publicationInfo = publicationInfo;
 
         // Creates a new empty ArrayList of Appraisals
-        this._appraisals = new ArrayList<>();
+        _appraisals = new ArrayList<>();
     }
 
     // Add an appraisal to the Appraisal list of Magazine
@@ -55,6 +61,11 @@ public class Magazine {
     // Show condition (condition is an Enum, so no violation of encapsulation by using this method)
     public Condition getCondition() {
         return _condition;
+    }
+
+    // Return publication info
+    public PublicationInfo getPublicationInfo() {
+        return _publicationInfo;
     }
 
 }
