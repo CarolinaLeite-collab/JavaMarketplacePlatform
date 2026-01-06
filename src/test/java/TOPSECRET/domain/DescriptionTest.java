@@ -86,7 +86,7 @@ public class DescriptionTest {
         assertEquals(40, description.getLength());
     }
     @Test
-    public void toString() {
+    public void testToString() {
         Description description = new Description("Amazing Magazine!");
         assertEquals("Amazing Magazine! (17/500)", description.toString());
     }
