@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public class Edition {
     private final ISSN _issn;
     private final ISBN _isbn;
-    private final NumberOfPages _numberOfPages;
+    private final int _numberOfPages;
     private final int _editionNumber;
     private final LocalDate _publicationDate;
     private final Binding _binding;
@@ -18,7 +18,7 @@ public class Edition {
     private final Weight _weight;
     private final Language _language;
 
-    public Edition (ISSN issn, ISBN isbn, NumberOfPages numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
+    public Edition (ISSN issn, ISBN isbn, int numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
                     Description description, Dimension dimension, Weight weight ,Language language) {
 
         // An edition cannot have both ISSN and ISBN
@@ -27,6 +27,10 @@ public class Edition {
 
         if (editionNumber <= 0)
             throw new IllegalArgumentException("Edition number needs to be positive");
+
+        if (numberOfPages <= 0)
+            throw new IllegalArgumentException("Number of pages cannot be zero or negative.");
+
 
         _issn = issn;
         _isbn = isbn;
@@ -42,7 +46,7 @@ public class Edition {
     
     public ISSN getIssn() { return _issn; }
     public ISBN getIsbn() { return _isbn; }
-    public NumberOfPages getNumberOfPages() { return _numberOfPages; }
+    public int getNumberOfPages() { return _numberOfPages; }
     public int getEditionNumber() { return _editionNumber; }
     public LocalDate getPublicationDate() { return _publicationDate; }
     public Binding getBinding() { return _binding; }
