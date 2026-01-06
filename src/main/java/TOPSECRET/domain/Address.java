@@ -138,8 +138,8 @@ public class Address {
 
         return switch (country) {
             case PORTUGAL -> trimmed.matches("[1-9]\\d{3}-\\d{3}");
-            case SPAIN, GERMANY, ITALY, UNITED_STATES-> trimmed.matches("\\d{5}");
-            case FRANCE -> trimmed.matches("0[1-9]\\d{3}|9[78]\\d{2}");
+            case SPAIN, GERMANY, ITALY, FRANCE, UNITED_STATES-> trimmed.matches("\\d{5}");
+            /*case FRANCE -> trimmed.matches("0[1-9]\\d{3}|9[78]\\d{2}");*/
             case UNITED_KINGDOM -> trimmed.matches("^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$");    //It's not complete yet!
         };
     }

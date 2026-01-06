@@ -12,7 +12,7 @@ public class AddressTest {
 
     @BeforeEach
     void setUp() {
-        Address validAddress = new Address(
+        validAddress = new Address(
                 "Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
                 "Lisboa", Address.Country.PORTUGAL, "1000-205", null);
     }
@@ -38,24 +38,28 @@ public class AddressTest {
                 new Address(null, "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", Address.Country.PORTUGAL, "1000-205", null));
     }
+
     @Test
     void constructor_emptyStreet_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address("", "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", Address.Country.PORTUGAL, "1000-205", null));
     }
+
     @Test
     void constructor_nullPostalCodeForPortugal_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", Address.Country.PORTUGAL, null, null));
     }
-//    @Test
-//    void constructor_invalidPortugalPostalCode_throwsException() {
-//        assertThrows(IllegalArgumentException.class, () ->
-//                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-//                        "Lisboa", Address.Country.PORTUGAL, "9999-999", null));
-//    }
+
+    @Test
+    void constructor_invalidPortugalPostalCode_throwsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
+                        "Lisboa", Address.Country.PORTUGAL, "99998", null));
+    }
+
     @Test
     void constructor_validUSZipPlus4_accepted() {
         new Address("123 Main St", "Apt 4B", Address.BuildingType.APARTMENT,
@@ -70,68 +74,87 @@ public class AddressTest {
         address.setStreet("New Street  ");
         assertEquals("New Street", address.getStreet());
     }
-//    @Test
-//    void setStreet_emptyValue_throwsException() {
-//        Address address = new Address(" ", "123", Address.BuildingType.OTHER,
-//                "Lisboa", null, Address.Country.PORTUGAL, "1000-205", null);;
-//        assertThrows(IllegalArgumentException.class, () -> validAddress.setStreet(""));
-//    }
+
+    @Test
+    void setStreet_emptyValue_throwsException() {
+        Address address = new Address("Alameda X ", "123", Address.BuildingType.OTHER,
+                "Lisboa", null, Address.Country.PORTUGAL, "1000-205", null);
+        assertThrows(IllegalArgumentException.class, () -> validAddress.setStreet(""));
+    }
+
     @Test
     void setCountry_validCountryWithValidPostalCode_succeeds() {
         Address address = new Address("Rua Whatever", "123", Address.BuildingType.STORE,
-                "Barcelona", null, Address.Country.SPAIN, "28301", null);;
+                "Barcelona", null, Address.Country.SPAIN, "28301", null);
+        ;
         address.setCountry(Address.Country.SPAIN);
         assertEquals(Address.Country.SPAIN, address.getCountry());
     }
+
     @Test
-//    void setCountry_spainPostalCodeForPortugal_throwsException() {
-//        Address address = validAddress;
-//        assertThrows(IllegalArgumentException.class, () ->
-//                address.setCountry(Address.Country.SPAIN));
-//    }
-//    @Test
-//    void setPostalCode_validForCurrentCountry_succeeds() {
-//        Address address = validAddress;
-//        address.setPostalCode("1050-123");
-//        assertEquals("1050-123", address.getPostalCode());
-//    }
-//    @Test
-//    void setPostalCode_invalidForCurrentCountry_throwsException() {
-//        Address address = validAddress;
-//        assertThrows(IllegalArgumentException.class, () ->
-//                address.setPostalCode("99999"));  // Spain's postal code format not valid for Portugal
-//    }
-//    // I need to update dependencies in xml file
-//    //valid postal codes
-//    @ParameterizedTest
-//    @CsvSource({
-//            "1000-205, PORTUGAL",
-//            "28001, SPAIN",
-//            "75001, FRANCE",
-//            "10115, GERMANY",
-//            "00100, ITALY",
-//            "SW1A 1AA, UNITED_KINGDOM",
-//            "10001, UNITED_STATES",
-//            "90210-1234, UNITED_STATES"
-//    })
-//    public void validPostalCodes(String postalCode, Address.Country country) {
-//        Address address = simplifiedAddress(country, postalCode);
-//        assertDoesNotThrow(() -> address.setPostalCode(postalCode));
-//    }
-//
-//    // Invalid postal codes
-//    @ParameterizedTest
-//    @CsvSource({
-//            "'', PORTUGAL",
-//            "'abc', SPAIN",
-//            "'12345', PORTUGAL",
-//            "'99999-999', PORTUGAL",     // Invalid first digit
-//            "'A1A 1A1', UNITED_STATES"
-//    })
-//    public void invalidPostalCodes(String postalCode, Address.Country country) {
-//        Address address = simplifiedAddress(country, "1000-205");
-//        assertThrows(IllegalArgumentException.class, () -> address.setPostalCode(postalCode));
-//    }
+    void setCountry_spainPostalCodeForPortugal_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () ->
+                address.setCountry(Address.Country.SPAIN));
+    }
+
+    @Test
+    void setPostalCode_validForCurrentCountry_succeeds() {
+        Address address = validAddress;
+        address.setPostalCode("1050-123");
+        assertEquals("1050-123", address.getPostalCode());
+    }
+
+    @Test
+    void setPostalCode_invalidForCurrentCountry_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () ->
+                address.setPostalCode("99999"));  // Spain's postal code format not valid for Portugal
+    }
+
+    //valid postal codes
+    @ParameterizedTest
+    @CsvSource({
+            "1000-205, PORTUGAL",
+            "28001, SPAIN",
+            "75001, FRANCE",
+            "10115, GERMANY",
+            "00100, ITALY",
+            "SW1A 1AA, UNITED_KINGDOM",
+            "10001, UNITED_STATES",
+            "90210, UNITED_STATES"
+    })
+    public void validPostalCodes(String postalCode, Address.Country country) {
+        Address address = simplifiedAddress(country, postalCode);
+        assertDoesNotThrow(() -> address.setPostalCode(postalCode));
+    }
+
+    // Invalid postal codes
+    @ParameterizedTest
+    @CsvSource({
+            "'', PORTUGAL",
+            "'abc', SPAIN",
+            "'12345', PORTUGAL",
+            "'99999-999', PORTUGAL",     // Invalid first digit
+            "'A1A 1A1', UNITED_STATES"
+    })
+    public void invalidPostalCodes(String postalCode, Address.Country country) {
+        Address address = simplifiedAddress(country, validPostalCodeFor(country));
+        assertThrows(IllegalArgumentException.class, () -> address.setPostalCode(postalCode));
+    }
+
+    //Helper method
+    private String validPostalCodeFor(Address.Country country) {
+        return switch (country) {
+            case SPAIN -> "12345";
+            case PORTUGAL -> "1000-036";
+            case FRANCE -> "13001";
+            case ITALY -> "00134";
+            case GERMANY -> "10115";
+            case UNITED_KINGDOM -> "W1A 1AA";
+            case UNITED_STATES -> "10001";
+        };
+    }
 
     private Address simplifiedAddress(Address.Country country, String postalCode) {
         return new Address("street", "1", Address.BuildingType.HOUSE, "City",
@@ -154,11 +177,12 @@ public class AddressTest {
         assertEquals("PORTUGAL, Lisboa , Rua Example, 123, HOUSE, 1000-205",
                 addr.toString());
     }
-//    @Test
-//    void toString_withPostalExtension() {
-//        Address addr = new Address("123 Main St", "Apt 4B", Address.BuildingType.APARTMENT,
-//                "New York", "NY", Address.Country.UNITED_STATES, "10001", "1234"); //Need to decide if we should keep extensions
-//        assertEquals("UNITED_STATES, New York (NY), 123 Main St, APARTMENT, 10001-1234",
-//                addr.toString());
-//    }
+
+    @Test
+    void toString_withPostalExtension() {
+        Address addr = new Address("123 Main St", "Apt 4B", Address.BuildingType.APARTMENT,
+                "New York", "NY", Address.Country.UNITED_STATES, "10001", "1234"); //Need to decide if we should keep extensions
+        assertEquals("UNITED_STATES, New York (NY), 123 Main St, Apt 4B, APARTMENT, 10001-1234",
+                addr.toString());
+    }
 }
