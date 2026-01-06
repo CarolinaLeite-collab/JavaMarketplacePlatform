@@ -18,18 +18,18 @@ public final class Email {
     // Email should never change after creation
     private final String _email;
 
-    public Email(String _email) {
+    public Email(String email) {
 
         // Throws exception if email is null or blank
-        if (_email == null || _email.isBlank()) {
+        if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email cannot be null or blank!");
         }
 
         // Trim extra blank spaces from beginning or end before validating format
-        String trimmed = _email.trim();
+        String trimmed = email.trim();
 
         // Throws exception if email has invalid format
-        if (!EMAIL_PATTERN.matcher(_email).matches()) {
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("Invalid email format!");
         }
 

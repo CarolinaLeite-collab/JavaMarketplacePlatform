@@ -14,12 +14,12 @@ public class User {
     private final Email _email;
     private final Phone _phone;
 
-    public User (Name _name, Address _address, Email _email, Phone _phone) {
+    public User (Name name, Address address, Email email, Phone phone) {
 
-        this._name = Objects.requireNonNull(_name, "name is required");
-        this._address = Objects.requireNonNull(_address, "address is required");
-        this._email = Objects.requireNonNull(_email, "email is required");
-        this._phone = Objects.requireNonNull(_phone, "phoneNumber is required");
+        _name = Objects.requireNonNull(name, "name is required");
+        _address = Objects.requireNonNull(address, "address is required");
+        _email = Objects.requireNonNull(email, "email is required");
+        _phone = Objects.requireNonNull(phone, "phoneNumber is required");
 
     }
 

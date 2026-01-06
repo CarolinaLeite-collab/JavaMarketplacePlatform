@@ -23,30 +23,30 @@ public class WeightTest {
     @Test
     void constructor_validKilograms() {
         assertNotNull(fiveKg);
-        assertEquals(5.0, fiveKg.getValue());
-        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.getWeightUnit());
+        assertEquals(5.0, fiveKg.get_value());
+        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.get_weightUnit());
     }
     @Test
     void constructor_validGrams() {
         Weight grams = new Weight(1000.0, Weight.WeightUnit.GRAMS);
-        assertEquals(1000.0, grams.getValue());
-        assertEquals(Weight.WeightUnit.GRAMS, grams.getWeightUnit());
+        assertEquals(1000.0, grams.get_value());
+        assertEquals(Weight.WeightUnit.GRAMS, grams.get_weightUnit());
     }
     @Test
     void constructor_validOunces() {
         Weight ounces = new Weight(10.5, Weight.WeightUnit.OUNCES);
-        assertEquals(10.5, ounces.getValue());
-        assertEquals(Weight.WeightUnit.OUNCES, ounces.getWeightUnit());
+        assertEquals(10.5, ounces.get_value());
+        assertEquals(Weight.WeightUnit.OUNCES, ounces.get_weightUnit());
     }
     @Test
     void constructor_validPounds() {
         Weight pounds = new Weight(11.0, Weight.WeightUnit.POUNDS);
-        assertEquals(11.0, pounds.getValue());
-        assertEquals(Weight.WeightUnit.POUNDS, pounds.getWeightUnit());
+        assertEquals(11.0, pounds.get_value());
+        assertEquals(Weight.WeightUnit.POUNDS, pounds.get_weightUnit());
     }
     @Test
     void constructor_zeroWeight() {
-        assertEquals(0.0, zeroGrams.getValue());
+        assertEquals(0.0, zeroGrams.get_value());
     }
 
     // Constructor tests - INVALID
@@ -109,19 +109,19 @@ public class WeightTest {
     // Getter tests
     @Test
     void getValueCorrectly() {
-        assertEquals(5.0, fiveKg.getValue());
+        assertEquals(5.0, fiveKg.get_value());
     }
     @Test
     void getWeightUnitCorrectly() {
-        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.getWeightUnit());
+        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.get_weightUnit());
     }
 
     // Enum abbreviation tests
     @Test
     void weightUnit_abbreviation_returnsCorrectValue() {
-        assertEquals("kg", fiveKg.getWeightUnit().getAbbreviation());
-        assertEquals("g", zeroGrams.getWeightUnit().getAbbreviation());
-        assertEquals("oz", tenOunces.getWeightUnit().getAbbreviation());
-        assertEquals("lb", threePounds.getWeightUnit().getAbbreviation());
+        assertEquals("kg", fiveKg.get_weightUnit().get_abbreviation());
+        assertEquals("g", zeroGrams.get_weightUnit().get_abbreviation());
+        assertEquals("oz", tenOunces.get_weightUnit().get_abbreviation());
+        assertEquals("lb", threePounds.get_weightUnit().get_abbreviation());
     }
 }

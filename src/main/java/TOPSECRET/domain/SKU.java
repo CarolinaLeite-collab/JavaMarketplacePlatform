@@ -4,18 +4,19 @@ import java.util.UUID;
 
 public class SKU {
 
-    private static final int length = 10; //Tomei por liberdade definir o tamanho dos SKUs' de 10 caractéres alfanuméricos.
-    private static final String format = "^[A-F0-9]{" + length + "}$"; //Vamos ter uma string de caractéres, como 01234abcde.
-    private final String value;
+    private static final int _length = 10; //Tomei por liberdade definir o tamanho dos SKUs' de 10 caractéres alfanuméricos.
+    private static final String _format = "^[A-F0-9]{" + _length + "}$"; //Vamos ter uma string de caractéres, como 01234abcde.
+    private final String _value;
 
     private SKU(String value) {
-        this.value = value;
+        _value = value;
     }
 
     public static SKU generate() {
+
         String generatedSKU = generateRandomSKU();
 
-        if (!generatedSKU.matches(format)) {
+        if (!generatedSKU.matches(_format)) {
             throw new IllegalArgumentException("Generated invalid SKU");
         }
         return new SKU(generatedSKU);
@@ -24,11 +25,11 @@ public class SKU {
     private static String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();               // o UUID gera um "código" identificador único de 16 caracteres, de 0-9a-f, de forma aleatória e converte para string.
         String compact = uuid.replace("-", ""); // remove hífens
-        String shortPart = compact.substring(0, length);          // corta para 10
+        String shortPart = compact.substring(0, _length);          // corta para 10
         return shortPart.toUpperCase();                         // transforma todas as letras para maiúsculas
     }
 
     public String getValue() {
-        return value;
+        return _value;
     }
 }

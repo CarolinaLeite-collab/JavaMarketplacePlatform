@@ -80,8 +80,8 @@ public class ShoppingCart {
         private final Price _price;
 
         public CartLine(String listingId, Price price) {
-            this._listingId = listingId;
-            this._price = price;
+            _listingId = listingId;
+            _price = price;
         }
 
         public String getListingId() {

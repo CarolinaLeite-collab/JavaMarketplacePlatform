@@ -11,7 +11,7 @@ public enum UserRating {
     private final String _stars;
 
     UserRating(String stars) {
-        this._stars = stars;
+        _stars = stars;
     }
 
     //Override to obtain a String with stars only
