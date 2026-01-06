@@ -1,0 +1,158 @@
+package TOPSECRET.domain;
+
+public class Address {
+
+    public enum BuildingType {
+        HOUSE,
+        APARTMENT,
+        OFFICE,
+        STORE,
+        OTHER
+    }
+    public enum Country {
+        PORTUGAL,
+        SPAIN,
+        FRANCE,
+        GERMANY,
+        ITALY,
+        UNITED_KINGDOM,
+        UNITED_STATES
+    }
+    private String _street;
+    private String _doorNumber;
+    private BuildingType _buildingType;
+    private String _city;
+    private String _districtOrState;
+    private Country _country;
+    private String _postalCode;
+    private String _postalCodeExtension;
+
+    public Address(String street,
+                   String doorNumber,
+                   BuildingType buildingType,
+                   String city,
+                   String districtOrState,
+                   Country country,
+                   String postalCode,
+                   String postalCodeExtension) {
+
+        validateFields(street, doorNumber, buildingType, city, country, postalCode);
+
+        this._street = street;
+        this._doorNumber = doorNumber;
+        this._buildingType = buildingType;
+        this._city = city;
+        this._districtOrState = districtOrState;
+        this._country = country;
+        this._postalCode = postalCode;
+        this._postalCodeExtension = postalCodeExtension;
+    }
+    public String getStreet() { return _street; }
+    public String getDoorNumber() { return _doorNumber; }
+    public BuildingType getBuildingType() { return _buildingType; }
+    public String getCity() { return _city; }
+    public String getDistrictOrState() { return _districtOrState; }
+    public Country getCountry() { return _country; }
+    public String getPostalCode() { return _postalCode; }
+    public String getPostalCodeExtension() { return _postalCodeExtension; }
+
+    public void setStreet(String street) {
+        if (street == null || street.trim().isEmpty()) {
+            throw new IllegalArgumentException("Street cannot be empty!");
+        }
+        this._street = street.trim();
+    }
+    public void setDoorNumber(String doorNumber) {
+        if (doorNumber == null || doorNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Door number cannot be empty!");
+        }
+        this._doorNumber = doorNumber.trim();
+    }
+    public void setBuildingType(BuildingType buildingType) {
+        if (buildingType == null) {
+            throw new IllegalArgumentException("Must select a building type!");
+        }
+        this._buildingType = buildingType;
+    }
+    public void setCity(String city) {
+        if (city == null || city.trim().isEmpty()) {
+            throw new IllegalArgumentException("City cannot be empty!");
+        }
+        this._city = city.trim();
+    }
+    // District or State isn't mandatory, there's no need for validation
+    public void setDistrictOrState(String districtOrState) { this._districtOrState = districtOrState; }
+
+    public void setCountry(Country country) {
+        if (country == null) {
+            throw new IllegalArgumentException("Must select a country!");
+        }
+        //Revalidate postal code if country is changed
+        if (!isValidPostalCode(this._postalCode, country)) {
+            throw new IllegalArgumentException("Current postal code '" + this._postalCode + "' is not valid for: " + country + ".");
+        }
+        this._country = country;
+    }
+
+    public void setPostalCode(String postalCode) {
+        if (!isValidPostalCode(postalCode, this._country)) {
+            throw new IllegalArgumentException( "Invalid postal code '" + postalCode + "' for " + this._country);
+        }
+        this._postalCode = postalCode;
+    }
+    // Postal code extension isn't mandatory, there's no need for validation
+    public void setPostalCodeExtension(String postalCodeExtension) { this._postalCodeExtension = postalCodeExtension; }
+
+
+    private void validateFields(String street,
+                                String doorNumber,
+                                BuildingType buildingType,
+                                String city,
+                                Country country,
+                                String postalCode) {
+
+        if (street == null || street.trim().isEmpty()) {
+            throw new IllegalArgumentException("Street cannot be empty!");
+        }
+        if (doorNumber == null || doorNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Door number cannot be empty!");
+        }
+        if (buildingType == null) {
+            throw new IllegalArgumentException("Must select a building type!");
+        }
+        if (city == null || city.trim().isEmpty()) {
+            throw new IllegalArgumentException("City cannot be empty!");
+        }
+        if (country == null) {
+            throw new IllegalArgumentException("Must select a country!");
+        }
+        if (!isValidPostalCode(postalCode, country)) {
+            throw new IllegalArgumentException("Invalid postal code '" + postalCode + "' for " + country);
+        }
+    }
+
+    //Postal code validation
+    private boolean isValidPostalCode(String postalCode, Country country) {
+        if (postalCode == null || postalCode.trim().isEmpty()) return false;
+        String trimmed = postalCode.trim();
+
+        return switch (country) {
+            case PORTUGAL -> trimmed.matches("[1-9]\\d{3}-\\d{3}");
+            case SPAIN, GERMANY, ITALY, UNITED_STATES-> trimmed.matches("\\d{5}");
+            case FRANCE -> trimmed.matches("0[1-9]\\d{3}|9[78]\\d{2}");
+            case UNITED_KINGDOM -> trimmed.matches("^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$");    //It's not complete yet!
+        };
+    }
+
+    @Override
+    public String toString() {
+
+        String fullPostalCode = _postalCode;
+        if (_postalCodeExtension != null && !_postalCodeExtension.isEmpty()) {
+            fullPostalCode += "-" + _postalCodeExtension;
+        }
+        String checkForDistrictOrState = (_districtOrState != null && !_districtOrState.trim().isEmpty()) ? "(" + _districtOrState + ")" : "";
+
+        return _country + ", " + _city + " " + checkForDistrictOrState + ", " + _street + ", " + _doorNumber + ", " + _buildingType + ", " + fullPostalCode;
+    }
+}

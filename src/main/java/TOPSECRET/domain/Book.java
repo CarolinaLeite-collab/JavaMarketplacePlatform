@@ -24,7 +24,7 @@ public class Book {
         this.condition = condition;
         this.appraisals = new ArrayList<>();
     }
-    
+
     public PublicationInfo getPublicationInfo() {
         return publicationInfo;
     }
@@ -32,11 +32,11 @@ public class Book {
     public Condition getCondition() {
         return condition;
     }
-    
+
     public List<Appraisal> getAppraisals() {
         return Collections.unmodifiableList(appraisals);
     }
-    
+
     public void addAppraisal(Appraisal appraisal) {
         if (appraisal == null) {
             throw new IllegalArgumentException("Appraisal cannot be null");
