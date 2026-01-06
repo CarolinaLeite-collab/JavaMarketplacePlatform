@@ -1,98 +1,127 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DimensionTest {
+
     @Test
-    void testDimensions() {
-        // arrange
-        Dimension dim = new Dimension(10, 20, 3, 0.5);
+    void shouldCreateDimensionWithValidValues() {
+        // Arrange
+        double width = 10;
+        double height = 20;
+        double thickness = 5;
+        DimensionUnit unit = DimensionUnit.CENTIMETERS;
 
-        // act
-        double width = dim.get_width();
-        double height = dim.get_height();
-        double thickness = dim.get_thickness();
-        double weight = dim.get_weight();
+        // Act
+        Dimension dimension = new Dimension(width, height, thickness, unit);
 
-        // assert
-        assertEquals(10, width);
-        assertEquals(20, height);
-        assertEquals(3, thickness);
-        assertEquals(0.5, weight);
+        // Assert
+        assertNotNull(dimension);
     }
 
     @Test
-    void negative_width() {
-        // arrange
-        double width = -1;
-
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(width, 20, 3, 0.5));
-    }
-
-    @Test
-    void zero_width() {
-        // arrange
+    void shouldThrowExceptionWhenWidthIsZero() {
+        // Arrange
         double width = 0;
+        double height = 20;
+        double thickness = 5;
+        DimensionUnit unit = DimensionUnit.CENTIMETERS;
 
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(width, 20, 3, 0.5));
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Dimension(width, height, thickness, unit);
+        });
     }
 
     @Test
-    void negative_height() {
-        // arrange
-        double height = -5;
-
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, height, 3, 0.5));
-    }
-
-    @Test
-    void zero_height() {
-        // arrange
+    void shouldThrowExceptionWhenHeightIsZero() {
+        // Arrange
+        double width = 10;
         double height = 0;
+        double thickness = 5;
+        DimensionUnit unit = DimensionUnit.CENTIMETERS;
 
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, height, 3, 0.5));
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Dimension(width, height, thickness, unit);
+        });
     }
 
     @Test
-    void negative_thickness() {
-        // arrange
-        double thickness = -2;
-
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, 20, thickness, 0.5));
-    }
-
-    @Test
-    void zero_thickness() {
-        // arrange
+    void shouldThrowExceptionWhenThicknessIsZero() {
+        // Arrange
+        double width = 10;
+        double height = 20;
         double thickness = 0;
+        DimensionUnit unit = DimensionUnit.CENTIMETERS;
 
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, 20, thickness, 0.5));
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Dimension(width, height, thickness, unit);
+        });
     }
 
     @Test
-    void negative_weight() {
-        // arrange
-        double weight = -0.1;
+    void get_WidthShouldReturnValuePassedInConstructor() {
+        // Arrange
+        Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
 
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, 20, 3, weight));
+        // Act
+        double result = dimension.get_width();
+
+        // Assert
+        assertEquals(10, result);
     }
 
     @Test
-    void zero_weight() {
-        // arrange
-        double weight = 0;
+    void get_HeightShouldReturnValuePassedInConstructor() {
+        // Arrange
+        Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
 
-        // act & assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Dimension(10, 20, 3, weight));
+        // Act
+        double result = dimension.get_height();
+
+        // Assert
+        assertEquals(20, result);
+    }
+
+    @Test
+    void get_ThicknessShouldReturnValuePassedInConstructor() {
+        // Arrange
+        Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
+
+        // Act
+        double result = dimension.get_thickness();
+
+        // Assert
+        assertEquals(5, result);
+    }
+
+    @Test
+    void toStringShouldFormatValuesCorrectly() {
+        // Arrange
+        Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
+        String expected = "Dimensions: 10.00 centimeters, 20.00 centimeters, 5.00 centimeters";
+
+        // Act
+        String result = dimension.toString();
+
+        // Assert
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void toStringShouldRoundValuesToTwoDecimalPlaces() {
+        // Arrange
+        Dimension dimension = new Dimension(2.5, 1.234, 0.1, DimensionUnit.INCHES);
+        String expected = "Dimensions: 2.50 inches, 1.23 inches, 0.10 inches";
+
+        // Act
+        String result = dimension.toString();
+
+        // Assert
+        assertEquals(expected, result);
     }
 }

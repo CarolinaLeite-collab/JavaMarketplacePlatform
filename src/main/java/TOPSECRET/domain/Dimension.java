@@ -1,20 +1,23 @@
 package TOPSECRET.domain;
 
+import java.util.Locale;
+
 public class Dimension {
 
     private double _width;
     private double _height;
     private double _thickness;
-    private double _weight;
+    private DimensionUnit _unit;
 
-    public Dimension(double width, double height, double thickness, double weight) {
-        if (width <= 0 || height <= 0 || thickness <= 0 || weight <= 0) {
-            throw new IllegalArgumentException("All dimensions and weight must be greater than zero.");
+
+    public Dimension(double width, double height, double thickness, DimensionUnit unit) {
+        if (width <= 0 || height <= 0 || thickness <= 0) {
+            throw new IllegalArgumentException("All dimensions must be greater than zero.");
         }
         this._width = width;
         this._height = height;
         this._thickness = thickness;
-        this._weight = weight;
+        this._unit = unit;
     }
 
     public double get_width() {
@@ -29,11 +32,14 @@ public class Dimension {
         return _thickness;
     }
 
-    public double get_weight() {
-        return _weight;
-    }
-
-    public double calculateVolume() {
-        return _width * _height * _thickness;
+    @Override
+    public String toString() {
+        return String.format(
+                Locale.US, //garantir que o separador decimal seja sempre (.) independente da região.
+                "Dimensions: %.2f %s, %.2f %s, %.2f %s",
+                _width, _unit,
+                _height, _unit,
+                _thickness, _unit
+        );
     }
 }
