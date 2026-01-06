@@ -8,16 +8,17 @@ public class Title {
 
     private final String _title;
 
-    public Title(String title) throws InstantiationException {
+    public Title(String title) {
+
         if (!isValidConstructorArgument(title)) {
-            throw new InstantiationException("Title cannot be null, empty, or blank");
+            throw new IllegalArgumentException("Condition cannot be null!");
         }
 
         this._title = title.trim();
 
     }
 
-    private boolean isValidConstructorArgument(String title) {
+    public boolean isValidConstructorArgument(String title) {
         if (title == null || title.isBlank()) {
             return false;
         }
