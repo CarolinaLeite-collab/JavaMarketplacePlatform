@@ -26,9 +26,9 @@ public class Weight {
     }
 
     public Weight(double value, WeightUnit weightUnit) {
-        this.validate(_value);
         this._value = value;
         this._weightUnit = weightUnit;
+        this.validate(_value);
     }
 
     public double getValue() {
