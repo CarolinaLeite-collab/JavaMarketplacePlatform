@@ -1,0 +1,61 @@
+@startuml
+'==== Title ====
+title MiteLovers – UCD
+left to right direction
+
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+
+'==== entities ====
+actor User
+
+
+usecase "to create my library" as UC1
+usecase "to register a new publication in the system" as UC2
+usecase "to add a publication to my library" as UC3
+usecase " to get the list (title, author, type and ISBN/SSN) of publications in my library" as UC4
+usecase "to get the list of official genres" as UC5
+usecase "to get the list of official publication types" as UC6
+usecase "to put for sale a publication in my library in a direct sale" as UC7
+usecase "to put for sale a publication in my library in an auction" as UC8
+usecase "to create a private list of my publications, give it a name and a set a genre" as UC9
+usecase "to add one of my publications to a list of mine" as UC10
+usecase "to publicly share a list of mine" as UC11
+usecase "to get a list (name and user) of the publicly published lists of a given genre" as UC12
+
+User -- UC1
+User -- UC2
+User -- UC3
+User -- UC4
+User -- UC5
+User -- UC6
+User -- UC7
+User -- UC8
+User -- UC9
+User -- UC10
+User -- UC11
+User -- UC12
+
+@enduml
