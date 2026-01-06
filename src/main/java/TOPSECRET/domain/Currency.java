@@ -12,13 +12,13 @@ public enum Currency {
     NZD("$"),
     USD("$");
 
-    private final String currencySymbol;
+    private final String _currencySymbol;
 
     Currency(String currencySymbol) {
-        this.currencySymbol = currencySymbol;
+        _currencySymbol = currencySymbol;
     }
 
     public String getSymbol() {
-        return currencySymbol;
+        return _currencySymbol;
     }
 }

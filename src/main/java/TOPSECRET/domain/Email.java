@@ -34,7 +34,7 @@ public final class Email {
         }
 
         // Emails are case-insensitive, normalize to lowercase
-        this._email = trimmed.toLowerCase();
+        _email = trimmed.toLowerCase();
     }
 
     public String getValue() {

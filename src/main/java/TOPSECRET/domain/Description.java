@@ -4,7 +4,7 @@ public class Description {
 
     public static final int MAX_LENGTH = 500;
 
-    private String description;
+    private String _description;
 
     public Description(String description) {
         if (description == null || description.trim().isEmpty()) {
@@ -13,7 +13,7 @@ public class Description {
         if (description.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Description too long (maximum of " + MAX_LENGTH + " characters)");
         }
-        this.description = description.trim();
+        _description = description.trim();
     }
     // Mutability
     public void setDescription(String newDescription) {
@@ -23,19 +23,19 @@ public class Description {
         if (newDescription.length() > MAX_LENGTH) {
             throw new IllegalArgumentException("Description too long (maximum of " + MAX_LENGTH + " characters)");
         }
-        this.description = newDescription.trim();
+        _description = newDescription.trim();
     }
 
     public String getDescription() {
-        return description;
+        return _description;
     }
     public int getLength() {
-        return description.length();
+        return _description.length();
     }
     // Adding a Maxlength boolean here may be useful later on (UI)
 
     @Override
     public String toString() {
-        return description + " (" + getLength() + "/" + Description.MAX_LENGTH + ")";
+        return _description + " (" + getLength() + "/" + Description.MAX_LENGTH + ")";
     }
 }

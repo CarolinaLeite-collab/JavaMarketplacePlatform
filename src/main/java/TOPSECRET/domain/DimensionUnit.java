@@ -9,7 +9,7 @@ public enum DimensionUnit {
     private final String _dimensionUnit;
 
     DimensionUnit(String dimensionUnit) {
-        this._dimensionUnit = dimensionUnit;
+        _dimensionUnit = dimensionUnit;
     }
 
     @Override

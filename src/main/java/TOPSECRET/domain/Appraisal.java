@@ -21,9 +21,9 @@ public class Appraisal {
             throw new IllegalArgumentException("Object description must not be empty");
         }
 
-        this._valueEstimate = valueEstimate;
-        this._appraisalDate = appraisalDate;
-        this._objectDescription = objectDescription;
+        _valueEstimate = valueEstimate;
+        _appraisalDate = appraisalDate;
+        _objectDescription = objectDescription;
     }
 
     public Price getValueEstimate() {

@@ -14,10 +14,10 @@ public class Dimension {
         if (width <= 0 || height <= 0 || thickness <= 0) {
             throw new IllegalArgumentException("All dimensions must be greater than zero.");
         }
-        this._width = width;
-        this._height = height;
-        this._thickness = thickness;
-        this._unit = unit;
+        _width = width;
+        _height = height;
+        _thickness = thickness;
+        _unit = unit;
     }
 
     public double get_width() {

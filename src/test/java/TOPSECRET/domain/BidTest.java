@@ -11,10 +11,10 @@ class BidTest {
     public void test_valid_bid_creation() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = new Price(100.0, Currency.EUR);
 
         //act
@@ -45,10 +45,10 @@ class BidTest {
     void test_null_offer_prices_throws_exception() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = null;
 
         // act and assert
@@ -63,10 +63,10 @@ class BidTest {
     void test_getBidder() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = new Price(150.0, Currency.EUR);
         Bid bid = new Bid(bidder, offerPrice);
 
@@ -82,10 +82,10 @@ class BidTest {
     void test_getOfferPrice() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = new Price(250.0, Currency.EUR);
         Bid bid = new Bid(bidder, offerPrice);
 
@@ -101,10 +101,10 @@ class BidTest {
     void test_getBidDate_is_set() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = new Price(100.0, Currency.EUR);
 
         // act
@@ -120,22 +120,22 @@ class BidTest {
     public void test_different_users_can_bid() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
-        Address address2 = new Address("Rua de S. Gonçalo", "Porto", "4455-551", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
+        Address address2 = new Address("Rua de S. Gonçalo", "Porto", Address.BuildingType.APARTMENT, "Porto", "Porto", Address.Country.PORTUGAL, "1269", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
         Phone phoneNumber2 = new Phone(prefix1, "919999991");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
-        User bidder2 = new User(new Name("maria"), new Email("maria@test.pt"), address2, phoneNumber2);
+        User bidder1 = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
+        User bidder2 = new User (new Name("Leitor"), address1, new Email("example@exampling.com"), phoneNumber2);
         Price price1 = new Price(100.0, Currency.EUR);
         Price price2 = new Price(150.0, Currency.EUR);
 
         // act
-        Bid bid1 = new Bid(bidder, price1);
+        Bid bid1 = new Bid(bidder1, price1);
         Bid bid2 = new Bid(bidder2, price2);
 
         // assert
-        assertEquals(bidder, bid1.getBidder());
+        assertEquals(bidder1, bid1.getBidder());
         assertEquals(bidder2, bid2.getBidder());
         assertNotEquals(bid1.getBidder(), bid2.getBidder());
     }
@@ -145,10 +145,10 @@ class BidTest {
     void test_same_user_multiple_bids() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price price1 = new Price(100.0, Currency.EUR);
         Price price2 = new Price(150.0, Currency.EUR);
 
@@ -166,10 +166,10 @@ class BidTest {
     void test_bids_with_different_currencies() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", "4455-555", "Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969", "420");
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User (new Name("Reader"), new Email("reader@email.com"), address1, phoneNumber1);
+        User bidder = new User (new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price priceEUR = new Price(100.0, Currency.EUR);
         Price priceUSD = new Price(100.0, Currency.USD);
         Price priceGBP = new Price(100.0, Currency.GBP);

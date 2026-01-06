@@ -6,9 +6,9 @@ import java.util.List;
 
 public class Book {
 
-    private final PublicationInfo publicationInfo;
-    private final Condition condition;
-    private final List<Appraisal> appraisals;
+    private final PublicationInfo _publicationInfo;
+    private final Condition _condition;
+    private final List<Appraisal> _appraisals;
 
     public Book(PublicationInfo publicationInfo, Condition condition) {
 
@@ -20,27 +20,27 @@ public class Book {
             throw new IllegalArgumentException("Condition cannot be null");
         }
 
-        this.publicationInfo = publicationInfo;
-        this.condition = condition;
-        this.appraisals = new ArrayList<>();
+        _publicationInfo = publicationInfo;
+        _condition = condition;
+        _appraisals = new ArrayList<>();
     }
 
     public PublicationInfo getPublicationInfo() {
-        return publicationInfo;
+        return _publicationInfo;
     }
 
     public Condition getCondition() {
-        return condition;
+        return _condition;
     }
 
     public List<Appraisal> getAppraisals() {
-        return Collections.unmodifiableList(appraisals);
+        return Collections.unmodifiableList(_appraisals);
     }
 
     public void addAppraisal(Appraisal appraisal) {
         if (appraisal == null) {
             throw new IllegalArgumentException("Appraisal cannot be null");
         }
-        appraisals.add(appraisal);
+        _appraisals.add(appraisal);
     }
 }

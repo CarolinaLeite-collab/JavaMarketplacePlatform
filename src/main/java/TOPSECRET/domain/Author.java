@@ -6,17 +6,17 @@ package TOPSECRET.domain;
  */
 
 public class Author {
-    private String name;
+    private String _name;
 
     public Author (String name) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Author name cannot be null or empty");
 
-        this.name = name.trim();
+        _name = name.trim();
     }
 
-    public String getName() { return this.name; }
+    public String getName() { return _name; }
 
-    public String getLowerCaseName() { return name.toLowerCase(); }
+    public String getLowerCaseName() { return _name.toLowerCase(); }
 
 }

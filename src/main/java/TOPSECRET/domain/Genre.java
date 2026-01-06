@@ -41,7 +41,7 @@ public enum Genre {
     private final String _genre;
 
     Genre(String genre) {
-        this._genre = genre;
+        _genre = genre;
     }
 
     //Override to obtain a String of the mixed-cased genres (better for UI)

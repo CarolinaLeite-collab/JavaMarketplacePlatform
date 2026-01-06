@@ -38,14 +38,14 @@ public class Address {
 
         validateFields(street, doorNumber, buildingType, city, country, postalCode);
 
-        this._street = street;
-        this._doorNumber = doorNumber;
-        this._buildingType = buildingType;
-        this._city = city;
-        this._districtOrState = districtOrState;
-        this._country = country;
-        this._postalCode = postalCode;
-        this._postalCodeExtension = postalCodeExtension;
+        _street = street;
+        _doorNumber = doorNumber;
+        _buildingType = buildingType;
+        _city = city;
+        _districtOrState = districtOrState;
+        _country = country;
+        _postalCode = postalCode;
+        _postalCodeExtension = postalCodeExtension;
     }
     public String getStreet() { return _street; }
     public String getDoorNumber() { return _doorNumber; }
@@ -60,48 +60,48 @@ public class Address {
         if (street == null || street.trim().isEmpty()) {
             throw new IllegalArgumentException("Street cannot be empty!");
         }
-        this._street = street.trim();
+        _street = street.trim();
     }
     public void setDoorNumber(String doorNumber) {
         if (doorNumber == null || doorNumber.trim().isEmpty()) {
             throw new IllegalArgumentException("Door number cannot be empty!");
         }
-        this._doorNumber = doorNumber.trim();
+        _doorNumber = doorNumber.trim();
     }
     public void setBuildingType(BuildingType buildingType) {
         if (buildingType == null) {
             throw new IllegalArgumentException("Must select a building type!");
         }
-        this._buildingType = buildingType;
+        _buildingType = buildingType;
     }
     public void setCity(String city) {
         if (city == null || city.trim().isEmpty()) {
             throw new IllegalArgumentException("City cannot be empty!");
         }
-        this._city = city.trim();
+        _city = city.trim();
     }
     // District or State isn't mandatory, there's no need for validation
-    public void setDistrictOrState(String districtOrState) { this._districtOrState = districtOrState; }
+    public void setDistrictOrState(String districtOrState) { _districtOrState = districtOrState; }
 
     public void setCountry(Country country) {
         if (country == null) {
             throw new IllegalArgumentException("Must select a country!");
         }
         //Revalidate postal code if country is changed
-        if (!isValidPostalCode(this._postalCode, country)) {
-            throw new IllegalArgumentException("Current postal code '" + this._postalCode + "' is not valid for: " + country + ".");
+        if (!isValidPostalCode(_postalCode, country)) {
+            throw new IllegalArgumentException("Current postal code '" + _postalCode + "' is not valid for: " + country + ".");
         }
-        this._country = country;
+        _country = country;
     }
 
     public void setPostalCode(String postalCode) {
-        if (!isValidPostalCode(postalCode, this._country)) {
-            throw new IllegalArgumentException( "Invalid postal code '" + postalCode + "' for " + this._country);
+        if (!isValidPostalCode(postalCode, _country)) {
+            throw new IllegalArgumentException( "Invalid postal code '" + postalCode + "' for " + _country);
         }
-        this._postalCode = postalCode;
+        _postalCode = postalCode;
     }
     // Postal code extension isn't mandatory, there's no need for validation
-    public void setPostalCodeExtension(String postalCodeExtension) { this._postalCodeExtension = postalCodeExtension; }
+    public void setPostalCodeExtension(String postalCodeExtension) { _postalCodeExtension = postalCodeExtension; }
 
 
     private void validateFields(String street,

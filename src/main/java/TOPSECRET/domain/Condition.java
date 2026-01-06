@@ -11,14 +11,14 @@ public enum Condition {
     FAIR("Visible imperfections but readable"),
     POOR("Damaged or incomplete");
 
-    private final String description;
+    private final String _description;
 
     Condition(String description) {
-        this.description = description;
+        _description = description;
     }
 
     public String getDescription() {
-        return description;
+        return _description;
     }
 
 

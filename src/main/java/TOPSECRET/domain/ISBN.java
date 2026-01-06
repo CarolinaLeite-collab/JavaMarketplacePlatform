@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-public class ISBN {
+public class    ISBN {
 
     /**
      * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
@@ -10,14 +10,14 @@ public class ISBN {
      * An ISBN-10 can be converted to an ISBN-13 by adding a "978" prefix and recalculating the check digit.
      * ISBN-10 and ISBN-13 can coexist for the same edition.
      */
-    private long number;
+    private long _number;
 
     private ISBN() {
     }
 
     public ISBN(long isbn) {
         if (isValid(isbn)) {
-            this.number = isbn;
+            _number = isbn;
         } else {
             throw new IllegalArgumentException("Invalid ISBN");
         }
@@ -40,7 +40,7 @@ public class ISBN {
     }
 
     public boolean isSameISBN(long otherIsbnNumber) {
-        return this.number == otherIsbnNumber;
+        return _number == otherIsbnNumber;
     }
 
 }
