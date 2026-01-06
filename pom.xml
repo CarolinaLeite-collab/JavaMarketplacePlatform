@@ -29,7 +29,7 @@
 
         <!-- Pitest Version Configuration-->
         <pitest-maven>1.15.8</pitest-maven>
-        <pitest-junit5-plugin>1.1.2</pitest-junit5-plugin>
+        <pitest-junit5-plugin>1.2.2</pitest-junit5-plugin>
 
         <!-- Surefire Version Configuration -->
         <maven-surefire-plugin>3.2.5</maven-surefire-plugin>
@@ -43,6 +43,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit-jupiter}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <version>${junit-jupiter}</version>
             <scope>test</scope>
         </dependency>
