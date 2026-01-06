@@ -32,6 +32,7 @@ public class Description {
     public int getLength() {
         return _description.length();
     }
+
     // Adding a Maxlength boolean here may be useful later on (UI)
 
     @Override

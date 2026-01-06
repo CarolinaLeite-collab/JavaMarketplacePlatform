@@ -8,38 +8,38 @@ public class Weight {
         OUNCES("oz"),
         POUNDS("lb");
 
-        private final String abbreviation;
+        private final String _abbreviation;
         WeightUnit(String abbreviation) {
-            this.abbreviation = abbreviation;
+            this._abbreviation = abbreviation;
         }
         public String getAbbreviation() {
-            return abbreviation;
+            return _abbreviation;
         }
     }
-    private final double value;
-    private final WeightUnit weightUnit;
+    private final double _value;
+    private final WeightUnit _weightUnit;
 
-    private void validate(double value) {
-        if (value < 0) {
+    private void validate(double _value) {
+        if (_value < 0) {
             throw new IllegalArgumentException("weight cannot be negative.");
         }
     }
 
     public Weight(double value, WeightUnit weightUnit) {
-        this.validate(value);
-        this.value = value;
-        this.weightUnit = weightUnit;
+        this.validate(_value);
+        this._value = value;
+        this._weightUnit = weightUnit;
     }
 
     public double getValue() {
-        return value;
+        return _value;
     }
     public WeightUnit getWeightUnit() {
-        return weightUnit;
+        return _weightUnit;
     }
 
     @Override
     public String toString() {
-        return "Weight: " + value + " " + weightUnit.getAbbreviation();
+        return "Weight: " + _value + " " + _weightUnit.getAbbreviation();
     }
 }
