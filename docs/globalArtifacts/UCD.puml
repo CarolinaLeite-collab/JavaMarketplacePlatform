@@ -29,6 +29,7 @@ skinparam shadowing<<highlight>> false
 
 
 '==== entities ====
+actor Buyer
 actor User
 actor Administrator
 
@@ -60,6 +61,17 @@ usecase "UC019: To publicly share a list of mine" as UC19
 usecase "UC020: To get a list (name and user) of the publicly published lists of a given genre" as UC20
 
 
+'==== Buyer  ====
+
+usecase "UC021: To get the list of items on direct sale of a given genre" as UC21
+usecase "UC022: To get the list of items on auction of a given genre" as UC22
+usecase "UC023: To get the list of items on direct sale of a given publication" as UC23
+usecase "UC024: To get the list of items on auction of a given publication" as UC24
+usecase "UC025: To get the list of items on direct sale of a given author" as UC25
+usecase "UC026: To get the list of items on auction of a given author" as UC26
+usecase "UC027: To get the list of items on direct sale of a given publisher" as UC27
+usecase "UC028: To get the list of items on auction of a given publisher" as UC28
+
 Administrator -- UC1
 Administrator -- UC2
 Administrator -- UC3
@@ -82,7 +94,13 @@ User -- UC18
 User -- UC19
 User -- UC20
 
-
-
+Buyer -- UC21
+Buyer -- UC22
+Buyer -- UC23
+Buyer -- UC24
+Buyer -- UC25
+Buyer -- UC26
+Buyer -- UC27
+Buyer -- UC28
 
 @enduml
