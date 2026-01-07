@@ -13,7 +13,7 @@ public class Publisher {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
 
-        this._name = name.trim();
+        _name = name.trim();
     }
 
     public String getName() {

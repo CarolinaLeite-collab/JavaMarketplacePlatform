@@ -22,10 +22,10 @@ public class Language {
             throw new IllegalArgumentException("Language name cannot be null or empty");
         }
 
-        this._code = code.toLowerCase().trim();
-        this._name = name.trim();
-        this._nativeName = (nativeName != null) ? nativeName.trim() : name.trim();
-        this._locale = new Locale(this._code);
+        _code = code.toLowerCase().trim();
+        _name = name.trim();
+        _nativeName = (nativeName != null) ? nativeName.trim() : name.trim();
+        _locale = new Locale(this._code);
     }
 
     // Factory method - recommended approach

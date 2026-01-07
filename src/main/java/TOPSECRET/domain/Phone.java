@@ -27,8 +27,8 @@ public class Phone {
             throw new IllegalArgumentException("Phone number must have 4 to 12 digits");
         }
 
-        this._prefix = prefix;
-        this._nationalNumber = cleaned;
+        _prefix = prefix;
+        _nationalNumber = cleaned;
     }
 
     public PhonePrefix getPrefix() {

@@ -18,12 +18,16 @@ public class Edition {
     private final Weight _weight;
     private final Language _language;
 
-    public Edition (ISSN issn, ISBN isbn, int numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
+    // Constructor for Books
+    public Edition (ISBN isbn, int numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
                     Description description, Dimension dimension, Weight weight ,Language language) {
 
+        _issn = null;
+        _isbn = isbn;
+
         // An edition cannot have both ISSN and ISBN
-        if (issn != null && isbn != null)
-            throw new IllegalArgumentException("An edition only can have on code: ISSN or ISBN");
+        if (_isbn == null)
+            throw new IllegalArgumentException("A Book with ISBN is required!");
 
         if (editionNumber <= 0)
             throw new IllegalArgumentException("Edition number needs to be positive");
@@ -32,8 +36,6 @@ public class Edition {
             throw new IllegalArgumentException("Number of pages cannot be zero or negative.");
 
 
-        _issn = issn;
-        _isbn = isbn;
         _numberOfPages = numberOfPages;
         _editionNumber = editionNumber;
         _publicationDate = publicationDate;
@@ -43,7 +45,59 @@ public class Edition {
         _weight = weight;
         _language = language;
     }
-    
+
+    // Constructor for Magazine
+    public Edition (ISSN issn, int numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
+                    Description description, Dimension dimension, Weight weight ,Language language) {
+
+        _isbn = null;
+        _issn = issn;
+
+        // An edition cannot have both ISSN and ISBN
+        if (_issn == null)
+            throw new IllegalArgumentException("A magazine ISSN is required!");
+
+        if (editionNumber <= 0)
+            throw new IllegalArgumentException("Edition number needs to be positive");
+
+        if (numberOfPages <= 0)
+            throw new IllegalArgumentException("Number of pages cannot be zero or negative.");
+
+
+        _numberOfPages = numberOfPages;
+        _editionNumber = editionNumber;
+        _publicationDate = publicationDate;
+        _binding = binding;
+        _description = description;
+        _dimension = dimension;
+        _weight = weight;
+        _language = language;
+    }
+
+    // Constructor for Books or Magazines without ISBN or ISSN
+    public Edition (int numberOfPages, int editionNumber, LocalDate publicationDate, Binding binding,
+                    Description description, Dimension dimension, Weight weight ,Language language) {
+
+        _isbn = null;
+        _issn = null;
+
+        if (editionNumber < 0)
+            throw new IllegalArgumentException("Edition number needs to be positive");
+
+        if (numberOfPages <= 0)
+            throw new IllegalArgumentException("Number of pages cannot be zero or negative.");
+
+
+        _numberOfPages = numberOfPages;
+        _editionNumber = editionNumber;
+        _publicationDate = publicationDate;
+        _binding = binding;
+        _description = description;
+        _dimension = dimension;
+        _weight = weight;
+        _language = language;
+    }
+
     public ISSN getIssn() { return _issn; }
     public ISBN getIsbn() { return _isbn; }
     public int getNumberOfPages() { return _numberOfPages; }

@@ -4,12 +4,12 @@ public final class Name {
 
     private final String _name;
 
-    public Name(String _name) {
-        if (_name == null) {
+    public Name(String name) {
+        if (name == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
 
-        String normalized = normalize(_name);
+        String normalized = normalize(name);
 
         if (normalized.isBlank()) {
             throw new IllegalArgumentException("Name cannot be blank");
@@ -23,7 +23,7 @@ public final class Name {
         if (!normalized.matches("[\\p{L}]+([\\p{L}\\s'-]*[\\p{L}])?")) {
             throw new IllegalArgumentException("Name contains invalid characters");
         }
-        this._name = normalized;
+        _name = normalized;
     }
 
     public String get_Name() {

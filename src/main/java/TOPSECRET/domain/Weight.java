@@ -10,36 +10,36 @@ public class Weight {
 
         private final String _abbreviation;
         WeightUnit(String abbreviation) {
-            this._abbreviation = abbreviation;
+            _abbreviation = abbreviation;
         }
-        public String getAbbreviation() {
+        public String get_abbreviation() {
             return _abbreviation;
         }
     }
     private final double _value;
     private final WeightUnit _weightUnit;
 
-    private void validate(double _value) {
-        if (_value < 0) {
+    private void validate(double value) {
+        if (value < 0) {
             throw new IllegalArgumentException("weight cannot be negative.");
         }
     }
 
     public Weight(double value, WeightUnit weightUnit) {
-        this.validate(_value);
-        this._value = value;
-        this._weightUnit = weightUnit;
+        validate(value);
+        _value = value;
+        _weightUnit = weightUnit;
     }
 
-    public double getValue() {
+    public double get_value() {
         return _value;
     }
-    public WeightUnit getWeightUnit() {
+    public WeightUnit get_weightUnit() {
         return _weightUnit;
     }
 
     @Override
     public String toString() {
-        return "Weight: " + _value + " " + _weightUnit.getAbbreviation();
+        return "Weight: " + _value + " " + _weightUnit.get_abbreviation();
     }
 }

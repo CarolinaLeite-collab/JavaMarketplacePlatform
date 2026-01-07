@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-public class    ISBN {
+public class ISBN {
 
     /**
      * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.

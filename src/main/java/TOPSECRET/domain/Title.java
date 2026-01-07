@@ -14,7 +14,7 @@ public class Title {
             throw new IllegalArgumentException("Condition cannot be null!");
         }
 
-        this._title = title.trim();
+        _title = title.trim();
 
     }
 

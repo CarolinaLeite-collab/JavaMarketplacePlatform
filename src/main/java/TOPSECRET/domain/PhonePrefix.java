@@ -27,7 +27,7 @@ public class PhonePrefix {
             throw new IllegalArgumentException("Phone prefix must have 1 to 3 digits");
         }
 
-        this._value = "+" + normalized;
+        _value = "+" + normalized;
     }
 
     public String getValue() {

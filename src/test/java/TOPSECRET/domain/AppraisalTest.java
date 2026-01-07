@@ -86,7 +86,7 @@ class AppraisalTest {
 
         assertTrue(text.contains("Appraisal"));
         assertTrue(text.contains("The book is in great condition, with no use marks."));
-        assertTrue(text.contains("104 €"));
+        assertTrue(text.contains("104.0 €"));
     }
 
 }

@@ -44,4 +44,12 @@ public class PublicationInfo {
     public Publisher getPublisher() {
         return _publisher;
     }
+
+    public ISBN getISBN() {
+        return _edition.getIsbn();
+    }
+
+    public ISSN getISSN() {
+        return _edition.getIssn();
+    }
 }

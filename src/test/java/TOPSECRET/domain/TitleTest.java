@@ -71,15 +71,10 @@ class TitleTest {
         String nullTitle = null;
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act
-        Exception exception = assertThrows(InstantiationException.class, () ->
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () ->
                 new Title(nullTitle)
         );
-
-        //assert
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
 
     }
 
@@ -92,15 +87,11 @@ class TitleTest {
         String emptyTitle = "";
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act
-        Exception exception = assertThrows(InstantiationException.class, () ->
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () ->
                 new Title(emptyTitle)
         );
 
-        //assert
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
 
     }
 
@@ -113,15 +104,10 @@ class TitleTest {
         String blankTitle = " ";
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act
-        Exception exception = assertThrows(InstantiationException.class, () ->
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () ->
                 new Title(blankTitle)
         );
-
-        //assert
-        String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
 
     }
 
