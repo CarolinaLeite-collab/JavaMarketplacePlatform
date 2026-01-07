@@ -28,3 +28,6 @@ replay_pid*
 
 # macOS system files
 .DS_Store
+
+# Build outputs
+target/
