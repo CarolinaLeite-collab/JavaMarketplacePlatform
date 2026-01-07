@@ -24,13 +24,20 @@ public class AuthorTest {
         Author a3 = new Author("EÇA DE QUEIRÓS");
         Author a4 = new Author("eça de queirós");
 
-        assertEquals(a2.getLowerCaseName(), a3.getLowerCaseName(), a4.getLowerCaseName());
+        assertEquals(a2.getLowerCaseName(), a3.getLowerCaseName());
+        assertEquals(a2.getLowerCaseName(), a4.getLowerCaseName());
     }
 
     @Test
-    void emptyNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author("   ");}); }
+    void authorNameIsTrimmedAndLowerCased() {
+        Author a5 = new Author("  EÇA DE QUEIRÓS  ");
+        assertEquals("eça de queirós", a5.getLowerCaseName());
+    }
 
     @Test
-    void nullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
+    void rejectEmptyNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author("   ");}); }
+
+    @Test
+    void rejectNullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
 
 }
