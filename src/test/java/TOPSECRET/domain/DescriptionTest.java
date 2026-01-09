@@ -1,9 +1,20 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DescriptionTest {
+
+    // Setup to reuse strings
+    private String maxLengthText;
+    private String tooLongText;
+
+    @BeforeEach
+    void setUp() {
+        maxLengthText = "a".repeat(Description.MAX_LENGTH);
+        tooLongText = "a".repeat(Description.MAX_LENGTH + 1);
+    }
 
     //Test constructor
     @Test
@@ -26,8 +37,7 @@ public class DescriptionTest {
     }
     @Test
     public void maxLengthAccepted() {
-        String maxLengthDescription = "a".repeat(Description.MAX_LENGTH);
-        Description description = new Description(maxLengthDescription);
+        Description description = new Description(maxLengthText);
         assertEquals(Description.MAX_LENGTH, description.getLength());
     }
     @Test
@@ -56,8 +66,7 @@ public class DescriptionTest {
     }
     @Test
     public void constructor_tooLongThrowsException() {
-        String tooLongDescription = "a".repeat(Description.MAX_LENGTH + 1);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Description(tooLongDescription));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new Description(tooLongText));
         assertTrue(exception.getMessage().contains("Description too long (maximum of " + Description.MAX_LENGTH + " characters)"));
     }
     @Test
@@ -75,9 +84,23 @@ public class DescriptionTest {
     @Test
     public void setter_tooLongThrowsException() {
         Description description = new Description("Original Description");
-        String tooLongDescription = "a".repeat(Description.MAX_LENGTH + 1);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> description.setDescription(tooLongDescription));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> description.setDescription(tooLongText));
         assertTrue(exception.getMessage().contains("Description too long (maximum of " + Description.MAX_LENGTH + " characters)"));
+    }
+
+    @Test  //Improving mutation tests
+    public void setter_acceptsMaxLength() {
+        Description description = new Description("Original Description");
+        description.setDescription(maxLengthText);
+        assertEquals(Description.MAX_LENGTH, description.getLength());
+        assertEquals(maxLengthText, description.getDescription());
+    }
+    @Test
+    public void setter_acceptsMaxLengthWithSurroundingSpaces() {
+        Description description = new Description("Original Description");
+        String maxWithSpaces = "  " + maxLengthText + "  ";
+        IllegalArgumentException expected = assertThrows(IllegalArgumentException.class, () -> description.setDescription(maxWithSpaces));
+        assertTrue(expected.getMessage().contains("Description too long"));
     }
 
     @Test
