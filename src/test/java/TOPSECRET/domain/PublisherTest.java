@@ -2,20 +2,19 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PublisherTest {
     @Test
-    void shouldCreateValidPublisher() {
-        Publisher p1 = new Publisher("Porto Editora");
-        assertEquals("Porto Editora", p1.getName());
+    void validPublisher() {
+        Publisher p = new Publisher("Porto Editora");
+        assertEquals("Porto Editora", p.getName());
     }
 
     @Test
     void publisherNameIsTrimmed() {
-        Publisher p = new Publisher (" Porto Editora  ");
-        assertEquals("Porto Editora", p.getName());
+        Publisher p1 = new Publisher (" Porto Editora  ");
+        assertEquals("Porto Editora", p1.getName());
     }
 
     @Test
@@ -43,4 +42,42 @@ public class PublisherTest {
 
         assertEquals(p4.hashCode(), p5.hashCode());
     }
+
+    @Test
+    void publisherEqualsItself() {
+        Publisher p6 = new Publisher("Porto Editora");
+
+        assertEquals(p6, p6);
+    }
+
+    @Test
+    void publisherNotEqualToNull() {
+        Publisher p7 = new Publisher("Porto Editora");
+
+        assertNotEquals(p7, null);
+    }
+
+    @Test
+    void publisherNotEqualToDifferentType() {
+        Publisher p8 = new Publisher("Porto Editora");
+
+        assertNotEquals(p8, "Porto Editora");
+    }
+
+    @Test
+    void publisherWithDifferentNameAreNotEqual() {
+        Publisher p9 = new Publisher("Porto Editora");
+        Publisher p10 = new Publisher("Tinta da China");
+
+        assertNotEquals(p9, p10);
+    }
+
+    @Test
+    void publisherWithDifferentNameHaveDifferentHashCode() {
+        Publisher p11 = new Publisher("Porto Editora");
+        Publisher p12 = new Publisher("Tinta da China");
+
+        assertNotEquals(p11.hashCode(), p12.hashCode());
+    }
+
 }
