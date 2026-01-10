@@ -74,23 +74,76 @@ public class AddressTest {
         address.setStreet("New Street  ");
         assertEquals("New Street", address.getStreet());
     }
-
     @Test
-    void setStreet_emptyValue_throwsException() {
+    void setStreet_empty_throwsException() {
         Address address = new Address("Alameda X ", "123", Address.BuildingType.OTHER,
                 "Lisboa", null, Address.Country.PORTUGAL, "1000-205", null);
         assertThrows(IllegalArgumentException.class, () -> validAddress.setStreet(""));
     }
 
     @Test
+    void setDoorNumber_valid_updatesValue() {
+        Address address = validAddress;
+        address.setDoorNumber("  1000  ");
+        assertEquals("1000", address.getDoorNumber());
+    }
+    @Test
+    void setDoorNumber_null_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setDoorNumber(null));
+    }
+    @Test
+    void setDoorNumber_empty_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setDoorNumber(""));
+    }
+    @Test
+    void setDoorNumber_spaces_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setDoorNumber("   "));
+    }
+
+    @Test
+    void setBuildingType_valid() {
+        Address address = validAddress;
+        address.setBuildingType(Address.BuildingType.OTHER);
+        assertEquals(Address.BuildingType.OTHER, address.getBuildingType());
+    }
+    @Test
+    void setBuildingType_null_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setBuildingType(null));
+    }
+
+    @Test
+    void setCity_valid_updatesCity() {
+        Address address = validAddress;
+        address.setCity("Braga   ");
+        assertEquals("Braga", address.getCity());
+    }
+    @Test
+    void setCity_null_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setCity(null));
+    }
+    @Test
+    void setCity_empty_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setCity(""));
+    }
+    @Test
+    void setCity_spaces_throwsException() {
+        Address address = validAddress;
+        assertThrows(IllegalArgumentException.class, () -> address.setCity("   "));
+    }
+
+    @Test
     void setCountry_validCountryWithValidPostalCode_succeeds() {
         Address address = new Address("Rua Whatever", "123", Address.BuildingType.STORE,
                 "Barcelona", null, Address.Country.SPAIN, "28301", null);
-        ;
         address.setCountry(Address.Country.SPAIN);
         assertEquals(Address.Country.SPAIN, address.getCountry());
     }
-
     @Test
     void setCountry_spainPostalCodeForPortugal_throwsException() {
         Address address = validAddress;
@@ -104,7 +157,6 @@ public class AddressTest {
         address.setPostalCode("1050-123");
         assertEquals("1050-123", address.getPostalCode());
     }
-
     @Test
     void setPostalCode_invalidForCurrentCountry_throwsException() {
         Address address = validAddress;
