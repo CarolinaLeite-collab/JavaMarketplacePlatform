@@ -1,0 +1,21 @@
+@startuml
+title SSD N1 (System Sequence Diagram) - to register a new publication (US10)
+
+actor User
+participant "MiteLovers" as System
+
+User -> System: Select "Register publication"
+System --> User: Show registration form
+
+User -> System: Submit publication data\n(title, type, authors, ISBN/ISSN, ...)
+activate System
+
+System -> System: Validate mandatory fields + format
+System -> System: Check duplicates (ISBN/ISSN or title+authors)
+System -> System: Register in the System
+System --> User: Done!
+
+
+
+deactivate System
+@enduml
