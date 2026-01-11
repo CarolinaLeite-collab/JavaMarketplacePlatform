@@ -16,15 +16,14 @@ public class Listing {
     private Book _book;
     private Magazine _magazine;
     private final User _seller;
-    private List<String> _urls;   //receives images url
+    private List<String> _urls;
 
     //Listing of a book construct
     public Listing (Book book, Price price, User seller, SKU sku, Description description, LocalDate createdDate, List<String> urls) {
 
         //TODO: Verify if SKU is unique
 
-        //posso fazer isto de uma só vez?
-        if (price == null || description == null || sku == null || book == null || seller == null) {
+        if (price == null || description == null || sku == null || book == null || seller == null || urls == null) {
             throw new IllegalArgumentException("Listing parameters cannot be null");
         }
 
@@ -43,7 +42,7 @@ public class Listing {
 
         //TODO: Verify if SKU is unique
 
-        if (price == null || description == null || sku == null || magazine == null || seller == null) {
+        if (price == null || description == null || sku == null || magazine == null || seller == null ||  urls == null) {
             throw new IllegalArgumentException("Listing parameters cannot be null");
         }
 
