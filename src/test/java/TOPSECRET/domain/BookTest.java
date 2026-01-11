@@ -1,23 +1,21 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BookTest {
+public class BookTest {
 
-    // Constructor test
-    @Test
-    void test_a_constructor() {
+    private PublicationInfo validPublicationInfo;
 
-        // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
+    @BeforeEach
+    void setUp() {
+        validPublicationInfo = new PublicationInfo(
+               new Title ("title"),
                 Genre.ACTION,
                 new Author ("Eça de Queirós"),
                 new Edition(
@@ -33,7 +31,14 @@ class BookTest {
                 new Publisher("My Publisher")
         );
 
+    }
+    // Constructor test
+    @Test
+    void test_a_constructor() {
+
+        // Arrange
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
 
         // Act
         Book book = new Book(publicationInfo, condition);
@@ -44,26 +49,9 @@ class BookTest {
     void test_invalid_constructor() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = null;
         Condition condition2 = Condition.FAIR;
+        PublicationInfo publicationInfo = validPublicationInfo;
         PublicationInfo publicationInfo2 = null;
 
         // Act and assert
@@ -76,25 +64,8 @@ class BookTest {
     void test_invalid_appraisal() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
         Book book = new Book(publicationInfo, condition);
         Appraisal appraisal = null;
 
@@ -107,25 +78,8 @@ class BookTest {
     void test_add_Appraisal() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
         Book book = new Book(publicationInfo, condition);
 
         Price price1 = new Price(200, Currency.GBP);
@@ -152,25 +106,8 @@ class BookTest {
     void test_list_of_appraisals() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
         Book book = new Book(publicationInfo, condition);
 
         Price price1 = new Price(200, Currency.GBP);
@@ -204,25 +141,8 @@ class BookTest {
     void test_return_Condition() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
         Book book = new Book(publicationInfo, condition);
 
         // Act and assert
@@ -234,25 +154,8 @@ class BookTest {
     void test_return_PublicationInfo() {
 
         // Arrange
-
-        PublicationInfo publicationInfo = new PublicationInfo(
-                new Title ("title"),
-                Genre.ACTION,
-                new Author ("Eça de Queirós"),
-                new Edition(
-                        new ISBN(9789720048758L),
-                        30,
-                        3,
-                        LocalDate.of(2001, 4, 23),
-                        Binding.SADDLE_STITCH,
-                        new Description("Amazing Magazine"),
-                        new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                        new Weight(224.7, Weight.WeightUnit.GRAMS),
-                        Language.of("pt", "Portuguese", "Português")),
-                new Publisher("My Publisher")
-        );
-
         Condition condition = Condition.LIKE_NEW;
+        PublicationInfo publicationInfo = validPublicationInfo;
         Book book = new Book(publicationInfo, condition);
 
         // Act and assert

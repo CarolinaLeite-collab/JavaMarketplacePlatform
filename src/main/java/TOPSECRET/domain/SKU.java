@@ -4,32 +4,56 @@ import java.util.UUID;
 
 public class SKU {
 
-    private static final int _length = 10; //Tomei por liberdade definir o tamanho dos SKUs' de 10 caractéres alfanuméricos.
-    private static final String _format = "^[A-F0-9]{" + _length + "}$"; //Vamos ter uma string de caractéres, como 01234abcde.
+    // SKU gerado automaticamente pela aplicação:
+    // 10 caracteres alfanuméricos (A–F, 0–9)
+    private static final int _length = 10;
+    private static final String _format = "^[A-F0-9]{" + _length + "}$";
+
     private final String _value;
 
     private SKU(String value) {
+
+        if (value == null || !value.matches(_format)) {
+            throw new IllegalArgumentException("Invalid SKU format");
+        }
+
         _value = value;
     }
 
+    // ÚNICO ponto de criação de SKUs
+    // Não aceita input externo → não há criação manual
     public static SKU generate() {
-
-        String generatedSKU = generateRandomSKU();
-
-        if (!generatedSKU.matches(_format)) {
-            throw new IllegalArgumentException("Generated invalid SKU");
-        }
-        return new SKU(generatedSKU);
+        return new SKU(generateRandomSKU());
     }
 
+    // Geração interna e controlada
     private static String generateRandomSKU() {
-        String uuid = UUID.randomUUID().toString();               // o UUID gera um "código" identificador único de 16 caracteres, de 0-9a-f, de forma aleatória e converte para string.
-        String compact = uuid.replace("-", ""); // remove hífens
-        String shortPart = compact.substring(0, _length);          // corta para 10
-        return shortPart.toUpperCase();                         // transforma todas as letras para maiúsculas
+        String uuid = UUID.randomUUID().toString();   // hex + hífens
+        String compact = uuid.replace("-", "");       // remove hífens
+        return compact.substring(0, _length).toUpperCase();
     }
 
     public String getValue() {
         return _value;
     }
+
+    @Override
+    public String toString() {
+        return _value;
+    }
+
+    // Value Object semantics
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SKU)) return false;
+        SKU other = (SKU) o;
+        return _value.equals(other._value);
+    }
+
+    @Override
+    public int hashCode() {
+        return _value.hashCode();
+    }
 }
+
