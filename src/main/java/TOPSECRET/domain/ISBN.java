@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class ISBN {
 
     /**
@@ -12,7 +14,9 @@ public class ISBN {
      */
     private long _number;
 
-    private ISBN() {
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(_number);
     }
 
     public ISBN(long isbn) {
@@ -21,6 +25,13 @@ public class ISBN {
         } else {
             throw new IllegalArgumentException("Invalid ISBN");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ISBN isbn = (ISBN) o;
+        return _number == isbn._number;
     }
 
     private boolean isValid(long isbn) {
