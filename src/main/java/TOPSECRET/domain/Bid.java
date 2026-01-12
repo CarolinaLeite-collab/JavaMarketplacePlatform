@@ -1,13 +1,15 @@
 package TOPSECRET.domain;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 
 
 public class Bid {
-
 
     /**
      * A bid is a monetary offer ('offerPrice') place by a 'bidder' during an 'auction'
@@ -21,7 +23,7 @@ public class Bid {
 
     private final User _bidder; // Final: bidder cannot change
     private final Price _offerPrice; // Final: offer price is immutable
-    private final LocalDateTime _bidDate; //Final: historical timestamp
+    private final Instant _bidDate; //Final: historical timestamp
 
 
     /**
@@ -32,14 +34,21 @@ public class Bid {
      * @throws IllegalArgumentException if validation fails
      */
 
-
     public Bid(User bidder, Price offerPrice) {
+        this(bidder, offerPrice, Clock.systemDefaultZone());
+    }
+
+    public Bid(User bidder, Price offerPrice, Clock clock) {
         validateBidder(bidder);
         validateOfferPrice(offerPrice);
 
+        if (clock == null) {
+            throw new IllegalArgumentException ("Clock cannot be null");
+        }
+
         _bidder = bidder;
         _offerPrice = offerPrice;
-        _bidDate = LocalDateTime.now();
+        _bidDate = Instant.now(clock);
     }
 
     //Getters
@@ -64,7 +73,7 @@ public class Bid {
      * Returns when this bid was placed.
      * @return the bid date
      */
-    public LocalDateTime getBidDate() {
+    public Instant getBidDate() {
         return _bidDate;
     }
 
@@ -101,11 +110,14 @@ public class Bid {
 
     @Override
     public String toString() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
+                        .withZone(ZoneId.systemDefault());
+
         return String.format("Bid{bidder=%s, offerPrice=%s, date=%s}",
                 _bidder,
                 _offerPrice,
-                _bidDate.format(formatter));
+                formatter.format(_bidDate));
     }
 
 }
