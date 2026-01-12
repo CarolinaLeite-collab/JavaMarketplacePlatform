@@ -1,0 +1,20 @@
+@startuml
+title SSD US008 - Register a new city
+
+actor Administrator
+participant "MiteLovers" as System
+
+Administrator -> System: Select "Register city"
+System --> Administrator: Show city registration form\n(with countries list)
+
+Administrator -> System: Submit city data\n(cityName, countryId)
+activate System
+
+System -> System: Validate mandatory fields + format
+System -> System: Check country exists
+System -> System: Check duplicates (cityName + country)
+System -> System: Register city in the system
+System --> Administrator: Done!
+
+deactivate System
+@enduml
