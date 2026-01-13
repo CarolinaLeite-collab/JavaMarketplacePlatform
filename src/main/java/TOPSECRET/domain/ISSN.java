@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-public class ISSN {
+public class ISSN implements Identifier {
 
     private final String _issn;
 
@@ -17,6 +17,11 @@ public class ISSN {
 
     @Override
     public String toString() {
+        return _issn;
+    }
+
+    @Override
+    public String getIdentifier() {
         return _issn;
     }
 }
