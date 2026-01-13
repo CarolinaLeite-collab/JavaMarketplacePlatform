@@ -1,8 +1,6 @@
 package TOPSECRET.domain;
 
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.junit.jupiter.api.Test;
-
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,9 +27,9 @@ public class EditionTest {
     }
 
     @Test
-    void invalidEditionWithNullIssn() {
+    void invalidEditionWithoutIssn() {
         assertThrows(IllegalArgumentException.class, () -> new Edition(
-                new ISSN(null),
+                (ISSN) null,    // null as object ISSN - ISSN not exist
                 30,
                 3,
                 LocalDate.of(2001, 4, 23),
@@ -58,41 +56,134 @@ public class EditionTest {
 
         assertNull(edit1.getIssn());
         assertNotNull(edit1.getIsbn());
+        assertEquals(1, edit1.getEditionNumber());
     }
 
     @Test
-    void editionWithoutIssnAndIsbn(){
-        Edition edit2 = new Edition(
-                30,
-                3,
-                LocalDate.of(2001, 4, 23),
-                Binding.SADDLE_STITCH,
-                new Description("Amazing Magazine"),
+    void invalidEditionWithoutIsbn() {
+        assertThrows(IllegalArgumentException.class, () -> new Edition(
+                (ISBN) null,    // null as object ISBN - ISBN not exist
+                250,
+                1,
+                LocalDate.of(1992, 5, 12),
+                Binding.PUR,
+                new Description("Amazing Book"),
                 new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
                 new Weight(224.7, Weight.WeightUnit.GRAMS),
-                Language.of("pt", "Portuguese", "Português"));
-
-        assertNull(edit2.getIssn());
-        assertNull(edit2.getIsbn());
+                Language.of("pt", "Portuguese", "Português")));
     }
 
     @Test
-    void negativeEditionNumber() {
+    void invalidEditionWithIsbnAndWithNullEditionNumber() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN(9789720048758L),
-                    30,
-                    -3,
-                    LocalDate.of(2001, 4, 23),
+                    300,
+                    null,
+                    LocalDate.of(1940, 2, 3),
                     Binding.SADDLE_STITCH,
-                    new Description("Amazing Magazine"),
+                    new Description("Old book"),
                     new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
                     new Weight(224.7, Weight.WeightUnit.GRAMS),
                     Language.of("pt", "Portuguese", "Português"));});
     }
 
     @Test
-    void zeroEditionNumber(){
+    void validEditionWithoutIssnAndIsbnAndWithNullEditionNumber(){
+        Edition edit2 = new Edition(
+                300,
+                null,
+                LocalDate.of(1940, 2, 3),
+                Binding.SADDLE_STITCH,
+                new Description("Old book"),
+                new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
+                new Weight(224.7, Weight.WeightUnit.GRAMS),
+                Language.of("pt", "Portuguese", "Português"));
+
+        assertNull(edit2.getIssn());
+        assertNull(edit2.getIsbn());
+        assertNull(edit2.getEditionNumber());
+    }
+
+    @Test
+    void validEditionWithoutIssnAndIsbnWithEditionNumberOne() {
+        Edition edit3 = new Edition(
+                10,
+                1,   // boundary value
+                LocalDate.of(2022, 10, 1),
+                Binding.SADDLE_STITCH,
+                new Description("Old magazine"),
+                new Dimension(20, 30, 1, DimensionUnit.CENTIMETERS),
+                new Weight(200, Weight.WeightUnit.GRAMS),
+                Language.of("pt", "Portuguese", "Português")
+        );
+
+        assertEquals(1, edit3.getEditionNumber());
+    }
+
+
+    @Test
+    void invalidEditionWithoutIssnAndIsbnWithNegativeEditionNumber(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    100,
+                    -1,
+                    LocalDate.of(1940, 11, 1),
+                    Binding.SADDLE_STITCH,
+                    new Description("Old Book"),
+                    new Dimension(20, 30, 2, DimensionUnit.CENTIMETERS),
+                    new Weight(300, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void invalidEditionWithNullEditionNumber() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    new ISBN(9789720048758L),
+                    100,
+                    null,
+                    LocalDate.of(2001, 4, 23),
+                    Binding.PUR,
+                    new Description("Amazing Book"),
+                    new Dimension(20, 30, 2, DimensionUnit.CENTIMETERS),
+                    new Weight(300, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void validEditionWithEditionNumberOne() {
+        Edition edit4 = new Edition(
+                new ISSN ("1018-4783"),
+                10,
+                1,
+                LocalDate.of(2020, 1, 1),
+                Binding.PUR,
+                new Description("Amazing Magazine"),
+                new Dimension(20, 30, 2, DimensionUnit.CENTIMETERS),
+                new Weight(100, Weight.WeightUnit.GRAMS),
+                Language.of("pt", "Portuguese", "Português"));
+
+        assertEquals(1, edit4.getEditionNumber());
+    }
+
+    @Test
+    void invalidEditionWithNegativeEditionNumber() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    new ISBN(9789720048758L),
+                    300,
+                    -3,
+                    LocalDate.of(2001, 4, 23),
+                    Binding.SADDLE_STITCH,
+                    new Description("Amazing Book"),
+                    new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
+                    new Weight(224.7, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void invalidEditionWithValidIsbnAndEditionNumberZero(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN(9789720048758L),
@@ -107,7 +198,22 @@ public class EditionTest {
     }
 
     @Test
-    void negativeNumberOfPages(){
+    void invalidEditionWithValidIssnAndEditionNumberZero(){
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    new ISSN("1018-4783"),
+                    30,
+                    0,
+                    LocalDate.of(2020, 1, 1),
+                    Binding.SADDLE_STITCH,
+                    new Description("Pages validation"),
+                    new Dimension(20, 30, 1, DimensionUnit.CENTIMETERS),
+                    new Weight(200, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void invalidEditionWithNegativeNumberOfPages(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN(9789720048758L),
@@ -122,7 +228,7 @@ public class EditionTest {
     }
 
     @Test
-    void zeroNumberOfPages(){
+    void invalidEditionWithIsbnButZeroNumberOfPages(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN(9789720048758L),
@@ -137,5 +243,79 @@ public class EditionTest {
 
     }
 
+    @Test
+    void invalidEditionWithIssnButZeroNumberOfPages() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    new ISSN("1018-4783"),
+                    0,
+                    1,
+                    LocalDate.of(2020, 1, 1),
+                    Binding.SADDLE_STITCH,
+                    new Description("Pages validation"),
+                    new Dimension(20, 30, 1, DimensionUnit.CENTIMETERS),
+                    new Weight(200, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void invalidEditionWithoutIssnAndIsbnButZeroNumberOfPages() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Edition(
+                    0,
+                    1,
+                    LocalDate.of(2020, 1, 1),
+                    Binding.SADDLE_STITCH,
+                    new Description("Pages validation"),
+                    new Dimension(20, 30, 1, DimensionUnit.CENTIMETERS),
+                    new Weight(200, Weight.WeightUnit.GRAMS),
+                    Language.of("pt", "Portuguese", "Português"));});
+    }
+
+    @Test
+    void validEditionWithOneNumberOfPages(){
+        Edition edit5 = new Edition(
+                new ISSN ("1018-4783"),
+                1,   // boundary valid value
+                2,
+                LocalDate.of(2020, 11, 1),
+                Binding.PUR,
+                new Description("One page edition"),
+                new Dimension(20, 30, 0.3, DimensionUnit.CENTIMETERS),
+                new Weight(10, Weight.WeightUnit.GRAMS),
+                Language.of("pt", "Portuguese", "Português")
+        );
+
+        assertEquals(1, edit5.getNumberOfPages());
+    }
+
+    @Test
+    void gettersReturnCorrectValues(){
+        LocalDate date = LocalDate.of(2001, 4, 23);
+        Description descript = new Description("Amazing Magazine");
+        Dimension dim = new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS);
+        Weight w = new Weight(224.7, Weight.WeightUnit.GRAMS);
+        Language lang = Language.of ("pt", "Portuguese", "Português");
+
+        Edition edit6 = new Edition (
+                new ISSN ("1018-4783"),
+                30,
+                3,
+                date,
+                Binding.SADDLE_STITCH,
+                descript,
+                dim,
+                w,
+                lang);
+
+        assertEquals(3, edit6.getEditionNumber());
+        assertEquals(30, edit6.getNumberOfPages());
+        assertEquals(date, edit6.getPublicationDate());
+        assertEquals(Binding.SADDLE_STITCH, edit6.getBinding());
+        assertEquals(descript, edit6.getDescription());
+        assertEquals(dim, edit6.getDimension());
+        assertEquals(w, edit6.getWeight());
+        assertEquals(lang, edit6.getLanguage());
+    }
 }
 
