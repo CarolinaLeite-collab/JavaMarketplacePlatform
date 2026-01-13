@@ -1,3 +1,4 @@
+
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ public class BookTest {
                 Genre.ACTION,
                 new Author ("Eça de Queirós"),
                 new Edition(
-                        new ISBN(9789720048758L),
+                        new ISBN("0306406152"),
                         30,
                         3,
                         LocalDate.of(2001, 4, 23),
@@ -162,3 +163,4 @@ public class BookTest {
         assertEquals(publicationInfo, book.getPublicationInfo());
     }
 }
+

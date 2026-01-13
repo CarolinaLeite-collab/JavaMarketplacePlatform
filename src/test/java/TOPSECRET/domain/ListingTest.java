@@ -1,3 +1,4 @@
+
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class ListingTest {
             Genre.ACTION,
             new Author ("Klaus-Peter Gast"),
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     198,
                     3,
                     LocalDate.of(2001, 4, 23),

@@ -1,3 +1,4 @@
+
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class MagazineTest {
                 Genre.ACTION,
                 new Author ("Eça de Queirós"),
                 new Edition(
-                        new ISBN(1010101923L),
+                        new ISBN("0306406152"),
                         30,
                         3,
                         LocalDate.of(2001, 4, 23),

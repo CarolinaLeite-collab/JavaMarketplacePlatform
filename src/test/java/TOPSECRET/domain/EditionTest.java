@@ -1,3 +1,4 @@
+
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class EditionTest {
     @Test
     void validEditionWithIsbn() {
         Edition edit1 = new Edition (
-                new ISBN(9789720048758L),
+                new ISBN("0306406152"),
                 250,
                 1,
                 LocalDate.of(1992, 5, 12),
@@ -77,7 +78,7 @@ public class EditionTest {
     void invalidEditionWithIsbnAndWithNullEditionNumber() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     300,
                     null,
                     LocalDate.of(1940, 2, 3),
@@ -140,7 +141,7 @@ public class EditionTest {
     void invalidEditionWithNullEditionNumber() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     100,
                     null,
                     LocalDate.of(2001, 4, 23),
@@ -171,7 +172,7 @@ public class EditionTest {
     void invalidEditionWithNegativeEditionNumber() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     300,
                     -3,
                     LocalDate.of(2001, 4, 23),
@@ -186,7 +187,7 @@ public class EditionTest {
     void invalidEditionWithValidIsbnAndEditionNumberZero(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     30,
                     0,
                     LocalDate.of(2001, 4, 23),
@@ -216,7 +217,7 @@ public class EditionTest {
     void invalidEditionWithNegativeNumberOfPages(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     -30,
                     1,
                     LocalDate.of(2001, 4, 23),
@@ -231,7 +232,7 @@ public class EditionTest {
     void invalidEditionWithIsbnButZeroNumberOfPages(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("0306406152"),
                     0,
                     1,
                     LocalDate.of(2001, 4, 23),
@@ -318,4 +319,5 @@ public class EditionTest {
         assertEquals(lang, edit6.getLanguage());
     }
 }
+
 
