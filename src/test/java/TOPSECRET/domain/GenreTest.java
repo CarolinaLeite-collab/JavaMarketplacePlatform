@@ -1,19 +1,22 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenreTest {
 
     @Test
     void allGenreConstantsExist() {
-        Genre[] genres = Genre.values();
+        Genre[] genres = Genre.getAllGenres().toArray(new Genre[0]);
         assertEquals(33, genres.length);
 
         for (Genre genre : genres) {
             assertNotNull(genre); // checks all 33 genres are not null
             assertNotNull(genre.toString()); // checks all 33 genres in String format are not null
-            assertEquals(Genre.valueOf(genre.name()), genre); // 'round-trip' validation (Genre -> String -> Genre)
+            assertEquals(Genre.fromString(genre.toString()), genre); // 'round-trip' validation (Genre -> String -> Genre)
         }
     }
 
@@ -21,16 +24,18 @@ class GenreTest {
     void toStringRoundtripAllGenres() {
         // toString() → fromString() → original Genre
         // E.g., AUTOBIOGRAPHY -> "Autobiography" -> AUTOBIOGRAPHY
-        for (Genre genre : Genre.values()) {
+        for (Genre genre : Genre.getAllGenres()) {
             assertEquals(genre, Genre.fromString(genre.toString()));
         }
     }
 
     @Test
-    void genreOrdinalOrderIsStable() {
-        assertEquals(0, Genre.ACTION.ordinal());
-        assertEquals(5, Genre.CHILDREN.ordinal());
-        assertEquals(32, Genre.YOUNG_ADULT.ordinal());
+    void getAllOrderIsStable() {
+        List<Genre> allGenres = Genre.getAllGenres();
+        assertEquals(33, allGenres.size());
+        assertEquals(Genre.ACTION, allGenres.get(0));
+        assertEquals(Genre.CHILDREN, allGenres.get(5));
+        assertEquals(Genre.YOUNG_ADULT, allGenres.get(32));
     }
 
     @Test
