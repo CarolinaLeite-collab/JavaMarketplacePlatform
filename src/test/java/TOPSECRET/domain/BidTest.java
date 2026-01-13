@@ -1,8 +1,10 @@
 package TOPSECRET.domain;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,15 +12,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
 
+    Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-200", null);
+    PhonePrefix prefix1 = new PhonePrefix("+351");
+    Phone phoneNumber1 = new Phone(prefix1, "919999999");
+    User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
+    Price offerPrice = new Price(100.0, Currency.EUR);
+
+
     @Test
     public void test_valid_bid_creation() {
-
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-200", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        Price offerPrice = new Price(100.0, Currency.EUR);
 
         //act
         Bid bid = new Bid(bidder, offerPrice);
@@ -28,6 +30,16 @@ class BidTest {
         assertEquals(bidder, bid.getBidder());          //Correct bidder?
         assertEquals(offerPrice, bid.getOfferPrice());  //Price correct?
         assertNotNull(bid.getBidDate());                //Date defined?
+    }
+
+    @Test
+    void test_bidDate_with_fixed_clock() {
+        Instant fixedInstant = Instant.parse("2024-01-01T10:15:30Z");
+        Clock fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault());
+
+        Bid bid = new Bid(bidder, offerPrice, fixedClock);
+
+        assertEquals(fixedInstant, bid.getBidDate());
     }
 
     @Test
@@ -47,11 +59,6 @@ class BidTest {
     @Test
     void test_null_offer_prices_throws_exception() {
 
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
         Price offerPrice = null;
 
         // act and assert
@@ -60,17 +67,18 @@ class BidTest {
         assertEquals("Offer Price cannot be null", exception.getMessage());
     }
 
+    @Test
+    void test_constructor_with_null_clock(){
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new Bid(bidder, offerPrice, null));
+        assertEquals("Clock cannot be null", exception.getMessage());
+    }
+
 
     // Test getBidder returns correct user
     @Test
     void test_getBidder() {
 
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        Price offerPrice = new Price(150.0, Currency.EUR);
         Bid bid = new Bid(bidder, offerPrice);
 
         // act
@@ -84,12 +92,6 @@ class BidTest {
     @Test
     void test_getOfferPrice() {
 
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        Price offerPrice = new Price(250.0, Currency.EUR);
         Bid bid = new Bid(bidder, offerPrice);
 
         // act
@@ -103,68 +105,30 @@ class BidTest {
     @Test
     void test_getBidDate_is_set() {
 
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        Price offerPrice = new Price(100.0, Currency.EUR);
-
         // act
         Bid bid = new Bid(bidder, offerPrice);
-        LocalDateTime bidDate = bid.getBidDate();
+        Instant bidDate = bid.getBidDate();
 
         // assert
         assertNotNull(bidDate);
 
     }
-
-    @Test
-    void test_getBidDate_is_recent() {
-        // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price offerPrice = new Price(100.0, Currency.EUR);
-        LocalDateTime beforeCreation = LocalDateTime.now();
-
-        // act
-        Bid bid = new Bid(bidder, offerPrice);
-        LocalDateTime bidDate = bid.getBidDate();
-        LocalDateTime afterCreation = LocalDateTime.now();
-
-        // assert - verify bidDate is between before and after creation
-        assertNotNull(bidDate);
-        assertTrue(bidDate.isAfter(beforeCreation.minusSeconds(1)) || bidDate.isEqual(beforeCreation));
-        assertTrue(bidDate.isBefore(afterCreation.plusSeconds(1)) || bidDate.isEqual(afterCreation));
-        // Verify it's within a reasonable time window (2 seconds)
-        assertTrue(ChronoUnit.SECONDS.between(beforeCreation, bidDate) <= 2);
-        assertTrue(ChronoUnit.SECONDS.between(bidDate, afterCreation) <= 2);
-    }
-
-
 
     @Test
     public void test_different_bidders_can_bid() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-420", null);
         Address address2 = new Address("Rua de S. Gonçalo", "Porto", Address.BuildingType.APARTMENT, "Porto", "Porto", Address.Country.PORTUGAL, "1269-400", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
         Phone phoneNumber2 = new Phone(prefix1, "919999991");
-        User bidder1 = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        User bidder2 = new User(new Name("Leitor"), address1, new Email("example@exampling.com"), phoneNumber2);
-        Price price1 = new Price(100.0, Currency.EUR);
+        User bidder2 = new User(new Name("Leitor"), address2, new Email("example@exampling.com"), phoneNumber2);
         Price price2 = new Price(150.0, Currency.EUR);
 
         // act
-        Bid bid1 = new Bid(bidder1, price1);
+        Bid bid1 = new Bid(bidder, offerPrice);
         Bid bid2 = new Bid(bidder2, price2);
 
         // assert
-        assertEquals(bidder1, bid1.getBidder());
+        assertEquals(bidder, bid1.getBidder());
         assertEquals(bidder2, bid2.getBidder());
         assertNotEquals(bid1.getBidder(), bid2.getBidder());
     }
@@ -173,16 +137,10 @@ class BidTest {
     @Test
     void test_same_bidder_multiple_bids() {
 
-        // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-420", null);
-        PhonePrefix prefix1 = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix1, "919999999");
-        User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
-        Price price1 = new Price(100.0, Currency.EUR);
         Price price2 = new Price(150.0, Currency.EUR);
 
         // act
-        Bid bid1 = new Bid(bidder, price1);
+        Bid bid1 = new Bid(bidder, offerPrice);
         Bid bid2 = new Bid(bidder, price2);
 
         // assert
@@ -219,10 +177,6 @@ class BidTest {
     @Test
     void test_bid_with_very_large_price() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
         Price largePrice = new Price(Double.MAX_VALUE / 2, Currency.EUR);
 
         // act
@@ -238,10 +192,6 @@ class BidTest {
     @Test
     void test_bid_with_small_price() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
         Price smallPrice = new Price(0.01, Currency.EUR);
 
         // act
@@ -259,12 +209,7 @@ class BidTest {
     @Test
     void test_equals_same_object() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act & assert
         assertEquals(bid, bid);
@@ -275,12 +220,7 @@ class BidTest {
     @Test
     void test_equals_null() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act & assert
         assertNotEquals(bid, null);
@@ -289,15 +229,11 @@ class BidTest {
     @Test
     void test_equals_different_bidder() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone1 = new Phone(prefix, "919999999");
-        Phone phone2 = new Phone(prefix, "919999998");
-        User bidder1 = new User(new Name("Reader"), address, new Email("reader@email.com"), phone1);
-        User bidder2 = new User(new Name("Writer"), address, new Email("writer@email.com"), phone2);
+        Phone phone2 = new Phone(prefix1, "919999998");
+        User bidder2 = new User(new Name("Writer"), address1, new Email("writer@email.com"), phone2);
         Price price = new Price(100.0, Currency.EUR);
 
-        Bid bid1 = new Bid(bidder1, price);
+        Bid bid1 = new Bid(bidder, price);
         Bid bid2 = new Bid(bidder2, price);
 
         // act & assert
@@ -306,15 +242,11 @@ class BidTest {
 
     @Test
     void test_equals_different_price() {
+
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price1 = new Price(100.0, Currency.EUR);
         Price price2 = new Price(200.0, Currency.EUR);
 
-        Bid bid1 = new Bid(bidder, price1);
+        Bid bid1 = new Bid(bidder, offerPrice);
         Bid bid2 = new Bid(bidder, price2);
 
         // act & assert
@@ -322,14 +254,22 @@ class BidTest {
     }
 
     @Test
+    void test_equals_and_hashCode_with_fixed_clock() {
+        Instant fixedInstant = Instant.parse("2024-01-01T10:15:30Z");
+        Clock fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault());
+
+        Bid bid1 = new Bid(bidder, offerPrice, fixedClock);
+        Bid bid2 = new Bid(bidder, offerPrice, fixedClock);
+
+        assertEquals(bid1, bid2);
+        assertEquals(bid1.hashCode(), bid2.hashCode());
+    }
+
+    @Test
     void test_equals_different_class_type() {
+
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+        Bid bid = new Bid(bidder, offerPrice);
         String notABid = "not a bid";
 
         // act & assert
@@ -338,46 +278,13 @@ class BidTest {
     }
 
     @Test
-    void test_equals_and_hashCode() {
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE,
-                "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-
-        Bid bid1 = new Bid(bidder, price);
-        Bid bid2 = new Bid(bidder, price);
-
-        // Equals tests
-        assertEquals(bid1, bid1);          // same object
-        assertNotEquals(bid1, null);       // null
-        assertNotEquals(bid1, "string");   // different class
-
-        // HashCode consistency
-        int hash1 = bid1.hashCode();
-        int hash2 = bid1.hashCode();
-        assertEquals(hash1, hash2);        // repeated calls consistent
-
-        // HashCode for different objects
-        int hashBid2 = bid2.hashCode();
-        assertNotEquals(hash1, hashBid2);
-
-    }
-
-    @Test
     void test_hashCode_different_bids() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone1 = new Phone(prefix, "919999999");
-        Phone phone2 = new Phone(prefix, "919999998");
-        User bidder1 = new User(new Name("Reader"), address, new Email("reader@email.com"), phone1);
-        User bidder2 = new User(new Name("Writer"), address, new Email("writer@email.com"), phone2);
-        Price price = new Price(100.0, Currency.EUR);
+        Phone phone2 = new Phone(prefix1, "919999998");
+        User bidder2 = new User(new Name("Writer"), address1, new Email("writer@email.com"), phone2);
 
-        Bid bid1 = new Bid(bidder1, price);
-        Bid bid2 = new Bid(bidder2, price);
+        Bid bid1 = new Bid(bidder, offerPrice);
+        Bid bid2 = new Bid(bidder2, offerPrice);
 
         // act & assert
         assertNotEquals(bid1.hashCode(), bid2.hashCode());
@@ -385,13 +292,10 @@ class BidTest {
 
     @Test
     void test_hashCode_consistency_multiple_calls() {
+
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act - call hashCode multiple times
         int hashCode1 = bid.hashCode();
@@ -407,13 +311,9 @@ class BidTest {
 
     @Test
     void test_toString_format() {
+
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act
         String result = bid.toString();
@@ -429,31 +329,21 @@ class BidTest {
     @Test
     void test_toString_contains_correct_values() {
         // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act
         String result = bid.toString();
 
         // assert
         assertTrue(result.contains(bidder.toString()));
-        assertTrue(result.contains(price.toString()));
+        assertTrue(result.contains(offerPrice.toString()));
     }
 
     @Test
     void test_toString_date_format_using_DateTimeFormatter() {
-        // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address,
-                new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act
         String result = bid.toString();
@@ -476,13 +366,8 @@ class BidTest {
 
     @Test
     void test_toString_complete_structure() {
-        // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act
         String result = bid.toString();
@@ -503,23 +388,30 @@ class BidTest {
     }
 
     @Test
+    void test_toString_date_appears_in_correct_position() {
+        Bid bid = new Bid(bidder, offerPrice);
+        String result = bid.toString();
+
+        // Date should be the last field before closing brace
+        assertTrue(result.endsWith("}"));
+        int lastComma = result.lastIndexOf(',');
+        int dateEquals = result.lastIndexOf("date=");
+        assertTrue(dateEquals > lastComma, "date should be last field");
+    }
+
+    @Test
     void test_bid_immutability() {
-        // arrange
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-400", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phone = new Phone(prefix, "919999999");
-        User bidder = new User(new Name("Reader"), address, new Email("reader@email.com"), phone);
-        Price price = new Price(100.0, Currency.EUR);
-        Bid bid = new Bid(bidder, price);
+
+        Bid bid = new Bid(bidder, offerPrice);
 
         // act
         User retrievedBidder = bid.getBidder();
         Price retrievedPrice = bid.getOfferPrice();
-        LocalDateTime retrievedDate = bid.getBidDate();
+        Instant retrievedDate = bid.getBidDate();
 
         // assert - verify getters return the same objects (immutability)
         assertSame(bidder, retrievedBidder);
-        assertSame(price, retrievedPrice);
-        assertNotNull(retrievedDate); // LocalDateTime is immutable by design
+        assertSame(offerPrice, retrievedPrice);
+        assertNotNull(retrievedDate);
     }
 }
