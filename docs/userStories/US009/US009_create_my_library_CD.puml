@@ -1,0 +1,39 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US009 – "As a user, I want to create my library" - CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+class CreateLibraryController {
+  + createMyLibrary(user:String) : Library
+}
+
+class LibraryRepo {
+  + create(user:String) : Library
+  - myLibraryExists(user:String) : boolean
+}
+
+class Library {
+  - _owner:String
+  + Library(owner:String)
+}
+
+class User {
+  - _userID:String
+}
+
+CreateLibraryController "1" --> "1" LibraryRepo : uses
+LibraryRepo "1" --> "*" Library : creates
+Library "0..1" -- "1" User : owns <
+
+@enduml
