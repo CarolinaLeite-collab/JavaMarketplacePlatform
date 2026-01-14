@@ -1,21 +1,34 @@
 @startuml
-title SSD N1 (System Sequence Diagram) - to register a new publication (US10)
+title US010 - "As a User, I want to register a new publication in the system" - SSD
 
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+' --- Actor and participants ---
 actor User
 participant "MiteLovers" as System
 
-User -> System: Select "Register publication"
+' --- System dialog ---
+User -> System: I want to register a new publication
+activate System
 System --> User: Show registration form
 
-User -> System: Submit publication data\n(title, type, authors, ISBN/ISSN, ...)
+User -> System: Submit publication data\n(type, identifier, date, title, ...)
 activate System
 
-System -> System: Validate mandatory fields + format
-System -> System: Check duplicates (ISBN/ISSN or title+authors)
-System -> System: Register in the System
+'System -> System: Validate mandatory fields + format
+'System -> System: Check duplicates (ISBN/ISSN or title+date+authors)
+'System -> System: Register in the System
 System --> User: Done!
-
-
 
 deactivate System
 @enduml
