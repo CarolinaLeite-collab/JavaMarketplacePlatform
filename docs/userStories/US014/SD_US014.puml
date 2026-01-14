@@ -1,0 +1,17 @@
+@startuml
+
+actor User
+
+participant "UI : UserListPubType" as UI
+participant "Ctrl : CtrlGetListPubType" as CTRL
+participant "_Ptr : PubTypeRepo" as SVC
+
+User -> UI : 1. I want to know the publication types
+UI -> CTRL : 2. getListOfPubTypes()
+CTRL -> SVC : 3. nomeFuturoMetodo()
+
+SVC --> CTRL : 4. pubTypeList
+CTRL --> UI : 5. pubTypeList
+UI --> User : 6. Here's the list
+
+@enduml

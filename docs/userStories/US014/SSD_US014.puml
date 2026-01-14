@@ -1,0 +1,16 @@
+@startuml
+title SSD N1 (System Sequence Diagram) - to register a new publication (US10)
+
+actor User
+participant "MiteLovers" as System
+
+User -> System: Get "Publication Types"
+
+activate System
+
+System --> User: Done!
+
+
+
+deactivate System
+@enduml
