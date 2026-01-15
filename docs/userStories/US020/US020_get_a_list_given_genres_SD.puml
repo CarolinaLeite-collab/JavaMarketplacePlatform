@@ -19,7 +19,7 @@ autoactivate off
 actor User
 
 User -> "U1:UI": I want to get a list (name and user) of the \npublicly published lists of a given genre
-"U1:UI" --> User: Which genre?
+"U1:UI" --> User: What genre?
 
 User -> "U1:UI": Fiction!
 activate "U1:UI"
