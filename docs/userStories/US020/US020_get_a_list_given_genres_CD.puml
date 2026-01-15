@@ -1,27 +1,38 @@
 @startuml
-'https://plantuml.com/class-diagram
+title US020 - As a User, I want to get a list (name and user) of the publicly published lists of a given genre - CD
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam backgroundColor CornSilk
+skinparam classBackgroundColor WhiteSmoke
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+class UI {
+  +requestPublicListsByGenre()
+  +askGenre()
+  +getPublicListsByGenre(genre: String)
+  +displayPublicLists(publicLists: List<PublicList>)
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+class GetPublicListsByGenreController {
+  +getPublicListsByGenre(genre: String): List<PublicList>
 }
+
+class PublicListRepository {
+  +findPublicListsPublishedByGenre(genre: String): List<PublicList>
+}
+
+class PublicList {
+  -id: Long
+  -name: String
+  -isPublic: boolean
+  -isPublished: boolean
+  -genre: String
+  -ownerUsername: String
+}
+
+UI --> GetPublicListsByGenreController : uses
+GetPublicListsByGenreController --> PublicListRepository : uses
+PublicListRepository --> PublicList : returns
 
 @enduml
