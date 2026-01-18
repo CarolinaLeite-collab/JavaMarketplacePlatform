@@ -5,7 +5,7 @@ public class ISSN implements Identifier {
     private final String _issn;
 
     public ISSN(String value) {
-        if (value == null || !value.matches("\\d{4}-\\d{3}[\\dX]$")){
+        if (value == null || !value.matches("\\d{4}-\\d{3}[\\dX]$")) {
             throw new IllegalArgumentException("Invalid ISSN format");
         }
         _issn = value;
@@ -23,5 +23,12 @@ public class ISSN implements Identifier {
     @Override
     public String getIdentifier() {
         return _issn;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ISSN other)) return false;
+        return _issn.equals(other._issn);
     }
 }

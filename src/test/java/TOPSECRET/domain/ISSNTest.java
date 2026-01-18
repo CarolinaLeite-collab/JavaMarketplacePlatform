@@ -48,4 +48,37 @@ class ISSNTest {
         ISSN issn = new ISSN ("0000-0000");
         assertEquals("0000-0000", issn.toString());
     }
+
+    @Test
+    void getIdentifier_returnsStoredIssn() {
+        ISSN issn = new ISSN("1234-5679");
+        assertEquals("1234-5679", issn.getIdentifier());
+    }
+
+    @Test
+    void equals_returnsTrueForSameIssn(){
+        ISSN issn = new ISSN("1234-5678");
+        Object o = issn;
+        assertEquals(issn,o);
+
+
+    }
+    @Test
+    void equals_returnsFalseForDiferentIssn(){
+        ISSN issn = new ISSN("1234-5678");
+        ISSN issn2 = new ISSN("1234-5679");
+        assertFalse(issn.equals(issn2));
+    }
+    @Test
+    void equals_returnsFalseForNull() {
+        ISSN a = new ISSN("1234-5679");
+        assertFalse(a.equals(null));
+    }
+
+    @Test
+    void equals_returnsFalseForDifferentType() {
+        ISSN a = new ISSN("1234-5679");
+        assertFalse(a.equals("1234-5679"));
+    }
+
 }
