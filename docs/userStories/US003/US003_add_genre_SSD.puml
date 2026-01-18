@@ -1,0 +1,32 @@
+@startuml
+title "US003 - As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+skinparam ActivationBackgroundColor WhiteSmoke
+
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Administrator
+participant "MiteLovers" as System
+
+' --- System dialog ---
+Administrator -> System: I want to add a publication genre
+activate "System"
+System --> Administrator: What is the genre name?
+Administrator -> System: genreName
+System --> Administrator: genre added successfully to the \nofficial genre list!
+deactivate "System"
+@enduml
