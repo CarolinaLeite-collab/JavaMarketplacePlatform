@@ -1,0 +1,56 @@
+@startuml
+'==== Title ====
+title US007 - "As an Administrator, I want to register a new country in the system" - SD
+
+'==== basic style ====
+skinparam monochrome false
+
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+hidefootbox
+autonumber
+autoactivate off
+
+' ==== Actor and participants ====
+actor Administrator as Adm
+participant "UI1:RegisterCountry" as UI
+participant "Ctl1:RegisterCountryController" as Ctl
+participant "_cr:CountryRepo" as _cr
+
+'==== Processes ====
+Adm -> UI: I want to register a country
+UI --> Adm: What is the country name?
+Adm -> UI: Country Name
+activate UI
+
+UI -> Ctl: registerCountry (countryName, admin)
+activate Ctl
+
+Ctl -> Ctl: createdDate = LocalDate.now()
+Ctl -> _cr: registerCountry (countryName, admin, createdDate)
+activate _cr
+_cr -> _cr: findCountry (country)
+
+create "c1:Country" as c1
+_cr -> c1: create (countryName, admin, createdDate)
+activate c1
+
+'==== Return ====
+c1 --> _cr: newCountry
+deactivate c1
+
+_cr --> Ctl: newCountry
+deactivate _cr
+
+Ctl --> UI: newCountry
+deactivate Ctl
+
+UI --> Adm : Country registered successfully!
+deactivate UI
+@enduml

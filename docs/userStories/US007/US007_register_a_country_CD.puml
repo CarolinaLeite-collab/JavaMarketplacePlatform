@@ -1,0 +1,44 @@
+@startuml
+'==== Title ====
+title US007 - "As an Administrator, I want to register a new country in the system" - CD
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'==== entities ====
+Class User {
+- _name :Name
+- _address :Address
+- _email :Email
+- _phone :Phone
+}
+Class Country {
+- _countryName :String
+- _admin :User
+- _createdDate :LocalDate
++ create(String countryName, User admin, LocalDate createdDate) :Country
+}
+Class CountryRepo {
+- _countries :List<Country>
++ registerCountry(countryName : String, admin :User, createdDate : LocalDate) :Country
+- findCountry(country :Country) :boolean
+}
+Class RegisterCountryController {
++ registerCountry(countryName :String, admin :User) :Country
+}
+
+'==== connections ====
+User "1" -- "*" Country: registers >
+Country "*" <-- "1" CountryRepo: creates <
+CountryRepo "1" <-- "1" RegisterCountryController: uses <
+
+@enduml
