@@ -1,0 +1,30 @@
+@startuml
+title US006 – "As an Administrator, I want to register a %n()Publishing Company in the system" %n() SSD (happy path)
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+
+' --- Actor and participants ---
+actor "Admin" as Administrator
+participant "Mitelovers" as System
+
+' --- System dialog (happy path) ---
+Administrator -> System: I want to register a publishing company.
+activate "System"
+System --> Administrator: Name of the publishing company?
+Administrator -> System: New Publishing Co.
+System --> Administrator: Registered successfully!
+deactivate "System"
+
+@enduml
