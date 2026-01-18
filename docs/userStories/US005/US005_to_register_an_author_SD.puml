@@ -1,0 +1,46 @@
+@startuml
+title US005 - As an Administrator, I want to register an Author in the system, so that publications of that author can be added.
+hidefootbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+actor Administrator
+
+
+Administrator -> "U1:UICreateAuthor": I want to register an Author
+"U1:UICreateAuthor" --> Administrator: What is the author's name?
+
+Administrator -> "U1:UICreateAuthor": authorData
+activate "U1:UICreateAuthor"
+
+"U1:UICreateAuthor" -> "Ctl1:CreateAuthorController": createAuthor(authorData)
+activate "Ctl1:CreateAuthorController"
+"Ctl1:CreateAuthorController"-> "_ar:AuthorRepository": createAuthor(authorData)
+
+activate "_ar:AuthorRepository"
+"_ar:AuthorRepository" -> "_ar:AuthorRepository": myAuthorExists()
+
+create "myAuthor:Author"
+"_ar:AuthorRepository" -> "myAuthor:Author": new(authorData)
+"myAuthor:Author" --> "_ar:AuthorRepository": myAuthor
+"_ar:AuthorRepository" --> "Ctl1:CreateAuthorController": myAuthor
+deactivate "_ar:AuthorRepository"
+
+"Ctl1:CreateAuthorController" --> "U1:UICreateAuthor": myAuthor
+deactivate "Ctl1:CreateAuthorController"
+
+"U1:UICreateAuthor" --> Administrator: Done!
+deactivate "U1:UICreateAuthor"
+
+@enduml

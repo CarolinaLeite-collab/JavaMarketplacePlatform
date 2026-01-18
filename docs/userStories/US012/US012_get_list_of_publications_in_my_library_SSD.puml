@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+hide footbox
+
+title US012 – "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - SSD
+
+actor User
+participant "Mitelovers"
+
+User -> "Mitelovers" : Display list of Publications\n in my library
+"Mitelovers" --> User : Publications list displayed\n with details
+
+
+@enduml

@@ -61,4 +61,21 @@ public class LibraryRepo {
 
     }
 
+    /**
+     * Finds and returns the Library associated with the given user ID.
+     *
+     * @param userID the unique identifier of the user whose library is being searched
+     * @return the Library instance belonging to the specified user
+     * @throws IllegalStateException if no Library exists for the given userID
+     */
+
+    public Library findByUser(String userID){
+        for (Library lib : _libraries){
+            if (lib.getUserID().equals(userID)){
+                return lib;
+            }
+        }
+        throw new IllegalStateException("Library not found for user: " + userID);
+    }
+
 }

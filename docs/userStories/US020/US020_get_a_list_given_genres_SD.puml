@@ -1,0 +1,43 @@
+@startuml
+title US020 - As a User, I want to get a list (name and user) of the publicly published lists of a given genre" - SSD
+              hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+actor User
+
+User -> "U1:UI": I want to get a list (name and user) of the \npublicly published lists of a given genre
+"U1:UI" --> User: What genre?
+
+User -> "U1:UI": Fiction!
+activate "U1:UI"
+
+"U1:UI" -> "Ctl1:GetPublicListsByGenreController": getPublicListsByGenre("Fiction")
+activate "Ctl1:GetPublicListsByGenreController"
+
+"Ctl1:GetPublicListsByGenreController" -> "_plr:PublicListRepository": findPublicListsPublishedByGenre("Fiction")
+activate "_plr:PublicListRepository"
+"_plr:PublicListRepository" --> "Ctl1:GetPublicListsByGenreController": publicLists
+deactivate "_plr:PublicListRepository"
+
+'"Ctl1:GetPublicListsByGenreController" -> "Ctl1:GetPublicListsByGenreController": mapToSummaries(publicLists)
+"Ctl1:GetPublicListsByGenreController" --> "U1:UI": publicList
+deactivate "Ctl1:GetPublicListsByGenreController"
+
+
+"U1:UI" --> User: Done!
+deactivate "U1:UI"
+
+@enduml

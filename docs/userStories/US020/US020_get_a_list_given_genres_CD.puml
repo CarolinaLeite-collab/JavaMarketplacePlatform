@@ -1,0 +1,38 @@
+@startuml
+title US020 - As a User, I want to get a list (name and user) of the publicly published lists of a given genre - CD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam backgroundColor CornSilk
+skinparam classBackgroundColor WhiteSmoke
+
+class UI {
+  +requestPublicListsByGenre()
+  +askGenre()
+  +getPublicListsByGenre(genre: String)
+  +displayPublicLists(publicLists: List<PublicList>)
+}
+
+class GetPublicListsByGenreController {
+  +getPublicListsByGenre(genre: String): List<PublicList>
+}
+
+class PublicListRepository {
+  +findPublicListsPublishedByGenre(genre: String): List<PublicList>
+}
+
+class PublicList {
+  -id: Long
+  -name: String
+  -isPublic: boolean
+  -isPublished: boolean
+  -genre: String
+  -ownerUsername: String
+}
+
+UI --> GetPublicListsByGenreController : uses
+GetPublicListsByGenreController --> PublicListRepository : uses
+PublicListRepository --> PublicList : returns
+
+@enduml

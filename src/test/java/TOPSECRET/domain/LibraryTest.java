@@ -2,6 +2,8 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class LibraryTest {
@@ -25,4 +27,18 @@ class LibraryTest {
 
     }
 
+
+
+    @Test
+    void getPublicationsInLibraryShouldReturnEmptyListWhenNoPublications() {
+        // Arrange
+        Library library = new Library("myOwner");
+
+        // Act
+        List<String> result = library.getPublicationsInLibrary();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 }

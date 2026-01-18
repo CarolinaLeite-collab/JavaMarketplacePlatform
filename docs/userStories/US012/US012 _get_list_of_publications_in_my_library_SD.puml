@@ -1,0 +1,71 @@
+@startuml
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+hidefootbox
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+autonumber
+
+title US012 - "As a User, I want to get the list (title, author, type and ISBN/ISSN) of publications in my library" - SD
+
+
+' --- Actor and participants ---'
+
+actor User
+participant "UI1: UIgetListOfPublications" as UI
+participant "Ctl1:ListOfPublicationsInMyLibraryController" as Ctl
+participant "_lr:LibraryRepo" as LibRepo
+participant ":Library" as Lib
+
+
+User -> UI: Display List of my Publications
+activate UI
+
+UI -> Ctl: getListOfPublications(userId)
+activate Ctl
+
+Ctl -> LibRepo: findByUser(userId)
+activate LibRepo
+LibRepo --> Ctl: library
+deactivate LibRepo
+
+Ctl -> Lib: getPublicationsInLibrary()
+activate Lib
+
+loop for each publication
+    Lib -> Lib: getCopyPublication(pubId)
+    Lib -> Lib: addPublicationToResultList(details)
+end
+
+Lib --> Ctl: listOfPublicationDetails
+deactivate Lib
+
+Ctl --> UI: publicationsList
+deactivate Ctl
+
+UI --> User: Publications list displayed\n with details
+deactivate UI
+
+
+
+@enduml
