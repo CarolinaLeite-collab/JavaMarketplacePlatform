@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import java.util.Objects;
-
 /**
  * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
  * There are two types of ISBN:
@@ -13,7 +11,7 @@ import java.util.Objects;
 
 public class ISBN implements Identifier {
 
-    private String _number;
+    private String _isbn;
 
     // contrutor
     public ISBN(String isbn) {
@@ -21,7 +19,7 @@ public class ISBN implements Identifier {
         String normalized = normalize(isbn);
 
         if (isValidIsbn10(normalized) || isValidIsbn13(normalized)) {
-            _number = normalized;
+            _isbn = normalized;
         } else {
             throw new IllegalArgumentException("Invalid ISBN");
         }
@@ -29,14 +27,15 @@ public class ISBN implements Identifier {
 
     @Override
     public String getIdentifier() {
-        return _number;
+        return _isbn;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ISBN other)) return false;
-        return toIsbn13(_number).equals(toIsbn13(other._number));    }
+        return toIsbn13(_isbn).equals(toIsbn13(other._isbn));
+    }
 
     //(expects normalized length -> 10 chars, last can be X)
     public static boolean isValidIsbn10(String s) {
@@ -126,6 +125,5 @@ public class ISBN implements Identifier {
 
         return isbn12 + check;
     }
-
 
 }
