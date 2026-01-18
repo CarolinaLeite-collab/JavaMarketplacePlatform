@@ -1,0 +1,86 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US010 - "As a User, I want to register a new publication in the system" - CD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+'==== classes ====
+class RegisterNewPublicationController {
+  + registerPublication(Publication) : Publication
+}
+
+class PublicationRepo{
+  - _publications: List<Publication>
+  + add(Publication) : Publication
+  - publicationAlreadyExists(Publication): boolean
+}
+
+class Publication{
+  - _publicationType: PublicationType
+  - _identifier: Identifier
+  - _publicationDate: LocalDate
+  - _title: Title
+  - _author: Author
+  - _publisher: Publisher
+  - _edition: Edition
+  - _genre: Genre
+  + equals(Object): boolean
+  (...)
+}
+
+interface Identifier {
+  + getIdentifier(): String
+ }
+class ISBN {
+  - _isbn: String
+  + equals(Object): boolean
+  + getIdentifier(): String
+  }
+class ISSN {
+  - _issn: String
+  + equals(Object): boolean
+  + getIdentifier(): String
+  }
+
+class NoIdentifier {
+  - _noIdentifier: String
+  + NoIdentifier()
+  + getIdentifier(): String
+  }
+
+'==== relations ====
+' --- controller / repo ---
+RegisterNewPublicationController "1" --> "1" PublicationRepo : uses
+PublicationRepo "1" --> "*" Publication : manages
+
+' --- publication structure ---
+Publication --> "1" Identifier : has
+
+
+' --- identifier hierarchy ---
+Identifier <|.. ISBN
+Identifier <|.. ISSN
+Identifier <|.. NoIdentifier
+
+
+note right of Publication
+  abstract editorial work,
+  independent of any specific copy
+  previously named PublicationInfo
+end note
+
+note left of Publication #LightPink
+{constraint:
+identifier is ISBN, ISSN or NoIdentifier}
+end note
+
+@enduml
