@@ -1,5 +1,5 @@
 @startuml
-title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - SSD
+title US015 - "As a User, I want to put for sale a publication %n() in my library in a direct sale" - SSD
 hidefootbox
 
 '==== basic style ====
@@ -17,14 +17,18 @@ autonumber
 autoactivate off
 
 ' --- Actor and participants ---
-actor "Administrator" as Admin
+actor User
 participant "MiteLovers" as System
 
 ' --- System dialog ---
-Admin -> System: I want to add a publication type!
+User -> System: I want to put for Direct Sale a publication in my library!
 activate "System"
-System --> Admin: What type would you like to add?
-Admin -> System: publicationType
-System --> Admin: The new publication type was successfully added to the official type list!
+System --> User: What publication?
+User -> System: publicationID
+System --> User: Please select the item's condition.
+User -> System: condition
+System --> User: Please fill the Direct Sale form.
+User ->System: DirectSale(price, timeLimit)
+System --> User: Done!
 
 @enduml

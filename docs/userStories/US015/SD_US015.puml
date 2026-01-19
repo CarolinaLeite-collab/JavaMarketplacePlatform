@@ -1,0 +1,93 @@
+@startuml
+title US015 -"As a User, I want to put for sale a publication %n() in my library in a direct sale" - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor User
+participant "UI:PublicationForDirectSaleUI" as UI
+participant "Ctl15:PublicationForDirectSaleCTL" as Ctl
+participant "_lr:LibraryRepo" as LibraryRepo
+participant "_pr:PublicationRepo" as PublicationRepo
+participant "_ir:ItemRepo" as ItemRepo
+
+' --- System dialog ---
+
+User -> UI: I want to put for direct sale a publication in my library.
+activate "UI"
+
+' --- Get the list of publications in the User's library ---
+UI -> Ctl: getPublicationsList(userID)
+activate "Ctl"
+Ctl -> LibraryRepo: getPublicationsList(userID)
+activate "LibraryRepo"
+LibraryRepo --> Ctl: publicationsList
+deactivate "LibraryRepo"
+Ctl --> UI: publicationsList
+' --- Done! ---
+
+UI --> User: What publication?
+User -> UI: publication(publicationID, saleType, condition)
+UI --> User: Please fill the Direct Sale form.
+User -> UI: DirectSale(price, timeLimit)
+
+' --- Get the selected publication ---
+UI -> Ctl: getPublication(publicationID)
+Ctl -> PublicationRepo: getPublication(publicationID)
+activate "PublicationRepo"
+PublicationRepo --> Ctl: p1:Publication
+deactivate "PublicationRepo"
+' --- Done! ---
+
+' ---  Instance the physical copy of the selected publication ---
+Ctl -> ItemRepo: createItem(p1:Publication, saleType, condition)
+activate "ItemRepo"
+create "item:Item" as itemInstance
+ItemRepo -> itemInstance: createItem(p1:Publication, saleType, condition)
+activate "itemInstance"
+
+' --- Instance a direct sale ---
+create "directSale:DirectSale" as directSaleInstance
+Ctl -> directSaleInstance: createDirectSale(i1:Item, price, timeLimit)
+
+' --- Item relates to DirectSale ---
+itemInstance -> directSaleInstance: validateSaleConditions(condition)
+activate "directSaleInstance"
+directSaleInstance --> itemInstance: validateResult
+' --- Done! ---
+
+' --- Details on relationship between Item and DirectSale ---
+note right
+DirectSale is a component of Item,
+not a subclass. It's a sale-type component,
+owned by Item and attached to it
+after creation.
+end note
+
+' --- Return to User ---
+directSaleInstance --> Ctl: d1:DirectSale
+deactivate "directSaleInstance"
+itemInstance --> ItemRepo: i1:Item
+deactivate "itemInstance"
+ItemRepo --> Ctl: i1:Item
+deactivate "ItemRepo"
+Ctl --> UI: d1/i1
+deactivate "Ctl"
+UI --> User: Your item was successfully listed for sale!
+deactivate "UI"
+
+
+@enduml
