@@ -24,6 +24,7 @@ participant "MiteLovers" as System
 Admin -> System: I want to add a publication type!
 activate "System"
 System --> Admin: What type would you like to add?
-Admin -> System: Book
-System --> Admin: Book was successfully added to the official type list!
+Admin -> System: publicationType
+System --> Admin: The new publication type was successfully added to the official type list!
+
 @enduml
