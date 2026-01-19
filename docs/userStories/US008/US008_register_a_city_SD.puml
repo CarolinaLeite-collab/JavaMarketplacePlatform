@@ -1,0 +1,57 @@
+@startuml
+title US008 - "As an Administrator, I want to register a new city in the system" - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+autonumber
+autoactivate off
+
+actor Administrator as Adm
+participant "UI1:RegisterCity" as UI
+participant "Ctl1:CityRegisterController" as Ctl
+participant "_cr:CountryRepository" as _cr
+participant "_cityRepo:CityRepository" as _cityRepo
+
+' 1. Admin opens the register city screen
+Adm -> UI: select "Register city"
+
+' 2. UI asks for city and country
+UI --> Adm: What is the city name and country?
+Adm -> UI: cityName, countryId
+activate UI
+
+' 3. UI submits data to controller
+UI -> Ctl: registerCity(cityName, countryId)
+activate Ctl
+
+' 4. Controller validates country existence
+Ctl -> _cr: findById(countryId)
+_cr --> Ctl: country / null
+
+Ctl -> Ctl: validate mandatory fields and country existence
+
+' 5. Controller checks duplicates and saves city
+Ctl -> _cityRepo: existsByNameAndCountry(cityName, country)
+_cityRepo --> Ctl: true/false
+
+Ctl -> _cityRepo: save(new City(cityName, country))
+_cityRepo --> Ctl: persisted City
+
+' 6. Controller returns result to UI
+Ctl --> UI: success / error
+deactivate Ctl
+UI --> Adm: show confirmation / error message
+deactivate UI
+
+@enduml
+
