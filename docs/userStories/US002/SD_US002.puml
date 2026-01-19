@@ -1,0 +1,48 @@
+@startuml
+title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor "Administrator" as Admin
+participant "UI:UIAddPublicationType" as UI
+participant "Ctl2:CtlAddPublicationType" as Ctl
+participant "_ptr:PublicationTypeRepo" as REPO
+
+' --- System dialog ---
+Admin -> UI: I want to add a new publication type!
+activate "UI"
+UI --> Admin: What type would you like to add?
+Admin -> UI: Publication Type (typeName, bindingDescription)
+UI -> Ctl: addPublicationType (typeName, bindingDescription)
+activate "Ctl"
+Ctl -> REPO: addPublicationType (typeName, bindingDescription)
+activate "REPO"
+REPO -> REPO: publicationTypeExists(typeName)
+create "publicationType:PublicationType" as instance
+REPO -> instance: addPublicationType(typeName, bindingDescription)
+activate "instance"
+instance --> REPO: publicationType
+deactivate "instance"
+REPO --> Ctl: publicationType
+deactivate "REPO"
+Ctl --> UI: publicationType
+deactivate "Ctl"
+UI --> Admin: Publication Type successfully added to the list!
+deactivate "UI"
+
+
+@enduml
