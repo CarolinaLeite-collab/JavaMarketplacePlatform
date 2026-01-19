@@ -15,7 +15,7 @@ class PublicationInfoTest {
                 Genre.ACTION,
                 new Author ("Eça de Queirós"),
                 new Edition(
-                    new ISBN(9789720048758L),
+                    new ISBN("9789720048758L"),
                     30,
                     3,
                     LocalDate.of(2001, 4, 23),
