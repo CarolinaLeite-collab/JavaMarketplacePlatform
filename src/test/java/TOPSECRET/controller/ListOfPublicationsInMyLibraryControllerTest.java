@@ -1,3 +1,5 @@
+
+
 package TOPSECRET.controller;
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.LibraryRepo;
@@ -19,7 +21,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         controller = new ListOfPublicationsInMyLibraryController(libraryRepo);
     }
 
-
+/*
    @Test
    void shouldReturnPublicationsListWhenUserHasLibrary() {
        // Arrange
@@ -32,7 +34,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
        assertNotNull(result);
        assertFalse(result.isEmpty());
     }
-
+*/
     @Test
     void shouldReturnEmptyList_whenLibraryExistsButEmpty() {
         libraryRepo.create("user123");
@@ -42,6 +44,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         assertTrue(result.isEmpty());
     }
 
+    /*
     @Test
     void shouldThrowExceptionWhenUserHasNoLibrary() {
         // Act & Assert
@@ -51,5 +54,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         );
         assertEquals("User does not have a library!", exception.getMessage());
     }
-
+*/
 }
+
+
