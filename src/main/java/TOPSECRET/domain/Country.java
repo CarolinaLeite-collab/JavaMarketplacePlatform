@@ -18,6 +18,20 @@ public class Country {
         _createdDate = createdDate;
     }
 
+    // Added getter to allow other components to locate countries by name
+    public String getCountryName() {
+        return _countryName;
+    }
+
+    // Optional getters for tests/controllers
+    public User getAdmin() {
+        return _admin;
+    }
+
+    public LocalDate getCreatedDate() {
+        return _createdDate;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
