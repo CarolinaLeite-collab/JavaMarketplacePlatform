@@ -1,0 +1,54 @@
+@startuml
+title US006 – "As an Administrator, I want to register a Publishing Company in the system" %n() SD
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor "Admin" as Administrator
+participant "UI1:RegisterPublisherUI"
+participant "Ctl1:RegisterPublisherController"
+participant "_pr:PublisherRepo"
+
+' Design of happy path
+
+' --- UI interaction ---
+Administrator -> "UI1:RegisterPublisherUI": I want to register a publishing company.
+activate "UI1:RegisterPublisherUI"
+"UI1:RegisterPublisherUI" --> Administrator:Name of the publishing company?
+Administrator -> "UI1:RegisterPublisherUI": publisherName
+' --- Use case execution ---
+"UI1:RegisterPublisherUI" -> "Ctl1:RegisterPublisherController": registerPublisher(publisherName)
+activate "Ctl1:RegisterPublisherController"
+"Ctl1:RegisterPublisherController" -> "_pr:PublisherRepo": registerPublisher(publisherName)
+activate "_pr:PublisherRepo"
+"_pr:PublisherRepo" -> "_pr:PublisherRepo": publisherExists(publisherName)
+note over "_pr:PublisherRepo": happy path (publisherExists returns false)
+"_pr:PublisherRepo" -> "_pr:PublisherRepo" : createPublisher(publisherName)
+note over "_pr:PublisherRepo":the above internally instatiates new Publisher()
+create "p1:Publisher"
+"_pr:PublisherRepo" -> "p1:Publisher": new Publisher(publisherName)
+
+activate "p1:Publisher"
+"p1:Publisher" --> "_pr:PublisherRepo": p1
+deactivate "p1:Publisher"
+"_pr:PublisherRepo" --> "Ctl1:RegisterPublisherController": p1
+deactivate "_pr:PublisherRepo"
+"Ctl1:RegisterPublisherController" --> "UI1:RegisterPublisherUI": p1
+deactivate "Ctl1:RegisterPublisherController"
+"UI1:RegisterPublisherUI" --> Administrator: Registered successfully!
+deactivate "UI1:RegisterPublisherUI"
+
+@enduml
