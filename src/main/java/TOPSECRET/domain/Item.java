@@ -12,6 +12,8 @@ public class Item {
         this.condition = condition;
     }
 
+    public Publication getPublication() { return publication; }
+
     public Condition getCondition() {
         return condition;
     }
