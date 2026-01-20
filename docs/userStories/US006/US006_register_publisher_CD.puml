@@ -13,37 +13,39 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class RegisterPublisherUI {
+}
 
 class RegisterPublisherController {
   + registerPublisher(publisherName: String) : Publisher
 }
 
 class PublisherRepo {
-  '+ registerPublisher(publisherName: String) : Publisher
+  + registerPublisher(publisherName: String) : Publisher
   - publisherExists(publisherName: String) : boolean
-  + createPublisher(publisherName: String) : Publisher
 }
 
 class Publisher {
   - publisherName: String
   + Publisher(publisherName: String)
-  + getPublisherName(): String
 }
-' NOTE: getPublisherName() to be used in unit tests
-
+' NOTE: getName() to be used in unit tests, but is not in US006 SD
+RegisterPublisherUI "1" --> "1" RegisterPublisherController: interacts with
 RegisterPublisherController "1" --> "1" PublisherRepo : uses
 PublisherRepo "1" --> "*" Publisher : creates
 
-/'note right of RegisterPublisherController
+note right of RegisterPublisherController
   This registerPublisher() calls
   PublisherRepo's method of the
   same name
-end note'/
+end note
 
-/'note right of PublisherRepo
+note right of PublisherRepo
   This registerPublisher() orchestrates:
-  publisherExists() → createPublisher() %n()→ new Publisher()
-end note'/
+  publisherExists() → new Publisher %n()→ _publishers.add()
+end note
 
 
 @enduml
