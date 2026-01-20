@@ -19,36 +19,37 @@ autoactivate off
 
 ' ==== Actor and participants ====
 actor Administrator as Adm
-participant "UI1:RegisterCountry" as UI
-participant "Ctl1:RegisterCountryController" as Ctl
-participant "_cr:CountryRepo" as _cr
+participant ":RegisterCountryUI" as UI
+participant ":RegisterCountryController" as Ctl
+participant ":CountryRepo" as _cr
 
 '==== Processes ====
+
 Adm -> UI: I want to register a country
+activate UI
 UI --> Adm: What is the country name?
+deactivate UI
 Adm -> UI: Country Name
 activate UI
 
 UI -> Ctl: registerCountry (countryName, admin)
 activate Ctl
 
-Ctl -> Ctl: createdDate = LocalDate.now()
-Ctl -> _cr: registerCountry (countryName, admin, createdDate)
+Ctl -> _cr: registerCountry (countryName, admin)
 activate _cr
 _cr -> _cr: findCountry (country)
 
-create "c1:Country" as c1
-_cr -> c1: create (countryName, admin, createdDate)
-activate c1
+create "c1:Country"
+_cr -> "c1:Country": create (countryName, admin)
+
+_cr -> _cr: add.(c1)
 
 '==== Return ====
-c1 --> _cr: newCountry
-deactivate c1
 
-_cr --> Ctl: newCountry
+_cr --> Ctl: c1
 deactivate _cr
 
-Ctl --> UI: newCountry
+Ctl --> UI: c1
 deactivate Ctl
 
 UI --> Adm : Country registered successfully!

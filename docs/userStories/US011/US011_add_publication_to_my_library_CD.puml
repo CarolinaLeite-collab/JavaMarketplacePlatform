@@ -1,0 +1,48 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US011 – "As a user, I want to add a publication to my library" - CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class AddPublicationOnLibraryUI
+
+class Ctl1:AddPublicationOnLibrary {
+    + getMyLibrary(userID : String) : Library
+    + getListOfAvailablePublications(userID : String) : List<Publication>
+    + addPublicationToLibrary(selectedPublication : Publication, userID : String) : boolean
+
+}
+
+class _pr:PublicationRepo {
+    + getDifferentOf(existentPublications : List<Publication>) : List<Publication>
+}
+
+class myLibrary:Library {
+    - _publications : List<Publication>
+    + getAllPublications() : List<Publication>
+    + addPublication(selectedPublication) : Publication) : boolean
+    - copyOfLibrary() : List<Publication>
+    - verifyUnique(selectedPublication) : Publication) : boolean
+}
+
+class _lr:LibraryRepo {
+     + findByUser(userID : String) : Library
+}
+
+
+"AddPublicationOnLibraryUI" "1" -- "1" "Ctl1:AddPublicationOnLibrary" : request >
+"Ctl1:AddPublicationOnLibrary" "1" -- "1" "_pr:PublicationRepo" : queries >
+"Ctl1:AddPublicationOnLibrary" "1" -- "1" "myLibrary:Library" : uses >
+"Ctl1:AddPublicationOnLibrary" "1" -- "1" "_lr:LibraryRepo" : queries >
+@enduml

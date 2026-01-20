@@ -18,31 +18,36 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor User
-participant "UI1:CreateLibraryUI"
-participant "Ctl1:CreateLibraryController"
-participant "_lr:LibraryRepo"
+participant ":CreateLibraryUI" as UI
+participant ":CreateLibraryController" as CTL
+participant ":LibraryRepo" as LR
 
 ' --- UI interaction ---
-User -> "UI1:CreateLibraryUI": I want to create my library
-activate "UI1:CreateLibraryUI"
+User -> UI: I want to create my library
+activate UI
 
 
 ' --- Use case execution ---
-"UI1:CreateLibraryUI" -> "Ctl1:CreateLibraryController": createMyLibrary(userID)
-activate "Ctl1:CreateLibraryController"
-"Ctl1:CreateLibraryController" -> "_lr:LibraryRepo": createMyLibrary(userID)
-activate "_lr:LibraryRepo"
-"_lr:LibraryRepo" -> "_lr:LibraryRepo": myLibraryExists(userID)
-create "myLibrary:Library"
-"_lr:LibraryRepo" -> "myLibrary:Library": create(userID)
-activate "myLibrary:Library"
-"myLibrary:Library" --> "_lr:LibraryRepo": myLibrary
-deactivate "myLibrary:Library"
-"_lr:LibraryRepo" --> "Ctl1:CreateLibraryController": myLibrary
-deactivate "_lr:LibraryRepo"
-"Ctl1:CreateLibraryController" --> "UI1:CreateLibraryUI": myLibrary
-deactivate "Ctl1:CreateLibraryController"
-"UI1:CreateLibraryUI" --> User: done!
-deactivate "UI1:CreateLibraryUI"
+UI -> CTL: createMyLibrary(user)
+activate CTL
+CTL -> LR: createMyLibrary(user)
+activate LR
+
+    opt myLibraryExists(user) == false
+        create "myLibrary:Library"
+        LR -> "myLibrary:Library": create(user)
+        LR -> LR: add(myLibrary)
+    end
+
+
+'activate "myLibrary:Library"
+'"myLibrary:Library" --> "_lr:LibraryRepo": myLibrary
+'deactivate "myLibrary:Library"
+LR --> CTL: myLibrary
+deactivate LR
+CTL --> UI: myLibrary
+deactivate CTL
+UI --> User: done!
+deactivate UI
 
 @enduml
