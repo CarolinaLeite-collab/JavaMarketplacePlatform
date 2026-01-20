@@ -18,7 +18,7 @@ public class Library {
 
     private String _owner;
 
-    private List<PublicationInfo> publications = new ArrayList<>();
+    private List<Publication> publications = new ArrayList<>();
 
 
     public Library(String userID){
@@ -32,31 +32,30 @@ public class Library {
     }
 
     /**
-     * Returns a list of publications in this library with required details
-     * (title, author, type, ISBN/ISSN) for UI display.
+     * Returns a list of publications in this library with all required details
+     * (title, author, publication type, ISBN/ISSN) formatted for UI display.
      *
-     * @return unmodifiable list of publications suitable for UI presentation
+     * <p>The method iterates through all publications, extracts details via
+     * {@link PublicationDetails#PublicationDetails(Publication)}, and returns
+     * an <strong>unmodifiable list</strong> to ensure encapsulation and
+     * thread-safety.</p>
+     *
+     * @return unmodifiable {@link List}&lt;{@link PublicationDetails}&gt;
+     *         containing publication details suitable for UI presentation
      */
 
-    public List<String> getPublicationsInLibrary() {
 
-        List <String> listWithDetails = new ArrayList<>();
+    public List<PublicationDetails> getPublicationsInLibrary() {
 
-        for (PublicationInfo p : publications) {
-            String pubDetails = String.format("%s | %s | %s | %s/%s",
-                    p.getTitle(),
-                    p.getAuthor(),
-                    //p.getType(),
-                    p.getISSN(),
-                    p.getISBN()
-            );
-            listWithDetails.add(pubDetails);
+        List <PublicationDetails> listWithDetails = new ArrayList<>();
+
+        for (Publication p : publications) {
+
+            PublicationDetails pDetails = new PublicationDetails(p);
+
+            listWithDetails.add(pDetails);
         }
 
         return Collections.unmodifiableList(listWithDetails);
     }
-
-    
-
-
 }
