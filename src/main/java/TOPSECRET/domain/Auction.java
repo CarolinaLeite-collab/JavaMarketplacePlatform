@@ -27,7 +27,7 @@ import java.time.ZonedDateTime;
 
 public class Auction {
 
-    private Listing _listing;
+    private Item _item;
     private Price _startingPrice;
     private Price _outrightPrice; // optional (nullable)
     private Price _finalPrice;
@@ -38,8 +38,8 @@ public class Auction {
 
 
     // 1. Private constructor takes _outrightPrice as an argument
-    private Auction(Listing listing, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _listing = listing;
+    private Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        _item = item;
         _startingPrice = startingPrice;
         _bids = new Bids();
 
@@ -63,8 +63,8 @@ public class Auction {
     }
 
     // 2. Private constructor without _outrightPrice as an argument
-    private Auction(Listing listing, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _listing = listing;
+    private Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        _item = item;
         _startingPrice = startingPrice;
         _bids = new Bids();
 
