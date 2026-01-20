@@ -9,55 +9,77 @@ import static org.junit.jupiter.api.Assertions.*;
 class GenreTest {
 
     @Test
-    void allGenreConstantsExist() {
-        Genre[] genres = Genre.getAllGenres().toArray(new Genre[0]);
-        assertEquals(33, genres.length);
-
-        for (Genre genre : genres) {
-            assertNotNull(genre); // checks all 33 genres are not null
-            assertNotNull(genre.toString()); // checks all 33 genres in String format are not null
-            assertEquals(Genre.fromString(genre.toString()), genre); // 'round-trip' validation (Genre -> String -> Genre)
-        }
+    void validGenre() {
+        Genre g = new Genre("Science Fiction");
+        assertEquals("Science Fiction", g.getGenre());
     }
 
     @Test
-    void toStringRoundtripAllGenres() {
-        // toString() → fromString() → original Genre
-        // E.g., AUTOBIOGRAPHY -> "Autobiography" -> AUTOBIOGRAPHY
-        for (Genre genre : Genre.getAllGenres()) {
-            assertEquals(genre, Genre.fromString(genre.toString()));
-        }
+    void genreIsTrimmed() {
+        Genre g = new Genre(" Science Fiction  ");
+        assertEquals("Science Fiction", g.getGenre());
     }
 
     @Test
-    void getAllOrderIsStable() {
-        List<Genre> allGenres = Genre.getAllGenres();
-        assertEquals(33, allGenres.size());
-        assertEquals(Genre.ACTION, allGenres.get(0));
-        assertEquals(Genre.CHILDREN, allGenres.get(5));
-        assertEquals(Genre.YOUNG_ADULT, allGenres.get(32));
+    void emptyGenre() {
+        assertThrows(IllegalArgumentException.class, () -> new Genre("  "));
+    }
+
+    @Test
+    void nullGenre() {
+        assertThrows(IllegalArgumentException.class, () -> new Genre(null));
+    }
+
+    @Test
+    void genreNotEqualsToNull() {
+        Genre g = new Genre("Science Fiction");
+        assertNotEquals(g, null);
+    }
+
+    @Test
+    void genreWithSameName() {
+        Genre g = new Genre("Romance ");
+        Genre g1 = new Genre("ROMANCE");
+        assertEquals(g, g1);
+    }
+
+    @Test
+    void genreEqualsItself() {
+        Genre g = new Genre("Science Fiction");
+        assertEquals(g, g);
+    }
+
+    @Test
+    void genreNotEqualsToDifferentType() {
+        Genre g = new Genre("Science Fiction");
+        assertNotEquals(g, "Science Fiction");
     }
 
     @Test
     void differentGenresAreNotEqual() {
-        assertNotEquals(Genre.TECHNOLOGY, Genre.CHILDREN);
+        Genre g = new Genre("Science Fiction");
+        Genre g1 = new Genre("ROMANCE");
+        assertNotEquals(g, g1);
     }
 
     @Test
-    void fromStringHandlesDifferentValidInputs() {
-        assertEquals(Genre.SCI_FI, Genre.fromString("  sci-Fi"));
-        assertEquals(Genre.SCI_FI, Genre.fromString("sci fi"));
-        assertEquals(Genre.GRAPHIC_NOVEL, Genre.fromString("graphic novel"));
-        assertEquals(Genre.SELF_HELP, Genre.fromString("self help "));
+    void genreWithSameNameHaveSameHashCode() {
+        Genre g = new Genre("Romance ");
+        Genre g1 = new Genre("ROMANCE");
+        assertEquals(g.hashCode(), g1.hashCode());
     }
 
     @Test
-    void fromStringInvalidInputs() {
-        assertThrows(IllegalArgumentException.class, () -> Genre.fromString(""));
-        assertThrows(IllegalArgumentException.class, () -> Genre.fromString(" "));
-        assertThrows(IllegalArgumentException.class, () -> Genre.fromString(null));
-        assertThrows(IllegalArgumentException.class, () -> Genre.fromString("Invalid"));
-        assertThrows(IllegalArgumentException.class, () -> Genre.fromString("Funny book"));
+    void genreWithDifferentNameHaveDifferentHashCode() {
+        Genre g = new Genre("Science Fiction");
+        Genre g1 = new Genre("ROMANCE");
+        assertNotEquals(g.hashCode(), g1.hashCode());
+    }
+
+    @Test
+    void genreToString() {
+        Genre g = new Genre("Science Fiction");
+        assertEquals("Science Fiction", g.toString());
     }
 
 }
