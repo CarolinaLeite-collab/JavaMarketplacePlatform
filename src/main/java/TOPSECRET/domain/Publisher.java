@@ -13,7 +13,8 @@ public class Publisher {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
 
-        _name = name.trim();
+        // Normalized (multiple spaces → single spaces, trim ends)
+        _name = name.trim().replaceAll("\\s+", " ");;
     }
 
     public String getName() {
