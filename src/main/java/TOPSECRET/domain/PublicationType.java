@@ -2,16 +2,20 @@ package TOPSECRET.domain;
 
 public class PublicationType {
 
-    private final String type;
+    private final String typeName;
 
     public PublicationType(String typeName) {
         if (typeName == null || typeName.isBlank())
             throw new IllegalArgumentException("Publication type name is required!");
 
-        this.type = typeName;
+        this.typeName = typeName;
+    }
+    public String getPublicationType() {
+        return typeName;
     }
 
-    public String getPublicationType() {
-        return type;
+    @Override
+    public String toString() {
+        return typeName;
     }
 }
