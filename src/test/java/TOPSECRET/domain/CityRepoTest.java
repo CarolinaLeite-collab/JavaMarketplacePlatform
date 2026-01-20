@@ -3,8 +3,6 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CityRepoTest {
@@ -20,13 +18,13 @@ class CityRepoTest {
 
     @Test
     void save_and_exists() {
-        City city = new City("Porto", country, LocalDate.now());
+        City city = new City("Porto", country);
         assertFalse(repo.existsByNameAndCountry("Porto", country));
         City saved = repo.save(city);
         assertNotNull(saved);
         assertTrue(repo.existsByNameAndCountry("Porto", country));
         // duplicate save returns null
-        assertNull(repo.save(new City("Porto", country, LocalDate.now())));
+        assertNull(repo.save(new City("Porto", country)));
     }
 
     @Test

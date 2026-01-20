@@ -46,4 +46,18 @@ public class CountryRepo {
         return null;
     }
 
+    // Added helper to lookup countries by an identifier (currently reusing getCountryName() for simplicity)
+    public Country findById(String countryId) {
+        if (countryId == null) return null;
+        for (Country country : _countries) {
+            if (countryNameMatches(country, countryId)) {
+                return country;
+            }
+        }
+        return null;
+    }
+
+    private boolean countryNameMatches(Country country, String countryId) {
+        return country.getCountryName().equals(countryId);
+    }
 }

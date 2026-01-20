@@ -17,41 +17,38 @@ autonumber
 autoactivate off
 
 actor Administrator as Adm
-participant "UI1:RegisterCity" as UI
+participant "UI1:RegisterCityUI" as UI
 participant "Ctl1:CityRegisterController" as Ctl
-participant "_cr:CountryRepository" as _cr
-participant "_cityRepo:CityRepository" as _cityRepo
+participant "Ctl2:CountryRepo" as CountryRepo
+participant "Ctl3:CityRepo" as CityRepo
 
-' 1. Admin opens the register city screen
+' 1. Admin requests to register a new city
 Adm -> UI: select "Register city"
-
-' 2. UI asks for city and country
-UI --> Adm: What is the city name and country?
-Adm -> UI: cityName, countryId
 activate UI
 
-' 3. UI submits data to controller
+UI -> Adm: show form (city + country)
+Adm -> UI: submit(cityName, countryId)
+
 UI -> Ctl: registerCity(cityName, countryId)
 activate Ctl
 
-' 4. Controller validates country existence
-Ctl -> _cr: findById(countryId)
-_cr --> Ctl: country / null
+' 2. Controller validates country existence
+Ctl -> CountryRepo: findById(countryId)
+CountryRepo --> Ctl: country / null
 
-Ctl -> Ctl: validate mandatory fields and country existence
-
-' 5. Controller checks duplicates and saves city
-Ctl -> _cityRepo: existsByNameAndCountry(cityName, country)
-_cityRepo --> Ctl: true/false
-
-Ctl -> _cityRepo: save(new City(cityName, country))
-_cityRepo --> Ctl: persisted City
-
-' 6. Controller returns result to UI
+Ctl -> Ctl: validate inputs
+Ctl -> CityRepo: existsByNameAndCountry(cityName, country)
+CityRepo --> Ctl: boolean
+Ctl -> CityRepo: save(new City(cityName, country))
+activate CityRepo
+create "c1:City" as c1
+CityRepo -> c1: create(cityName, country)
+activate c1
+c1 --> CityRepo: new city
+deactivate c1
+CityRepo --> Ctl: saved city
+deactivate CityRepo
 Ctl --> UI: success / error
 deactivate Ctl
-UI --> Adm: show confirmation / error message
-deactivate UI
-
+UI --> Adm: confirmation / error
 @enduml
-

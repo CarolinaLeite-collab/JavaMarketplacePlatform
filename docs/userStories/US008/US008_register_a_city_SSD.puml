@@ -17,22 +17,11 @@ autonumber
 autoactivate off
 
 actor Administrator
-participant "UI1:RegisterCity" as UI
-participant "Ctl1:CityRegisterController" as Ctl
+participant "MiteLovers" as MiteLovers
 
-' -- User interaction --
-Administrator -> UI: I want to register a city
-activate UI
-
-' -- UI triggers controller --
-UI -> Ctl: registerCity(cityName, countryId)
-activate Ctl
-
-' -- Controller returns result to UI and user --
-Ctl --> UI: success / error
-deactivate Ctl
-UI --> Administrator: confirmation / error message
-deactivate UI
-
+Administrator -> MiteLovers: open "Register city" screen
+activate MiteLovers
+MiteLovers --> Administrator: show form (city name + country picker)
+Administrator -> MiteLovers: fill form + submit
+MiteLovers --> Administrator: show confirmation / error
 @enduml
-

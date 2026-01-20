@@ -45,10 +45,22 @@ class CityRegisterControllerTest {
     }
 
     @Test
-    void registerCity_nullOrBlankArgumentsThrows() {
-        assertThrows(IllegalArgumentException.class, () -> controller.registerCity(null, "Portugal"));
-        assertThrows(IllegalArgumentException.class, () -> controller.registerCity("  ", "Portugal"));
-        assertThrows(IllegalArgumentException.class, () -> controller.registerCity("Porto", null));
-        assertThrows(IllegalArgumentException.class, () -> controller.registerCity("Porto", "  "));
+    void registerCity_missingCountryIdThrows() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> controller.registerCity("Porto", ""));
+        assertEquals("Country ID cannot be null or blank", error.getMessage());
+    }
+
+    @Test
+    void registerCity_blankOrNullCityNameThrows() {
+        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+                () -> controller.registerCity("", "Portugal"));
+        assertEquals("City name cannot be null or blank", error.getMessage());
+    }
+
+    @Test
+    void registerCity_trimmedDuplicateNameThrows() {
+        controller.registerCity("Porto", "Portugal");
+        assertThrows(IllegalStateException.class, () -> controller.registerCity(" Porto ", "Portugal"));
     }
 }
