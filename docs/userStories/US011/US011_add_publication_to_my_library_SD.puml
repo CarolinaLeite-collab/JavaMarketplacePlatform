@@ -1,0 +1,62 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+hide footbox
+title US011 - to add a publication to my library.
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+
+actor User
+participant "UI1:AddPublicationUI"
+participant "Ctl1:AddPublicationOnLibrary"
+participant "_pr:PublicationRepo"
+participant "myLibrary:Library"
+participant "_lr:LibraryRepo"
+
+User -> "UI1:AddPublicationUI" : I want to add a publication to my library
+activate "UI1:AddPublicationUI"
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailablePublications(userID)
+activate "Ctl1:AddPublicationOnLibrary"
+"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : findByUser(UserID)
+activate "_lr:LibraryRepo"
+"_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
+deactivate "_lr:LibraryRepo"
+"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : existentPublications = getAllPublications()
+"myLibrary:Library" -> "myLibrary:Library" :cloneList()
+"Ctl1:AddPublicationOnLibrary" -> "_pr:PublicationRepo" : listOfPublicationToSelect = getDifferentOf(existentPublications)
+"_pr:PublicationRepo" -> "_pr:PublicationRepo" : cloneList()
+"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : listOfPublicationToSelect
+deactivate "Ctl1:AddPublicationOnLibrary"
+"UI1:AddPublicationUI" --> User : Select what available books you want to add
+deactivate "UI1:AddPublicationUI"
+User -> "UI1:AddPublicationUI" : Selection
+activate "UI1:AddPublicationUI"
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addPublicationToLibrary(selectedPublication, userID)
+activate "Ctl1:AddPublicationOnLibrary"
+"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublication(selectedPublication)
+activate "myLibrary:Library"
+"myLibrary:Library" -> "myLibrary:Library" : verifyUnique(selectedPublication)
+"myLibrary:Library" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)
+"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : true
+deactivate "myLibrary:Library"
+"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : true
+deactivate "Ctl1:AddPublicationOnLibrary"
+"UI1:AddPublicationUI" --> User : Done!
+deactivate "UI1:AddPublicationUI"
+
+
+
+
+@enduml
