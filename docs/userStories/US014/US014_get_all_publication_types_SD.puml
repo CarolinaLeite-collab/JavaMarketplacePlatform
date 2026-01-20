@@ -15,16 +15,16 @@ hidefootbox
 
 actor User
 
-participant "UI : UserListPubType" as UI
-participant "Ctrl : CtrlGetListPubType" as CTRL
-participant "_Ptr : PubTypeRepo" as SVC
+participant "UI : UserPublicationTypeList" as UI
+participant "Ctrl : GetPublicationTypeListController" as CTRL
+participant "_Ptr : PublicationTypeRepo" as SVC
 
-User -> UI : 1. I want to know the publication types
-UI -> CTRL : 2. getListOfPubTypes()
-CTRL -> SVC : 3. nomeFuturoMetodo()
+User -> UI : 1. I want to know all publication types
+UI -> CTRL : 2. getListOfPublicationTypes()
+CTRL -> SVC : 3. getAll()
 
-SVC --> CTRL : 4. pubTypeList
-CTRL --> UI : 5. pubTypeList
-UI --> User : 6. Here's the list
+SVC --> CTRL : 4. PublicationTypeList
+CTRL --> UI : 5. PublicationTypeList
+UI --> User : 6. Here's the list!
 
 @enduml
