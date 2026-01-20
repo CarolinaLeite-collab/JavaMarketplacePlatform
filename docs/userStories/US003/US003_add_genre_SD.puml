@@ -21,6 +21,7 @@ actor Administrator
 participant "U1:UIAddGenre" as UI
 participant "Ctl1:AddGenreController" as Ctl
 participant "_gr:GenreRepo" as gr
+participant "_listgr:List <Genre>" as list
 
 Administrator -> UI: I want to add a publication genre
 activate UI
@@ -36,11 +37,16 @@ activate gr
 gr --> gr: existsGenre(genreName)
 
 create "genre:Genre"
-gr -> "genre:Genre": add(genreName)
-gr --> Ctl: genreAdded
+gr -> "genre:Genre": create(genreName)
+
+gr -> list: add(genre)
+activate list
+list --> gr: true
+deactivate list
+gr --> Ctl: genre
 deactivate gr
 
-Ctl --> UI: genreAdded
+Ctl --> UI: genre
 deactivate Ctl
 
 UI --> Administrator: genre added successfully to the \nofficial genre list!
