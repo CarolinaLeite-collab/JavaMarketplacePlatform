@@ -1,8 +1,7 @@
-
-
 package TOPSECRET.controller;
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.LibraryRepo;
+import TOPSECRET.domain.PublicationDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -21,40 +20,28 @@ class ListOfPublicationsInMyLibraryControllerTest {
         controller = new ListOfPublicationsInMyLibraryController(libraryRepo);
     }
 
-/*
-   @Test
-   void shouldReturnPublicationsListWhenUserHasLibrary() {
-       // Arrange
-       Library mylibrary = libraryRepo.create("user123");
 
-        // Act
-       List<String> result = controller.getListOfPublications("user123");
-
-        // Assert
-       assertNotNull(result);
-       assertFalse(result.isEmpty());
-    }
-*/
     @Test
     void shouldReturnEmptyList_whenLibraryExistsButEmpty() {
-        libraryRepo.create("user123");
-        List<String> result = controller.getListOfPublications("user123");
+        // Arrange
+        Library mylibrary = libraryRepo.create("user123");
 
+        // Act
+        List<PublicationDetails> result = controller.getListOfPublications("user123");
+
+        // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
-    /*
+
     @Test
-    void shouldThrowExceptionWhenUserHasNoLibrary() {
-        // Act & Assert
+    void shouldThrowException_whenLibraryNotFound() {
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> controller.getListOfPublications("user123")
+                () -> libraryRepo.findByUser("user123")
         );
-        assertEquals("User does not have a library!", exception.getMessage());
+        assertEquals("Library not found for user: user123", exception.getMessage());
     }
-*/
+
 }
-
-

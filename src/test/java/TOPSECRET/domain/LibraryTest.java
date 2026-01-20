@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,10 +36,15 @@ class LibraryTest {
         Library library = new Library("myOwner");
 
         // Act
-        List<String> result = library.getPublicationsInLibrary();
+        List<PublicationDetails> result = library.getPublicationsInLibrary();
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getPublicationsInLibraryShouldReturnPublicationsWhenPublicationsExist() {
+        //missing add publication method to library
     }
 }

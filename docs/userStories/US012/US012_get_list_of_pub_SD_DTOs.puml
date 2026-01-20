@@ -1,0 +1,69 @@
+@startuml
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+hidefootbox
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+autonumber
+
+title US012 - "As a User, I want to get the list (title, author, type and ISBN/ISSN) of publications in my library" - SD
+
+
+' --- Actor and participants ---'
+actor User
+participant "ui1:UIgetListOfPublications" as UI
+participant "Ctl1:ListOfPublicationsInMyLibraryController" as Controller
+participant ":PublicationMapper" as Mapper
+participant ":Library" as Library
+participant ":Publication" as Publication
+
+
+User -> UI : Display List of my Publications
+UI -> Controller : getListOfPublicationsInLibrary(userId)
+
+Controller -> Library : getListOfPublicationsInLibrary()
+activate Library
+create "listOfPublications:List<Publication>" as list
+Library -> list
+Library --> Controller : listOfPublications
+
+deactivate Library
+Controller -> Mapper : toDTO(listOfPublications)
+
+create "listOfPublicationsDTO : List<PublicationDTO>" as DTO
+Mapper --> DTO
+
+loop for each publication in list
+    Mapper -> Publication :  getDetails()
+    Publication --> Mapper :  details
+create "pubDTO : PublicationDTO"
+    Mapper -> "pubDTO : PublicationDTO" : create(details)
+    "pubDTO : PublicationDTO" --> Mapper : pubDTO
+    Mapper -> Mapper : listOfPublicationsDTO.add(pubDTO)
+end
+
+Mapper --> Controller : listOfPublicationsDTO
+Controller --> UI :  listOfPublicationsDTO
+UI --> User :  shows the list of publications with details
+
+@enduml
