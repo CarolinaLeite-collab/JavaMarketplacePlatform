@@ -13,11 +13,15 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class UIgetListOfPublications {
+}
 
 class ListOfPublicationsInMyLibraryController {
     -_libraryRepo : LibraryRepo
     +ListOfPublicationsInMyLibraryController(libraryRepo: LibraryRepo)
-    +getListOfPublications(userId: String) : List<String>
+    +getListOfPublications(userId: String) : List<PublicationDetails>
 }
 
 class LibraryRepo {
@@ -30,11 +34,21 @@ class Library {
   -_owner : String
   -publications : List<Publication>
       +getUserID() : String
-      +getPublicationsInLibrary() : List<String>
+      +getPublicationsInLibrary() : List<PublicationDetails>
 }
 
+class PublicationDetails{
+-_title : Title
+  -_author : Author
+  -_publicationType : PublicationType
+  -_isbn : ISBN
+  -_issn : ISSN
+}
+
+UIgetListOfPublications "1"--> "1"ListOfPublicationsInMyLibraryController :uses
 ListOfPublicationsInMyLibraryController "1"--> "1"LibraryRepo : uses
 LibraryRepo "1" --> "*" Library : manages
+Library "1" --> "*" PublicationDetails
 
 
 @enduml

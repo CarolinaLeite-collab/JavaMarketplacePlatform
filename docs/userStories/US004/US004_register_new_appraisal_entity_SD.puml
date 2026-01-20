@@ -1,0 +1,68 @@
+@startuml
+title US004 - "Register a new Appraisal Entity, including the genres and publication types it can appraise" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+
+
+actor Administrator
+participant "UI1:RegisterNewAppraisalEntityUI"
+participant "Ctl1:RegisterNewAppraisalEntityController"
+participant "_ptr:PublicationTypeRepo"
+participant "_gr:GenreRepo"
+participant "_aer:AppraisalEntityRepo"
+
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": I want to register an Appraisal Entity
+activate "UI1:RegisterNewAppraisalEntityUI"
+"UI1:RegisterNewAppraisalEntityUI" --> Administrator: What is the Appraisal Entity's name?
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": HelpingzTM
+"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getPublicationTypes()
+activate "Ctl1:RegisterNewAppraisalEntityController"
+"Ctl1:RegisterNewAppraisalEntityController" -> "_ptr:PublicationTypeRepo": getPublicationTypes()
+activate "_ptr:PublicationTypeRepo"
+"_ptr:PublicationTypeRepo" --> "Ctl1:RegisterNewAppraisalEntityController": cloneOfPublicationTypes
+deactivate "_ptr:PublicationTypeRepo"
+"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": cloneOfPublicationTypes
+deactivate "Ctl1:RegisterNewAppraisalEntityController"
+
+"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": Softcover book with plastic cover
+"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getGenres()
+activate "Ctl1:RegisterNewAppraisalEntityController"
+"Ctl1:RegisterNewAppraisalEntityController" -> "_gr:GenreRepo": getGenres()
+activate "_gr:GenreRepo"
+"_gr:GenreRepo" --> "Ctl1:RegisterNewAppraisalEntityController": cloneOfGenres
+deactivate "_gr:GenreRepo"
+"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": cloneOfGenres
+deactivate "Ctl1:RegisterNewAppraisalEntityController"
+"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": Self-Help
+
+"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": registerAppraisalEntity(name, publicationTypes, genres)
+activate "Ctl1:RegisterNewAppraisalEntityController"
+"Ctl1:RegisterNewAppraisalEntityController" -> "_aer:AppraisalEntityRepo": registerAppraisalEntity(name, publicationTypes, genres)
+activate "_aer:AppraisalEntityRepo"
+"_aer:AppraisalEntityRepo" -> "_aer:AppraisalEntityRepo": appraisalEntityExists(name)
+create "HelpingzTM:AppraisalEntity"
+"_aer:AppraisalEntityRepo" -> "HelpingzTM:AppraisalEntity": registerAppraisalEntity(name, publicationTypes, genres)
+"_aer:AppraisalEntityRepo" --> "Ctl1:RegisterNewAppraisalEntityController": HelpingzTM
+deactivate "_aer:AppraisalEntityRepo"
+"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": AppraisalEntity
+deactivate "Ctl1:RegisterNewAppraisalEntityController"
+"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Done!
+deactivate "UI1:RegisterNewAppraisalEntityUI"
+
+
+
+@enduml

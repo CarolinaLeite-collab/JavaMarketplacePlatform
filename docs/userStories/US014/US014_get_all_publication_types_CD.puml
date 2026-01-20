@@ -1,0 +1,37 @@
+@startuml
+
+title CD (Class Diagram) - to get list of all publication types (US014)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam backgroundColor CornSilk
+skinparam classBackgroundColor WhiteSmoke
+skinparam classAttributeIconSize 0
+
+class UIPublicationTypeList {
+}
+
+class GetPublicationTypeListController {
+    - publicationTypeRepo : PublicationTypeRepo
+    + getListOfPublicationTypes() : Collection<PublicationType>
+}
+
+class PublicationTypeRepo {
+    - publicationTypes : List<PublicationType>
+    + exists(typeName : String) : boolean
+    + create(typeName : String) : PublicationType
+    + getAll() : Collection<PublicationType>
+}
+
+class PublicationType {
+    - type : String
+    + PublicationType(type : String)
+    + getPublicationType() : String
+}
+
+UIPublicationTypeList --> GetPublicationTypeListController : uses
+GetPublicationTypeListController --> PublicationTypeRepo : uses
+PublicationTypeRepo "1" o-- "*" PublicationType
+
+@enduml

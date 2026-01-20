@@ -3,6 +3,9 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.LibraryRepo;
 import TOPSECRET.domain.Library;
+import TOPSECRET.domain.PublicationDetails;
+import TOPSECRET.domain.User;
+
 import java.util.List;
 
 
@@ -35,14 +38,9 @@ public class ListOfPublicationsInMyLibraryController {
      * @throws IllegalStateException if the user does not have a library
      */
 
-
-    public List<String> getListOfPublications (String userId){
+    public List<PublicationDetails> getListOfPublications(String userId) {
         Library library = _libraryRepo.findByUser(userId);
-
-        if (library == null){
-            throw new IllegalStateException("User does not have a library!");
-        }
-
-        return library.getPublicationsInLibrary();
+            return library.getPublicationsInLibrary();
     }
+
 }

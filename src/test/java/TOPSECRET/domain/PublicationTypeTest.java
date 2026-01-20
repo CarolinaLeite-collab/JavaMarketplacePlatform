@@ -6,33 +6,40 @@ import static org.junit.jupiter.api.Assertions.*;
 class PublicationTypeTest {
 
     @Test
-    void givenValidTypeName_StoresValue() {
-        PublicationType publicationType = new PublicationType("Book");
+    void givenValidTypeName_SavesData() {
+        PublicationType publicationType = new PublicationType("Hardcover");
 
-        assertEquals("Book", publicationType.getPublicationType());
+        assertEquals("Hardcover", publicationType.getPublicationType());
     }
 
     @Test
     void givenNullTypeName_ThrowsIllegalArgumentException() {
-        IllegalArgumentException ex = assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(null));
 
-        assertEquals("Publication type name is required!", ex.getMessage());
+        assertEquals("Publication type name is required!", exception.getMessage());
     }
 
     @Test
     void givenBlankTypeName_ThrowsIllegalArgumentException() {
-        IllegalArgumentException ex = assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType("   "));
 
-        assertEquals("Publication type name is required!", ex.getMessage());
+        assertEquals("Publication type name is required!", exception.getMessage());
     }
 
     @Test
     void givenEmptyTypeName_ThrowsIllegalArgumentException() {
-        IllegalArgumentException ex = assertThrows(
+        IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(""));
 
-        assertEquals("Publication type name is required!", ex.getMessage());
+        assertEquals("Publication type name is required!", exception.getMessage());
+    }
+
+    @Test
+    void toStringReturnsTypeName() {
+        PublicationType publicationType = new PublicationType("Paperback");
+
+        assertEquals("Paperback", publicationType.toString());
     }
 }

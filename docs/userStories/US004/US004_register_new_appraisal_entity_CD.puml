@@ -1,0 +1,59 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US004 – "As an administrator, I want to register a new Appraisal Entity, including the genres and publication types it can appraise" - CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class RegisterNewAppraisalEntityUI {
+}
+
+class RegisterNewAppraisalEntityController {
+- _appraisalEntityRepo : AppraisalEntityRepo
+- _genreRepo : GenreRepo
+- _publicationTypeRepo : PublicationTypeRepo
++ createNewAppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>)
++ getPublicationTypes() : List<PublicationType>
++ getGenres() : List<Genre>
+}
+
+class AppraisalEntityRepo {
+-_appraisalEntity : List<AppraisalEntity>
+- appraisalEntityExists(name:Name) : boolean
++ create(name : Name, publicationTypes: List<PublicationType>, genres: List<Genre>) : AppraisalEntity
+}
+
+class GenreRepo {
+- _genre : List<Genre>
++ cloneOfGenres() : List<Genre>
+}
+
+class PublicationTypeRepo {
+-_publicationType : List<PublicationType>
++ cloneOfPublicationTypes() : List<PublicationType>
+}
+
+class AppraisalEntity{
+- _name : Name
+- _publicationTypes : List<PublicationType>
+- _genres : List<Genre>
++ AppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>)
+}
+
+RegisterNewAppraisalEntityUI "1" --> "1" RegisterNewAppraisalEntityController : uses
+RegisterNewAppraisalEntityController "1" --> "1" GenreRepo : accesses
+RegisterNewAppraisalEntityController "1" --> "1" PublicationTypeRepo : accesses
+RegisterNewAppraisalEntityController "1" --> "1"AppraisalEntityRepo : uses >
+AppraisalEntityRepo "1" --> "*" AppraisalEntity : creates
+
+@enduml

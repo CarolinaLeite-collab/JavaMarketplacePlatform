@@ -1,0 +1,132 @@
+@startuml
+'==== Title ====
+title MiteLovers – OOA-G2
+top to bottom direction
+
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+
+'========================
+'title MiteLovers – OOA-G2 (Organizado)
+top to bottom direction
+
+'========================
+'==== STYLE ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 18
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+'========================
+'==== CORE USERS & ROLES ====
+together {
+  object User
+  object logisticService <<highlight>>
+  object Buyer
+  object Seller
+  object Bidder
+  object Administrator
+  object CommunityMember <<highlight>>
+  object Item
+
+}
+
+'========================
+'==== SERVICES ====
+together {
+  object SupportService <<highlight>>
+  object AppraisalEntity
+}
+
+'========================
+'==== MARKETPLACE CORE ====
+together {
+
+  object Publication
+  object Library
+}
+
+together {
+  object Auction
+  object DirectSale
+  object Bid
+  object shoppingCart <<highlight>>
+  object transaction <<highlight>>
+
+}
+
+'========================
+'==== RELATIONSHIPS ====
+
+'---User---
+User "1" --- "0..1" Bidder: < is a
+User "1" -- "0..1" Seller: < is a
+User "1" --- "0..1" Buyer: < is a
+User "1" --[#4B9DA9AA] "0..1" SupportService: < <font color="547792AA">supports</font>
+User "1" --[#4B9DA9AA] "0..1" CommunityMember: < <font color="547792AA">is a</font>
+User "1" -- "0..1"Administrator: < is a
+
+'--- Publications & Items ---
+Publication "1" ---- "1" Item : represents
+Library "1" --- "*" Publication : contains
+User "1" --- "0..1" Library : owns
+User "1" --- "*" Publication : creates
+
+'--- Sales Types ---
+Item "1" ---- "0..1" Auction : offered as
+Item "1" -- "0..1" DirectSale : offered as
+shoppingCart "1" -- "0..1" transaction: < processes
+
+Auction "1" --- "*" Bid : receives
+Bid "*" - "1" Bidder : placed by
+
+Buyer "1" --- "1..*" Item : buys
+Buyer "1" - "1" shoppingCart: > owns
+
+'--- Seller relations ---
+Seller "1" ------ "1..*" Item : creates
+
+'--- Appraisal & Support ---
+Seller "1" -- "*" AppraisalEntity : requests
+AppraisalEntity "*" -- "*" Item : appraises
+SupportService "1" -- "*" AppraisalEntity : manages
+
+User "*" --[#4B9DA9AA] "0..1" logisticService: <  <font color="547792AA">delivers to</font>
+
+
+@enduml
