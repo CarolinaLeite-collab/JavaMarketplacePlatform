@@ -13,32 +13,28 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ArrowColor #57595BAA
+skinparam classAttributeIconSize 0
 
 '==== entities ====
-Class User {
-- _name :Name
-- _address :Address
-- _email :Email
-- _phone :Phone
-}
+
 Class Country {
-- _countryName :String
-- _admin :User
-- _createdDate :LocalDate
-+ create(String countryName, User admin, LocalDate createdDate) :Country
+- _countryName : String
+- _admin : User
 }
 Class CountryRepo {
 - _countries :List<Country>
-+ registerCountry(countryName : String, admin :User, createdDate : LocalDate) :Country
-- findCountry(country :Country) :boolean
++ registerCountry(countryName : String, admin : User) : Country
+- existsCountry(country :Country) : boolean
 }
 Class RegisterCountryController {
-+ registerCountry(countryName :String, admin :User) :Country
++ registerCountry(countryName : String, admin : User) : Country
 }
+Class RegisterCountryUI {}
 
 '==== connections ====
-User "1" -- "*" Country: registers >
-Country "*" <-- "1" CountryRepo: creates <
-CountryRepo "1" <-- "1" RegisterCountryController: uses <
+
+CountryRepo "1" --> "*" Country: instantiates through
+RegisterCountryController  "1" ..> "1" CountryRepo: uses
+RegisterCountryUI "1" ..> "1" RegisterCountryController: invokes
 
 @enduml
