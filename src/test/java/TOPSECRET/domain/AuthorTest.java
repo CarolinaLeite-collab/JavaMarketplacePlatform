@@ -40,4 +40,16 @@ public class AuthorTest {
     @Test
     void rejectNullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
 
+    @Test
+    void test_hash_code(){
+
+        //act and arrange
+        Author a = new Author("Seneca");
+        Author a2 = new Author("SeneCA");
+
+        //assert
+        assertEquals(a.hashCode(), a2.hashCode());
+
+    }
+
 }
