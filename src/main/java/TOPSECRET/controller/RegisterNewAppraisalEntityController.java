@@ -34,7 +34,7 @@ public class RegisterNewAppraisalEntityController {
 
     public List getGenres(){
 
-        return List.copyOf(_genreRepo.getAll());
+        return List.copyOf(_genreRepo.getListOfOfficialGenres());
     }
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){

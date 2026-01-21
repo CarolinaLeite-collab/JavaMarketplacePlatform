@@ -49,7 +49,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void should_get_genres_from_repo() {
         List genres = controller.getGenres();
 
-        assertEquals(genres, genreRepo.getAll());
+        assertEquals(genres, genreRepo.getListOfOfficialGenres());
     }
 
     @Test
