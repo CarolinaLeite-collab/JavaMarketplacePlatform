@@ -18,7 +18,7 @@ class CreateLibraryUI {
 }
 
 class CreateLibraryController {
-
+  -_lr: LibraryRepo
   + createMyLibrary(user:User) : Library
 }
 
@@ -32,12 +32,12 @@ class Library {
   + Library(owner:User)
 }
 
-class User {
-}
+'class User {
+'}
 
 CreateLibraryUI "1" ..> "1" CreateLibraryController : invokes
 CreateLibraryController "1" ..> "1" LibraryRepo : calls
 LibraryRepo "1" --> "*" Library : creates
-User "1" --> "1" Library: owns
+'User "1" --> "1" Library: owns
 
 @enduml
