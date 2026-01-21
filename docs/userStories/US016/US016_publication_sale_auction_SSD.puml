@@ -1,0 +1,34 @@
+@startuml
+title US016 – "As a User, I want to put for sale a %n()publication in my library in an auction" %n() SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+
+' --- Actor and participants ---
+actor "User" as User
+participant "Mitelovers" as System
+
+' --- System dialog ---
+User -> System: I want to put a publication in my library %n()for sale in an auction
+activate "System"
+System --> User: Which publication?
+User -> System: This publication
+System --> User: What is its condition?
+User -> System: condition
+System --> User: Please provide auction details
+User -> System: Start price, start date, end date
+System --> User: Done! Publication for sale in auction
+deactivate "System"
+
+@enduml
