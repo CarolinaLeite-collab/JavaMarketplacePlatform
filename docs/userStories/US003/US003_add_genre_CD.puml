@@ -32,12 +32,11 @@ class GenreRepo {
 class Genre {
     - _genre : String
     + Genre(genre : String)
-    + getGenre() : String
 }
 
 '==== Relationships ====
-UIAddGenre "1" --> "1" AddGenreController : uses
-AddGenreController "1" --> "1" GenreRepo : uses
+UIAddGenre "1" ..> "1" AddGenreController : uses
+AddGenreController "1" ..> "1" GenreRepo : uses
 GenreRepo "1" --> "*" Genre : manages
 
 @enduml
