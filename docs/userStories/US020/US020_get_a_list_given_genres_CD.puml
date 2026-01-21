@@ -1,38 +1,55 @@
 @startuml
-title US020 - As a User, I want to get a list (name and user) of the publicly published lists of a given genre - CD
+title US020 - Class Diagram (Get Public Lists by Genre)
 
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk
 skinparam classBackgroundColor WhiteSmoke
+skinparam classAttributeIconSize 0
 
 class UI {
   +requestPublicListsByGenre()
-  +askGenre()
-  +getPublicListsByGenre(genre: String)
-  +displayPublicLists(publicLists: List<PublicList>)
+  +displayGenrePrompt()
+  +selectGenre(genre: String)
+  +displayPublicLists(lists: List<PublicList>)
 }
 
 class GetPublicListsByGenreController {
+  -repo: PublicListRepo
+  +GetPublicListsByGenreController(repo: PublicListRepo)
   +getPublicListsByGenre(genre: String): List<PublicList>
 }
 
-class PublicListRepository {
-  +findPublicListsPublishedByGenre(genre: String): List<PublicList>
+class PublicListRepo {
+  -lists: List<PublicList>
+  +add(list: PublicList)
+  +findPublicListPublishedByGenre(genre: String): List<PublicList>
 }
 
 class PublicList {
-  -id: Long
-  -name: String
+  -listName: String
+  -ownerUsername: String
+  -genre: String
   -isPublic: boolean
   -isPublished: boolean
-  -genre: String
-  -ownerUsername: String
+
+  +PublicList(listName: String,
+              ownerUsername: String,
+              genre: String,
+              isPublic: boolean,
+              isPublished: boolean)
+
+  +getListName(): String
+  +getOwnerUsername(): String
+  +getGenre(): String
+  +isPublic(): boolean
+  +isPublished(): boolean
 }
 
 UI --> GetPublicListsByGenreController : uses
-GetPublicListsByGenreController --> PublicListRepository : uses
-PublicListRepository --> PublicList : returns
+GetPublicListsByGenreController --> PublicListRepo : delegates to
+PublicListRepo --> PublicList : manages
+UI ..> PublicList : displays (name, owner)
 
 @enduml
