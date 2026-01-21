@@ -17,7 +17,7 @@ class AddPublicationTypeControllerTest {
         PublicationType type = controller.addPublicationType("Hardcover");
 
         assertEquals("Hardcover", type.getPublicationType());
-        assertTrue(repo.exists("Hardcover"));
+        assertTrue(repo.existsPublicationType("Hardcover"));
     }
 
     @Test

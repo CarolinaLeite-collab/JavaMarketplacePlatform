@@ -12,7 +12,7 @@ public class AddPublicationTypeController {
     }
 
     public PublicationType addPublicationType(String typeName) {
-        if (repo.exists(typeName)) {
+        if (repo.existsPublicationType(typeName)) {
             throw new IllegalArgumentException("Publication type already exists!");
         }
         return repo.createPublicationType(typeName);
