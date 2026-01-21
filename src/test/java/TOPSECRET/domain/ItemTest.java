@@ -3,16 +3,24 @@ package TOPSECRET.domain;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import java.time.Period;
+import java.time.Year;
 import java.time.ZonedDateTime;
 
 class ItemTest {
 
-    private ZonedDateTime futureStart = ZonedDateTime.now().plusDays(1);
-    private ZonedDateTime futureEnd = ZonedDateTime.now().plusDays(2);
+    private ZonedDateTime auctionStartDate = ZonedDateTime.now().plusDays(1);
+    private ZonedDateTime auctionEndDate = ZonedDateTime.now().plusDays(2);
 
     @Test
     void itemIsCreatedWithPublicationAndCondition() {
-        Publication publication = new Publication("Test Title");
+        Publication publication = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(publication, Condition.GOOD);
 
         assertEquals(Condition.GOOD, item.getCondition());
@@ -20,7 +28,14 @@ class ItemTest {
 
     @Test
     void canSetDirectSaleWhenNoAuctionExists() {
-        Publication publication = new Publication("Test Title");
+        Publication publication = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(publication, Condition.LIKE_NEW);
 
         DirectSale directSale =
@@ -31,15 +46,22 @@ class ItemTest {
 
     @Test
     void canSetAuctionWhenNoDirectSaleExists() {
-        Publication publication = new Publication("Test Title");
+        Publication publication = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(publication, Condition.FAIR);
 
         AuctionRepo repo = new AuctionRepo();
         Auction auction = repo.createAuction(
                 item,
                 new Price(5.0, Currency.EUR),
-                futureStart,
-                futureEnd
+                auctionStartDate,
+                auctionEndDate
         );
 
         assertDoesNotThrow(() -> item.setAuction(auction));
@@ -47,15 +69,22 @@ class ItemTest {
 
     @Test
     void cannotSetDirectSaleIfAuctionAlreadyExists() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         AuctionRepo repo = new AuctionRepo();
         Auction auction = repo.createAuction(
                 item,
                 new Price(5.0, Currency.EUR),
-                futureStart,
-                futureEnd
+                auctionStartDate,
+                auctionEndDate
         );
         item.setAuction(auction);
 
@@ -72,7 +101,14 @@ class ItemTest {
 
     @Test
     void cannotSetAuctionIfDirectSaleAlreadyExists() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         DirectSale ds =
@@ -83,8 +119,8 @@ class ItemTest {
         Auction auction = repo.createAuction(
                 item,
                 new Price(5.0, Currency.EUR),
-                futureStart,
-                futureEnd
+                auctionStartDate,
+                auctionEndDate
         );
 
         IllegalStateException exception = assertThrows(
@@ -97,7 +133,14 @@ class ItemTest {
 
     @Test
     void settingDirectSaleDoesNotOverwriteCondition() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.POOR);
 
         DirectSale ds =
@@ -109,19 +152,25 @@ class ItemTest {
 
     @Test
     void settingAuctionDoesNotOverwriteCondition() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.LIKE_NEW);
 
         AuctionRepo repo = new AuctionRepo();
         Auction auction = repo.createAuction(
                 item,
                 new Price(5.0, Currency.EUR),
-                futureStart,
-                futureEnd
+                auctionStartDate,
+                auctionEndDate
         );
         item.setAuction(auction);
 
         assertEquals(Condition.LIKE_NEW, item.getCondition());
     }
 }
-
