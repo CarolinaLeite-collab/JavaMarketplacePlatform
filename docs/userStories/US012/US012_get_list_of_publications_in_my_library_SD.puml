@@ -32,23 +32,24 @@ title US012 - "As a User, I want to get the list (title, author, type and ISBN/I
 ' --- Actor and participants ---'
 
 actor User
-participant "UI1: UIgetListOfPublications" as UI
+participant "UI1: GetListOfPublicationsUI" as UI
 participant "Ctl1:ListOfPublicationsInMyLibraryController" as Ctl
 participant "_lr:LibraryRepo" as LibRepo
+participant "library:Library" as Lib
+
 
 
 User -> UI: Display List of my Publications
 activate UI
 
-UI -> Ctl: getListOfPublications(userId)
+UI -> Ctl: getListOfPublications(user)
 activate Ctl
 
-Ctl -> LibRepo: findByUser(userId)
+Ctl -> LibRepo: findByUser(user)
 activate LibRepo
 LibRepo --> Ctl: library
 deactivate LibRepo
 
-create "library:Library" as Lib
 Ctl -> Lib: getPublicationsInLibrary()
 
 create "listWithDetails: List<PublicationsDetails>" as listOfPubs
@@ -60,17 +61,18 @@ Lib -> listOfPubs: create()
 loop for each publication in library
 
 create "pDetails:PublicationDetails" as list
-    Lib -> list: create()
-activate listOfPubs
-    Lib -> listOfPubs: add(pDetails)
+    Lib -> list: create(publication)
 
+    Lib -> listOfPubs: add(pDetails)
+activate listOfPubs
+listOfPubs --> Lib :true
 end
-listOfPubs --> Lib: listWithDetails
+
 deactivate listOfPubs
-Lib --> Ctl: listOfPublicationDetails
+Lib --> Ctl: listWithDetails
 deactivate Lib
 
-Ctl --> UI: listOfPublicationDetails
+Ctl --> UI: listWithDetails
 deactivate Ctl
 
 UI --> User: Publications list displayed\n with details
