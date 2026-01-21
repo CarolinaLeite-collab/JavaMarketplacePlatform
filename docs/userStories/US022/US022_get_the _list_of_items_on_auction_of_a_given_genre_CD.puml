@@ -1,0 +1,40 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title US022 "As a Buyer, I want to get the list of items on auction of a given genre"  - CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class getAuctionItemsUI{}
+
+class GetAuctionItemsByGenreController {
+    -_auctionRepo: AuctionRepo
+     +getAuctionItemsByGenre(genre: Genre): List<Item>
+}
+
+class AuctionRepo {
+
+    +getAuctionItemsByGenre(genre: Genre): List<Item>
+}
+
+class Auction {
++isByGenre(genre:Genre)
+}
+
+getAuctionItemsUI "1"..>"1" GetAuctionItemsByGenreController:uses
+GetAuctionItemsByGenreController "1"..> "1"AuctionRepo : uses
+AuctionRepo "1" --> "*"Auction
+
+
+@enduml
