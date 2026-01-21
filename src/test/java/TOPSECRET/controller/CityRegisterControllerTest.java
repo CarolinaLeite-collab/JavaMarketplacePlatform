@@ -21,7 +21,7 @@ class CityRegisterControllerTest {
         countryRepo = new CountryRepo();
         // create a country through CountryRepo
         User admin = new User(new Name("Admin"), new Address("a","1", Address.BuildingType.HOUSE,"city","region", Address.Country.PORTUGAL, "1000-000", null), new Email("a@b.c"), new Phone(new PhonePrefix("+351"), "912345678"));
-        portugal = countryRepo.registerCountry("Portugal", admin, LocalDate.of(2020,1,1));
+        portugal = countryRepo.registerCountry("Portugal", admin);
         controller = new CityRegisterController(cityRepo, countryRepo);
     }
 
