@@ -17,7 +17,7 @@ public class BookTest {
     void setUp() {
         validPublicationInfo = new PublicationInfo(
                new Title ("title"),
-                Genre.ACTION,
+                new Genre("Action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISBN("0306406152"),
