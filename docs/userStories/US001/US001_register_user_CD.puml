@@ -1,0 +1,49 @@
+@startuml
+title US001 - "As an Administrator, I want to register a user in the system" - CD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class "UI1:RegisterNewUserUI"
+
+class "Ctl1:RegisterNewUserController" {
+  - _ur: UserRepo
+  + RegisterNewUser(name: String, email: String): User
+}
+
+class "_ur:UserRepo" {
+  - _users: List<User>
+  + registerNewUser(name: String, email: String): User
+  - UserExists(email: String): Boolean
+}
+
+class "user:User" {
+  -_name: Name
+  -_email: Email
+}
+
+class "name:Name"  {
+  -_name: String
+}
+
+class "email:Email" {
+  -_email: String
+}
+
+' === RELAÇÕES ===
+"UI1:RegisterNewUserUI""1" ..> "1""Ctl1:RegisterNewUserController" : uses
+"Ctl1:RegisterNewUserController""1" ..> "1""_ur:UserRepo" : uses
+"_ur:UserRepo""1" --> "*""user:User" : creates
+"user:User""1" <-- "1""name:Name" : has
+"user:User""1" <-- "1""email:Email" : has
+
+@enduml
