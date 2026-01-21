@@ -3,8 +3,8 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- *A registered entity (may be a person, company, or even an AI agent)
- *  on the platform who may play one or more roles.
+ * A registered entity (may be a person, company, or even an AI agent)
+ * on the platform who may play one or more roles.
  */
 
 public class User {
@@ -14,7 +14,7 @@ public class User {
     private final Email _email;
     private final Phone _phone;
 
-    public User (Name name, Address address, Email email, Phone phone) {
+    public User(Name name, Address address, Email email, Phone phone) {
 
         _name = Objects.requireNonNull(name, "name is required");
         _address = Objects.requireNonNull(address, "address is required");
@@ -23,45 +23,44 @@ public class User {
 
     }
 
-    public User (Name name, Email email) {
+    public User(Name name, Email email) {
 
         _name = Objects.requireNonNull(name, "name is required");
         _email = Objects.requireNonNull(email, "email is required");
         _address = null;
         _phone = null;
+    }
+
+    public Name getName() {
+        return _name;
+    }
+
+    public Address getAddress() {
+        return _address;
+    }
+
+    public String getEmail() {
+        return _email.toString();
+    }
+
+    public Phone getPhone() {
+        return _phone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return _email.equals(user._email);
 
     }
 
-        public Name getName(){
-            return _name;
-        }
+    @Override
+    public int hashCode() {
 
-        public Address getAddress(){
-            return _address;
-        }
+        return _email.hashCode();
 
-        public Email getEmail(){
-            return _email;
-        }
-
-        public Phone getPhone() {
-            return _phone;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            User user = (User) o;
-            return _email.equals(user._email);
-
-        }
-
-        @Override
-        public int hashCode() {
-
-            return _email.hashCode();
-
-        }
+    }
 }
