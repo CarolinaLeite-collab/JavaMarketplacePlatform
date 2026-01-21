@@ -19,28 +19,21 @@ class GetListOfOfficialGenresUI {
 }
 
 class GetListOfOfficialGenresController {
-
+-_gr: GenreRepo
 +getListOfOfficialGenres(): List<Genre>
 
 }
 
 class GenreRepo {
 
+
 +getListOfOfficialGenres(): List<Genre>
-
-}
-
-class List<Genre> {
-
-}
-
-Class Genre {
 
 }
 
 GetListOfOfficialGenresUI "1" ..> "1" GetListOfOfficialGenresController : invokes
 GetListOfOfficialGenresController "1" ..> "1" GenreRepo : calls
-GenreRepo "1" --> "*" List: creates
-Genre "*" <-- "1" List: contains
+
+
 
 @enduml
