@@ -40,11 +40,11 @@ class AddPublicationOnLibraryControllerTest {
                 .build();
         _p2 = Publication.builder()
                 .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .identifier(new ISBN("9789723701241"))
+                .year(Year.of(2020))
+                .title(new Title("The Hobbit"))
+                .author(new Author("Somebody"))
+                .publisher(new Publisher("Girafa"))
                 .build();
 
         _publicationRepo.add(_p1);
@@ -129,7 +129,7 @@ class AddPublicationOnLibraryControllerTest {
         User otherUser = new User(new Name("João"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", Address.Country.PORTUGAL, "1000-205", null),
-                new Email("maria123@hotmail.com"),
+                new Email("joao123@hotmail.com"),
                 new Phone(new PhonePrefix("+351"), "918902632"));
 
         assertThrows(IllegalStateException.class, () -> _controller.getMyLibrary(otherUser)
