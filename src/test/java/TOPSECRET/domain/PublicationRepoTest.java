@@ -94,7 +94,7 @@ class PublicationRepoTest {
 
     @Test
     void returnsAllPublicationsWhenExistentListIsEmpty() {
-    // Ensures that getDifferentOf returns all publications when no publications are provided
+        // Ensures that getDifferentOf returns all publications when no publications are provided
 
         // Arrange
         PublicationRepo repo = new PublicationRepo();
@@ -183,31 +183,20 @@ class PublicationRepoTest {
                 .build();
         Publication p2 = Publication.builder()
                 .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .identifier(new ISBN("9789723701241"))
+                .year(Year.of(2020))
+                .title(new Title("The Hobbit"))
+                .author(new Author("Somebody"))
+                .publisher(new Publisher("Girafa"))
                 .build();
-        Publication p3 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
-
 
         repo.add(p);
         repo.add(p2);
-        repo.add(p3);
 
         // Act
-        List<Publication> result = repo.getDifferentOf(List.of(p));
+        List<Publication> result = repo.getDifferentOf(List.of(p, p2));
 
         // Assert
         assertTrue(result.isEmpty());
     }
-
 }
