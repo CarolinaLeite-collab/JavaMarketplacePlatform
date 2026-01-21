@@ -1,33 +1,47 @@
 @startuml
-title US005 - As an Administrator, I want to register an Author in the system, so that publications of that author can be added - CD
+title US005 - Class Diagram (aligned with CreateAuthorController + AuthorRepository)
 
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk
 skinparam classBackgroundColor WhiteSmoke
+skinparam classAttributeIconSize 0
+
 
 class UICreateAuthor {
   +requestAuthorRegistration()
+  +displayAuthorRegistrationForm()
+  +submitAuthorName(authorName: String)
+  +displayResult()
 }
 
 class CreateAuthorController {
-  +createAuthor(authorData): Author
+  -authorRepo: AuthorRepo
+  +CreateAuthorController(ar: AuthorRepo)
+  +createAuthor(authorName: String): Author
 }
 
-class AuthorRepository {
-  +createAuthor(authorData): Author
+note right of CreateAuthorController
+Validates authorName (null/blank)
+Trims before delegating to AuthorRepo
+end note
+
+class AuthorRepo {
+  -authors: List<Author>
+  +create(authorName: String): Author
+  +existsByName(name: String): boolean
+  +findAll(): List<Author>
 }
 
 class Author {
-  -id: Long
   -name: String
-  +Author(authorData)
+  +Author(authorName: String)
+  +getName(): String
 }
 
-
 UICreateAuthor --> CreateAuthorController : uses
-CreateAuthorController --> AuthorRepository : uses
-AuthorRepository --> Author : creates/returns
+CreateAuthorController --> AuthorRepo : delegates to
+AuthorRepo --> Author : creates/returns
 
 @enduml
