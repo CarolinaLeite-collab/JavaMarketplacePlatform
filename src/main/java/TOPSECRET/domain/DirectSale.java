@@ -36,4 +36,16 @@ public class DirectSale {
             throw new IllegalArgumentException("Time limit cannot be negative");
         }
     }
+
+    public boolean isByAuthor (Author author) {
+
+        if (item.getPublication().getAuthor().equals(author)) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
 }
