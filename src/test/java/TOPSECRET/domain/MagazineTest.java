@@ -20,7 +20,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -50,7 +50,7 @@ class MagazineTest {
         // A valid publicationInfo
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -68,7 +68,7 @@ class MagazineTest {
         // An invalid publicationInfo (with ISBN)
         PublicationInfo publicationInfo2 = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISBN("0306406152"),
@@ -102,7 +102,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -135,7 +135,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -182,7 +182,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -234,7 +234,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
@@ -264,7 +264,7 @@ class MagazineTest {
 
         PublicationInfo publicationInfo = new PublicationInfo(
                 new Title ("title"),
-                Genre.ACTION,
+                new Genre("action"),
                 new Author ("Eça de Queirós"),
                 new Edition(
                         new ISSN("1234-5678"),
