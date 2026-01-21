@@ -21,21 +21,24 @@ actor Administrator
 Administrator -> "U1:UICreateAuthor": I want to register an Author
 "U1:UICreateAuthor" --> Administrator: What is the author's name?
 
-Administrator -> "U1:UICreateAuthor": authorData
+Administrator -> "U1:UICreateAuthor": authorName
 activate "U1:UICreateAuthor"
 
-"U1:UICreateAuthor" -> "Ctl1:CreateAuthorController": createAuthor(authorData)
-activate "Ctl1:CreateAuthorController"
-"Ctl1:CreateAuthorController"-> "_ar:AuthorRepository": createAuthor(authorData)
+"U1:UICreateAuthor" -> "Ctl1:CreateAuthorController": createAuthor(authorName)
 
-activate "_ar:AuthorRepository"
-"_ar:AuthorRepository" -> "_ar:AuthorRepository": myAuthorExists()
+activate "Ctl1:CreateAuthorController"
+"Ctl1:CreateAuthorController" -> "Ctl1:CreateAuthorController": validateAndTrim(authorName)
+"Ctl1:CreateAuthorController"-> "_ar:AuthorRepo": create(normalizedName)
+
+activate "_ar:AuthorRepo"
+"_ar:AuthorRepo" -> "_ar:AuthorRepo": existsByName(normalizedName)
+"_ar:AuthorRepo" --> "_ar:AuthorRepo": false
 
 create "myAuthor:Author"
-"_ar:AuthorRepository" -> "myAuthor:Author": new(authorData)
-"myAuthor:Author" --> "_ar:AuthorRepository": myAuthor
-"_ar:AuthorRepository" --> "Ctl1:CreateAuthorController": myAuthor
-deactivate "_ar:AuthorRepository"
+"_ar:AuthorRepo" -> "myAuthor:Author": new(normalizedName))
+"myAuthor:Author" --> "_ar:AuthorRepo": myAuthor
+"_ar:AuthorRepo" --> "Ctl1:CreateAuthorController": myAuthor
+deactivate "_ar:AuthorRepo"
 
 "Ctl1:CreateAuthorController" --> "U1:UICreateAuthor": myAuthor
 deactivate "Ctl1:CreateAuthorController"
