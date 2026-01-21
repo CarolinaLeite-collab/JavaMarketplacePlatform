@@ -1,0 +1,31 @@
+@startuml
+title US001 – "As an Administrator, I want to register a user in the system" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Admin
+participant "Mitelovers" as System
+
+' --- System dialog ---
+Admin -> System: I want to register a new user in the system
+activate "System"
+System --> Admin: What's the name and email
+Admin -> System: Name, test@email.pt
+System --> Admin: New User registered!
+deactivate "System"
+
+@enduml
