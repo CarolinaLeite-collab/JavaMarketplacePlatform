@@ -14,24 +14,17 @@ class UIPublicationTypeList {
 
 class GetPublicationTypeListController {
     - publicationTypeRepo : PublicationTypeRepo
-    + getListOfPublicationTypes() : Collection<PublicationType>
+    + getListOfPublicationTypes() : List<PublicationType>
 }
 
 class PublicationTypeRepo {
     - publicationTypes : List<PublicationType>
-    + exists(typeName : String) : boolean
-    + create(typeName : String) : PublicationType
-    + getAll() : Collection<PublicationType>
+    + existsPublicationType(typeName : String) : boolean
+    + createPublicationType(typeName : String) : PublicationType
+    + getAll() : List<PublicationType>
 }
 
-class PublicationType {
-    - type : String
-    + PublicationType(type : String)
-    + getPublicationType() : String
-}
-
-UIPublicationTypeList --> GetPublicationTypeListController : uses
-GetPublicationTypeListController --> PublicationTypeRepo : uses
-PublicationTypeRepo "1" o-- "*" PublicationType
+UIPublicationTypeList "1" ..> "1" GetPublicationTypeListController : invokes
+GetPublicationTypeListController "1" ..> "1" PublicationTypeRepo : use
 
 @enduml
