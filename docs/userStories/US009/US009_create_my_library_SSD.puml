@@ -18,7 +18,7 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor User
-participant "Mitelovers" as System
+participant ":Mitelovers" as System
 
 ' --- System dialog ---
 User -> System: I want to create my library
