@@ -33,13 +33,13 @@ public class ListOfPublicationsInMyLibraryController {
 /**
      * Retrieves the list of publications in the user's library.
      *
-     * @param userId the unique identifier of the user
+     * @param user the unique identifier of the user
      * @return list of publications with title, author, type and ISBN/ISSN details
      * @throws IllegalStateException if the user does not have a library
      */
 
-    public List<PublicationDetails> getListOfPublications(String userId) {
-        Library library = _libraryRepo.findByUser(userId);
+    public List<PublicationDetails> getListOfPublications(User user) {
+        Library library = _libraryRepo.findByUser(user);
             return library.getPublicationsInLibrary();
     }
 
