@@ -49,7 +49,7 @@ class PublicationTypeRepoTest {
         repo.createPublicationType("Book");
 
         // Act
-        boolean exists = repo.exists("Book");
+        boolean exists = repo.existsPublicationType("Book");
 
         // Assert
         assertTrue(exists);
@@ -62,8 +62,8 @@ class PublicationTypeRepoTest {
         repo.createPublicationType("Book");
 
         // Act
-        boolean lowerCaseExists = repo.exists("book");
-        boolean upperCaseExists = repo.exists("BOOK");
+        boolean lowerCaseExists = repo.existsPublicationType("book");
+        boolean upperCaseExists = repo.existsPublicationType("BOOK");
 
         // Assert
         assertTrue(lowerCaseExists);

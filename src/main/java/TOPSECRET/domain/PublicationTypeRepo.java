@@ -9,7 +9,7 @@ public class PublicationTypeRepo {
     private final List<PublicationType> publicationTypes = new ArrayList<>();
 
     // Verifica se um tipo já existe
-    public boolean exists(String typeName) {
+    public boolean existsPublicationType(String typeName) {
         if (typeName == null) return false;
 
         for (int i = 0; i < publicationTypes.size(); i++) {
@@ -24,7 +24,7 @@ public class PublicationTypeRepo {
 
     // Cria e guarda um novo PublicationType
     public PublicationType createPublicationType(String typeName) {
-        if (exists(typeName)) {
+        if (existsPublicationType(typeName)) {
             throw new IllegalStateException("This publication type already exists!");
         }
 
