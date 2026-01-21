@@ -9,26 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CountryRepoTest {
 
-    private CountryRepo countryRepo;
-    private User admin;
-
-    @BeforeEach
-    void setUp() {
-        // Arrange
-        countryRepo = new CountryRepo();
-        Phone phone = new Phone(new PhonePrefix("+351"), "909978798");
-        Address address = new Address(
-                "Rua Dr. Rui Falcão", "33",
-                Address.BuildingType.HOUSE,
-                "Barcelos", "Braga",
-                Address.Country.PORTUGAL,
-                "4790-105", null
-        );
-        admin = new User(new Name("Marcelo"), address, new Email("test@test.pt"), phone);
-    }
-
     @Test
     void constructsRepoSuccessfully() {
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
         // Act
         CountryRepo repo = new CountryRepo();
 
@@ -39,8 +24,11 @@ class CountryRepoTest {
 
     @Test
     void registerCountrySuccessfully() {
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
         // Act
-        Country portugal = countryRepo.registerCountry("Portugal", admin);
+        Country portugal = countryRepo.registerCountry("Portugal");
 
         // Assert
         assertNotNull(portugal);
@@ -50,9 +38,12 @@ class CountryRepoTest {
 
     @Test
     void registersMultipleUniqueCountries() {
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
         // Act
-        Country portugal = countryRepo.registerCountry("Portugal", admin);
-        Country germany = countryRepo.registerCountry("Germany", admin);
+        Country portugal = countryRepo.registerCountry("Portugal");
+        Country germany = countryRepo.registerCountry("Germany");
 
         // Assert
         assertNotNull(portugal);
@@ -62,9 +53,12 @@ class CountryRepoTest {
 
     @Test
     void returnNullIfCountryDuplicate() {
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
         // Act
-        Country portugal = countryRepo.registerCountry("Portugal", admin);
-        Country portugalDuplicate = countryRepo.registerCountry("Portugal", admin);
+        Country portugal = countryRepo.registerCountry("Portugal");
+        Country portugalDuplicate = countryRepo.registerCountry("Portugal");
 
         // Assert
         assertNotNull(portugal);
@@ -74,10 +68,13 @@ class CountryRepoTest {
 
     @Test
     void returnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
         // Act
-        Country portugal = countryRepo.registerCountry("Portugal", admin);
-        Country portugal1 = countryRepo.registerCountry("portugal", admin);
-        Country portugal2 = countryRepo.registerCountry(" Portugal ", admin);
+        Country portugal = countryRepo.registerCountry("Portugal");
+        Country portugal1 = countryRepo.registerCountry("portugal");
+        Country portugal2 = countryRepo.registerCountry(" Portugal ");
 
         // Assert
         assertNotNull(portugal);
@@ -88,13 +85,16 @@ class CountryRepoTest {
 
     @Test
     void returnsUnmodifiableListOfCountries() {
-        Country portugal = countryRepo.registerCountry("Portugal", admin);
+        // Arrange
+        CountryRepo countryRepo = new CountryRepo();
+
+        // Act
+        Country portugal = countryRepo.registerCountry("Portugal");
         List<Country> countries = countryRepo.getAllCountries();
 
         // Assert
         assertEquals(1, countries.size());
-
-        assertThrows(UnsupportedOperationException.class, () -> countries.add(new Country("Germany", admin)));
+        assertThrows(UnsupportedOperationException.class, () -> countries.add(new Country("Germany")));
     }
 
 }

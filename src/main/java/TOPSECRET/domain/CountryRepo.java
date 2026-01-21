@@ -18,11 +18,11 @@ public class CountryRepo {
         _countries = new ArrayList<>();
     }
 
-    public Country registerCountry (String countryName, User admin) {
+    public Country registerCountry (String countryName) {
 
         String normalizedName = countryName.trim();
 
-        Country newCountry = new Country(normalizedName, admin);
+        Country newCountry = new Country(normalizedName);
 
         if (existsCountry(newCountry))  {
             return null;
@@ -46,7 +46,7 @@ public class CountryRepo {
     * Returns a list of all countries for unit tests.
     */
     public List<Country> getAllCountries() {
-        return Collections.unmodifiableList(_countries);
+        return List.copyOf(_countries);
     }
 
     // Added helper to lookup a country by name (returns null if not found)

@@ -20,8 +20,8 @@ public class RegisterCountryController {
         _countryRepo = countryRepo;
     }
 
-    public Country registerCountry(String countryName, User admin) {
-        return _countryRepo.registerCountry(countryName, admin);
+    public Country registerCountry(String countryName) {
+        return _countryRepo.registerCountry(countryName);
     }
 
 }

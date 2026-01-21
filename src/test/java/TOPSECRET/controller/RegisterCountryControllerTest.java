@@ -41,7 +41,7 @@ class RegisterCountryControllerTest {
     @Test
     void shouldRegisterCountrySuccessfully() {
         // Act
-        Country country = controller.registerCountry("Portugal", admin);
+        Country country = controller.registerCountry("Portugal");
 
         // Assert
         assertNotNull(country);
@@ -51,11 +51,12 @@ class RegisterCountryControllerTest {
 
     @Test
     void shouldNotRegisterCountrySuccessfully() {
-        Country country = countryRepo.registerCountry("Portugal", admin);
+        //Arrange
+        Country country = countryRepo.registerCountry("Portugal");
         List<Country> countries = countryRepo.getAllCountries();
 
         // Act
-        Country duplicate = controller.registerCountry("Portugal", admin);
+        Country duplicate = controller.registerCountry("Portugal");
 
         // Assert
         assertNull(duplicate);
