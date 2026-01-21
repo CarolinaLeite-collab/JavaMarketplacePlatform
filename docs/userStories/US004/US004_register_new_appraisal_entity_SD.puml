@@ -26,7 +26,9 @@ participant "_aer:AppraisalEntityRepo"
 Administrator -> "UI1:RegisterNewAppraisalEntityUI": I want to register an Appraisal Entity
 activate "UI1:RegisterNewAppraisalEntityUI"
 "UI1:RegisterNewAppraisalEntityUI" --> Administrator: What is the Appraisal Entity's name?
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": HelpingzTM
+deactivate "UI1:RegisterNewAppraisalEntityUI"
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": name
+activate "UI1:RegisterNewAppraisalEntityUI"
 "UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getPublicationTypes()
 activate "Ctl1:RegisterNewAppraisalEntityController"
 "Ctl1:RegisterNewAppraisalEntityController" -> "_ptr:PublicationTypeRepo": getPublicationTypes()
@@ -37,7 +39,10 @@ deactivate "_ptr:PublicationTypeRepo"
 deactivate "Ctl1:RegisterNewAppraisalEntityController"
 
 "UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": Softcover book with plastic cover
+deactivate "UI1:RegisterNewAppraisalEntityUI"
+
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": publicationTypes
+activate "UI1:RegisterNewAppraisalEntityUI"
 "UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getGenres()
 activate "Ctl1:RegisterNewAppraisalEntityController"
 "Ctl1:RegisterNewAppraisalEntityController" -> "_gr:GenreRepo": getGenres()
@@ -47,16 +52,18 @@ deactivate "_gr:GenreRepo"
 "Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": cloneOfGenres
 deactivate "Ctl1:RegisterNewAppraisalEntityController"
 "UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": Self-Help
+deactivate "UI1:RegisterNewAppraisalEntityUI"
 
-"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": registerAppraisalEntity(name, publicationTypes, genres)
+Administrator -> "UI1:RegisterNewAppraisalEntityUI": genres
+activate "UI1:RegisterNewAppraisalEntityUI"
+"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": registerNewAppraisalEntity(name, publicationTypes, genres)
 activate "Ctl1:RegisterNewAppraisalEntityController"
-"Ctl1:RegisterNewAppraisalEntityController" -> "_aer:AppraisalEntityRepo": registerAppraisalEntity(name, publicationTypes, genres)
+"Ctl1:RegisterNewAppraisalEntityController" -> "_aer:AppraisalEntityRepo": registerNewAppraisalEntity(name, publicationTypes, genres)
 activate "_aer:AppraisalEntityRepo"
 "_aer:AppraisalEntityRepo" -> "_aer:AppraisalEntityRepo": appraisalEntityExists(name)
-create "HelpingzTM:AppraisalEntity"
-"_aer:AppraisalEntityRepo" -> "HelpingzTM:AppraisalEntity": registerAppraisalEntity(name, publicationTypes, genres)
-"_aer:AppraisalEntityRepo" --> "Ctl1:RegisterNewAppraisalEntityController": HelpingzTM
+create "_ar:AppraisalEntity"
+"_aer:AppraisalEntityRepo" -> "_ar:AppraisalEntity": registerNewAppraisalEntity(name, publicationTypes, genres)
+"_aer:AppraisalEntityRepo" --> "Ctl1:RegisterNewAppraisalEntityController": AppraisalEntity
 deactivate "_aer:AppraisalEntityRepo"
 "Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": AppraisalEntity
 deactivate "Ctl1:RegisterNewAppraisalEntityController"
