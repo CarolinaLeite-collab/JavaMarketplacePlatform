@@ -18,7 +18,7 @@ public class Library {
 
     private User _owner;
 
-    private List<Publication> publications = new ArrayList<>();
+    private List<Publication> _publications = new ArrayList<>();
 
 
     public Library(User user){
@@ -49,7 +49,7 @@ public class Library {
 
         List <PublicationDetails> listWithDetails = new ArrayList<>();
 
-        for (Publication p : publications) {
+        for (Publication p : _publications) {
 
             PublicationDetails pDetails = new PublicationDetails(p);
 
@@ -57,5 +57,37 @@ public class Library {
         }
 
         return Collections.unmodifiableList(listWithDetails);
+    }
+
+    private List<Publication> copyOfLibrary() {
+        List<Publication> publicationsCopy = List.copyOf(_publications);
+        return publicationsCopy;
+    }
+
+    public List<Publication> getAllPublications() {
+        return copyOfLibrary();
+    }
+
+    private boolean verifyUnique(Publication selectedPublication) {
+        for (Publication check : _publications) {
+            if (selectedPublication.equals(check)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean addPublicationToLibrary(Publication selectedPublication) {
+        if (_publications == null) {
+            _publications = new ArrayList<>();
+        }
+        if (selectedPublication == null) {
+            return false;
+        }
+        if (!verifyUnique(selectedPublication)) {
+            return false;
+        }
+        _publications.add(selectedPublication);
+        return true;
     }
 }

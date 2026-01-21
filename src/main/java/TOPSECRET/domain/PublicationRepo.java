@@ -35,4 +35,14 @@ public class PublicationRepo {
         return false;
     }
 
+    //check publications that are still out of library
+    public List<Publication> getDifferentOf(List<Publication> existentPublications) {
+        List<Publication> result = new ArrayList<>();
+        for (Publication publication : _publications){
+            if (!existentPublications.contains(publication)){
+                result.add(publication);
+            }
+        }
+        return List.copyOf(result);
+    }
 }

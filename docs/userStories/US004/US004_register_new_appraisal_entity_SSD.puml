@@ -20,14 +20,20 @@ actor Administrator
 participant "MiteLovers" as System
 
 Administrator -> System: I want to register an Appraisal Entity
-activate "System"
+activate System
 System --> Administrator: What is the Appraisal Entity's name?
-Administrator -> System: HelpingzTM
+deactivate System
+Administrator -> System: name
+activate System
 System --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
-Administrator -> System: Books
+deactivate System
+Administrator -> System: publicationTypes
+activate System
 System --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
-Administrator -> System: Self-Help
+deactivate System
+Administrator -> System: genres
+activate System
 System --> Administrator: Done!
-deactivate "System"
+deactivate System
 
 @enduml
