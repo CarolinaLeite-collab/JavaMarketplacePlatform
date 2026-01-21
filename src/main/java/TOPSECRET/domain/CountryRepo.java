@@ -1,21 +1,30 @@
 package TOPSECRET.domain;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Repository class for managing countries in the system.
+ * <p>
+ * Provides functionality to register new countries, prevent duplicates,
+ * and retrieve existing countries. The repository maintains a list of unique countries
+ * based on their name.
+ */
 public class CountryRepo {
-    private List<Country> _countries;
+    private final List<Country> _countries;
 
     public CountryRepo () {
         _countries = new ArrayList<>();
     }
 
-    public Country registerCountry (String countryName, User admin, LocalDate createdDate) {
-        Country newCountry = new Country(countryName, admin, createdDate);
+    public Country registerCountry (String countryName, User admin) {
 
-        if (findCountry(newCountry))  {
+        String normalizedName = countryName.trim();
+
+        Country newCountry = new Country(normalizedName, admin);
+
+        if (existsCountry(newCountry))  {
             return null;
         }
         else  {
@@ -24,7 +33,7 @@ public class CountryRepo {
         return newCountry;
     }
 
-    private boolean findCountry(Country country) {
+    private boolean existsCountry(Country country) {
         for (Country country1 : _countries) {
             if (country1.equals(country)) {
                 return true;
@@ -33,6 +42,9 @@ public class CountryRepo {
         return false;
     }
 
+    /**
+    * Returns a list of all countries for unit tests.
+    */
     public List<Country> getAllCountries() {
         return Collections.unmodifiableList(_countries);
     }

@@ -4,6 +4,8 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RegisterCountryControllerTest {
@@ -15,23 +17,29 @@ class RegisterCountryControllerTest {
     @BeforeEach
     void setUp() {
         // Arrange
-        countryRepo = new CountryRepo();
-        controller = new RegisterCountryController(countryRepo);
-
         Address address = new Address(
-                "Rua Dr.Amilcar de Castro", "24",
+                "Rua Dr. Rui Falcão", "33",
                 Address.BuildingType.HOUSE,
                 "Barcelos", "Braga",
                 Address.Country.PORTUGAL,
-                "4775-105", null
+                "4790-105", null
         );
 
-        Phone phone = new Phone(new PhonePrefix("+351"), "962064343");
+        Phone phone = new Phone(new PhonePrefix("+351"), "909978798");
         admin = new User(new Name("Marcelo"), address, new Email("test@test.pt"), phone);
+
+        countryRepo = new CountryRepo();
+        controller = new RegisterCountryController(countryRepo, admin);
     }
 
     @Test
-    void registerCountry_shouldCreateAndStoreCountry() {
+    void constructsControllerSuccessfully() {
+        // Assert
+        assertNotNull(controller);
+    }
+
+    @Test
+    void shouldRegisterCountrySuccessfully() {
         // Act
         Country country = controller.registerCountry("Portugal", admin);
 
@@ -41,5 +49,16 @@ class RegisterCountryControllerTest {
         assertEquals(country, countryRepo.getAllCountries().get(0));
     }
 
+    @Test
+    void shouldNotRegisterCountrySuccessfully() {
+        Country country = countryRepo.registerCountry("Portugal", admin);
+        List<Country> countries = countryRepo.getAllCountries();
 
+        // Act
+        Country duplicate = controller.registerCountry("Portugal", admin);
+
+        // Assert
+        assertNull(duplicate);
+        assertEquals(1, countries.size());
+    }
 }
