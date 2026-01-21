@@ -46,7 +46,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
                 IllegalStateException.class,
                 () -> libraryRepo.findByUser(_user)
         );
-        assertEquals("Library not found for user: user123", exception.getMessage());
+        assertEquals("Library not found for user: Zé Isep", exception.getMessage());
     }
 
 }

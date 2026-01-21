@@ -75,7 +75,7 @@ public class LibraryRepo {
                 return lib;
             }
         }
-        throw new IllegalStateException("Library not found for user: " + user);
+        throw new IllegalStateException("Library not found for user: " + user.toString());
     }
 
 }

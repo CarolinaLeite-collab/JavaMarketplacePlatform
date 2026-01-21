@@ -77,4 +77,55 @@ class UserTest {
                         new Email("test@email.pt")
                 );
     }
+
+    @Test
+    void test_toString() {
+
+        User t = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        User t2 = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        assertEquals(t.toString(), t2.toString());
+
+    }
+
+    @Test
+    void test_user_are_equals_when_email_is_the_same() {
+
+        User t = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        User t2 = new User(
+                new Name("Alfredo"),
+                new Email("test@email.pt")
+        );
+
+        assertEquals(t, t2);
+
+    }
+
+    @Test
+    void test_hash_codes_are_the_same_when_email_is_the_same() {
+
+        User t = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        User t2 = new User(
+                new Name("Alfredo"),
+                new Email("test@email.pt")
+        );
+
+        assertEquals(t.hashCode(), t2.hashCode());
+
+    }
 }
