@@ -18,10 +18,10 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Admin" as Administrator
-participant "UI1:RegisterPublisherUI" as UI
+participant ":RegisterPublisherUI" as UI
 note over "UI": not implementing UI now; %n() placeholder for tests
-participant "Ctl1:RegisterPublisherController" as Ctl
-participant "_pr:PublisherRepo" as Repo
+participant ":RegisterPublisherController" as Ctl
+participant ":PublisherRepo" as Repo
 
 ' --- SD (Happy Path only)---
 
