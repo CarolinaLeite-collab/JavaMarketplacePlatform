@@ -15,7 +15,7 @@ class ListingTest {
     //Reusable instances
     PublicationInfo publicationInfoBook = new PublicationInfo(
             new Title ("Louis I. Kahn: The Idea of Orde"),
-            Genre.ACTION,
+            new Genre("Action"),
             new Author ("Klaus-Peter Gast"),
             new Edition(
                     new ISBN("0306406152"),
@@ -31,7 +31,7 @@ class ListingTest {
 
     PublicationInfo publicationInfoMagazine = new PublicationInfo(
             new Title ("title"),
-            Genre.ACTION,
+            new Genre("Action"),
             new Author ("Eça de Queirós"),
             new Edition(
                     new ISSN("1018-4783"),
