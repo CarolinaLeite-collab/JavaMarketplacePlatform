@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Period;
 import java.time.Year;
@@ -104,5 +105,71 @@ class DirectSaleTest {
         );
 
         assertEquals("Time limit cannot be negative", ex.getMessage());
+    }
+
+    @Test
+    void test_isByAuthor_should_return_true_when_author_matches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Author author = new Author("Seneca");
+
+        assertTrue(sale.isByAuthor(author));
+
+    }
+
+    @Test
+    void test_is_by_author_should_return_true_when_author_matches_case_insensitive() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Author author = new Author("sEnEcA");
+
+        assertTrue(sale.isByAuthor(author));
+
+    }
+
+    @Test
+    void test_is_by_author_should_return_false_when_author_does_not_match() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Author author = new Author("Soren Kirkegaard");
+
+        assertFalse(sale.isByAuthor(author));
+
     }
 }
