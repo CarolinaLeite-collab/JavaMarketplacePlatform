@@ -2,13 +2,22 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 import java.time.Period;
+import java.time.Year;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class DirectSaleTest {
 
     @Test
     void createsDirectSaleWithPriceAndTimeLimit() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         Price price = new Price(10.0, Currency.EUR);
@@ -23,7 +32,14 @@ class DirectSaleTest {
 
     @Test
     void createsDirectSaleWithoutTimeLimit() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         Price price = new Price(15.0, Currency.USD);
@@ -37,7 +53,14 @@ class DirectSaleTest {
 
     @Test
     void throwsExceptionWhenPriceIsNull() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         IllegalArgumentException ex = assertThrows(
@@ -62,7 +85,14 @@ class DirectSaleTest {
 
     @Test
     void throwsExceptionWhenTimeLimitIsNegative() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Item item = new Item(pub, Condition.GOOD);
 
         Price price = new Price(10.0, Currency.EUR);
