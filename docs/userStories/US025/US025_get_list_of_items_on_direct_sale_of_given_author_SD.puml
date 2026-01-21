@@ -1,0 +1,43 @@
+@startuml
+title US025 – "As a Buyer, I want to get the list of items on direct sale of a given author" - Level 1 SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetDirectSaleItemsByAuthorUI" as UI
+participant ":GetDirectSaleItemsByAuthorController" as CTL
+participant "dsr:DirectSaleRepo" as DSR
+
+Buyer -> UI: I want the list of items on direct sale of a given author
+activate UI
+UI --> Buyer: What is the author's name?
+deactivate UI
+Buyer -> UI: authorName
+activate UI
+
+
+UI -> CTL: getDirectSaleItemsByAuthor(authorName)
+activate CTL
+
+CTL -> DSR: getDirectSaleItemsByAuthor(authorName)
+activate DSR
+
+DSR --> CTL: copyOfListOfDirectSaleItemsByAuthor
+deactivate DSR
+
+CTL --> UI: copyOfListOfDirectSaleItemsByAuthor
+deactivate CTL
+
+UI --> Buyer: Here's the list! done!
+deactivate UI
+
+@enduml
