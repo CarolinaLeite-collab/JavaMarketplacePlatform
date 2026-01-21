@@ -13,7 +13,7 @@ class CityRepoTest {
     @BeforeEach
     void setUp() {
         repo = new CityRepo();
-        country = new Country("Portugal", new User(new Name("Admin"), new Address("a","1", Address.BuildingType.HOUSE,"city","region", Address.Country.PORTUGAL, "1000-000", null), new Email("a@b.c"), new Phone(new PhonePrefix("+351"), "912345678")));
+        country = new Country("Portugal");
     }
 
     @Test

@@ -8,7 +8,7 @@ class CityTest {
 
     @Test
     void constructor_validArgumentsCreatesCity() {
-        Country country = new Country("Portugal", new User(new Name("Admin"), new Address("a","1", Address.BuildingType.HOUSE,"city","region", Address.Country.PORTUGAL, "1000-000", null), new Email("a@b.c"), new Phone(new PhonePrefix("+351"), "912345678")));
+        Country country = new Country("Portugal");
         City city = new City("Porto", country);
         assertEquals("Porto", city.getName());
         assertEquals(country, city.getCountry());
@@ -16,7 +16,7 @@ class CityTest {
 
     @Test
     void constructor_nullOrBlankNameThrows() {
-        Country country = new Country("Portugal", new User(new Name("Admin"), new Address("a","1", Address.BuildingType.HOUSE,"city","region", Address.Country.PORTUGAL, "1000-000", null), new Email("a@b.c"), new Phone(new PhonePrefix("+351"), "912345678")));
+        Country country = new Country("Portugal");
         assertThrows(IllegalArgumentException.class, () -> new City(null, country));
         assertThrows(IllegalArgumentException.class, () -> new City("   ", country));
     }
@@ -28,7 +28,7 @@ class CityTest {
 
     @Test
     void equalsAndHashCode() {
-        Country country = new Country("Portugal", new User(new Name("Admin"), new Address("a","1", Address.BuildingType.HOUSE,"city","region", Address.Country.PORTUGAL, "1000-000", null), new Email("a@b.c"), new Phone(new PhonePrefix("+351"), "912345678")));
+        Country country = new Country("Portugal");
         City a = new City("Lisbon", country);
         City b = new City("Lisbon", country);
         City c = new City("Porto", country);
