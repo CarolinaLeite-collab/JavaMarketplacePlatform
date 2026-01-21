@@ -32,14 +32,14 @@ ADM -> UI: countryName
 activate UI
 
 '==== Use case execution ====
-UI -> CTL: registerCountry (countryName, admin)
+UI -> CTL: registerCountry (countryName)
 activate CTL
-CTL -> CR: registerCountry (countryName, admin)
+CTL -> CR: registerCountry (countryName)
 activate CR
 
     opt existsCountry (country) == false
         create "c1:Country"
-        CR -> "c1:Country": create (countryName, admin)
+        CR -> "c1:Country": create (countryName)
         CR -> CR: add(c1)
     end
 
