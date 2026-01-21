@@ -27,13 +27,12 @@ activate "U1:UI"
 "U1:UI" -> "Ctl1:GetPublicListsByGenreController": getPublicListsByGenre("Fiction")
 activate "Ctl1:GetPublicListsByGenreController"
 
-"Ctl1:GetPublicListsByGenreController" -> "_plr:PublicListRepository": findPublicListsPublishedByGenre("Fiction")
-activate "_plr:PublicListRepository"
-"_plr:PublicListRepository" --> "Ctl1:GetPublicListsByGenreController": publicLists
-deactivate "_plr:PublicListRepository"
+"Ctl1:GetPublicListsByGenreController" -> "_plr:PublicListRepo": findPublicListsPublishedByGenre("Fiction")
+activate "_plr:PublicListRepo"
+"_plr:PublicListRepo" --> "Ctl1:GetPublicListsByGenreController": lists: List<PublicList>
+deactivate "_plr:PublicListRepo"
 
-'"Ctl1:GetPublicListsByGenreController" -> "Ctl1:GetPublicListsByGenreController": mapToSummaries(publicLists)
-"Ctl1:GetPublicListsByGenreController" --> "U1:UI": publicList
+"Ctl1:GetPublicListsByGenreController" --> "U1:UI": lists
 deactivate "Ctl1:GetPublicListsByGenreController"
 
 
