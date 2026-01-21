@@ -4,7 +4,7 @@ import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.PublicationTypeRepo;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,14 +14,14 @@ class GetPublicationTypeListControllerTest {
     void shouldReturnAllPublicationTypes() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
-        repo.create("Magazine");
+        repo.createPublicationType("Book");
+        repo.createPublicationType("Magazine");
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repo);
 
         // Act
-        Collection<PublicationType> result =
+        List<PublicationType> result =
                 controller.getListOfPublicationTypes();
 
         // Assert
@@ -37,7 +37,7 @@ class GetPublicationTypeListControllerTest {
                 new GetPublicationTypeListController(repo);
 
         // Act
-        Collection<PublicationType> result =
+        List<PublicationType> result =
                 controller.getListOfPublicationTypes();
 
         // Assert
@@ -46,20 +46,26 @@ class GetPublicationTypeListControllerTest {
     }
 
     @Test
-    void modifyingReturnedCollectionShouldNotAffectRepository() {
-        // Arrange
+    void returnedListShouldNotBeModifiable() {
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
+        repo.createPublicationType("Book");
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repo);
 
-        // Act
-        Collection<PublicationType> result =
+        List<PublicationType> result =
                 controller.getListOfPublicationTypes();
-        result.clear();
 
-        // Assert
-        assertEquals(1, repo.getAll().size());
+        boolean modificationWorked = true;
+
+        try {
+            result.clear();
+        } catch (Exception e) {
+            modificationWorked = false;
+        }
+
+        if (modificationWorked) {
+            fail("Returned list should be immutable");
+        }
     }
 }

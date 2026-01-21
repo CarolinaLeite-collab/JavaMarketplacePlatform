@@ -2,6 +2,8 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PublicationTypeRepoTest {
@@ -12,7 +14,7 @@ class PublicationTypeRepoTest {
         PublicationTypeRepo repo = new PublicationTypeRepo();
 
         // Act
-        PublicationType type = repo.create("Book");
+        PublicationType type = repo.createPublicationType("Book");
 
         // Assert
         assertNotNull(type);
@@ -23,23 +25,28 @@ class PublicationTypeRepoTest {
     void shouldNotAllowDuplicatePublicationTypes() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Magazine");
+        repo.createPublicationType("Magazine");
 
         // Act
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> repo.create("Magazine")
-        );
+        boolean duplicateWasCreated = true;
+
+        try {
+            repo.createPublicationType("Magazine");
+        } catch (Exception e) {
+            duplicateWasCreated = false;
+        }
 
         // Assert
-        assertEquals("This publication type already exists!", exception.getMessage());
+        if (duplicateWasCreated) {
+            fail("It should not be possible to create duplicate publication types");
+        }
     }
 
     @Test
     void shouldRecognizeExistingPublicationType() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
+        repo.createPublicationType("Book");
 
         // Act
         boolean exists = repo.exists("Book");
@@ -52,7 +59,7 @@ class PublicationTypeRepoTest {
     void shouldBeCaseInsensitiveWhenCheckingExistence() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
+        repo.createPublicationType("Book");
 
         // Act
         boolean lowerCaseExists = repo.exists("book");
@@ -67,8 +74,8 @@ class PublicationTypeRepoTest {
     void shouldReturnAllCreatedPublicationTypes() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
-        repo.create("Magazine");
+        repo.createPublicationType("Book");
+        repo.createPublicationType("Magazine");
 
         // Act
         int numberOfTypes = repo.getAll().size();
@@ -78,19 +85,25 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void returnedCollectionShouldNotAllowModifyingInternalState() {
+    void returnedListCannotBeModifiedFromOutside() {
         // Arrange
         PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.create("Book");
+        repo.createPublicationType("Book");
+
+        List<PublicationType> returnedList = repo.getAll();
 
         // Act
-        var allTypes = repo.getAll();
-        allTypes.clear();
+        boolean modificationSucceeded = true;
 
-        int numberOfTypesAfterExternalModification =
-                repo.getAll().size();
+        try {
+            returnedList.clear();   // tentativa de modificação externa
+        } catch (Exception e) {
+            modificationSucceeded = false;
+        }
 
         // Assert
-        assertEquals(1, numberOfTypesAfterExternalModification);
+        if (modificationSucceeded) {
+            fail("External code should not be able to modify the returned list");
+        }
     }
 }

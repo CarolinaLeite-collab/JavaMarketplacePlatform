@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.PublicationTypeRepo;
 
-import java.util.Collection;
+import java.util.List;
 
 public class GetPublicationTypeListController {
 
@@ -13,7 +13,7 @@ public class GetPublicationTypeListController {
         this.publicationTypeRepo = publicationTypeRepo;
     }
 
-    public Collection<PublicationType> getListOfPublicationTypes() {
+    public List<PublicationType> getListOfPublicationTypes() {
         return publicationTypeRepo.getAll();
     }
 }

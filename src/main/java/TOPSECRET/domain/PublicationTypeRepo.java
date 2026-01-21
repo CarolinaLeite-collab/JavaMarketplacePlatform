@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PublicationTypeRepo {
@@ -24,7 +23,7 @@ public class PublicationTypeRepo {
     }
 
     // Cria e guarda um novo PublicationType
-    public PublicationType create(String typeName) {
+    public PublicationType createPublicationType(String typeName) {
         if (exists(typeName)) {
             throw new IllegalStateException("This publication type already exists!");
         }
@@ -34,7 +33,7 @@ public class PublicationTypeRepo {
         return type;
     }
 
-    // Vai buscar um tipo existente pelo nome
+    // Vai buscar um tipo existente pelo nome (para já documentado pois não é necessário. Pode ser futuramente)
 //    public PublicationType findByTypeName(String typeName) {
 //        if (typeName == null) return null;
 //
@@ -49,7 +48,7 @@ public class PublicationTypeRepo {
 //    }
 
     // Devolve uma cópia da lista (não quebra encapsulamento)
-    public Collection<PublicationType> getAll() {
-        return new ArrayList<>(publicationTypes);
+    public List<PublicationType> getAll() {
+        return List.copyOf(publicationTypes);
     }
 }
