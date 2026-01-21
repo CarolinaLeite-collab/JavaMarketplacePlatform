@@ -2,6 +2,8 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
@@ -96,24 +98,35 @@ class UserTest {
     }
 
     @Test
-    void test_user_are_equals_when_email_is_the_same() {
+    void test_equals() {
 
-        User t = new User(
+        User u1 = new User(
                 new Name("Tiago"),
                 new Email("test@email.pt")
         );
 
-        User t2 = new User(
+        User u2 = new User(
                 new Name("Alfredo"),
                 new Email("test@email.pt")
         );
 
-        assertEquals(t, t2);
+        User u3 = new User(
+                new Name("Magalhaes"),
+                new Email("test2@email.pt")
+        );
+
+        String u4 = "user";
+
+        assertEquals(u1, u1);
+        assertEquals(u1, u2);
+        assertNotEquals(u1, u3);
+        assertNotEquals(u1, null);
+        assertNotEquals(u1, u4);
 
     }
 
     @Test
-    void test_hash_codes_are_the_same_when_email_is_the_same() {
+    void test_hash_code_same_email() {
 
         User t = new User(
                 new Name("Tiago"),
@@ -122,10 +135,29 @@ class UserTest {
 
         User t2 = new User(
                 new Name("Alfredo"),
-                new Email("test@email.pt")
+                new Email("TEST@EMAIL.PT")
         );
 
         assertEquals(t.hashCode(), t2.hashCode());
 
     }
+
+    @Test
+    void test_hash_code_different_email() {
+
+        User t = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        User t2 = new User(
+                new Name("Alfredo"),
+                new Email("alfredo@EMAIL.PT")
+        );
+
+        assertNotEquals(t.hashCode(), t2.hashCode());
+
+    }
+
+
 }
