@@ -18,40 +18,35 @@ autonumber
 autoactivate off
 
 ' ==== Actor and participants ====
-actor Administrator as Adm
+actor Administrator as ADM
 participant ":RegisterCountryUI" as UI
-participant ":RegisterCountryController" as Ctl
-participant ":CountryRepo" as _cr
+participant ":RegisterCountryController" as CTL
+participant ":CountryRepo" as CR
 
-'==== Processes ====
-
-Adm -> UI: I want to register a country
+'==== UI interaction ====
+ADM -> UI: I want to register a country
 activate UI
-UI --> Adm: What is the country name?
+UI --> ADM: What is the country name?
 deactivate UI
-Adm -> UI: Country Name
+ADM -> UI: countryName
 activate UI
 
-UI -> Ctl: registerCountry (countryName, admin)
-activate Ctl
+'==== Use case execution ====
+UI -> CTL: registerCountry (countryName, admin)
+activate CTL
+CTL -> CR: registerCountry (countryName, admin)
+activate CR
 
-Ctl -> _cr: registerCountry (countryName, admin)
-activate _cr
-_cr -> _cr: findCountry (country)
+    opt existsCountry (country) == false
+        create "c1:Country"
+        CR -> "c1:Country": create (countryName, admin)
+        CR -> CR: add(c1)
+    end
 
-create "c1:Country"
-_cr -> "c1:Country": create (countryName, admin)
-
-_cr -> _cr: add.(c1)
-
-'==== Return ====
-
-_cr --> Ctl: c1
-deactivate _cr
-
-Ctl --> UI: c1
-deactivate Ctl
-
-UI --> Adm : Country registered successfully!
+CR --> CTL: c1
+deactivate CR
+CTL --> UI: c1
+deactivate CTL
+UI --> ADM : Country registered successfully!
 deactivate UI
 @enduml
