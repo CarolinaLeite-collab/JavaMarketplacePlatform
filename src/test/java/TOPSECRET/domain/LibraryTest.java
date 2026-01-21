@@ -60,7 +60,27 @@ class LibraryTest {
 
     @Test
     void getPublicationsInLibraryShouldReturnPublicationsWhenPublicationsExist() {
-        //missing add publication method to library
+
+        Library library = new Library(_user);
+        Publication p = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        library.addPublicationToLibrary(p);
+
+        List<PublicationDetails> result = library.getPublicationsInLibrary();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(p.getTitle(), result.get(0).getTitle());
+        assertEquals(p.getAuthor(), result.get(0).getAuthor());
+        assertEquals(p.getPublicationType(), result.get(0).getPublicationType());
+        assertEquals(p.getIdentifier(), result.get(0).getIdentifier());
     }
 
     @Test
