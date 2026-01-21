@@ -19,17 +19,17 @@ autoactivate off
 
 ' ==== Actor and participants ====
 actor Administrator as Adm
-participant "MiteLovers" as UI1
+participant ":MiteLovers" as UI
 
-'==== Processes ====
-Adm -> UI1: I want to register a country
-activate UI1
-UI1 --> Adm: What is the country name?
-deactivate UI1
+'==== System dialog ====
+Adm -> UI: I want to register a country
+activate UI
+UI --> Adm: What is the country name?
+deactivate UI
 
-Adm -> UI1: Country Name
-activate UI1
+Adm -> UI: countryName
+activate UI
 
-UI1 --> Adm : Country registered successfully!
-deactivate UI1
+UI --> Adm : Country registered successfully!
+deactivate UI
 @enduml
