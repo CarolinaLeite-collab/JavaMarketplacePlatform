@@ -62,8 +62,8 @@ public class Auction {
         }
     }
 
-    // 2. Private constructor without _outrightPrice as an argument
-    private Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    // 2. Public constructor without _outrightPrice as an argument
+    public Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
         _bids = new Bids();
@@ -80,6 +80,11 @@ public class Auction {
             throw new IllegalArgumentException("Invalid end date");
         }
     }
+
+    public Item getItem() {
+        return _item;
+    }
+
 
     public void acceptBid(Bid bid) {
         ZonedDateTime now = ZonedDateTime.now();
@@ -120,6 +125,13 @@ public class Auction {
             result = true;
         }
         return result;
+    }
+
+    public boolean isByGenre( Genre genre) {
+        if (_item.getPublication().getGenre().equals(genre)) {
+            return true;
+        }
+        return false;
     }
 }
 
