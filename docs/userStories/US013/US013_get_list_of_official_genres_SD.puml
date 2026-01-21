@@ -1,5 +1,5 @@
 @startuml
-title US009 - "As a user, I want to get the list of official genres" - SD
+title US013 - "As a user, I want to get the list of official genres" - SD
 hidefootbox
 
 '==== basic style ====

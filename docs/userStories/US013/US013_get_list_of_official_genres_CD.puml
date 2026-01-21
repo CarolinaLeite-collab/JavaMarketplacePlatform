@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US009 – "As a user, I want to create my library" - CD
+title US013 – "As a user, I want to get the list of official genres" - CD
 
 
 '==== basic style ====
