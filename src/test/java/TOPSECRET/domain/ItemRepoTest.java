@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+
+import java.time.Year;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,7 +10,14 @@ class ItemRepoTest {
 
     @Test
     void existsReturnsFalseWhenRepoIsEmpty() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         ItemRepo repo = new ItemRepo();
 
         assertFalse(repo.exists(pub));
@@ -16,7 +25,14 @@ class ItemRepoTest {
 
     @Test
     void existsReturnsTrueWhenItemWithPublicationExists() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Condition condition = Condition.GOOD;
 
         ItemRepo repo = new ItemRepo();
@@ -34,7 +50,14 @@ class ItemRepoTest {
 
     @Test
     void createItemCreatesAndStoresNewItem() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Condition condition = Condition.GOOD;
 
         ItemRepo repo = new ItemRepo();
@@ -47,7 +70,14 @@ class ItemRepoTest {
 
     @Test
     void createItemThrowsWhenPublicationAlreadyExists() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Condition condition = Condition.GOOD;
 
         ItemRepo repo = new ItemRepo();
@@ -63,7 +93,14 @@ class ItemRepoTest {
 
     @Test
     void getAllReturnsUnmodifiableList() {
-        Publication pub = new Publication("Test Title");
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
         Condition condition = Condition.GOOD;
 
         ItemRepo repo = new ItemRepo();
@@ -77,8 +114,21 @@ class ItemRepoTest {
 
     @Test
     void getAllReflectsNewItems() {
-        Publication pub1 = new Publication("A");
-        Publication pub2 = new Publication("B");
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Publication pub2 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("1234-5678"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
         Condition condition = Condition.GOOD;
 
         ItemRepo repo = new ItemRepo();
