@@ -79,6 +79,7 @@ together {
 
   object Publication
   object Library
+  object ListOfPublications
 }
 
 together {
@@ -105,7 +106,9 @@ User "1" -- "0..1"Administrator: < is a
 Publication "1" ---- "1" Item : represents
 Library "1" --- "*" Publication : contains
 User "1" --- "0..1" Library : owns
-User "1" --- "*" Publication : creates
+User "1" -- "*" Publication : creates
+User "1" ---- "*" ListOfPublications : owns
+ListOfPublications "1" -- "*" Publication : owns
 
 '--- Sales Types ---
 Item "1" ---- "0..1" Auction : offered as
@@ -119,7 +122,7 @@ Buyer "1" --- "1..*" Item : buys
 Buyer "1" - "1" shoppingCart: > owns
 
 '--- Seller relations ---
-Seller "1" ------ "1..*" Item : creates
+Seller "1" ---- "1..*" Item : creates
 
 '--- Appraisal & Support ---
 Seller "1" -- "*" AppraisalEntity : requests
