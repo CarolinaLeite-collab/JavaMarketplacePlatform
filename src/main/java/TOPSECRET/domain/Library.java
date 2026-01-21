@@ -16,18 +16,18 @@ import java.util.List;
 
 public class Library {
 
-    private String _owner;
+    private User _owner;
 
     private List<Publication> publications = new ArrayList<>();
 
 
-    public Library(String userID){
+    public Library(User user){
 
-        _owner = userID;
+        _owner = user;
 
     }
 
-    public String getUserID() {
+    public User getUser() {
         return _owner;
     }
 

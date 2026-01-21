@@ -25,17 +25,17 @@ public class LibraryRepo {
 
     }
 
-    public Library create(String userID){
+    public Library create(User user){
 
         //if user already has a library, throw exception (library will not be created)
-        if (myLibraryExists(userID)) {
+        if (myLibraryExists(user)) {
 
             throw new IllegalStateException("User already has a library!");
 
         }
 
         //instantiate new Library
-        Library myLibrary = new Library(userID);
+        Library myLibrary = new Library(user);
 
         //add to libraryRepo
         _libraries.add(myLibrary);
@@ -45,11 +45,11 @@ public class LibraryRepo {
 
     }
 
-    private boolean myLibraryExists(String userID){
+    private boolean myLibraryExists(User user){
 
         for  (Library lib : _libraries){
 
-            if (lib.getUserID().equals(userID)){
+            if (lib.getUser().equals(user)){
 
                 return true;
 
@@ -64,18 +64,18 @@ public class LibraryRepo {
     /**
      * Finds and returns the Library associated with the given user ID.
      *
-     * @param userID the unique identifier of the user whose library is being searched
+     * @param user the unique identifier of the user whose library is being searched
      * @return the Library instance belonging to the specified user
      * @throws IllegalStateException if no Library exists for the given userID
      */
 
-    public Library findByUser(String userID){
+    public Library findByUser(User user){
         for (Library lib : _libraries){
-            if (lib.getUserID().equals(userID)){
+            if (lib.getUser().equals(user)){
                 return lib;
             }
         }
-        throw new IllegalStateException("Library not found for user: " + userID);
+        throw new IllegalStateException("Library not found for user: " + user);
     }
 
 }

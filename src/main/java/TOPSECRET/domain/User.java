@@ -23,6 +23,15 @@ public class User {
 
     }
 
+    public User (Name name, Email email) {
+
+        _name = Objects.requireNonNull(name, "name is required");
+        _email = Objects.requireNonNull(email, "email is required");
+        _address = null;
+        _phone = null;
+
+    }
+
         public Name getName(){
             return _name;
         }
@@ -37,5 +46,22 @@ public class User {
 
         public Phone getPhone() {
             return _phone;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            User user = (User) o;
+            return _email.equals(user._email);
+
+        }
+
+        @Override
+        public int hashCode() {
+
+            return _email.hashCode();
+
         }
 }
