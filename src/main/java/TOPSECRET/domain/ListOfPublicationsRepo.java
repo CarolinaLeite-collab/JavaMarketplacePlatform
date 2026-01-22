@@ -47,6 +47,22 @@ public class ListOfPublicationsRepo {
     public List<ListOfPublications> getListOfListOfPublications(){
         return List.copyOf(_listsOfListOfPublications);
     }
+
+
+    public List<ListOfPublications> findPublicListsByGenre(Genre genre) {
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre is mandatory");
+        }
+
+        List<ListOfPublications> result = new ArrayList<>();
+        for (ListOfPublications lop : _listsOfListOfPublications) {
+            if (!lop.isPrivate() && lop.getGenre().equals(genre)) {
+                result.add(lop);
+            }
+        }
+        return List.copyOf(result);
+    }
 }
+
 
 
