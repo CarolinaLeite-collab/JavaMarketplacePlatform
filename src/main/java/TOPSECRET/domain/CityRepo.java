@@ -9,8 +9,9 @@ public class CityRepo {
 
     public boolean existsByNameAndCountry(String name, Country country) {
         if (name == null || country == null) return false;
+        String normalized = name.trim();
         for (City c : _cities) {
-            if (c.getName().equals(name) && c.getCountry().equals(country)) return true;
+            if (c.getName().equalsIgnoreCase(normalized) && c.getCountry().equals(country)) return true;
         }
         return false;
     }

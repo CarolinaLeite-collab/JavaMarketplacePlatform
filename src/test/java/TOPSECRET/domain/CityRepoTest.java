@@ -31,4 +31,15 @@ class CityRepoTest {
     void save_nullThrows() {
         assertThrows(IllegalArgumentException.class, () -> repo.save(null));
     }
+
+    @Test
+    void getAll_returnsUnmodifiableCopy() {
+        City porto = repo.save(new City("Porto", country));
+        City lisbon = repo.save(new City("Lisbon", country));
+        var all = repo.getAll();
+        assertEquals(2, all.size());
+        assertTrue(all.contains(porto));
+        assertTrue(all.contains(lisbon));
+        assertThrows(UnsupportedOperationException.class, () -> all.add(new City("Braga", country)));
+    }
 }
