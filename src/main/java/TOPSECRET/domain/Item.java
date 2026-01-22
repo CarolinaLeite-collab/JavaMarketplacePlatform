@@ -1,5 +1,20 @@
 package TOPSECRET.domain;
 
+/**
+ * <h3>Item represents a publication that has been listed for sale.</h3>
+ * <p>
+ * An {@code Item} wraps a {@link Publication} and captures its sale context,
+ * including its {@link Condition} and the type of sale it belongs to .
+ * Each item can only be part of either a {@link DirectSale} or an {@link Auction}, but never both.
+ * </p>
+ *
+ * <p>
+ * This class enforces mutual exclusivity between direct sales and auctions
+ * to maintain domain consistency. Attempting to assign both types of sale will
+ * result in an {@link IllegalStateException}.
+ * </p>
+ */
+
 public class Item {
 
     private final Publication publication;
