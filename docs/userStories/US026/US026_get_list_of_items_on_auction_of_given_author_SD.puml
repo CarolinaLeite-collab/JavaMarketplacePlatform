@@ -1,0 +1,64 @@
+@startuml
+title US026 - "As a Buyer, I want to get the list of items on auction %n() of a given author" - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant "GetItemsOnAuctionOfAGivenAuthorUI" as UI
+participant "GetItemsOnAuctionOfAGivenAuthorCtl" as Ctl
+participant "ar:AuctionRepo" as AuctionRepo
+participant "auction:Auction" as Auction
+
+' --- System dialog ---
+Buyer -> UI: I want a list of Items on auction of a given author
+activate "UI"
+UI --> Buyer: What is the author's name?
+deactivate "UI"
+Buyer -> UI: authorName
+activate "UI"
+UI -> Ctl: getItemsOnAuctionOfAGivenAuthor(authorName)
+activate Ctl
+Ctl -> AuctionRepo: getItemsOnAuctionOfAGivenAuthor(authorName)
+activate "AuctionRepo"
+create "listOfItemsOnAuctionByAuthor:List<Item>" as List
+AuctionRepo -> List: create()
+
+' --- To run through each auction available and check the name of the author associated with the corresponding Item ---
+loop for each auction in ar
+    AuctionRepo -> Auction: isByAuthor(authorName)
+'    activate Auction
+'    Auction -> AuctionRepo: true
+'    deactivate Auction
+    opt isByAuthor == true
+        AuctionRepo -> List: add(auction.getItem())
+        activate List
+        List -> AuctionRepo: true
+        deactivate List
+    end
+end
+
+create "ListCopyOfItemsOnAuctionByAuthor: List<Item>" as ListCopy
+AuctionRepo -> ListCopy: List.copyof(ListOfItemsOnAuctionByAuthor)
+AuctionRepo --> Ctl: copyOfListOfDirectSaleItemsByAuthor
+deactivate AuctionRepo
+Ctl --> UI: listCopyOfItemsOnAuctionByAuthor
+deactivate Ctl
+UI --> Buyer: Here it is!
+deactivate UI
+
+
+@enduml
