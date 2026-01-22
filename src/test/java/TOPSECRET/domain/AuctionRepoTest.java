@@ -166,4 +166,78 @@ class AuctionRepoTest {
         assertNotNull(results);
         assertTrue(results.isEmpty());
     }
+
+    @Test
+    void getAuctionItemsByAuthorReturnsMatchingItems() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Genre action = new Genre("Action");
+        Author author = new Author("Author A");
+        Item item = itemFor(action, "9789896710453", "Sample", author.getName(), "Pub");
+
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
+
+        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+
+        List<Item> results = repo.getAuctionItemsByAuthor(author);
+        assertEquals(1, results.size());
+        assertSame(item, results.get(0));
+    }
+
+    @Test
+    void getAuctionItemsByAuthorIsCaseInsensitive() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Genre action = new Genre("Action");
+        Author author = new Author("Author A");
+        Item item = itemFor(action, "9789896710453", "Sample", author.getName(), "Pub");
+
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
+
+        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+
+        List<Item> results = repo.getAuctionItemsByAuthor(new Author("author a"));
+        assertEquals(1, results.size());
+        assertSame(item, results.get(0));
+    }
+
+    @Test
+    void getAuctionItemsByAuthorReturnsEmptyListWhenNoMatch() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Genre action = new Genre("Action");
+        Author author = new Author("Author A");
+        Item item = itemFor(action, "9789896710453", "Sample", author.getName(), "Pub");
+
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
+
+        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+
+        List<Item> results = repo.getAuctionItemsByAuthor(new Author("Other"));
+        assertNotNull(results);
+        assertTrue(results.isEmpty());
+    }
+
+    @Test
+    void getAuctionItemsByAuthorReturnsDefensiveCopy() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Genre action = new Genre("Action");
+        Author author = new Author("Author A");
+        Item item = itemFor(action, "9789896710453", "Sample", author.getName(), "Pub");
+
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
+
+        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+
+        List<Item> first = repo.getAuctionItemsByAuthor(author);
+        first.clear();
+
+        List<Item> second = repo.getAuctionItemsByAuthor(author);
+        assertEquals(1, second.size());
+    }
 }

@@ -161,5 +161,183 @@ class AuctionTest {
         assertFalse(auction.isByGenre(_genre));
 
     }
-}
 
+    @Test
+    void constructorThrowsWhenOutrightPriceIsNotGreaterThanStartingPrice() {
+        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_item, _startingPrice, new Price(10.0, Currency.EUR), auctionStart, auctionEnd));
+
+        assertEquals("Invalid outright price", ex.getMessage());
+    }
+
+    @Test
+    void constructorWithOutrightThrowsWhenStartDateInvalid() {
+        ZonedDateTime auctionStart = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime auctionEnd = ZonedDateTime.now().plusDays(1);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_item, _startingPrice, _outrightPrice, auctionStart, auctionEnd));
+
+        assertEquals("Invalid start date", ex.getMessage());
+    }
+
+    @Test
+    void constructorWithOutrightThrowsWhenEndDateBeforeStartDate() {
+        ZonedDateTime auctionStart = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime auctionEnd = ZonedDateTime.now().plusDays(1);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_item, _startingPrice, _outrightPrice, auctionStart, auctionEnd));
+
+        assertEquals("Invalid end date", ex.getMessage());
+    }
+
+    @Test
+    void test_is_by_author_should_return_true_when_author_matches() {
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Author author = _item.getPublication().getAuthor();
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+        assertTrue(auction.isByAuthor(author));
+    }
+
+    @Test
+    void test_is_by_author_should_return_true_when_author_matches_case_insensitive() {
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Author author = new Author(_item.getPublication().getAuthor().getName().toUpperCase());
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+        assertTrue(auction.isByAuthor(author));
+    }
+
+    @Test
+    void test_is_by_author_should_return_false_when_author_does_not_match() {
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Author differentAuthor = new Author("Different");
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+        assertFalse(auction.isByAuthor(differentAuthor));
+    }
+
+    @Test
+    void getBidsReturnsNonNullEvenWhenEmpty() {
+        ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
+        ZonedDateTime end = start.plusHours(1);
+
+        Auction auction = new Auction(_item, _startingPrice, start, end);
+
+        assertNotNull(auction.getBids());
+        assertThrows(IllegalStateException.class, () -> auction.getBids().getHighestBid());
+    }
+
+    @Test
+    void acceptBidAddsBidWhenAuctionIsActive() {
+        ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
+        ZonedDateTime end = start.plusMinutes(1);
+        Bid bid = new Bid(_buyer, new Price(20.0, Currency.EUR));
+
+        Auction auction = new Auction(_item, _startingPrice, start, end);
+
+        setAuctionWindow(auction, ZonedDateTime.now().minusSeconds(1), ZonedDateTime.now().plusSeconds(1));
+        auction.acceptBid(bid);
+
+        assertSame(bid, auction.getBids().getHighestBid());
+    }
+
+    @Test
+    void acceptBidThrowsWhenOfferNotHigherThanStartingPrice() {
+        ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
+        ZonedDateTime end = start.plusMinutes(1);
+        Bid bid = new Bid(_buyer, new Price(_startingPrice.getValue(), Currency.EUR));
+
+        Auction auction = new Auction(_item, _startingPrice, start, end);
+
+        setAuctionWindow(auction, ZonedDateTime.now().minusSeconds(1), ZonedDateTime.now().plusSeconds(1));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> auction.acceptBid(bid));
+        assertEquals("Invalid Bid", ex.getMessage());
+    }
+
+    @Test
+    void acceptBidThrowsWhenAuctionAlreadyEnded() {
+        ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
+        ZonedDateTime end = start.plusMinutes(1);
+        Bid bid = new Bid(_buyer, new Price(20.0, Currency.EUR));
+
+        Auction auction = new Auction(_item, _startingPrice, start, end);
+
+        setAuctionWindow(auction, ZonedDateTime.now().minusSeconds(2), ZonedDateTime.now().minusSeconds(1));
+        assertThrows(IllegalArgumentException.class, () -> auction.acceptBid(bid));
+    }
+
+    @Test
+    void finalizeAuctionSetsBuyerAndFinalPriceFromHighestBid() {
+        ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
+        ZonedDateTime end = start.plusMinutes(1);
+        Auction auction = new Auction(_item, _startingPrice, start, end);
+
+        User higher = new User(new Name("Higher"), new Email("high@example.com"));
+        Bid lowBid = new Bid(_buyer, new Price(20.0, Currency.EUR));
+        Bid highBid = new Bid(higher, new Price(30.0, Currency.EUR));
+
+        Bids bids = new Bids();
+        bids.addBid(lowBid);
+        bids.addBid(highBid);
+        setAuctionBids(auction, bids);
+
+        auction.finalizeAuction();
+
+        assertSame(higher, readPrivateField(auction, "_buyer", User.class));
+        assertEquals(highBid.getOfferPrice(), readPrivateField(auction, "_finalPrice", Price.class));
+    }
+
+    private void setAuctionWindow(Auction auction, ZonedDateTime start, ZonedDateTime end) {
+        try {
+            var startField = Auction.class.getDeclaredField("_auctionStartDate");
+            startField.setAccessible(true);
+            startField.set(auction, start);
+
+            var endField = Auction.class.getDeclaredField("_auctionEndDate");
+            endField.setAccessible(true);
+            endField.set(auction, end);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to adjust auction window for test: " + e.getMessage());
+        }
+    }
+
+    private void setAuctionBids(Auction auction, Bids bids) {
+        try {
+            var bidsField = Auction.class.getDeclaredField("_bids");
+            bidsField.setAccessible(true);
+            bidsField.set(auction, bids);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to inject bids for test: " + e.getMessage());
+        }
+    }
+
+    private <T> T readPrivateField(Auction auction, String fieldName, Class<T> type) {
+        try {
+            var field = Auction.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            Object value = field.get(auction);
+            return type.cast(value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to read field '" + fieldName + "' for test: " + e.getMessage());
+            return null; // unreachable
+        }
+    }
+}
