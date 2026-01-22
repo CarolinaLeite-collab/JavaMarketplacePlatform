@@ -69,5 +69,25 @@ class AuthorRepoTest {
         );
     }
 
+    @Test
+    void existsByNameShouldReturnFalseOnEmptyRepo() {
+        AuthorRepo repo = new AuthorRepo();
+        assertFalse(repo.existsByName("Ana"));
+    }
 
+    @Test
+    void existsByNameShouldReturnFalseWhenNoMatchExists() {
+        AuthorRepo repo = new AuthorRepo();
+        repo.create("Ana");
+
+        assertFalse(repo.existsByName("Bruno")); // <- mata o mutant "return true"
+    }
+
+    @Test
+    void existsByNameShouldReturnTrueWhenMatchExistsIgnoringCase() {
+        AuthorRepo repo = new AuthorRepo();
+        repo.create("Ana");
+
+        assertTrue(repo.existsByName("aNa"));
+    }
 }
