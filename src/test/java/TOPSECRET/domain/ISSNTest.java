@@ -11,6 +11,7 @@ class ISSNTest {
         ISSN issn = new ISSN ("1234-5678");
         assertEquals("1234-5678", issn.get_issn());
     }
+
     @Test
     void shouldRejectNullIssn(){
         assertThrows(IllegalArgumentException.class, () ->
@@ -55,20 +56,20 @@ class ISSNTest {
         assertEquals("1234-5679", issn.getIdentifier());
     }
 
+
     @Test
     void equals_returnsTrueForSameIssn(){
         ISSN issn = new ISSN("1234-5678");
-        Object o = issn;
-        assertEquals(issn,o);
-
-
+        assertTrue(issn.equals(issn));
     }
+
     @Test
     void equals_returnsFalseForDiferentIssn(){
         ISSN issn = new ISSN("1234-5678");
         ISSN issn2 = new ISSN("1234-5679");
         assertFalse(issn.equals(issn2));
     }
+
     @Test
     void equals_returnsFalseForNull() {
         ISSN a = new ISSN("1234-5679");
@@ -79,6 +80,28 @@ class ISSNTest {
     void equals_returnsFalseForDifferentType() {
         ISSN a = new ISSN("1234-5679");
         assertFalse(a.equals("1234-5679"));
+    }
+
+    @Test
+    void hashCode_sameValue_sameHash() {
+        ISSN a = new ISSN("1234-5678");
+        ISSN b = new ISSN("1234-5678");
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    void equals_returnsTrueForSameValueDifferentObjects() {
+        ISSN a = new ISSN("1234-5678");
+        ISSN b = new ISSN("1234-5678");
+
+        assertTrue(a.equals(b));   // <- mata "return false" na linha 32
+        assertTrue(b.equals(a));   // extra: simetria
+    }
+
+    @Test
+    void hashCode_shouldMatchStringHashCode() {
+        ISSN a = new ISSN("1234-5678");
+        assertEquals("1234-5678".hashCode(), a.hashCode()); // <- mata "return 0"
     }
 
 }

@@ -31,4 +31,9 @@ public class ISSN implements Identifier {
         if (!(o instanceof ISSN other)) return false;
         return _issn.equals(other._issn);
     }
+
+    @Override
+    public int hashCode() {
+        return _issn.hashCode();
+    }
 }
