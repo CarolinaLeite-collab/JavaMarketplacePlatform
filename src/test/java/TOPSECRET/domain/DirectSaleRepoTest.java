@@ -59,6 +59,15 @@ class DirectSaleRepoTest {
     }
 
     @Test
+    void testAddDirectSale() {
+
+        DirectSale ds = _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
+
+        assertNotNull(ds);
+
+    }
+
+    @Test
     void testGetDirectSaleItemsByAuthorNoDirectSalesShouldReturnEmptyList() {
 
         //act
