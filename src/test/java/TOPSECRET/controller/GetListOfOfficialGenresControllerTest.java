@@ -46,6 +46,8 @@ class GetListOfOfficialGenresControllerTest {
 
         //assert
         assertNotNull(listOfOfficialGenres);
+        assertEquals(2, listOfOfficialGenres.size());
+        assertFalse(listOfOfficialGenres.isEmpty());
 
     }
 
