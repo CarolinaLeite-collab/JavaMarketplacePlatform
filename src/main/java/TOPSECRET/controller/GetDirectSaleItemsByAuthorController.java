@@ -4,6 +4,15 @@ import TOPSECRET.domain.*;
 
 import java.util.List;
 
+
+/**
+ * Controller responsible for retrieving items that are currently on direct sale
+ * by a given author.
+ * <p>
+ * This controller acts as an application-layer entry point, delegating the
+ * retrieval logic to the {@link DirectSaleRepo}.
+ */
+
 public class GetDirectSaleItemsByAuthorController {
 
     private DirectSaleRepo _dsr;

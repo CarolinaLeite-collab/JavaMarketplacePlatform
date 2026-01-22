@@ -53,13 +53,6 @@ class GetDirectSaleItemsByAuthorControllerTest {
     }
 
     @Test
-    void test_get_direct_sale_items_by_author_with_direct_sales_should_return_not_empty_list(){
-
-        //needs createDirectSale()
-
-    }
-
-    @Test
     void test_get_direct_sale_items_by_author_with_no_direct_sales_should_return_empty_list(){
 
         //arrange and act
