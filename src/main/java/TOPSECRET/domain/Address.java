@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents a physical address with details such as street, door number, building type, city,
+ * district/state, country, and postal code.
+ * <p>
+ * Provides validation for mandatory fields and ensures that postal codes conform to country-specific formats.
+ * </p>
+ */
+
 public class Address {
 
     public enum BuildingType {

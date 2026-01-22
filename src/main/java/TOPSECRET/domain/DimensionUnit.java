@@ -2,6 +2,14 @@ package TOPSECRET.domain;
 
 import java.util.Set;
 
+/**
+ * Enumeration representing units of measurement for dimensions.
+ * <p>
+ * Supports {@link #CENTIMETERS} and {@link #INCHES}, with a {@link #fromString(String)} method
+ * that converts various string representations to the corresponding {@link DimensionUnit}.
+ * </p>
+ */
+
 public enum DimensionUnit {
     CENTIMETERS("centimeters"),
     INCHES("inches");

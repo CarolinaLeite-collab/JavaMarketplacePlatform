@@ -2,6 +2,13 @@ package TOPSECRET.domain;
 
 import java.util.Objects;
 
+/**
+ * Represents a city within a specific country.
+ * <p>
+ * Ensures that the city name is not null or blank and that the country is specified.
+ * </p>
+ */
+
 public class City {
     private final String _name;
     private final Country _country;

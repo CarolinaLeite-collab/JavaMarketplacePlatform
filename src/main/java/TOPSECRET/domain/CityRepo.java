@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Repository for managing {@link City} instances.
+ * <p>
+ * Provides methods to check for the existence of a city by name and country,
+ * save new cities, and retrieve all stored cities as an unmodifiable list.
+ * </p>
+ */
+
 public class CityRepo {
     private final List<City> _cities = new ArrayList<>();
 

@@ -2,6 +2,13 @@ package TOPSECRET.domain;
 
 import java.util.UUID;
 
+/**
+ * Represents a Stock Keeping Unit (SKU) for an item.
+ * <p>
+ * SKUs are automatically generated 10-character alphanumeric codes (A–F, 0–9) and cannot be created manually.
+ * </p>
+ */
+
 public class SKU {
 
     // SKU gerado automaticamente pela aplicação:

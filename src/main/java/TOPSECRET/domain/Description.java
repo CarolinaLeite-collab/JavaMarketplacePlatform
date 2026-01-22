@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents a textual description with a maximum allowed length.
+ * <p>
+ * Ensures that descriptions are not null, empty, or exceed {@link #MAX_LENGTH} characters.
+ * Provides methods to retrieve, update, and get the length of the description.
+ * </p>
+ */
+
 public class Description {
 
     public static final int MAX_LENGTH = 500;

@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents a collection of data retrieved from {@link Publication}.
+ * <p>
+ * Includes the title, author, publication type, and identifier of the publication.
+ * This class is used to display publication information without exposing full domain objects.
+ * </p>
+ */
+
 public class PublicationDetails {
 
     private final Title _title;

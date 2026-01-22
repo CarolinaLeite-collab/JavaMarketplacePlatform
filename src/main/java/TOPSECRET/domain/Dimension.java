@@ -2,6 +2,14 @@ package TOPSECRET.domain;
 
 import java.util.Locale;
 
+/**
+ * Represents the physical dimensions of an object, including width, height, and thickness.
+ * <p>
+ * Ensures that all dimension values are greater than zero and allows specification of a {@link DimensionUnit}.
+ * Provides getters for each dimension and a formatted string representation via {@link #toString()}.
+ * </p>
+ */
+
 public class Dimension {
 
     private double _width;

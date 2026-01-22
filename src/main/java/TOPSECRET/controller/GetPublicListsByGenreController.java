@@ -6,6 +6,14 @@ import TOPSECRET.domain.ListOfPublicationsRepo;
 
 import java.util.List;
 
+/**
+ * Controller responsible for retrieving public lists of publications filtered by genre.
+ * <p>
+ * This controller interacts with the {@link ListOfPublicationsRepo} to obtain
+ * {@link ListOfPublications} instances that are public and match a specific {@link Genre}.
+ * </p>
+ */
+
 public class GetPublicListsByGenreController {
 
     private final ListOfPublicationsRepo _repo;

@@ -1,5 +1,14 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents a validated personal or entity name.
+ * <p>
+ * Ensures that the name is not null, not blank, between 2 and 80 characters,
+ * and contains only letters, spaces, hyphens, or apostrophes. Provides normalization
+ * by trimming and collapsing multiple spaces.
+ * </p>
+ */
+
 public final class Name {
 
     private final String _name;

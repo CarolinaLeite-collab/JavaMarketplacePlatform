@@ -10,8 +10,12 @@ import java.util.List;
 
 
 /**
- * Controller responsible for handling the "List publications in my library" use case (US012).
- * Coordinates between UI and domain layer to retrieve publication details.
+ * Controller responsible for listing all publications in a user's library.
+ * <p>
+ * This controller coordinates with the {@link LibraryRepo} to retrieve a
+ * {@link Library} for a given {@link User} and provides detailed information
+ * about the publications contained in that library.
+ * </p>
  */
 
 

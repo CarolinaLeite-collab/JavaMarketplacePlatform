@@ -1,5 +1,11 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents a user's rating using a star-based system from one to five stars.
+ * <p>
+ * Each enum constant maps to a visual representation of stars for display purposes.
+ * </p>
+ */
 
 public enum UserRating {
     ONE_STAR("★"),

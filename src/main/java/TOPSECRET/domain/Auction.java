@@ -3,7 +3,7 @@ package TOPSECRET.domain;
 import java.time.ZonedDateTime;
 
 /**
- * Represents a time-bounded selling mechanism where a {@link Listing} is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where a {@link Item} is sold via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.

@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.time.Period;
 
+/**
+ * Repository for managing {@link DirectSale} instances.
+ * <p>
+ * Provides methods to create new direct sales and to retrieve items on direct sale by a specific {@link Author}.
+ * </p>
+ */
+
 public class DirectSaleRepo {
 
     private List<DirectSale> _directSales;

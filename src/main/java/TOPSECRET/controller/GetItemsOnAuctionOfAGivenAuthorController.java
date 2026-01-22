@@ -8,6 +8,14 @@ import TOPSECRET.domain.User;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Controller responsible for retrieving auction items by a specific author.
+ * <p>
+ * This controller uses the {@link AuctionRepo} to obtain a list of {@link Item}
+ * instances that are currently on auction and were created by a given {@link Author}.
+ * </p>
+ */
+
 public class GetItemsOnAuctionOfAGivenAuthorController {
 
     private final AuctionRepo _auctionRepo;

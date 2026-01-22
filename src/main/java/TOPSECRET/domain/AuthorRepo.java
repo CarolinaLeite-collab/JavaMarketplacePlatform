@@ -3,6 +3,14 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for managing {@link Author} instances.
+ * <p>
+ * Provides methods to create new authors, check for the existence of authors by name,
+ * and retrieve all authors in the repository.
+ * </p>
+ */
+
 public class AuthorRepo {
 
     private List<Author> authors = new ArrayList<>();

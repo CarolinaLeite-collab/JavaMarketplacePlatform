@@ -5,6 +5,14 @@ import TOPSECRET.domain.PublicationTypeRepo;
 
 import java.util.List;
 
+/**
+ * Controller responsible for retrieving the list of all publication types.
+ * <p>
+ * This controller interacts with the {@link PublicationTypeRepo} to fetch
+ * all existing {@link PublicationType} instances in the system.
+ * </p>
+ */
+
 public class GetPublicationTypeListController {
 
     private final PublicationTypeRepo publicationTypeRepo;

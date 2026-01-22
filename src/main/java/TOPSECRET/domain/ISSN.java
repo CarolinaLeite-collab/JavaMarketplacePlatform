@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents an ISSN (International Standard Serial Number) for a publication.
+ * <p>
+ * Implements the {@link Identifier} interface and ensures that the ISSN follows the standard
+ * format (four digits, a hyphen, three digits, and a check digit which may be 'X').
+ * </p>
+ */
+
 public class ISSN implements Identifier {
 
     private final String _issn;

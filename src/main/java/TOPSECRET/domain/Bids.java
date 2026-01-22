@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a collection of {@link Bid} instances for an auction or item.
+ * <p>
+ * Provides functionality to add bids and to retrieve the highest bid based on the offered price.
+ * Ensures that bids are not null when added.
+ * </p>
+ */
+
 public class Bids {
 
     private List<Bid> _list;

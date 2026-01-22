@@ -4,8 +4,20 @@ import java.time.Year;
 import java.util.Objects;
 
 /**
- * Catalog-level metadata describing a publication independently of any physical copy.
+ * Represents catalog-level metadata for a publication.
+ * <p>
+ * Contains information such as {@link PublicationType}, {@link Identifier}, publication year,
+ * title, author, publisher, edition, and genre.
+ * <p>
+ * Uses the Builder pattern to construct instances, enforcing mandatory fields depending on the publication type
+ * (e.g., books require author and publisher, magazines require publisher).
+ * </p>
+ * <p>
+ * Equality of publications is determined based on identifier(ISBN or ISSN), title, and publication year,
+ * with specific rules for books and magazines depending on the publication year.
+ * </p>
  */
+
 public class Publication {
 
     private final PublicationType _publicationType;

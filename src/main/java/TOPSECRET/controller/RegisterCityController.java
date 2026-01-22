@@ -7,6 +7,15 @@ import TOPSECRET.domain.CountryRepo;
 
 import java.util.List;
 
+/**
+ * Controller responsible for registering new cities in the system.
+ * <p>
+ * This controller interacts with {@link CityRepo} and {@link CountryRepo} to
+ * retrieve available countries and to register new {@link City} instances,
+ * ensuring that city names are valid and unique within a given country.
+ * </p>
+ */
+
 public class RegisterCityController {
     private final CityRepo _cityRepo;
     private final CountryRepo _countryRepo;

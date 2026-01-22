@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Handles the processing of a payment between a buyer and a seller for a given price.
+ * <p>
+ * Validates that the final price, buyer, and seller are not null. Currently, {@link #isSuccessful()}
+ * is a placeholder that always returns true.
+ * </p>
+ */
+
 public class PaymentProcessing {
 
     private Price _finalPrice;

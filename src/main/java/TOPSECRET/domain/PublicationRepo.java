@@ -3,6 +3,15 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for managing {@link Publication} instances.
+ * <p>
+ * Provides methods to add new publications, check for duplicates, retrieve a specific publication,
+ * and obtain publications that are not present in a given list.
+ * Ensures that publications are not null and prevents adding duplicates.
+ * </p>
+ */
+
 public class PublicationRepo {
     private List<Publication> _publications;
 

@@ -1,7 +1,12 @@
 package TOPSECRET.domain;
 
 /**
- * Edition refers to a specific version of a publication.
+ * Represents a specific edition of a publication, such as a book or magazine.
+ * <p>
+ * Contains information including ISBN or ISSN, number of pages, edition number, publication date,
+ * binding, description, physical dimensions, weight, and language.
+ * Validates that editions have positive page counts and edition numbers, and ensures that books have ISBN and magazines have ISSN when required.
+ * </p>
  */
 
 import java.time.LocalDate;

@@ -3,6 +3,14 @@ package TOPSECRET.domain;
 import java.time.Period;
 import java.util.Objects;
 
+/**
+ * Represents a direct sale of an {@link Item} with a specified {@link Price} and optional time limit.
+ * <p>
+ * Ensures that both the item and price are provided and that the time limit, if specified, is not negative.
+ * Provides methods to retrieve the item, price, time limit, and to check if the sale is by a specific {@link Author}.
+ * </p>
+ */
+
 public class DirectSale {
 
     private final Item item;

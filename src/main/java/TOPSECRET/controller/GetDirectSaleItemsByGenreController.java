@@ -6,6 +6,14 @@ import TOPSECRET.domain.Item;
 
 import java.util.List;
 
+/**
+ * Controller responsible for retrieving direct sale items filtered by genre.
+ * <p>
+ * This controller interacts with the {@link DirectSaleRepo} to fetch a list of
+ * {@link Item} instances available in direct sales that match a specific {@link Genre}.
+ * </p>
+ */
+
 public class GetDirectSaleItemsByGenreController {
 
     private DirectSaleRepo _directSaleRepo;

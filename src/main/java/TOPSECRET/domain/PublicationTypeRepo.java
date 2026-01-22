@@ -3,6 +3,14 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository for managing {@link PublicationType} instances.
+ * <p>
+ * Provides methods to check if a publication type exists, create and store new types,
+ * and retrieve all stored publication types as an unmodifiable list.
+ * </p>
+ */
+
 public class PublicationTypeRepo {
 
     // Lista interna de tipos de publicação

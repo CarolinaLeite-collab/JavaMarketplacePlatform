@@ -2,6 +2,14 @@ package TOPSECRET.domain;
 
 import java.util.Objects;
 
+/**
+ * Represents a monetary price with a specific value and {@link Currency}.
+ * <p>
+ * Ensures that the price value is greater than zero and that the currency is not null.
+ * Provides getters for value and currency, and overrides {@link #equals(Object)}, {@link #hashCode()}, and {@link #toString()}.
+ * </p>
+ */
+
 public class Price {
     private final double _value;
     private final Currency _currency;

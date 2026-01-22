@@ -1,5 +1,13 @@
 package TOPSECRET.domain;
 
+/**
+ * Represents the weight of an object along with its unit of measurement.
+ * <p>
+ * Supports {@link WeightUnit} enum with grams, kilograms, ounces, and pounds.
+ * Ensures that the weight value is non-negative and provides getters and a string representation.
+ * </p>
+ */
+
 public class Weight {
 
     public enum WeightUnit {

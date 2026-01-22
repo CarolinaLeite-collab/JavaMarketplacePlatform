@@ -178,5 +178,21 @@ class SKUTest {
 
         assertTrue(exception.getCause() instanceof IllegalArgumentException);
     }
+
+    @Test
+    void hashCodeShouldBeEqual() throws Exception {
+        SKU sku1 = SKU.generate();
+        SKU sku2 = sku1;
+
+        assertEquals(sku1.hashCode(), sku2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldBeNotEqual() throws Exception {
+        SKU sku1 = SKU.generate();
+        SKU sku2 = SKU.generate();
+
+        assertNotEquals(sku1.hashCode(), sku2.hashCode());
+    }
 }
 

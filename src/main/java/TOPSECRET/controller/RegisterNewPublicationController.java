@@ -5,6 +5,15 @@ import TOPSECRET.domain.*;
 import java.time.Year;
 import java.util.Objects;
 
+/**
+ * Controller responsible for registering new publications in the system.
+ * <p>
+ * This controller interacts with the {@link PublicationRepo} to create and store
+ * new {@link Publication} instances with details such as type, identifier, year,
+ * title, author, publisher, edition, and genre.
+ * </p>
+ */
+
 public class RegisterNewPublicationController {
     private PublicationRepo _publicationRepo;
 

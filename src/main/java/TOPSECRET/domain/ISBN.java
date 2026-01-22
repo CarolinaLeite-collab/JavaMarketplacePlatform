@@ -7,6 +7,7 @@ package TOPSECRET.domain;
  * and a 13-digit code for books published after 2007.
  * An ISBN-10 can be converted to an ISBN-13 by adding a "978" prefix and recalculating the check digit.
  * ISBN-10 and ISBN-13 can coexist for the same edition.
+ * Implements the {@link Identifier} interface.
  */
 
 public class ISBN implements Identifier {

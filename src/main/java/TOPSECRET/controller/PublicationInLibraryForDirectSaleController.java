@@ -4,6 +4,16 @@ import TOPSECRET.domain.*;
 import java.time.Period;
 import java.util.List;
 
+/**
+ * Controller responsible for managing publications in a user's library for direct sale.
+ * <p>
+ * This controller interacts with {@link LibraryRepo}, {@link PublicationRepo}, {@link ItemRepo},
+ * and {@link DirectSaleRepo} to retrieve publications from a user's library and to add
+ * selected publications for direct sale with specific conditions, price, and time limits.
+ * All created {@link DirectSale} are stored in {@link DirectSaleRepo}.
+ * </p>
+ */
+
 public class PublicationInLibraryForDirectSaleController {
 
     private final LibraryRepo libraryRepo;
