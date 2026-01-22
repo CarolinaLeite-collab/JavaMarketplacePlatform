@@ -22,7 +22,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         );
 
         libraryRepo = new LibraryRepo();
-        controller = new ListOfPublicationsInMyLibraryController(libraryRepo);
+        controller = new ListOfPublicationsInMyLibraryController(libraryRepo, _user);
     }
 
 

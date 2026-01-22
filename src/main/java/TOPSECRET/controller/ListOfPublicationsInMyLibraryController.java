@@ -25,7 +25,7 @@ public class ListOfPublicationsInMyLibraryController {
      */
 
 
-     public ListOfPublicationsInMyLibraryController(LibraryRepo libraryRepo){
+     public ListOfPublicationsInMyLibraryController(LibraryRepo libraryRepo, User user){
         _libraryRepo = libraryRepo;
     }
 
