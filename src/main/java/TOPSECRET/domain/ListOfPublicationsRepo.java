@@ -11,14 +11,14 @@ import java.util.List;
  * </p>
  */
 public class ListOfPublicationsRepo {
-    private final List<ListOfPublications> _listsOfPublications;
+    private final List<ListOfPublications> _listsOfListOfPublications;
     private final GenreRepo _genreRepo;
 
     public ListOfPublicationsRepo(GenreRepo genreRepo) {
         if (genreRepo == null) {
             throw new IllegalArgumentException("GenreRepo cannot be null");
         }
-        _listsOfPublications = new ArrayList<>();
+        _listsOfListOfPublications = new ArrayList<>();
         _genreRepo = genreRepo;
     }
 
@@ -28,12 +28,12 @@ public class ListOfPublicationsRepo {
 
         if (existsListOfPublications(newList))
             return null;
-        _listsOfPublications.add(newList);
+        _listsOfListOfPublications.add(newList);
         return newList;
     }
 
     private boolean existsListOfPublications(ListOfPublications listOfPublications){
-        for (ListOfPublications lp1 : _listsOfPublications ) {
+        for (ListOfPublications lp1 : _listsOfListOfPublications) {
             if (lp1.equals(listOfPublications)) {
                 return true;
                 }
@@ -44,8 +44,8 @@ public class ListOfPublicationsRepo {
     /**
      * Returns a list of all ListOfPublications, created for unit tests.
      */
-    public List<ListOfPublications> getListOfPublications(){
-        return List.copyOf(_listsOfPublications);
+    public List<ListOfPublications> getListOfListOfPublications(){
+        return List.copyOf(_listsOfListOfPublications);
     }
 }
 

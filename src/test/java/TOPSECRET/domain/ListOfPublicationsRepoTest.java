@@ -31,7 +31,7 @@ class ListOfPublicationsRepoTest {
 
         // Assert
         assertNotNull(list);
-        assertEquals(1, repo.getListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfPublications().size());
     }
 
     @Test
@@ -44,7 +44,7 @@ class ListOfPublicationsRepoTest {
 
         // Assert
         assertNull(duplicate);
-        assertEquals(1, repo.getListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfPublications().size());
     }
 
     @Test
@@ -61,7 +61,7 @@ class ListOfPublicationsRepoTest {
         repo.createListOfPublications(user1, "My List", actionGenre);
 
         // Act
-        var lists = repo.getListOfPublications();
+        var lists = repo.getListOfListOfPublications();
 
         // Assert
         assertEquals(1, lists.size());

@@ -36,7 +36,7 @@ class CreatePrivateListOfPublicationsControllerTest {
 
         // Assert
         assertNotNull(list);
-        assertEquals(1, repo.getListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfPublications().size());
     }
 
     @Test
@@ -49,7 +49,7 @@ class CreatePrivateListOfPublicationsControllerTest {
 
         // Assert
         assertNull(duplicate);
-        assertEquals(1, repo.getListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfPublications().size());
     }
 
     @Test
