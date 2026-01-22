@@ -1,0 +1,59 @@
+@startuml
+title US021 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - Class Diagram
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class GetDirectSaleItemsByGenreUI {
+}
+
+class GetDirectSaleItemsByGenreController {
+  - _directSaleRepo : DirectSaleRepo
+  +getDirectSaleItemsByGenre(genre: Genre): List<Item>
+}
+
+class DirectSaleRepo {
+  -_directSales: List<DirectSale>
+  +getDirectSaleItemsByGenre(genre: Genre): List<Item>
+}
+
+class DirectSale {
+  -item: Item
+  -price: Price
+  -timeLimit: Period
+  +getItem(): Item
+}
+
+class Item {
+  -publication: Publication
+  +getPublication(): Publication
+}
+
+class Publication {
+  -_genre: Genre
+  +matchGenre(genre: Genre): boolean
+}
+
+class Genre {
+  -_genre: String
+}
+
+GetDirectSaleItemsByGenreUI "1"..>"1" GetDirectSaleItemsByGenreController : calls for
+GetDirectSaleItemsByGenreController "1"..>"1" DirectSaleRepo : uses
+
+DirectSaleRepo "1" --> "*" DirectSale : goes through every
+DirectSale "1" --> "1" Item : searches
+Item "0..1" --> "1..*" Publication : asks
+Publication "*" -->"1..*" Genre : returns
+
+@enduml

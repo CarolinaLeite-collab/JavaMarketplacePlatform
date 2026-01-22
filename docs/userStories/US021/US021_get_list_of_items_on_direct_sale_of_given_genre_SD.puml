@@ -1,0 +1,46 @@
+@startuml
+title US021 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - Sequence Diagram
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+actor User
+participant UIListDirectSaleItemsByGenre
+participant GetDirectSaleItemsByGenreController
+participant DirectSaleRepository
+participant DirectSale
+participant Item
+participant Publication
+
+User -> UIListDirectSaleItemsByGenre : requestItemsByGenre(genre)
+UIListDirectSaleItemsByGenre -> GetDirectSaleItemsByGenreController : getDirectSaleItemsByGenre(genre)
+GetDirectSaleItemsByGenreController -> DirectSaleRepository : getDirectSaleItemsByGenre(genre)
+
+loop for each DirectSale
+    DirectSaleRepository -> DirectSale : getItem()
+    DirectSale -> Item : getPublication()
+    Item -> Publication : matchGenre(genre)
+
+    opt publication.matchGenre(genre)
+
+        DirectSaleRepository -> DirectSaleRepository : add Item to result list
+    end
+end
+
+DirectSaleRepository --> GetDirectSaleItemsByGenreController : List<Item>
+GetDirectSaleItemsByGenreController --> UIListDirectSaleItemsByGenre : List<Item>
+UIListDirectSaleItemsByGenre --> User : show items
+
+@enduml
