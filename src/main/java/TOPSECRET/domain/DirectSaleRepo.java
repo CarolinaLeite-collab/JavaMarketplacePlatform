@@ -28,9 +28,9 @@ public class DirectSaleRepo {
 
         }
 
-        List<Item> copyOfListOfDirectSaleItemsByItem = List.copyOf(listOfDirectSaleItemsByAuthor);
+        List<Item> copyOfListOfDirectSaleItemsByAuthor = List.copyOf(listOfDirectSaleItemsByAuthor);
 
-        return copyOfListOfDirectSaleItemsByItem;
+        return copyOfListOfDirectSaleItemsByAuthor;
 
     }
 
