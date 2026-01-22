@@ -1,0 +1,77 @@
+@startuml
+'==== Title ====
+title US017 - "As a User, I want to create a private list of my publications, give it a name and set a genre" - SD
+
+'==== basic style ====
+skinparam monochrome false
+
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+hidefootbox
+autonumber
+autoactivate off
+
+' ==== Actor and participants ====
+actor "User"
+
+participant ":CreatePrivateListOfPublicationsUI" as UI
+participant ":CreatePrivateListOfPublicationsController" as CTL
+participant ":ListOfPublicationsRepo" as LOPR
+participant ":GenreRepo" as GR
+
+'==== UI interaction ====
+"User" -> UI: I want to create a private list
+activate UI
+
+"User" <-- UI: What is the list name?
+deactivate UI
+
+"User" -> UI: name
+activate UI
+UI -> CTL: getListOfOfficialGenres()
+activate CTL
+CTL -> GR: getListOfOfficialGenres()
+activate GR
+CTL <-- GR: listOfPublications
+deactivate GR
+UI <-- CTL: listOfPublications
+deactivate CTL
+
+"User" <-- UI: What is the list genre?
+deactivate UI
+"User" -> UI: genre
+activate UI
+
+'==== Use case execution ====
+UI -> CTL: createListOfPublications (user, name, genre)
+activate CTL
+CTL -> LOPR: createListOfPublications (user, name, genre)
+activate LOPR
+
+    opt existsListOfPublications (listOfPublications) == false
+
+        create "lop1:ListOfPublications" as lop1
+        LOPR -> lop1: create(user, name, genre)
+        note left of lop1
+                  The private attribute (_isPrivate)
+                  is set by default in the constructor
+              end note
+        LOPR -> LOPR: adds(lop1)
+    end
+
+
+
+CTL <-- LOPR: lop1
+deactivate LOPR
+UI <-- CTL: lop1
+deactivate CTL
+
+"User" <-- UI: Private list successfully created!
+deactivate UI
+@enduml

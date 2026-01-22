@@ -1,0 +1,45 @@
+@startuml
+'==== Title ====
+title US017 - "As a User, I want to create a private list of my publications, give it a name and set a genre" - CD
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+skinparam classAttributeIconSize 0
+
+'==== entities ====
+Class ListOfPublicationsRepo {
+- _listsOfPublications : List<ListOfPublications>
+- _genreRepo : GenreRepo
++createListOfPublications (user : User, name : String, genre : Genre) : ListOfPublications
+-existsListOfPublications (listOfPublications : ListOfPublications) : boolean
+}
+
+Class RegisterPrivateListOfPublicationController {
+-_listOfPublicationsRepo : ListOfPublicationsRepo
+-_genreRepo : GenreRepo
++ getOfficialGenres() : List<Genre>
++ createListOfPublications (user : User, name : String, genre : Genre) : ListOfPublications
+}
+
+Class ListOfPublications {
+-_user : User
+-_name : String
+-_genre : Genre
+-_isPrivate : boolean
+}
+
+'==== connections ====
+ListOfPublicationsRepo "1" --> "*" ListOfPublications: instantiates through
+RegisterPrivateListOfPublicationController  "1" ..> "1" ListOfPublicationsRepo: calls
+RegisterPrivateListOfPublicationUI "1" ..> "1" RegisterPrivateListOfPublicationController: invokes
+
+@enduml
