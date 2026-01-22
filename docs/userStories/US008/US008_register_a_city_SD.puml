@@ -19,8 +19,8 @@ autoactivate off
 actor Administrator as Adm
 participant "UI1:RegisterCityUI" as UI
 participant "Ctl1:CityRegisterController" as Ctl
-participant "Ctl2:CountryRepo" as CountryRepo
-participant "Ctl3:CityRepo" as CityRepo
+participant "_cr:CountryRepo" as CountryRepo
+participant "_cir:CityRepo" as CityRepo
 
 ' 1. Admin requests to register a new city
 Adm -> UI: select "Register city"

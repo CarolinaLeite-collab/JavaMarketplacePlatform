@@ -13,6 +13,11 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam classAttributeIconSize 0
 
+
+class RegisterCityUI {
+
+}
+
 class City {
   + City(name: String, country: Country)
   + getName(): String
@@ -35,6 +40,7 @@ class CityRegisterController {
   + registerCity(name: String, country: Country): City
 }
 
+RegisterCityUI "1" ..> "1" CityRegisterController : invokes
 CityRegisterController "1" --> "1" CountryRepo : uses
 CityRegisterController "1" --> "1" CityRepo : uses
 CityRepo "1" --> "*" City : manages
