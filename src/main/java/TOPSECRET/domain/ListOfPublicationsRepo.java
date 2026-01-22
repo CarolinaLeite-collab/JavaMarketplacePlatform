@@ -12,14 +12,9 @@ import java.util.List;
  */
 public class ListOfPublicationsRepo {
     private final List<ListOfPublications> _listsOfListOfPublications;
-    private final GenreRepo _genreRepo;
 
-    public ListOfPublicationsRepo(GenreRepo genreRepo) {
-        if (genreRepo == null) {
-            throw new IllegalArgumentException("GenreRepo cannot be null");
-        }
+    public ListOfPublicationsRepo() {
         _listsOfListOfPublications = new ArrayList<>();
-        _genreRepo = genreRepo;
     }
 
     public ListOfPublications createListOfPublications(User user, String name, Genre genre){

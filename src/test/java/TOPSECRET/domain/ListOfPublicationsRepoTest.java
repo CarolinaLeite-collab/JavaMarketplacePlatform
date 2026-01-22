@@ -21,7 +21,7 @@ class ListOfPublicationsRepoTest {
     void setUp() {
         _genreRepo = new GenreRepo();
         _userRepo = new UserRepo();
-        _repo = new ListOfPublicationsRepo(_genreRepo);
+        _repo = new ListOfPublicationsRepo();
 
         _action = _genreRepo.addGenre("Action");
         _poetry = _genreRepo.addGenre("Poetry");

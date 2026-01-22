@@ -29,12 +29,6 @@ class ListOfPublicationsTest {
     }
 
     @Test
-    void constructorShouldThrowForNullGenreRepo() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new ListOfPublicationsRepo(null));
-    }
-
-    @Test
     void constructsListSuccessfully() {
         // Arrange & Act
         ListOfPublications list = new ListOfPublications(user1,"My favorite books",actionGenre);
