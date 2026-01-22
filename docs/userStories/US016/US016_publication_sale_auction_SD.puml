@@ -43,15 +43,14 @@ deactivate userLibrary
 Controller --> UI : publicationsList
 deactivate Controller
 UI --> User : Which publication?
-User -> UI : publicationId
+User -> UI : publication
 UI --> User : What is its condition?
 User -> UI : condition
 UI --> User : Please provide auction details
 User -> UI : startingPrice, auctionStartDate, auctionEndDate
-'UI -> Controller : selectPublication(publicationId)
-UI -> Controller: putPublicationOnAuction(publicationId, %n()condition, startPrice, startDate, endDate)
+UI -> Controller: putPublicationOnAuction(publication, %n()condition, startPrice, startDate, endDate)
 activate Controller
-Controller -> PublicationRepo :findPublicationById(publicationId)
+Controller -> PublicationRepo :getPublication(publication)
 activate PublicationRepo
 PublicationRepo --> Controller : p1
 deactivate PublicationRepo
