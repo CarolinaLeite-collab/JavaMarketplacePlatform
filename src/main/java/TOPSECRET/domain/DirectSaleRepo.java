@@ -15,7 +15,13 @@ public class DirectSaleRepo {
     }
 
     public DirectSale createDirectSale(Item item, Price price, Period timeLimit) {
-        return new DirectSale(item, price, timeLimit);
+
+        DirectSale directSale = new DirectSale(item, price, timeLimit);
+
+        _directSales.add(directSale);
+
+        return directSale;
+
     }
 
     public List<Item> getDirectSaleItemsByAuthor (Author author) {
