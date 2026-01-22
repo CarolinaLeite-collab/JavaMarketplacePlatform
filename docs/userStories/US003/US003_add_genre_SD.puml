@@ -25,22 +25,23 @@ participant "_listgr:List <Genre>" as list
 
 Administrator -> UI: I want to add a publication genre
 activate UI
-
 UI --> Administrator: What is the genre name?
+deactivate UI
 Administrator -> UI: genreName
+activate UI
 
 UI -> Ctl: addGenre(genreName)
 activate Ctl
-
 Ctl -> gr: addGenre(genreName)
 activate gr
-gr --> gr: existsGenre(genreName)
 
-create "genre:Genre"
-gr -> "genre:Genre": create(genreName)
+opt existsGenre(genreName) == false
+        create "genre:Genre"
+        gr -> "genre:Genre": create()
+        gr -> list: add()
+        activate list
+    end
 
-gr -> list: add(genre)
-activate list
 list --> gr: true
 deactivate list
 gr --> Ctl: genre
