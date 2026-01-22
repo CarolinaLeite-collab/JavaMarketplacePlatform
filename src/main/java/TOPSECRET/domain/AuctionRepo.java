@@ -63,7 +63,18 @@ public class AuctionRepo {
 
         return copyOfListOfAuctionItemsByGenre;
     }
+    /**
+     * Retrieves a list of items currently on auction for a specific author.
+     * Returns a copy to preserve encapsulation.
+     */
+    public List<Item> getAuctionItemsByAuthor(Author author) {
+        List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
+        for (Auction auction : itemsOnAuction) {
+            if (auction.isByAuthor(author)) {
+                listOfAuctionItemsByAuthor.add(auction.getItem());
+            }
+        }
+        return new ArrayList<>(listOfAuctionItemsByAuthor);
+    }
 
 }
-
-

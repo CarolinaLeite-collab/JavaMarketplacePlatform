@@ -4,15 +4,13 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class CityRegisterControllerTest {
+class RegisterCityControllerTest {
 
     private CityRepo cityRepo;
     private CountryRepo countryRepo;
-    private CityRegisterController controller;
+    private RegisterCityController controller;
     private Country portugal;
 
     @BeforeEach
@@ -20,7 +18,7 @@ class CityRegisterControllerTest {
         cityRepo = new CityRepo();
         countryRepo = new CountryRepo();
         portugal = countryRepo.registerCountry("Portugal");
-        controller = new CityRegisterController(cityRepo, countryRepo);
+        controller = new RegisterCityController(cityRepo, countryRepo);
     }
 
     @Test

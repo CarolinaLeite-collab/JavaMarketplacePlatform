@@ -133,5 +133,11 @@ public class Auction {
         }
         return false;
     }
-}
 
+    public boolean isByAuthor(Author author) {
+        if (_item.getPublication().getAuthor().equals(author)) {
+            return true;
+        }
+        return false;
+    }
+}

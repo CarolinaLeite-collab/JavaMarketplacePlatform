@@ -5,11 +5,11 @@ import TOPSECRET.domain.CityRepo;
 import TOPSECRET.domain.Country;
 import TOPSECRET.domain.CountryRepo;
 
-public class CityRegisterController {
+public class RegisterCityController {
     private final CityRepo _cityRepo;
     private final CountryRepo _countryRepo;
 
-    public CityRegisterController(CityRepo cityRepo, CountryRepo countryRepo) {
+    public RegisterCityController(CityRepo cityRepo, CountryRepo countryRepo) {
         _cityRepo = cityRepo;
         _countryRepo = countryRepo;
     }
