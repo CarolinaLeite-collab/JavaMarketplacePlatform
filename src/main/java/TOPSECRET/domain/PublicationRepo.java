@@ -10,7 +10,6 @@ public class PublicationRepo {
         _publications = new ArrayList<>();
     }
 
-
     public Publication add(Publication myPublication) {
         // see if its null
         if (myPublication == null) throw new IllegalArgumentException("Publication is required");
@@ -45,4 +44,12 @@ public class PublicationRepo {
         }
         return List.copyOf(result);
     }
+
+    public Publication getPublication(Publication publication) {
+        return _publications.stream()
+                .filter(p -> p.equals(publication))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
+    }
+
 }

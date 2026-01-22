@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Period;
 
 public class DirectSaleRepo {
 
@@ -11,6 +12,10 @@ public class DirectSaleRepo {
 
         _directSales = new ArrayList<>();
 
+    }
+
+    public DirectSale createDirectSale(Item item, Price price, Period timeLimit) {
+        return new DirectSale(item, price, timeLimit);
     }
 
     public List<Item> getDirectSaleItemsByAuthor (Author author) {
