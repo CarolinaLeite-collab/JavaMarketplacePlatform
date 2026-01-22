@@ -34,12 +34,12 @@ activate "_lr:LibraryRepo"
 "_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
 deactivate "_lr:LibraryRepo"
 "Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : existentPublications = getAllPublications()
-"myLibrary:Library" -> "myLibrary:Library" :cloneList()
+"myLibrary:Library" -> "myLibrary:Library" : copyList
 "Ctl1:AddPublicationOnLibrary" -> "_pr:PublicationRepo" : listOfPublicationToSelect = getDifferentOf(existentPublications)
-"_pr:PublicationRepo" -> "_pr:PublicationRepo" : cloneList()
+"_pr:PublicationRepo" -> "_pr:PublicationRepo" : copyList
 "Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : listOfPublicationToSelect
 deactivate "Ctl1:AddPublicationOnLibrary"
-"UI1:AddPublicationUI" --> User : Select what available books you want to add
+"UI1:AddPublicationUI" --> User : Select what available publications you want to add
 deactivate "UI1:AddPublicationUI"
 User -> "UI1:AddPublicationUI" : Selection
 activate "UI1:AddPublicationUI"
