@@ -3,6 +3,15 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository responsible for managing {@link User} entities.
+ * <p>
+ * This class provides operations to check existence by {@link Email} and create new users
+ * with associated {@link Name} and {@link Email}. Ensures uniqueness by email
+ * before creation, throwing {@link IllegalStateException} if a duplicate is detected.
+ * </p>
+ */
+
 public class UserRepo {
 
     private List<User> _users;

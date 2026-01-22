@@ -1,7 +1,14 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Publisher;
+import TOPSECRET.domain.PublisherRepo;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.UserRepo;
+
+/**
+ * Controller responsible for handling the registration of a {@link User}.
+ * Delegates creation/persistence to {@link UserRepo}.
+ */
 
 public class RegisterNewUserController {
 

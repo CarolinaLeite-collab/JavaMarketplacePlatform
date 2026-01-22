@@ -3,8 +3,13 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- * A registered entity (may be a person, company, or even an AI agent)
- * on the platform who may play one or more roles.
+ * Represents a registered {@code User} in the system.
+ * <p>
+ * A user is identified uniquely by their {@link Email}.
+ * </p>
+ *
+ * <p><b>Identity rule:</b> Two {@code User} instances are considered equal if they have the same
+ * {@link Email} (see {@link #equals(Object)} and {@link #hashCode()}).</p>
  */
 
 public class User {
