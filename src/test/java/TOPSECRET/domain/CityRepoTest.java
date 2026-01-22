@@ -33,6 +33,12 @@ class CityRepoTest {
     }
 
     @Test
+    void existsByNameAndCountry_isCaseInsensitiveAndTrims() {
+        repo.save(new City("Porto", country));
+        assertTrue(repo.existsByNameAndCountry(" porto ", country));
+    }
+
+    @Test
     void getAll_returnsUnmodifiableCopy() {
         City porto = repo.save(new City("Porto", country));
         City lisbon = repo.save(new City("Lisbon", country));

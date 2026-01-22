@@ -29,12 +29,12 @@ public class City {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof City city)) return false;
-        return _name.equals(city._name) && _country.equals(city._country);
+        return _name.equalsIgnoreCase(city._name) && _country.equals(city._country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_name, _country);
+        return Objects.hash(_name.toLowerCase(), _country);
     }
 
     @Override

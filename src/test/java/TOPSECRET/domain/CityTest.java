@@ -37,4 +37,11 @@ class CityTest {
         assertEquals(a.hashCode(), b.hashCode());
         assertNotEquals(a, c);
     }
+
+    @Test
+    void constructor_trimsName() {
+        Country country = new Country("Portugal");
+        City city = new City("  Porto  ", country);
+        assertEquals("Porto", city.getName());
+    }
 }
