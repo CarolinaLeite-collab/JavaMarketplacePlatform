@@ -38,8 +38,8 @@ class GetListOfOfficialGenresControllerTest {
     void test_get_list_of_official_genres_should_return_list_with_genres() {
 
         //arrange
-        _genreRepo.create("fiction");
-        _genreRepo.create("romance");
+        _genreRepo.addGenre("fiction");
+        _genreRepo.addGenre("romance");
 
         //act
         List<Genre> listOfOfficialGenres = _getListOfOfficialGenresController.getListOfOfficialGenres();

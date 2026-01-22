@@ -23,8 +23,8 @@ class ListOfPublicationsRepoTest {
         _userRepo = new UserRepo();
         _repo = new ListOfPublicationsRepo(_genreRepo);
 
-        _action = _genreRepo.create("Action");
-        _poetry = _genreRepo.create("Poetry");
+        _action = _genreRepo.addGenre("Action");
+        _poetry = _genreRepo.addGenre("Poetry");
 
         assertNotNull(_action);
         assertNotNull(_poetry);

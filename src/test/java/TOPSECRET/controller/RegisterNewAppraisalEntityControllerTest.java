@@ -22,8 +22,8 @@ class RegisterNewAppraisalEntityControllerTest {
         appraisalEntityRepo = new AppraisalEntityRepo();
 
         publicationTypeRepo.createPublicationType("book");
-        genreRepo.create("romance");
-        genreRepo.create("fantasy");
+        genreRepo.addGenre("romance");
+        genreRepo.addGenre("fantasy");
 
         controller = new RegisterNewAppraisalEntityController(
                 appraisalEntityRepo, publicationTypeRepo, genreRepo);

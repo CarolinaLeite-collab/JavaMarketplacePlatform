@@ -27,7 +27,7 @@ class GetPublicListsByGenreControllerTest {
 
         _controller = new GetPublicListsByGenreController(_repo);
 
-        _action = _genreRepo.create("Fiction");
+        _action = _genreRepo.addGenre("Fiction");
         assertNotNull(_action);
 
         _user1 = _userRepo.registerNewUser("User One", "user1@mail.com");

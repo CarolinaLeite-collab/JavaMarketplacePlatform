@@ -22,8 +22,8 @@ class CreatePrivateListOfPublicationsControllerTest {
         user1 = new User(new Name("Joaquim"), new Email("test@isep.com"));
 
         genreRepo = new GenreRepo();
-        actionGenre = genreRepo.create("Action");
-        poetryGenre = genreRepo.create("poetry");
+        actionGenre = genreRepo.addGenre("Action");
+        poetryGenre = genreRepo.addGenre("poetry");
 
         repo = new ListOfPublicationsRepo(genreRepo);
         controller = new CreatePrivateListOfPublicationsController(repo, genreRepo);

@@ -24,8 +24,8 @@ class ListOfPublicationsTest {
         );
 
         GenreRepo genreRepo = new GenreRepo();
-        actionGenre = genreRepo.create("Action");
-        poetryGenre = genreRepo.create("Poetry");
+        actionGenre = genreRepo.addGenre("Action");
+        poetryGenre = genreRepo.addGenre("Poetry");
     }
 
     @Test
