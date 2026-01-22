@@ -42,10 +42,26 @@ public class GenreRepoTest {
         gr.addGenre("Romance");
 
         //act
-        List<Genre> ListOfOfficialGenres = gr.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = gr.getListOfOfficialGenres();
 
         //assert
-        assertNotNull(ListOfOfficialGenres);
+        assertNotNull(listOfOfficialGenres);
+        assertEquals(2, listOfOfficialGenres.size());
+        assertFalse(listOfOfficialGenres.isEmpty());
+        assertTrue(listOfOfficialGenres.contains(new Genre("Science Fiction")));
+
+    }
+
+    @Test
+    void test_get_list_of_genres_should_return_list_of_genres() {
+        GenreRepo gr = new GenreRepo();
+
+        List<Genre> listOfOfficialGenres = gr.getListOfOfficialGenres();
+
+        //assert
+        assertNotNull(listOfOfficialGenres);
+        assertTrue(listOfOfficialGenres.isEmpty());
+
 
     }
 
