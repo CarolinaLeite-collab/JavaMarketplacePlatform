@@ -1,0 +1,81 @@
+@startuml
+title US016 – "As a User, I want to put for sale a publication in my library in an auction" %n() SD
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+
+' --- Actor and participants ---
+actor "User" as User
+participant ":PublicationSaleAuctionUI" as UI
+participant ":PublicationSaleAuctionCtl" as Controller
+participant ":LibraryRepo" as LibraryRepo
+participant "userLibrary: Library" as userLibrary
+participant ":PublicationRepo" as PublicationRepo
+participant ":ItemRepo" as ItemRepo
+participant ":AuctionRepo" as AuctionRepo
+
+' Design of happy path
+
+User -> UI : I want to put a publication in my library for sale in an auction
+activate UI
+UI -> Controller : getLibraryPublicationList(user)
+activate Controller
+Controller -> LibraryRepo : findByUser(user)
+activate LibraryRepo
+LibraryRepo --> Controller : userLibrary: Library
+deactivate LibraryRepo
+Controller -> userLibrary : getPublicationsInLibrary()
+activate userLibrary
+userLibrary --> Controller : publicationsList
+note right userLibrary:  publicationsList is an %n()unmodifiable copy
+deactivate userLibrary
+Controller --> UI : publicationsList
+deactivate Controller
+UI --> User : Which publication?
+User -> UI : publicationId
+UI --> User : What is its condition?
+User -> UI : condition
+UI --> User : Please provide auction details
+User -> UI : startingPrice, auctionStartDate, auctionEndDate
+'UI -> Controller : selectPublication(publicationId)
+UI -> Controller: putPublicationOnAuction(publicationId, %n()condition, startPrice, startDate, endDate)
+activate Controller
+Controller -> PublicationRepo :findPublicationById(publicationId)
+activate PublicationRepo
+PublicationRepo --> Controller : p1
+deactivate PublicationRepo
+note left Controller: Publication needs to be turned %n()into an item to be put for sale
+Controller -> ItemRepo : createItem(p1, condition)
+activate ItemRepo
+create i1 as "i1: Item"
+ItemRepo -> i1 : create
+ItemRepo --> Controller : i1
+deactivate ItemRepo
+Controller -> AuctionRepo : createAuction(i1, startPrice, startDate, endDate)
+activate AuctionRepo
+create a1 as "a1: Auction"
+AuctionRepo -> a1 : create
+AuctionRepo --> Controller : a1
+deactivate AuctionRepo
+Controller -> i1 : setAuction(a1)
+activate i1
+i1 --> Controller : [ok]
+deactivate i1
+Controller --> UI : true
+deactivate Controller
+UI --> User : Your item was successfully put up for sale in an auction
+deactivate UI
+
+
+@enduml

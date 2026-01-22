@@ -1,0 +1,102 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US016 – "As a User, I want to put for sale a publication in my library in an auction %n() CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+
+class PublicationSaleAuctionUI {
+}
+
+class PublicationSaleAuctionCtl {
+  - libraryRepo: LibraryRepo
+  - publicationRepo: PublicationRepo
+  - itemRepo: ItemRepo
+  - auctionRepo: AuctionRepo
+  --
+  + getLibraryPublicationList(user: User): List<PublicationDetails>
+  + putPublicationOnAuction(publicationId: PublicationId, condition: Condition,
+                           startPrice: Price, startDate: ZonedDateTime,
+                           endDate: ZonedDateTime): boolean
+}
+
+class LibraryRepo {
+  - _libraries: List<Library>
+  + findByUser(user: User): Library
+}
+
+class Library {
+  - _owner: User
+  - publications: List<Publication>
+  + getPublicationsInLibrary(): List<PublicationDetails>
+}
+
+class PublicationRepo {
+  - _publications: List<Publication>
+  + findPublicationById(id: PublicationId): Publication
+}
+
+class ItemRepo {
+  - items: List<Item>
+  + createItem(publication: Publication, condition: Condition): Item
+}
+
+class Item {
+  - publication: Publication
+  - condition: Condition
+  - auction: Auction
+  + setAuction(auction: Auction): void
+}
+
+class AuctionRepo {
+  - auctions: List<Auction>
+  + createAuction(item: Item, startPrice: Price,
+                  startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+}
+
+class Auction {
+  - _item: Item
+  - _startingPrice: Price
+  - _auctionStartDate: ZonedDateTime
+  - _auctionEndDate: ZonedDateTime
+}
+
+' UI → Controller
+PublicationSaleAuctionUI --> PublicationSaleAuctionCtl : interacts with
+
+' Controller → Repos
+PublicationSaleAuctionCtl --> LibraryRepo : uses
+PublicationSaleAuctionCtl --> PublicationRepo : uses
+PublicationSaleAuctionCtl --> ItemRepo : uses
+PublicationSaleAuctionCtl --> AuctionRepo : uses
+
+' Repos → Domain objects
+LibraryRepo --> Library : manages
+PublicationRepo --> Publication: manages
+ItemRepo --> Item : manages
+AuctionRepo --> Auction : manages
+
+' Domain relationships
+Item --> Auction : sets
+Library --> Publication : contains
+
+note right
+Publication is data/parameter %n()for this US016
+end note
+
+note as N1
+Only US016 SD methods/attributes shown
+end note
+
+@enduml
