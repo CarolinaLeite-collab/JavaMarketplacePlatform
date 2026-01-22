@@ -1,6 +1,6 @@
 @startuml
-title US020 - As a User, I want to get a list (name and user) of the publicly published lists of a given genre" - SSD
-              hidefootbox
+title US020 - Get public lists by genre - Sequence Diagram
+hidefootbox
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,27 +16,33 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-actor User
 
-User -> "U1:UI": I want to get a list (name and user) of the \npublicly published lists of a given genre
-"U1:UI" --> User: What genre?
+actor User as U
+participant "UI1:UI" as UI
+participant "Ctl1:GetPublicListsByGenreController" as C
+participant "_lopr:ListOfPublicationsRepo" as R
 
-User -> "U1:UI": Fiction!
-activate "U1:UI"
+U -> UI: I want to get a list (name and user) of the \npublicly published lists of a given genre
+UI --> U: What genre?
 
-"U1:UI" -> "Ctl1:GetPublicListsByGenreController": getPublicListsByGenre("Fiction")
-activate "Ctl1:GetPublicListsByGenreController"
+U -> UI: Genre
+activate UI
 
-"Ctl1:GetPublicListsByGenreController" -> "_plr:PublicListRepo": findPublicListsPublishedByGenre("Fiction")
-activate "_plr:PublicListRepo"
-"_plr:PublicListRepo" --> "Ctl1:GetPublicListsByGenreController": lists: List<PublicList>
-deactivate "_plr:PublicListRepo"
+UI -> C: getPublicListsByGenre(Genre)
+activate C
 
-"Ctl1:GetPublicListsByGenreController" --> "U1:UI": lists
-deactivate "Ctl1:GetPublicListsByGenreController"
+C -> C: validateGenreNotNull()
+C -> R: findPublicListsByGenre(Genre)
+activate R
 
+R -> R: filterPublicByGenre()\n(!isPrivate && genre matches)
+R --> C: publicLists: List<ListOfPublications>
+deactivate R
 
-"U1:UI" --> User: Done!
-deactivate "U1:UI"
+C --> UI: publicLists
+deactivate C
+
+UI --> U: Done!
+deactivate UI
 
 @enduml
