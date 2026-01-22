@@ -5,6 +5,8 @@ import TOPSECRET.domain.CityRepo;
 import TOPSECRET.domain.Country;
 import TOPSECRET.domain.CountryRepo;
 
+import java.util.List;
+
 public class RegisterCityController {
     private final CityRepo _cityRepo;
     private final CountryRepo _countryRepo;
@@ -14,24 +16,24 @@ public class RegisterCityController {
         _countryRepo = countryRepo;
     }
 
-    public City registerCity(String name, String countryId) {
+    public List<Country> getCountries() {
+        return _countryRepo.getAllCountries();
+    }
+
+    public City registerCity(String name, Country country) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("City name cannot be null or blank");
         }
-        if (countryId == null || countryId.trim().isEmpty()) {
-            throw new IllegalArgumentException("Country ID cannot be null or blank");
-        }
-
-        Country country = _countryRepo.findById(countryId);
         if (country == null) {
-            throw new IllegalArgumentException("Country not found");
+            throw new IllegalArgumentException("Country cannot be null");
         }
 
-        if (_cityRepo.existsByNameAndCountry(name.trim(), country)) {
+        String normalizedName = name.trim();
+        if (_cityRepo.existsByNameAndCountry(normalizedName, country)) {
             throw new IllegalStateException("City already exists for this country");
         }
 
-        City city = new City(name, country);
+        City city = new City(normalizedName, country);
         return _cityRepo.save(city);
     }
 }

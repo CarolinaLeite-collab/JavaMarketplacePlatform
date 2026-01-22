@@ -23,40 +23,35 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCity_happyPath() {
-        City c = controller.registerCity("Porto", "Portugal");
+        City c = controller.registerCity("Porto", portugal);
         assertNotNull(c);
         assertEquals("Porto", c.getName());
         assertEquals(portugal, c.getCountry());
     }
 
     @Test
-    void registerCity_unknownCountryThrows() {
-        assertThrows(IllegalArgumentException.class, () -> controller.registerCity("X", "Atlantis"));
-    }
-
-    @Test
     void registerCity_duplicateThrows() {
-        controller.registerCity("Porto", "Portugal");
-        assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", "Portugal"));
+        controller.registerCity("Porto", portugal);
+        assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", portugal));
     }
 
     @Test
-    void registerCity_missingCountryIdThrows() {
+    void registerCity_nullCountryThrows() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> controller.registerCity("Porto", ""));
-        assertEquals("Country ID cannot be null or blank", error.getMessage());
+                () -> controller.registerCity("Porto", null));
+        assertEquals("Country cannot be null", error.getMessage());
     }
 
     @Test
     void registerCity_blankOrNullCityNameThrows() {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> controller.registerCity("", "Portugal"));
+                () -> controller.registerCity("", portugal));
         assertEquals("City name cannot be null or blank", error.getMessage());
     }
 
     @Test
     void registerCity_trimmedDuplicateNameThrows() {
-        controller.registerCity("Porto", "Portugal");
-        assertThrows(IllegalStateException.class, () -> controller.registerCity(" Porto ", "Portugal"));
+        controller.registerCity("Porto", portugal);
+        assertThrows(IllegalStateException.class, () -> controller.registerCity(" Porto ", portugal));
     }
 }
