@@ -129,23 +129,23 @@ public class Publication {
         switch (sanitizedPublicationType) {
             case "BOOK" -> {
                 if (other._publicationYear.getValue() > 1970) {
-                    return Objects.equals(other._identifier, this._identifier);
+                    return Objects.equals(this._identifier, other._identifier);
                 } else {
                     return Objects.equals(other._title, this._title)
-                            && Objects.equals(other._publicationYear, this._publicationYear);
+                            && Objects.equals(this._publicationYear, other._publicationYear);
                 }
             }
             case "MAGAZINE" -> {
                 if (other._publicationYear.getValue() > 1976) {
-                    return Objects.equals(other._identifier, this._identifier);
+                    return Objects.equals(this._identifier, other._identifier);
                 } else {
-                    return Objects.equals(other._title, this._title)
-                            && Objects.equals(other._publicationYear, this._publicationYear);
+                    return Objects.equals(this._title, other._title)
+                            && Objects.equals(this._publicationYear, other._publicationYear);
                 }
             }
             default -> {
-                return Objects.equals(other._title, this._title)
-                        && Objects.equals(other._publicationYear, this._publicationYear);
+                return Objects.equals(this._title, other._title)
+                        && Objects.equals(this._publicationYear, other._publicationYear);
             }
         }
     }
