@@ -1,55 +1,73 @@
 @startuml
-title US020 - Class Diagram (Get Public Lists by Genre)
+title US020 - Class Diagram (aligned with code)
 
-skinparam monochrome false
-skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk
 skinparam classBackgroundColor WhiteSmoke
 skinparam classAttributeIconSize 0
+hide circle
 
 class UI {
   +requestPublicListsByGenre()
   +displayGenrePrompt()
-  +selectGenre(genre: String)
-  +displayPublicLists(lists: List<PublicList>)
+  +selectGenre(genre: Genre)
+  +displayPublicLists(lists: List<ListOfPublications>)
 }
 
 class GetPublicListsByGenreController {
-  -_repo: PublicListRepo
-  +GetPublicListsByGenreController(repo: PublicListRepo)
-  +getPublicListsByGenre(genre: String): List<PublicList>
+  -_repo: ListOfPublicationsRepo
+  +GetPublicListsByGenreController(repo: ListOfPublicationsRepo)
+  +getPublicListsByGenre(genre: Genre): List<ListOfPublications>
 }
 
-class PublicListRepo {
-  -_lists: List<PublicList>
-  +add(list: PublicList)
-  +findPublicListPublishedByGenre(genre: String): List<PublicList>
+class ListOfPublicationsRepo {
+  -_listsOfListOfPublications: List<ListOfPublications>
+  -_genreRepo: GenreRepo
+  +createListOfPublications(user: User, name: String, genre: Genre): ListOfPublications
+  +findPublicListsByGenre(genre: Genre): List<ListOfPublications>
+  +getListOfListOfPublications(): List<ListOfPublications>
 }
 
-class PublicList {
-  -_listName: String
-  -_ownerUsername: String
+class ListOfPublications {
+  -_user: User
+  -_name: String
+  -_genre: Genre
+  -_isPrivate: boolean
+
+  +ListOfPublications(user: User, name: String, genre: Genre)
+  +getUser(): User
+  +getName(): String
+  +getGenre(): Genre
+  +isPrivate(): boolean
+  +makePublic()
+}
+
+class User {
+  -_name: Name
+  -_address: Address
+  -_email: Email
+  -_phone: Phone
+  +getName(): Name
+  +getEmail(): String
+}
+
+class Genre {
   -_genre: String
-  -_isPublic: boolean
-  -_isPublished: boolean
-
-  +PublicList(listName: String,
-              ownerUsername: String,
-              genre: String,
-              isPublic: boolean,
-              isPublished: boolean)
-
-  +getListName(): String
-  +getOwnerUsername(): String
+  +Genre(genre: String)
   +getGenre(): String
-  +isPublic(): boolean
-  +isPublished(): boolean
+}
+
+class GenreRepo {
+  -_genres: List<Genre>
+  +create(genreName: String): Genre
+  +getListOfOfficialGenres(): List<Genre>
 }
 
 UI --> GetPublicListsByGenreController : uses
-GetPublicListsByGenreController --> PublicListRepo : delegates to
-PublicListRepo --> PublicList : manages
-UI ..> PublicList : displays (name, owner)
+GetPublicListsByGenreController --> ListOfPublicationsRepo : delegates to
+ListOfPublicationsRepo --> ListOfPublications : stores/returns
+ListOfPublications --> User
+ListOfPublications --> Genre
+ListOfPublicationsRepo --> GenreRepo
 
 @enduml
