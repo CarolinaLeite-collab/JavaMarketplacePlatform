@@ -23,6 +23,7 @@ class CreateLibraryController {
 }
 
 class LibraryRepo {
+-_libraries: List<Library>
   + create(user:User) : Library
   - myLibraryExists(user:User) : boolean
 }

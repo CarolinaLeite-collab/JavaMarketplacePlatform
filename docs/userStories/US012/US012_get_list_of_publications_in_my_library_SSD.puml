@@ -28,10 +28,10 @@ hide footbox
 title US012 – "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - SSD
 
 actor User
-participant "Mitelovers"
+participant ":Mitelovers"
 
-User -> "Mitelovers" : Display list of Publications\n in my library
-"Mitelovers" --> User : Publications list displayed\n with details
+User -> ":Mitelovers" : Display list of Publications\n in my library
+":Mitelovers" --> User : Publications list displayed\n with details
 
 
 @enduml
