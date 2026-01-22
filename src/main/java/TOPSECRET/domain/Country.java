@@ -11,11 +11,11 @@ public class Country {
 
     public Country(String countryName) {
 
-        if (countryName == null) {
+        if (countryName == null || countryName.trim().isEmpty()) {
             throw new IllegalArgumentException("Country parameters cannot be null");
         }
 
-        _countryName = countryName;
+        _countryName = countryName.trim();
     }
 
     // Added getter to allow other components to locate countries by name

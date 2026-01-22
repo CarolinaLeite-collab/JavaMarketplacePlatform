@@ -20,9 +20,7 @@ public class CountryRepo {
 
     public Country registerCountry (String countryName) {
 
-        String normalizedName = countryName.trim();
-
-        Country newCountry = new Country(normalizedName);
+        Country newCountry = new Country(countryName);
 
         if (existsCountry(newCountry))  {
             return null;
