@@ -22,14 +22,17 @@ class City {
 class CityRepo {
   + existsByNameAndCountry(name: String, country: Country): boolean
   + save(city: City): City
+  + getAll(): List<City>
 }
 
 class CountryRepo {
-  + findById(countryId: String): Country
+  + getAllCountries(): List<Country>
+  + findByName(countryName: String): Country
 }
 
 class CityRegisterController {
-  + registerCity(name: String, countryId: String): City
+  + getCountries(): List<Country>
+  + registerCity(name: String, country: Country): City
 }
 
 CityRegisterController "1" --> "1" CountryRepo : uses

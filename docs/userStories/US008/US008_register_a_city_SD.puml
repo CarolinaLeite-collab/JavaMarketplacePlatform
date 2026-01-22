@@ -26,19 +26,29 @@ participant "Ctl3:CityRepo" as CityRepo
 Adm -> UI: select "Register city"
 activate UI
 
-UI -> Adm: show form (city + country)
-Adm -> UI: submit(cityName, countryId)
-
-UI -> Ctl: registerCity(cityName, countryId)
+UI -> Ctl: getCountries()
 activate Ctl
+Ctl -> CountryRepo: getAllCountries()
+activate CountryRepo
+Ctl <-- CountryRepo: listOfCountries
+deactivate CountryRepo
+UI <-- Ctl: listOfCountries
+deactivate Ctl
 
-' 2. Controller validates country existence
-Ctl -> CountryRepo: findById(countryId)
-CountryRepo --> Ctl: country / null
+UI -> Adm: show form (city name, listOfCountries)
+deactivate UI
+Adm -> UI: select country; enter cityName
+activate UI
+
+' 3. UI submits city creation (passes selected country, already validated by list)
+UI -> Ctl: registerCity(cityName, country)
+activate Ctl
 
 Ctl -> Ctl: validate inputs
 Ctl -> CityRepo: existsByNameAndCountry(cityName, country)
 CityRepo --> Ctl: boolean
+
+' 5. Persist city when valid
 Ctl -> CityRepo: save(new City(cityName, country))
 activate CityRepo
 create "c1:City" as c1
@@ -46,9 +56,12 @@ CityRepo -> c1: create(cityName, country)
 activate c1
 c1 --> CityRepo: new city
 deactivate c1
-CityRepo --> Ctl: saved city
+CityRepo --> Ctl: c1
 deactivate CityRepo
-Ctl --> UI: success / error
+
+' 6. UI feedback (mirror US007: object then message)
+Ctl --> UI: c1
 deactivate Ctl
-UI --> Adm: confirmation / error
+UI --> Adm: City registered successfully!
+deactivate UI
 @enduml
