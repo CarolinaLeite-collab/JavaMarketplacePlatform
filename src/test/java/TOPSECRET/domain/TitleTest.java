@@ -111,4 +111,59 @@ class TitleTest {
 
     }
 
+    @Test
+    void titleWithSameName() {
+        Title title = new Title("My Title");
+        Title title1 = new Title("My Title");
+
+        assertEquals(title, title1);
+    }
+
+    @Test
+    void titleWithSameNameHaveSameHashCode() {
+        Title title = new Title("My Title");
+        Title title1 = new Title("MY TITLE");
+
+        assertEquals(title.hashCode(), title1.hashCode());
+    }
+
+    @Test
+    void titleEqualsItself() {
+        Title title = new Title("My Title");
+
+        assertEquals(title, title);
+    }
+
+    @Test
+    void titleNotEqualsToNull() {
+        Title title = new Title("My Title");
+
+        assertNotEquals(title, null);
+    }
+
+    @Test
+    void titleNotEqualsToDifferentType() {
+        Title title = new Title("My Title");
+
+        assertNotEquals(title, "My Title");
+    }
+
+    @Test
+    void titleWithDifferentNameAreNotEqual() {
+        Title title = new Title("My Title");
+        Title title1 = new Title("My First Title");
+
+        assertNotEquals(title, title1);
+        assertNotEquals(title.hashCode(), title1.hashCode());
+    }
+
+    @Test
+    void titleEqualsIgnoresCase() {
+        Title title = new Title("My Title");
+        Title title1 = new Title("My TITLE");
+
+        assertEquals(title, title1);
+        assertEquals(title.hashCode(), title1.hashCode());
+    }
+
 }

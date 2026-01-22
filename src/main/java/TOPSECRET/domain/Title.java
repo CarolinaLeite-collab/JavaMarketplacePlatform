@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class Title {
 
     /**
@@ -32,6 +34,19 @@ public class Title {
     // To standardize titles, as some entries may have varying capitalization
     public String getLowercaseTitle() {
         return this._title.toLowerCase();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Title)) return false;
+        Title title = (Title) o;
+        return _title.equalsIgnoreCase(title._title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_title.toLowerCase());
     }
 
 }
