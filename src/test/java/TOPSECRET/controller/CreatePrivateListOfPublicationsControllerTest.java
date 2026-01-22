@@ -26,7 +26,7 @@ class CreatePrivateListOfPublicationsControllerTest {
         poetryGenre = genreRepo.addGenre("poetry");
 
         repo = new ListOfPublicationsRepo();
-        controller = new CreatePrivateListOfPublicationsController(repo, genreRepo);
+        controller = new CreatePrivateListOfPublicationsController(repo, genreRepo,  user1);
     }
 
     @Test

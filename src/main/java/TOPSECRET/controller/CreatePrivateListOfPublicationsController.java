@@ -15,9 +15,9 @@ public class CreatePrivateListOfPublicationsController {
     private ListOfPublicationsRepo _listOfPublicationsRepo;
     private GenreRepo _genreRepo;
 
-    public CreatePrivateListOfPublicationsController(ListOfPublicationsRepo listOfPublicationsRepo, GenreRepo genreRepo) {
-        this._listOfPublicationsRepo = listOfPublicationsRepo;
-        this._genreRepo = genreRepo;
+    public CreatePrivateListOfPublicationsController(ListOfPublicationsRepo listOfPublicationsRepo, GenreRepo genreRepo, User user) {
+        _listOfPublicationsRepo = listOfPublicationsRepo;
+        _genreRepo = genreRepo;
     }
 
     public List<Genre> getOfficialGenres() {
