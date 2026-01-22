@@ -50,24 +50,10 @@ public class CountryRepo {
     // Added helper to lookup a country by name (returns null if not found)
     public Country findByName(String name) {
         if (name == null) return null;
+        String normalized = name.trim();
         for (Country c : _countries) {
-            if (name.equals(c.getCountryName())) return c;
+            if (normalized.equalsIgnoreCase(c.getCountryName())) return c;
         }
         return null;
-    }
-
-    // Added helper to lookup countries by an identifier (currently reusing getCountryName() for simplicity)
-    public Country findById(String countryId) {
-        if (countryId == null) return null;
-        for (Country country : _countries) {
-            if (countryNameMatches(country, countryId)) {
-                return country;
-            }
-        }
-        return null;
-    }
-
-    private boolean countryNameMatches(Country country, String countryId) {
-        return country.getCountryName().equals(countryId);
     }
 }
