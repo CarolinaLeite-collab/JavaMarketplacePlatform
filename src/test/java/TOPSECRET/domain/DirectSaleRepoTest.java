@@ -28,7 +28,7 @@ class DirectSaleRepoTest {
                 new Email("ze@isep.pt")
         );
 
-        _author = new Author("Ryszard Kapuściński");
+        _author = new Author("Seneca");
 
         _publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -65,6 +65,21 @@ class DirectSaleRepoTest {
         assertNotNull(emptyList);
         assertTrue(emptyList.isEmpty());
 
+    }
+
+    @Test
+    void testGetDirectSaleItemsByAuthorWithDirectSalesShouldReturnNonEmptyList() {
+
+        //arrange
+        _directSaleRepo.createDirectSale(_item, new Price(20.0,Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(25.0,Currency.EUR), null);
+
+        //act
+        List<Item> list = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
+
+        //assert
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
     }
 
 }

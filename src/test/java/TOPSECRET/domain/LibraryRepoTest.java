@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class LibraryRepoTest {
 
     private User _user;
+    private Library _library;
+    private LibraryRepo _libraryRepo;
 
     @BeforeEach
     void setUp() {
@@ -16,6 +18,31 @@ class LibraryRepoTest {
                 new Name("Zé Isep"),
                 new Email ("test@isep.ipp.pt")
         );
+
+        _library = new Library(_user);
+        _libraryRepo = new LibraryRepo();
+
+    }
+
+    @Test
+    void testCreatingANewLibrary(){
+
+        //act
+        Library newLibrary = _libraryRepo.create(_user);
+
+        //assert
+        assertNotNull(_libraryRepo.findByUser(newLibrary.getUser()));
+    }
+
+    @Test
+    void testAddingASecondLibraryShouldThrowAnException(){
+
+        //act
+        Library newLibrary = _libraryRepo.create(_user);
+
+        //
+        assertThrows(IllegalStateException.class, () -> _libraryRepo.create(_user));
+
 
     }
 
