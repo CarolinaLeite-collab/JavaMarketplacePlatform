@@ -1,0 +1,34 @@
+@startuml
+title US026 - "As a Buyer, I want to get the list of items on auction %n() of a given author" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant "MiteLovers" as System
+
+' --- System dialog ---
+Buyer -> System: I want a list of Items on auction of a given author
+activate "System"
+System --> Buyer: What's the name of the author?
+deactivate "System"
+Buyer -> System: authorName
+activate "System"
+System --> Buyer: Here's the list!
+deactivate "System"
+
+
+@enduml
