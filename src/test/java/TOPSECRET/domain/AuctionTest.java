@@ -29,10 +29,12 @@ class AuctionTest {
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
                 .publisher(new Publisher("Penguin"))
+                .genre(new Genre("action"))
                 .build();
         _item = new Item(_publication, Condition.GOOD);
         _startingPrice = new Price(10.0, Currency.EUR);
         _outrightPrice = new Price(50.0, Currency.EUR);
+
         Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-200", null);
         PhonePrefix prefix = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix, "919999999");
@@ -113,6 +115,51 @@ class AuctionTest {
                 () -> auction.acceptBid(bid3)
         );
         assertEquals("Invalid Bid", ex.getMessage());
+    }
+    @Test
+    void test_is_by_genre_should_return_true_when_genre_matches() {
+
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Genre _genre= new Genre("action");
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+
+        assertTrue(auction.isByGenre(_genre));
+
+    }
+    @Test
+    void test_is_by_genre_should_return_true_when_genre_matches_case_insensitive() {
+
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Genre _genre= new Genre("ActioN");
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+
+        assertTrue(auction.isByGenre(_genre));
+
+    }
+
+    @Test
+    void test_is_by_genre_should_return_false_when_genre_does_not_match() {
+
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Genre _genre= new Genre("Horror");
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+        assertFalse(auction.isByGenre(_genre));
+
     }
 }
 
