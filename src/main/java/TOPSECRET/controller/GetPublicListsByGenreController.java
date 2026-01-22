@@ -1,23 +1,23 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicList;
-import TOPSECRET.domain.PublicListRepo;
+import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.ListOfPublications;
+import TOPSECRET.domain.ListOfPublicationsRepo;
 
 import java.util.List;
 
 public class GetPublicListsByGenreController {
 
-    private final PublicListRepo _repo;
+    private final ListOfPublicationsRepo _repo;
 
-    public GetPublicListsByGenreController(PublicListRepo repo) {
+    public GetPublicListsByGenreController(ListOfPublicationsRepo repo) {
         _repo = repo;
     }
 
-    public List<PublicList> getPublicListsByGenre(String genre) {
-        if (genre == null || genre.isBlank()) {
+    public List<ListOfPublications> getPublicListsByGenre(Genre genre) {
+        if (genre == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-
-        return _repo.findPublicListsPublishedByGenre(genre.trim());
+        return _repo.findPublicListsByGenre(genre);
     }
 }
