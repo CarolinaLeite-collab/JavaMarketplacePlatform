@@ -7,10 +7,10 @@ import java.util.List;
 
 public class GetPublicListsByGenreController {
 
-    private final PublicListRepo repo;
+    private final PublicListRepo _repo;
 
     public GetPublicListsByGenreController(PublicListRepo repo) {
-        this.repo = repo;
+        _repo = repo;
     }
 
     public List<PublicList> getPublicListsByGenre(String genre) {
@@ -18,6 +18,6 @@ public class GetPublicListsByGenreController {
             throw new IllegalArgumentException("Genre is mandatory");
         }
 
-        return repo.findPublicListsPublishedByGenre(genre.trim());
+        return _repo.findPublicListsPublishedByGenre(genre.trim());
     }
 }
