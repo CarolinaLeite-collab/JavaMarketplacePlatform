@@ -1,0 +1,34 @@
+@startuml
+title US024 - "As a Buyer, I want to get the list of items on auction of a given publication" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam ArrowColor #57595BAA
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant ":Mitelovers" as System
+
+' --- System dialog ---
+Buyer -> System: I want the list of items on auction of a given publication
+activate "System"
+System --> Buyer: What is the publication's name?
+deactivate "System"
+Buyer -> System: publicationName
+activate "System"
+System --> Buyer: Here's the list! done!
+deactivate "System"
+
+@enduml
