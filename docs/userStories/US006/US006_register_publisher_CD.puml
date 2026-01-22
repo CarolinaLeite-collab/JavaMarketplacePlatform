@@ -32,8 +32,8 @@ class Publisher {
   + Publisher(publisherName: String)
 }
 ' NOTE: getName() to be used in unit tests, but is not in US006 SD
-RegisterPublisherUI "1" --> "1" RegisterPublisherController: interacts with
-RegisterPublisherController "1" --> "1" PublisherRepo : uses
+RegisterPublisherUI "1" ..> "1" RegisterPublisherController: uses
+RegisterPublisherController "1" ..> "1" PublisherRepo : calls
 PublisherRepo "1" --> "*" Publisher : creates
 
 note right of RegisterPublisherController
