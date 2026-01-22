@@ -27,11 +27,19 @@ class GetDirectSaleItemsByAuthorController {
 
 class DirectSaleRepo {
 
-getDirectSaleItemsByAuthor(authorName) : List<Item>
+- _directSales : List<DirectSale>
++getDirectSaleItemsByAuthor(authorName) : List<Item>
+
+}
+
+class DirectSale {
+
++isByAuthor(authorName) : boolean
 
 }
 
 GetDirectSaleItemsByAuthorUI "1" ..> "1" GetDirectSaleItemsByAuthorController : invokes
 GetDirectSaleItemsByAuthorController "1" ..> "1" DirectSaleRepo : calls
+DirectSaleRepo "1" --> "*" DirectSale : contains
 
 @enduml

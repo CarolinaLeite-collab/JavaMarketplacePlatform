@@ -54,7 +54,7 @@ loop for each directSale in dsr
 end
 
 create "copyOfListOfDirectSaleItemsByAuthor: List<Item>" as Copy
-DSR -> Copy: List.copyof(ListOfDirectSaleItemsByAuthor)
+DSR -> Copy: List.copyOf(ListOfDirectSaleItemsByAuthor)
 
 
 
