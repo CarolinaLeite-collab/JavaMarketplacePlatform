@@ -38,10 +38,11 @@ public class Auction {
 
 
     // 1. Private constructor takes _outrightPrice as an argument
-    private Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    public Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
         _bids = new Bids();
+
 
         if (isOutrightPriceValid(outrightPrice)) {
             this._outrightPrice = outrightPrice;
@@ -83,6 +84,10 @@ public class Auction {
 
     public Item getItem() {
         return _item;
+    }
+
+    public Bids getBids() {
+        return _bids;
     }
 
 
