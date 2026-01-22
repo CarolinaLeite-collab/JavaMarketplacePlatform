@@ -24,7 +24,7 @@ Class ListOfPublicationsRepo {
 }
 
 Class RegisterPrivateListOfPublicationController {
--_listOfPublicationsRepo : ListOfPublicationsRepo
+-_listOfListOfPublicationsRepo : ListOfPublicationsRepo
 -_genreRepo : GenreRepo
 + getOfficialGenres() : List<Genre>
 + createListOfPublications (user : User, name : String, genre : Genre) : ListOfPublications
