@@ -21,7 +21,7 @@ public class AddGenreController {
 
 
     public Genre addGenre(String genreName) {
-        Genre genre = _genre.create(genreName);
+        Genre genre = _genre.addGenre(genreName);
         return genre;
     }
 }
