@@ -19,13 +19,18 @@ autoactivate off
 actor "Administrator" as Admin
 participant "MiteLovers" as System
 
-Admin -> System: I want to register a new city in the system!
+Admin -> System: I want to register a new city
 activate System
-System --> Admin: Please fill the form to register a new city
-deactivate System
-Admin -> System: RegisterCityForm(countryID, cityName)
-activate System
-System --> Admin: The city was successfully added to the list!
+System --> Admin: Please choose a country and provide the city name
+
+System -> System: getAllCountries()
+System --> Admin: listOfCountries
+
+Admin -> System: select country; enter cityName
+System --> Admin: confirm selection
+
+Admin -> System: RegisterCityForm(countryName, cityName)
+System --> Admin: City registered (or error)
 deactivate System
 
 @enduml
