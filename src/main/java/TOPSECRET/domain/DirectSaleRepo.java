@@ -45,5 +45,23 @@ public class DirectSaleRepo {
 
     }
 
+    public List<Item> getDirectSaleItemsByGenre(Genre genre) {
+
+        List<Item> listOfDirectSaleItemsByGenre = new ArrayList<>();
+
+        for (int i = 0; i < _directSales.size(); i++) {
+
+            DirectSale directSale = _directSales.get(i);
+            Publication publication = directSale.getItem().getPublication();
+
+            if (publication.matchGenre(genre)) {
+                listOfDirectSaleItemsByGenre.add(directSale.getItem());
+            }
+        }
+
+        return List.copyOf(listOfDirectSaleItemsByGenre);
+    }
+
+
 
 }

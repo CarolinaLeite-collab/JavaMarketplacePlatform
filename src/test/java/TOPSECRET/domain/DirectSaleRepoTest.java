@@ -18,6 +18,7 @@ class DirectSaleRepoTest {
     private Author _author;
     private DirectSale _directSale1;
     private DirectSale _directSale2;
+    private Genre _genre;
 
 
     @BeforeEach
@@ -29,6 +30,7 @@ class DirectSaleRepoTest {
         );
 
         _author = new Author("Seneca");
+        _genre = new Genre("History");
 
         _publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -37,12 +39,13 @@ class DirectSaleRepoTest {
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
                 .publisher(new Publisher("Penguin"))
+                .genre(_genre)
                 .build();
 
         _item = new Item(_publication, Condition.GOOD);
 
-        _directSale1 = new DirectSale(_item, new Price(20.0,Currency.EUR), null);
-        _directSale2 = new DirectSale(_item, new Price(25.0,Currency.EUR), null);
+        _directSale1 = new DirectSale(_item, new Price(20.0, Currency.EUR), null);
+        _directSale2 = new DirectSale(_item, new Price(25.0, Currency.EUR), null);
 
         _directSaleRepo = new DirectSaleRepo();
 
@@ -71,8 +74,8 @@ class DirectSaleRepoTest {
     void testGetDirectSaleItemsByAuthorWithDirectSalesShouldReturnNonEmptyList() {
 
         //arrange
-        _directSaleRepo.createDirectSale(_item, new Price(20.0,Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(25.0,Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
 
         //act
         List<Item> list = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
@@ -82,4 +85,29 @@ class DirectSaleRepoTest {
         assertFalse(list.isEmpty());
     }
 
+    @Test
+    void testGetDirectSaleItemsByGenreWithDirectSalesShouldReturnNonEmptyList() {
+
+
+        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(30.0, Currency.EUR), null);
+
+        List<Item> list = _directSaleRepo.getDirectSaleItemsByGenre(_genre);
+
+        assertNotNull(list);
+        assertEquals(3, list.size());
+    }
+
+    @Test
+    void testGetDirectSaleItemsByGenreWithNoDirectSalesShouldReturnEmptyList() {
+
+        //act
+        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByGenre(_genre);
+
+        //assert
+        assertNotNull(emptyList);
+        assertTrue(emptyList.isEmpty());
+
+    }
 }

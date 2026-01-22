@@ -150,6 +150,15 @@ public class Publication {
         }
     }
 
+    //Method to get items' genre that are on direct sale
+
+    public boolean matchGenre(Genre genre) {
+        if (genre == null) {
+            return false;
+        }
+        return genre.equals(this._genre);
+    }
+
     //getters
     public PublicationType getPublicationType() {
         return _publicationType;
@@ -182,5 +191,6 @@ public class Publication {
     public Genre getGenre() {
         return _genre;
     }
+
 
 }
