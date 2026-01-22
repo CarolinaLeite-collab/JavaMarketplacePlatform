@@ -2,38 +2,38 @@ package TOPSECRET.domain;
 
 public class PublicList {
 
-    private final String listName;
-    private final String ownerUsername;
-    private final String genre;
-    private final boolean isPublic;
-    private final boolean isPublished;
+    private final String _listName;
+    private final String _ownerUsername;
+    private final String _genre;
+    private final boolean _isPublic;
+    private final boolean _isPublished;
 
     public PublicList(String listName, String ownerUsername, String genre, boolean isPublic, boolean isPublished) {
-        this.listName = listName;
-        this.ownerUsername = ownerUsername;
-        this.genre = genre;
-        this.isPublic = isPublic;
-        this.isPublished = isPublished;
+        _listName = listName;
+        _ownerUsername = ownerUsername;
+        _genre = genre;
+        _isPublic = isPublic;
+        _isPublished = isPublished;
     }
 
     public String getListName() {
-        return listName;
+        return _listName;
     }
 
     public String getOwnerUsername() {
-        return ownerUsername;
+        return _ownerUsername;
     }
 
     public boolean isPublic() {
-        return isPublic;
+        return _isPublic;
     }
 
     public boolean isPublished() {
-        return isPublished;
+        return _isPublished;
     }
 
     public String getGenre() {
-        return genre;
+        return _genre;
     }
 
 
