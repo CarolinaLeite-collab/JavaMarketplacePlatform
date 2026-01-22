@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZonedDateTime;
@@ -10,25 +11,60 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionRepoTest {
 
+    private PublicationType bookType;
+    private Year publicationYear;
+    private String defaultAuthorName;
+    private String defaultPublisherName;
+
+    @BeforeEach
+    void setUp() {
+        bookType = new PublicationType("BOOK");
+        publicationYear = Year.of(2019);
+        defaultAuthorName = "Someone";
+        defaultPublisherName = "SomePub";
+    }
+
+    private Publication publication(Genre genre, String isbn, String title) {
+        return publication(genre, isbn, title, defaultAuthorName, defaultPublisherName);
+    }
+
+    private Publication publication(Genre genre, String isbn, String title, String authorName, String publisherName) {
+        return Publication.builder()
+                .type(bookType)
+                .identifier(new ISBN(isbn))
+                .year(publicationYear)
+                .title(new Title(title))
+                .author(new Author(authorName))
+                .publisher(new Publisher(publisherName))
+                .genre(genre)
+                .build();
+    }
+
+    private Item itemFor(Genre genre, String isbn, String title) {
+        return new Item(publication(genre, isbn, title), Condition.GOOD);
+    }
+
+    private Item itemFor(Genre genre, String isbn, String title, String authorName, String publisherName) {
+        return new Item(publication(genre, isbn, title, authorName, publisherName), Condition.GOOD);
+    }
+
+    private ZonedDateTime futureStart() {
+        return ZonedDateTime.now().plusDays(1);
+    }
+
+    private ZonedDateTime futureEnd() {
+        return ZonedDateTime.now().plusDays(2);
+    }
+
     @Test
     void createAuctionAddsAuctionAndCanBeRetrievedByGenre() {
         AuctionRepo repo = new AuctionRepo();
 
         Genre action = new Genre("Action");
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("Sample"))
-                .author(new Author("Someone"))
-                .publisher(new Publisher("SomePub"))
-                .genre(action)
-                .build();
+        Item item = itemFor(action, "9789896710453", "Sample");
 
-        Item item = new Item(pub, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
 
         Auction auction = repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
         assertNotNull(auction);
@@ -43,20 +79,10 @@ class AuctionRepoTest {
         AuctionRepo repo = new AuctionRepo();
 
         Genre action = new Genre("Action");
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("Sample"))
-                .author(new Author("Someone"))
-                .publisher(new Publisher("SomePub"))
-                .genre(action)
-                .build();
+        Item item = itemFor(action, "9789896710453", "Sample");
 
-        Item item = new Item(pub, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
 
         repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
@@ -74,20 +100,10 @@ class AuctionRepoTest {
         AuctionRepo repo = new AuctionRepo();
 
         Genre g = new Genre("X");
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("Sample"))
-                .author(new Author("Someone"))
-                .publisher(new Publisher("SomePub"))
-                .genre(g)
-                .build();
-
-        Item item = new Item(pub, Condition.GOOD);
+        Item item = itemFor(g, "9789896710453", "Sample");
 
         ZonedDateTime start = ZonedDateTime.now().minusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end = futureStart();
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> repo.createAuction(item, new Price(5.0, Currency.EUR), start, end));
@@ -99,20 +115,10 @@ class AuctionRepoTest {
         AuctionRepo repo = new AuctionRepo();
 
         Genre g = new Genre("Y");
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("Sample"))
-                .author(new Author("Someone"))
-                .publisher(new Publisher("SomePub"))
-                .genre(g)
-                .build();
+        Item item = itemFor(g, "9789896710453", "Sample");
 
-        Item item = new Item(pub, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(2);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime start = futureEnd();
+        ZonedDateTime end = futureStart();
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> repo.createAuction(item, new Price(5.0, Currency.EUR), start, end));
@@ -126,31 +132,11 @@ class AuctionRepoTest {
         Genre action = new Genre("Action");
         Genre romance = new Genre("Romance");
 
-        Publication pubA = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("0306406152"))
-                .year(Year.of(2019))
-                .title(new Title("A"))
-                .author(new Author("A"))
-                .publisher(new Publisher("P"))
-                .genre(action)
-                .build();
+        Item itemA = itemFor(action, "0306406152", "A", "A", "P");
+        Item itemB = itemFor(romance, "9789896710453", "B", "B", "P");
 
-        Publication pubB = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("B"))
-                .author(new Author("B"))
-                .publisher(new Publisher("P"))
-                .genre(romance)
-                .build();
-
-        Item itemA = new Item(pubA, Condition.GOOD);
-        Item itemB = new Item(pubB, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
 
         repo.createAuction(itemA, new Price(1.0, Currency.EUR), start, end);
         repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
@@ -169,20 +155,10 @@ class AuctionRepoTest {
         AuctionRepo repo = new AuctionRepo();
 
         Genre action = new Genre("Action");
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("Sample"))
-                .author(new Author("Someone"))
-                .publisher(new Publisher("SomePub"))
-                .genre(action)
-                .build();
+        Item item = itemFor(action, "9789896710453", "Sample");
 
-        Item item = new Item(pub, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime start = futureStart();
+        ZonedDateTime end = futureEnd();
 
         repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 

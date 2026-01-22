@@ -19,8 +19,8 @@ autoactivate off
 ' --- Actor and participants ---
 actor Buyer
 participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuctionOfAGivenAuthorCtl" as Ctl
-participant "ar:AuctionRepo" as AuctionRepo
+participant ":GetItemsOnAuctionOfAGivenAuthorController" as Ctl
+participant "_ar:AuctionRepo" as AuctionRepo
 participant "auction:Auction" as Auction
 
 ' --- System dialog ---

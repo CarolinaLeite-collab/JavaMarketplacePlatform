@@ -17,8 +17,8 @@ autonumber
 autoactivate off
 
 actor Administrator as Adm
-participant "UI1:RegisterCityUI" as UI
-participant "Ctl1:CityRegisterController" as Ctl
+participant ":RegisterCityUI" as UI
+participant ":CityRegisterController" as Ctl
 participant "_cr:CountryRepo" as CountryRepo
 participant "_cir:CityRepo" as CityRepo
 
