@@ -17,12 +17,14 @@ public class GenreRepo {
         _genres = new ArrayList<>();
     }
 
-    public Genre create(String genreName) {
+    public Genre addGenre(String genreName) {
+
+        Genre genre = new Genre(genreName);
+
         if (existsGenre(genreName)) {
             return null;
         }
 
-        Genre genre = new Genre(genreName);
         _genres.add(genre);
         return genre;
     }

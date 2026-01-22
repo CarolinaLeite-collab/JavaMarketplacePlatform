@@ -17,19 +17,19 @@ public class GenreRepoTest {
     }
 
     @Test
-    void genreRepoCreateNewGenre() {
+    void testAddGenreCreateNewGenre() {
         GenreRepo gr = new GenreRepo();
-        Genre g = gr.create("Action");
+        Genre g = gr.addGenre("Action");
 
         assertEquals("Action", g.getGenre());   // correct content
         assertNotNull(g);   // created
     }
 
     @Test
-    void genreAlreadyExistsInRepo() {
+    void testAddGenreIfGenreAlreadyExistsInRepo() {
         GenreRepo gr = new GenreRepo();
-        gr.create("Science Fiction");
-        Genre g = gr.create("Science Fiction");
+        gr.addGenre("Science Fiction");
+        Genre g = gr.addGenre("Science Fiction");
         assertNull(g);
     }
 
@@ -38,8 +38,8 @@ public class GenreRepoTest {
 
         //arrange
         GenreRepo gr = new GenreRepo();
-        gr.create("Science Fiction");
-        gr.create("Romance");
+        gr.addGenre("Science Fiction");
+        gr.addGenre("Romance");
 
         //act
         List<Genre> ListOfOfficialGenres = gr.getListOfOfficialGenres();
