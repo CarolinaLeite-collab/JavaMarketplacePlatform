@@ -16,23 +16,23 @@ class UI {
 }
 
 class GetPublicListsByGenreController {
-  -repo: PublicListRepo
+  -_repo: PublicListRepo
   +GetPublicListsByGenreController(repo: PublicListRepo)
   +getPublicListsByGenre(genre: String): List<PublicList>
 }
 
 class PublicListRepo {
-  -lists: List<PublicList>
+  -_lists: List<PublicList>
   +add(list: PublicList)
   +findPublicListPublishedByGenre(genre: String): List<PublicList>
 }
 
 class PublicList {
-  -listName: String
-  -ownerUsername: String
-  -genre: String
-  -isPublic: boolean
-  -isPublished: boolean
+  -_listName: String
+  -_ownerUsername: String
+  -_genre: String
+  -_isPublic: boolean
+  -_isPublished: boolean
 
   +PublicList(listName: String,
               ownerUsername: String,
