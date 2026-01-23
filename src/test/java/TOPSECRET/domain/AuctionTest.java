@@ -280,5 +280,45 @@ class AuctionTest {
         // Assert
         assertFalse(result);
     }
+    @Test
+    void should_return_true_when_publisher_matches_and_be_case_insensitive() {
+        Publication publication1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("PeNgUin"))
+                .genre(new Genre("action"))
+                .build();
+        Item item1 = new Item(publication1, Condition.GOOD);
+
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Publisher publisher1 = _item.getPublication().getPublisher();
+        Publisher publisher2 = item1.getPublication().getPublisher();
+
+        Auction auction1 = new Auction(_item, _startingPrice, _startDate, _endDate);
+        Auction auction2 = new Auction(_item, _outrightPrice, _startDate, _endDate);
+
+        assertTrue(auction1.isByPublisher(publisher1));
+        assertTrue(auction2.isByPublisher(publisher2));
+    }
+
+    @Test
+    void should_return_false_when_publisher_does_not_match() {
+        ZonedDateTime _startDate =
+                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
+        ZonedDateTime _endDate =
+                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        Publisher publisher3 = new Publisher("Porto Editora");
+
+        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
+
+        assertFalse(auction.isByPublisher(publisher3));
+    }
+
 }
 
