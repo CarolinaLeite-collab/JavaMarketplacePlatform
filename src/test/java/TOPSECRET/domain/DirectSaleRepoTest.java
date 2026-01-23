@@ -197,6 +197,6 @@ class DirectSaleRepoTest {
         List<Item> itemsByAuthor = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
 
         assertEquals(1, itemsByAuthor.size());
-        assertEquals(_item, itemsByAuthor.get(0)); }
+        assertEquals(_item, itemsByAuthor.get(0));
     }
 }
