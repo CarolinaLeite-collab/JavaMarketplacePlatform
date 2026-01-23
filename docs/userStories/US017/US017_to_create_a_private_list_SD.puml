@@ -29,7 +29,7 @@ participant ":GenreRepo" as GR
 "User" -> UI: I want to create a private list
 activate UI
 
-"User" <-- UI: What is the list name?
+"User" <-- UI: What is the list's name?
 deactivate UI
 
 "User" -> UI: name
@@ -38,12 +38,12 @@ UI -> CTL: getListOfOfficialGenres()
 activate CTL
 CTL -> GR: getListOfOfficialGenres()
 activate GR
-CTL <-- GR: listOfPublications
+CTL <-- GR: copyOfListOfOfficialGenres
 deactivate GR
-UI <-- CTL: listOfPublications
+UI <-- CTL: copyOfListOfOfficialGenres
 deactivate CTL
 
-"User" <-- UI: What is the list genre?
+"User" <-- UI: What is the list's genre?
 deactivate UI
 "User" -> UI: genre
 activate UI
@@ -59,7 +59,7 @@ activate LOPR
         create "lop1:ListOfPublications" as lop1
         LOPR -> lop1: create(user, name, genre)
         note left of lop1
-                  The private attribute (_isPrivate)
+                  The private attribute (_isPrivate = true)
                   is set by default in the constructor
               end note
         LOPR -> LOPR: adds(lop1)
