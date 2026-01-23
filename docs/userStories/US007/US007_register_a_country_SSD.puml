@@ -24,7 +24,7 @@ participant ":MiteLovers" as UI
 '==== System dialog ====
 Adm -> UI: I want to register a country
 activate UI
-UI --> Adm: What is the country name?
+UI --> Adm: What is the country's name?
 deactivate UI
 
 Adm -> UI: countryName
