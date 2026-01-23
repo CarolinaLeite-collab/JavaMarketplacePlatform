@@ -1,0 +1,104 @@
+@startuml
+title US015 -"As a User, I want to put for sale a publication %n() in my library in a direct sale" - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor User
+participant ":PublicationInLibraryForDirectSaleUI" as UI
+participant ":PublicationInLibraryForDirectSaleCTL" as Ctl
+participant "_lr:LibraryRepo" as LibraryRepo
+participant "userLibrary:Library" as userLibrary
+participant "_pr:PublicationRepo" as PublicationRepo
+participant "_ir:ItemRepo" as ItemRepo
+participant "_dsr:DirectSaleRepo" as DirectSaleRepo
+
+' --- System dialog ---
+User -> UI: I want to put for direct sale a publication in my library.
+activate "UI"
+
+' --- Get the user's library ---
+UI -> Ctl: getPublicationsList(userID)
+activate "Ctl"
+Ctl -> LibraryRepo: findByUser(user)
+activate "LibraryRepo"
+LibraryRepo --> Ctl: userLibrary
+deactivate "LibraryRepo"
+
+' --- Get the list of publications in the User's library ---
+Ctl -> userLibrary: getPublicationsInLibraryList()
+activate "userLibrary"
+userLibrary --> Ctl: publicationsList
+deactivate "userLibrary"
+Ctl --> UI: publicationsList
+deactivate "Ctl"
+' --- Done! ---
+
+UI --> User: What publication?
+deactivate "UI"
+User -> UI: publication
+activate "UI"
+UI --> User: What is it's condition?
+deactivate "UI"
+User -> "UI": condition
+activate "UI"
+UI --> User: Please fill the Direct Sale form.
+deactivate "UI"
+User -> UI: DirectSale(price, timeLimit)
+activate "UI"
+
+' --- Get the selected publication ---
+UI -> Ctl: addPublicationForDirectSale(publication)
+activate "Ctl"
+Ctl -> PublicationRepo: getPublication(publication)
+activate "PublicationRepo"
+PublicationRepo --> Ctl: publication
+deactivate "PublicationRepo"
+' --- Done! ---
+
+' ---  Instance the physical copy (item) of the selected publication ---
+Ctl -> ItemRepo: createItem(publication, condition)
+activate "ItemRepo"
+create "item:Item" as itemInstance
+ItemRepo -> itemInstance:
+ItemRepo --> Ctl: item
+deactivate "ItemRepo"
+
+' --- Create a direct sale ---
+Ctl -> DirectSaleRepo: createDirectSale(item, price, timeLimit)
+activate DirectSaleRepo
+create "directSale:DirectSale" as directSaleInstance
+DirectSaleRepo -> directSaleInstance:
+
+' --- Details on relationship between Item and DirectSale ---
+note over directSaleInstance
+A directSale can only exist
+in association with an item.
+end note
+
+' --- Return to user ---
+DirectSaleRepo --> Ctl: directSale
+deactivate "DirectSaleRepo"
+Ctl -> itemInstance: setDirectSale(directSale)
+activate "itemInstance"
+itemInstance --> Ctl: True
+deactivate "itemInstance"
+Ctl --> UI: True
+deactivate "Ctl"
+UI --> User: Your item was successfully put up for sale!
+deactivate "UI"
+
+@enduml

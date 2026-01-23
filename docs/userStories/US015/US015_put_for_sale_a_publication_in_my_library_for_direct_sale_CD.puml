@@ -1,0 +1,98 @@
+@startuml
+title Class Diagram - US015 -"As a User, I want to put for sale a publication %n() in my library in a direct sale"
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+' ===== ENUM =====
+
+class PublicationInLibraryForDirectSaleUI {
+}
+
+class PublicationInLibraryForDirectSaleCTL {
+  - libraryRepo: LibraryRepo
+  - publicationRepo: PublicationRepo
+  - itemRepo: ItemRepo
+  - auctionRepo: AuctionRepo
+
+  + getLibraryPublicationList(user: User): List<PublicationDetails>
+  + addPublicationForDirectSale(Publication publication, Condition condition, Price price,
+    Period timeLimit): boolean
+}
+
+class LibraryRepo {
+  - _libraries: List<Library>
+  + findByUser(user: User): Library
+}
+
+class Library {
+  - _owner: User
+  - publications: List<Publication>
+
+  + getPublicationsInLibrary(): List<PublicationDetails>
+ }
+
+class PublicationRepo {
+  - _publications: List<Publication>
+  + findPublicationById??(id: PublicationId): Publication
+}
+
+class ItemRepo {
+  - items: List<Item>
+
+  + createItem(publication: Publication, condition: Condition): Item
+}
+
+class Item {
+  - publication : Publication
+  - condition : Condition
+  - directSale : DirectSale
+
+  + setDirectSale(directSale : DirectSale): void
+}
+
+class DirectSaleRepo {
+  - itemsOnDirectSale: List<DirectSale>
+
+  + createDirectSale(item: Item, price : Price, timeLimit : Period)
+
+ }
+
+class DirectSale {
+  - item: Item
+  - price : Price
+  - timeLimit : Period
+}
+
+
+
+' ===== RELATIONSHIPS =====
+
+' --- UI → Controller ---
+PublicationInLibraryForDirectSaleUI "1" ..> "1"  PublicationInLibraryForDirectSaleCTL : uses
+
+' --- Controller → Repos ---
+PublicationInLibraryForDirectSaleCTL "1" ..> "1" LibraryRepo : calls
+PublicationInLibraryForDirectSaleCTL "1" ..> "1" PublicationRepo : calls
+PublicationInLibraryForDirectSaleCTL "1" ..> "1" ItemRepo : calls
+PublicationInLibraryForDirectSaleCTL "1" ..> "1" DirectSaleRepo : calls
+
+' --- Repos → Domain objects ---
+LibraryRepo "1"--> "*" Library : manages
+PublicationRepo "1" --> "*" Publication: manages
+ItemRepo "1" --> "*" Item : manages
+DirectSaleRepo "1" --> "*" DirectSale : manages
+
+' --- Domain relationships ---
+Item "1" --> "1" DirectSale : sets
+
+
+@enduml
