@@ -188,7 +188,7 @@ public class ISBNTest {
 
     //test equals()
     @Test
-    void returnsTrueForsameIsbn() {
+    void returnsTrueForSameIsbn() {
         ISBN isbn = new ISBN("9780618260300");
         Object o = isbn;
         assertEquals(isbn, o);
