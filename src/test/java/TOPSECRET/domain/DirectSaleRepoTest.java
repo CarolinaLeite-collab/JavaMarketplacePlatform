@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Period;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,5 +176,27 @@ class DirectSaleRepoTest {
         assertNotNull(emptyList);
         assertTrue(emptyList.isEmpty());
 
+    }
+
+    @Test void createDirectSale_CreateAndStoreDirectSale() {
+
+        // act
+        DirectSale created = _directSaleRepo.createDirectSale(
+                _item,
+                new Price(20.0, Currency.EUR),
+                null
+        );
+
+        // assert: returned object is correct
+        assertNotNull(created);
+        assertEquals(_item, created.getItem());
+        assertEquals(20.0, created.getPrice().getValue());
+        assertEquals(Currency.EUR, created.getPrice().getCurrency());
+
+        // assert: repo actually stored it
+        List<Item> itemsByAuthor = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
+
+        assertEquals(1, itemsByAuthor.size());
+        assertEquals(_item, itemsByAuthor.get(0)); }
     }
 }
