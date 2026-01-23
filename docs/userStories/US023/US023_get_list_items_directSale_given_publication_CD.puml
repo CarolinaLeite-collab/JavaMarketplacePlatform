@@ -35,6 +35,6 @@ _item : Item
 
 UIGetDirectSaleItemsByPublication "1" ..> "1" GetDirectSaleItemsByPublicationsController : uses
 GetDirectSaleItemsByPublicationsController "1" ..> "1" DirectSaleRepo : uses
-DirectSaleRepo "*" --> "1" DirectSale : manages
+DirectSaleRepo "1" --> "*" DirectSale : manages
 
 @enduml
