@@ -7,31 +7,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ListOfPublicationsTest {
 
-    private User user1;
-    private User user2;
-    private Genre actionGenre;
-    private Genre poetryGenre;
+    private User _user1;
+    private User _user2;
+    private Genre _actionGenre;
+    private Genre _poetryGenre;
 
     @BeforeEach
     void setUp() {
-        user1 = new User (
+        _user1 = new User (
                 new Name ("Trump"),
                 new Email ("usa@isep.com")
         );
-        user2 = new User (
+        _user2 = new User (
                 new Name ("Putin"),
                 new Email ("russia@isep.com")
         );
 
         GenreRepo genreRepo = new GenreRepo();
-        actionGenre = genreRepo.addGenre("Action");
-        poetryGenre = genreRepo.addGenre("Poetry");
+        _actionGenre = genreRepo.addGenre("Action");
+        _poetryGenre = genreRepo.addGenre("Poetry");
     }
 
     @Test
     void constructsListSuccessfully() {
         // Arrange & Act
-        ListOfPublications list = new ListOfPublications(user1,"My favorite books",actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1,"My favorite books", _actionGenre);
 
         // Assert
         assertNotNull(list);
@@ -40,16 +40,16 @@ class ListOfPublicationsTest {
     @Test
     void constructorShouldThrowExceptionForNulls() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(null, "Name", actionGenre));
-        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(user1, null, actionGenre));
-        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(user1, "Name", null));
+        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(null, "Name", _actionGenre));
+        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(_user1, null, _actionGenre));
+        assertThrows(IllegalArgumentException.class, () -> new ListOfPublications(_user1, "Name", null));
     }
 
     @Test
     void equalsShouldReturnTrueForSameArguments() {
         //Arrange
-        ListOfPublications list1 = new ListOfPublications(user1, "My List", actionGenre);
-        ListOfPublications list2 = new ListOfPublications(user1, "My List", actionGenre);
+        ListOfPublications list1 = new ListOfPublications(_user1, "My List", _actionGenre);
+        ListOfPublications list2 = new ListOfPublications(_user1, "My List", _actionGenre);
 
         // Act & Assert
         assertEquals(list1, list2);
@@ -59,14 +59,14 @@ class ListOfPublicationsTest {
     void equalsShouldReturnFalseForDifferentArguments() {
         //Arrange
         // Same name
-        ListOfPublications list1 = new ListOfPublications(user1, "My List", actionGenre);
-        ListOfPublications list2 = new ListOfPublications(user2, "My List", poetryGenre);
+        ListOfPublications list1 = new ListOfPublications(_user1, "My List", _actionGenre);
+        ListOfPublications list2 = new ListOfPublications(_user2, "My List", _poetryGenre);
         // Same genre
-        ListOfPublications list3 = new ListOfPublications(user1, "My List", actionGenre);
-        ListOfPublications list4 = new ListOfPublications(user2, "Books list", actionGenre);
+        ListOfPublications list3 = new ListOfPublications(_user1, "My List", _actionGenre);
+        ListOfPublications list4 = new ListOfPublications(_user2, "Books list", _actionGenre);
         // Same user
-        ListOfPublications list5 = new ListOfPublications(user1, "My List", actionGenre);
-        ListOfPublications list6 = new ListOfPublications(user1, "Books list", poetryGenre);
+        ListOfPublications list5 = new ListOfPublications(_user1, "My List", _actionGenre);
+        ListOfPublications list6 = new ListOfPublications(_user1, "Books list", _poetryGenre);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -77,7 +77,7 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForNull() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(user1, "My List", actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1, "My List", _actionGenre);
 
         // Act & Assert
         assertNotEquals(list, null);
@@ -86,7 +86,7 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(user1, "My List", actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1, "My List", _actionGenre);
         String notAList = "not a ListOfPublications";
 
         // Act & Assert
@@ -96,7 +96,7 @@ class ListOfPublicationsTest {
     @Test
     void makeListPublicWhenInitiallyPrivate() {
         // switchVisibility() – changes visibility from private to public
-        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
 
         assertTrue(list.isPrivate());
         list.switchVisibility();
@@ -106,7 +106,7 @@ class ListOfPublicationsTest {
     @Test
     void makeListPrivateWhenPublic() {
         // switchVisibility() – changes visibility from public back to private
-        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
 
         list.switchVisibility();
         assertFalse(list.isPrivate());
@@ -118,7 +118,7 @@ class ListOfPublicationsTest {
     @Test
     void createsValidListWhenParametersAreValid() {
         // Constructor – creates a valid list with default values
-        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
 
         assertNotNull(list);
         assertTrue(list.isPrivate());
@@ -129,20 +129,20 @@ class ListOfPublicationsTest {
     void throwsExceptionWhenUserIsNull() {
         // Constructor – throws exception when user is null
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(null, "Lista", actionGenre));
+                () -> new ListOfPublications(null, "Lista", _actionGenre));
     }
 
     @Test
     void throwsExceptionWhenListNameIsNull() {
         // Constructor – throws exception when list name is null
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(user1, null, actionGenre));
+                () -> new ListOfPublications(_user1, null, _actionGenre));
     }
 
     @Test
     void throwsExceptionWhenGenreIsNull() {
         // Constructor – throws exception when genre is null
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(user1, "Lista", null));
+                () -> new ListOfPublications(_user1, "Lista", null));
     }
 }

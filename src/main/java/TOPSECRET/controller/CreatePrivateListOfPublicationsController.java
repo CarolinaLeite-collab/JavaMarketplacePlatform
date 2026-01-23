@@ -20,7 +20,7 @@ public class CreatePrivateListOfPublicationsController {
         _genreRepo = genreRepo;
     }
 
-    public List<Genre> getOfficialGenres() {
+    public List<Genre> getListOfOfficialGenres() {
         return List.copyOf(_genreRepo.getListOfOfficialGenres());
     }
 
