@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RegisterCountryControllerTest {
 
-    private CountryRepo countryRepo;
-    private RegisterCountryController controller;
-    private User admin;
+    private CountryRepo _countryRepo;
+    private RegisterCountryController _controller;
+    private User _admin;
 
     @BeforeEach
     void setUp() {
@@ -26,37 +26,37 @@ class RegisterCountryControllerTest {
         );
 
         Phone phone = new Phone(new PhonePrefix("+351"), "909978798");
-        admin = new User(new Name("Marcelo"), address, new Email("test@test.pt"), phone);
+        _admin = new User(new Name("Marcelo"), address, new Email("test@test.pt"), phone);
 
-        countryRepo = new CountryRepo();
-        controller = new RegisterCountryController(countryRepo, admin);
+        _countryRepo = new CountryRepo();
+        _controller = new RegisterCountryController(_countryRepo, _admin);
     }
 
     @Test
     void constructsControllerSuccessfully() {
         // Assert
-        assertNotNull(controller);
+        assertNotNull(_controller);
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() {
         // Act
-        Country country = controller.registerCountry("Portugal");
+        Country country = _controller.registerCountry("Portugal");
 
         // Assert
         assertNotNull(country);
-        assertEquals(1, countryRepo.getAllCountries().size());
-        assertEquals(country, countryRepo.getAllCountries().get(0));
+        assertEquals(1, _countryRepo.getAllCountries().size());
+        assertEquals(country, _countryRepo.getAllCountries().get(0));
     }
 
     @Test
     void shouldNotRegisterCountrySuccessfully() {
         //Arrange
-        Country country = countryRepo.registerCountry("Portugal");
-        List<Country> countries = countryRepo.getAllCountries();
+        Country country = _countryRepo.registerCountry("Portugal");
+        List<Country> countries = _countryRepo.getAllCountries();
 
         // Act
-        Country duplicate = controller.registerCountry("Portugal");
+        Country duplicate = _controller.registerCountry("Portugal");
 
         // Assert
         assertNull(duplicate);
