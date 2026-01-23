@@ -74,5 +74,16 @@ public class ListOfPublications {
         _isPrivate = !_isPrivate;
     }
 
+    public void addPublication(Publication publication) {
+        if (publication == null) {
+            throw new IllegalArgumentException("Publication is mandatory");
+        }
+
+        if (_publications.contains(publication)) {
+            throw new IllegalStateException("Publication already in list");
+        }
+
+        _publications.add(publication);
+    }
 
 }

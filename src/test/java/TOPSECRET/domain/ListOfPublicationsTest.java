@@ -3,6 +3,8 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Year;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ListOfPublicationsTest {
@@ -144,5 +146,53 @@ class ListOfPublicationsTest {
         // Constructor – throws exception when genre is null
         assertThrows(IllegalArgumentException.class,
                 () -> new ListOfPublications(_user1, "Lista", null));
+    }
+
+    @Test
+    void publicationsListShouldStartEmpty() {
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
+        assertTrue(list.getPublications().isEmpty());
+    }
+
+    @Test
+    void addPublicationShouldAddSuccessfully() {
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
+
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("0306406152")) // valid
+                .year(Year.of(2000))
+                .title(new Title("Some Title"))
+                .author(new Author("Some Author"))
+                .publisher(new Publisher("Some Publisher"))
+                .genre(_actionGenre)
+                .build();
+
+        list.addPublication(pub);
+
+        assertEquals(1, list.getPublications().size());
+        assertEquals(pub, list.getPublications().get(0));
+    }
+
+    @Test
+    void addPublicationShouldThrowWhenDuplicate() {
+        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
+
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("1234-5678"))
+                .year(Year.of(2020))
+                .title(new Title("Magazine A"))
+                .publisher(new Publisher("Publisher M"))
+                .genre(_actionGenre)
+                .build();
+
+        list.addPublication(pub);
+
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> list.addPublication(pub)
+        );
+        assertEquals("Publication already in list", ex.getMessage());
     }
 }
