@@ -199,4 +199,101 @@ class PublicationRepoTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+    
+    @Test
+    void getPublication_returnsStoredInstance_whenSameReference() {
+        PublicationRepo repo = new PublicationRepo();
+        Publication p = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        repo.add(p);
+
+        assertSame(p, repo.getPublication(p));
+    }
+
+    @Test
+    void getPublication_returnsStoredInstance_whenEqualButDifferentObject() {
+        PublicationRepo repo = new PublicationRepo();
+        Publication stored = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Publication probe = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        repo.add(stored);
+
+        assertSame(stored, repo.getPublication(probe));
+    }
+
+    @Test
+    void getPublication_throws_whenNotFound() {
+        PublicationRepo repo = new PublicationRepo();
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                repo.getPublication(Publication.builder()
+                        .type(new PublicationType("BOOK"))
+                        .identifier(new ISBN("9780691181950"))
+                        .year(Year.of(2019))
+                        .title(new Title("How to Keep Your Cool"))
+                        .author(new Author("Seneca"))
+                        .publisher(new Publisher("Penguin"))
+                        .build()));
+
+        assertEquals("Publication not found", ex.getMessage());
+    }
+
+    @Test
+    void getPublication_throws_whenNull() {
+        PublicationRepo repo = new PublicationRepo();
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.getPublication(null));
+
+        assertEquals("Publication not found", ex.getMessage());
+    }
+
+    @Test
+    void getPublication_returnsCorrectPublication_whenMultipleStored() {
+        PublicationRepo repo = new PublicationRepo();
+
+        Publication p1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        Publication p2 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9789723701241"))
+                .year(Year.of(2013))
+                .title(new Title("Photomaton & Vox"))
+                .author(new Author("Herberto Helder"))
+                .publisher(new Publisher("Assírio & Alvim"))
+                .build();
+
+        repo.add(p1);
+        repo.add(p2);
+
+        assertSame(p2, repo.getPublication(p2));
+    }
+
 }
