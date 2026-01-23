@@ -61,6 +61,45 @@ public class ListOfPublicationsRepo {
         }
         return _listsOfListOfPublications.add(list);
     }
+
+
+    public List<ListOfPublications> findListsByUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User is mandatory");
+        }
+
+        List<ListOfPublications> result = new ArrayList<>();
+        for (ListOfPublications lop : _listsOfListOfPublications) {
+            if (lop.getUser().equals(user)) {
+                result.add(lop);
+            }
+        }
+        return List.copyOf(result);
+    }
+
+    public ListOfPublications findByOwnerNameAndGenre(User user, String name, Genre genre) {
+        if (user == null) {
+            throw new IllegalArgumentException("User is mandatory");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("List name is mandatory");
+        }
+        if (genre == null) {
+            throw new IllegalArgumentException("Genre is mandatory");
+        }
+
+        String normalizedName = name.trim();
+
+        for (ListOfPublications lop : _listsOfListOfPublications) {
+            if (lop.getUser().equals(user)
+                    && lop.getName().equalsIgnoreCase(normalizedName)
+                    && lop.getGenre().equals(genre)) {
+                return lop;
+            }
+        }
+        return null;
+    }
+
 }
 
 

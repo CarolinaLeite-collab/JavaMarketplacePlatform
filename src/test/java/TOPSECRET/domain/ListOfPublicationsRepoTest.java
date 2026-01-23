@@ -144,5 +144,27 @@ class   ListOfPublicationsRepoTest {
         assertEquals(1, newRepo.getListOfListOfPublications().size());
     }
 
+    @Test
+    void findListsByUserShouldReturnOnlyListsOfThatUser() {
+        _repo.createListOfPublications(_user1, "U1 List", _action);
+        _repo.createListOfPublications(_user2, "U2 List", _action);
+
+        List<ListOfPublications> result = _repo.findListsByUser(_user1);
+
+        assertEquals(1, result.size());
+        assertEquals("U1 List", result.get(0).getName());
+        assertEquals(_user1, result.get(0).getUser());
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldReturnListWhenExists() {
+        ListOfPublications created = _repo.createListOfPublications(_user1, "My List", _action);
+        assertNotNull(created);
+
+        ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1, "My List", _action);
+
+        assertNotNull(found);
+        assertEquals(created, found);
+    }
 
 }
