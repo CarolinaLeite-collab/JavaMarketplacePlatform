@@ -1,0 +1,43 @@
+@startuml
+title US002 - Add Publication Type to Official List
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+' ===== UI =====
+class AddPublicationTypeUI
+
+' ===== ENTITY =====
+class PublicationType {
+  - typeName : String
+  + getTypeName() : String
+}
+
+' ===== REPOSITORY =====
+class PublicationTypeRepo {
+  + existsPublicationType(typeName : String) : boolean
+  + createPublicationType(typeName : String) : PublicationType
+}
+
+' ===== CONTROLLER =====
+class AddPublicationTypeController {
+  - repo : PublicationTypeRepo
+  --
+  + AddPublicationTypeController(repo : PublicationTypeRepo)
+  + addPublicationType(typeName : String) : PublicationType
+}
+
+' ===== RELATIONSHIPS =====
+AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: uses
+AddPublicationTypeController "1" ..> "1" PublicationTypeRepo: calls
+PublicationTypeRepo "1"--> "*" PublicationType: manages
+
+@enduml

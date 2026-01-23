@@ -18,28 +18,30 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Administrator" as Admin
-participant "UI:UIAddPublicationType" as UI
-participant "Ctl2:CtlAddPublicationType" as Ctl
+participant "UI:AddPublicationTypeUI" as UI
+participant "Ctl:AddPublicationTypeCtl" as Ctl
 participant "_ptr:PublicationTypeRepo" as REPO
 
 ' --- System dialog ---
 Admin -> UI: I want to add a new publication type!
 activate "UI"
 UI --> Admin: What type would you like to add?
-Admin -> UI: Publication Type (typeName, bindingDescription)
-UI -> Ctl: addPublicationType (typeName, bindingDescription)
+deactivate "UI"
+Admin -> UI: Publication Type (typeName)
+activate "UI"
+UI -> Ctl: addPublicationType (typeName)
 activate "Ctl"
-Ctl -> REPO: addPublicationType (typeName, bindingDescription)
+Ctl -> REPO: addPublicationType (typeName)
 activate "REPO"
 REPO -> REPO: publicationTypeExists(typeName)
 create "publicationType:PublicationType" as instance
-REPO -> instance: addPublicationType(typeName, bindingDescription)
+REPO -> instance: createPublicationType(typeName)
 activate "instance"
-instance --> REPO: publicationType
+instance --> REPO: type
 deactivate "instance"
-REPO --> Ctl: publicationType
+REPO --> Ctl: type
 deactivate "REPO"
-Ctl --> UI: publicationType
+Ctl --> UI: True
 deactivate "Ctl"
 UI --> Admin: Publication Type successfully added to the list!
 deactivate "UI"
