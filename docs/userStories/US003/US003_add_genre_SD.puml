@@ -37,8 +37,8 @@ activate gr
 
 opt existsGenre(genreName) == false
         create "genre:Genre"
-        gr -> "genre:Genre": create()
-        gr -> list: add()
+        gr -> "genre:Genre": create(genreName)
+        gr -> list: add(genre)
         activate list
     end
 
