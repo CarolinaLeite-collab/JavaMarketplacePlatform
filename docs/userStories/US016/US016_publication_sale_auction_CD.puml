@@ -19,14 +19,14 @@ skinparam classAttributeIconSize 0
 class PublicationSaleAuctionUI {
 }
 
-class PublicationSaleAuctionCtl {
+class PublicationSaleAuctionController {
   - _libraryRepo: LibraryRepo
   - _publicationRepo: PublicationRepo
   - _itemRepo: ItemRepo
   - _auctionRepo: AuctionRepo
   --
   + getLibraryPublicationList(user: User): List<PublicationDetails>
-  + putPublicationOnAuction(publicationId: PublicationId, condition: Condition,
+  + putPublicationOnAuction(publication: Publication, condition: Condition,
                            startPrice: Price, startDate: ZonedDateTime,
                            endDate: ZonedDateTime): boolean
 }
@@ -47,7 +47,7 @@ class Publication {
 
 class PublicationRepo {
   - _publications: List<Publication>
-  + findPublicationById(id: PublicationId): Publication
+  + getPublication(publication: Publication): Publication
 }
 
 class ItemRepo {
@@ -76,13 +76,13 @@ class Auction {
 }
 
 ' UI → Controller
-PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionCtl : uses
+PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : uses
 
 ' Controller → Repos
-PublicationSaleAuctionCtl "1" ..> "1" LibraryRepo : calls
-PublicationSaleAuctionCtl "1" ..> "1" PublicationRepo : calls
-PublicationSaleAuctionCtl "1" ..> "1" ItemRepo : calls
-PublicationSaleAuctionCtl "1" ..> "1" AuctionRepo : calls
+PublicationSaleAuctionController "1" ..> "1" LibraryRepo : calls
+PublicationSaleAuctionController "1" ..> "1" PublicationRepo : calls
+PublicationSaleAuctionController "1" ..> "1" ItemRepo : calls
+PublicationSaleAuctionController "1" ..> "1" AuctionRepo : calls
 
 ' Repos → Domain objects
 LibraryRepo "1"--> "*" Library : manages

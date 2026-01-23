@@ -18,7 +18,7 @@ autonumber
 ' --- Actor and participants ---
 actor "User" as User
 participant ":PublicationSaleAuctionUI" as UI
-participant ":PublicationSaleAuctionCtl" as Controller
+participant ":PublicationSaleAuctionController" as Controller
 participant ":LibraryRepo" as LibraryRepo
 participant "userLibrary: Library" as userLibrary
 participant ":PublicationRepo" as PublicationRepo
@@ -58,13 +58,13 @@ note left Controller: Publication needs to be turned %n()into an item to be put 
 Controller -> ItemRepo : createItem(p1, condition)
 activate ItemRepo
 create i1 as "i1: Item"
-ItemRepo -> i1 : create
+ItemRepo -> i1 :
 ItemRepo --> Controller : i1
 deactivate ItemRepo
 Controller -> AuctionRepo : createAuction(i1, startPrice, startDate, endDate)
 activate AuctionRepo
 create a1 as "a1: Auction"
-AuctionRepo -> a1 : create
+AuctionRepo -> a1 :
 AuctionRepo --> Controller : a1
 deactivate AuctionRepo
 Controller -> i1 : setAuction(a1)
