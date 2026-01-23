@@ -172,4 +172,304 @@ class DirectSaleTest {
         assertFalse(sale.isByAuthor(author));
 
     }
+
+    @Test
+    void testIsByPublicationShouldReturnTrueWhenPublicationBookWithIsbnMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnFalseWhenPublicationBookWithIsbnDoesntMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9781408736401"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        assertFalse(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnTrueWhenPublicationBookWithoutIsbnMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnFalseWhenPublicationBookWithoutIsbnDoesntMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1940))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        assertFalse(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnTrueWhenPublicationMagazineWithIssnMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("1234-5678"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("1234-5678"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnFalseWhenPublicationMagazineWithIssnDoesntMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("2316-9133"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("1234-5678"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertFalse(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnTrueWhenPublicationMagazineWithoutIssnMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void testIsByPublicationShouldReturnFalseWhenPublicationMagazineWithoutIssnDoesntMatches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1930))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertFalse(sale.isByPublication(pub1));
+    }
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationBookMatchesCaseInsensitive() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("PEngUiN"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+
+    }
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationMagazineMatchesCaseInsensitive() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("NatURE"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+
+    }
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationMatchesCaseInsensitive() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("NatURE"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null); // create a directSale of an item
+
+        Publication pub1 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new NoIdentifier())
+                .year(Year.of(1950))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
+        assertTrue(sale.isByPublication(pub1));
+
+    }
+
 }
