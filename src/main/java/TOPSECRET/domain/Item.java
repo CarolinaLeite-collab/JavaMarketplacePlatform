@@ -53,4 +53,9 @@ public class Item {
         }
         this.auction = auction;
     }
+
+    public Auction getAuction() {
+        return auction;
+
+    }
 }

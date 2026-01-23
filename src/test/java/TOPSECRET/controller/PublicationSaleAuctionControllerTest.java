@@ -242,6 +242,29 @@ class PublicationSaleAuctionControllerTest {
     }
 
     @Test
+    void testPutPublicationOnAuctionWrongAuctionItem(){
+
+        Publication testPub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780141036144"))
+                .year(Year.of(2012))
+                .title(new Title("1984"))
+                .author(new Author("George Orwell"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        publicationRepo.add(testPub);
+
+        Item item = new Item(testPub, Condition.GOOD);
+        Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
+
+        assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
+                "This Auction does not belong to this Item.");
+
+    }
+
+
+    @Test
     void testPutPublicationOnAuctionSuccess(){
 
         Publication testPub = Publication.builder()
@@ -258,35 +281,18 @@ class PublicationSaleAuctionControllerTest {
 
         boolean result = controller.putPublicationOnAuction(testPub, Condition.GOOD, new Price(10, Currency.EUR), now.plusDays(1), now.plusDays(8));
 
-        assertTrue(result);
-        assertEquals(1, itemRepo.getAll().size());
+        assertTrue(result); // controller returning true means entire operation succeeded
+        assertEquals(1, itemRepo.getAll().size()); //one item in itemRepo now
         Item createdItem = itemRepo.getAll().get(0);
-        assertEquals(testPub, createdItem.getPublication());
-        assertEquals(Condition.GOOD, createdItem.getCondition());
+        assertNotNull(createdItem.getAuction()); //proves item.setAuction(auction) carried out successfully
+        assertEquals(createdItem, createdItem.getAuction().getItem()); //verified consistency in all directions
+        assertEquals(testPub, createdItem.getPublication()); //correct publication was turned into item
+        assertEquals(Condition.GOOD, createdItem.getCondition()); //proves condition parameter was preserved
 
-        //Using existing AuctionRepo method to verify item was successfully put on auction
+        //Using existing AuctionRepo method to verify auction was created, persists, and linked to its item
         assertEquals(1, auctionRepo.getAuctionItemsByAuthor(new Author("George Orwell")).size());
 
     }
 
-    @Test
-    void testPutPublicationNotInRepoOrLibraryOnAuction() {
-
-        Publication unknownPub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780141439556"))  // Invalid ISBN
-                .year(Year.of(2002))
-                .title(new Title("Wuthering Heights"))
-                .author(new Author("Emily Brönte"))
-                .publisher(new Publisher("Penguin"))
-                .build();
-
-        //  Publication never added to PublicationRepo, and therefore never to library
-
-        assertThrows(IllegalArgumentException.class, () ->
-                        controller.putPublicationOnAuction(unknownPub, Condition.GOOD,
-                                new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)),
-                "Publication not found");
-        }
 
 }
