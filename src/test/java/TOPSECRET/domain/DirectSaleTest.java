@@ -174,6 +174,50 @@ class DirectSaleTest {
     }
 
     @Test
+    void test_isByPublisher_should_return_true_when_Publisher_matches() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Publisher publisher = new Publisher("Penguin");
+
+        assertTrue(sale.isByPublisher(publisher));
+
+    }
+
+    @Test
+    void test_is_by_publisher_should_return_false_when_publisher_does_not_match() {
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+        Item item = new Item(pub, Condition.GOOD);
+
+        Price price = new Price(15.0, Currency.USD);
+
+        DirectSale sale = new DirectSale(item, price, null);
+
+        Publisher publisher = new Publisher("Porto Editora");
+
+        assertFalse(sale.isByPublisher(publisher));
+
+    }
+
+    @Test
     void testIsByPublicationShouldReturnTrueWhenPublicationBookWithIsbnMatches() {
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))

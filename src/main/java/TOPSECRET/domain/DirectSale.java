@@ -64,4 +64,13 @@ public class DirectSale {
         }
         return false;
     }
+
+    public boolean isByPublisher (Publisher publisher) {
+
+        if (item.getPublication().getPublisher().equals(publisher)) {
+
+            return true;
+        }
+        return false;
+    }
 }
