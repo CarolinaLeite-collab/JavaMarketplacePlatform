@@ -33,11 +33,12 @@ public class PublicationInLibraryForDirectSaleController {
         this.directSaleRepo = directSaleRepo;
     }
 
-    public List<PublicationDetails> getPublicationsList(User user) {
-
+    public List<Publication> getPublicationsInLibraryList(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User required");    //In the LibraryRepo the findByUser method doesn't have this verification.
+        }
         Library userLibrary = libraryRepo.findByUser(user);
-
-        return userLibrary.getPublicationsInLibrary();
+        return userLibrary.getAllPublications();
     }
 
     public boolean addPublicationForDirectSale(
@@ -46,6 +47,9 @@ public class PublicationInLibraryForDirectSaleController {
             Price price,
             Period timeLimit
     ) {
+        if (condition == null || price == null || timeLimit == null)
+            return false;
+
         Publication pub = publicationRepo.getPublication(publication);
         Item item = itemRepo.createItem(pub, condition);
         DirectSale directSale = directSaleRepo.createDirectSale(item, price, timeLimit);
