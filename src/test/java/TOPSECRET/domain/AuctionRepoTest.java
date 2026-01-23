@@ -388,4 +388,75 @@ class AuctionRepoTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void should_filter_correctly_and_be_case_insensitive() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Publisher publisher1 = new Publisher("publisher1");
+        Publisher publisher2 = new Publisher("publisher2");
+
+        Publication pubA = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("0306406152"))
+                .year(Year.of(2019))
+                .title(new Title("A"))
+                .author(new Author("A"))
+                .publisher(publisher1)
+                .genre(new Genre("action"))
+                .build();
+
+        Publication pubB = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9789896710453"))
+                .year(Year.of(2019))
+                .title(new Title("B"))
+                .author(new Author("B"))
+                .publisher(publisher2)
+                .genre(new Genre("romance"))
+                .build();
+
+        Item itemA = new Item(pubA, Condition.GOOD);
+        Item itemB = new Item(pubB, Condition.GOOD);
+
+        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+
+        repo.createAuction(itemA, new Price(1.0, Currency.EUR), start, end);
+        repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
+
+        List<Item> item1 = repo.getAuctionItemsByPublisher(new Publisher("pubLIshEr1"));
+        assertEquals(1, item1.size());
+        assertSame(itemA, item1.get(0));
+
+        List<Item> item2 = repo.getAuctionItemsByPublisher(publisher2);
+        assertEquals(1, item2.size());
+        assertSame(itemB, item2.get(0));
+    }
+    @Test
+    void should_return_empty_list_when_null_publisher() {
+        AuctionRepo repo = new AuctionRepo();
+
+        Publisher publisher1 = new Publisher("publisher1");
+        Publication pubA = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("0306406152"))
+                .year(Year.of(2019))
+                .title(new Title("A"))
+                .author(new Author("A"))
+                .publisher(publisher1)
+                .genre(new Genre("action"))
+                .build();
+
+        Item item = new Item(pubA, Condition.GOOD);
+
+        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+
+        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+
+        List<Item> item3 = repo.getAuctionItemsByPublisher(null);
+        assertNotNull(item3);
+        assertTrue(item3.isEmpty());
+    }
 }

@@ -89,4 +89,27 @@ public class AuctionRepo {
         return new ArrayList<>(listOfAuctionItemsByPublication);
     }
 
+    /**
+     * Retrieves a list of items currently on auction that belong to a specific publisher.
+     * <p>
+     * This method creates and returns a copy of the list to preserve encapsulation
+     * and prevent external modifications to the internal repository state.
+     * </p>
+     * @param publisher The publisher by which to filter auction items.
+     * @return A new list containing items that match the given publisher.
+     */
+
+    public List<Item> getAuctionItemsByPublisher(Publisher publisher) {
+
+        List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
+
+        for (Auction auction : itemsOnAuction) {
+            if (auction.isByPublisher(publisher)){
+                listOfAuctionItemsByPublisher.add(auction.getItem());
+            }
+        }
+
+        return new ArrayList<>(listOfAuctionItemsByPublisher);
+    }
+
 }
