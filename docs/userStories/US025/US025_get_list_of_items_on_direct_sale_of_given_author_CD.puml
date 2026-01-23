@@ -22,19 +22,19 @@ class GetDirectSaleItemsByAuthorUI {
 class GetDirectSaleItemsByAuthorController {
 
 - _dsr : DirectSaleRepo
-+ getDirectSaleItemsByAuthor(authorName) : List<Item>
++ getDirectSaleItemsByAuthor(authorName: Author) : List<Item>
 }
 
 class DirectSaleRepo {
 
 - _directSales : List<DirectSale>
-+getDirectSaleItemsByAuthor(authorName) : List<Item>
++getDirectSaleItemsByAuthor(authorName: Author) : List<Item>
 
 }
 
 class DirectSale {
 
-+isByAuthor(authorName) : boolean
++isByAuthor(authorName: Author) : boolean
 
 }
 
