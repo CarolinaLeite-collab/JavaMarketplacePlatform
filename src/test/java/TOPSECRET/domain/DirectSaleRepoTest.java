@@ -22,6 +22,7 @@ class DirectSaleRepoTest {
     private DirectSale _directSale1;
     private DirectSale _directSale2;
     private Genre _genre;
+    private Publisher _publisher;
 
 
     @BeforeEach
@@ -34,6 +35,7 @@ class DirectSaleRepoTest {
 
         _author = new Author("Seneca");
         _genre = new Genre("History");
+        _publisher = new Publisher("Penguin");
 
         _publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -199,4 +201,32 @@ class DirectSaleRepoTest {
         assertEquals(1, itemsByAuthor.size());
         assertEquals(_item, itemsByAuthor.get(0));
     }
+
+    @Test
+    void testGetDirectSaleItemsByPublisherWithDirectSalesShouldReturnNonEmptyList() {
+
+
+        _directSaleRepo.createDirectSale(_item, new Price(10.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(15.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(5.0, Currency.EUR), null);
+
+        List<Item> list = _directSaleRepo.getDirectSaleItemByPublisher(_publisher);
+
+        assertNotNull(list);
+        assertEquals(4, list.size());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoDirectSaleItemsForPublisher() {
+
+        //act
+        List<Item> emptyList = _directSaleRepo.getDirectSaleItemByPublisher(_publisher);
+
+        //assert
+        assertNotNull(emptyList);
+        assertTrue(emptyList.isEmpty());
+
+    }
+
 }
