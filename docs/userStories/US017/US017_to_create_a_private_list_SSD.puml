@@ -24,13 +24,13 @@ participant ":MiteLovers" as ML
 '==== UI interaction ====
 User -> ML: I want to create a private list
 activate ML
-ML --> User: What is the list name?
+ML --> User: What is the list's name?
 deactivate ML
 
 User -> ML:  name
 activate ML
 
-User <-- ML:  What is the list genre?
+User <-- ML:  What is the list's genre?
 deactivate
 
 User -> ML:  genre
