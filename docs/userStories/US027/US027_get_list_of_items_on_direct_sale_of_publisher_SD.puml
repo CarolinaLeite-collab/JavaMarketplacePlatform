@@ -1,0 +1,63 @@
+@@startuml
+ title US027 - "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SD
+ hidefootbox
+
+ '==== basic style ====
+ skinparam monochrome false
+ skinparam shadowing false
+ skinparam defaultFontName Futura
+ skinparam objectFontSize 20
+ skinparam backgroundColor CornSilk
+ skinparam objectBackgroundColor WhiteSmoke
+ skinparam noteBackgroundColor #FFFFE0
+ skinparam ArrowFontColor #3B4953
+ skinparam ActivationBackgroundColor black
+
+ autonumber
+ autoactivate off
+
+ ' --- Actor and participants ---
+ actor Buyer
+ participant ":GetItemsOnDirectSaleOfAGivenPublisherUI" as UI
+ participant ":GetItemsOnDirectSaleOfAGivenPublisherCtl" as Ctl
+ participant "dsr:DirectSaleRepo" as DirectSaleRepo
+ participant "directSale:DirectSale" as DirectSale
+
+ ' --- System dialog ---
+ Buyer -> UI: I want a list of items on direct sale of a given publisher
+ activate UI
+ UI --> Buyer: What is the publisher's name?
+ deactivate UI
+
+ Buyer -> UI: publisherName
+ activate UI
+ UI -> Ctl: getDirectSaleItemsByPublisher(publisherName)
+ activate Ctl
+ Ctl -> DirectSaleRepo: getDirectSaleItemsByPublisher(publisherName)
+ activate DirectSaleRepo
+
+ create "listOfItemsOnDirectSaleByPublisher:List<Item>" as List
+ DirectSaleRepo -> List: create()
+
+ ' --- Run through each direct sale and check the publisher associated with the corresponding Item ---
+ loop for each directSale in dsr
+     DirectSaleRepo -> DirectSale: isOfPublisher(publisherName)
+     opt isOfPublisher == true
+         DirectSaleRepo -> List: add(directSale.getItem())
+         activate List
+         List -> DirectSaleRepo: true
+         deactivate List
+     end
+ end
+
+ create "CopyOfListOfDirectSaleItemsByPublisher: List<Item>" as ListCopy
+ DirectSaleRepo -> ListCopy: List.copyOf(listOfItemsOnDirectSaleByPublisher)
+ DirectSaleRepo --> Ctl: copyOfListOfItemsOnDirectSaleByPublisher
+ deactivate DirectSaleRepo
+
+ Ctl --> UI: copyOfListOfItemsOnDirectSaleByPublisher
+ deactivate Ctl
+ UI --> Buyer: Here it is!
+ deactivate UI
+
+ @enduml
