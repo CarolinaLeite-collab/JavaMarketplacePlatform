@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +17,8 @@ public class ListOfPublications {
     private String _name;
     private Genre _genre;
     private boolean _isPrivate;
+    private List<Publication> _publications;
+
 
     public ListOfPublications(User user, String name, Genre genre) {
 
@@ -27,6 +30,7 @@ public class ListOfPublications {
         _name = name;
         _genre = genre;
         _isPrivate = true;
+        _publications = new ArrayList<>();
     }
 
 
@@ -62,6 +66,13 @@ public class ListOfPublications {
         return Objects.hash(_user, _name, _genre);
     }
 
+    public List<Publication> getPublications() {
+        return List.copyOf(_publications);
+    }
+
+    public void switchVisibility() {
+        _isPrivate = !_isPrivate;
+    }
 
 
 }

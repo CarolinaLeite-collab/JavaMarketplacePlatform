@@ -93,4 +93,56 @@ class ListOfPublicationsTest {
         assertNotEquals(list, notAList);
     }
 
+    @Test
+    void makeListPublicWhenInitiallyPrivate() {
+        // switchVisibility() – changes visibility from private to public
+        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+
+        assertTrue(list.isPrivate());
+        list.switchVisibility();
+        assertFalse(list.isPrivate());
+    }
+
+    @Test
+    void makeListPrivateWhenPublic() {
+        // switchVisibility() – changes visibility from public back to private
+        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+
+        list.switchVisibility();
+        assertFalse(list.isPrivate());
+
+        list.switchVisibility();
+        assertTrue(list.isPrivate());
+    }
+
+    @Test
+    void createsValidListWhenParametersAreValid() {
+        // Constructor – creates a valid list with default values
+        ListOfPublications list = new ListOfPublications(user1, "Lista", actionGenre);
+
+        assertNotNull(list);
+        assertTrue(list.isPrivate());
+        assertTrue(list.getPublications().isEmpty());
+    }
+
+    @Test
+    void throwsExceptionWhenUserIsNull() {
+        // Constructor – throws exception when user is null
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfPublications(null, "Lista", actionGenre));
+    }
+
+    @Test
+    void throwsExceptionWhenListNameIsNull() {
+        // Constructor – throws exception when list name is null
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfPublications(user1, null, actionGenre));
+    }
+
+    @Test
+    void throwsExceptionWhenGenreIsNull() {
+        // Constructor – throws exception when genre is null
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfPublications(user1, "Lista", null));
+    }
 }
