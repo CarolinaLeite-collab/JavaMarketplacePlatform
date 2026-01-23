@@ -1,0 +1,67 @@
+@startuml
+title US024 - "As a Buyer, I want to get the list of items on auction of a given publication" - Level 2 SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant ":GetAuctionItemsByPublicationUI" as UI
+participant ":GetAuctionItemsByPublicationController" as CTL
+participant "_ar:AuctionRepo" as AR
+participant "auction:Auction" as DS
+
+
+
+' --- Dialog ---
+Buyer -> UI: I want the list of items on auction of a given publication
+activate UI
+UI --> Buyer: What is the publication's name?
+deactivate UI
+Buyer -> UI: publicationName
+activate UI
+UI -> CTL: getAuctionItemsByPublication(publicationName)
+activate CTL
+CTL -> AR: getAuctionItemsByPublication(publicationName)
+activate AR
+
+create "listOfAuctionItemsByPublisher: List<Item>" as List
+AR -> List: create()
+
+loop for each auction in _ar
+    AR -> DS: isByPublication(publicationName)
+'    activate DS
+'    DS -> DSR: true
+'    deactivate DS
+    opt isByPublication == true
+        AR -> List: add(auction.getItem())
+        activate List
+        List -> AR: true
+        deactivate List
+    end
+end
+
+create "copyOfListOfAuctionItemsByPublication: List<Item>" as Copy
+AR -> Copy: List.copyof(ListOfAuctionItemsByPublication)
+
+
+AR --> CTL: copyOfListOfAuctionItemsByPublication
+deactivate AR
+CTL --> UI: copyOfListOfAuctionItemsByPublication
+deactivate CTL
+UI --> Buyer: Here's the list! done!
+deactivate UI
+
+@enduml
