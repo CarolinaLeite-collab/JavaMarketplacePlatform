@@ -26,7 +26,7 @@ participant ":CountryRepo" as CR
 '==== UI interaction ====
 ADM -> UI: I want to register a country
 activate UI
-UI --> ADM: What is the country name?
+UI --> ADM: What is the country's name?
 deactivate UI
 ADM -> UI: countryName
 activate UI
