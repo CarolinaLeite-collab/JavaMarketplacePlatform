@@ -15,14 +15,18 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
 actor User
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
 User -> System : I want to add one of my publications to one of my lists
 activate "System"
-System --> User : Select what available books you want to add:
-User -> System : Selection
-System --> User : Select what list you want to add them to:
-User -> System : Selection
+System --> User : Select what list you want to add them to
+deactivate System
+User -> System : listOfPublications
+activate System
+System --> User : Select what available publications you want to add
+deactivate System
+User -> System : publicationsToAdd
+activate System
 System --> User : Done
 deactivate "System"
 
