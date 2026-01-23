@@ -36,9 +36,6 @@ public class ListOfPublicationsRepo {
         return false;
     }
 
-    /**
-     * Returns a list of all ListOfPublications, created for unit tests.
-     */
     public List<ListOfPublications> getListOfListOfPublications(){
         return List.copyOf(_listsOfListOfPublications);
     }
@@ -56,6 +53,13 @@ public class ListOfPublicationsRepo {
             }
         }
         return List.copyOf(result);
+    }
+
+    public boolean addListOnRepo(ListOfPublications list){
+        if (list == null) {
+            return false;
+        }
+        return _listsOfListOfPublications.add(list);
     }
 }
 

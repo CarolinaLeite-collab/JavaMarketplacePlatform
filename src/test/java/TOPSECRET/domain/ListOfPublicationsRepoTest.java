@@ -7,7 +7,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ListOfPublicationsRepoTest {
+class   ListOfPublicationsRepoTest {
 
     private User _user1;
     private User _user2;
@@ -123,4 +123,26 @@ class ListOfPublicationsRepoTest {
 
         assertThrows(UnsupportedOperationException.class, () -> result.add(a));
     }
+
+    @Test
+    void returnFalseWhenListIsNull() {
+        // addListOnRepo() – returns false when list is null
+        ListOfPublicationsRepo newRepo = new ListOfPublicationsRepo();
+
+        boolean result = newRepo.addListOnRepo(null);
+        assertFalse(result);
+    }
+
+    @Test
+    void storeListAndReturnTrueWhenListIsValid() {
+        // addListOnRepo() – stores a valid list and returns true
+        ListOfPublicationsRepo newRepo = new ListOfPublicationsRepo();
+        ListOfPublications list1 = new ListOfPublications(_user1, "MyActionList", _action);
+
+        boolean result = newRepo.addListOnRepo(list1);
+        assertTrue(result);
+        assertEquals(1, newRepo.getListOfListOfPublications().size());
+    }
+
+
 }
