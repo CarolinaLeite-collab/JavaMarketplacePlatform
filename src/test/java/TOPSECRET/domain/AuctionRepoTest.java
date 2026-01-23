@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.Year;
 import java.util.List;
@@ -16,8 +17,47 @@ class AuctionRepoTest {
     private String defaultAuthorName;
     private String defaultPublisherName;
 
+    private AuctionRepo _repo;
+    private Publication _pub1;
+    private Publication _pub2;
+    private Item _item1;
+    private Item _item2;
+    private Item _item3;
+    private Price _startingPrice;
+    private ZonedDateTime _start;
+    private ZonedDateTime _end;
+
     @BeforeEach
     void setUp() {
+        _repo = new AuctionRepo();
+
+        _pub1 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("1111111111"))
+                .year(Year.of(2020))
+                .title(new Title("Architectonica Percepta"))
+                .author(new Author("Paulo Providência"))
+                .publisher(new Publisher("Park Books"))
+                .build();
+
+        _pub2 = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("838894522X"))
+                .year(Year.of(1980))
+                .title(new Title("Louis I. Khan: The idea of order"))
+                .author(new Author("Klaus-Peter Gast"))
+                .publisher(new Publisher("Birkhauser"))
+                .build();
+
+        _item1 = new Item(_pub1, Condition.GOOD);
+        _item2 = new Item(_pub1, Condition.FAIR);
+        _item3 = new Item(_pub2, Condition.LIKE_NEW);
+
+        _startingPrice = new Price(10.0, Currency.EUR);
+
+        _start = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        _end = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+
         bookType = new PublicationType("BOOK");
         publicationYear = Year.of(2019);
         defaultAuthorName = "Someone";
@@ -239,5 +279,45 @@ class AuctionRepoTest {
 
         List<Item> second = repo.getAuctionItemsByAuthor(author);
         assertEquals(1, second.size());
+    }
+
+    @Test
+    void shouldReturnAllItemsForGivenPublication() {
+        // Arrange
+        _repo.createAuction(_item1, _startingPrice, _start, _end);
+        _repo.createAuction(_item2, _startingPrice, _start, _end);
+        _repo.createAuction(_item3, _startingPrice, _start, _end);
+
+        // Act
+        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(_item1));
+        assertTrue(result.contains(_item2));
+        assertFalse(result.contains(_item3));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
+        // Arrange
+        _repo.createAuction(_item3, _startingPrice, _start, _end); // only pub2 item
+
+        // Act
+        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenRepoIsEmpty() {
+        // Act
+        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }

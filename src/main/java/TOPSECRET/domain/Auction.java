@@ -145,4 +145,11 @@ public class Auction {
         }
         return false;
     }
+
+    public boolean isByPublication(Publication publication) {
+        if (_item.getPublication().equals(publication)) {
+            return true;
+        }
+        return false;
+    }
 }

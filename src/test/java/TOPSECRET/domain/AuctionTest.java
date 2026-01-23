@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +16,8 @@ class AuctionTest {
     private Price _outrightPrice; // optional (nullable)
     private User _buyer;
     private Bids _bids;
+    private ZonedDateTime _auctionStart1;
+    private ZonedDateTime _auctionEnd1;
 
     @BeforeEach
     void setUp() {
@@ -46,6 +47,8 @@ class AuctionTest {
         bids.addBid(bid1);
         bids.addBid(bid2);
         _bids = bids;
+        _auctionStart1 = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+        _auctionEnd1 = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
     }
 
     //test a sucessful auction
@@ -340,4 +343,38 @@ class AuctionTest {
             return null; // unreachable
         }
     }
+
+    @Test
+    void shouldReturnTrueForMatchingPublication() {
+        // Arrange
+        Auction auction = new Auction(_item, _startingPrice, _outrightPrice, _auctionStart1, _auctionEnd1);
+
+        // Act
+        boolean result = auction.isByPublication(_publication);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseForDifferentPublication() {
+        // Arrange
+        Publication otherPublication = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("838894522X"))
+                .year(Year.of(2020))
+                .title(new Title("Louis I. Khan: The idea of order"))
+                .author(new Author("Klaus-Peter Gast"))
+                .publisher(new Publisher("Birkhauser"))
+                .build();
+
+        Auction auction = new Auction(_item, _startingPrice, _outrightPrice, _auctionStart1, _auctionEnd1);
+
+        // Act
+        boolean result = auction.isByPublication(otherPublication);
+
+        // Assert
+        assertFalse(result);
+    }
 }
+

@@ -77,4 +77,16 @@ public class AuctionRepo {
         return new ArrayList<>(listOfAuctionItemsByAuthor);
     }
 
+    public List<Item> getAuctionItemsByPublication(Publication publication) {
+
+        List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
+
+        for (Auction auction : itemsOnAuction) {
+            if(auction.isByPublication(publication)) {
+                listOfAuctionItemsByPublication.add(auction.getItem());
+            }
+        }
+        return new ArrayList<>(listOfAuctionItemsByPublication);
+    }
+
 }
