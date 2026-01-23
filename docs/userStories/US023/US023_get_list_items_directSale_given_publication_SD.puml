@@ -39,11 +39,11 @@ Ctl -> dsr: getDirectSaleItemsByPublication(publication)
 activate dsr
 create "listOfDirectSaleItemsByPublication: List<item>" as list
 
-dsr -> list: create()
+dsr -> list: create(listOfDirectSaleItemsByPublication)
 loop for each ds in dsRepo
         dsr -> ds: isByPublication(publication)
         opt isByPublication == true
-            dsr -> list: add(ds.getItem())
+            dsr -> list: add(directSale.getItem())
             activate list
             list --> dsr: true
             deactivate list
