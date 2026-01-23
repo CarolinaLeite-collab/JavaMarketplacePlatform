@@ -11,10 +11,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectSaleRepoTest {
 
-    private User _user;
+    private User _buyer;
     private DirectSaleRepo _directSaleRepo;
     private Publication _publication;
+    private Publication _publication2;
     private Item _item;
+    private Item _item2;
     private Author _author;
     private DirectSale _directSale1;
     private DirectSale _directSale2;
@@ -24,7 +26,7 @@ class DirectSaleRepoTest {
     @BeforeEach
     void setUp() {
 
-        _user = new User(
+        _buyer = new User(
                 new Name("Zé Isep"),
                 new Email("ze@isep.pt")
         );
@@ -42,7 +44,16 @@ class DirectSaleRepoTest {
                 .genre(_genre)
                 .build();
 
+        _publication2 = Publication.builder()
+                .type(new PublicationType("MAGAZINE"))
+                .identifier(new ISSN("2316-9133"))
+                .year(Year.of(2022))
+                .title(new Title("Science Weekly"))
+                .publisher(new Publisher("Nature"))
+                .build();
+
         _item = new Item(_publication, Condition.GOOD);
+        _item2 = new Item(_publication2, Condition.GOOD);
 
         _directSale1 = new DirectSale(_item, new Price(20.0, Currency.EUR), null);
         _directSale2 = new DirectSale(_item, new Price(25.0, Currency.EUR), null);
@@ -77,6 +88,52 @@ class DirectSaleRepoTest {
         assertNotNull(emptyList);
         assertTrue(emptyList.isEmpty());
 
+    }
+
+    @Test
+    void testGetDirectSaleItemsByPublicationBookNoDirectSalesShouldReturnEmptyList() {
+
+        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByPublication(_publication);
+
+        assertNotNull(emptyList);
+        assertTrue(emptyList.isEmpty());
+
+    }
+
+    @Test
+    void testGetDirectSaleItemsByPublicationMagazineNoDirectSalesShouldReturnEmptyList() {
+
+        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByPublication(_publication2);
+
+        assertNotNull(emptyList);
+        assertTrue(emptyList.isEmpty());
+
+    }
+
+    @Test
+    void testGetDirectSaleItemsByPublicationBookWithDirectSalesShouldReturnNonEmptyList() {
+
+        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
+
+        //act
+        List<Item> list = _directSaleRepo.getDirectSaleItemsByPublication(_publication);
+
+        //assert
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
+    }
+
+    @Test
+    void testGetDirectSaleItemsByPublicationMagazineWithDirectSalesShouldReturnNonEmptyList() {
+
+        _directSaleRepo.createDirectSale(_item2, new Price(20.0, Currency.EUR), null);
+        _directSaleRepo.createDirectSale(_item2, new Price(25.0, Currency.EUR), null);
+
+        List<Item> list = _directSaleRepo.getDirectSaleItemsByPublication(_publication2);
+
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
     }
 
     @Test

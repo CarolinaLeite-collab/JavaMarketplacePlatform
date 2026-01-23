@@ -70,5 +70,19 @@ public class DirectSaleRepo {
     }
 
 
+    public List<Item> getDirectSaleItemsByPublication (Publication publication) {
+
+        List<Item> listOfDirectSaleItemsByPublication = new ArrayList<>();
+
+        for (DirectSale directSale: _directSales) {
+            if (directSale.isByPublication(publication)) {
+                listOfDirectSaleItemsByPublication.add(directSale.getItem());
+            }
+        }
+
+        List<Item> copyOfListOfDirectSaleItemsByPublication = List.copyOf(listOfDirectSaleItemsByPublication);
+
+        return copyOfListOfDirectSaleItemsByPublication;
+    }
 
 }
