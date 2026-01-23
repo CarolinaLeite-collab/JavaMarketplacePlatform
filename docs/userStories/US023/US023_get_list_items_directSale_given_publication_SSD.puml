@@ -1,0 +1,35 @@
+@startuml
+title "US023 - As a Buyer, I want to get the list of items on \ndirect sale of a given publication" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+skinparam ActivationBackgroundColor WhiteSmoke
+
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant "MiteLovers" as System
+
+' --- System dialog ---
+Buyer -> System: I want to get a list of items on direct sale of a publication
+activate "System"
+System --> Buyer: Which publication?
+deactivate "System"
+
+Buyer -> System: publication
+activate "System"
+System --> Buyer: List of items of a publication on direct sale displayed
+deactivate "System"
+@enduml
