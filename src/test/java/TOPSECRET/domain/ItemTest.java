@@ -173,4 +173,45 @@ class ItemTest {
 
         assertEquals(Condition.LIKE_NEW, item.getCondition());
     }
+
+    @Test
+    void puttingPublicationOnAuctionWrongAuctionItem(){
+
+        Publication testPub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780141036144"))
+                .year(Year.of(2012))
+                .title(new Title("1984"))
+                .author(new Author("George Orwell"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        Item item = new Item(testPub, Condition.GOOD);
+        Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
+
+        assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
+                "This Auction does not belong to this Item.");
+
+    }
+
+    @Test
+    void puttingPublicationOnDirectSaleWrongDirectSaleItem(){
+
+        Publication testPub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780141036144"))
+                .year(Year.of(2012))
+                .title(new Title("1984"))
+                .author(new Author("George Orwell"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        Item item = new Item(testPub, Condition.GOOD);
+        DirectSale wrongDirectSaleItem = new DirectSale(new Item(testPub, Condition.POOR), new Price(10.0, Currency.EUR), Period.ofMonths(3));
+
+        assertThrows(IllegalArgumentException.class, () -> item.setDirectSale(wrongDirectSaleItem),
+                "This DirectSale does not belong to this Item.");
+
+    }
+
 }
