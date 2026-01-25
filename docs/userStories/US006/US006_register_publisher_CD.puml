@@ -19,6 +19,7 @@ class RegisterPublisherUI {
 }
 
 class RegisterPublisherController {
+  - _publisherRepo: PublisherRepo
   + registerPublisher(publisherName: String) : Publisher
 }
 
@@ -33,13 +34,13 @@ class Publisher {
 }
 ' NOTE: getName() to be used in unit tests, but is not in US006 SD
 RegisterPublisherUI "1" ..> "1" RegisterPublisherController: uses
-RegisterPublisherController "1" ..> "1" PublisherRepo : calls
+RegisterPublisherController "1" --> "1" PublisherRepo : uses
 PublisherRepo "1" --> "*" Publisher : creates
 
 note right of RegisterPublisherController
-  This registerPublisher() calls
-  PublisherRepo's method of the
-  same name
+  registerPublisher() calls
+  PublisherRepo's method
+  of the same name
 end note
 
 note right of PublisherRepo
