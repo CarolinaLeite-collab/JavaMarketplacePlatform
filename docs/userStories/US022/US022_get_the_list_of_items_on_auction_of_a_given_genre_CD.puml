@@ -19,7 +19,6 @@ skinparam classAttributeIconSize 0
 class getAuctionItemsUI{}
 
 class GetAuctionItemsByGenreController {
-    -_auctionRepo: AuctionRepo
      +getAuctionItemsByGenre(genre: Genre): List<Item>
 }
 

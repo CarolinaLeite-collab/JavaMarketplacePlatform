@@ -25,14 +25,12 @@ class ListOfPublicationsInMyLibraryController {
 }
 
 class LibraryRepo {
-  -_libraries : List<Library>
       +create(user: User) : Library
       +findByUser(user: User) : Library
 }
 
 class Library {
   -_owner : String
-  -publications : List<Publication>
       +getUserID() : String
       +getPublicationsInLibrary() : List<PublicationDetails>
 }
