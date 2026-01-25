@@ -79,10 +79,10 @@ class Auction {
 PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : uses
 
 ' Controller → Repos
-PublicationSaleAuctionController "1" ..> "1" LibraryRepo : calls
-PublicationSaleAuctionController "1" ..> "1" PublicationRepo : calls
-PublicationSaleAuctionController "1" ..> "1" ItemRepo : calls
-PublicationSaleAuctionController "1" ..> "1" AuctionRepo : calls
+PublicationSaleAuctionController "1" --> "1" LibraryRepo : uses
+PublicationSaleAuctionController "1" --> "1" PublicationRepo : uses
+PublicationSaleAuctionController "1" --> "1" ItemRepo : uses
+PublicationSaleAuctionController "1" --> "1" AuctionRepo : uses
 
 ' Repos → Domain objects
 LibraryRepo "1"--> "*" Library : manages
