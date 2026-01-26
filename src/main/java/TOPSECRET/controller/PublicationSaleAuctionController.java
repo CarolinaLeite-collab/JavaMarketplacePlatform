@@ -16,14 +16,14 @@ import java.util.List;
 public class PublicationSaleAuctionController {
 
     private final LibraryRepo _libraryRepo;
-    private final PublicationRepo _publicationRepo;
     private final ItemRepo _itemRepo;
     private final AuctionRepo _auctionRepo;
 
-    public PublicationSaleAuctionController(LibraryRepo libraryRepo, PublicationRepo publicationRepo, ItemRepo itemRepo, AuctionRepo auctionRepo) {
-
+    public PublicationSaleAuctionController(LibraryRepo libraryRepo, ItemRepo itemRepo, AuctionRepo auctionRepo) {
+        if (libraryRepo == null || itemRepo == null || auctionRepo == null) {
+            throw new NullPointerException("Repositories are required");
+        }
         _libraryRepo = libraryRepo;
-        _publicationRepo = publicationRepo;
         _itemRepo = itemRepo;
         _auctionRepo = auctionRepo;
 
@@ -40,24 +40,25 @@ public class PublicationSaleAuctionController {
 
    // US016 Controller Step 2: putPublicationOnAuction(publication, condition, ...)
       // returns true if publication successfully put on sale in auction
-    public boolean putPublicationOnAuction(Publication publication, Condition condition, Price startPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putPublicationOnAuction(User user, Publication publication, Condition condition, Price startPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
-        if (publication == null || condition == null || startPrice == null || startDate == null || endDate == null) {
-            return false; //If one of the parameters is not provided, cannot put publication on sale for auction
+        if (user == null || publication == null || condition == null || startPrice == null || startDate == null || endDate == null) {
+            return null; //If one of the parameters is not provided, cannot put publication on sale for auction
         }
         if (endDate.isBefore(startDate)) {
-            return false; // End date cannot be before start date
+            return null; // End date cannot be before start date
         }
         if (_itemRepo.exists(publication)){
-            return false; //If publication was already made into an item put on sale, cannot duplicate
+            return null; //If publication was already made into an item put on sale, cannot duplicate
         }
 
-        // Following US016 SD flow: get real publication -> create Item -> Auction -> link between item and its auction
-        Publication actualPublication = _publicationRepo.getPublication(publication);
-        Item item = _itemRepo.createItem(actualPublication, condition);
+        // Following US016 SD flow: get real publication from user's library -> create Item -> create Auction -> link between item and its auction
+        Library userLibrary = _libraryRepo.findByUser(user);
+        Publication actualPublicationInLibrary = userLibrary.getPublicationFromLibrary(publication);
+        Item item = _itemRepo.createItem(actualPublicationInLibrary, condition);
         Auction auction = _auctionRepo.createAuction(item, startPrice, startDate, endDate);
         item.setAuction(auction);
-        return true;
+        return auction;
     }
 
 }

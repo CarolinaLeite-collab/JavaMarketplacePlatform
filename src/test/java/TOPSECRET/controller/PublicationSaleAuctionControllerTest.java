@@ -3,10 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.net.PortUnreachableException;
-import java.time.LocalDate;
-import java.time.Period;
 import java.time.Year;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -22,7 +18,6 @@ class PublicationSaleAuctionControllerTest {
 
     private PublicationSaleAuctionController controller;
     private LibraryRepo libraryRepo;
-    private PublicationRepo publicationRepo;
     private ItemRepo itemRepo;
     private AuctionRepo auctionRepo;
     private User testUser;
@@ -31,11 +26,10 @@ class PublicationSaleAuctionControllerTest {
     @BeforeEach
     void setUp() {
         libraryRepo = new LibraryRepo();
-        publicationRepo = new PublicationRepo();
         itemRepo = new ItemRepo();
         auctionRepo = new AuctionRepo();
 
-        controller = new PublicationSaleAuctionController(libraryRepo, publicationRepo, itemRepo, auctionRepo);
+        controller = new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo);
 
         testUser = new User(
                 new Name("John Test"),
@@ -50,7 +44,7 @@ class PublicationSaleAuctionControllerTest {
     void testUsingConstructorPublicationSaleAuctionController() {
 
         //validating constructor works when given all parameters
-        assertDoesNotThrow(() -> new PublicationSaleAuctionController(libraryRepo, publicationRepo, itemRepo, auctionRepo));
+        assertDoesNotThrow(() -> new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo));
     }
 
 
@@ -60,43 +54,13 @@ class PublicationSaleAuctionControllerTest {
         //validates constructor doesn't work when repo parameter is missing
 
         // Null libraryRepo → fails on getLibraryPublicationList
-        PublicationSaleAuctionController nullLibraryController =
-                new PublicationSaleAuctionController(null, publicationRepo, itemRepo, auctionRepo);
-        assertThrows(NullPointerException.class, () ->
-                nullLibraryController.getLibraryPublicationList(testUser));
-
-        // Null publicationRepo → fails on putPublicationOnAuction
-        PublicationSaleAuctionController nullPubController =
-                new PublicationSaleAuctionController(libraryRepo, null, itemRepo, auctionRepo);
-
-                Publication testPub = Publication.builder().type(new PublicationType("BOOK"))
-                                .identifier(new ISBN("9781800816862")).year(Year.of(2020))
-                                .title(new Title("Test")).author(new Author("Testy McTest"))
-                                .publisher(new Publisher("Testing Co.")).build();
-
-                        assertThrows(NullPointerException.class,
-                                () -> nullPubController.putPublicationOnAuction(
-                                        testPub,
-                                        Condition.LIKE_NEW,
-                                        new Price(10, Currency.EUR),
-                                        ZonedDateTime.now(),
-                                        ZonedDateTime.now().plusDays(7))
-                        );
+        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(null, itemRepo, auctionRepo));
 
         // Null itemRepo → fails putPublicationOnAuction() at createItem()
-        PublicationSaleAuctionController nullItemController =
-                new PublicationSaleAuctionController(libraryRepo, publicationRepo, null, auctionRepo);
-        publicationRepo.add(testPub);
-        assertThrows(NullPointerException.class,
-                () -> nullItemController.putPublicationOnAuction(testPub, Condition.LIKE_NEW,
-                        new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(7)));
+        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(libraryRepo, null, auctionRepo));
 
         // Test null auctionRepo → fails putPublicationOnAuction() at createAuction()
-        PublicationSaleAuctionController nullAuctionController =
-                new PublicationSaleAuctionController(libraryRepo, publicationRepo, itemRepo, null);
-        assertThrows(NullPointerException.class,
-                () -> nullAuctionController.putPublicationOnAuction(testPub, Condition.LIKE_NEW,
-                        new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(7)));
+        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(libraryRepo, itemRepo, null));
     }
 
     @Test
@@ -181,13 +145,7 @@ class PublicationSaleAuctionControllerTest {
     }
 
     @Test
-    void testPutNullPublicationOnAuction(){
-        assertFalse(controller.putPublicationOnAuction(null, Condition.LIKE_NEW,
-                new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(7)));
-    }
-
-    @Test
-    void testPutPublicationOnAuctionWithNullCondition(){
+    void testPutPublicationOnAuctionWithNullArguments(){
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780141036144"))
@@ -197,10 +155,25 @@ class PublicationSaleAuctionControllerTest {
                 .publisher(new Publisher("Penguin"))
                 .build();
 
-        assertFalse(controller.putPublicationOnAuction(testPub, null,
+        assertNull(controller.putPublicationOnAuction(null, testPub, Condition.POOR,
                 new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
 
+        assertNull(controller.putPublicationOnAuction(testUser, null, Condition.POOR,
+                new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
+
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, null,
+                new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
+
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.POOR,
+                null, ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
+
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.POOR,
+                new Price(10, Currency.EUR), null, ZonedDateTime.now().plusDays(1)));
+
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.POOR,
+                new Price(10, Currency.EUR), ZonedDateTime.now(), null));
     }
+
 
     @Test
     void testPutPublicationOnAuctionWithInvalidDates(){
@@ -215,8 +188,7 @@ class PublicationSaleAuctionControllerTest {
                 .author(new Author("George Orwell"))
                 .publisher(new Publisher("Penguin"))
                 .build();
-        ZonedDateTime now = ZonedDateTime.now();
-        assertFalse(controller.putPublicationOnAuction(testPub, Condition.POOR, new Price(10, Currency.EUR), now, now.minusDays(1)));
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.POOR, new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().minusDays(1)));
     }
 
     @Test
@@ -231,19 +203,21 @@ class PublicationSaleAuctionControllerTest {
                 .author(new Author("George Orwell"))
                 .publisher(new Publisher("Penguin"))
                 .build();
-        publicationRepo.add(testPub);
+
+        // Publication added to user's library
+        testLibrary.addPublicationToLibrary(testPub);
+
+        // Mark testPub as already an item
         itemRepo.createItem(testPub, Condition.GOOD);
 
-        //returns false because pub was already made into an item;
-        //putPublicationOnAuction tries doing so again
-
-        assertFalse(controller.putPublicationOnAuction(testPub, Condition.GOOD,
+        //returns null because testPub was already made into an item (above);
+        //putPublicationOnAuction tries doing so again here
+        assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.GOOD,
                 new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
     }
 
     @Test
-    void testPutPublicationOnAuctionWrongAuctionItem(){
-
+    void testPutPublicationOnAuctionPublicationNotInUserLibrary() {
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780141036144"))
@@ -253,16 +227,13 @@ class PublicationSaleAuctionControllerTest {
                 .publisher(new Publisher("Penguin"))
                 .build();
 
-        publicationRepo.add(testPub);
+        // not adding testPub to testLibrary
 
-        Item item = new Item(testPub, Condition.GOOD);
-        Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
-
-        assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
-                "This Auction does not belong to this Item.");
-
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.putPublicationOnAuction(testUser, testPub, Condition.GOOD,
+                        new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)),
+                "Publication not found in user's library");
     }
-
 
     @Test
     void testPutPublicationOnAuctionSuccess(){
@@ -275,13 +246,13 @@ class PublicationSaleAuctionControllerTest {
                 .author(new Author("George Orwell"))
                 .publisher(new Publisher("Penguin"))
                 .build();
-        publicationRepo.add(testPub);
 
-        ZonedDateTime now = ZonedDateTime.now();
+        // add publication to user's library
+        testLibrary.addPublicationToLibrary(testPub);
 
-        boolean result = controller.putPublicationOnAuction(testPub, Condition.GOOD, new Price(10, Currency.EUR), now.plusDays(1), now.plusDays(8));
+        Auction result = controller.putPublicationOnAuction(testUser, testPub, Condition.GOOD, new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
 
-        assertTrue(result); // controller returning true means entire operation succeeded
+        assertNotNull(result); // non-null auction means entire operation succeeded
         assertEquals(1, itemRepo.getAll().size()); //one item in itemRepo now
         Item createdItem = itemRepo.getAll().get(0);
         assertNotNull(createdItem.getAuction()); //proves item.setAuction(auction) carried out successfully
