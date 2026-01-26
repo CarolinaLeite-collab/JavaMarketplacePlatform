@@ -11,6 +11,12 @@ public class Phone {
     private final PhonePrefix _prefix;
     private final String _nationalNumber;
 
+    /**
+     * Creates a phone with a validated prefix and national number, stripping formatting characters.
+     *
+     * @param prefix country/region prefix
+     * @param nationalNumber digits only, 4–12 characters post-normalization
+     */
     public Phone(PhonePrefix prefix, String nationalNumber) {
         if (prefix == null) {
             throw new IllegalArgumentException("Phone prefix cannot be null");
@@ -31,16 +37,22 @@ public class Phone {
         _nationalNumber = cleaned;
     }
 
+    /**
+     * Returns the country/region prefix for this phone number.
+     */
     public PhonePrefix getPrefix() {
         return _prefix;
     }
 
+    /**
+     * Returns the normalized national number (digits only).
+     */
     public String getNationalNumber() {
         return _nationalNumber;
     }
 
     /**
-     * E.164-like representation: +<prefix><number>
+     * E.164-like representation: +{prefix}{nationalNumber}.
      */
     public String getE164() {
         return _prefix.getValue() + _nationalNumber;

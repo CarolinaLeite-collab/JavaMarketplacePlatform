@@ -8,7 +8,13 @@ class PhoneTest {
 
     @Test
     void buildsPhoneAndNormalizesNumber() {
-        Phone phone = new Phone(new PhonePrefix("+351"), " 912-345-678 ");
+        // Arrange
+        PhonePrefix prefix = new PhonePrefix("+351");
+
+        // Act
+        Phone phone = new Phone(prefix, " 912-345-678 ");
+
+        // Assert
         assertEquals("+351", phone.getPrefix().getValue());
         assertEquals("912345678", phone.getNationalNumber());
         assertEquals("+351912345678", phone.getE164());
@@ -16,7 +22,10 @@ class PhoneTest {
 
     @Test
     void rejectsNullsAndInvalidLengths() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Phone(null, "123456"));
         assertThrows(IllegalArgumentException.class, () -> new Phone(prefix, null));
         assertThrows(IllegalArgumentException.class, () -> new Phone(prefix, "123"));      // too short
@@ -25,16 +34,22 @@ class PhoneTest {
 
     @Test
     void rejectsLettersInNumber() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+44");
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Phone(prefix, "12A456"));
     }
 
     @Test
     void equalityUsesNormalizedValues() {
+        // Arrange
         PhonePrefix p1 = new PhonePrefix("+44");
         PhonePrefix p2 = new PhonePrefix("44");
         Phone a = new Phone(p1, "123 456");
         Phone b = new Phone(p2, "123456");
+
+        // Assert
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
     }
@@ -43,41 +58,50 @@ class PhoneTest {
 
     @Test
     void allowsMinimumAndMaximumLengths() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+9");
+
+        // Act
         Phone min = new Phone(prefix, "1234");
+        Phone max = new Phone(prefix, "123456789012");
+
+        // Assert
         assertEquals("1234", min.getNationalNumber());
         assertEquals("+91234", min.getE164());
-
-        Phone max = new Phone(prefix, "123456789012");
         assertEquals("123456789012", max.getNationalNumber());
         assertEquals("+9123456789012", max.getE164());
     }
 
     @Test
     void rejectsBlankAfterCleaning() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
-        // characters removed by replaceAll, resulting in empty string
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Phone(prefix, " ( ) "));
         assertThrows(IllegalArgumentException.class, () -> new Phone(prefix, "   "));
     }
 
     @Test
     void toStringIsE164AndEqualsContract() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+123");
         Phone p = new Phone(prefix, "(000) 111-2222");
-        assertEquals(p.getE164(), p.toString());
 
-        // equals/hashCode contract with null and different class
+        // Assert
+        assertEquals(p.getE164(), p.toString());
         assertNotEquals(null, p);
         assertNotEquals("not-a-phone", p);
     }
 
     @Test
     void hashCodeMatchesObjectsHashAndVaries() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
         Phone a = new Phone(prefix, "1234");
         Phone b = new Phone(new PhonePrefix("1"), "12345");
 
+        // Assert
         assertEquals(java.util.Objects.hash(a.getPrefix(), a.getNationalNumber()), a.hashCode());
         assertEquals(java.util.Objects.hash(b.getPrefix(), b.getNationalNumber()), b.hashCode());
         assertNotEquals(a.hashCode(), b.hashCode());
@@ -85,11 +109,11 @@ class PhoneTest {
 
     @Test
     void equalityAndNullDifferentTypeBehavior() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
         Phone p = new Phone(prefix, "1234");
 
-        // identity and null/different-type behavior
-        // different instance with same state should be equal
+        // Assert
         assertEquals(p, new Phone(prefix, "1234"));
         assertNotEquals(null, p);
         assertNotEquals("not-a-phone", p);
@@ -97,29 +121,39 @@ class PhoneTest {
 
     @Test
     void cleansTabsAndOtherWhitespaceFromNumber() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
+
+        // Act
         Phone p = new Phone(prefix, "12\t34");
+
+        // Assert
         assertEquals("1234", p.getNationalNumber());
         assertEquals("+11234", p.getE164());
     }
 
     @Test
     void inequalityForDifferentNumbersEvenIfPrefixSame() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
         Phone a = new Phone(prefix, "1234");
         Phone b = new Phone(prefix, "1235");
+
+        // Assert
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
     void directEqualsIdentityNullAndDifferentType() {
+        // Arrange
         PhonePrefix prefix = new PhonePrefix("+1");
         Phone p = new Phone(prefix, "4444");
 
-        // direct equals calls to hit the early-return and instanceof branches
+        // Assert
         assertTrue(p.equals(p));
         assertFalse(p.equals(null));
         assertFalse(p.equals(new Object()));
     }
 }
+

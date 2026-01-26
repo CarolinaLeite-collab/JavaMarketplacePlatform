@@ -16,6 +16,10 @@ public class ShoppingCart {
 
     /**
      * Adds a listing priced in a given currency. All entries must share the same currency.
+     *
+     * @param listingId external identifier of the listing
+     * @param price price of the listing, used to enforce currency consistency
+     * @throws IllegalArgumentException when inputs are invalid or duplicate is found
      */
     public void addListing(String listingId, Price price) {
         if (listingId == null || listingId.trim().isEmpty()) {
@@ -41,6 +45,9 @@ public class ShoppingCart {
 
     /**
      * Removes a listing by id. Returns true if it was present.
+     *
+     * @param listingId identifier of the listing to remove
+     * @return {@code true} when the listing was removed, {@code false} otherwise
      */
     public boolean removeListing(String listingId) {
         if (listingId == null) return false;
@@ -79,15 +86,25 @@ public class ShoppingCart {
         private final String _listingId;
         private final Price _price;
 
+        /**
+         * @param listingId id of the listing
+         * @param price price attached to the listing
+         */
         public CartLine(String listingId, Price price) {
             _listingId = listingId;
             _price = price;
         }
 
+        /**
+         * Listing identifier normalized by the cart.
+         */
         public String getListingId() {
             return _listingId;
         }
 
+        /**
+         * Price assigned when the listing was added.
+         */
         public Price getPrice() {
             return _price;
         }
