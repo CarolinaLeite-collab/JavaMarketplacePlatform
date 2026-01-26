@@ -24,8 +24,8 @@ participant "selectedList:ListOfPublications"
 
 
 User -> "UI1:ShareListPubliclyUI" : I want to publicly share one List of mine.
-"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : getListOfListsOfPublications()
-"Ctl:ShareListPubliclyController" -> "_lr:ListOfPublicationsRepo" : getListOfListsOfPublications()
+"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : findListsByUser()
+"Ctl:ShareListPubliclyController" -> "_lr:ListOfPublicationsRepo" : findListsByUser()
 "_lr:ListOfPublicationsRepo" -> "_lr:ListOfPublicationsRepo" : copy
 "_lr:ListOfPublicationsRepo" --> "Ctl:ShareListPubliclyController" : listOfLists
 "Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : listOfLists
