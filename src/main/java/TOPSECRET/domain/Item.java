@@ -54,6 +54,10 @@ public class Item {
         this.auction = auction;
     }
 
+    public DirectSale getDirectSale() {
+        return directSale;
+    }
+
     public Auction getAuction() {
         return auction;
 

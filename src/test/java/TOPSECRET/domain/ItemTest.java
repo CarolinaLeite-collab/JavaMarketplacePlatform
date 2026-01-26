@@ -214,4 +214,46 @@ class ItemTest {
 
     }
 
+    @Test
+    void testGetDirectSale_WhenDirectSaleIsSet() {
+        // Arrange
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780141036144"))
+                .year(Year.of(2012))
+                .title(new Title("1984"))
+                .author(new Author("George Orwell"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        Item item = new Item(pub, Condition.GOOD);
+        DirectSale sale = new DirectSale(item, new Price(10, Currency.EUR), Period.ofDays(30));
+
+        // Act
+        item.setDirectSale(sale);
+
+        // Assert
+        assertEquals(sale, item.getDirectSale(),
+                "Getter must return the DirectSale previously assigned");
+    }
+
+    @Test
+    void testGetDirectSale_WhenNoDirectSaleWasAssigned() {
+        // Arrange
+        Publication pub = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780141036144"))
+                .year(Year.of(2012))
+                .title(new Title("1984"))
+                .author(new Author("George Orwell"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        Item item = new Item(pub, Condition.GOOD);
+
+        // Act + Assert
+        assertNull(item.getDirectSale(),
+                "Getter must return null when no DirectSale is assigned");
+    }
+
 }
