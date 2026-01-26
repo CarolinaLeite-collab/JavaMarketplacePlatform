@@ -251,13 +251,21 @@ class PublicationInLibraryForDirectSaleControllerTest {
         boolean result = controller.addPublicationForDirectSale(testPub, Condition.GOOD, new Price(10, Currency.EUR), timeLimit);
 
         assertTrue(result);
+
+        // The item must have been created
         assertEquals(1, itemRepo.getAll().size());
         Item createdItem = itemRepo.getAll().get(0);
+
         assertEquals(testPub, createdItem.getPublication());
         assertEquals(Condition.GOOD, createdItem.getCondition());
 
-        //Using existing DirectSaleRepo method to verify item was successfully put up for Sale
-        assertEquals(1, directSaleRepo.getDirectSaleItemsByAuthor(new Author("George Orwell")).size());
+        // DirectSale must exist because it was created by the controller
+        List<Item> itemsByAuthor = directSaleRepo.getDirectSaleItemsByAuthor(new Author("George Orwell"));
+        assertEquals(1, itemsByAuthor.size());
+
+        // Assert that the item retuned contains the directSale reference
+        DirectSale createdSale = createdItem.getDirectSale();
+        assertNotNull(createdSale, "Item must reference its DirectSale");
 
     }
 
