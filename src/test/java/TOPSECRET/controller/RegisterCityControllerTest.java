@@ -4,6 +4,8 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RegisterCityControllerTest {
@@ -23,7 +25,10 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCity_happyPath() {
+        // Act
         City c = controller.registerCity("Porto", portugal);
+
+        // Assert
         assertNotNull(c);
         assertEquals("Porto", c.getName());
         assertEquals(portugal, c.getCountry());
@@ -31,12 +36,16 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCity_duplicateThrows() {
+        // Arrange
         controller.registerCity("Porto", portugal);
+
+        // Act & Assert
         assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", portugal));
     }
 
     @Test
     void registerCity_nullCountryThrows() {
+        // Act & Assert
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> controller.registerCity("Porto", null));
         assertEquals("Country cannot be null", error.getMessage());
@@ -44,6 +53,7 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCity_blankOrNullCityNameThrows() {
+        // Act & Assert
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> controller.registerCity("", portugal));
         assertEquals("City name cannot be null or blank", error.getMessage());
@@ -51,7 +61,23 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCity_trimmedDuplicateNameThrows() {
+        // Arrange
         controller.registerCity("Porto", portugal);
+
+        // Act & Assert
         assertThrows(IllegalStateException.class, () -> controller.registerCity(" Porto ", portugal));
     }
+
+    // Tests that getCountries() returns the actual list from the repo and not an empty list.
+    @Test void getCountries_returnsAllCountriesFromRepo() {
+        // Arrange
+        countryRepo.registerCountry("Spain");
+
+        // Act
+        List<Country> result = controller.getCountries();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("Portugal")));
+        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("Spain"))); }
 }
