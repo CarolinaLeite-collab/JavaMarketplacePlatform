@@ -21,7 +21,6 @@ participant ":PublicationSaleAuctionUI" as UI
 participant ":PublicationSaleAuctionController" as Controller
 participant ":LibraryRepo" as LibraryRepo
 participant "userLibrary: Library" as userLibrary
-participant ":PublicationRepo" as PublicationRepo
 participant ":ItemRepo" as ItemRepo
 participant ":AuctionRepo" as AuctionRepo
 
@@ -38,7 +37,11 @@ deactivate LibraryRepo
 Controller -> userLibrary : getPublicationsInLibrary()
 activate userLibrary
 userLibrary --> Controller : publicationsList
-note right userLibrary:  publicationsList is an %n()unmodifiable copy
+note right userLibrary
+ getPublicationsInLibrary() returns publicationsList,
+ an unmodifiable copy of the publications in the user’s
+ library, represented as PublicationDetails objects
+end note
 deactivate userLibrary
 Controller --> UI : publicationsList
 deactivate Controller
@@ -48,13 +51,18 @@ UI --> User : What is its condition?
 User -> UI : condition
 UI --> User : Please provide auction details
 User -> UI : startingPrice, auctionStartDate, auctionEndDate
-UI -> Controller: putPublicationOnAuction(publication, %n()condition, startPrice, startDate, endDate)
+UI -> Controller: putPublicationOnAuction(user, publication, %n()condition, startPrice, startDate, endDate)
 activate Controller
-Controller -> PublicationRepo :getPublication(publication)
-activate PublicationRepo
-PublicationRepo --> Controller : p1
-deactivate PublicationRepo
-note left Controller: Publication needs to be turned %n()into an item to be put for sale
+Controller -> userLibrary :getPublicationFromLibrary(publication)
+activate userLibrary
+userLibrary --> Controller : p1
+deactivate userLibrary
+note left Controller
+ Publication is retrieved from
+ userLibrary, ensuring it belongs to
+ that Library, then is turned into
+ an Item to be put for sale in auction
+end note
 Controller -> ItemRepo : createItem(p1, condition)
 activate ItemRepo
 create i1 as "i1: Item"
@@ -71,7 +79,7 @@ Controller -> i1 : setAuction(a1)
 activate i1
 i1 --> Controller : [ok]
 deactivate i1
-Controller --> UI : true
+Controller --> UI : a1
 deactivate Controller
 UI --> User : Your item was successfully put up for sale in an auction
 deactivate UI

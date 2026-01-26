@@ -21,14 +21,12 @@ class PublicationSaleAuctionUI {
 
 class PublicationSaleAuctionController {
   - _libraryRepo: LibraryRepo
-  - _publicationRepo: PublicationRepo
   - _itemRepo: ItemRepo
   - _auctionRepo: AuctionRepo
   --
   + getLibraryPublicationList(user: User): List<PublicationDetails>
-  + putPublicationOnAuction(publication: Publication, condition: Condition,
-                           startPrice: Price, startDate: ZonedDateTime,
-                           endDate: ZonedDateTime): boolean
+  + putPublicationOnAuction(user: User, publication: Publication, condition: Condition,
+                           startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
 class LibraryRepo {
@@ -38,16 +36,12 @@ class LibraryRepo {
 
 class Library {
   - _owner: User
-  - publications: List<Publication>
+  - _publications: List<Publication>
   + getPublicationsInLibrary(): List<PublicationDetails>
+  + getPublicationFromLibrary(publication: Publication): Publication
 }
 
 class Publication {
-}
-
-class PublicationRepo {
-  - _publications: List<Publication>
-  + getPublication(publication: Publication): Publication
 }
 
 class ItemRepo {
@@ -80,13 +74,11 @@ PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : uses
 
 ' Controller → Repos
 PublicationSaleAuctionController "1" --> "1" LibraryRepo : uses
-PublicationSaleAuctionController "1" --> "1" PublicationRepo : uses
 PublicationSaleAuctionController "1" --> "1" ItemRepo : uses
 PublicationSaleAuctionController "1" --> "1" AuctionRepo : uses
 
 ' Repos → Domain objects
 LibraryRepo "1"--> "*" Library : manages
-PublicationRepo "1" --> "*" Publication: manages
 ItemRepo "1" --> "*" Item : manages
 AuctionRepo "1" --> "*" Auction : manages
 
@@ -99,11 +91,14 @@ end note
 Library "1" --> "*" Publication : contains
 
 note right of Publication
-Publication is instantiated and used %n()as data/a parameter for this US016
+ Publication is the core domain object
+ for this US016; it is stored in the user's
+ Library and passed as data/parameter when
+ putting it for sale in auction
 end note
 
 note as N1
-Only US016 SD methods/attributes shown
+ Only US016 SD methods/attributes shown
 end note
 
 @enduml
