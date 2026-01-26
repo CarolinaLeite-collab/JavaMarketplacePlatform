@@ -13,7 +13,7 @@ class ShareListPubliclyController {
     }
 
     public List<ListOfPublications> getListOfLists(User user) {
-        return _listOfPublicationsRepo.getListOfListOfPublications();
+        return _listOfPublicationsRepo.findListsByUser(user);
     }
 
     public boolean shareListPublicly(ListOfPublications selectedList) {
