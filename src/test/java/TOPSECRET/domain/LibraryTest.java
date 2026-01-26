@@ -84,6 +84,44 @@ class LibraryTest {
     }
 
     @Test
+    void getPublicationInLibraryShouldReturnPublicationWhenItExistInLibrary() {
+
+        Library library = new Library(_user);
+        Publication p = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        library.addPublicationToLibrary(p);
+
+        Publication myPublicationInLibrary = library.getPublicationFromLibrary(p);
+        assertEquals(p, myPublicationInLibrary); // asserts both are equal
+        assertSame(p, myPublicationInLibrary); // asserts they are the same object in memory
+    }
+
+    @Test
+    void getPublicationInLibraryThrowsWhenPublicationNotInLibrary() {
+
+        Library library = new Library(_user);
+        Publication p = Publication.builder()
+                .type(new PublicationType("BOOK"))
+                .identifier(new ISBN("9780691181950"))
+                .year(Year.of(2019))
+                .title(new Title("How to Keep Your Cool"))
+                .author(new Author("Seneca"))
+                .publisher(new Publisher("Penguin"))
+                .build();
+
+        // p was never added to user's library
+        assertThrows(IllegalArgumentException.class, () -> library.getPublicationFromLibrary(p));
+
+    }
+
+    @Test
     void addPublicationToLibraryShouldAddPublicationWhenValid() {
         // Verifies that a valid publication is successfully added to the library
 

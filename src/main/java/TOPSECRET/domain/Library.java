@@ -68,6 +68,15 @@ public class Library {
         return copyOfLibrary();
     }
 
+    public Publication getPublicationFromLibrary(Publication publication) {
+        for (Publication p : _publications) {
+            if (p.equals(publication)) {
+                return p;
+            }
+        }
+        throw new IllegalArgumentException("Publication not found in user's library");
+    }
+
     private boolean verifyUnique(Publication selectedPublication) {
         for (Publication check : _publications) {
             if (selectedPublication.equals(check)) {
