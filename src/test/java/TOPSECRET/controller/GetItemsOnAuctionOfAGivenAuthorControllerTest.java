@@ -27,19 +27,23 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
     @Test
     void constructor_acceptsValidDependencies() {
+        // Act: ensuring constructor accepts repositories and buyer without exceptions
         new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepo, _buyer);
     }
 
     @Test
     void getAuctionItemsByAuthor_returnsEmpty_whenNoAuctions() {
+        // Act
         List<Item> items = _controller.getAuctionItemsByAuthor(_author);
+
+        // Assert
         assertNotNull(items);
         assertTrue(items.isEmpty());
     }
 
     @Test
     void getAuctionItemsByAuthor_returnsItemsForMatchingAuthor() {
-        // arrange publication and item
+        // Arrange: publication, item and auction for the target author
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9789896710453"))
@@ -55,14 +59,17 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
         _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
+        // Act
         List<Item> items = _controller.getAuctionItemsByAuthor(new Author("sEnEcA"));
+
+        // Assert
         assertEquals(1, items.size());
         assertSame(item, items.get(0));
     }
 
     @Test
     void getAuctionItemsByAuthor_returnsEmpty_whenAuthorDoesNotMatch() {
-        // arrange publication and item with different author
+        // Arrange: publication and auction for a different author
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9789896710453"))
@@ -78,9 +85,11 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
         _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
+        // Act
         List<Item> items = _controller.getAuctionItemsByAuthor(_author);
+
+        // Assert
         assertNotNull(items);
         assertTrue(items.isEmpty());
     }
 }
-

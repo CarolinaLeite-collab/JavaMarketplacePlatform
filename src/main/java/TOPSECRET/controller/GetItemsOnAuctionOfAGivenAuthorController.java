@@ -20,13 +20,18 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
 
     private final AuctionRepo _auctionRepo;
 
+    /**
+     * Ensures the controller has the repository it needs and validates the buyer reference.
+     */
     public GetItemsOnAuctionOfAGivenAuthorController(AuctionRepo auctionRepo, User buyer) {
         _auctionRepo = Objects.requireNonNull(auctionRepo, "auctionRepo");
         Objects.requireNonNull(buyer, "buyer"); // buyer kept for parity/validation
     }
 
+    /**
+     * Retrieves all active auction listings by a normalized author name.
+     */
     public List<Item> getAuctionItemsByAuthor(Author author) {
         return _auctionRepo.getAuctionItemsByAuthor(author);
     }
 }
-

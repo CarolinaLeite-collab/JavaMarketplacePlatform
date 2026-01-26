@@ -97,4 +97,30 @@ class CountryRepoTest {
         assertThrows(UnsupportedOperationException.class, () -> countries.add(new Country("Germany")));
     }
 
+    //Test findByName() method
+    @Test
+    void findByName_returnsNullWhenNameIsNull() {
+        CountryRepo repo = new CountryRepo();
+        repo.registerCountry("Portugal");
+
+        assertNull(repo.findByName(null));
+    }
+
+    @Test
+    void findByName_findsCountryIgnoringCaseAndSpaces() {
+        CountryRepo repo = new CountryRepo();
+        Country portugal = repo.registerCountry("Portugal");
+
+        assertEquals(portugal, repo.findByName("portugal"));
+        assertEquals(portugal, repo.findByName(" Portugal "));
+    }
+
+    @Test
+    void findByName_returnsNullWhenCountryNotFound() {
+        CountryRepo repo = new CountryRepo();
+        repo.registerCountry("Portugal");
+
+        assertNull(repo.findByName("Germany"));
+    }
+
 }
