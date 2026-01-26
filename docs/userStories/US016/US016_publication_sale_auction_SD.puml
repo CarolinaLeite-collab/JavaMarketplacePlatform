@@ -53,6 +53,11 @@ UI --> User : Please provide auction details
 User -> UI : startingPrice, auctionStartDate, auctionEndDate
 UI -> Controller: putPublicationOnAuction(user, publication, %n()condition, startPrice, startDate, endDate)
 activate Controller
+note over Controller: LibraryRepo: Same retrieval logic %n()as in getLibraryPublicationList(user) %n()but for separate use case
+Controller -> LibraryRepo: findByUser(user)
+activate LibraryRepo
+LibraryRepo--> Controller: userLibrary: Library
+deactivate LibraryRepo
 Controller -> userLibrary :getPublicationFromLibrary(publication)
 activate userLibrary
 userLibrary --> Controller : p1
