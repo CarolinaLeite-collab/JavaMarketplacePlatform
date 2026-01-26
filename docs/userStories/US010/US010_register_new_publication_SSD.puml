@@ -15,18 +15,20 @@ hidefootbox
 
 ' --- Actor and participants ---
 actor User
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
 ' --- System dialog ---
 User -> System: I want to register a new publication
 activate System
 System --> User: Show registration form
-
+deactivate System
 User -> System: Submit publication data\n(type, identifier, date, title, ...)
 'System -> System: Validate mandatory fields + format
 'System -> System: Check duplicates (ISBN/ISSN or title+date+authors)
 'System -> System: Register in the System
+activate System
 System --> User: Done!
+deactivate System
 
 deactivate System
 @enduml

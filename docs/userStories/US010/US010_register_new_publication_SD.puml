@@ -24,7 +24,10 @@ participant "_pr:PublicationRepo" as PR
 User -> UI: I want to register a new publication
 activate UI
 UI --> User: Fill the registration form...
+deactivate UI
+
 User -> UI: Publication data\n(type, identifier, date, title, ...)
+activate UI
 UI -> UI: Validate mandatory fields
 
 ' --- Use case execution ---
