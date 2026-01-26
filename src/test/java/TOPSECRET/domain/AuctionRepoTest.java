@@ -23,6 +23,7 @@ class AuctionRepoTest {
     private Item _item1;
     private Item _item2;
     private Item _item3;
+    private Genre _genre;
     private Price _startingPrice;
     private ZonedDateTime _start;
     private ZonedDateTime _end;
@@ -31,6 +32,8 @@ class AuctionRepoTest {
     void setUp() {
         _repo = new AuctionRepo();
 
+        _genre = new Genre("action");
+
         _pub1 = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("1111111111"))
@@ -38,6 +41,7 @@ class AuctionRepoTest {
                 .title(new Title("Architectonica Percepta"))
                 .author(new Author("Paulo Providência"))
                 .publisher(new Publisher("Park Books"))
+                .genre(_genre)
                 .build();
 
         _pub2 = Publication.builder()
@@ -47,11 +51,14 @@ class AuctionRepoTest {
                 .title(new Title("Louis I. Khan: The idea of order"))
                 .author(new Author("Klaus-Peter Gast"))
                 .publisher(new Publisher("Birkhauser"))
+                .genre(_genre)
                 .build();
 
         _item1 = new Item(_pub1, Condition.GOOD);
         _item2 = new Item(_pub1, Condition.FAIR);
         _item3 = new Item(_pub2, Condition.LIKE_NEW);
+
+
 
         _startingPrice = new Price(10.0, Currency.EUR);
 
@@ -63,6 +70,34 @@ class AuctionRepoTest {
         defaultAuthorName = "Someone";
         defaultPublisherName = "SomePub";
     }
+
+    @Test
+    void testGetAuctionItemsByGenreNoAuctionShouldReturnEmptyList() {
+
+        //act
+        List<Item> emptyList = _repo.getAuctionItemsByGenre(_genre);
+
+        //assert
+        assertNotNull(emptyList);
+        assertTrue(emptyList.isEmpty());
+
+    }
+
+    @Test
+    void testGetAuctionItemsByGenreWithAuctionsShouldReturnNonEmptyList() {
+
+        //arrange
+        _repo.createAuction(_item1, _startingPrice, _start, _end);
+        _repo.createAuction(_item3, new Price(25.0, Currency.EUR), _start, _end);
+
+        //act
+        List<Item> list = _repo.getAuctionItemsByGenre(_genre);
+
+        //assert
+        assertNotNull(list);
+        assertFalse(list.isEmpty());
+    }
+
 
     @Test
     void createAuctionAddsAuctionAndCanBeRetrievedByGenre() {
@@ -78,7 +113,7 @@ class AuctionRepoTest {
                 .publisher(new Publisher(defaultPublisherName))
                 .genre(action)
                 .build();
-        Item item = new Item(publication, Condition.GOOD);
+        Item item = new Item(_pub1, Condition.GOOD);
 
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
         ZonedDateTime end = ZonedDateTime.now().plusDays(2);

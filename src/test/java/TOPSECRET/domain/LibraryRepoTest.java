@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class LibraryRepoTest {
 
     private User _user;
-    private Library _library;
     private LibraryRepo _libraryRepo;
 
     @BeforeEach
@@ -19,7 +18,6 @@ class LibraryRepoTest {
                 new Email ("test@isep.ipp.pt")
         );
 
-        _library = new Library(_user);
         _libraryRepo = new LibraryRepo();
 
     }
@@ -50,14 +48,14 @@ class LibraryRepoTest {
     @Test
     void findByUserShouldReturnCorrectLibraryWhenExists() {
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo();
-        Library mylibrary = libraryRepo.create(_user);
+
+        Library mylibrary = _libraryRepo.create(_user);
 
         // Act
-        Library actualLibrary = libraryRepo.findByUser(_user);
+        Library actualLibrary = _libraryRepo.findByUser(_user);
 
         // Assert
-        assertEquals(mylibrary.getUser(), actualLibrary.getUser());
+        assertEquals(mylibrary, actualLibrary);
     }
 
 

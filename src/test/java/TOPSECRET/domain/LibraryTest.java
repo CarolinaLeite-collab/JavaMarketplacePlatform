@@ -59,7 +59,7 @@ class LibraryTest {
     }
 
     @Test
-    void getPublicationsInLibraryShouldReturnPublicationsWhenPublicationsExist() {
+    void getPublicationsInLibraryShouldReturnPublicationsDetailsWhenPublicationsExist() {
 
         Library library = new Library(_user);
         Publication p = Publication.builder()
