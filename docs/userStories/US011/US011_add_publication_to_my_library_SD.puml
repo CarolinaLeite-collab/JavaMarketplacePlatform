@@ -29,7 +29,7 @@ User -> "UI1:AddPublicationUI" : I want to add a publication to my library
 activate "UI1:AddPublicationUI"
 "UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailablePublications(userID)
 activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : findByUser(UserID)
+"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : getMyLibrary(UserID)
 activate "_lr:LibraryRepo"
 "_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
 deactivate "_lr:LibraryRepo"
@@ -45,7 +45,7 @@ User -> "UI1:AddPublicationUI" : Selection
 activate "UI1:AddPublicationUI"
 "UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addPublicationToLibrary(selectedPublication, userID)
 activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublication(selectedPublication)
+"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)
 activate "myLibrary:Library"
 "myLibrary:Library" -> "myLibrary:Library" : verifyUnique(selectedPublication)
 "myLibrary:Library" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)
