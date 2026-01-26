@@ -1,21 +1,23 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static TOPSECRET.domain.ISBN.isValidIsbn10;
 import static TOPSECRET.domain.ISBN.isValidIsbn13;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ISBNTest {
     //Constructor test
     //invalid Isbn10
     @Test
     void returnExceptionforInvalidIsbn10() {
-        assertThrows(IllegalArgumentException.class,() -> new ISBN("123456789"));
+        assertThrows(IllegalArgumentException.class, () -> new ISBN("123456789"));
     }
-
 
     //isValidIsbn10 tests
     @Test
@@ -25,7 +27,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -35,7 +37,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -45,7 +47,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -55,7 +57,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -65,7 +67,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -75,7 +77,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -85,7 +87,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn10(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     //isValidIsbn13 tests
@@ -96,7 +98,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertTrue(result);
+        assertTrue(result);
     }
 
     @Test
@@ -106,7 +108,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -116,7 +118,7 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -126,17 +128,17 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
     void returnFalseForIsbn13WithLetters() {
         // arrange
-        String isbn = "A97898967104";
+        String isbn = "97803A6406157";
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -146,19 +148,10 @@ public class ISBNTest {
         // act
         boolean result = isValidIsbn13(isbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     //test toIsbn13 method
-    @Test
-    void convertsIsbn10ToEquivalentIsbn13() throws Exception {
-        String isbn10 = "0618260307";
-        String expected = "9780618260300";
-
-        String result = ISBN.toIsbn13(isbn10);
-
-        assertEquals(expected, result);
-    }
 
     @Test
     void returnsSameIfAlreadyIsbn13() {
@@ -168,17 +161,51 @@ public class ISBNTest {
 
         assertEquals(isbn13, result);
     }
+    @Test
+    void isValidIsbn13_returnsFalse_whenCheckDigitIsWrong() {
+        assertFalse(isValidIsbn13("9780306406158"));
+    }
+
+    @Test
+    void isValidIsbn13_returnsFalse_whenNonDigitAppearsInFirst12() {
+        assertFalse(ISBN.isValidIsbn13("97803A6406157"));
+    }
+    @Test
+    void isValidIsbn13_returnsFalse_whenLastCharIsNonDigit() {
+        assertFalse(ISBN.isValidIsbn13("978030640615X")); // last is non-digit
+    }
+
+    @ParameterizedTest
+    @MethodSource("isbn10To13Samples")
+    void toIsbn13_convertsCorrectly_forMultipleExamples(String isbn10, String expectedIsbn13) {
+        assertEquals(expectedIsbn13, ISBN.toIsbn13(isbn10));
+    }
+    static Stream<Arguments> isbn10To13Samples() {
+        return Stream.of(
+                // These are standard well-known examples:
+                Arguments.of("0306406152", "9780306406157"),
+                Arguments.of("0134685997", "9780134685991"),
+                Arguments.of("0596009208", "9780596009205"),
+                Arguments.of("0618260307", "9780618260300")
+        );
+    }
+
 
     //test getIdentifier
     @Test
     void toIsbn13ThrowsWhenNotIsbn10AndNotIsbn13() {
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> ISBN.toIsbn13("1234567890") // 10 chars, mas check digit inválido
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ISBN.toIsbn13("1234567890") // 10 chars, mas check digit inválido
         );
 
         assertEquals("Invalid ISBN", ex.getMessage());
     }
+
+    @Test
+    void constructor_normalizesHyphensSpacesAndLowercaseX() {
+        ISBN isbn = new ISBN("978-06182-60300");
+        assertEquals("9780618260300", isbn.getIdentifier());
+    }
+
     @Test
     void returnsTrueForgetIdentifierIsbn() {
         ISBN isbn = new ISBN("9780618260300");
@@ -216,7 +243,7 @@ public class ISBNTest {
         //act
         boolean result = a.equals(b);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
     }
 
     @Test
@@ -227,7 +254,12 @@ public class ISBNTest {
         //act
         boolean result = isbn.equals(notAnIsbn);
         // assert
-        Assertions.assertFalse(result);
+        assertFalse(result);
+    }
+    @Test
+    void normalize_throwsExceptionForNullIsbnString(){
+        assertThrows(IllegalArgumentException.class, () -> new ISBN(null));
+
     }
 
 }
