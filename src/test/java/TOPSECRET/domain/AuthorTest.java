@@ -2,8 +2,7 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthorTest {
     @Test
@@ -41,7 +40,21 @@ public class AuthorTest {
     void rejectNullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
 
     @Test
-    void test_hash_code(){
+    void test_to_equals_different_object_types(){
+
+        //act and arrange
+        Author a = new Author("Seneca");
+        String b = "Seneca";
+        Author b2 = null;
+
+        //assert
+        assertNotEquals(a,b);
+        assertNotEquals(a,b2);
+
+    }
+
+    @Test
+    void test_equal_hash_code(){
 
         //act and arrange
         Author a = new Author("Seneca");
@@ -49,6 +62,18 @@ public class AuthorTest {
 
         //assert
         assertEquals(a.hashCode(), a2.hashCode());
+
+    }
+
+    @Test
+    void test_non_equal_hash_code(){
+
+        //act and arrange
+        Author a = new Author("Seneca");
+        Author a2 = new Author("SeneCAR");
+
+        //assert
+        assertNotEquals(a.hashCode(), a2.hashCode());
 
     }
 
