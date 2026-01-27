@@ -106,4 +106,34 @@ class PublicationTypeRepoTest {
             fail("External code should not be able to modify the returned list");
         }
     }
+
+    // Teste de melhoria  improv1.
+    @Test
+    void shouldNotAllowDuplicatePublicationTypesWithDifferentCasing() {
+
+        // Arrange
+        PublicationTypeRepo repo = new PublicationTypeRepo();
+        repo.createPublicationType("Book");
+
+        // Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> repo.createPublicationType("book")
+        );
+    }
+
+    // Teste para matar o mutante pq ele mudou de return false para return true. O de cima valida o happy path, este o caminho negativo
+
+    @Test
+    void shouldReturnFalseWhenPublicationTypeDoesNotExist() {
+        // Arrange
+        PublicationTypeRepo repo = new PublicationTypeRepo();
+        repo.createPublicationType("Book");
+
+        // Act
+        boolean exists = repo.existsPublicationType("Magazine");
+
+        // Assert
+        assertFalse(exists);
+    }
 }

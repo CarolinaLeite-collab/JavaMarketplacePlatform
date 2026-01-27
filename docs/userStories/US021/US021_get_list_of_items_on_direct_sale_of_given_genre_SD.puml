@@ -16,31 +16,58 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-actor User
-participant UIListDirectSaleItemsByGenre
-participant GetDirectSaleItemsByGenreController
-participant DirectSaleRepository
-participant DirectSale
-participant Item
-participant Publication
+actor Buyer
+participant ":UIListDirectSaleItemsByGenre" as UI
+participant ":GetDirectSaleItemsByGenreController" as CTL
+participant ":DirectSaleRepository" as DSR
+participant ":DirectSale" as DS
+participant ":Item" as Itm
+participant ":Publication" as Pub
 
-User -> UIListDirectSaleItemsByGenre : requestItemsByGenre(genre)
-UIListDirectSaleItemsByGenre -> GetDirectSaleItemsByGenreController : getDirectSaleItemsByGenre(genre)
-GetDirectSaleItemsByGenreController -> DirectSaleRepository : getDirectSaleItemsByGenre(genre)
+'-- Dialog --'
+
+activate Buyer
+Buyer -> UI : I want the list of items, in direct sale,\nof a given genre
+activate UI
+
+UI --> Buyer : What is the genre?
+Buyer -> UI : The genre is genre
+
+'-- System interaction --'
+
+UI -> CTL : getDirectSaleItemsByGenre(genre)
+activate CTL
+
+CTL -> DSR : getDirectSaleItemsByGenre(genre)
+activate DSR
 
 loop for each DirectSale
-    DirectSaleRepository -> DirectSale : getItem()
-    DirectSale -> Item : getPublication()
-    Item -> Publication : matchGenre(genre)
+    DSR -> DS : getItem()
+    activate DS
+
+    DS -> Itm : getPublication()
+    activate Itm
+
+    Itm -> Pub : matchGenre(genre)
+    activate Pub
 
     opt publication.matchGenre(genre)
-
-        DirectSaleRepository -> DirectSaleRepository : add Item to result list
+        DSR -> DSR : add Item to result list
     end
+
+    deactivate Pub
+    deactivate Itm
+    deactivate DS
 end
 
-DirectSaleRepository --> GetDirectSaleItemsByGenreController : List<Item>
-GetDirectSaleItemsByGenreController --> UIListDirectSaleItemsByGenre : List<Item>
-UIListDirectSaleItemsByGenre --> User : show items
+DSR --> CTL : List<Item>
+deactivate DSR
+
+CTL --> UI : List<Item>
+deactivate CTL
+
+UI --> Buyer : show items
+deactivate UI
+deactivate Buyer
 
 @enduml
