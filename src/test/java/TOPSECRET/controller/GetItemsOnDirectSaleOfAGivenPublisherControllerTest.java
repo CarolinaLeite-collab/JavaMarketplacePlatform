@@ -56,7 +56,7 @@ class GetItemsOnDirectSaleOfAGivenPublisherControllerTest {
     @Test
     void test_get_direct_sale_items_by_publisher_with_no_direct_sales_should_return_empty_list(){
 
-        //arrange and act
+        //act
         List<Item> listOfDirectSaleItemsByPublisher = _getItemsOnDirectSaleOfAGivenPublisherController.getDirectSaleItemByPublisher(_publisher);
 
         //assert
@@ -68,11 +68,11 @@ class GetItemsOnDirectSaleOfAGivenPublisherControllerTest {
     @Test
     void test_get_direct_sale_items_by_publisher_with_direct_sales_should_return_non_empty_list() {
 
-        //act
+        //arrange
         _dsr.createDirectSale(_item, new Price(25.0,Currency.EUR), null);
         _dsr.createDirectSale(_item, new Price(35.0,Currency.EUR), null);
 
-        //arrange
+        //act
         List<Item> listOfDirectSaleItemsByPublisher = _getItemsOnDirectSaleOfAGivenPublisherController.getDirectSaleItemByPublisher(_publisher);
 
         //assert

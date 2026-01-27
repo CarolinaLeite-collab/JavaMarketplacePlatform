@@ -205,14 +205,16 @@ class DirectSaleRepoTest {
     @Test
     void testGetDirectSaleItemsByPublisherWithDirectSalesShouldReturnNonEmptyList() {
 
-
+        //Arrange
         _directSaleRepo.createDirectSale(_item, new Price(10.0, Currency.EUR), null);
         _directSaleRepo.createDirectSale(_item, new Price(15.0, Currency.EUR), null);
         _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
         _directSaleRepo.createDirectSale(_item, new Price(5.0, Currency.EUR), null);
 
+        //Act
         List<Item> list = _directSaleRepo.getDirectSaleItemByPublisher(_publisher);
 
+        //Assert
         assertNotNull(list);
         assertEquals(4, list.size());
     }
