@@ -41,8 +41,8 @@
 
  ' --- Run through each direct sale and check the publisher associated with the corresponding Item ---
  loop for each directSale in dsr
-     DirectSaleRepo -> DirectSale: isOfPublisher(publisherName)
-     opt isOfPublisher == true
+     DirectSaleRepo -> DirectSale: isByPublisher(publisherName)
+     opt isByPublisher == true
          DirectSaleRepo -> List: add(directSale.getItem())
          activate List
          List -> DirectSaleRepo: true
