@@ -25,7 +25,7 @@ Buyer -> System: I want the list of items on direct sale of a given author
 activate "System"
 System --> Buyer: What is the author's name?
 deactivate "System"
-Buyer -> System: authorName
+Buyer -> System: author
 activate "System"
 System --> Buyer: Here's the list! done!
 deactivate "System"
