@@ -28,20 +28,20 @@ participant "auction:Auction" as DS
 ' --- Dialog ---
 Buyer -> UI: I want the list of items on auction of a given publication
 activate UI
-UI --> Buyer: What is the publication's name?
+UI --> Buyer: Whichpublication?
 deactivate UI
-Buyer -> UI: publicationName
+Buyer -> UI: publication
 activate UI
-UI -> CTL: getAuctionItemsByPublication(publicationName)
+UI -> CTL: getAuctionItemsByPublication(publication)
 activate CTL
-CTL -> AR: getAuctionItemsByPublication(publicationName)
+CTL -> AR: getAuctionItemsByPublication(publication)
 activate AR
 
 create "listOfAuctionItemsByPublisher: List<Item>" as List
 AR -> List: create()
 
 loop for each auction in _ar
-    AR -> DS: isByPublication(publicationName)
+    AR -> DS: isByPublication(publication)
 '    activate DS
 '    DS -> DSR: true
 '    deactivate DS

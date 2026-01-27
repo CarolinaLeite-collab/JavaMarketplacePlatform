@@ -19,16 +19,16 @@ participant "_ar:AuctionRepo" as AR
 
 Buyer -> UI: I want the list of items on auction of a given publication
 activate UI
-UI --> Buyer: What is the publication's name?
+UI --> Buyer: Which publication?
 deactivate UI
-Buyer -> UI: publicationName
+Buyer -> UI: publication
 activate UI
 
 
-UI -> CTL: getAuctionItemsByPublication(publicationName)
+UI -> CTL: getAuctionItemsByPublication(publication)
 activate CTL
 
-CTL -> AR: getAuctionItemsByPublication(publicationName)
+CTL -> AR: getAuctionItemsByPublication(publication)
 activate AR
 
 AR --> CTL: copyOfListOfAuctionItemsByPublication

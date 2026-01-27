@@ -23,12 +23,12 @@ class GetAuctionItemsByPublicationUI {
 class GetAuctionItemsByPublicationController {
 
 - _ar : AuctionRepo
-+ getAuctionItemsByPublication(publicationName : Publication) : List<Item>
++ getAuctionItemsByPublication(publication : Publication) : List<Item>
 }
 
 class AuctionRepo {
 - _itemsOnAuction : List<Auction>
-+getAuctionItemsByPublication(publicationName : Publication) : List<Item>
++getAuctionItemsByPublication(publication : Publication) : List<Item>
 
 }
 
