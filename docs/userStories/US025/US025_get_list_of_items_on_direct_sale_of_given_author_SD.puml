@@ -15,20 +15,20 @@ autoactivate off
 actor Buyer
 participant ":GetDirectSaleItemsByAuthorUI" as UI
 participant ":GetDirectSaleItemsByAuthorController" as CTL
-participant "dsr:DirectSaleRepo" as DSR
+participant ":DirectSaleRepo" as DSR
 
 Buyer -> UI: I want the list of items on direct sale of a given author
 activate UI
 UI --> Buyer: What is the author's name?
 deactivate UI
-Buyer -> UI: authorName
+Buyer -> UI: author
 activate UI
 
 
-UI -> CTL: getDirectSaleItemsByAuthor(authorName)
+UI -> CTL: getDirectSaleItemsByAuthor(author)
 activate CTL
 
-CTL -> DSR: getDirectSaleItemsByAuthor(authorName)
+CTL -> DSR: getDirectSaleItemsByAuthor(author)
 activate DSR
 
 DSR --> CTL: copyOfListOfDirectSaleItemsByAuthor

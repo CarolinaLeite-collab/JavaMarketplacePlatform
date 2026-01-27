@@ -22,24 +22,45 @@ class GetDirectSaleItemsByAuthorUI {
 class GetDirectSaleItemsByAuthorController {
 
 - _dsr : DirectSaleRepo
-+ getDirectSaleItemsByAuthor(authorName: Author) : List<Item>
++ getDirectSaleItemsByAuthor(author: Author) : List<Item>
 }
 
 class DirectSaleRepo {
 
 - _directSales : List<DirectSale>
-+getDirectSaleItemsByAuthor(authorName: Author) : List<Item>
++getDirectSaleItemsByAuthor(author: Author) : List<Item>
 
 }
 
 class DirectSale {
 
-+isByAuthor(authorName: Author) : boolean
+- item : Item
++isByAuthor(author: Author) : boolean
++getItem() : Item
+
+}
+
+class Item {
+
++getPublication() : Publication
+
+}
+
+class Publication {
+
++getAuthor() : Author
+
+}
+
+class Author {
 
 }
 
 GetDirectSaleItemsByAuthorUI "1" ..> "1" GetDirectSaleItemsByAuthorController : invokes
 GetDirectSaleItemsByAuthorController "1" ..> "1" DirectSaleRepo : calls
 DirectSaleRepo "1" --> "*" DirectSale : contains
+DirectSale "1" --> "1" Item : contains
+Item "1" --> "1" Publication : contains
+Publication "1" --> "1" Author : contains
 
 @enduml

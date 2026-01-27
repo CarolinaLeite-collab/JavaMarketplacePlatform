@@ -1,5 +1,5 @@
 @startuml
-title US025 – "As a Buyer, I want to get the list of items on direct sale of a given author" - Level 2 SD
+title US025 – "As a Buyer, I want to get the list of items on direct sale of a given author" - Level 3 SD
 hidefootbox
 
 '==== basic style ====
@@ -22,6 +22,8 @@ participant ":GetDirectSaleItemsByAuthorUI" as UI
 participant ":GetDirectSaleItemsByAuthorController" as CTL
 participant "dsr:DirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DS
+participant "item:Item" as IT
+participant "publication:Publication" as PUB
 
 
 
@@ -42,18 +44,34 @@ DSR -> List: create()
 
 loop for each directSale in dsr
     DSR -> DS: isByAuthor(author)
-    opt isByAuthor == true
-        DSR -> List: add(directSale.getItem())
-        activate List
-        List --> DSR: true
-        deactivate List
-    end
+    note right of DS: Checks if author's equals(item.publication.author)
+    activate DS
+    note right of DS
+    Uses internal attribute Item item
+    end note
+    DS -> IT: getPublication()
+    activate IT
+    IT -> PUB: getAuthor()
+    activate PUB
+    PUB --> IT: author
+    deactivate PUB
+    IT --> DS: publication
+    deactivate IT
+    DS --> DSR: true
+    deactivate DS
+    DSR -> List: add(directSale.getItem())
+    activate List
+    List --> DSR: true
+    deactivate List
 end
+
+
 
 create "copyOfListOfDirectSaleItemsByAuthor: List<Item>" as Copy
 DSR -> Copy: List.copyOf(listOfDirectSaleItemsByAuthor)
 
-participant "item:Item" as AUT
+participant "author:Author" as AUT
+
 
 DSR --> CTL: copyOfListOfDirectSaleItemsByAuthor
 deactivate DSR
