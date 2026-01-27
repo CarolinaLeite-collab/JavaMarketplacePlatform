@@ -77,7 +77,7 @@ class DirectSale {
 ' ===== RELATIONSHIPS =====
 
 ' --- UI → Controller ---
-PublicationInLibraryForDirectSaleUI "1" ..> "1"  PublicationInLibraryForDirectSaleCTL : uses
+PublicationInLibraryForDirectSaleUI "1" ..> "1"  PublicationInLibraryForDirectSaleCTL : invokes
 
 ' --- Controller → Repos ---
 PublicationInLibraryForDirectSaleCTL "1" ..> "1" LibraryRepo : calls
@@ -86,10 +86,10 @@ PublicationInLibraryForDirectSaleCTL "1" ..> "1" ItemRepo : calls
 PublicationInLibraryForDirectSaleCTL "1" ..> "1" DirectSaleRepo : calls
 
 ' --- Repos → Domain objects ---
-LibraryRepo "1"--> "*" Library : manages
-PublicationRepo "1" --> "*" Publication: manages
-ItemRepo "1" --> "*" Item : manages
-DirectSaleRepo "1" --> "*" DirectSale : manages
+LibraryRepo "1"--> "*" Library : uses
+PublicationRepo "1" --> "*" Publication: uses
+ItemRepo "1" --> "*" Item : uses
+DirectSaleRepo "1" --> "*" DirectSale : uses
 
 ' --- Domain relationships ---
 Item "1" --> "1" DirectSale : sets

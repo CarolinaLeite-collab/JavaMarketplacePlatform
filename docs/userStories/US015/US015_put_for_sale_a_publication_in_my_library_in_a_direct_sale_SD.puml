@@ -20,18 +20,18 @@ autoactivate off
 actor User
 participant ":PublicationInLibraryForDirectSaleUI" as UI
 participant ":PublicationInLibraryForDirectSaleCTL" as Ctl
-participant "_lr:LibraryRepo" as LibraryRepo
+participant ":LibraryRepo" as LibraryRepo
 participant "userLibrary:Library" as userLibrary
-participant "_pr:PublicationRepo" as PublicationRepo
-participant "_ir:ItemRepo" as ItemRepo
-participant "_dsr:DirectSaleRepo" as DirectSaleRepo
+participant ":PublicationRepo" as PublicationRepo
+participant ":ItemRepo" as ItemRepo
+participant ":DirectSaleRepo" as DirectSaleRepo
 
 ' --- System dialog ---
 User -> UI: I want to put for direct sale a publication in my library.
 activate "UI"
 
 ' --- Get the user's library ---
-UI -> Ctl: getPublicationsList(userID)
+UI -> Ctl: getPublicationsInLibraryList(user)
 activate "Ctl"
 Ctl -> LibraryRepo: findByUser(user)
 activate "LibraryRepo"
@@ -39,7 +39,7 @@ LibraryRepo --> Ctl: userLibrary
 deactivate "LibraryRepo"
 
 ' --- Get the list of publications in the User's library ---
-Ctl -> userLibrary: getPublicationsInLibraryList()
+Ctl -> userLibrary: getPublicationsInLibrary()
 activate "userLibrary"
 userLibrary --> Ctl: publicationsList
 deactivate "userLibrary"
@@ -94,7 +94,7 @@ DirectSaleRepo --> Ctl: directSale
 deactivate "DirectSaleRepo"
 Ctl -> itemInstance: setDirectSale(directSale)
 activate "itemInstance"
-itemInstance --> Ctl: True
+itemInstance --> Ctl: void
 deactivate "itemInstance"
 Ctl --> UI: True
 deactivate "Ctl"
