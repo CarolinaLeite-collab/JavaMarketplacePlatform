@@ -18,19 +18,19 @@ class CreateLibraryUI {
 }
 
 class CreateLibraryController {
-  -_lr: LibraryRepo
+  -_libraryRepo:LibraryRepo
   + createMyLibrary(user:User) : Library
 }
 
 class LibraryRepo {
--_libraries: List<Library>
-  + create(user:User) : Library
+-_libraries:List<Library>
+  + createMyLibrary(user:User) : Library
   - myLibraryExists(user:User) : boolean
 }
 
 class Library {
   - _owner:User
-  + Library(owner:User)
+  + Library(user:User)
   + getUser() : User
 }
 
@@ -40,6 +40,5 @@ class Library {
 CreateLibraryUI "1" ..> "1" CreateLibraryController : invokes
 CreateLibraryController "1" ..> "1" LibraryRepo : calls
 LibraryRepo "1" --> "*" Library : creates
-'User "1" --> "1" Library: owns
 
 @enduml
