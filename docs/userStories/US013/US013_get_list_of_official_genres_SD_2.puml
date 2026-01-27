@@ -1,5 +1,5 @@
 @startuml
-title US013 - "As a user, I want to get the list of official genres" - SD
+title US013 - "As a user, I want to get the list of official genres" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -20,7 +20,7 @@ autoactivate off
 actor User
 participant ":GetListOfOfficialGenresUI" as UI
 participant ":GetListOfOfficialGenresController" as CTL
-participant "_gr:GenreRepo" as GR
+participant "gr:GenreRepo" as GR
 
 ' --- UI interaction ---
 User -> UI: I want to get the list of official genres
@@ -32,14 +32,14 @@ UI -> CTL: getListOfOfficialGenres()
 activate CTL
 CTL -> GR: getListOfOfficialGenres()
 activate GR
-
-create "ListOfOfficialGenres:List<Genres>" as LO
-GR -> LO: create()
-
-
-GR --> CTL: ListOfOfficialGenres
+note right of GR
+Uses internal attribute List<Genre> _genres
+end note
+create "listOfOfficialGenres:List<Genre>" as List
+GR -> List: List.copyOf(_genres)
+GR --> CTL: listOfOfficialGenres
 deactivate GR
-CTL --> UI: ListOfOfficialGenres
+CTL --> UI: listOfOfficialGenres
 deactivate CTL
 UI --> User: Here's the list! Done!
 deactivate UI
