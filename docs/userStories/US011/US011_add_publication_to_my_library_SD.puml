@@ -27,9 +27,9 @@ participant "_lr:LibraryRepo"
 
 User -> "UI1:AddPublicationUI" : I want to add a publication to my library
 activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailablePublications(userID)
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailablePublications(user)
 activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : getMyLibrary(UserID)
+"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : getMyLibrary(user)
 activate "_lr:LibraryRepo"
 "_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
 deactivate "_lr:LibraryRepo"
@@ -43,9 +43,9 @@ deactivate "Ctl1:AddPublicationOnLibrary"
 deactivate "UI1:AddPublicationUI"
 User -> "UI1:AddPublicationUI" : Selection
 activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addPublicationToLibrary(selectedPublication, userID)
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addPublicationToLibrary(selectedPublication, user)
 activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)
+"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication, user)
 activate "myLibrary:Library"
 "myLibrary:Library" -> "myLibrary:Library" : verifyUnique(selectedPublication)
 "myLibrary:Library" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)

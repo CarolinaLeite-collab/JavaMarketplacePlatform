@@ -18,9 +18,9 @@ skinparam classAttributeIconSize 0
 class AddPublicationOnLibraryUI
 
 class Ctl1:AddPublicationOnLibrary {
-    + getMyLibrary(userID : String) : Library
-    + getListOfAvailablePublications(userID : String) : List<Publication>
-    + addPublicationToLibrary(selectedPublication : Publication, userID : String) : boolean
+    + getMyLibrary(user : User) : Library
+    + getListOfAvailablePublications(user : User) : List<Publication>
+    + addPublicationToLibrary(selectedPublication : Publication, user : User) : boolean
 
 }
 
@@ -31,13 +31,13 @@ class _pr:PublicationRepo {
 class myLibrary:Library {
     - _publications : List<Publication>
     + getAllPublications() : List<Publication>
-    + addPublication(selectedPublication) : Publication) : boolean
+    + addPublicationToLibrary(selectedPublication) : Publication) : boolean
     - copyOfLibrary() : List<Publication>
-    - verifyUnique(selectedPublication) : Publication) : boolean
+    - verifyUnique(selectedPublication : Publication) : boolean
 }
 
 class _lr:LibraryRepo {
-     + findByUser(userID : String) : Library
+     + findByUser(user : User) : Library
 }
 
 
