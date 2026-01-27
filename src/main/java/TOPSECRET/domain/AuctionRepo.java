@@ -86,7 +86,10 @@ public class AuctionRepo {
                 listOfAuctionItemsByPublication.add(auction.getItem());
             }
         }
-        return new ArrayList<>(listOfAuctionItemsByPublication);
+        List<Item> copyOfListOfAuctionItemsByPublication =
+                new ArrayList<>(listOfAuctionItemsByPublication);
+
+        return copyOfListOfAuctionItemsByPublication;
     }
 
     /**
