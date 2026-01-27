@@ -10,6 +10,7 @@ class UserTest {
 
     @Test
     void constructorWithValidArgumentsCreatesUser() {
+        // Arrange + act
         User user = new User(
                 new Name("Tiago"),
                 new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
@@ -17,6 +18,7 @@ class UserTest {
                 new Phone(new PhonePrefix("+351"), "918902632")
         );
 
+        // Assert
         assertEquals("Tiago", user.getName().toString());
         assertEquals("1252008@isep.ipp.pt", user.getEmail().toString());
         assertEquals("PORTUGAL, Matosinhos (Porto), Rua senhor de matosinhos, 81, HOUSE, 4300-111", user.getAddress().toString());
@@ -26,7 +28,9 @@ class UserTest {
     //Objects.requireNonNull lança NullPointerException (não IllegalArgumentException).
     @Test
     void constructorWithNullName() {
+        //Assert
         assertThrows(NullPointerException.class, () ->
+                // Arrange + act
                 new User(
                         null,
                         new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
@@ -38,7 +42,9 @@ class UserTest {
 
     @Test
     void constructorWithNullAddress() {
+        //Assert
         assertThrows(NullPointerException.class, () ->
+                // Arrange + act
                 new User(
                         new Name("Tiago"),
                         null,
@@ -50,7 +56,9 @@ class UserTest {
 
     @Test
     void constructorWithNullEmail() {
+        //Assert
         assertThrows(NullPointerException.class, () ->
+                // Arrange + act
                 new User(
                         new Name("Tiago"),
                         new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
@@ -62,7 +70,9 @@ class UserTest {
 
     @Test
     void constructorWithNullPhoneNumber() {
+        //Assert
         assertThrows(NullPointerException.class, () ->
+                // Arrange + act
                 new User(
                         new Name("Tiago"),
                         new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
@@ -74,10 +84,18 @@ class UserTest {
 
     @Test
     void constructorWithNameAndEmail() {
-                new User(
-                        new Name("Tiago"),
-                        new Email("test@email.pt")
-                );
+
+        // Arrange + Act
+        User user = new User(
+                new Name("Tiago"),
+                new Email("test@email.pt")
+        );
+
+        // Assert
+        assertEquals("Tiago", user.getName().toString());
+        assertEquals("test@email.pt", user.getEmail().toString());
+        assertNull(user.getAddress());
+        assertNull(user.getPhone());
     }
 
     @Test
