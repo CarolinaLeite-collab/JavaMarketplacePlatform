@@ -26,7 +26,7 @@ class LibraryRepoTest {
     void testCreatingANewLibrary(){
 
         //act
-        Library newLibrary = _libraryRepo.create(_user);
+        Library newLibrary = _libraryRepo.createMyLibrary(_user);
 
         //assert
         assertNotNull(_libraryRepo.findByUser(newLibrary.getUser()));
@@ -36,10 +36,10 @@ class LibraryRepoTest {
     void testAddingASecondLibraryShouldThrowAnException(){
 
         //act
-        Library newLibrary = _libraryRepo.create(_user);
+        Library newLibrary = _libraryRepo.createMyLibrary(_user);
 
         //
-        assertThrows(IllegalStateException.class, () -> _libraryRepo.create(_user));
+        assertThrows(IllegalStateException.class, () -> _libraryRepo.createMyLibrary(_user));
 
 
     }
@@ -49,7 +49,7 @@ class LibraryRepoTest {
     void findByUserShouldReturnCorrectLibraryWhenExists() {
         // Arrange
 
-        Library mylibrary = _libraryRepo.create(_user);
+        Library mylibrary = _libraryRepo.createMyLibrary(_user);
 
         // Act
         Library actualLibrary = _libraryRepo.findByUser(_user);

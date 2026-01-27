@@ -50,7 +50,7 @@ class AddPublicationOnLibraryControllerTest {
         _publicationRepo.add(_p1);
         _publicationRepo.add(_p2);
 
-        _libraryRepo.create(_user);
+        _libraryRepo.createMyLibrary(_user);
     }
 
     @Test

@@ -25,7 +25,7 @@ public class LibraryRepo {
 
     }
 
-    public Library create(User user){
+    public Library createMyLibrary(User user){
 
         //if user already has a library, throw exception (library will not be created)
         if (myLibraryExists(user)) {

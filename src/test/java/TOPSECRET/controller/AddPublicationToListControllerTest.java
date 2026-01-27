@@ -36,7 +36,7 @@ class AddPublicationToListControllerTest {
         _action = _genreRepo.addGenre("Action");
         assertNotNull(_action);
 
-        _library = _libraryRepo.create(_user);
+        _library = _libraryRepo.createMyLibrary(_user);
 
         ListOfPublications myList = _listRepo.createListOfPublications(_user, "My List", _action);
         assertNotNull(myList);

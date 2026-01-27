@@ -36,7 +36,7 @@ class PublicationSaleAuctionControllerTest {
                 new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "4000-123", null),
                 new Email("test@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "999999999"));
-        testLibrary = libraryRepo.create(testUser);
+        testLibrary = libraryRepo.createMyLibrary(testUser);
 
     }
 

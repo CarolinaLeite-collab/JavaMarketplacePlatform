@@ -31,7 +31,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnEmptyList_whenLibraryExistsButEmpty() {
         // Arrange
-        Library myLibrary = _libraryRepo.create(_user);
+        Library myLibrary = _libraryRepo.createMyLibrary(_user);
 
         // Act
         List<PublicationDetails> result = _controller.getListOfPublications(_user);
@@ -44,7 +44,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnListOfPublicationsInLibrary() {
 
-        Library myLibrary= _libraryRepo.create(_user);
+        Library myLibrary= _libraryRepo.createMyLibrary(_user);
         Publication p = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
