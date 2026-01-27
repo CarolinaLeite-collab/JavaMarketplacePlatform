@@ -40,6 +40,7 @@ public class GenreRepoTest {
         GenreRepo gr = new GenreRepo();
         gr.addGenre("Science Fiction");
         gr.addGenre("Romance");
+        Genre SciFi = new Genre("Science Fiction");
 
         //act
         List<Genre> listOfOfficialGenres = gr.getListOfOfficialGenres();
@@ -48,7 +49,7 @@ public class GenreRepoTest {
         assertNotNull(listOfOfficialGenres);
         assertEquals(2, listOfOfficialGenres.size());
         assertFalse(listOfOfficialGenres.isEmpty());
-        assertTrue(listOfOfficialGenres.contains(new Genre("Science Fiction")));
+        assertTrue(listOfOfficialGenres.contains(SciFi));
 
     }
 

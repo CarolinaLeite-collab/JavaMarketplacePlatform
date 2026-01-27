@@ -28,9 +28,9 @@ public class GetListOfOfficialGenresController {
 
     public List<Genre> getListOfOfficialGenres(){
 
-        List<Genre> ListOfOfficialGenres = _gr.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = _gr.getListOfOfficialGenres();
 
-        return ListOfOfficialGenres;
+        return listOfOfficialGenres;
 
     }
 

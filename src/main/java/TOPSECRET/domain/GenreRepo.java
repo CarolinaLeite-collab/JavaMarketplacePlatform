@@ -39,9 +39,9 @@ public class GenreRepo {
     // Gets the list of official genres, and uses copyOf for encapsulation
     public List<Genre> getListOfOfficialGenres() {
 
-        List<Genre> ListOfOfficialGenres = List.copyOf(_genres);
+        List<Genre> listOfOfficialGenres = List.copyOf(_genres);
 
-        return ListOfOfficialGenres;
+        return listOfOfficialGenres;
 
     }
 
