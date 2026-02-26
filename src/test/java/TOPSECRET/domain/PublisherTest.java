@@ -5,6 +5,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PublisherTest {
+
+    @Test
+    void testConstructor() {
+        new Publisher("Penguin Random House");
+    }
+
     @Test
     void validPublisher() {
         Publisher p = new Publisher("Porto Editora");
