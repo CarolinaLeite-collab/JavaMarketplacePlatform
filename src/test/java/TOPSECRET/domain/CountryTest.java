@@ -8,6 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 class CountryTest {
 
     @Test
+    void testConstructor() {
+        new Country("Lebanon");
+    }
+
+    @Test
     void constructsCountrySuccessfully() {
         // Act
         Country country = new Country("France");
@@ -21,6 +26,12 @@ class CountryTest {
     void throwsIfCountryNameNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country(null));
+    }
+
+    @Test
+    void throwsIfCountryNameEmpty() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Country("   "));
     }
 
     @Test
