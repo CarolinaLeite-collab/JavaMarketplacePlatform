@@ -15,38 +15,31 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class RegisterPublisherUI {
+class RegisterPublishingCompanyUI {
 }
 
-class RegisterPublisherController {
-  - _publisherRepo: PublisherRepo
-  + registerPublisher(publisherName: String) : Publisher
+class RegisterPublishingCompanyController {
+- _publishingCompanyRepo: PublishingCompanyRepo
++ registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
 }
 
-class PublisherRepo {
-  + registerPublisher(publisherName: String) : Publisher
-  - publisherExists(publisherName: String) : boolean
+class PublishingCompanyRepo {
++ registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+- publishingCompanyExists(publishingCompanyName: String) : boolean
 }
 
-class Publisher {
-  - publisherName: String
-  + Publisher(publisherName: String)
+class PublishingCompanyFactory {
++ createPublishingCompany(publishingCompanyName: String)
+}
+
+class PublishingCompany {
+  - publishingCompanyName: String
+  + PublishingCompany(publishingCompanyName: String)
 }
 ' NOTE: getName() to be used in unit tests, but is not in US006 SD
-RegisterPublisherUI "1" ..> "1" RegisterPublisherController: uses
-RegisterPublisherController "1" --> "1" PublisherRepo : uses
-PublisherRepo "1" --> "*" Publisher : creates
-
-note right of RegisterPublisherController
-  registerPublisher() calls
-  PublisherRepo's method
-  of the same name
-end note
-
-note right of PublisherRepo
-  This registerPublisher() orchestrates:
-  publisherExists() → new Publisher %n()→ _publishers.add()
-end note
-
+RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
+RegisterPublishingCompanyController "1" ..> "1" PublishingCompanyRepo : calls
+PublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : uses
+PublishingCompanyFactory "1" --> "*" PublishingCompany : instantiates through
 
 @enduml
