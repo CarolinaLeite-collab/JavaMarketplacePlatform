@@ -17,58 +17,72 @@ autonumber
 
 
 actor Administrator
-participant "UI1:RegisterNewAppraisalEntityUI"
-participant "Ctl1:RegisterNewAppraisalEntityController"
-participant "_ptr:PublicationTypeRepo"
-participant "_gr:GenreRepo"
-participant "_aer:AppraisalEntityRepo"
+participant "UI1:RegisterNewAppraisalEntityUI" as UI
+participant "Ctl1:RegisterNewAppraisalEntityController" as ctl
+participant "_ptr:PublicationTypeRepo" as ptr
+participant "_gr:GenreRepo" as grRepo
+participant "_aer:AppraisalEntityRepo" as aeRepo
+participant "aef:AppraisalEntityFactory" as aeFactory
 
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": I want to register an Appraisal Entity
-activate "UI1:RegisterNewAppraisalEntityUI"
-"UI1:RegisterNewAppraisalEntityUI" --> Administrator: What is the Appraisal Entity's name?
-deactivate "UI1:RegisterNewAppraisalEntityUI"
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": name
-activate "UI1:RegisterNewAppraisalEntityUI"
-"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getPublicationTypes()
-activate "Ctl1:RegisterNewAppraisalEntityController"
-"Ctl1:RegisterNewAppraisalEntityController" -> "_ptr:PublicationTypeRepo": getPublicationTypes()
-activate "_ptr:PublicationTypeRepo"
-"_ptr:PublicationTypeRepo" --> "Ctl1:RegisterNewAppraisalEntityController": cloneOfPublicationTypes
-deactivate "_ptr:PublicationTypeRepo"
-"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": cloneOfPublicationTypes
-deactivate "Ctl1:RegisterNewAppraisalEntityController"
+Administrator -> UI: I want to register an Appraisal Entity
+activate UI
+UI --> Administrator: What is the Appraisal Entity's name?
+deactivate UI
+Administrator -> UI: name
+activate UI
+UI -> ctl: getPublicationTypes()
+activate ctl
+ctl -> ptr: getPublicationTypes()
+activate ptr
+ptr --> ctl: copyOfListOfPublicationTypes
+deactivate ptr
+ctl --> UI: copyOfListOfPublicationTypes
+deactivate ctl
 
-"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
-deactivate "UI1:RegisterNewAppraisalEntityUI"
+UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
+deactivate UI
 
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": publicationTypes
-activate "UI1:RegisterNewAppraisalEntityUI"
-"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": getGenres()
-activate "Ctl1:RegisterNewAppraisalEntityController"
-"Ctl1:RegisterNewAppraisalEntityController" -> "_gr:GenreRepo": getGenres()
-activate "_gr:GenreRepo"
-"_gr:GenreRepo" --> "Ctl1:RegisterNewAppraisalEntityController": cloneOfGenres
-deactivate "_gr:GenreRepo"
-"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": cloneOfGenres
-deactivate "Ctl1:RegisterNewAppraisalEntityController"
-"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
-deactivate "UI1:RegisterNewAppraisalEntityUI"
+Administrator -> UI: publicationTypes
+activate UI
+UI -> ctl: getGenres()
+activate ctl
+ctl -> grRepo: getGenres()
+activate grRepo
+grRepo --> ctl: copyOfListOfGenres
+deactivate grRepo
+ctl --> UI: copyOfListOfOfficialGenres
+deactivate ctl
+UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
+deactivate UI
 
-Administrator -> "UI1:RegisterNewAppraisalEntityUI": genres
-activate "UI1:RegisterNewAppraisalEntityUI"
-"UI1:RegisterNewAppraisalEntityUI" -> "Ctl1:RegisterNewAppraisalEntityController": registerNewAppraisalEntity(name, publicationTypes, genres)
-activate "Ctl1:RegisterNewAppraisalEntityController"
-"Ctl1:RegisterNewAppraisalEntityController" -> "_aer:AppraisalEntityRepo": registerNewAppraisalEntity(name, publicationTypes, genres)
-activate "_aer:AppraisalEntityRepo"
-"_aer:AppraisalEntityRepo" -> "_aer:AppraisalEntityRepo": appraisalEntityExists(name)
-create "_ar:AppraisalEntity"
-"_aer:AppraisalEntityRepo" -> "_ar:AppraisalEntity": registerNewAppraisalEntity(name, publicationTypes, genres)
-"_aer:AppraisalEntityRepo" --> "Ctl1:RegisterNewAppraisalEntityController": AppraisalEntity
-deactivate "_aer:AppraisalEntityRepo"
-"Ctl1:RegisterNewAppraisalEntityController" --> "UI1:RegisterNewAppraisalEntityUI": AppraisalEntity
-deactivate "Ctl1:RegisterNewAppraisalEntityController"
-"UI1:RegisterNewAppraisalEntityUI" --> Administrator: Done!
-deactivate "UI1:RegisterNewAppraisalEntityUI"
+Administrator -> UI: genres
+activate UI
+UI -> ctl: registerNewAppraisalEntity(name, publicationTypes, genres)
+activate ctl
+ctl -> aeRepo: registerNewAppraisalEntity(name, publicationTypes, genres)
+activate aeRepo
+create "_listae:List <AppraisalEntity>"
+aeRepo -> "_listae:List <AppraisalEntity>": create()
+
+opt appraisalEntityExists(name, publicationTypes, genres) == false
+        aeRepo -> aeFactory: createAppraisalEntity(name, publicationTypes, genres)
+        create "_AppraisalEntity:AppraisalEntity"
+        activate aeFactory
+        aeFactory -> "_AppraisalEntity:AppraisalEntity": create(name, publicationTypes, genres)
+        aeFactory -> aeRepo: _AppraisalEntity
+        deactivate aeFactory
+        aeRepo -> "_listae:List <AppraisalEntity>":add(_AppraisalEntity)
+        activate "_listae:List <AppraisalEntity>"
+        "_listae:List <AppraisalEntity>" --> aeRepo: true
+    end
+
+deactivate "_listae:List <AppraisalEntity>"
+aeRepo --> ctl: _AppraisalEntity
+deactivate aeRepo
+ctl --> UI: _AppraisalEntity
+deactivate ctl
+UI --> Administrator: Done!
+deactivate UI
 
 
 
