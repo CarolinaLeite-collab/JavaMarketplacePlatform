@@ -1,5 +1,5 @@
 @startuml
-title US006 – "As an Administrator, I want to register a %n()Publishing Company in the system" %n() SSD (happy path)
+title US006 – "As an Administrator, I want to register a %n()Publishing Company in the system" %n() SSD
 hide footbox
 
 '==== basic style ====
@@ -17,13 +17,13 @@ autonumber
 
 ' --- Actor and participants ---
 actor "Admin" as Administrator
-participant "Mitelovers" as System
+participant ":Mitelovers" as System
 
 ' --- System dialog (happy path) ---
 Administrator -> System: I want to register a publishing company.
 activate "System"
 System --> Administrator: Name of the publishing company?
-Administrator -> System: New Publishing Co.
+Administrator -> System: publishingCompanyName
 System --> Administrator: Registered successfully!
 deactivate "System"
 
