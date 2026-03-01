@@ -19,19 +19,22 @@ skinparam classAttributeIconSize 0
 Class Country {
 - _countryName : String
 }
+Class CountryFactory {
++ create(countryName : String)
+}
 Class CountryRepo {
 - _countries : List<Country>
 + registerCountry(countryName : String) : Country
 - existsCountry(country : Country) : boolean
 }
 Class RegisterCountryController {
-- _countryRepo : CountryRepo
 + registerCountry(countryName : String) : Country
 }
 Class RegisterCountryUI {}
 
 '==== connections ====
-CountryRepo "1" --> "*" Country: instantiates through
+CountryFactory "1" --> "*" Country: instantiates through
+CountryRepo "1" --> "1" CountryFactory: calls
 RegisterCountryController  "1" ..> "1" CountryRepo: calls
 RegisterCountryUI "1" ..> "1" RegisterCountryController: invokes
 
