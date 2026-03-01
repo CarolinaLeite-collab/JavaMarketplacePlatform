@@ -22,6 +22,8 @@ actor Administrator as ADM
 participant ":RegisterCountryUI" as UI
 participant ":RegisterCountryController" as CTL
 participant ":CountryRepo" as CR
+participant ":CountryFactory" as FACTORY
+
 
 '==== UI interaction ====
 ADM -> UI: I want to register a country
@@ -30,6 +32,8 @@ UI --> ADM: What is the country's name?
 deactivate UI
 ADM -> UI: countryName
 activate UI
+UI -> UI: Validate field
+
 
 '==== Use case execution ====
 UI -> CTL: registerCountry (countryName)
@@ -38,8 +42,10 @@ CTL -> CR: registerCountry (countryName)
 activate CR
 
     opt existsCountry (country) == false
+        CR -> FACTORY: create (countryName)
         create "c1:Country"
-        CR -> "c1:Country": create (countryName)
+        FACTORY -> "c1:Country": create (countryName)
+        FACTORY --> CR :c1
         CR -> CR: add(c1)
     end
 
