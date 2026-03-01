@@ -28,69 +28,118 @@ skinparam object {
 skinparam shadowing<<highlight>> false
 
 
-'==== entities ====
+'========================
+'title MiteLovers – OOA-G2 (Organizado)
+top to bottom direction
+
+'========================
+'==== STYLE ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 18
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+'========================
+'==== CORE USERS & ROLES ====
 together {
-object communityMember <<highlight>>
-object user
-object buyer
-object supportService <<highlight>>
-object seller
-object appraisalService
+
+  object User
+
+  object Buyer
+  object Seller
+  object Bidder
+  object Administrator
+  object AppraisalEntity
+  object SupportService <<highlight>>
 
 }
-object bidder
-object logisticService <<highlight>>
+
+  object logisticService <<highlight>>
+  object CommunityMember <<highlight>>
+
+'========================
+'==== SERVICES ====
+
+
+
+'========================
+'==== MARKETPLACE CORE ====
+
+  object Library
+  object Bid
+
 together {
-object publicationInfo
-object book
-object magazine
-object item
-object listing
-object shoppingCart
-object transaction
-}
-object auction
-object bid
 
-'=== OBJECTS IN DOUBT===
-'object directSale
-'object paymentProcessing
-'object lineOfSale
-'object activityHistory
+  object Item
+  object Publication
+  object Auction
+  object DirectSale
+  object shoppingCart <<highlight>>
+  object transaction <<highlight>>
 
-'=== LISTING RELATIONS ===
-publicationInfo "1" -- "*" book : < contains
-publicationInfo "1" -- "*" magazine: < contains
-book "0..1" --- "1" item: < represents
-magazine "0..1" --- "1" item: < represents
-item "1" -- "0..1" listing: < contains
-listing "1" - "0..1" auction: < has
-listing "*" -- "*" shoppingCart: < has
+  }
+
+'========================
+'==== RELATIONSHIPS ====
+
+'---User---
+User "1" -[#4B9DA9AA] "0..1" SupportService: < <font color="547792AA">supports</font>
+User "1" -[#4B9DA9AA] "0..1" CommunityMember: < <font color="547792AA">is a</font>
+User "1" -- "0..1" Bidder: < is a
+User "1" -- "0..1" Seller: < is a
+User "1" -- "0..1" Buyer: < is a
+User "1" -- "0..1"Administrator: < is a
+
+'--- Publications & Items ---
+Publication "1" --- "*" Item : < embodies
+Library "1" --- "*" Item : contains
+User "1" --- "0..1" Library : owns
+User "1" -- "*" Publication : registers
+'User "1" ---- "*" ListOfPublications : creates
+'ListOfPublications "1" -- "*" Item : owns
+
+'--- Sales Types ---
+
+Item "1" -- "1" DirectSale : is put on
+Item "1" -- "1" Auction : is put on
+
 shoppingCart "1" -- "0..1" transaction: < processes
 
-'===USER RELATIONS===
-user "1" -- "0..1" bidder: < is a
-user "1" -- "0..1" seller: < is a
-user "1" -- "0..1" buyer: < is a
-user "1" --[#4B9DA9AA] "0..1" supportService: < <font color="547792AA">supports</font>
-user "1" --[#4B9DA9AA] "0..1" communityMember: < <font color="547792AA">is a</font>
-buyer "*" -[#4B9DA9AA] "0..1" logisticService: <  <font color="547792AA">delivers to</font>
-seller "*" -[#4B9DA9AA] "0..1" logisticService: < <font color="547792AA">collects from</font>
-'logisticServices "1" --- "*" logisticAgent: manages
+Auction "1" - "*" Bid : > receives
+Bid "*" - "1" Bidder : places
 
-'===OTHER RELATIONS===
-appraisalService "*" - "1" seller: < requests
-appraisalService "*" -- "*" item: > appraises
-seller "1" --- "1..*" listing:  > creates
-supportService "1" --[#4B9DA9AA] "*" appraisalService: > <font color="547792AA">manages</font>
-seller "*" --[#4B9DA9AA] "0..1" supportService: < <font color="547792AA">supports</font>
-buyer "*" --[#4B9DA9AA] "0..1" supportService: < <font color="547792AA">supports</font>
-bidder "*" --[#4B9DA9AA] "0..1" supportService: < <font color="547792AA">supports</font>
-buyer "1" - "1" shoppingCart: > owns
-bidder "1" --- "1..*" bid: < placed by
-bid "*" ----- "1" auction: < holds
-auction "1" -- "0..1" transaction: < processes
-'logisticAgent "1" -- "1" transaction: handles
-transaction "*" - "1" logisticService: < handles
+Buyer "1" --- "1..*" Item : buys
+Buyer "1" - "1" shoppingCart: > owns
+
+'--- Seller relations ---
+Seller "1" ---- "1..*" Item : sells
+
+'--- Appraisal & Support ---
+Seller "1" -- "*" AppraisalEntity : requests
+AppraisalEntity "*" -- "*" Item : appraises
+Administrator "1" -- "*" AppraisalEntity : registers
+AppraisalEntity "0..1" -- "1" SupportService : > is a
+
+'--- Shopping Cart ---
+
+Auction "*" -- "1" shoppingCart : added to
+DirectSale "*" -- "1" shoppingCart : added to
+
+
+User "*" --[#4B9DA9AA] "0..1" logisticService: <  <font color="547792AA">delivers to</font>
+
 
 @enduml

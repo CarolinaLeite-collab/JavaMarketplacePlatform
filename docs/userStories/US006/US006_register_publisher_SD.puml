@@ -18,32 +18,36 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Admin" as Administrator
-participant ":RegisterPublisherUI" as UI
-note over "UI": not implementing UI now; %n() placeholder for tests
-participant ":RegisterPublisherController" as Ctl
-participant ":PublisherRepo" as Repo
+participant ":RegisterPublishingCompanyUI" as UI
+' note over "UI": not implementing UI now; %n() placeholder for tests
+participant ":RegisterPublishingCompanyController" as Ctl
+participant ":PublishingCompanyRepo" as Repo
+participant ":PublishingCompanyFactory" as Factory
 
 ' --- SD (Happy Path only)---
 
 Administrator -> "UI": I want to register a publishing company.
 activate "UI"
 "UI" --> Administrator:Name of the publishing company?
-Administrator -> "UI": publisherName
-"UI" -> "Ctl": registerPublisher(publisherName)
+Administrator -> "UI": publishingCompanyName
+"UI" -> "Ctl": registerPublishingCompany(publishingCompanyName)
 activate "Ctl"
-"Ctl" -> "Repo": registerPublisher(publisherName)
+"Ctl" -> "Repo": registerPublishingCompany(publishingCompanyName)
 activate "Repo"
-"Repo" -> "Repo": publisherExists(publisherName)
-note right of "Repo": happy path (publisherExists returns false)
-create "p1:Publisher"
-"Repo" -> "p1:Publisher": create(publisherName)
-note right of "Repo": create() instantiates new %n()Publisher via its constructor
-"Repo" -> "Repo": add(p1);
-note right of "Repo": add() represents _publishers.add() %n()(built-in List method)
+
+opt publishingCompanyExists(publishingCompanyName) == false
+        "Repo" -> "Factory" : createPublishingCompany(publishingCompanyName)
+        activate "Factory"
+        create "p1:PublishingCompany"
+        "Factory" -> "p1:PublishingCompany": create(publishingCompanyName)
+        "Factory" --> "Repo": p1
+        deactivate "Factory"
+        "Repo" -> "Repo": add(p1);
+        end
+
 "Repo" --> "Ctl": p1
 deactivate "Repo"
 "Ctl" --> "UI": p1
-note right of "UI" : DTO preferred; returning p1 for %n()deadline of this sprint; in future will %n()implement DTO for best practice
 deactivate "Ctl"
 "UI" --> Administrator: Registered successfully!
 deactivate "UI"

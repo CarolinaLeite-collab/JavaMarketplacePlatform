@@ -3,31 +3,29 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class LibraryTest {
 
-    private User _user;
+    private User _userDouble;
+    private Publication _publicationDouble;
 
+    // Creating doubles for User and Publication classes
     @BeforeEach
     void setUp() {
 
-        _user = new User (
-                new Name ("Zé Isep"),
-                new Email ("test@isep.com")
-        );
+        _userDouble = mock(User.class);
+        _publicationDouble = mock(Publication.class);
 
     }
-
-
 
     @Test
     void testConstructor() {
 
-        new Library(_user);
+        new Library(_userDouble);
 
     }
 
@@ -35,7 +33,7 @@ class LibraryTest {
     void test_get_userID() {
 
         //arrange and act
-        Library myLibrary = new Library(_user);
+        Library myLibrary = new Library(_userDouble);
         User userID = myLibrary.getUser();
 
         //assert
@@ -48,7 +46,7 @@ class LibraryTest {
     @Test
     void getPublicationsInLibraryShouldReturnEmptyListWhenNoPublications() {
         // Arrange
-        Library library = new Library(_user);
+        Library library = new Library(_userDouble);
 
         // Act
         List<PublicationDetails> result = library.getPublicationsInLibrary();
@@ -61,63 +59,39 @@ class LibraryTest {
     @Test
     void getPublicationsInLibraryShouldReturnPublicationsDetailsWhenPublicationsExist() {
 
-        Library library = new Library(_user);
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
+        Library library = new Library(_userDouble);
 
-        library.addPublicationToLibrary(p);
+        library.addPublicationToLibrary(_publicationDouble);
 
         List<PublicationDetails> result = library.getPublicationsInLibrary();
 
         assertNotNull(result);
         assertEquals(1, result.size());
-        assertEquals(p.getTitle(), result.get(0).getTitle());
-        assertEquals(p.getAuthor(), result.get(0).getAuthor());
-        assertEquals(p.getPublicationType(), result.get(0).getPublicationType());
-        assertEquals(p.getIdentifier(), result.get(0).getIdentifier());
+        assertEquals(_publicationDouble.getTitle(), result.get(0).getTitle());
+        assertEquals(_publicationDouble.getAuthor(), result.get(0).getAuthor());
+        assertEquals(_publicationDouble.getPublicationType(), result.get(0).getPublicationType());
+        assertEquals(_publicationDouble.getIdentifier(), result.get(0).getIdentifier());
     }
 
     @Test
     void getPublicationInLibraryShouldReturnPublicationWhenItExistInLibrary() {
 
-        Library library = new Library(_user);
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
+        Library library = new Library(_userDouble);
 
-        library.addPublicationToLibrary(p);
+        library.addPublicationToLibrary(_publicationDouble);
 
-        Publication myPublicationInLibrary = library.getPublicationFromLibrary(p);
-        assertEquals(p, myPublicationInLibrary); // asserts both are equal
-        assertSame(p, myPublicationInLibrary); // asserts they are the same object in memory
+        Publication myPublicationInLibrary = library.getPublicationFromLibrary(_publicationDouble);
+        assertEquals(_publicationDouble, myPublicationInLibrary); // asserts both are equal
+        assertSame(_publicationDouble, myPublicationInLibrary); // asserts they are the same object in memory
     }
 
     @Test
     void getPublicationInLibraryThrowsWhenPublicationNotInLibrary() {
 
-        Library library = new Library(_user);
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
+        Library library = new Library(_userDouble);
 
         // p was never added to user's library
-        assertThrows(IllegalArgumentException.class, () -> library.getPublicationFromLibrary(p));
+        assertThrows(IllegalArgumentException.class, () -> library.getPublicationFromLibrary(_publicationDouble));
 
     }
 
@@ -126,24 +100,15 @@ class LibraryTest {
         // Verifies that a valid publication is successfully added to the library
 
         // Arrange
-        Library library = new Library(_user);
-
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
+        Library library = new Library(_userDouble);
 
         // Act
-        boolean result = library.addPublicationToLibrary(p);
+        boolean result = library.addPublicationToLibrary(_publicationDouble);
 
         // Assert
         assertTrue(result);
         assertEquals(1, library.getAllPublications().size());
-        assertTrue(library.getAllPublications().contains(p));
+        assertTrue(library.getAllPublications().contains(_publicationDouble));
     }
 
     @Test
@@ -151,7 +116,7 @@ class LibraryTest {
         // Verifies that an empty library returns an empty list of publications
 
         // Arrange
-        Library library = new Library(_user);
+        Library library = new Library(_userDouble);
 
         // Act
         List<Publication> result = library.getAllPublications();
@@ -166,24 +131,15 @@ class LibraryTest {
         // Ensures that getAllPublications returns an unmodifiable list
 
         // Arrange
-        Library library = new Library(_user);
+        Library library = new Library(_userDouble);
 
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
-
-        library.addPublicationToLibrary(p);
+        library.addPublicationToLibrary(_publicationDouble);
 
         // Act
         List<Publication> result = library.getAllPublications();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(p));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_publicationDouble));
     }
 
     @Test
@@ -191,21 +147,12 @@ class LibraryTest {
         // Checks that the library rejects duplicate publications
 
         // Arrange
-        Library library = new Library(_user);
+        Library library = new Library(_userDouble);
 
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
-                .build();
-
-        library.addPublicationToLibrary(p);
+        library.addPublicationToLibrary(_publicationDouble);
 
         // Act
-        boolean result = library.addPublicationToLibrary(p);
+        boolean result = library.addPublicationToLibrary(_publicationDouble);
 
         // Assert
         assertFalse(result);
@@ -217,7 +164,7 @@ class LibraryTest {
         // Ensures that null publications are not added to the library
 
         // Arrange
-        Library library = new Library(_user);
+        Library library = new Library(_userDouble);
 
         // Act
         boolean result = library.addPublicationToLibrary(null);

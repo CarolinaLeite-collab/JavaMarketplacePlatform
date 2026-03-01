@@ -1,5 +1,5 @@
 @startuml
-title US009 - "As a user, I want to create my library" - Level 1 SD
+title US009 - "As a user, I want to create my library" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -21,6 +21,7 @@ actor User
 participant ":CreateLibraryUI" as UI
 participant ":CreateLibraryController" as CTL
 participant ":LibraryRepo" as LR
+participant ":LibraryFactory" as LF
 
 ' --- UI interaction ---
 User -> UI: I want to create my library
@@ -30,23 +31,35 @@ activate UI
 ' --- Use case execution ---
 UI -> CTL: createMyLibrary(user)
 activate CTL
+
 CTL -> LR: createMyLibrary(user)
 activate LR
 
+
+
     opt myLibraryExists(user) == false
+        LR -> LF: createMyLibrary(user)
+        activate LF
         create "myLibrary:Library"
-        LR -> "myLibrary:Library": create(user)
+        LF -> "myLibrary:Library": create(user)
+        LF --> LR: myLibrary
+        deactivate LF
+
         LR -> LR: add(myLibrary)
+
+
     end
 
+LR --> CTL: myLibrary
+deactivate LR
 
 'activate "myLibrary:Library"
 '"myLibrary:Library" --> "_lr:LibraryRepo": myLibrary
 'deactivate "myLibrary:Library"
-LR --> CTL: myLibrary
-deactivate LR
+
 CTL --> UI: myLibrary
 deactivate CTL
+
 UI --> User: done!
 deactivate UI
 
