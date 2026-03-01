@@ -27,6 +27,10 @@ public class Library {
 
     }
 
+    public boolean belongsTo(User user){
+        return _owner.equals(user);
+    }
+
     public User getUser() {
         return _owner;
     }
