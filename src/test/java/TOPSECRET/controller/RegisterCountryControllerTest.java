@@ -1,6 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Country;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +41,7 @@ class RegisterCountryControllerTest {
     }
 
     @Test
-    void shouldRegisterCountrySuccessfully() {
+    void shouldRegisterCountrySuccessfully() throws InstantiationException {
         // Act
         Country country = _controller.registerCountry("Portugal");
 
@@ -50,7 +52,7 @@ class RegisterCountryControllerTest {
     }
 
     @Test
-    void shouldNotRegisterCountrySuccessfully() {
+    void shouldNotRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country country = _countryRepo.registerCountry("Portugal");
         List<Country> countries = _countryRepo.getAllCountries();
@@ -61,5 +63,13 @@ class RegisterCountryControllerTest {
         // Assert
         assertNull(duplicate);
         assertEquals(1, countries.size());
+    }
+
+    @Test
+    void shouldNotRegisterCountryInvalidName() {
+        // Arrange
+        String empty = "";
+        // Act and Assert
+        Assertions.assertThrows(InstantiationException.class, () -> _countryRepo.registerCountry(empty));
     }
 }

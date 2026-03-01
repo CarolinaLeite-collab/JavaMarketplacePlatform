@@ -12,7 +12,6 @@ import TOPSECRET.domain.User;
  * countries to {@link CountryRepo}.
  * </p>
  */
-
 public class RegisterCountryController {
     private final CountryRepo _countryRepo;
 
@@ -20,7 +19,7 @@ public class RegisterCountryController {
         _countryRepo = countryRepo;
     }
 
-    public Country registerCountry(String countryName) {
+    public Country registerCountry(String countryName) throws InstantiationException {
         return _countryRepo.registerCountry(countryName);
     }
 

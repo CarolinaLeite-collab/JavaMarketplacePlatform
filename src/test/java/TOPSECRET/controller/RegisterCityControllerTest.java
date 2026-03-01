@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.Country;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ class RegisterCityControllerTest {
     private Country portugal;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InstantiationException {
         cityRepo = new CityRepo();
         countryRepo = new CountryRepo();
         portugal = countryRepo.registerCountry("Portugal");
@@ -69,7 +70,7 @@ class RegisterCityControllerTest {
     }
 
     // Tests that getCountries() returns the actual list from the repo and not an empty list.
-    @Test void getCountries_returnsAllCountriesFromRepo() {
+    @Test void getCountries_returnsAllCountriesFromRepo() throws InstantiationException {
         // Arrange
         countryRepo.registerCountry("Spain");
 

@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,14 +12,16 @@ import java.util.List;
  */
 public class CountryRepo {
     private final List<Country> _countries;
+    private final CountryFactory _countryFactory;
 
     public CountryRepo () {
+        _countryFactory = new CountryFactory();
         _countries = new ArrayList<>();
     }
 
-    public Country registerCountry (String countryName) {
+    public Country registerCountry (String countryName) throws InstantiationException {
 
-        Country newCountry = new Country(countryName);
+        Country newCountry = _countryFactory.create(countryName);
 
         if (existsCountry(newCountry))  {
             return null;

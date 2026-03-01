@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,7 +22,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void registerCountrySuccessfully() {
+    void registerCountrySuccessfully() throws InstantiationException {
         // Arrange
         CountryRepo countryRepo = new CountryRepo();
 
@@ -37,7 +36,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void registersMultipleUniqueCountries() {
+    void registersMultipleUniqueCountries() throws InstantiationException {
         // Arrange
         CountryRepo countryRepo = new CountryRepo();
 
@@ -52,7 +51,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void returnNullIfCountryDuplicate() {
+    void returnNullIfCountryDuplicate() throws InstantiationException {
         // Arrange
         CountryRepo countryRepo = new CountryRepo();
 
@@ -67,7 +66,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void returnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
+    void returnNullIfCountryNameDiffersOnlyByCaseOrSpaces() throws InstantiationException {
         // Arrange
         CountryRepo countryRepo = new CountryRepo();
 
@@ -84,7 +83,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void returnsUnmodifiableListOfCountries() {
+    void returnsUnmodifiableListOfCountries() throws InstantiationException {
         // Arrange
         CountryRepo countryRepo = new CountryRepo();
 
@@ -99,7 +98,7 @@ class CountryRepoTest {
 
     //Test findByName() method
     @Test
-    void findByName_returnsNullWhenNameIsNull() {
+    void findByName_returnsNullWhenNameIsNull() throws InstantiationException {
         CountryRepo repo = new CountryRepo();
         repo.registerCountry("Portugal");
 
@@ -107,7 +106,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void findByName_findsCountryIgnoringCaseAndSpaces() {
+    void findByName_findsCountryIgnoringCaseAndSpaces() throws InstantiationException {
         CountryRepo repo = new CountryRepo();
         Country portugal = repo.registerCountry("Portugal");
 
@@ -116,7 +115,7 @@ class CountryRepoTest {
     }
 
     @Test
-    void findByName_returnsNullWhenCountryNotFound() {
+    void findByName_returnsNullWhenCountryNotFound() throws InstantiationException {
         CountryRepo repo = new CountryRepo();
         repo.registerCountry("Portugal");
 

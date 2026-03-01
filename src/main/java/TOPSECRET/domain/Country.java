@@ -10,11 +10,9 @@ public class Country {
     private final String _countryName;
 
     public Country(String countryName) {
-
         if (countryName == null || countryName.trim().isEmpty()) {
-            throw new IllegalArgumentException("Country parameters cannot be null");
+            throw new IllegalArgumentException("Country parameters cannot be null or blank");
         }
-
         _countryName = countryName.trim();
     }
 
