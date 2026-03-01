@@ -30,6 +30,25 @@ class LibraryTest {
     }
 
     @Test
+    void belongsTo_shouldReturnTrueWhenUserIsOwner() {
+        // Arrange
+        Library library = new Library(_userDouble);
+
+        // Act & Assert
+        assertTrue(library.belongsTo(_userDouble));
+    }
+
+    @Test
+    void belongsTo_shouldReturnFalseWhenUserIsNotOwner() {
+        // Arrange
+        User otherUserDouble = mock(User.class);
+        Library library = new Library(_userDouble);
+
+        // Act & Assert
+        assertFalse(library.belongsTo(otherUserDouble));
+    }
+
+    @Test
     void test_get_userID() {
 
         //arrange and act

@@ -18,11 +18,16 @@ import java.util.List;
 public class LibraryRepo {
 
     private List<Library> _libraries;
+    private LibraryFactory _libraryFactory;
+
 
     public LibraryRepo(){
-
+        _libraryFactory = new LibraryFactory();
         _libraries = new ArrayList<>();
-
+    }
+    public LibraryRepo(LibraryFactory libraryFactory) {
+        _libraryFactory = libraryFactory;
+        _libraries = new ArrayList<>();
     }
 
     public Library createMyLibrary(User user){
@@ -35,7 +40,7 @@ public class LibraryRepo {
         }
 
         //instantiate new Library
-        Library myLibrary = new Library(user);
+        Library myLibrary = _libraryFactory.createMyLibrary(user);
 
         //add to libraryRepo
         _libraries.add(myLibrary);
@@ -49,7 +54,7 @@ public class LibraryRepo {
 
         for  (Library lib : _libraries){
 
-            if (lib.getUser().equals(user)){
+            if (lib.belongsTo(user)){
 
                 return true;
 
@@ -71,7 +76,7 @@ public class LibraryRepo {
 
     public Library findByUser(User user){
         for (Library lib : _libraries){
-            if (lib.getUser().equals(user)){
+            if (lib.belongsTo(user)){
                 return lib;
             }
         }
