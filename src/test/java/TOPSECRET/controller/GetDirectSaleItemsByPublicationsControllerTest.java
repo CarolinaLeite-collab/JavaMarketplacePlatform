@@ -28,7 +28,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         _publication2 = Publication.builder()
@@ -36,7 +36,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
                 .identifier(new ISSN("2316-9133"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         _dsr = new DirectSaleRepo();

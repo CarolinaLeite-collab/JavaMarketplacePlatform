@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PublisherRepoTest {
+class PublishingCompanyRepoTest {
 
     private PublisherRepo repo;
 
@@ -24,27 +24,27 @@ class PublisherRepoTest {
 
     @Test
     void registeringNewPublisher(){
-        Publisher pub1 = repo.registerPublisher("Pendant Publishing");
+        PublishingCompany pub1 = repo.registerPublisher("Pendant Publishing");
         assertNotNull(pub1);
         assertEquals("Pendant Publishing", pub1.getName());
     }
 
     @Test
     void registeringNewPublisherAfterTrimAndSpaceNormalization(){
-        Publisher pub1 = repo.registerPublisher(" Simon   &  Schuster  ");
+        PublishingCompany pub1 = repo.registerPublisher(" Simon   &  Schuster  ");
         assertNotNull(pub1);
         assertEquals("Simon & Schuster", pub1.getName());
     }
 
     @Test
     void registeringExistingPublisher() {
-       Publisher pub1 = repo.registerPublisher("Penguin Random House"); // already registered in setUp repo
+       PublishingCompany pub1 = repo.registerPublisher("Penguin Random House"); // already registered in setUp repo
        assertNull(pub1); // duplicate returns null
     }
 
     @Test
     void registeringExistingPublisherTrimAndSpaceNormalizationCaseInsensitive() {
-        Publisher pub1 = repo.registerPublisher("   PengUin   RAndom  HOUSE ");
+        PublishingCompany pub1 = repo.registerPublisher("   PengUin   RAndom  HOUSE ");
         assertNull(pub1);
     }
 

@@ -6,10 +6,10 @@ import java.util.Objects;
  * The entity responsible for publication. Cannot be null, empty, or whitespace‑only.
  */
 
-public class Publisher {
+public class PublishingCompany {
     private final String _name;
 
-    public Publisher(String name){
+    public PublishingCompany(String name){
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
 
@@ -26,8 +26,8 @@ public class Publisher {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Publisher)) return false;
-        Publisher publisher = (Publisher) o;
+        if (!(o instanceof PublishingCompany)) return false;
+        PublishingCompany publisher = (PublishingCompany) o;
         return _name.equalsIgnoreCase(publisher._name);
     }
 

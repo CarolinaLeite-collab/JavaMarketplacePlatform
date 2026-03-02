@@ -20,7 +20,7 @@ class PublicationTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertNotNull(p);
@@ -35,7 +35,7 @@ class PublicationTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertNotNull(p);
@@ -55,7 +55,7 @@ class PublicationTest {
                     .year(Year.of(2019))
                     .title(new Title("How to Keep Your Cool"))
                     .author(new Author("Seneca"))
-                    .publisher(new Publisher("Penguin"))
+                    .publisher(new PublishingCompany("Penguin"))
                     .genre(new Genre("History"))
                     .build();
         }
@@ -84,7 +84,7 @@ class PublicationTest {
                         .year(Year.of(2010))
                         .title(new Title("T"))
                         .author(new Author("A"))
-                        .publisher(new Publisher("P"))
+                        .publisher(new PublishingCompany("P"))
                         .build()
         );
         assertTrue(ex.getMessage().contains("publicationType"));
@@ -98,7 +98,7 @@ class PublicationTest {
                         .year(Year.of(2010))
                         .title(new Title("T"))
                         .author(new Author("A"))
-                        .publisher(new Publisher("P"))
+                        .publisher(new PublishingCompany("P"))
                         .build()
         );
         assertTrue(ex.getMessage().contains("identifier"));
@@ -112,7 +112,7 @@ class PublicationTest {
                         .identifier(new ISBN("9780618260300"))
                         .title(new Title("T"))
                         .author(new Author("A"))
-                        .publisher(new Publisher("P"))
+                        .publisher(new PublishingCompany("P"))
                         .build()
         );
         assertTrue(ex.getMessage().contains("publicationYear"));
@@ -126,7 +126,7 @@ class PublicationTest {
                         .identifier(new ISBN("9780618260300"))
                         .year(Year.of(2010))
                         .author(new Author("A"))
-                        .publisher(new Publisher("P"))
+                        .publisher(new PublishingCompany("P"))
                         .build()
         );
         assertTrue(ex.getMessage().contains("title"));
@@ -140,7 +140,7 @@ class PublicationTest {
                         .identifier(new ISBN("9780618260300"))
                         .year(Year.of(2010))
                         .title(new Title("T"))
-                        .publisher(new Publisher("P"))
+                        .publisher(new PublishingCompany("P"))
                         .build()
         );
         assertTrue(ex.getMessage().contains("author"));
@@ -181,7 +181,7 @@ class PublicationTest {
                 .year(Year.of(1970))
                 .title(new Title("Same"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -190,7 +190,7 @@ class PublicationTest {
                 .year(Year.of(1970))
                 .title(new Title("Same"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertEquals(a, b);
@@ -204,7 +204,7 @@ class PublicationTest {
                 .year(Year.of(1971))
                 .title(new Title("Same"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -213,7 +213,7 @@ class PublicationTest {
                 .year(Year.of(1971))
                 .title(new Title("Same"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertNotEquals(a, b);
@@ -226,7 +226,7 @@ class PublicationTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(1976))
                 .title(new Title("Same"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -234,7 +234,7 @@ class PublicationTest {
                 .identifier(new ISSN("9999-9999")) // different ISSN
                 .year(Year.of(1976))
                 .title(new Title("Same"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertEquals(a, b);
@@ -247,7 +247,7 @@ class PublicationTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(1977))
                 .title(new Title("Same"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -255,7 +255,7 @@ class PublicationTest {
                 .identifier(new ISSN("9999-9999")) // different ISSN
                 .year(Year.of(1977))
                 .title(new Title("Same"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertNotEquals(a, b);
@@ -269,7 +269,7 @@ class PublicationTest {
                 .year(Year.of(2019))
                 .title(new Title("T"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertFalse(p.equals(null));
@@ -283,7 +283,7 @@ class PublicationTest {
                 .year(Year.of(2019))
                 .title(new Title("T"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
         assertFalse(p.equals("not a publication"));
     }
@@ -314,7 +314,7 @@ class PublicationTest {
                 .year(Year.of(2019))
                 .title(new Title("T"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertTrue(p.equals(p));
@@ -327,7 +327,7 @@ class PublicationTest {
                 .year(Year.of(1970))                 // <= 1970 forces title+year comparison
                 .title(new Title("Title A"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -336,7 +336,7 @@ class PublicationTest {
                 .year(Year.of(1970))
                 .title(new Title("Title B"))          // different title -> Objects.equals(...) becomes false
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertNotEquals(a, b);
@@ -384,7 +384,7 @@ class PublicationTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(1976))               // <= 1976 → title + year comparison
                 .title(new Title("Magazine A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         Publication b = Publication.builder()
@@ -392,7 +392,7 @@ class PublicationTest {
                 .identifier(new ISSN("9999-9999")) // different ISSN (ignored in this branch)
                 .year(Year.of(1976))
                 .title(new Title("Magazine B"))    // different title → equals(...) must be false
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .build();
 
         assertNotEquals(a, b);
@@ -401,7 +401,7 @@ class PublicationTest {
 
     @Test
     void getters_returnPublisherGenreTitleID() {
-        Publisher pub = new Publisher("Penguin");
+        PublishingCompany pub = new PublishingCompany("Penguin");
         Genre gen = new Genre("Science Fiction");
         Title tl = new Title("T");
         Identifier id = new ISBN("9780691181950");
@@ -442,7 +442,7 @@ class PublicationTest {
                 .year(Year.of(2019))
                 .title(new Title("T"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .edition(ed)
                 .build();
 

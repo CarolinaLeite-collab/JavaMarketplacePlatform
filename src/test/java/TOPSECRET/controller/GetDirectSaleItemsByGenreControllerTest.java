@@ -22,7 +22,7 @@ class GetDirectSaleItemsByGenreControllerTest {
                 .year(java.time.Year.of(2023))
                 .title(new Title("Controller Book"))
                 .author(new Author("Author D"))
-                .publisher(new Publisher("Publisher D"))
+                .publisher(new PublishingCompany("Publisher D"))
                 .genre(fantasy)
                 .build();
 

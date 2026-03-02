@@ -26,7 +26,7 @@ public class Publication {
     private final Title _title;
 
     private final Author _author;
-    private final Publisher _publisher;
+    private final PublishingCompany _publisher;
     private final Edition _edition;
     private final Genre _genre;
 
@@ -51,7 +51,7 @@ public class Publication {
         private Year _publicationYear;
         private Title _title;
         private Author _author;
-        private Publisher _publisher;
+        private PublishingCompany _publisher;
         private Edition _edition;
         private Genre _genre;
 
@@ -80,7 +80,7 @@ public class Publication {
             return this;
         }
 
-        public Builder publisher(Publisher p) {
+        public Builder publisher(PublishingCompany p) {
             this._publisher = p;
             return this;
         }
@@ -192,7 +192,7 @@ public class Publication {
         return _author;
     }
 
-    public Publisher getPublisher() {
+    public PublishingCompany getPublisher() {
         return _publisher;
     }
 

@@ -11,15 +11,15 @@ import java.util.List;
 public class PublisherRepo {
 
     // To get list of all publishers registered on MiteLovers
-    private final List<Publisher> _publishers = new ArrayList<>();
+    private final List<PublishingCompany> _publishers = new ArrayList<>();
 
     // This method orchestrates publisherExists() -> create()/new Publisher -> add()
-    public Publisher registerPublisher(String publisherName) {
+    public PublishingCompany registerPublisher(String publisherName) {
         if (publisherExists(publisherName)) {
             return null;
         }
         //  Instantiate a new Publisher
-        Publisher newPublisher = new Publisher(publisherName); //this is create(publisherName) from SD
+        PublishingCompany newPublisher = new PublishingCompany(publisherName); //this is create(publisherName) from SD
 
         // Add new publisher to repo
         _publishers.add(newPublisher);
@@ -32,8 +32,8 @@ public class PublisherRepo {
      */
 
     private boolean publisherExists(String publisherName) {
-        for (Publisher publisher : _publishers) {
-            if (publisher.equals(new Publisher(publisherName))) { // case-insensitive
+        for (PublishingCompany publisher : _publishers) {
+            if (publisher.equals(new PublishingCompany(publisherName))) { // case-insensitive
                 return true;
             }
         }

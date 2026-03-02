@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import java.time.Period;
-import java.util.Objects;
 
 /**
  * Represents a direct sale of an {@link Item} with a specified {@link Price} and optional time limit.
@@ -65,7 +64,7 @@ public class DirectSale {
         return false;
     }
 
-    public boolean isByPublisher (Publisher publisher) {
+    public boolean isByPublisher (PublishingCompany publisher) {
 
         if (item.getPublication().getPublisher().equals(publisher)) {
 

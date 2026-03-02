@@ -10,20 +10,20 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GetAuctionItemsByPublisherControllerTest {
+class GetAuctionItemsByPublishingCompanyControllerTest {
 
 
     private User _buyer;
     private AuctionRepo _auctionRepo;
-    private Publisher _publisher;
-    private GetAuctionItemsByPublisherController _controller;
+    private PublishingCompany _publisher;
+    private GetAuctionItemsByPublishingCompanyController _controller;
 
     @BeforeEach
     void setUp() {
         _buyer = new User(new Name("Buyer"), new Email("buyer@test.com"));
         _auctionRepo = new AuctionRepo();
-        _publisher = new Publisher("Seneca");
-        _controller = new GetAuctionItemsByPublisherController(_publisher, _auctionRepo, _buyer);
+        _publisher = new PublishingCompany("Seneca");
+        _controller = new GetAuctionItemsByPublishingCompanyController(_publisher, _auctionRepo, _buyer);
     }
 
     @Test
@@ -35,7 +35,7 @@ class GetAuctionItemsByPublisherControllerTest {
 
     @Test
     void should_return_correct_list_for_publisher() {
-        Publisher publisher1 = new Publisher("publisher1");
+        PublishingCompany publisher1 = new PublishingCompany("publisher1");
 
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -53,19 +53,19 @@ class GetAuctionItemsByPublisherControllerTest {
         _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
         //when publisher's name matches exactly
-        List<Item> items1 = _controller.getAuctionItemsByPublisher(new Publisher("publisher1"));
+        List<Item> items1 = _controller.getAuctionItemsByPublisher(new PublishingCompany("publisher1"));
         assertEquals(1, items1.size());
         assertSame(item, items1.get(0));
 
         //testing case insensitiveness
-        List<Item> items2 = _controller.getAuctionItemsByPublisher(new Publisher("pUbLisheR1"));
+        List<Item> items2 = _controller.getAuctionItemsByPublisher(new PublishingCompany("pUbLisheR1"));
         assertEquals(1, items2.size());
         assertSame(item, items2.get(0));
     }
 
     @Test
     void should_return_empty_when_publisher_does_not_match() {
-        Publisher publisher1 = new Publisher("publisher1");
+        PublishingCompany publisher1 = new PublishingCompany("publisher1");
 
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -82,7 +82,7 @@ class GetAuctionItemsByPublisherControllerTest {
 
         _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
-        List<Item> items = _controller.getAuctionItemsByPublisher(new Publisher("publisher2"));
+        List<Item> items = _controller.getAuctionItemsByPublisher(new PublishingCompany("publisher2"));
         assertNotNull(items);
         assertTrue(items.isEmpty());
     }

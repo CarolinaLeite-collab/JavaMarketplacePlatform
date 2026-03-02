@@ -84,7 +84,7 @@ public class DirectSaleRepo {
 
         return copyOfListOfDirectSaleItemsByPublication;
     }
-    public List<Item> getDirectSaleItemByPublisher(Publisher publisher) {
+    public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
 
         List<Item> listOfDirectSaleItemsByPublisher = new ArrayList<>();
 

@@ -69,7 +69,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         Publication testPub = Publication.builder().type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9781800816862")).year(Year.of(2020))
                 .title(new Title("Test")).author(new Author("Testy McTest"))
-                .publisher(new Publisher("Testing Co.")).build();
+                .publisher(new PublishingCompany("Testing Co.")).build();
 
         assertThrows(NullPointerException.class,
                 () -> nullPubController.addPublicationForDirectSale(
@@ -134,7 +134,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         testLibrary.addPublicationToLibrary(testPub);
@@ -154,7 +154,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         testLibrary.addPublicationToLibrary(testPub);
@@ -169,7 +169,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2006))
                 .title(new Title("Of Mice and Men"))
                 .author(new Author("John Steinbeck"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertThrows(UnsupportedOperationException.class, () -> result.add(newTestPub));
@@ -189,7 +189,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         publicationRepo.add(testPub);
@@ -209,7 +209,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         publicationRepo.add(testPub);
@@ -226,7 +226,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         publicationRepo.add(testPub);
         itemRepo.createItem(testPub, Condition.GOOD);
@@ -244,7 +244,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         publicationRepo.add(testPub);
 
@@ -278,7 +278,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .year(Year.of(2002))
                 .title(new Title("Wuthering Heights"))
                 .author(new Author("Emily Brönte"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         //  Publication never added to PublicationRepo, and therefore it was never added to library

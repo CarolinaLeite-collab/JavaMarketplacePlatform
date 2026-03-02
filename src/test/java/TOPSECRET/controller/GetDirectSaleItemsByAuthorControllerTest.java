@@ -33,7 +33,7 @@ class GetDirectSaleItemsByAuthorControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         _item = new Item(_publication, Condition.GOOD);

@@ -102,7 +102,7 @@ public class AuctionRepo {
      * @return A new list containing items that match the given publisher.
      */
 
-    public List<Item> getAuctionItemsByPublisher(Publisher publisher) {
+    public List<Item> getAuctionItemsByPublisher(PublishingCompany publisher) {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 

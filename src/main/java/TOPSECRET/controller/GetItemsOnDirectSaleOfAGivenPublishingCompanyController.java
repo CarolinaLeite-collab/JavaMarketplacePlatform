@@ -2,21 +2,21 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.DirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.Publisher;
+import TOPSECRET.domain.PublishingCompany;
 import TOPSECRET.domain.User;
 
 import java.util.List;
 
-public class GetItemsOnDirectSaleOfAGivenPublisherController {
+public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     private DirectSaleRepo _dsr;
 
-    public GetItemsOnDirectSaleOfAGivenPublisherController(DirectSaleRepo dsr, User buyer) {
+    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(DirectSaleRepo dsr, User buyer) {
 
         _dsr = dsr;
     }
 
-    public List<Item> getDirectSaleItemByPublisher(Publisher publisher) {
+    public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
 
         List<Item> directSaleItemByPublisher = _dsr.getDirectSaleItemByPublisher(publisher);
 

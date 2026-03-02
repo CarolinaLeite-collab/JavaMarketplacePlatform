@@ -153,7 +153,7 @@ public class Auction {
         return false;
     }
 
-    public boolean isByPublisher(Publisher publisher) {
+    public boolean isByPublisher(PublishingCompany publisher) {
         if (_item.getPublication().getPublisher().equals(publisher)) {
             return true;
         }

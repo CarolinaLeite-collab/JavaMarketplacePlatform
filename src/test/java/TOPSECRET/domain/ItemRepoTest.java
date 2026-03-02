@@ -16,7 +16,7 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         ItemRepo repo = new ItemRepo();
 
@@ -31,7 +31,7 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Condition condition = Condition.GOOD;
 
@@ -56,7 +56,7 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Condition condition = Condition.GOOD;
 
@@ -76,7 +76,7 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Condition condition = Condition.GOOD;
 
@@ -99,7 +99,7 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Condition condition = Condition.GOOD;
 
@@ -120,14 +120,14 @@ class ItemRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Publication pub2 = Publication.builder()
                 .type(new PublicationType("MAGAZINE"))
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
         Condition condition = Condition.GOOD;
 

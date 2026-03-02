@@ -1,6 +1,5 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Period;
 import java.time.Year;
@@ -17,7 +16,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -39,7 +38,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -60,7 +59,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -92,7 +91,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -115,7 +114,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -137,7 +136,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -159,7 +158,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -181,7 +180,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -189,7 +188,7 @@ class DirectSaleTest {
 
         DirectSale sale = new DirectSale(item, price, null);
 
-        Publisher publisher = new Publisher("Penguin");
+        PublishingCompany publisher = new PublishingCompany("Penguin");
 
         assertTrue(sale.isByPublisher(publisher));
 
@@ -203,7 +202,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -211,7 +210,7 @@ class DirectSaleTest {
 
         DirectSale sale = new DirectSale(item, price, null);
 
-        Publisher publisher = new Publisher("Porto Editora");
+        PublishingCompany publisher = new PublishingCompany("Porto Editora");
 
         assertFalse(sale.isByPublisher(publisher));
 
@@ -225,7 +224,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -239,7 +238,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -253,7 +252,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -267,7 +266,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertFalse(sale.isByPublication(pub1));
@@ -281,7 +280,7 @@ class DirectSaleTest {
                 .year(Year.of(1950))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -295,7 +294,7 @@ class DirectSaleTest {
                 .year(Year.of(1950))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -309,7 +308,7 @@ class DirectSaleTest {
                 .year(Year.of(1940))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -323,7 +322,7 @@ class DirectSaleTest {
                 .year(Year.of(1950))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertFalse(sale.isByPublication(pub1));
@@ -336,7 +335,7 @@ class DirectSaleTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -349,7 +348,7 @@ class DirectSaleTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -362,7 +361,7 @@ class DirectSaleTest {
                 .identifier(new ISSN("2316-9133"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -375,7 +374,7 @@ class DirectSaleTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertFalse(sale.isByPublication(pub1));
@@ -388,7 +387,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -401,7 +400,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -414,7 +413,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1930))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -427,7 +426,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertFalse(sale.isByPublication(pub1));
@@ -441,7 +440,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -455,7 +454,7 @@ class DirectSaleTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("PEngUiN"))
+                .publisher(new PublishingCompany("PEngUiN"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -469,7 +468,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("NatURE"))
+                .publisher(new PublishingCompany("NatURE"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -482,7 +481,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));
@@ -496,7 +495,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("NatURE"))
+                .publisher(new PublishingCompany("NatURE"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -509,7 +508,7 @@ class DirectSaleTest {
                 .identifier(new NoIdentifier())
                 .year(Year.of(1950))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         assertTrue(sale.isByPublication(pub1));

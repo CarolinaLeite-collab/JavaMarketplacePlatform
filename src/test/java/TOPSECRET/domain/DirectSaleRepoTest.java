@@ -3,9 +3,7 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Period;
 import java.time.Year;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +20,7 @@ class DirectSaleRepoTest {
     private DirectSale _directSale1;
     private DirectSale _directSale2;
     private Genre _genre;
-    private Publisher _publisher;
+    private PublishingCompany _publisher;
 
 
     @BeforeEach
@@ -35,7 +33,7 @@ class DirectSaleRepoTest {
 
         _author = new Author("Seneca");
         _genre = new Genre("History");
-        _publisher = new Publisher("Penguin");
+        _publisher = new PublishingCompany("Penguin");
 
         _publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -43,7 +41,7 @@ class DirectSaleRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .genre(_genre)
                 .build();
 
@@ -52,7 +50,7 @@ class DirectSaleRepoTest {
                 .identifier(new ISSN("2316-9133"))
                 .year(Year.of(2022))
                 .title(new Title("Science Weekly"))
-                .publisher(new Publisher("Nature"))
+                .publisher(new PublishingCompany("Nature"))
                 .build();
 
         _item = new Item(_publication, Condition.GOOD);

@@ -102,7 +102,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         testLibrary.addPublicationToLibrary(testPub);
@@ -122,7 +122,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         testLibrary.addPublicationToLibrary(testPub);
@@ -137,7 +137,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2006))
                 .title(new Title("Of Mice and Men"))
                 .author(new Author("John Steinbeck"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         PublicationDetails newPubDetails = new PublicationDetails(newTestPub);
@@ -152,7 +152,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         assertNull(controller.putPublicationOnAuction(null, testPub, Condition.POOR,
@@ -186,7 +186,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         assertNull(controller.putPublicationOnAuction(testUser, testPub, Condition.POOR, new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().minusDays(1)));
     }
@@ -201,7 +201,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         // Publication added to user's library
@@ -224,7 +224,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         // not adding testPub to testLibrary
@@ -244,7 +244,7 @@ class PublicationSaleAuctionControllerTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         // add publication to user's library

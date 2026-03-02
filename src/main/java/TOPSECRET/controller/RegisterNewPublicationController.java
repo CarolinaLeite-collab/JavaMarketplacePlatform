@@ -25,7 +25,7 @@ public class RegisterNewPublicationController {
                                            Year publicationYear,
                                            Title title,
                                            Author author,
-                                           Publisher publisher,
+                                           PublishingCompany publisher,
                                            Edition edition,
                                            Genre genre) {
 

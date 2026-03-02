@@ -40,7 +40,7 @@ class AuctionRepoTest {
                 .year(Year.of(2020))
                 .title(new Title("Architectonica Percepta"))
                 .author(new Author("Paulo Providência"))
-                .publisher(new Publisher("Park Books"))
+                .publisher(new PublishingCompany("Park Books"))
                 .genre(_genre)
                 .build();
 
@@ -50,7 +50,7 @@ class AuctionRepoTest {
                 .year(Year.of(1980))
                 .title(new Title("Louis I. Khan: The idea of order"))
                 .author(new Author("Klaus-Peter Gast"))
-                .publisher(new Publisher("Birkhauser"))
+                .publisher(new PublishingCompany("Birkhauser"))
                 .genre(_genre)
                 .build();
 
@@ -110,7 +110,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(new Author(defaultAuthorName))
-                .publisher(new Publisher(defaultPublisherName))
+                .publisher(new PublishingCompany(defaultPublisherName))
                 .genre(action)
                 .build();
         Item item = new Item(_pub1, Condition.GOOD);
@@ -137,7 +137,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(new Author(defaultAuthorName))
-                .publisher(new Publisher(defaultPublisherName))
+                .publisher(new PublishingCompany(defaultPublisherName))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -167,7 +167,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(new Author(defaultAuthorName))
-                .publisher(new Publisher(defaultPublisherName))
+                .publisher(new PublishingCompany(defaultPublisherName))
                 .genre(g)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -191,7 +191,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(new Author(defaultAuthorName))
-                .publisher(new Publisher(defaultPublisherName))
+                .publisher(new PublishingCompany(defaultPublisherName))
                 .genre(g)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -217,7 +217,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("A"))
                 .author(new Author("A"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .genre(action)
                 .build();
         Item itemA = new Item(pubA, Condition.GOOD);
@@ -228,7 +228,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("B"))
                 .author(new Author("B"))
-                .publisher(new Publisher("P"))
+                .publisher(new PublishingCompany("P"))
                 .genre(romance)
                 .build();
         Item itemB = new Item(pubB, Condition.GOOD);
@@ -259,7 +259,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(new Author(defaultAuthorName))
-                .publisher(new Publisher(defaultPublisherName))
+                .publisher(new PublishingCompany(defaultPublisherName))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -286,7 +286,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(author)
-                .publisher(new Publisher("Pub"))
+                .publisher(new PublishingCompany("Pub"))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -313,7 +313,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(author)
-                .publisher(new Publisher("Pub"))
+                .publisher(new PublishingCompany("Pub"))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -340,7 +340,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(author)
-                .publisher(new Publisher("Pub"))
+                .publisher(new PublishingCompany("Pub"))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -367,7 +367,7 @@ class AuctionRepoTest {
                 .year(publicationYear)
                 .title(new Title("Sample"))
                 .author(author)
-                .publisher(new Publisher("Pub"))
+                .publisher(new PublishingCompany("Pub"))
                 .genre(action)
                 .build();
         Item item = new Item(publication, Condition.GOOD);
@@ -428,8 +428,8 @@ class AuctionRepoTest {
     void should_filter_correctly_and_be_case_insensitive() {
         AuctionRepo repo = new AuctionRepo();
 
-        Publisher publisher1 = new Publisher("publisher1");
-        Publisher publisher2 = new Publisher("publisher2");
+        PublishingCompany publisher1 = new PublishingCompany("publisher1");
+        PublishingCompany publisher2 = new PublishingCompany("publisher2");
 
         Publication pubA = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -460,7 +460,7 @@ class AuctionRepoTest {
         repo.createAuction(itemA, new Price(1.0, Currency.EUR), start, end);
         repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
 
-        List<Item> item1 = repo.getAuctionItemsByPublisher(new Publisher("pubLIshEr1"));
+        List<Item> item1 = repo.getAuctionItemsByPublisher(new PublishingCompany("pubLIshEr1"));
         assertEquals(1, item1.size());
         assertSame(itemA, item1.get(0));
 
@@ -472,7 +472,7 @@ class AuctionRepoTest {
     void should_return_empty_list_when_null_publisher() {
         AuctionRepo repo = new AuctionRepo();
 
-        Publisher publisher1 = new Publisher("publisher1");
+        PublishingCompany publisher1 = new PublishingCompany("publisher1");
         Publication pubA = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("0306406152"))

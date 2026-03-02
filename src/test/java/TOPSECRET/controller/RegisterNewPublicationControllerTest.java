@@ -20,7 +20,7 @@ class RegisterNewPublicationControllerTest {
         Year year = Year.of(2019);
         Title title = new Title("How to Keep Your Cool");
         Author author = new Author("Seneca");
-        Publisher publisher = new Publisher("Penguin");
+        PublishingCompany publisher = new PublishingCompany("Penguin");
 
         //act
         Publication result = controller.registerPublication(type, identifier, year, title, author, publisher, null, null);
@@ -48,7 +48,7 @@ class RegisterNewPublicationControllerTest {
         Year year = Year.of(2019);
         Title title = new Title("How to Keep Your Cool");
         Author author = new Author("Seneca");
-        Publisher publisher = new Publisher("Penguin");
+        PublishingCompany publisher = new PublishingCompany("Penguin");
         //act
         controller.registerPublication(type, id, year, title, author, publisher, null, null);
 

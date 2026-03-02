@@ -19,7 +19,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         // arrange
         assertEquals(repo.add(p), p);
@@ -35,7 +35,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Publication p1 = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -43,7 +43,7 @@ class PublicationRepoTest {
                 .year(Year.of(2013))
                 .title(new Title("Photomaton & Vox "))
                 .author(new Author("Herberto Helder"))
-                .publisher(new Publisher("Assírio & Alvim"))
+                .publisher(new PublishingCompany("Assírio & Alvim"))
                 .build();
         // arrange
         repo.add(p);
@@ -58,7 +58,7 @@ class PublicationRepoTest {
                         .year(Year.of(2019))
                         .title(new Title(""))   // invalid
                         .author(new Author("Seneca"))
-                        .publisher(new Publisher("Penguin"))
+                        .publisher(new PublishingCompany("Penguin"))
                         .build()
         );
     }
@@ -79,7 +79,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to keep your cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         // first add succeeds
@@ -105,7 +105,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Publication p2 = Publication.builder()
@@ -114,7 +114,7 @@ class PublicationRepoTest {
                 .year(Year.of(2013))
                 .title(new Title("Photomaton & Vox"))
                 .author(new Author("Herberto Helder"))
-                .publisher(new Publisher("Assírio & Alvim"))
+                .publisher(new PublishingCompany("Assírio & Alvim"))
                 .build();
 
         repo.add(p1);
@@ -142,7 +142,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Publication p2 = Publication.builder()
@@ -151,7 +151,7 @@ class PublicationRepoTest {
                 .year(Year.of(2013))
                 .title(new Title("Photomaton & Vox"))
                 .author(new Author("Herberto Helder"))
-                .publisher(new Publisher("Assírio & Alvim"))
+                .publisher(new PublishingCompany("Assírio & Alvim"))
                 .build();
 
         repo.add(p1);
@@ -179,7 +179,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Publication p2 = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -187,7 +187,7 @@ class PublicationRepoTest {
                 .year(Year.of(2020))
                 .title(new Title("The Hobbit"))
                 .author(new Author("Somebody"))
-                .publisher(new Publisher("Girafa"))
+                .publisher(new PublishingCompany("Girafa"))
                 .build();
 
         repo.add(p);
@@ -209,7 +209,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         repo.add(p);
@@ -226,7 +226,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Publication probe = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -234,7 +234,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         repo.add(stored);
@@ -253,7 +253,7 @@ class PublicationRepoTest {
                         .year(Year.of(2019))
                         .title(new Title("How to Keep Your Cool"))
                         .author(new Author("Seneca"))
-                        .publisher(new Publisher("Penguin"))
+                        .publisher(new PublishingCompany("Penguin"))
                         .build()));
 
         assertEquals("Publication not found", ex.getMessage());
@@ -278,7 +278,7 @@ class PublicationRepoTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Publication p2 = Publication.builder()
@@ -287,7 +287,7 @@ class PublicationRepoTest {
                 .year(Year.of(2013))
                 .title(new Title("Photomaton & Vox"))
                 .author(new Author("Herberto Helder"))
-                .publisher(new Publisher("Assírio & Alvim"))
+                .publisher(new PublishingCompany("Assírio & Alvim"))
                 .build();
 
         repo.add(p1);

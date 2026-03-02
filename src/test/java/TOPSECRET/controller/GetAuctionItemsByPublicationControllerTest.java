@@ -28,7 +28,7 @@ class GetAuctionItemsByPublicationControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         _controller = new GetAuctionItemsByPublicationController(_auctionRepo, _buyer);
@@ -65,7 +65,7 @@ class GetAuctionItemsByPublicationControllerTest {
                 .year(Year.of(2020))
                 .title(new Title("Different Book"))
                 .author(new Author("Different Author"))
-                .publisher(new Publisher("Other Publisher"))
+                .publisher(new PublishingCompany("Other Publisher"))
                 .build();
 
         // Act

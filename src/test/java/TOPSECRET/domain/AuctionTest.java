@@ -29,7 +29,7 @@ class AuctionTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .genre(new Genre("action"))
                 .build();
         _item = new Item(_publication, Condition.GOOD);
@@ -269,7 +269,7 @@ class AuctionTest {
                 .year(Year.of(2020))
                 .title(new Title("Louis I. Khan: The idea of order"))
                 .author(new Author("Klaus-Peter Gast"))
-                .publisher(new Publisher("Birkhauser"))
+                .publisher(new PublishingCompany("Birkhauser"))
                 .build();
 
         Auction auction = new Auction(_item, _startingPrice, _outrightPrice, _auctionStart1, _auctionEnd1);
@@ -288,7 +288,7 @@ class AuctionTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("PeNgUin"))
+                .publisher(new PublishingCompany("PeNgUin"))
                 .genre(new Genre("action"))
                 .build();
         Item item1 = new Item(publication1, Condition.GOOD);
@@ -297,8 +297,8 @@ class AuctionTest {
                 ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
         ZonedDateTime _endDate =
                 ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Publisher publisher1 = _item.getPublication().getPublisher();
-        Publisher publisher2 = item1.getPublication().getPublisher();
+        PublishingCompany publisher1 = _item.getPublication().getPublisher();
+        PublishingCompany publisher2 = item1.getPublication().getPublisher();
 
         Auction auction1 = new Auction(_item, _startingPrice, _startDate, _endDate);
         Auction auction2 = new Auction(_item, _outrightPrice, _startDate, _endDate);
@@ -313,7 +313,7 @@ class AuctionTest {
                 ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
         ZonedDateTime _endDate =
                 ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Publisher publisher3 = new Publisher("Porto Editora");
+        PublishingCompany publisher3 = new PublishingCompany("Porto Editora");
 
         Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
 

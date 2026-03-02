@@ -36,7 +36,7 @@ class AddPublicationOnLibraryControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         _p2 = Publication.builder()
                 .type(new PublicationType("BOOK"))
@@ -44,7 +44,7 @@ class AddPublicationOnLibraryControllerTest {
                 .year(Year.of(2020))
                 .title(new Title("The Hobbit"))
                 .author(new Author("Somebody"))
-                .publisher(new Publisher("Girafa"))
+                .publisher(new PublishingCompany("Girafa"))
                 .build();
 
         _publicationRepo.add(_p1);

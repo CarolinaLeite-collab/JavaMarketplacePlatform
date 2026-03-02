@@ -77,7 +77,7 @@ class AddPublicationToListControllerTest {
                 .year(Year.of(2000))
                 .title(new Title("Some Title"))
                 .author(new Author("Some Author"))
-                .publisher(new Publisher("Some Publisher"))
+                .publisher(new PublishingCompany("Some Publisher"))
                 .genre(_action)
                 .build();
 
@@ -123,7 +123,7 @@ class AddPublicationToListControllerTest {
                 .year(Year.of(2001))
                 .title(new Title("Book A"))
                 .author(new Author("Author A"))
-                .publisher(new Publisher("Publisher A"))
+                .publisher(new PublishingCompany("Publisher A"))
                 .genre(_action)
                 .build();
 
@@ -151,7 +151,7 @@ class AddPublicationToListControllerTest {
                 .identifier(id)
                 .year(Year.of(2020))
                 .title(new Title("Magazine A"))
-                .publisher(new Publisher("Publisher M"))
+                .publisher(new PublishingCompany("Publisher M"))
                 .genre(_action)
                 .build();
 
@@ -180,7 +180,7 @@ class AddPublicationToListControllerTest {
                 .year(Year.of(2002))
                 .title(new Title("Book B"))
                 .author(new Author("Author B"))
-                .publisher(new Publisher("Publisher B"))
+                .publisher(new PublishingCompany("Publisher B"))
                 .genre(_action)
                 .build();
 
@@ -256,7 +256,7 @@ class AddPublicationToListControllerTest {
                 .year(Year.of(2003))
                 .title(new Title("Book C"))
                 .author(new Author("Author C"))
-                .publisher(new Publisher("Publisher C"))
+                .publisher(new PublishingCompany("Publisher C"))
                 .genre(_action)
                 .build();
 

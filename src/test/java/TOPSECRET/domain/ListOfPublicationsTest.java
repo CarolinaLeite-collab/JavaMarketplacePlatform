@@ -164,7 +164,7 @@ class ListOfPublicationsTest {
                 .year(Year.of(2000))
                 .title(new Title("Some Title"))
                 .author(new Author("Some Author"))
-                .publisher(new Publisher("Some Publisher"))
+                .publisher(new PublishingCompany("Some Publisher"))
                 .genre(_actionGenre)
                 .build();
 
@@ -183,7 +183,7 @@ class ListOfPublicationsTest {
                 .identifier(new ISSN("1234-5678"))
                 .year(Year.of(2020))
                 .title(new Title("Magazine A"))
-                .publisher(new Publisher("Publisher M"))
+                .publisher(new PublishingCompany("Publisher M"))
                 .genre(_actionGenre)
                 .build();
 

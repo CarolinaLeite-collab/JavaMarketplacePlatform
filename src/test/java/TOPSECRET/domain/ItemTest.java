@@ -19,7 +19,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(publication, Condition.GOOD);
 
@@ -34,7 +34,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(publication, Condition.LIKE_NEW);
 
@@ -52,7 +52,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(publication, Condition.FAIR);
 
@@ -75,7 +75,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -107,7 +107,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -139,7 +139,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.POOR);
 
@@ -158,7 +158,7 @@ class ItemTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.LIKE_NEW);
 
@@ -183,7 +183,7 @@ class ItemTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Item item = new Item(testPub, Condition.GOOD);
@@ -203,7 +203,7 @@ class ItemTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Item item = new Item(testPub, Condition.GOOD);
@@ -223,7 +223,7 @@ class ItemTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Item item = new Item(pub, Condition.GOOD);
@@ -246,7 +246,7 @@ class ItemTest {
                 .year(Year.of(2012))
                 .title(new Title("1984"))
                 .author(new Author("George Orwell"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         Item item = new Item(pub, Condition.GOOD);

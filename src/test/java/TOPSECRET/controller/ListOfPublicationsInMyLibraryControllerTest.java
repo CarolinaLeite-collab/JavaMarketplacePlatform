@@ -51,7 +51,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
 
         myLibrary.addPublicationToLibrary(p);

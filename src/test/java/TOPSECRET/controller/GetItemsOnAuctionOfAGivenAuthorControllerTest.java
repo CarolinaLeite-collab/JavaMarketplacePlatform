@@ -50,7 +50,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(_author)
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
@@ -76,7 +76,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Different"))
-                .publisher(new Publisher("Penguin"))
+                .publisher(new PublishingCompany("Penguin"))
                 .build();
         Item item = new Item(pub, Condition.GOOD);
 
