@@ -25,9 +25,9 @@ Admin -> System: I want to add a new publication type!
 activate "System"
 System --> Admin: What type would you like to add?
 deactivate "System"
-Admin -> System: publicationType
+Admin -> System: publicationTypeName
 activate "System"
-System --> Admin: The new publication type was successfully added to the official type list!
+System --> Admin: Publication Type successfully added to the official type list!
 deactivate "System"
 
 @enduml
