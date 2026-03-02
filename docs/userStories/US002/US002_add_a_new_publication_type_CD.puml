@@ -1,5 +1,5 @@
 @startuml
-title US002 - Add Publication Type to Official List
+title US002 - Add Publication Type to Official List - CD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -17,27 +17,34 @@ class AddPublicationTypeUI
 
 ' ===== ENTITY =====
 class PublicationType {
-  - typeName : String
-  + getTypeName() : String
+  - publicationTypeName : String
+  + PublicationType (publicationTypeName : String)
+  + isSamePublicationType(publicationTypeName : String) : boolean
+}
+
+' ===== FACTORY =====
+
+class PublicationTypeFactory {
+  newPublicationType(publicationTypeName : String) : PublicationType
 }
 
 ' ===== REPOSITORY =====
 class PublicationTypeRepo {
-  + existsPublicationType(typeName : String) : boolean
-  + createPublicationType(typeName : String) : PublicationType
+  + addPublicationType(publicationTypeName : String) : PublicationType
 }
 
 ' ===== CONTROLLER =====
 class AddPublicationTypeController {
-  - repo : PublicationTypeRepo
-  --
-  + AddPublicationTypeController(repo : PublicationTypeRepo)
-  + addPublicationType(typeName : String) : PublicationType
+'  - ptr : PublicationTypeRepo
+'  + createPublicationTypeController(repo : PublicationTypeRepo)
+  + addPublicationType(publicationTypeName : String) : PublicationType
 }
 
 ' ===== RELATIONSHIPS =====
-AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: uses
+AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
 AddPublicationTypeController "1" ..> "1" PublicationTypeRepo: calls
+PublicationTypeRepo "1" --> "1" PublicationTypeFactory: uses
+PublicationTypeFactory "1" --> "*" PublicationType: creates
 PublicationTypeRepo "1"--> "*" PublicationType: manages
 
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - Level 2 SD
+title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - Level 3 SD
 hidefootbox
 
 '==== basic style ====
@@ -20,7 +20,8 @@ autoactivate off
 actor "Administrator" as Admin
 participant ":AddPublicationTypeUI" as UI
 participant ":AddPublicationTypeCtl" as Ctl
-participant ":PublicationTypeRepo" as REPO
+participant "ptr:PublicationTypeRepo" as REPO
+participant "publicationType:PublicationType" as PUBTYPE
 participant ":PublicationTypeFactory" as FACTORY
 
 ' --- System dialog ---
@@ -34,18 +35,22 @@ UI -> Ctl: addPublicationType (publicationTypeName)
 activate "Ctl"
 Ctl -> REPO: addPublicationType (publicationTypeName)
 
-    opt publicationTypeExists(publicationTypeName) == false
+    loop for each publicationType in ptr
 
         activate "REPO"
-        REPO -> FACTORY: newPublicationType(publicationTypeName)
-        activate FACTORY
-        create "newPublicationType:PublicationType" as instance
-        FACTORY -> instance: create(publicationTypeName)
-        FACTORY --> REPO: newPublicationType
-        deactivate FACTORY
-        REPO -> REPO: add(newPublicationType)
+        REPO -> PUBTYPE: isSamePublicationType(publicationTypeName)
+        activate PUBTYPE
+        PUBTYPE -> REPO: false
+        deactivate PUBTYPE
     end
 
+REPO -> FACTORY: newPublicationType(publicationTypeName)
+activate FACTORY
+create "newPublicationType:PublicationType" as instance
+FACTORY -> instance: create(publicationTypeName)
+FACTORY --> REPO: newPublicationType
+deactivate FACTORY
+REPO -> REPO: add(newPublicationType)
 REPO --> Ctl: newPublicationType
 deactivate "REPO"
 Ctl --> UI: newPublicationType
