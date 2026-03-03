@@ -4,6 +4,8 @@ import TOPSECRET.domain.Country;
 import TOPSECRET.domain.CountryRepo;
 import TOPSECRET.domain.User;
 
+import java.util.Objects;
+
 /**
  * Controller responsible for handling the country registration use case.
  * <p>
@@ -15,8 +17,8 @@ import TOPSECRET.domain.User;
 public class RegisterCountryController {
     private final CountryRepo _countryRepo;
 
-    public RegisterCountryController(CountryRepo countryRepo, User _admin) {
-        _countryRepo = countryRepo;
+    public RegisterCountryController(CountryRepo countryRepo) {
+        this._countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
     }
 
     public Country registerCountry(String countryName) throws InstantiationException {
