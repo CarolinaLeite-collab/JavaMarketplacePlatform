@@ -17,21 +17,12 @@ public class Address {
         STORE,
         OTHER
     }
-    public enum Country {
-        PORTUGAL,
-        SPAIN,
-        FRANCE,
-        GERMANY,
-        ITALY,
-        UNITED_KINGDOM,
-        UNITED_STATES
-    }
+    private Country _country;
     private String _street;
     private String _doorNumber;
     private BuildingType _buildingType;
     private String _city;
     private String _districtOrState;
-    private Country _country;
     private String _postalCode;
     private String _postalCodeExtension;
 
@@ -142,13 +133,20 @@ public class Address {
     //Postal code validation
     private boolean isValidPostalCode(String postalCode, Country country) {
         if (postalCode == null || postalCode.trim().isEmpty()) return false;
-        String trimmed = postalCode.trim();
+        if (country == null)  return false;
 
-        return switch (country) {
-            case PORTUGAL -> trimmed.matches("[1-9]\\d{3}-\\d{3}");
-            case SPAIN, GERMANY, ITALY, FRANCE, UNITED_STATES-> trimmed.matches("\\d{5}");
+        String trimmed = postalCode.trim();
+        String c = country.getCountryName();
+        if (c == null) return false;
+
+        c = c.trim().toLowerCase();
+
+        return switch (c) {
+            case "portugal" -> trimmed.matches("[1-9]\\d{3}-\\d{3}");
+            case "spain", "germany", "italy", "france", "united states" -> trimmed.matches("\\d{5}");
             /*case FRANCE -> trimmed.matches("0[1-9]\\d{3}|9[78]\\d{2}");*/
-            case UNITED_KINGDOM -> trimmed.matches("^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$");    //It's not complete yet!
+            case "united kingdom" -> trimmed.matches("^[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2}$");
+            default -> false; //It's not complete yet!
         };
     }
 
