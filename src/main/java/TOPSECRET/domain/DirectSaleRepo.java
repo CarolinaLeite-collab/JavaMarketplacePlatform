@@ -13,94 +13,70 @@ import java.time.Period;
 
 public class DirectSaleRepo {
 
-    private List<DirectSale> _directSales;
+    private final List<DirectSale> _directSales;
+    private final DirectSaleFactory _factory;
 
     public DirectSaleRepo() {
+        this(new DirectSaleFactory());
+    }
 
+    public DirectSaleRepo(DirectSaleFactory factory) {
+        if (factory == null) throw new IllegalArgumentException("Factory cannot be null");
+        _factory = factory;
         _directSales = new ArrayList<>();
-
     }
 
-    public DirectSale createDirectSale(Item item, Price price, Period timeLimit) {
-
-        DirectSale directSale = new DirectSale(item, price, timeLimit);
-
+    public DirectSale createDirectSale(Item item, Price price, Period timeLimit) throws InstantiationException {
+        DirectSale directSale = _factory.create(item, price, timeLimit);
         _directSales.add(directSale);
-
         return directSale;
-
     }
 
-    public List<Item> getDirectSaleItemsByAuthor (Author author) {
+    public List<Item> getDirectSaleItemsByAuthor(Author author) {
+        List<Item> list = new ArrayList<>();
 
-        List<Item> listOfDirectSaleItemsByAuthor = new ArrayList<>();
-
-        for (DirectSale directSale: _directSales) {
-
+        for (DirectSale directSale : _directSales) {
             if (directSale.isByAuthor(author)) {
-
-                listOfDirectSaleItemsByAuthor.add(directSale.getItem());
-
+                list.add(directSale.getItem());
             }
-
-
         }
-
-        List<Item> copyOfListOfDirectSaleItemsByAuthor = List.copyOf(listOfDirectSaleItemsByAuthor);
-
-        return copyOfListOfDirectSaleItemsByAuthor;
-
+        return List.copyOf(list);
     }
 
     public List<Item> getDirectSaleItemsByGenre(Genre genre) {
-
-        List<Item> listOfDirectSaleItemsByGenre = new ArrayList<>();
+        List<Item> list = new ArrayList<>();
 
         for (int i = 0; i < _directSales.size(); i++) {
-
             DirectSale directSale = _directSales.get(i);
             Publication publication = directSale.getItem().getPublication();
 
             if (publication.matchGenre(genre)) {
-                listOfDirectSaleItemsByGenre.add(directSale.getItem());
+                list.add(directSale.getItem());
             }
         }
-
-        return List.copyOf(listOfDirectSaleItemsByGenre);
+        return List.copyOf(list);
     }
 
-
-    public List<Item> getDirectSaleItemsByPublication (Publication publication) {
-
-        List<Item> listOfDirectSaleItemsByPublication = new ArrayList<>();
-
-        for (DirectSale directSale: _directSales) {
-            if (directSale.isByPublication(publication)) {
-                listOfDirectSaleItemsByPublication.add(directSale.getItem());
-            }
-        }
-
-        List<Item> copyOfListOfDirectSaleItemsByPublication = List.copyOf(listOfDirectSaleItemsByPublication);
-
-        return copyOfListOfDirectSaleItemsByPublication;
-    }
-    public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
-
-        List<Item> listOfDirectSaleItemsByPublisher = new ArrayList<>();
+    public List<Item> getDirectSaleItemsByPublication(Publication publication) {
+        List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-
-            if (directSale.isByPublisher(publisher)) {
-
-                listOfDirectSaleItemsByPublisher.add(directSale.getItem());
-
+            if (directSale.isByPublication(publication)) {
+                list.add(directSale.getItem());
             }
-
         }
-
-        return List.copyOf(listOfDirectSaleItemsByPublisher);
-
+        return List.copyOf(list);
     }
 
+    public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
+        List<Item> list = new ArrayList<>();
 
+        for (DirectSale directSale : _directSales) {
+            if (directSale.isByPublisher(publisher)) {
+                list.add(directSale.getItem());
+            }
+        }
+        return List.copyOf(list);
+    }
 }
+// analise design teste e implementação

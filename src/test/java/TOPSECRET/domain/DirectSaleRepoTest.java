@@ -3,230 +3,162 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
+import java.time.Period;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class DirectSaleRepoTest {
 
-    private User _buyer;
-    private DirectSaleRepo _directSaleRepo;
-    private Publication _publication;
-    private Publication _publication2;
-    private Item _item;
-    private Item _item2;
-    private Author _author;
-    private DirectSale _directSale1;
-    private DirectSale _directSale2;
-    private Genre _genre;
-    private PublishingCompany _publisher;
+    private DirectSaleFactory factory;
+    private DirectSaleRepo repo;
 
+    private DirectSale ds1;
+    private DirectSale ds2;
+
+    private Item item1;
+    private Item item2;
+
+    private Author author;
+    private Genre genre;
+    private PublishingCompany publisher;
+    private Publication publication;
 
     @BeforeEach
     void setUp() {
+        factory = mock(DirectSaleFactory.class);
+        repo = new DirectSaleRepo(factory);
 
-        _buyer = new User(
-                new Name("Zé Isep"),
-                new Email("ze@isep.pt")
-        );
+        ds1 = mock(DirectSale.class);
+        ds2 = mock(DirectSale.class);
 
-        _author = new Author("Seneca");
-        _genre = new Genre("History");
-        _publisher = new PublishingCompany("Penguin");
+        item1 = mock(Item.class);
+        item2 = mock(Item.class);
 
-        _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .genre(_genre)
-                .build();
+        author = mock(Author.class);
+        genre = mock(Genre.class);
+        publisher = mock(PublishingCompany.class);
+        publication = mock(Publication.class);
 
-        _publication2 = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("2316-9133"))
-                .year(Year.of(2022))
-                .title(new Title("Science Weekly"))
-                .publisher(new PublishingCompany("Nature"))
-                .build();
-
-        _item = new Item(_publication, Condition.GOOD);
-        _item2 = new Item(_publication2, Condition.GOOD);
-
-        _directSale1 = new DirectSale(_item, new Price(20.0, Currency.EUR), null);
-        _directSale2 = new DirectSale(_item, new Price(25.0, Currency.EUR), null);
-
-        _directSaleRepo = new DirectSaleRepo();
-
+        when(ds1.getItem()).thenReturn(item1);
+        when(ds2.getItem()).thenReturn(item2);
     }
 
     @Test
-    void testADirectSaleRepoConstructor() {
-
-        new DirectSaleRepo();
-
+    void constructor_withFactory_doesNotThrow() {
+        assertDoesNotThrow(() -> new DirectSaleRepo(factory));
     }
 
     @Test
-    void testAddDirectSale() {
+    void createDirectSale_callsFactoryAndStoresReturnedDirectSale() throws Exception {
+        // Arrange
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
+        Period timeLimit = null;
 
-        DirectSale ds = _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
+        when(factory.create(item, price, timeLimit)).thenReturn(ds1);
+        when(ds1.isByAuthor(author)).thenReturn(true); // para provar que foi guardado
 
-        assertNotNull(ds);
+        // Act
+        DirectSale created = repo.createDirectSale(item, price, timeLimit);
 
+        // Assert
+        assertSame(ds1, created);
+        verify(factory, times(1)).create(item, price, timeLimit);
+
+        List<Item> items = repo.getDirectSaleItemsByAuthor(author);
+        assertEquals(1, items.size());
+        assertSame(item1, items.get(0));
     }
 
     @Test
-    void testGetDirectSaleItemsByAuthorNoDirectSalesShouldReturnEmptyList() {
+    void createDirectSale_whenFactoryThrows_propagatesInstantiationException() throws Exception {
+        // Arrange
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        //act
-        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
+        when(factory.create(eq(item), eq(price), isNull()))
+                .thenThrow(new InstantiationException("boom"));
 
-        //assert
-        assertNotNull(emptyList);
-        assertTrue(emptyList.isEmpty());
-
+        // Act & Assert
+        assertThrows(InstantiationException.class, () -> repo.createDirectSale(item, price, null));
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationBookNoDirectSalesShouldReturnEmptyList() {
+    void getDirectSaleItemsByAuthor_noSales_returnsEmptyUnmodifiableList() {
+        List<Item> items = repo.getDirectSaleItemsByAuthor(author);
 
-        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByPublication(_publication);
-
-        assertNotNull(emptyList);
-        assertTrue(emptyList.isEmpty());
-
+        assertNotNull(items);
+        assertTrue(items.isEmpty());
+        assertThrows(UnsupportedOperationException.class, () -> items.add(mock(Item.class)));
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationMagazineNoDirectSalesShouldReturnEmptyList() {
+    void getDirectSaleItemsByAuthor_filtersCorrectly() throws Exception {
+        // Arrange: meter 2 directSales lá dentro via factory
+        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
 
-        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByPublication(_publication2);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
-        assertNotNull(emptyList);
-        assertTrue(emptyList.isEmpty());
+        when(ds1.isByAuthor(author)).thenReturn(true);
+        when(ds2.isByAuthor(author)).thenReturn(false);
 
+        // Act
+        List<Item> items = repo.getDirectSaleItemsByAuthor(author);
+
+        // Assert
+        assertEquals(1, items.size());
+        assertSame(item1, items.get(0));
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationBookWithDirectSalesShouldReturnNonEmptyList() {
+    void getDirectSaleItemsByPublication_filtersCorrectly() throws Exception {
+        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
 
-        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
-        //act
-        List<Item> list = _directSaleRepo.getDirectSaleItemsByPublication(_publication);
+        when(ds1.isByPublication(publication)).thenReturn(true);
+        when(ds2.isByPublication(publication)).thenReturn(false);
 
-        //assert
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        List<Item> items = repo.getDirectSaleItemsByPublication(publication);
+
+        assertEquals(1, items.size());
+        assertSame(item1, items.get(0));
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationMagazineWithDirectSalesShouldReturnNonEmptyList() {
+    void getDirectSaleItemByPublisher_filtersCorrectly() throws Exception {
+        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
 
-        _directSaleRepo.createDirectSale(_item2, new Price(20.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item2, new Price(25.0, Currency.EUR), null);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
-        List<Item> list = _directSaleRepo.getDirectSaleItemsByPublication(_publication2);
+        when(ds1.isByPublisher(publisher)).thenReturn(true);
+        when(ds2.isByPublisher(publisher)).thenReturn(true);
 
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        List<Item> items = repo.getDirectSaleItemByPublisher(publisher);
+
+        assertEquals(2, items.size());
+        assertSame(item1, items.get(0));
+        assertSame(item2, items.get(1));
     }
 
     @Test
-    void testGetDirectSaleItemsByAuthorWithDirectSalesShouldReturnNonEmptyList() {
+    void getDirectSaleItemsByGenre_usesPublicationMatchGenre() throws Exception {
+        when(factory.create(any(), any(), any())).thenReturn(ds1);
 
-        //arrange
-        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
+        // ds1.getItem() -> item1 (já stubbed)
+        when(item1.getPublication()).thenReturn(publication);
+        when(publication.matchGenre(genre)).thenReturn(true);
 
-        //act
-        List<Item> list = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
-        //assert
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        List<Item> items = repo.getDirectSaleItemsByGenre(genre);
+
+        assertEquals(1, items.size());
+        assertSame(item1, items.get(0));
     }
-
-    @Test
-    void testGetDirectSaleItemsByGenreWithDirectSalesShouldReturnNonEmptyList() {
-
-
-        _directSaleRepo.createDirectSale(_item, new Price(20.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(30.0, Currency.EUR), null);
-
-        List<Item> list = _directSaleRepo.getDirectSaleItemsByGenre(_genre);
-
-        assertNotNull(list);
-        assertEquals(3, list.size());
-    }
-
-    @Test
-    void testGetDirectSaleItemsByGenreWithNoDirectSalesShouldReturnEmptyList() {
-
-        //act
-        List<Item> emptyList = _directSaleRepo.getDirectSaleItemsByGenre(_genre);
-
-        //assert
-        assertNotNull(emptyList);
-        assertTrue(emptyList.isEmpty());
-
-    }
-
-    @Test void createDirectSale_CreateAndStoreDirectSale() {
-
-        // act
-        DirectSale created = _directSaleRepo.createDirectSale(
-                _item,
-                new Price(20.0, Currency.EUR),
-                null
-        );
-
-        // assert: returned object is correct
-        assertNotNull(created);
-        assertEquals(_item, created.getItem());
-        assertEquals(20.0, created.getPrice().getValue());
-        assertEquals(Currency.EUR, created.getPrice().getCurrency());
-
-        // assert: repo actually stored it
-        List<Item> itemsByAuthor = _directSaleRepo.getDirectSaleItemsByAuthor(_author);
-
-        assertEquals(1, itemsByAuthor.size());
-        assertEquals(_item, itemsByAuthor.get(0));
-    }
-
-    @Test
-    void testGetDirectSaleItemsByPublisherWithDirectSalesShouldReturnNonEmptyList() {
-
-        //Arrange
-        _directSaleRepo.createDirectSale(_item, new Price(10.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(15.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(25.0, Currency.EUR), null);
-        _directSaleRepo.createDirectSale(_item, new Price(5.0, Currency.EUR), null);
-
-        //Act
-        List<Item> list = _directSaleRepo.getDirectSaleItemByPublisher(_publisher);
-
-        //Assert
-        assertNotNull(list);
-        assertEquals(4, list.size());
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenNoDirectSaleItemsForPublisher() {
-
-        //act
-        List<Item> emptyList = _directSaleRepo.getDirectSaleItemByPublisher(_publisher);
-
-        //assert
-        assertNotNull(emptyList);
-        assertTrue(emptyList.isEmpty());
-
-    }
-
 }
