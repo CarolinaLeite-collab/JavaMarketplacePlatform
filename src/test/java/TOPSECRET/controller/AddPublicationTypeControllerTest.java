@@ -2,36 +2,62 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.PublicationTypeRepo;
+import TOPSECRET.domain.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 
 class AddPublicationTypeControllerTest {
 
+    private User _admin;
+    private PublicationTypeRepo _ptrDouble;
+    private PublicationType _pubTypeDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        _admin = mock (User.class);
+        _ptrDouble = mock(PublicationTypeRepo.class);
+        _pubTypeDouble = mock(PublicationType.class);
+        when(_ptrDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
+
+    }
+
     @Test
-    void addPublicationTypeDelegatesToRepoAndReturnsCreatedType() {
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        AddPublicationTypeController controller = new AddPublicationTypeController(repo);
+    void addPublicationTypeToRepoAndReturnsCreatedType() {
 
-        PublicationType type = controller.addPublicationType("Hardcover");
+        //arrange
+        String publicationTypeName = "book";
 
-        assertEquals("Hardcover", type.getPublicationType());
-        assertTrue(repo.existsPublicationType("Hardcover"));
+        //SUT
+        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _admin);
+
+        //act
+
+        PublicationType pubTypeResult = controller.addPublicationType(publicationTypeName);
+
+        //assert
+        assertEquals(_pubTypeDouble, pubTypeResult);
+        verify(_ptrDouble).addPublicationType("book");
+
     }
 
     @Test
     void addPublicationTypeThrowsWhenTypeAlreadyExists() {
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        AddPublicationTypeController controller = new AddPublicationTypeController(repo);
 
-        repo.createPublicationType("Magazine");
+        //Arrange
+        String publicationTypeName = "book";
+        when(_ptrDouble.addPublicationType("book"))
+            .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.addPublicationType("MAGAZINE")
-        );
+        //SUT
+        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _admin);
 
-        assertEquals("Publication type already exists!", ex.getMessage());
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
+
     }
 }

@@ -1,139 +1,115 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationTypeRepoTest {
 
+    private PublicationTypeFactory _ptfDouble;
+    private PublicationType _pubTypeDouble1;
+    private PublicationType _pubTypeDouble2;
+
+    @BeforeEach
+    void setUp() {
+
+        _ptfDouble = mock(PublicationTypeFactory.class);
+        _pubTypeDouble1 = mock(PublicationType.class);
+        _pubTypeDouble2 = mock(PublicationType.class);
+
+        // Stub fallback for any input - guarantees true isolation
+        when(_ptfDouble.newPublicationType(anyString())).thenReturn(mock(PublicationType.class));
+
+        // Specific Stubs for BOOK and MAGAZINE inputs (in this order they take priority over anyString())
+        when(_ptfDouble.newPublicationType("BOOK")).thenReturn(_pubTypeDouble1);
+        when(_ptfDouble.newPublicationType("MAGAZINE")).thenReturn(_pubTypeDouble2);
+
+    }
+
+
     @Test
-    void shouldCreatePublicationTypeSuccessfully() {
+    void addPublicationTypeShouldReturnPublicationType() {
         // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
+        String pubTypeName = "BOOK";
+
+        // SUT
+        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
 
         // Act
-        PublicationType type = repo.createPublicationType("Book");
+        PublicationType pubTypeResult = repo.addPublicationType(pubTypeName);
 
         // Assert
-        assertNotNull(type);
-        assertEquals("Book", type.getPublicationType());
+        assertEquals(_pubTypeDouble1, pubTypeResult);
+    }
+
+    @Test
+    void shouldAddPublicationTypeSuccessfullyAndListNotEmpty() {
+        // Arrange
+        String pubTypeName = "BOOK";
+
+        // SUT
+        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+
+        // Act
+        repo.addPublicationType(pubTypeName);
+
+        // Assert
+        assertEquals(1, repo.getAll().size());
     }
 
     @Test
     void shouldNotAllowDuplicatePublicationTypes() {
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Magazine");
+        //Arrange
+        String pubTypeName = "MAGAZINE";
+        when(_pubTypeDouble2.isSamePublicationType(pubTypeName)).thenReturn(true);
 
-        // Act
-        boolean duplicateWasCreated = true;
+        // SUT
+        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
 
-        try {
-            repo.createPublicationType("Magazine");
-        } catch (Exception e) {
-            duplicateWasCreated = false;
-        }
+        //Act
+        repo.addPublicationType(pubTypeName);
 
-        // Assert
-        if (duplicateWasCreated) {
-            fail("It should not be possible to create duplicate publication types");
-        }
+        //Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.addPublicationType(pubTypeName));
     }
 
     @Test
-    void shouldRecognizeExistingPublicationType() {
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
+    void shouldBeAbleToAddMultiplePublicationTypes() {
+        //Arrange
+        String pubTypeName = "MAGAZINE";
+        String pubTypeName2 = "BOOK";
+        String pubTypeName3 = "POKEMON_CARD";
 
-        // Act
-        boolean exists = repo.existsPublicationType("Book");
+        //SUT
+        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
 
-        // Assert
-        assertTrue(exists);
+        //Act
+        repo.addPublicationType(pubTypeName);
+        repo.addPublicationType(pubTypeName2);
+        repo.addPublicationType(pubTypeName3);
+
+        //Assert
+        assertEquals(3, repo.getAll().size());
     }
 
     @Test
-    void shouldBeCaseInsensitiveWhenCheckingExistence() {
+    void shouldThrowCorrectMessageOnDuplicatePublicationTypes() {
         // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
+        String pubTypeName = "BOOK";
+        when(_pubTypeDouble1.isSamePublicationType(pubTypeName)).thenReturn(true);
+
+        //SUT
+        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        repo.addPublicationType(pubTypeName);
 
         // Act
-        boolean lowerCaseExists = repo.existsPublicationType("book");
-        boolean upperCaseExists = repo.existsPublicationType("BOOK");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addPublicationType(pubTypeName));
 
-        // Assert
-        assertTrue(lowerCaseExists);
-        assertTrue(upperCaseExists);
-    }
+        //Assert
+        assertEquals("This publication type already exists!", exception.getMessage());
 
-    @Test
-    void shouldReturnAllCreatedPublicationTypes() {
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
-        repo.createPublicationType("Magazine");
-
-        // Act
-        int numberOfTypes = repo.getAll().size();
-
-        // Assert
-        assertEquals(2, numberOfTypes);
-    }
-
-    @Test
-    void returnedListCannotBeModifiedFromOutside() {
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
-
-        List<PublicationType> returnedList = repo.getAll();
-
-        // Act
-        boolean modificationSucceeded = true;
-
-        try {
-            returnedList.clear();   // tentativa de modificação externa
-        } catch (Exception e) {
-            modificationSucceeded = false;
-        }
-
-        // Assert
-        if (modificationSucceeded) {
-            fail("External code should not be able to modify the returned list");
-        }
-    }
-
-    // Teste de melhoria  improv1.
-    @Test
-    void shouldNotAllowDuplicatePublicationTypesWithDifferentCasing() {
-
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
-
-        // Assert
-        assertThrows(
-                IllegalStateException.class,
-                () -> repo.createPublicationType("book")
-        );
-    }
-
-    // Teste para matar o mutante pq ele mudou de return false para return true. O de cima valida o happy path, este o caminho negativo
-
-    @Test
-    void shouldReturnFalseWhenPublicationTypeDoesNotExist() {
-        // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
-
-        // Act
-        boolean exists = repo.existsPublicationType("Magazine");
-
-        // Assert
-        assertFalse(exists);
     }
 }
