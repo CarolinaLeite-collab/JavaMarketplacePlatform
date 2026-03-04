@@ -65,7 +65,7 @@ class GetDirectSaleItemsByAuthorControllerTest {
     }
 
     @Test
-    void test_get_direct_sale_items_by_author_with_no_direct_sales_should_return_non_empty_list() {
+    void test_get_direct_sale_items_by_author_with_no_direct_sales_should_return_non_empty_list() throws InstantiationException {
 
         //act
         _dsr.createDirectSale(_item, new Price(20.0,Currency.EUR), null);

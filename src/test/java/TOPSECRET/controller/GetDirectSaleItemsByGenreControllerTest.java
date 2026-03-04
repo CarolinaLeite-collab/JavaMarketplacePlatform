@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GetDirectSaleItemsByGenreControllerTest {
 
     @Test
-    void shouldReturnItemsByGenreThroughController() {
+    void shouldReturnItemsByGenreThroughController() throws InstantiationException {
 
         Genre fantasy = new Genre("Fantasy");
 

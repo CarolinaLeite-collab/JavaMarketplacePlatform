@@ -53,7 +53,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
     }
 
     @Test
-    void testShouldReturnDirectSaleItemsByPublication() {
+    void testShouldReturnDirectSaleItemsByPublication() throws InstantiationException {
         Item item = new  Item(_publication, Condition.GOOD);
 
         _dsr.createDirectSale(item, new Price(20.0, Currency.EUR), null);

@@ -46,7 +46,7 @@ public class PublicationInLibraryForDirectSaleController {
             Condition condition,
             Price price,
             Period timeLimit
-    ) {
+    ) throws InstantiationException {
         if (condition == null || price == null || timeLimit == null)
             return false;
 

@@ -24,9 +24,11 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private User testUser;
     private Library testLibrary;
     private Period timeLimit;
+    private Country country;
 
     @BeforeEach
     void setUp() {
+        country = new Country("Portugal");
         libraryRepo = new LibraryRepo();
         publicationRepo = new PublicationRepo();
         itemRepo = new ItemRepo();
@@ -37,7 +39,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         testUser = new User(
                 new Name("John Test"),
-                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "4000-123", null),
+                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", country, "4000-123", null),
                 new Email("test@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "999999999"));
         testLibrary = libraryRepo.createMyLibrary(testUser);
@@ -108,7 +110,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         User userWithoutLibrary = new User(
                 new Name("NoLibrary"),
                 new Address("NoLib Road", "456", Address.BuildingType.HOUSE,
-                        "Porto", "Porto", Address.Country.PORTUGAL, "4000-456", null),
+                        "Porto", "Porto", country, "4000-456", null),
                 new Email("nolib@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "888888888"));
 
@@ -182,7 +184,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testAddPublicationForDirectSaleWithNullCondition() {
+    void testAddPublicationForDirectSaleWithNullCondition() throws InstantiationException {
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780141036144"))
@@ -236,7 +238,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testAddPublicationForDirectSaleSuccess() {
+    void testAddPublicationForDirectSaleSuccess() throws InstantiationException {
 
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
