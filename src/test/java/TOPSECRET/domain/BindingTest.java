@@ -6,39 +6,39 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BindingTest {
 
+    // Verifying each enum constant returns its expected display name; implicitly tests enum constructor wiring
     @Test
-    void getDisplayNameShouldReturnCorrectText() {
-
-        //Arrange
-        Binding hardCover = Binding.HARDCOVER;
-        Binding saddle = Binding.SADDLE_STITCH;
-        Binding pur = Binding.PUR;
-
-        //Act
-        String hardCoverText = hardCover.getDisplayName();
-        String saddleText = saddle.getDisplayName();
-        String purBoundText = pur.getDisplayName();
-
-        //Assert
-        assertEquals("Hardcover binding", hardCover.getDisplayName());
-        assertEquals("Saddle stitch binding", saddle.getDisplayName());
-        assertEquals("PUR binding", pur.getDisplayName());
+    void allBindingsShouldReturnCorrectDisplayName(){
+        assertEquals("PUR binding", Binding.PUR.getDisplayName());
+        assertEquals("Saddle stitch binding", Binding.SADDLE_STITCH.getDisplayName());
+        assertEquals("Hardcover binding", Binding.HARDCOVER.getDisplayName());
+        assertEquals("Singer sewn binding", Binding.SINGER_SEWN.getDisplayName());
+        assertEquals("Section sewn binding", Binding.SECTION_SEWN.getDisplayName());
+        assertEquals("Coptic stitch binding", Binding.COPTIC_STITCH.getDisplayName());
+        assertEquals("Wiro binding", Binding.WIRO.getDisplayName());
+        assertEquals("Interscrew binding", Binding.INTERSCREW.getDisplayName());
     }
 
-
+    // Ensuring toString() returns the exact text
     @Test
     void toStringShouldReturnDisplayName() {
-        // Arrange
-        Binding hardCover = Binding.HARDCOVER;
-        Binding saddle = Binding.SADDLE_STITCH;
 
-        // Act
-        String hardCoverText = hardCover.toString();
-        String saddleText = saddle.toString();
+        assertEquals("PUR binding", Binding.PUR.toString());
+        assertEquals("Saddle stitch binding", Binding.SADDLE_STITCH.toString());
+        assertEquals("Hardcover binding", Binding.HARDCOVER.toString());
+        assertEquals("Singer sewn binding", Binding.SINGER_SEWN.toString());
+        assertEquals("Section sewn binding", Binding.SECTION_SEWN.toString());
+        assertEquals("Coptic stitch binding", Binding.COPTIC_STITCH.toString());
+        assertEquals("Wiro binding", Binding.WIRO.toString());
+        assertEquals("Interscrew binding", Binding.INTERSCREW.toString());
+    }
 
-        // Assert
-        assertEquals("Hardcover binding", hardCoverText);
-        assertEquals("Saddle stitch binding", saddleText);
+    // Not checking for exact text, but the relationships between toString() and getDisplayName()
+    @Test
+    void toStringShouldMatchDisplayNameForAllBindings() {
+        for (Binding binding : Binding.values()) {
+            assertEquals(binding.getDisplayName(), binding.toString());
+        }
     }
 
 }
