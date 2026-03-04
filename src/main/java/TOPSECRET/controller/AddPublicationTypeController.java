@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.PublicationTypeRepo;
+import TOPSECRET.domain.User;
 
 /**
  * Controller responsible for managing the creation of new publication types.
@@ -13,17 +14,18 @@ import TOPSECRET.domain.PublicationTypeRepo;
 
 public class AddPublicationTypeController {
 
-    private final PublicationTypeRepo repo;
+    private final PublicationTypeRepo _ptr;
 
-    public AddPublicationTypeController(PublicationTypeRepo repo) {
-        this.repo = repo;
+    public AddPublicationTypeController(PublicationTypeRepo _ptr, User _admin) {
+
+        this._ptr = _ptr;
+
     }
 
-    public PublicationType addPublicationType(String typeName) {
-        if (repo.existsPublicationType(typeName)) {
-            throw new IllegalArgumentException("Publication type already exists!");
-        }
-        return repo.createPublicationType(typeName);
+    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
+
+        return _ptr.addPublicationType(publicationTypeName);
+
     }
 }
 

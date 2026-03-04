@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 /**
  * Represents the description of the morphology of the {@link Publication}.
  * <p>
@@ -9,20 +11,54 @@ package TOPSECRET.domain;
 
 public class PublicationType {
 
-    private final String typeName;
+    private final String _publicationType;
 
-    public PublicationType(String typeName) {
-        if (typeName == null || typeName.isBlank())
+    public PublicationType(String publicationTypeName) throws IllegalArgumentException {
+
+        if (publicationTypeName == null || publicationTypeName.isBlank()) {
+
             throw new IllegalArgumentException("Publication type name is required!");
 
-        this.typeName = typeName;
+        }
+
+        _publicationType = publicationTypeName.toUpperCase().trim();
+
     }
+
+    public boolean isSamePublicationType (String publicationTypeName) {
+
+        if  (publicationTypeName == null || publicationTypeName.isBlank()) {
+
+            return false;
+
+        }
+
+        String publicationTypeNameNormalized = publicationTypeName.toUpperCase().trim();
+
+        return publicationTypeNameNormalized.equals(_publicationType);
+
+    }
+
     public String getPublicationType() {
-        return typeName;
+        return _publicationType;
     }
 
     @Override
     public String toString() {
-        return typeName;
+        return _publicationType;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PublicationType)) return false;
+        PublicationType pubType = (PublicationType) o;
+        return _publicationType.equals(pubType._publicationType.toUpperCase().trim());
+    }
+
+    // Normalizing hash codes will prevent false negatives
+    @Override
+    public int hashCode() {
+        return Objects.hash(_publicationType);
     }
 }
