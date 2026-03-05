@@ -1,106 +1,102 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class UserTest {
+    private Name _nameDouble;
+    private Name _nameDouble2;
+    private Address _addressDouble;
+    private Country _countryDouble;
+    private Email _emailDouble;
+    private Email _emailDouble2;
+    private PhonePrefix _phonePerfixDouble;
+    private Phone _phoneDouble;
+    private User _user;
+
+    @BeforeEach
+    void setup() {
+        _nameDouble = mock(Name.class);
+        when(_nameDouble.get_Name()).thenReturn("Tiago");
+
+        _nameDouble2 = mock(Name.class);
+        when(_nameDouble2.get_Name()).thenReturn("Alfredo");
+
+        _countryDouble = mock(Country.class);
+        when(_countryDouble.getCountryName()).thenReturn("Portugal");
+
+        _addressDouble = mock(Address.class);
+        when(_addressDouble.getStreet()).thenReturn("Rua senhor de matosinhos");
+        when(_addressDouble.getDoorNumber()).thenReturn("81");
+        when(_addressDouble.getBuildingType()).thenReturn(Address.BuildingType.HOUSE);
+        when(_addressDouble.getCity()).thenReturn("Matosinhos");
+        when(_addressDouble.getDistrictOrState()).thenReturn("Porto");
+        when(_addressDouble.getCountry()).thenReturn(_countryDouble);
+        when(_addressDouble.getPostalCode()).thenReturn("4300-111");
+        when(_addressDouble.getPostalCodeExtension()).thenReturn(null);
+
+        _emailDouble = mock(Email.class);
+        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
+
+        _emailDouble2 = mock(Email.class);
+        when(_emailDouble2.toString()).thenReturn("test2@email.pt");
+
+        _phonePerfixDouble = mock(PhonePrefix.class);
+        when(_phonePerfixDouble.getValue()).thenReturn("+351");
+
+        _phoneDouble = mock(Phone.class);
+        when(_phoneDouble.getPrefix()).thenReturn(_phonePerfixDouble);
+        when(_phoneDouble.getNationalNumber()).thenReturn("918902632");
+
+        _user = new User(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+    }
 
     @Test
     void constructorWithValidArgumentsCreatesUser() {
-        // Arrange + act
-        Country country = new Country("Portugal");
-        User user = new User(
-                new Name("Tiago"),
-                new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
-                new Email("1252008@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918902632")
-        );
-
         // Assert
-        assertEquals("Tiago", user.getName().toString());
-        assertEquals("1252008@isep.ipp.pt", user.getEmail().toString());
-        assertEquals("PORTUGAL, Matosinhos (Porto), Rua senhor de matosinhos, 81, HOUSE, 4300-111", user.getAddress().toString());
-        assertEquals("+351918902632", user.getPhone().toString());
+        assertEquals(_nameDouble, _user.getName());
+        assertEquals("1252008@isep.ipp.pt", _user.getEmail());
+        assertEquals(_addressDouble, _user.getAddress());
+        assertEquals(_phoneDouble, _user.getPhone());
     }
 
-    //Objects.requireNonNull lança NullPointerException (não IllegalArgumentException).
+    //Objects.requireNonNull throw NullPointerException (no IllegalArgumentException).
     @Test
     void constructorWithNullName() {
-        //Assert
-        Country country = new Country("Portugal");
-        assertThrows(NullPointerException.class, () ->
-                // Arrange + act
-                new User(
-                        null,
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
-                        new Email("1252008@isep.ipp.pt"),
-                        new Phone(new PhonePrefix("+351"), "918902632")
-                )
-        );
+
+        assertThrows(NullPointerException.class, () -> new User (null, _addressDouble, _emailDouble, _phoneDouble));
+
     }
 
     @Test
     void constructorWithNullAddress() {
 
-        //Assert
-        assertThrows(NullPointerException.class, () ->
-                // Arrange + act
-                new User(
-                        new Name("Tiago"),
-                        null,
-                        new Email("1252008@isep.ipp.pt"),
-                        new Phone(new PhonePrefix("+351"), "918902632")
-                )
-        );
+        assertThrows(NullPointerException.class, () -> new User(_nameDouble, null, _emailDouble, _phoneDouble));
     }
 
     @Test
     void constructorWithNullEmail() {
-        //Assert
-        Country country = new Country("Portugal");
 
-        assertThrows(NullPointerException.class, () ->
-                // Arrange + act
-                new User(
-                        new Name("Tiago"),
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
-                        null,
-                        new Phone(new PhonePrefix("+351"), "918902632")
-                )
-        );
+        assertThrows(NullPointerException.class, () -> new User(_nameDouble, _addressDouble, null, _phoneDouble));
     }
 
     @Test
     void constructorWithNullPhoneNumber() {
-        //Assert
-        Country country = new Country("Portugal");
 
-        assertThrows(NullPointerException.class, () ->
-                // Arrange + act
-                new User(
-                        new Name("Tiago"),
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
-                        new Email("1252008@isep.ipp.pt"),
-                        null
-                )
-        );
+        assertThrows(NullPointerException.class, () -> new User(_nameDouble, _addressDouble, _emailDouble, null));
     }
 
     @Test
     void constructorWithNameAndEmail() {
 
-        // Arrange + Act
-        User user = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
+        User user = new User(_nameDouble, _emailDouble);
 
-        // Assert
-        assertEquals("Tiago", user.getName().toString());
-        assertEquals("test@email.pt", user.getEmail().toString());
+        assertEquals(_nameDouble, user.getName());
+        assertEquals("1252008@isep.ipp.pt", user.getEmail());
         assertNull(user.getAddress());
         assertNull(user.getPhone());
     }
@@ -108,37 +104,23 @@ class UserTest {
     @Test
     void test_toString() {
 
-        User t = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
-
-        User t2 = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
+        User t = new User(_nameDouble, _emailDouble);
+        User t2 = new User(_nameDouble, _emailDouble);
 
         assertEquals(t.toString(), t2.toString());
-
     }
 
     @Test
     void test_equals() {
 
-        User u1 = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
+        Name _nameDouble3 = mock(Name.class);
+        when(_nameDouble3.get_Name()).thenReturn("Magalhaes");
 
-        User u2 = new User(
-                new Name("Alfredo"),
-                new Email("test@email.pt")
-        );
+        User u1 = new User(_nameDouble, _emailDouble);
 
-        User u3 = new User(
-                new Name("Magalhaes"),
-                new Email("test2@email.pt")
-        );
+        User u2 = new User(_nameDouble2, _emailDouble);
+
+        User u3 = new User(_nameDouble3, _emailDouble2);
 
         String u4 = "user";
 
@@ -153,15 +135,8 @@ class UserTest {
     @Test
     void test_hash_code_same_email() {
 
-        User t = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
-
-        User t2 = new User(
-                new Name("Alfredo"),
-                new Email("TEST@EMAIL.PT")
-        );
+        User t = new User(_nameDouble, _emailDouble2);
+        User t2 = new User(_nameDouble2, _emailDouble2);
 
         assertEquals(t.hashCode(), t2.hashCode());
 
@@ -170,19 +145,10 @@ class UserTest {
     @Test
     void test_hash_code_different_email() {
 
-        User t = new User(
-                new Name("Tiago"),
-                new Email("test@email.pt")
-        );
-
-        User t2 = new User(
-                new Name("Alfredo"),
-                new Email("alfredo@EMAIL.PT")
-        );
+        User t = new User(_nameDouble, _emailDouble);
+        User t2 = new User(_nameDouble2, _emailDouble2);
 
         assertNotEquals(t.hashCode(), t2.hashCode());
 
     }
-
-
 }
