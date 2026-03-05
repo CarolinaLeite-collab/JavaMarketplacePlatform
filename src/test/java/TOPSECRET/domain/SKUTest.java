@@ -60,13 +60,17 @@ class SKUTest {
      * Verifica se dois SKUs gerados em momentos diferentes
      * não são considerados iguais.
      */
-    @Test
+
+    //Commented out below test because SKU.generate() uses UUID.randomUUID()
+    // making collisions extremely unlikely, but not impossible.
+
+    /*@Test
     void twoGeneratedSkusShouldBeDifferent() {
         SKU sku1 = SKU.generate();
         SKU sku2 = SKU.generate();
 
         assertNotEquals(sku1, sku2);
-    }
+    }*/
 
     // -------------------------------------------------
     // equals, hashCode e toString
@@ -160,6 +164,7 @@ class SKUTest {
                 constructor.newInstance("INVALID!!"));
 
         assertTrue(exception.getCause() instanceof IllegalArgumentException);
+        assertEquals(exception.getCause().getMessage(), "Invalid SKU format");
     }
 
     /**
@@ -177,6 +182,7 @@ class SKUTest {
                 constructor.newInstance((String) null));
 
         assertTrue(exception.getCause() instanceof IllegalArgumentException);
+        assertEquals(exception.getCause().getMessage(), "Invalid SKU format");
     }
 
     @Test
@@ -187,12 +193,14 @@ class SKUTest {
         assertEquals(sku1.hashCode(), sku2.hashCode());
     }
 
-    @Test
+    //Commented out below test because non-equal objects may still have the same hash code
+
+   /* @Test
     void hashCodeShouldBeNotEqual() throws Exception {
         SKU sku1 = SKU.generate();
         SKU sku2 = SKU.generate();
 
         assertNotEquals(sku1.hashCode(), sku2.hashCode());
-    }
+    }*/
 }
 
