@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType;
+import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationTypeRepo;
 import org.junit.jupiter.api.Test;
 
@@ -11,11 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class GetPublicationTypeListControllerTest {
 
     @Test
-    void shouldReturnAllPublicationTypes() {
+    void shouldReturnAllPublicationTypes() throws InstantiationException {
         // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
-        repo.createPublicationType("Magazine");
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
+        repo.addPublicationType("Book");
+        repo.addPublicationType("Magazine");
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repo);
@@ -31,7 +33,8 @@ class GetPublicationTypeListControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist() {
         // Arrange
-        PublicationTypeRepo repo = new PublicationTypeRepo();
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repo);
@@ -47,8 +50,9 @@ class GetPublicationTypeListControllerTest {
 
     @Test
     void returnedListShouldNotBeModifiable() {
-        PublicationTypeRepo repo = new PublicationTypeRepo();
-        repo.createPublicationType("Book");
+        PublicationTypeFactory factory = new PublicationTypeFactory();
+        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
+        repo.addPublicationType("Book");
 
         GetPublicationTypeListController controller =
                 new GetPublicationTypeListController(repo);

@@ -17,11 +17,12 @@ class RegisterNewAppraisalEntityControllerTest {
 
     @BeforeEach
     void setUp() {
-        publicationTypeRepo = new PublicationTypeRepo();
+        PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
+        publicationTypeRepo = new PublicationTypeRepo(publicationTypeFactory);
         genreRepo = new GenreRepo();
         appraisalEntityRepo = new AppraisalEntityRepo();
 
-        publicationTypeRepo.createPublicationType("book");
+        publicationTypeRepo.addPublicationType("book");
         genreRepo.addGenre("romance");
         genreRepo.addGenre("fantasy");
 
