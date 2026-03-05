@@ -18,7 +18,7 @@ class CountryTest {
 
         // Assert
         assertNotNull(country);
-        assertEquals("France", country.getCountryName());
+        assertEquals("FRANCE", country.getCountryName());
     }
 
     @Test
