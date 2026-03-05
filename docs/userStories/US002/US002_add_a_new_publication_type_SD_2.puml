@@ -44,7 +44,7 @@ Ctl -> REPO: addPublicationType (publicationTypeName)
         deactivate PUBTYPE
     end
 
-REPO -> FACTORY: newPublicationType(publicationTypeName)
+REPO -> FACTORY: createPublicationType(publicationTypeName)
 activate FACTORY
 create "newPublicationType:PublicationType" as instance
 FACTORY -> instance: create(publicationTypeName)

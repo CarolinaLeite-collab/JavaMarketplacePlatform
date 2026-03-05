@@ -37,7 +37,7 @@ Ctl -> REPO: addPublicationType (publicationTypeName)
     opt publicationTypeExists(publicationTypeName) == false
 
         activate "REPO"
-        REPO -> FACTORY: newPublicationType(publicationTypeName)
+        REPO -> FACTORY: createPublicationType(publicationTypeName)
         activate FACTORY
         create "newPublicationType:PublicationType" as instance
         FACTORY -> instance: create(publicationTypeName)
