@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BidTest {
-
-    Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-200", null);
+    Country country = new Country("Portugal");
+    Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", country, "6969-200", null);
     PhonePrefix prefix1 = new PhonePrefix("+351");
     Phone phoneNumber1 = new Phone(prefix1, "919999999");
     User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
@@ -118,7 +118,7 @@ class BidTest {
     public void test_different_bidders_can_bid() {
 
         // arrange
-        Address address2 = new Address("Rua de S. Gonçalo", "Porto", Address.BuildingType.APARTMENT, "Porto", "Porto", Address.Country.PORTUGAL, "1269-400", null);
+        Address address2 = new Address("Rua de S. Gonçalo", "Porto", Address.BuildingType.APARTMENT, "Porto", "Porto", country, "1269-400", null);
         Phone phoneNumber2 = new Phone(prefix1, "919999991");
         User bidder2 = new User(new Name("Leitor"), address2, new Email("example@exampling.com"), phoneNumber2);
         Price price2 = new Price(150.0, Currency.EUR);
@@ -153,7 +153,8 @@ class BidTest {
     void test_bids_with_different_currencies() {
 
         // arrange
-        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "6969-420", null);
+        Country country = new Country("Portugal");
+        Address address1 = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", country, "6969-420", null);
         PhonePrefix prefix1 = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix1, "919999999");
         User bidder = new User(new Name("Reader"), address1, new Email("reader@email.com"), phoneNumber1);
