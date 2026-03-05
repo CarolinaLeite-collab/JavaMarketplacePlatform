@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class CountryTest {
 
     @Test
-    void testConstructor() {
+    void shouldSucessfullyBuildCountryTestConstructor() {
         new Country("Lebanon");
     }
 

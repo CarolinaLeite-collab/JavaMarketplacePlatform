@@ -20,10 +20,11 @@ class BidsTest {
     void getHighestBid_SingleBid() {
         //arrange
         Bids bids = new Bids();
+        Country country = new Country("Português");
         User user = new User(
                 new Name("Tiago"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", Address.Country.PORTUGAL, "1000-205", null),
+                        "Lisboa", country, "1000-205", null),
                 new Email("1252008@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918902632")
         );
@@ -43,17 +44,18 @@ class BidsTest {
     void getHighestBid_MultipleBids_firstHighest() {
         //arrange
         Bids bids = new Bids();
+        Country country = new Country("Português");
         User user1 = new User(
                 new Name("Tiago"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", Address.Country.PORTUGAL, "1000-205", null),
+                        "Lisboa", country, "1000-205", null),
                 new Email("1252008@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918902632")
         );
         User user2 = new User(
                 new Name("Carla"),
                 new Address("Rua Vasco", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Porto", Address.Country.PORTUGAL, "1000-205", null),
+                        "Porto", country, "1000-205", null),
                 new Email("125228@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918972632")
         );
@@ -76,17 +78,18 @@ class BidsTest {
     void getHighestBid_MultipleBids_lastHighest() {
         //arrange
         Bids bids = new Bids();
+        Country country = new Country("Português");
         User user1 = new User(
                 new Name("Tiago"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", Address.Country.PORTUGAL, "1000-205", null),
+                        "Lisboa", country, "1000-205", null),
                 new Email("1252008@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918902632")
         );
         User user2 = new User(
                 new Name("Carla"),
                 new Address("Rua Vasco", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Porto", Address.Country.PORTUGAL, "1000-205", null),
+                        "Porto", country, "1000-205", null),
                 new Email("125228@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918972632")
         );

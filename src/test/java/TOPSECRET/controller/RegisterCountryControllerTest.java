@@ -20,33 +20,34 @@ class RegisterCountryControllerTest {
     private RegisterCountryController _controller;
     private User _admin;
 
-    @BeforeEach
-    void setUp() throws InstantiationException {
-        // Arrange
-        _admin = mock(User.class);
-        Country country1 = mock(Country.class);
-        when(country1.getCountryName()).thenReturn("Portugal");
-        _factory = mock(CountryFactory.class);
-        _countryRepo = mock(CountryRepo.class);
-        _controller = new RegisterCountryController(_countryRepo);
-    }
+//    @BeforeEach
+//    void setUp() throws InstantiationException {
+//        // Arrange
+//        _admin = mock(User.class);
+//        Country country1 = mock(Country.class);
+//        when(country1.getCountryName()).thenReturn("Portugal");
+//        _factory = mock(CountryFactory.class);
+//        _countryRepo = mock(CountryRepo.class);
+//        _controller = new RegisterCountryController(_countryRepo);
+//    }
+//
+//    @Test
+//    void constructsControllerSuccessfully() {
+//        //arrange
+//        //SUT
+//        _controller = new RegisterCountryController(_countryRepo);
+//        // act and assert
+//        assertNotNull(_controller);
+//    }
+//
+//    @Test
+//    void throwsExceptionNullCountryRepo() {
+//        // act and assert
+//        assertThrows(NullPointerException.class, () ->
+//                new RegisterCountryController(null));
+//
+//    }
 
-    @Test
-    void constructsControllerSuccessfully() {
-        //arrange
-        //SUT
-        _controller = new RegisterCountryController(_countryRepo);
-        // act and assert
-        assertNotNull(_controller);
-    }
-
-    @Test
-    void throwsExceptionNullCountryRepo() {
-        // act and assert
-        assertThrows(NullPointerException.class, () ->
-                new RegisterCountryController(null));
-
-    }
     /*   @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
 

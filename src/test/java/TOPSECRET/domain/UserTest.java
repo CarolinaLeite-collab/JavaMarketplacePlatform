@@ -11,9 +11,10 @@ class UserTest {
     @Test
     void constructorWithValidArgumentsCreatesUser() {
         // Arrange + act
+        Country country = new Country("Portugal");
         User user = new User(
                 new Name("Tiago"),
-                new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
+                new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
                 new Email("1252008@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "918902632")
         );
@@ -29,11 +30,12 @@ class UserTest {
     @Test
     void constructorWithNullName() {
         //Assert
+        Country country = new Country("Portugal");
         assertThrows(NullPointerException.class, () ->
                 // Arrange + act
                 new User(
                         null,
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
+                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
                         new Email("1252008@isep.ipp.pt"),
                         new Phone(new PhonePrefix("+351"), "918902632")
                 )
@@ -42,6 +44,7 @@ class UserTest {
 
     @Test
     void constructorWithNullAddress() {
+
         //Assert
         assertThrows(NullPointerException.class, () ->
                 // Arrange + act
@@ -57,11 +60,13 @@ class UserTest {
     @Test
     void constructorWithNullEmail() {
         //Assert
+        Country country = new Country("Portugal");
+
         assertThrows(NullPointerException.class, () ->
                 // Arrange + act
                 new User(
                         new Name("Tiago"),
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
+                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
                         null,
                         new Phone(new PhonePrefix("+351"), "918902632")
                 )
@@ -71,11 +76,13 @@ class UserTest {
     @Test
     void constructorWithNullPhoneNumber() {
         //Assert
+        Country country = new Country("Portugal");
+
         assertThrows(NullPointerException.class, () ->
                 // Arrange + act
                 new User(
                         new Name("Tiago"),
-                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null),
+                        new Address("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", country, "4300-111", null),
                         new Email("1252008@isep.ipp.pt"),
                         null
                 )

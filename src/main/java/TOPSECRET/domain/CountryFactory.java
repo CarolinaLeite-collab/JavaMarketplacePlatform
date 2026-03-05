@@ -1,4 +1,7 @@
 package TOPSECRET.domain;
+
+import java.util.Locale;
+
 /**
  * Factory responsible for creating {@link Country} instances.
  * <p>
@@ -14,4 +17,5 @@ public class CountryFactory {
             throw new InstantiationException("Unable to instantiate Country: " + e.getMessage());
         }
     }
+
 }

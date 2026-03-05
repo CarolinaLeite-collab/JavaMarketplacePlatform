@@ -16,6 +16,7 @@ class ShareListPubliclyControllerTest {
     private Genre _genrePoetry;
     private Genre _genreAction;
     private User _user;
+    private Country _country;
 
     @BeforeEach
     void setUp() {
@@ -25,10 +26,10 @@ class ShareListPubliclyControllerTest {
 
         _listOfPublicationsRepo = new ListOfPublicationsRepo();
         _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
-
+        _country = new Country ("Portugal");
         _user = new User(new Name("Maria"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", Address.Country.PORTUGAL, "1000-205", null),
+                        "Lisboa", _country, "1000-205", null),
                 new Email("maria123@hotmail.com"),
                 new Phone(new PhonePrefix("+351"), "918902632"));
     }

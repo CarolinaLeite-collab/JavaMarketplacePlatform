@@ -22,18 +22,19 @@ class PublicationSaleAuctionControllerTest {
     private AuctionRepo auctionRepo;
     private User testUser;
     private Library testLibrary;
+    private Country _country;
 
     @BeforeEach
     void setUp() {
         libraryRepo = new LibraryRepo();
         itemRepo = new ItemRepo();
         auctionRepo = new AuctionRepo();
-
+        _country = new Country("Portugal");
         controller = new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo);
 
         testUser = new User(
                 new Name("John Test"),
-                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", Address.Country.PORTUGAL, "4000-123", null),
+                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", _country, "4000-123", null),
                 new Email("test@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "999999999"));
         testLibrary = libraryRepo.createMyLibrary(testUser);
@@ -76,7 +77,7 @@ class PublicationSaleAuctionControllerTest {
         User userWithoutLibrary = new User(
                 new Name("NoLibrary"),
                 new Address("NoLib Road", "456", Address.BuildingType.HOUSE,
-                        "Porto", "Porto", Address.Country.PORTUGAL, "4000-456", null),
+                        "Porto", "Porto", _country, "4000-456", null),
                 new Email("nolib@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "888888888"));
 

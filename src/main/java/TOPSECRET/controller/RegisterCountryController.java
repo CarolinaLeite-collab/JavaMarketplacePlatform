@@ -17,12 +17,13 @@ import java.util.Objects;
 public class RegisterCountryController {
     private final CountryRepo _countryRepo;
 
-    public RegisterCountryController(CountryRepo countryRepo) {
+    public RegisterCountryController(CountryRepo countryRepo, User _admin) {
         this._countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
     }
 
-    public Country registerCountry(String countryName) throws InstantiationException {
+    public Country registerCountry(String countryName, User admin) throws InstantiationException {
         return _countryRepo.registerCountry(countryName);
+
     }
 
 }

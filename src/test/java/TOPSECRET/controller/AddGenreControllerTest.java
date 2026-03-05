@@ -12,12 +12,14 @@ public class AddGenreControllerTest {
     private User _admin;
     private GenreRepo _genreRepo;
     private AddGenreController _addGenreController;
+    private Country _country;
 
     @BeforeEach
     void setUp() {
+        _country = new Country("Portugal");
         _admin = new User(
                 new Name ("Maria"),
-                new Address ("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", Address.Country.PORTUGAL, "4300-111", null ),
+                new Address ("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", _country, "4300-111", null ),
                 new Email ("test@gmail.com"),
                 new Phone( new PhonePrefix("+351"),"911234567"));
 
