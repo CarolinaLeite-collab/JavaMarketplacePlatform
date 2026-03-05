@@ -16,7 +16,7 @@ class PublicationTypeFactoryTest {
         try (MockedConstruction<PublicationType> mockedConstruction = mockConstruction(PublicationType.class)){
 
             //Act
-            PublicationType publicationTypeResult = publicationTypeFactory.newPublicationType("BOOK");
+            PublicationType publicationTypeResult = publicationTypeFactory.createPublicationType("BOOK");
 
             //Assert
             assertNotNull(publicationTypeResult);

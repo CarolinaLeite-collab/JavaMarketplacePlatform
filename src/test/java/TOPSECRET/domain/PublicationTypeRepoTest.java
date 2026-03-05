@@ -21,11 +21,11 @@ class PublicationTypeRepoTest {
         _pubTypeDouble2 = mock(PublicationType.class);
 
         // Stub fallback for any input - guarantees true isolation
-        when(_ptfDouble.newPublicationType(anyString())).thenReturn(mock(PublicationType.class));
+        when(_ptfDouble.createPublicationType(anyString())).thenReturn(mock(PublicationType.class));
 
         // Specific Stubs for BOOK and MAGAZINE inputs (in this order they take priority over anyString())
-        when(_ptfDouble.newPublicationType("BOOK")).thenReturn(_pubTypeDouble1);
-        when(_ptfDouble.newPublicationType("MAGAZINE")).thenReturn(_pubTypeDouble2);
+        when(_ptfDouble.createPublicationType("BOOK")).thenReturn(_pubTypeDouble1);
+        when(_ptfDouble.createPublicationType("MAGAZINE")).thenReturn(_pubTypeDouble2);
 
     }
 

@@ -32,7 +32,7 @@ public class PublicationTypeRepo {
         }
 
         // Uses factory to create a new instance of PublicationType
-        PublicationType newPublicationType = _publicationTypeFactory.newPublicationType(publicationTypeName);
+        PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
 
         //Adds to repo
         _publicationTypes.add(newPublicationType);
