@@ -7,82 +7,85 @@ import static org.junit.jupiter.api.Assertions.*;
 class CountryTest {
 
     @Test
-    void shouldSucessfullyBuildCountryTestConstructor() {
-        new Country("Lebanon");
-    }
-
-    @Test
-    void constructsCountrySuccessfully() {
-        // Act
+    void shouldConstructCountrySuccessfully() {
+        //Arrange & act
         Country country = new Country("France");
-
-        // Assert
+        //Assert
         assertNotNull(country);
-        assertEquals("FRANCE", country.getCountryName());
     }
-    //@Test
-    //void shouldThrowthrows(){}
+
     @Test
-    void throwsIfCountryNameNull() {
+    void shouldTrimAndNormalizeCountryName() {
+        //Arrange & Act
+        Country country = new Country("   Portugal   ");
+        //Assert
+        assertEquals("PORTUGAL", country.getCountryName());
+    }
+
+    @Test
+    void shouldThrowIfCountryNameIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country(null));
     }
 
     @Test
-    void throwsIfCountryNameEmpty() {
+    void shouldThrowIfCountryNameIsEmpty() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country("   "));
     }
 
     @Test
-    void returnsTrueIfSameCountry() {
+    void shouldThrowIfCountryNameHasIllegalChar() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Country("#portugal"));
+    }
+
+    @Test
+    void shouldReturnTrueForCountriesWithSameName() {
         // Arrange
         Country c1 = new Country("France");
-        Country c2 = new Country("France");
-
+        Country c2 = new Country(" France ");
         // Act
         boolean result = c1.equals(c2);
-
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void returnsFalseIfDifferentCountry() {
+    void shouldReturnTrueForSameCountryReference() {
+        // Arrange
+        Country c1 = new Country("France");
+        // Act
+        boolean result = c1.equals(c1);
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseForDifferentCountries() {
         // Arrange
         Country c1 = new Country("France");
         Country c2 = new Country("Germany");
-
         // Act
         boolean result = c1.equals(c2);
-
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void returnsFalseForNonCountry() {
+    void shouldReturnFalseWhenComparedWithNull() {
         // Arrange
-        Country c = new Country("France");
-        Object notACountry = "Not a Country";
-
-        // Act
-        boolean result = c.equals(notACountry);
-
+        Country country = new Country("France");
         // Assert
-        assertFalse(result);
+        assertNotEquals(null, country);
     }
 
     @Test
-    void returnsFalseIfCountryNull() {
+    void shouldReturnFalseWhenComparedWithDifferentType() {
         // Arrange
-        Country c = new Country("France");
-
-        // Act
-        boolean result = c.equals(null);
-
+        Country country = new Country("France");
         // Assert
-        assertFalse(result);
+        assertNotEquals("France", country);
+        assertFalse(country.equals("Portugal"));
     }
-
 }
