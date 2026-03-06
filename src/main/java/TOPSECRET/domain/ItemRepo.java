@@ -20,6 +20,11 @@ import java.util.List;
 public class ItemRepo {
 
     private final List<Item> items = new ArrayList<>();
+    private ItemFactory itemFactory;
+
+    public ItemRepo() {
+        itemFactory = new ItemFactory();
+    }
 
     public boolean exists(Publication publication) {
         if (publication == null) return false;
@@ -37,7 +42,7 @@ public class ItemRepo {
             throw new IllegalArgumentException("Item for this publication already exists!");
         }
 
-        Item item = new Item(publication, condition);
+        Item item = itemFactory.create(publication, condition);
         items.add(item);
         return item;
     }

@@ -2,22 +2,15 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class ItemRepoTest {
 
     @Test
     void existsReturnsFalseWhenRepoIsEmpty() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
+        Publication pub = mock(Publication.class);
         ItemRepo repo = new ItemRepo();
 
         assertFalse(repo.exists(pub));
@@ -25,15 +18,8 @@ class ItemRepoTest {
 
     @Test
     void existsReturnsTrueWhenItemWithPublicationExists() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Condition condition = Condition.GOOD;
+        Publication pub = mock(Publication.class);
+        Condition condition = mock(Condition.class);
 
         ItemRepo repo = new ItemRepo();
         repo.createItem(pub, condition);
@@ -50,15 +36,8 @@ class ItemRepoTest {
 
     @Test
     void createItemCreatesAndStoresNewItem() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Condition condition = Condition.GOOD;
+        Publication pub = mock(Publication.class);
+        Condition condition = mock(Condition.class);
 
         ItemRepo repo = new ItemRepo();
         Item item = repo.createItem(pub, condition);
@@ -70,15 +49,8 @@ class ItemRepoTest {
 
     @Test
     void createItemThrowsWhenPublicationAlreadyExists() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Condition condition = Condition.GOOD;
+        Publication pub = mock(Publication.class);
+        Condition condition = mock(Condition.class);
 
         ItemRepo repo = new ItemRepo();
         repo.createItem(pub, condition);
@@ -93,15 +65,8 @@ class ItemRepoTest {
 
     @Test
     void getAllReturnsUnmodifiableList() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Condition condition = Condition.GOOD;
+        Publication pub = mock(Publication.class);
+        Condition condition = mock(Condition.class);
 
         ItemRepo repo = new ItemRepo();
         repo.createItem(pub, condition);
@@ -114,22 +79,9 @@ class ItemRepoTest {
 
     @Test
     void getAllReflectsNewItems() {
-        Publication pub1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Publication pub2 = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("1234-5678"))
-                .year(Year.of(2022))
-                .title(new Title("Science Weekly"))
-                .publisher(new PublishingCompany("Nature"))
-                .build();
-        Condition condition = Condition.GOOD;
+        Publication pub1 = mock(Publication.class);
+        Publication pub2 = mock(Publication.class);
+        Condition condition = mock(Condition.class);
 
         ItemRepo repo = new ItemRepo();
         repo.createItem(pub1, condition);
