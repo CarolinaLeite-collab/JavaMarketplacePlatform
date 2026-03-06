@@ -21,7 +21,7 @@ public class RegisterCountryController {
         this._countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
     }
 
-    public Country registerCountry(String countryName, User admin) throws InstantiationException {
+    public Country registerCountry(String countryName, User admin) {
         return _countryRepo.registerCountry(countryName);
 
     }
