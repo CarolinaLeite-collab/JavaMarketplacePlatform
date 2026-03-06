@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a registered {@code User} in the system.
@@ -18,22 +20,31 @@ public class User {
     private final Address _address;
     private final Email _email;
     private final Phone _phone;
+    private final Set<Role> _roles = new HashSet<>();
 
     public User(Name name, Address address, Email email, Phone phone) {
 
-        _name = Objects.requireNonNull(name, "name is required");
-        _address = Objects.requireNonNull(address, "address is required");
-        _email = Objects.requireNonNull(email, "email is required");
-        _phone = Objects.requireNonNull(phone, "phoneNumber is required");
-
+        _name = Objects.requireNonNull(name, "Name is required");
+        _address = address;
+        _email = Objects.requireNonNull(email, "Email is required");
+        _phone = phone;
+        _roles.add(Role.USER); // default role
     }
 
     public User(Name name, Email email) {
+        this(name, null, email, null);
+    }
 
-        _name = Objects.requireNonNull(name, "name is required");
-        _email = Objects.requireNonNull(email, "email is required");
-        _address = null;
-        _phone = null;
+    public void addRole(Role role) {
+        _roles.add(Objects.requireNonNull(role));
+    }
+
+    public boolean hasRole(Role role) {
+        return _roles.contains(role);
+    }
+
+    public Set<Role> getRoles() {
+        return Set.copyOf(_roles); // immutable view
     }
 
     public Name getName() {
@@ -69,8 +80,6 @@ public class User {
 
     @Override
     public int hashCode() {
-
         return _email.hashCode();
-
     }
 }
