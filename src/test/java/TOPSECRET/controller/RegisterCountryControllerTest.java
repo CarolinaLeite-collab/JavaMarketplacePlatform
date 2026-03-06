@@ -17,71 +17,65 @@ import static org.mockito.Mockito.when;
 class RegisterCountryControllerTest {
     private CountryFactory _factory;
     private CountryRepo _countryRepo;
-    private RegisterCountryController _controller;
+    private RegisterCountryController _sut;
     private User _admin;
 
-//    @BeforeEach
-//    void setUp() throws InstantiationException {
-//        // Arrange
-//        _admin = mock(User.class);
-//        Country country1 = mock(Country.class);
-//        when(country1.getCountryName()).thenReturn("Portugal");
-//        _factory = mock(CountryFactory.class);
-//        _countryRepo = mock(CountryRepo.class);
-//        _controller = new RegisterCountryController(_countryRepo);
-//    }
-//
-//    @Test
-//    void constructsControllerSuccessfully() {
-//        //arrange
-//        //SUT
-//        _controller = new RegisterCountryController(_countryRepo);
-//        // act and assert
-//        assertNotNull(_controller);
-//    }
-//
-//    @Test
-//    void throwsExceptionNullCountryRepo() {
-//        // act and assert
-//        assertThrows(NullPointerException.class, () ->
-//                new RegisterCountryController(null));
-//
-//    }
+    @BeforeEach
+    void setUp() throws InstantiationException {
 
-    /*   @Test
+        _countryRepo = mock(CountryRepo.class);
+        _sut = new RegisterCountryController(_countryRepo);
+    }
+
+    @Test
+    void constructsControllerSuccessfully() {
+        // act and assert
+        assertNotNull(_sut);
+    }
+
+    @Test
+    void throwsExceptionNullCountryRepo() {
+        // act and assert
+        assertThrows(NullPointerException.class, () ->
+                new RegisterCountryController(null));
+
+    }
+
+    @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
-
-        // Act
-        Country country = _controller.registerCountry("Portugal");
+        //Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+        Country portugal = mock(Country.class);
+        when(_countryRepo.registerCountry("Portugal")).thenReturn(portugal);
+        //Act
+        Country country = _sut.registerCountry("Portugal", user);
 
         // Assert
         assertNotNull(country);
 
         // asserts a efeitos secundários
-        assertEquals("Portugal", country.getCountryName());
+        //assertEquals("PORTUGAL", country.getCountryName());
         //assertEquals(1, _countryRepo.getAllCountries().size());
         //assertEquals(country, _countryRepo.getAllCountries().get(0));
     }
 
- @Test
-    void shouldNotRegisterCountrySuccessfully() throws InstantiationException {
+    @Test
+    void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() throws SecurityException {
         //Arrange
-        Country country = _countryRepo.registerCountry("Portugal");
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(false);
         List<Country> countries = _countryRepo.getAllCountries();
 
-        // Act
-        Country duplicate = _controller.registerCountry("Portugal");
-
-        // Assert
-        assertNull(duplicate);
-        assertEquals(1, countries.size());
+        // Act & Assert
+        Assertions.assertThrows(SecurityException.class, () -> _sut.registerCountry("Portugal", user));
     }
 
     @Test
-    void shouldNotRegisterCountryInvalidName() {
+    void shouldNotRegisterNullUser() throws InstantiationException {
         // Arrange
-        String empty = "";
-        // Act and Assert
-        Assertions.assertThrows(InstantiationException.class, () -> _countryRepo.registerCountry(empty));
-    }*/
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> _sut.registerCountry("Portugal", null));
+    }
 }
