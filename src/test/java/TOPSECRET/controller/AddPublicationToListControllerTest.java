@@ -21,7 +21,7 @@ class AddPublicationToListControllerTest {
     private User _user;
     private Genre _action;
     private Library _library;
-    private LibraryFactory _libraryFactory;
+    private LibraryFactory _libraryFactory = new LibraryFactory();
 
     @BeforeEach
     void setUp() {

@@ -13,7 +13,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     private User _user;
     private LibraryRepo _libraryRepo;
     private ListOfPublicationsInMyLibraryController _controller;
-    private LibraryFactory _libraryFactory;
+    private LibraryFactory _libraryFactory = new LibraryFactory();
 
     @BeforeEach
 

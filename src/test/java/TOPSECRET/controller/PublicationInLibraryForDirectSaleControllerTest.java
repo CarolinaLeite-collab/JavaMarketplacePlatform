@@ -25,7 +25,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private Library testLibrary;
     private Period timeLimit;
     private CountryFactory _countryFactory;
-    private LibraryFactory _libraryFactory;
+    private LibraryFactory _libraryFactory = new LibraryFactory();
     private Country _country;
 
     @BeforeEach

@@ -17,7 +17,7 @@ class AddPublicationOnLibraryControllerTest {
     private Publication _p1;
     private Publication _p2;
     private CountryFactory _countryFactory;
-    private LibraryFactory _libraryFactory;
+    private LibraryFactory _libraryFactory = new LibraryFactory();
     private Country _country;
 
     @BeforeEach
