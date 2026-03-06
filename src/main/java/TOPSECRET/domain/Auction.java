@@ -61,12 +61,16 @@ public class Auction {
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
+
+        // Keep Item/Auction association consistent with Item invariants.
+        _item.setAuction(this);
     }
 
     // 2. Public constructor without _outrightPrice as an argument
     public Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
+        _outrightPrice = null;
         _bids = new Bids();
 
         if (isAuctionStartDateValid(auctionStartDate)) {
@@ -80,6 +84,9 @@ public class Auction {
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
+
+        // Keep Item/Auction association consistent with Item invariants.
+        _item.setAuction(this);
     }
 
     public Item getItem() {
