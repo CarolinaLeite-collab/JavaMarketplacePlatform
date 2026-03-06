@@ -18,6 +18,7 @@ public class Phone {
      * @param nationalNumber digits only, 4–12 characters post-normalization
      */
     public Phone(PhonePrefix prefix, String nationalNumber) {
+
         if (prefix == null) {
             throw new IllegalArgumentException("Phone prefix cannot be null");
         }
@@ -25,7 +26,12 @@ public class Phone {
             throw new IllegalArgumentException("Phone number cannot be null");
         }
 
-        String cleaned = nationalNumber.replaceAll("[\\s\\-()]", "");
+        String cleaned = nationalNumber
+                .replaceAll("\\s", "")
+                .replace("-", "")
+                .replace("(", "")
+                .replace(")", "");
+
         if (cleaned.isEmpty()) {
             throw new IllegalArgumentException("Phone number cannot be blank");
         }
@@ -61,8 +67,7 @@ public class Phone {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Phone)) return false;
-        Phone phone = (Phone) o;
+        if (!(o instanceof Phone phone)) return false;
         return _prefix.equals(phone._prefix) && _nationalNumber.equals(phone._nationalNumber);
     }
 
