@@ -13,18 +13,19 @@ class AddPublicationOnLibraryControllerTest {
     private AddPublicationOnLibraryController _controller;
     private PublicationRepo _publicationRepo;
     private LibraryRepo _libraryRepo;
-    private Country _country;
     private User _user;
     private Publication _p1;
     private Publication _p2;
+    private CountryFactory _countryFactory;
+    private Country _country;
 
     @BeforeEach
     void setUp() {
         _publicationRepo = new PublicationRepo();
         _libraryRepo = new LibraryRepo();
         _controller = new AddPublicationOnLibraryController(_publicationRepo, _libraryRepo);
-        _country = new Country("Portugal");
-        _user = new User(
+        _countryFactory = new CountryFactory();
+        _country = _countryFactory.createClass("Portugal");        _user = new User(
                 new Name("Maria"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", _country, "1000-205", null),
@@ -125,10 +126,9 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldThrowExceptionWhenLibraryDoesNotExist() {
         // Verifies that an exception is thrown when attempting to retrieve a library for a user without one
-        Country country= new Country("Portugal");
         User otherUser = new User(new Name("João"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", country, "1000-205", null),
+                        "Lisboa", _country, "1000-205", null),
                 new Email("joao123@hotmail.com"),
                 new Phone(new PhonePrefix("+351"), "918902632"));
 

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class BidsTest {
     //test constructor
@@ -21,13 +22,7 @@ class BidsTest {
         //arrange
         Bids bids = new Bids();
         Country country = new Country("Português");
-        User user = new User(
-                new Name("Tiago"),
-                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", country, "1000-205", null),
-                new Email("1252008@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918902632")
-        );
+        User user = mock(User.class);
         double expectedResult = 100.0;
         Price offerPrice = new Price(expectedResult, Currency.EUR);
         Bid bid = new Bid(user, offerPrice);
@@ -45,20 +40,8 @@ class BidsTest {
         //arrange
         Bids bids = new Bids();
         Country country = new Country("Português");
-        User user1 = new User(
-                new Name("Tiago"),
-                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", country, "1000-205", null),
-                new Email("1252008@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918902632")
-        );
-        User user2 = new User(
-                new Name("Carla"),
-                new Address("Rua Vasco", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Porto", country, "1000-205", null),
-                new Email("125228@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918972632")
-        );
+        User user1 = mock(User.class);
+        User user2 = mock(User.class);
         double expectedResult = 100.0;
         Price offerPrice = new Price(expectedResult, Currency.EUR);
         Price offerPrice2 = new Price(expectedResult - 1, Currency.EUR);
@@ -79,20 +62,8 @@ class BidsTest {
         //arrange
         Bids bids = new Bids();
         Country country = new Country("Português");
-        User user1 = new User(
-                new Name("Tiago"),
-                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", country, "1000-205", null),
-                new Email("1252008@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918902632")
-        );
-        User user2 = new User(
-                new Name("Carla"),
-                new Address("Rua Vasco", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Porto", country, "1000-205", null),
-                new Email("125228@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "918972632")
-        );
+        User user1 = mock(User.class);
+        User user2 = mock(User.class);
         double expectedResult = 100.0;
         Price offerPrice = new Price(expectedResult, Currency.EUR);
         Price offerPrice2 = new Price(expectedResult - 1, Currency.EUR);

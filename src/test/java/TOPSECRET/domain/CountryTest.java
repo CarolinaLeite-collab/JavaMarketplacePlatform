@@ -20,7 +20,8 @@ class CountryTest {
         assertNotNull(country);
         assertEquals("FRANCE", country.getCountryName());
     }
-
+    //@Test
+    //void shouldThrowthrows(){}
     @Test
     void throwsIfCountryNameNull() {
         // Act & Assert

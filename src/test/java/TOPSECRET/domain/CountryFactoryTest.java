@@ -21,25 +21,11 @@ class CountryFactoryTest {
                              })) {
             CountryFactory factory = new CountryFactory();
             // act
-            Country newCountry = factory.create(countryName);
+            Country newCountry = factory.createClass(countryName);
             //assert
             assertEquals(countryName, newCountry.getCountryName());
         }
     }
 
-    @Test
-    void shouldThrowExceptionWhenCreateCountry() {
-        // arrange
-        String countryName = "hgfdfjygfgvjh";
-        try (MockedConstruction<Country> mocked =
-                     mockConstruction(Country.class, (mock, context) -> {
-                         throw new RuntimeException("dfrdfgtfrghfvhbgvbh");
-                     })) {
-            //SUT
-            CountryFactory factory = new CountryFactory();
 
-            // act and assert
-            assertThrows(InstantiationException.class, () -> factory.create(countryName));
-        }
-    }
 }

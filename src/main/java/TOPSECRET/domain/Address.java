@@ -82,22 +82,12 @@ public class Address {
     // District or State isn't mandatory, there's no need for validation
     public void setDistrictOrState(String districtOrState) { _districtOrState = districtOrState; }
 
-    public void setCountry(Country country) {
-        if (country == null) {
-            throw new IllegalArgumentException("Must select a country!");
-        }
-        //Revalidate postal code if country is changed
-        if (!isValidPostalCode(_postalCode, country)) {
-            throw new IllegalArgumentException("Current postal code '" + _postalCode + "' is not valid for: " + country + ".");
-        }
-        _country = country;
-    }
 
     public void setPostalCode(String postalCode) {
         if (!isValidPostalCode(postalCode, _country)) {
             throw new IllegalArgumentException( "Invalid postal code '" + postalCode + "' for " + _country);
         }
-        _postalCode = postalCode;
+        _postalCode = postalCode.trim();
     }
     // Postal code extension isn't mandatory, there's no need for validation
     public void setPostalCodeExtension(String postalCodeExtension) { _postalCodeExtension = postalCodeExtension; }
@@ -160,5 +150,17 @@ public class Address {
         String checkForDistrictOrState = (_districtOrState != null && !_districtOrState.trim().isEmpty()) ? "(" + _districtOrState + ")" : "";
 
         return _country + ", " + _city + " " + checkForDistrictOrState + ", " + _street + ", " + _doorNumber + ", " + _buildingType + ", " + fullPostalCode;
+    }
+
+    public void changeCountryAndPostalCode(Country country, String postalCode) {
+        if (country == null) {
+            throw new IllegalArgumentException("Must select a country!");
+        }
+        if (!isValidPostalCode(postalCode, country)) {
+            throw new IllegalArgumentException("Invalid postal code '" + postalCode + "' for " + country);
+        }
+
+        _country = country;
+        _postalCode = postalCode.trim();
     }
 }

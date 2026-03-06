@@ -16,6 +16,7 @@ class ShareListPubliclyControllerTest {
     private Genre _genrePoetry;
     private Genre _genreAction;
     private User _user;
+    private CountryFactory _countryFactory;
     private Country _country;
 
     @BeforeEach
@@ -26,7 +27,8 @@ class ShareListPubliclyControllerTest {
 
         _listOfPublicationsRepo = new ListOfPublicationsRepo();
         _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
-        _country = new Country ("Portugal");
+        _countryFactory = new CountryFactory();
+        _country = _countryFactory.createClass("Portugal");
         _user = new User(new Name("Maria"),
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
                         "Lisboa", _country, "1000-205", null),

@@ -19,9 +19,9 @@ public class CountryRepo {
         _countries = new ArrayList<>();
     }
 
-    public Country registerCountry (String countryName) throws InstantiationException {
+    public Country registerCountry (String countryName) {
 
-        Country newCountry = _countryFactory.create(countryName);
+        Country newCountry = _countryFactory.createClass(countryName);
 
         if (existsCountry(newCountry))  {
             return null;

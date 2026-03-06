@@ -11,7 +11,7 @@ import java.util.Locale;
 public class Country {
     private final String _countryName;
 
-    public Country(String countryName) {
+    Country(String countryName) {
         _countryName = sanitizedCountryName(countryName);
     }
 
@@ -20,24 +20,20 @@ public class Country {
         return _countryName;
     }
 
-    public String sanitizedCountryName(String countryName) {
+    private String sanitizedCountryName(String countryName) {
         if (countryName == null) {
             throw new IllegalArgumentException("Country name cannot be null");
         }
-
         String result = countryName.trim();
-
         if (result.isEmpty()) {
             throw new IllegalArgumentException("Country name cannot be empty");
         }
-
         // Only allows Unicode letters and spaces
         // must start and end with a letter and words may only be separated by a single space
         String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
         if(!result.matches(pattern)) {
             throw new IllegalArgumentException("Invalid country name: " + countryName);
         }
-
         //eliminates multiple spaces and converts to uppercase
         result = result.replaceAll("\\s+", " ").toUpperCase(Locale.ROOT);
 

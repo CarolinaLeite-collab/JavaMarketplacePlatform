@@ -9,13 +9,8 @@ import java.util.Locale;
  * into an {@link InstantiationException}.
  */
 public class CountryFactory {
-    public Country create(String countryName)  throws InstantiationException {
-        try {
+    public Country createClass(String countryName) {
             return new Country(countryName);
-        }
-        catch (final Exception e) {
-            throw new InstantiationException("Unable to instantiate Country: " + e.getMessage());
-        }
     }
 
 }

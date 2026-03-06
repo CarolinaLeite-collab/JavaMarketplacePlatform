@@ -13,10 +13,12 @@ public class AddGenreControllerTest {
     private GenreRepo _genreRepo;
     private AddGenreController _addGenreController;
     private Country _country;
+    private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp() {
-        _country = new Country("Portugal");
+        _countryFactory = new CountryFactory();
+        _country = _countryFactory.createClass("Portugal");
         _admin = new User(
                 new Name ("Maria"),
                 new Address ("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", _country, "4300-111", null ),

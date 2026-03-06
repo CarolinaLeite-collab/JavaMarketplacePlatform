@@ -70,7 +70,7 @@ class RegisterCityControllerTest {
     }
 
     // Tests that getCountries() returns the actual list from the repo and not an empty list.
-    @Test void getCountries_returnsAllCountriesFromRepo() throws InstantiationException {
+    @Test void getCountries_returnsAllCountriesFromRepo() {
         // Arrange
         countryRepo.registerCountry("Spain");
 
@@ -79,6 +79,6 @@ class RegisterCityControllerTest {
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("Portugal")));
-        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("Spain"))); }
+        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("PORTUGAL")));
+        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("SPAIN"))); }
 }

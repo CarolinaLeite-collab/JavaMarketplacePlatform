@@ -22,6 +22,7 @@ class PublicationSaleAuctionControllerTest {
     private AuctionRepo auctionRepo;
     private User testUser;
     private Library testLibrary;
+    private CountryFactory _countryFactory;
     private Country _country;
 
     @BeforeEach
@@ -29,7 +30,8 @@ class PublicationSaleAuctionControllerTest {
         libraryRepo = new LibraryRepo();
         itemRepo = new ItemRepo();
         auctionRepo = new AuctionRepo();
-        _country = new Country("Portugal");
+        _countryFactory = new CountryFactory();
+        _country = _countryFactory.createClass("Portugal");
         controller = new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo);
 
         testUser = new User(

@@ -12,17 +12,17 @@ import static org.mockito.Mockito.when;
 class AddressTest {
 
     private Address _validAddress;
-    private Country countryPortugal;
+    private Country _countryPortugal;
 
     @BeforeEach
     void setUp() {
-        countryPortugal = mock(Country.class);
-        when(countryPortugal.getCountryName()).thenReturn("portugal"); // used by isValidPostalCode
-        when(countryPortugal.toString()).thenReturn("PORTUGAL");       // used by Address.toString()
+        _countryPortugal = mock(Country.class);
+        when(_countryPortugal.getCountryName()).thenReturn("PORTUGAL"); // used by isValidPostalCode
+        when(_countryPortugal.toString()).thenReturn("PORTUGAL");       // used by Address.toString()
 
         _validAddress = new Address(
                 "Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                "Lisboa", countryPortugal, "1000-205", null
+                "Lisboa", _countryPortugal, "1000-205", null
         );
     }
 
@@ -35,7 +35,7 @@ class AddressTest {
         assertEquals(Address.BuildingType.HOUSE, _validAddress.getBuildingType());
         assertEquals("Lisboa", _validAddress.getCity());
         assertEquals("Lisboa", _validAddress.getDistrictOrState());
-        assertSame(countryPortugal, _validAddress.getCountry());
+        assertSame(_countryPortugal, _validAddress.getCountry());
         assertEquals("1000-205", _validAddress.getPostalCode());
         assertNull(_validAddress.getPostalCodeExtension());
     }
@@ -44,28 +44,28 @@ class AddressTest {
     void constructor_nullStreet_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address(null, "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", countryPortugal, "1000-205", null));
+                        "Lisboa", _countryPortugal, "1000-205", null));
     }
 
     @Test
     void constructor_emptyStreet_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address("", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", countryPortugal, "1000-205", null));
+                        "Lisboa", _countryPortugal, "1000-205", null));
     }
 
     @Test
     void constructor_nullPostalCode_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", countryPortugal, null, null));
+                        "Lisboa", _countryPortugal, null, null));
     }
 
     @Test
     void constructor_invalidPortugalPostalCode_throwsException() {
         assertThrows(IllegalArgumentException.class, () ->
                 new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", countryPortugal, "99998", null));
+                        "Lisboa", _countryPortugal, "99998", null));
     }
 
     @Test
@@ -84,7 +84,7 @@ class AddressTest {
     @Test
     void setStreet_valid_trimsAndUpdates() {
         Address address = new Address("  Rua Vasco da Gama  ", "123", Address.BuildingType.HOUSE,
-                "Lisboa", null, countryPortugal, "1000-205", null);
+                "Lisboa", null, _countryPortugal, "1000-205", null);
 
         address.setStreet("New Street  ");
         assertEquals("New Street", address.getStreet());
@@ -148,8 +148,7 @@ class AddressTest {
         assertThrows(IllegalArgumentException.class, () -> _validAddress.setCity("   "));
     }
 
-    // -------------------- Country / Postal code behavior --------------------
-
+    // -------------------- Postal code / atomic country change behavior --------------------
     @Test
     void setPostalCode_validForPortugal_succeeds() {
         _validAddress.setPostalCode("1050-123");
@@ -162,31 +161,31 @@ class AddressTest {
     }
 
     @Test
-    void setCountry_validChangeToUnitedStates_whenPostalCodeIsValid() {
+    void changeCountryAndPostalCode_validChangeToUnitedStates_succeeds() {
         Country us = mock(Country.class);
         when(us.getCountryName()).thenReturn("United States");
         when(us.toString()).thenReturn("UNITED_STATES");
 
-        // 10001 is valid for United States (5 digits) and will be accepted
         Address addr = new Address("Rua X", "1", Address.BuildingType.HOUSE,
-                "Lisboa", null, countryPortugal, "10001", null);
+                "Lisboa", null, _countryPortugal, "1000-205", null);
 
-        addr.setCountry(us);
+        addr.changeCountryAndPostalCode(us, "10001");
 
         assertSame(us, addr.getCountry());
+        assertEquals("10001", addr.getPostalCode());
     }
 
     @Test
-    void setCountry_throws_whenCurrentPostalCodeInvalidForUnitedKingdom() {
+    void changeCountryAndPostalCode_throws_whenPostalCodeInvalidForUnitedKingdom() {
         Country uk = mock(Country.class);
         when(uk.getCountryName()).thenReturn("United Kingdom");
         when(uk.toString()).thenReturn("UNITED_KINGDOM");
 
-        // current postal code is PT format, invalid for UK
         Address addr = new Address("Rua X", "1", Address.BuildingType.HOUSE,
-                "Lisboa", null, countryPortugal, "1000-205", null);
+                "Lisboa", null, _countryPortugal, "1000-205", null);
 
-        assertThrows(IllegalArgumentException.class, () -> addr.setCountry(uk));
+        assertThrows(IllegalArgumentException.class,
+                () -> addr.changeCountryAndPostalCode(uk, "1000-205"));
     }
 
     // -------------------- Parameterized: postal codes by country --------------------
@@ -250,7 +249,7 @@ class AddressTest {
     @Test
     void toString_withDistrict_containsDistrictInParentheses() {
         Address addr = new Address("Rua Example", "123", Address.BuildingType.OFFICE,
-                "Lisboa", "Centro", countryPortugal, "1000-205", null);
+                "Lisboa", "Centro", _countryPortugal, "1000-205", null);
 
         assertTrue(addr.toString().contains("PORTUGAL, Lisboa (Centro)"));
     }
@@ -258,7 +257,7 @@ class AddressTest {
     @Test
     void toString_withoutDistrict_omitsParentheses() {
         Address addr = new Address("Rua Example", "123", Address.BuildingType.HOUSE,
-                "Lisboa", null, countryPortugal, "1000-205", null);
+                "Lisboa", null, _countryPortugal, "1000-205", null);
 
         assertEquals("PORTUGAL, Lisboa , Rua Example, 123, HOUSE, 1000-205",
                 addr.toString());
