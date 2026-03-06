@@ -21,26 +21,22 @@ public class LibraryRepo {
     private LibraryFactory _libraryFactory;
 
 
-    public LibraryRepo(){
-        _libraryFactory = new LibraryFactory();
-        _libraries = new ArrayList<>();
-    }
     public LibraryRepo(LibraryFactory libraryFactory) {
         _libraryFactory = libraryFactory;
         _libraries = new ArrayList<>();
     }
 
-    public Library createMyLibrary(User user){
+    public Library addLibrary(User user){
 
         //if user already has a library, throw exception (library will not be created)
-        if (myLibraryExists(user)) {
+        if (libraryExists(user)) {
 
             throw new IllegalStateException("User already has a library!");
 
         }
 
         //instantiate new Library
-        Library myLibrary = _libraryFactory.createMyLibrary(user);
+        Library myLibrary = _libraryFactory.createLibrary(user);
 
         //add to libraryRepo
         _libraries.add(myLibrary);
@@ -50,7 +46,7 @@ public class LibraryRepo {
 
     }
 
-    private boolean myLibraryExists(User user){
+    private boolean libraryExists(User user){
 
         for  (Library lib : _libraries){
 

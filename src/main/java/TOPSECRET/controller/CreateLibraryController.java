@@ -24,9 +24,9 @@ public class CreateLibraryController {
 
     }
 
-    public Library createMyLibrary(User user){
+    public Library createLibrary(User user){
 
-        Library library= _libraryRepo.createMyLibrary(user);
+        Library library= _libraryRepo.addLibrary(user);
 
         return library;
 

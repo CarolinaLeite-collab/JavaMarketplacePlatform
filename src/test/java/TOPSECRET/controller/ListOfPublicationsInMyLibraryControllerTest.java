@@ -13,6 +13,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     private User _user;
     private LibraryRepo _libraryRepo;
     private ListOfPublicationsInMyLibraryController _controller;
+    private LibraryFactory _libraryFactory;
 
     @BeforeEach
 
@@ -23,7 +24,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
                 new Email("test@isep.com")
         );
 
-        _libraryRepo = new LibraryRepo();
+        _libraryRepo = new LibraryRepo(_libraryFactory);
         _controller = new ListOfPublicationsInMyLibraryController(_libraryRepo, _user);
     }
 
@@ -31,7 +32,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnEmptyList_whenLibraryExistsButEmpty() {
         // Arrange
-        Library myLibrary = _libraryRepo.createMyLibrary(_user);
+        Library myLibrary = _libraryRepo.addLibrary(_user);
 
         // Act
         List<PublicationDetails> result = _controller.getListOfPublications(_user);
@@ -44,7 +45,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnListOfPublicationsInLibrary() {
 
-        Library myLibrary= _libraryRepo.createMyLibrary(_user);
+        Library myLibrary= _libraryRepo.addLibrary(_user);
         Publication p = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))

@@ -17,12 +17,13 @@ class AddPublicationOnLibraryControllerTest {
     private Publication _p1;
     private Publication _p2;
     private CountryFactory _countryFactory;
+    private LibraryFactory _libraryFactory;
     private Country _country;
 
     @BeforeEach
     void setUp() {
         _publicationRepo = new PublicationRepo();
-        _libraryRepo = new LibraryRepo();
+        _libraryRepo = new LibraryRepo(_libraryFactory);
         _controller = new AddPublicationOnLibraryController(_publicationRepo, _libraryRepo);
         _countryFactory = new CountryFactory();
         _country = _countryFactory.createClass("Portugal");        _user = new User(
@@ -51,7 +52,7 @@ class AddPublicationOnLibraryControllerTest {
         _publicationRepo.add(_p1);
         _publicationRepo.add(_p2);
 
-        _libraryRepo.createMyLibrary(_user);
+        _libraryRepo.addLibrary(_user);
     }
 
     @Test

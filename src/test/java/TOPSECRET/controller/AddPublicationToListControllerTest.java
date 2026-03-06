@@ -21,11 +21,12 @@ class AddPublicationToListControllerTest {
     private User _user;
     private Genre _action;
     private Library _library;
+    private LibraryFactory _libraryFactory;
 
     @BeforeEach
     void setUp() {
         _listRepo = new ListOfPublicationsRepo();
-        _libraryRepo = new LibraryRepo();
+        _libraryRepo = new LibraryRepo(_libraryFactory);
         _controller = new AddPublicationToListController(_listRepo, _libraryRepo);
 
         _userRepo = new UserRepo();
@@ -36,7 +37,7 @@ class AddPublicationToListControllerTest {
         _action = _genreRepo.addGenre("Action");
         assertNotNull(_action);
 
-        _library = _libraryRepo.createMyLibrary(_user);
+        _library = _libraryRepo.addLibrary(_user);
 
         ListOfPublications myList = _listRepo.createListOfPublications(_user, "My List", _action);
         assertNotNull(myList);

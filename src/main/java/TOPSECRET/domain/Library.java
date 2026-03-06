@@ -23,6 +23,9 @@ public class Library {
 
     public Library(User user){
 
+        if (user == null)
+            throw new IllegalArgumentException("User is required");
+
         _owner = user;
 
     }

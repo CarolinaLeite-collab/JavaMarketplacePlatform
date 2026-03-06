@@ -11,7 +11,6 @@ class CreateLibraryControllerTest {
 
     //Set up test objects
     private User _userDouble;
-    private User _userDouble2;
     private LibraryRepo _repoDouble;
     private CreateLibraryController _createLibraryController;
 
@@ -30,10 +29,10 @@ class CreateLibraryControllerTest {
 
         //Arrange
         Library libraryDouble = mock(Library.class);
-        when(_repoDouble.createMyLibrary(_userDouble)).thenReturn(libraryDouble);
+        when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
 
         //act
-        Library myLibrary = _createLibraryController.createMyLibrary(_userDouble);
+        Library myLibrary = _createLibraryController.createLibrary(_userDouble);
 
         //assert
         assertEquals(libraryDouble, myLibrary);
@@ -44,12 +43,12 @@ class CreateLibraryControllerTest {
     void create_a_second_library_for_same_user_should_return_exception(){
 
         //arrange
-       when(_repoDouble.createMyLibrary(_userDouble)).thenThrow(new IllegalStateException());
+       when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
 
         //tries to add another library
         //assert
         assertThrows(IllegalStateException.class,()->{
-            _createLibraryController.createMyLibrary(_userDouble);
+            _createLibraryController.createLibrary(_userDouble);
         });
 
     }
@@ -58,28 +57,14 @@ class CreateLibraryControllerTest {
     void createMyLibrary_should_delegate_to_repo(){
         // Arrange
         Library libraryDouble = mock(Library.class);
-        when(_repoDouble.createMyLibrary(_userDouble)).thenReturn(libraryDouble);
+        when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
 
         // Act
-        _createLibraryController.createMyLibrary(_userDouble);
+        _createLibraryController.createLibrary(_userDouble);
 
         // Assert
-        verify(_repoDouble).createMyLibrary(_userDouble);
+        verify(_repoDouble).addLibrary(_userDouble);
     }
-
-//    @Test
-//    void create_2_libraries_for_2_users_should_return_not_null(){
-//
-//        //arrange and act
-//        Library newLibrary = _createLibraryController.createMyLibrary(_userDouble);
-//        Library newLibrary2 = _createLibraryController.createMyLibrary(_userDouble2);
-//
-//
-//        //assert
-//        assertNotNull(newLibrary);
-//        assertNotNull(newLibrary2);
-//
-//    }
 
 
 

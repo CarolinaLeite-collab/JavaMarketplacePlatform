@@ -8,13 +8,13 @@ import static org.mockito.Mockito.mock;
 class LibraryFactoryTest {
 
     @Test
-    void createMyLibrary_shouldReturnLibraryWithCorrectUser() {
+    void createLibrary_shouldReturnLibraryWithCorrectUser() {
         // Arrange
         User userDouble = mock(User.class);
         LibraryFactory factory = new LibraryFactory();
 
         // Act
-        Library myLibrary = factory.createMyLibrary(userDouble);
+        Library myLibrary = factory.createLibrary(userDouble);
 
         // Assert
         assertNotNull(myLibrary);

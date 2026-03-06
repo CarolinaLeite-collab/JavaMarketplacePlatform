@@ -25,12 +25,14 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private Library testLibrary;
     private Period timeLimit;
     private CountryFactory _countryFactory;
+    private LibraryFactory _libraryFactory;
     private Country _country;
 
     @BeforeEach
     void setUp() {
         _countryFactory = new CountryFactory();
-        _country = _countryFactory.createClass("Portugal");           libraryRepo = new LibraryRepo();
+        _country = _countryFactory.createClass("Portugal");
+        libraryRepo = new LibraryRepo(_libraryFactory);
         publicationRepo = new PublicationRepo();
         itemRepo = new ItemRepo();
         directSaleRepo = new DirectSaleRepo();
@@ -43,7 +45,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", _country, "4000-123", null),
                 new Email("test@isep.ipp.pt"),
                 new Phone(new PhonePrefix("+351"), "999999999"));
-        testLibrary = libraryRepo.createMyLibrary(testUser);
+        testLibrary = libraryRepo.addLibrary(testUser);
 
     }
 
