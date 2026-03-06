@@ -29,23 +29,23 @@ activate UI
 
 
 ' --- Use case execution ---
-UI -> CTL: createMyLibrary(user)
+UI -> CTL: createLibrary(user)
 activate CTL
 
-CTL -> LR: createMyLibrary(user)
+CTL -> LR: addLibrary(user)
 activate LR
 
 
 
-    opt myLibraryExists(user) == false
-        LR -> LF: createMyLibrary(user)
+    opt libraryExists(user) == false
+        LR -> LF: createLibrary(user)
         activate LF
         create "myLibrary:Library"
         LF -> "myLibrary:Library": create(user)
-        LF --> LR: myLibrary
+        LF --> LR: mylibrary
         deactivate LF
 
-        LR -> LR: add(myLibrary)
+        LR -> LR: add(mylibrary)
 
 
     end

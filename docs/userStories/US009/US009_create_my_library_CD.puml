@@ -18,17 +18,16 @@ class CreateLibraryUI {
 }
 
 class CreateLibraryController {
-  + createMyLibrary(user:User) : Library
+  + createLibrary(user:User) : Library
 }
 
 class LibraryRepo {
-  - myLibraryExists(user:User) : boolean
-  + createMyLibrary(user:User) : Library
- '+ save(library: Library) : Library'
+  - libraryExists(user:User) : boolean
+  + addLibrary(user:User) : Library
 
 }
 class LibraryFactory {
-+ createMyLibrary(user:User) : Library
++ createLibrary(user:User) : Library
 }
 
 class Library {
@@ -41,12 +40,9 @@ class Library {
 '}
 
 CreateLibraryUI "1" ..> "1" CreateLibraryController : invokes
-'CreateLibraryController "1" ..> "1" FactoryLibrary : calls
 CreateLibraryController "1" ..> "1" LibraryRepo : calls
-'CreateLibraryController "1" --> "1" LibraryRepo : saves
 LibraryRepo "1" --> "1" LibraryFactory : uses
 LibraryFactory "1" --> "*" Library : creates
 LibraryRepo "1" --> "*" Library : manages
-'User "1" --> "1" Library: owns
 
 @enduml
