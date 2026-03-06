@@ -3,11 +3,33 @@ package TOPSECRET.domain;
 import java.util.Locale;
 
 /**
- * Represents a country in the system, associated with an administrator.
+ * Represents a country registered in the system.
+ *
  * <p>
- * Each Country has a name and a User who registers it.
- * Equality between Country instances is determined solely by the country name.
+ * A {@code Country} is uniquely identified by its name. The name is validated
+ * and normalized during construction.
+ * </p>
+ *
+ * <p><b>Normalization rules:</b></p>
+ * <ul>
+ *   <li>Leading and trailing whitespace is removed.</li>
+ *   <li>Multiple spaces between words are collapsed into a single space.</li>
+ *   <li>The resulting name is converted to uppercase using {@link Locale#ROOT}.</li>
+ * </ul>
+ *
+ * <p><b>Validation rules:</b></p>
+ * <ul>
+ *   <li>The name cannot be {@code null}.</li>
+ *   <li>The name cannot be empty.</li>
+ *   <li>Only Unicode letters and single spaces between words are allowed.</li>
+ * </ul>
+ *
+ * <p>
+ * Instances of {@code Country} are considered equal if their normalized names
+ * are equal, using a case-insensitive comparison.
+ * </p>
  */
+
 public class Country {
     private final String _countryName;
 
