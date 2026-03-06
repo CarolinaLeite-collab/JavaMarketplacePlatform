@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Repository class for managing countries in the system.
@@ -14,9 +15,9 @@ public class CountryRepo {
     private final List<Country> _countries;
     private final CountryFactory _countryFactory;
 
-    public CountryRepo () {
-        _countryFactory = new CountryFactory();
+    public CountryRepo (CountryFactory countryFactory) {
         _countries = new ArrayList<>();
+        _countryFactory = Objects.requireNonNull(countryFactory, "CountryFactory cannot be null");
     }
 
     public Country registerCountry (String countryName) {
@@ -41,22 +42,18 @@ public class CountryRepo {
         return false;
     }
 
-    /**
-    * Returns a list of all countries for unit tests.
-    */
     public List<Country> getAllCountries() {
         return List.copyOf(_countries);
     }
 
-    // Added helper to lookup a country by name (returns null if not found)
     public Country findByName(String name) {
-        if (name == null) return null;
-        String normalized = name.trim();
+        if (name == null) {
+            return null;
+        }
+        String normalized = name.trim().replaceAll("\\s+", " ");
         for (Country c : _countries) {
             if (normalized.equalsIgnoreCase(c.getCountryName())) return c;
         }
         return null;
     }
-
-
 }
