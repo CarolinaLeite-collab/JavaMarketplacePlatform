@@ -1,33 +1,36 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
-
-import java.time.Year;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationDetailsTest {
 
    @Test
     void publicationDetailsShouldExtractAllFieldsFromPublication() {
         // Arrange
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
+        Publication _publicationDouble = mock(Publication.class);
+        Title _titleDouble = mock(Title.class);
+        Author _authorDouble = mock(Author.class);
+        PublicationType _publicationTypeDouble = mock(PublicationType.class);
+        Identifier _identifierDouble = mock(Identifier.class);
+
+       when(_publicationDouble.getTitle()).thenReturn(_titleDouble);
+       when(_publicationDouble.getAuthor()).thenReturn(_authorDouble);
+       when(_publicationDouble.getPublicationType()).thenReturn(_publicationTypeDouble);
+       when(_publicationDouble.getIdentifier()).thenReturn(_identifierDouble);
+
+
         // Act
-        PublicationDetails details = new PublicationDetails(p);
+        PublicationDetails details = new PublicationDetails(_publicationDouble);
 
         // Assert
         assertNotNull(details);
-        assertEquals(p.getTitle(), details.getTitle());
-        assertEquals(p.getAuthor(), details.getAuthor());
-        assertEquals(p.getPublicationType(), details.getPublicationType());
-        assertEquals(p.getIdentifier(), details.getIdentifier());
+        assertEquals(_titleDouble, details.getTitle());
+        assertEquals(_authorDouble, details.getAuthor());
+        assertEquals(_publicationTypeDouble, details.getPublicationType());
+        assertEquals(_identifierDouble, details.getIdentifier());
 
     }
 
