@@ -30,10 +30,30 @@ class AuctionRepo {
 
 class Auction {
 + isByAuthor(authorName) : boolean
++ getItem() : Item
+}
+
+class Item {
+
++ isByAuthor(authorName) : boolean
+
+}
+
+class Publication {
+
++ isByAuthor(authorName) : boolean
+
+}
+
+class Author {
+
 }
 
 GetItemsOnAuctionOfAGivenAuthorUI "1" ..> "1" GetItemsOnAuctionOfAGivenAuthorCtl : invokes
 GetItemsOnAuctionOfAGivenAuthorCtl "1" ..> "1" AuctionRepo : calls
 AuctionRepo "1" --> "*" Auction : accesses
+Auction "1" --> "1" Item : contains
+Item "1" --> "1" Publication : contains
+Publication "1" --> "1" Author : contains
 
 @enduml

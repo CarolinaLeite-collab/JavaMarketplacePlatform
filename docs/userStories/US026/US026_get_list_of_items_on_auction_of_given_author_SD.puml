@@ -1,5 +1,5 @@
 @startuml
-title US026 - "As a Buyer, I want to get the list of items on auction %n() of a given author" - SD
+title US026 - "As a Buyer, I want to get the list of items on auction %n() of a given author" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -20,7 +20,7 @@ autoactivate off
 actor Buyer
 participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
 participant ":GetItemsOnAuctionOfAGivenAuthorController" as Ctl
-participant "_ar:AuctionRepo" as AuctionRepo
+participant "ar:AuctionRepo" as AuctionRepo
 participant "auction:Auction" as Auction
 
 ' --- System dialog ---
@@ -52,12 +52,12 @@ loop for each auction in ar
 end
 
 create "ListCopyOfItemsOnAuctionByAuthor: List<Item>" as ListCopy
-AuctionRepo -> ListCopy: List.copyof(ListOfItemsOnAuctionByAuthor)
+AuctionRepo -> ListCopy: List.copyOf(ListOfItemsOnAuctionByAuthor)
 AuctionRepo --> Ctl: copyOfListOfDirectSaleItemsByAuthor
 deactivate AuctionRepo
-Ctl --> UI: listCopyOfItemsOnAuctionByAuthor
+Ctl --> UI: copyOfItemsOnAuctionByAuthor
 deactivate Ctl
-UI --> Buyer: Here it is!
+UI --> Buyer: Here's the list!
 deactivate UI
 
 

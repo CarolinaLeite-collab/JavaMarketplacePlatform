@@ -1,0 +1,78 @@
+@startuml
+title US025 – "As a Buyer, I want to get the list of items on auction of a given author" - Level 3 SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
+participant ":GetItemsOnAuctionOfAGivenAuthorController" as CTL
+participant "ar:AuctionSaleRepo" as DSR
+participant "auction:Auction" as DS
+participant "item:Item" as IT
+participant "publication:Publication" as PUB
+
+
+
+' --- Dialog ---
+Buyer -> UI: I want the list of items on direct sale of a given author
+activate UI
+UI --> Buyer: What is the author's name?
+deactivate UI
+Buyer -> UI: author
+activate UI
+UI -> CTL: getDirectSaleItemsByAuthor(author)
+activate CTL
+CTL -> DSR: getDirectSaleItemsByAuthor(author)
+activate DSR
+
+create "listOfItemsOnAuctionByAuthor: List<Item>" as List
+DSR -> List: create()
+
+loop for each auction in ar
+    DSR -> DS: isByAuthor(author)
+    activate DS
+    DS -> IT: isByAuthor(author)
+    activate IT
+    IT -> PUB: isByAuthor(author)
+    activate PUB
+    PUB --> IT: true
+    deactivate PUB
+    IT --> DS: true
+    deactivate IT
+    DS --> DSR: true
+    deactivate DS
+    DSR -> List: add(auction.getItem())
+    activate List
+    List --> DSR: true
+    deactivate List
+end
+
+
+
+create "copyOfListOfItemsOnAuctionByAuthor: List<Item>" as Copy
+DSR -> Copy: List.copyOf(listOfItemsOnAuctionByAuthor)
+
+'participant "author:Author" as AUT
+
+DSR --> CTL: copyOfListOfItemsOnAuctionByAuthor
+deactivate DSR
+CTL --> UI: copyOfListOfItemsOnAuctionByAuthor
+deactivate CTL
+UI --> Buyer: Here's the list!
+deactivate UI
+
+@enduml
