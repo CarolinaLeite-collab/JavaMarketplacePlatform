@@ -42,7 +42,7 @@ public class ItemRepo {
             throw new IllegalArgumentException("Item for this publication already exists!");
         }
 
-        Item item = itemFactory.create(publication, condition);
+        Item item = itemFactory.createItem(publication, condition);
         items.add(item);
         return item;
     }
