@@ -116,19 +116,18 @@ class ItemTest {
         item.setDirectSale(ds);
 
         AuctionRepo repo = new AuctionRepo();
-        Auction auction = repo.createAuction(
-                item,
-                new Price(5.0, Currency.EUR),
-                auctionStartDate,
-                auctionEndDate
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.createAuction(
+                        item,
+                        new Price(5.0, Currency.EUR),
+                        auctionStartDate,
+                        auctionEndDate
+                )
         );
 
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> item.setAuction(auction)
-        );
-
-        assertEquals("Item is already in a direct sale.", exception.getMessage());
+        assertTrue(exception.getMessage().contains("Item is already in a direct sale."));
     }
 
     @Test
