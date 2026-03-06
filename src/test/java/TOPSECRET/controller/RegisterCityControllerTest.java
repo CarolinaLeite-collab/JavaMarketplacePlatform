@@ -13,7 +13,7 @@ class RegisterCityControllerTest {
 
     private CityRepo _cityRepo;
     private CountryRepo _countryRepo;
-    private RegisterCityController _controller;
+    private RegisterCityController _sut;
     private Country _portugal;
     private CountryFactory _countryFactory;
 
@@ -23,13 +23,13 @@ class RegisterCityControllerTest {
         _countryFactory = new CountryFactory();
         _countryRepo = new CountryRepo(_countryFactory);
         _portugal = _countryRepo.registerCountry("Portugal");
-        _controller = new RegisterCityController(_cityRepo, _countryRepo);
+        _sut = new RegisterCityController(_cityRepo, _countryRepo);
     }
 
     @Test
     void registerCity_happyPath() {
         // Act
-        City c = _controller.registerCity("Porto", _portugal);
+        City c = _sut.registerCity("Porto", _portugal);
 
         // Assert
         assertNotNull(c);
@@ -40,17 +40,17 @@ class RegisterCityControllerTest {
     @Test
     void registerCity_duplicateThrows() {
         // Arrange
-        _controller.registerCity("Porto", _portugal);
+        _sut.registerCity("Porto", _portugal);
 
         // Act & Assert
-        assertThrows(IllegalStateException.class, () -> _controller.registerCity("Porto", _portugal));
+        assertThrows(IllegalStateException.class, () -> _sut.registerCity("Porto", _portugal));
     }
 
     @Test
     void registerCity_nullCountryThrows() {
         // Act & Assert
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> _controller.registerCity("Porto", null));
+                () -> _sut.registerCity("Porto", null));
         assertEquals("Country cannot be null", error.getMessage());
     }
 
@@ -58,17 +58,17 @@ class RegisterCityControllerTest {
     void registerCity_blankOrNullCityNameThrows() {
         // Act & Assert
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> _controller.registerCity("", _portugal));
+                () -> _sut.registerCity("", _portugal));
         assertEquals("City name cannot be null or blank", error.getMessage());
     }
 
     @Test
     void registerCity_trimmedDuplicateNameThrows() {
         // Arrange
-        _controller.registerCity("Porto", _portugal);
+        _sut.registerCity("Porto", _portugal);
 
         // Act & Assert
-        assertThrows(IllegalStateException.class, () -> _controller.registerCity(" Porto ", _portugal));
+        assertThrows(IllegalStateException.class, () -> _sut.registerCity(" Porto ", _portugal));
     }
 
     // Tests that getCountries() returns the actual list from the repo and not an empty list.
@@ -77,7 +77,7 @@ class RegisterCityControllerTest {
         _countryRepo.registerCountry("Spain");
 
         // Act
-        List<Country> result = _controller.getCountries();
+        List<Country> result = _sut.getCountries();
 
         // Assert
         assertEquals(2, result.size());
