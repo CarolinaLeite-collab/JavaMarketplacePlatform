@@ -68,14 +68,16 @@ class UserTest {
     @Test
     void constructorWithNullName() {
 
-        assertThrows(NullPointerException.class, () -> new User (null, _addressDouble, _emailDouble, _phoneDouble));
+        assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, _emailDouble, _phoneDouble));
 
     }
 
     @Test
-    void constructorWithNullAddress() {
-
-        assertThrows(NullPointerException.class, () -> new User(_nameDouble, null, _emailDouble, _phoneDouble));
+    void constructorShouldAllowNullAddress() {
+        //Act
+        User user = new User(_nameDouble, _addressDouble, _emailDouble, null);
+        //Assert
+        assertNull(user.getPhone());
     }
 
     @Test
@@ -85,9 +87,11 @@ class UserTest {
     }
 
     @Test
-    void constructorWithNullPhoneNumber() {
-
-        assertThrows(NullPointerException.class, () -> new User(_nameDouble, _addressDouble, _emailDouble, null));
+    void constructorShouldAllowNullPhoneNumber() {
+        //Act
+        User user = new User(_nameDouble, null, _emailDouble, _phoneDouble);
+        //Assert
+        assertNull(user.getAddress());
     }
 
     @Test
@@ -150,5 +154,47 @@ class UserTest {
 
         assertNotEquals(t.hashCode(), t2.hashCode());
 
+    }
+
+    @Test
+    void constructorShouldAssignDefaultUserRole() {
+        // Arrange
+        User user = new User(_nameDouble, _emailDouble);
+        // Act
+        boolean hasUserRole = user.hasRole(Role.USER);
+        // Assert
+        assertTrue(hasUserRole);
+        assertEquals(1, user.getRoles().size());
+        assertTrue(user.getRoles().contains(Role.USER));
+    }
+
+    @Test
+    void addRoleShouldAddAdminRoleWithoutRemovingDefaultUserRole() {
+        // Arrange
+        User user = new User(_nameDouble, _emailDouble);
+        // Act
+        user.addRole(Role.ADMIN);
+        // Assert
+        assertTrue(user.hasRole(Role.USER));
+        assertTrue(user.hasRole(Role.ADMIN));
+        assertEquals(2, user.getRoles().size());
+    }
+
+    @Test
+    void hasRoleShouldReturnFalseWhenUserDoesNotHaveAdminRole() {
+        // Arrange
+        User user = new User(_nameDouble, _emailDouble);
+        // Act
+        boolean result = user.hasRole(Role.ADMIN);
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void addRoleShouldThrowWhenRoleIsNull() {
+        // Arrange
+        User user = new User(_nameDouble, _emailDouble);
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> user.addRole(null));
     }
 }
