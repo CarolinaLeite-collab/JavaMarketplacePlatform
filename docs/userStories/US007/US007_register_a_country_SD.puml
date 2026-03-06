@@ -41,13 +41,14 @@ activate CTL
 CTL -> CR: registerCountry (countryName)
 activate CR
 
-    opt existsCountry (country) == false
-        CR -> FACTORY: create (countryName)
-        create "c1:Country"
-        FACTORY -> "c1:Country": create (countryName)
-        FACTORY --> CR :c1
+CR -> FACTORY: createClass (countryName)
+create "c1:Country"
+FACTORY -> "c1:Country": createClass (countryName)
+FACTORY --> CR :c1
+
+opt existsCountry (country) == false
         CR -> CR: add(c1)
-    end
+end
 
 CR --> CTL: c1
 deactivate CR
