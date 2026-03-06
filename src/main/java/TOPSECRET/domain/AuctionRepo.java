@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Repository class responsible for managing auctions within the system.
@@ -14,7 +15,22 @@ import java.util.List;
 
 public class AuctionRepo {
 
-    private List<Auction> itemsOnAuction = new ArrayList<>();
+    private final List<Auction> itemsOnAuction;
+    private final AuctionFactory auctionFactory;
+
+    public AuctionRepo() {
+        this(new AuctionFactory());
+    }
+
+    /**
+     * Creates a repository with a provided factory (useful for tests).
+     *
+     * @param auctionFactory factory used to create auctions
+     */
+    AuctionRepo(AuctionFactory auctionFactory) {
+        this.itemsOnAuction = new ArrayList<>();
+        this.auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
+    }
 
     /**
      * Creates a new auction for a specific item.
@@ -28,11 +44,24 @@ public class AuctionRepo {
 
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-        Auction auction = new Auction(item, startingPrice, auctionStartDate, auctionEndDate);
+        try {
+            Auction auction = auctionFactory.create(item, startingPrice, auctionStartDate, auctionEndDate);
+            itemsOnAuction.add(auction);
+            return auction;
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("Unable to create auction: " + e.getMessage(), e);
+        }
+    }
 
-        itemsOnAuction.add(auction);
-
-        return auction;
+    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
+                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        try {
+            Auction auction = auctionFactory.create(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+            itemsOnAuction.add(auction);
+            return auction;
+        } catch (InstantiationException e) {
+            throw new IllegalArgumentException("Unable to create auction: " + e.getMessage(), e);
+        }
     }
 
     /**
