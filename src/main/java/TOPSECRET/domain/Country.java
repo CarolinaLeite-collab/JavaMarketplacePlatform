@@ -34,7 +34,7 @@ public class Country {
     private final String _countryName;
 
     Country(String countryName) {
-        _countryName = sanitizedCountryName(countryName);
+            _countryName = sanitizedCountryName(countryName);
     }
 
     // Added getter to allow other components to locate countries by name
@@ -53,7 +53,7 @@ public class Country {
         // Only allows Unicode letters and spaces
         // must start and end with a letter and words may only be separated by a single space
         String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
-        if(!result.matches(pattern)) {
+        if (!result.matches(pattern)) {
             throw new IllegalArgumentException("Invalid country name: " + countryName);
         }
         //eliminates multiple spaces and converts to uppercase
@@ -66,7 +66,7 @@ public class Country {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Country country)) return false;
-        return _countryName.equalsIgnoreCase(country._countryName);
+        return _countryName.equals(country._countryName);
     }
 
 }
