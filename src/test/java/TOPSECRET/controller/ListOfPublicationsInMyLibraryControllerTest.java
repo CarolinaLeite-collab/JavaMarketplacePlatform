@@ -21,7 +21,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         _myLibrary = mock(Library.class);
         _libraryRepo = mock(LibraryRepo.class);
         when(_libraryRepo.findByUser(_user)).thenReturn(_myLibrary);
-        _sut = new ListOfPublicationsInMyLibraryController(_libraryRepo, _user);
+        _sut = new ListOfPublicationsInMyLibraryController(_libraryRepo);
     }
 
     @Test
