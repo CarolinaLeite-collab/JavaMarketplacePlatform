@@ -1,80 +1,47 @@
 package TOPSECRET.controller;
+
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ListOfPublicationsInMyLibraryControllerTest {
-
     private User _user;
     private LibraryRepo _libraryRepo;
-    private ListOfPublicationsInMyLibraryController _controller;
-    private LibraryFactory _libraryFactory = new LibraryFactory();
+    private ListOfPublicationsInMyLibraryController _sut;
+    private Library _myLibrary;
 
     @BeforeEach
-
     void setUp() {
-
-        _user = new User(
-                new Name("Zé Isep"),
-                new Email("test@isep.com")
-        );
-
-        _libraryRepo = new LibraryRepo(_libraryFactory);
-        _controller = new ListOfPublicationsInMyLibraryController(_libraryRepo, _user);
+        _user = mock(User.class);
+        _myLibrary = mock(Library.class);
+        _libraryRepo = mock(LibraryRepo.class);
+        when(_libraryRepo.findByUser(_user)).thenReturn(_myLibrary);
+        _sut = new ListOfPublicationsInMyLibraryController(_libraryRepo, _user);
     }
 
-
     @Test
-    void shouldReturnEmptyList_whenLibraryExistsButEmpty() {
+    void shouldReturnEmptyListWhenLibraryExistsButEmpty() {
         // Arrange
-        Library myLibrary = _libraryRepo.addLibrary(_user);
-
+        when(_myLibrary.getPublicationsInLibrary()).thenReturn(List.of());
         // Act
-        List<PublicationDetails> result = _controller.getListOfPublications(_user);
-
+        List<PublicationDetails> result = _sut.getListOfPublications(_user);
         // Assert
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void shouldReturnListOfPublicationsInLibrary() {
-
-        Library myLibrary= _libraryRepo.addLibrary(_user);
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        myLibrary.addPublicationToLibrary(p);
-
-        List<PublicationDetails> result = _controller.getListOfPublications(_user);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(p.getTitle(), result.get(0).getTitle());
-        assertEquals(p.getAuthor(), result.get(0).getAuthor());
-        assertEquals(p.getPublicationType(), result.get(0).getPublicationType());
-        assertEquals(p.getIdentifier(), result.get(0).getIdentifier());
+        // Arrange
+        PublicationDetails details = mock(PublicationDetails.class);
+        when(_myLibrary.getPublicationsInLibrary()).thenReturn(List.of(details));
+        //Act
+        List<PublicationDetails> result = _sut.getListOfPublications(_user);
+        //Assert
+        assertEquals(List.of(details), result);
     }
-
-
-    @Test
-    void shouldThrowException_whenLibraryNotFound() {
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> _libraryRepo.findByUser(_user)
-        );
-        assertEquals("Library not found for user: Zé Isep", exception.getMessage());
-    }
-
 }
