@@ -8,68 +8,56 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GetPublicationTypeListControllerTest {
 
     @Test
-    void shouldReturnAllPublicationTypes() throws InstantiationException {
+    void shouldReturnAllPublicationTypes() {
         // Arrange
-        PublicationTypeFactory factory = new PublicationTypeFactory();
-        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
-        repo.addPublicationType("Book");
-        repo.addPublicationType("Magazine");
+        PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
+        PublicationType publicationType = mock(PublicationType.class);
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repo);
+        when(repo.getAll()).thenReturn(List.of(publicationType));
+
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
 
         // Act
-        List<PublicationType> result =
-                controller.getListOfPublicationTypes();
+        List<PublicationType> result = controller.getListOfPublicationTypes();
 
         // Assert
-        assertEquals(2, result.size());
+        assertTrue(List.of(publicationType).equals(result));
     }
 
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist() {
         // Arrange
-        PublicationTypeFactory factory = new PublicationTypeFactory();
-        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
+        PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repo);
+        when(repo.getAll()).thenReturn(List.of());
+
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
 
         // Act
-        List<PublicationType> result =
-                controller.getListOfPublicationTypes();
+        List<PublicationType> result = controller.getListOfPublicationTypes();
 
         // Assert
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void returnedListShouldNotBeModifiable() {
-        PublicationTypeFactory factory = new PublicationTypeFactory();
-        PublicationTypeRepo repo = new PublicationTypeRepo(factory);
-        repo.addPublicationType("Book");
+        PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
+        PublicationType publicationType = mock(PublicationType.class);
 
-        GetPublicationTypeListController controller =
-                new GetPublicationTypeListController(repo);
+        when(repo.getAll()).thenReturn(List.of(publicationType));
 
-        List<PublicationType> result =
-                controller.getListOfPublicationTypes();
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
 
-        boolean modificationWorked = true;
+        List<PublicationType> result = controller.getListOfPublicationTypes();
 
-        try {
-            result.clear();
-        } catch (Exception e) {
-            modificationWorked = false;
-        }
+        assertThrows(UnsupportedOperationException.class, () -> result.clear());
 
-        if (modificationWorked) {
-            fail("Returned list should be immutable");
-        }
     }
 }
