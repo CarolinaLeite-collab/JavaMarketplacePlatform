@@ -21,11 +21,11 @@ class GetItemsOnAuctionOfAGivenAuthorUI {
 
 class GetItemsOnAuctionOfAGivenAuthorCtl {
 - ar : AuctionRepo
-+ getItemsOnAuctionOfAGivenAuthor(authorName) : List<Item>
++ getAuctionItemsByAuthor(authorName) : List<Item>
 }
 
 class AuctionRepo {
-+ getItemsOnAuctionOfAGivenAuthor(authorName) : List<Item>
++ getAuctionItemsByAuthor(authorName) : List<Item>
 }
 
 class Auction {

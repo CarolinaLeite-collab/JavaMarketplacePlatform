@@ -30,9 +30,9 @@ UI --> Buyer: What is the author's name?
 deactivate "UI"
 Buyer -> UI: authorName
 activate "UI"
-UI -> Ctl: getItemsOnAuctionOfAGivenAuthor(authorName)
+UI -> Ctl: getAuctionItemsByAuthor(authorName)
 activate Ctl
-Ctl -> AuctionRepo: getItemsOnAuctionOfAGivenAuthor(authorName)
+Ctl -> AuctionRepo: getAuctionItemsByAuthor(authorName)
 activate "AuctionRepo"
 create "listOfItemsOnAuctionByAuthor:List<Item>" as List
 AuctionRepo -> List: create()

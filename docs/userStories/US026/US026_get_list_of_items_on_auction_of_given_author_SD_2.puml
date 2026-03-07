@@ -28,15 +28,15 @@ participant "publication:Publication" as PUB
 
 
 ' --- Dialog ---
-Buyer -> UI: I want the list of items on direct sale of a given author
+Buyer -> UI: I want a list of Items on auction of a given author
 activate UI
 UI --> Buyer: What is the author's name?
 deactivate UI
 Buyer -> UI: author
 activate UI
-UI -> CTL: getDirectSaleItemsByAuthor(author)
+UI -> CTL: getAuctionItemsByAuthor(author)
 activate CTL
-CTL -> DSR: getDirectSaleItemsByAuthor(author)
+CTL -> DSR: getAuctionItemsByAuthor(author)
 activate DSR
 
 create "listOfItemsOnAuctionByAuthor: List<Item>" as List
