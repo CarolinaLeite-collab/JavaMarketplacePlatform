@@ -6,71 +6,86 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AppraisalEntityRepoTest {
 
-    private AppraisalEntityRepo repo;
+    private AppraisalEntity _entity;
+    private AppraisalEntityFactory _factoryDouble;
+    private List<Genre> _genres;
+    private Genre _genreDouble;
+    private List<PublicationType> _publicationTypes;
+    private PublicationType _publicationTypeDouble;
+    private Name _nameDouble;
 
     @BeforeEach
     void setUp() {
-        repo = new AppraisalEntityRepo();
+
+        _genreDouble = mock(Genre.class);
+        when(_genreDouble.getGenre()).thenReturn("Self-Help");
+
+        _genres = new ArrayList<>();
+        _genres.add(_genreDouble);
+
+        _publicationTypeDouble = mock(PublicationType.class);
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("Book");
+
+        _publicationTypes = new ArrayList<>();
+        _publicationTypes.add(_publicationTypeDouble);
+
+        _nameDouble = mock(Name.class);
+        when(_nameDouble.get_Name()).thenReturn("Livraria Alfarrabista");
+
+        _entity = new AppraisalEntity(_nameDouble, _publicationTypes, _genres);
+
+        _factoryDouble = mock(AppraisalEntityFactory.class);
+        when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entity);
+
     }
 
     @Test
-    void should_register_new_appraisalEntity() {
-        List<Genre> selfHelp = new ArrayList<>();
-        selfHelp.add(new Genre("Self-Help"));
-        List<PublicationType> bookType = new ArrayList<>();
-        bookType.add(new PublicationType("Books"));
-        Name helpingzTM = new Name("Helpingz TM");
+    void should_add_new_appraisalEntity() {
 
-        AppraisalEntity entity = repo.registerNewAppraisalEntity(helpingzTM, bookType, selfHelp);
+        // SUT
+        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
 
-        assertNotNull(entity);
-        assertEquals(helpingzTM, entity.getName());
+        // act
+        AppraisalEntity entity = repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+
+        // assert
+        assertEquals(_nameDouble, entity.getName());
+        assertEquals(_publicationTypes, entity.getPublicationTypes());
+        assertEquals(_genres, entity.getGenres());
     }
 
     @Test
-    void should_throw_exception_when_duplicate_dame() {
-        List<Genre> genre = new ArrayList<>();
-        genre.add(new Genre("Self-Help"));
-        List<PublicationType> pubType = new ArrayList<>();
-        pubType.add(new PublicationType("Books"));
-        Name name = new Name("Helpingz TM");
+    void should_throw_exception_when_duplicate_name() {
 
-        repo.registerNewAppraisalEntity(name, pubType, genre);
+        //SUT
+        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
 
-        assertThrows(IllegalStateException.class, () ->
-                repo.registerNewAppraisalEntity(name, pubType, genre));
-    }
+        // act
+        repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
-    @Test
-    void should_throw_exception_when_name_is_null() {
-        List<PublicationType> pubType = new ArrayList<>();
-        List<Genre> genre = new ArrayList<>();
-
+        // assert
         assertThrows(IllegalArgumentException.class, () ->
-                repo.registerNewAppraisalEntity(null, pubType, genre));
-    }
-
-
-    @Test
-    void should_throw_exception_when_publication_types_nuull() {
-        Name name = new Name("HelpingzTM");
-        List<Genre> genre = new ArrayList<>();
-        genre.add(new Genre("Self-Help"));
-
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.registerNewAppraisalEntity(name, null, genre));
+                repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres));
     }
 
     @Test
-    void should_throw_exception_when_genres_null() {
-        Name name = new Name("HelpingzTM");
-        List<PublicationType> pubType = new ArrayList<>();
-        pubType.add(new PublicationType("Book"));
+    void should_avoid_external_lists_alterations() {
 
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.registerNewAppraisalEntity(name, pubType, null));
+        // SUT
+        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+
+        // act
+        AppraisalEntity entity = repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+
+        _genres.clear();
+        _publicationTypes.clear();
+
+        assertFalse(entity.getGenres().isEmpty());
+        assertFalse(entity.getPublicationTypes().isEmpty());
     }
 }
