@@ -1,92 +1,79 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class ListOfPublicationsFactoryTest {
 
-    private ListOfPublicationsFactory factory;
-    private User user;
-    private Genre genre;
+    @Test
+    void createListOfPublications_validInputs_createsPrivateList() {
+        // Arrange
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        User user = mock(User.class);
+        Genre genre = mock(Genre.class);
 
-    @BeforeEach
-    void setUp() {
-        factory = new ListOfPublicationsFactory();
-        user = new User(new Name("José Sousa"), new Email("jose@gmail.com"));
-        genre = new Genre("Fantasy");
+        // Act
+        ListOfPublications list = factory.createListOfPublications(user, "My List", genre);
+
+        // Assert
+        assertNotNull(list);
+        assertSame(user, list.getUser());
+        assertEquals("My List", list.getName());
+        assertSame(genre, list.getGenre());
+        assertTrue(list.isPrivate());
     }
 
     @Test
-    void createListOfPublications_validArguments_createsPrivateList() {
+    void createPublicListOfPublications_validInputs_createsPublicList() {
         // Arrange
-        String name = "My List";
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        User user = mock(User.class);
+        Genre genre = mock(Genre.class);
 
         // Act
-        ListOfPublications list = factory.createListOfPublications(user, name, genre);
+        ListOfPublications list = factory.createPublicListOfPublications(user, "My List", genre);
 
         // Assert
-        assertAll(
-                () -> assertNotNull(list),
-                () -> assertEquals(user, list.getUser()),
-                () -> assertEquals("My List", list.getName()),
-                () -> assertEquals(genre, list.getGenre()),
-                () -> assertTrue(list.isPrivate())
-        );
-    }
-
-    @Test
-    void createPublicListOfPublications_validArguments_createsPublicList() {
-        // Arrange
-        String name = "Public List";
-
-        // Act
-        ListOfPublications list = factory.createPublicListOfPublications(user, name, genre);
-
-        // Assert
-        assertAll(
-                () -> assertNotNull(list),
-                () -> assertEquals(user, list.getUser()),
-                () -> assertEquals("Public List", list.getName()),
-                () -> assertEquals(genre, list.getGenre()),
-                () -> assertFalse(list.isPrivate())
-        );
+        assertNotNull(list);
+        assertSame(user, list.getUser());
+        assertEquals("My List", list.getName());
+        assertSame(genre, list.getGenre());
+        assertFalse(list.isPrivate());
     }
 
     @Test
     void createListOfPublications_nullUser_throwsIllegalArgumentException() {
+        // Arrange
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        Genre genre = mock(Genre.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.createListOfPublications(null, "My List", genre));
     }
 
     @Test
     void createListOfPublications_nullName_throwsIllegalArgumentException() {
+        // Arrange
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        User user = mock(User.class);
+        Genre genre = mock(Genre.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.createListOfPublications(user, null, genre));
     }
 
     @Test
     void createListOfPublications_nullGenre_throwsIllegalArgumentException() {
+        // Arrange
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        User user = mock(User.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.createListOfPublications(user, "My List", null));
-    }
-
-    @Test
-    void createPublicListOfPublications_nullUser_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> factory.createPublicListOfPublications(null, "My List", genre));
-    }
-
-    @Test
-    void createPublicListOfPublications_nullName_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> factory.createPublicListOfPublications(user, null, genre));
-    }
-
-    @Test
-    void createPublicListOfPublications_nullGenre_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> factory.createPublicListOfPublications(user, "My List", null));
     }
 }

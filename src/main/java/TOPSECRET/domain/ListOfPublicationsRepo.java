@@ -12,40 +12,36 @@ import java.util.List;
  */
 public class ListOfPublicationsRepo {
     private final List<ListOfPublications> _listsOfListOfPublications;
-    private final ListOfPublicationsFactory _factory;
 
     public ListOfPublicationsRepo() {
-        this(new ListOfPublicationsFactory());
-    }
-
-    public ListOfPublicationsRepo(ListOfPublicationsFactory factory) {
         _listsOfListOfPublications = new ArrayList<>();
-        _factory = factory;
     }
 
-    public ListOfPublications createListOfPublications(User user, String name, Genre genre){
+    public ListOfPublications addListOfPublications(ListOfPublications list) {
+        if (list == null) {
+            throw new IllegalArgumentException("List is mandatory");
+        }
 
-        ListOfPublications newList = _factory.createListOfPublications(user, name, genre);
-
-        if (existsListOfPublications(newList))
+        if (existsListOfPublications(list)) {
             return null;
-        _listsOfListOfPublications.add(newList);
-        return newList;
+        }
+
+        _listsOfListOfPublications.add(list);
+        return list;
     }
 
-    private boolean existsListOfPublications(ListOfPublications listOfPublications){
+    private boolean existsListOfPublications(ListOfPublications listOfPublications) {
         for (ListOfPublications lp1 : _listsOfListOfPublications) {
             if (lp1.equals(listOfPublications)) {
                 return true;
-                }
             }
+        }
         return false;
     }
 
-    public List<ListOfPublications> getListOfListOfPublications(){
+    public List<ListOfPublications> getListOfListOfPublications() {
         return List.copyOf(_listsOfListOfPublications);
     }
-
 
     public List<ListOfPublications> findPublicListsByGenre(Genre genre) {
         if (genre == null) {
@@ -60,14 +56,6 @@ public class ListOfPublicationsRepo {
         }
         return List.copyOf(result);
     }
-
-    public boolean addListOnRepo(ListOfPublications list){
-        if (list == null) {
-            return false;
-        }
-        return _listsOfListOfPublications.add(list);
-    }
-
 
     public List<ListOfPublications> findListsByUser(User user) {
         if (user == null) {

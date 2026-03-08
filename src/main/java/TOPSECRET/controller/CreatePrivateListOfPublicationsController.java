@@ -14,18 +14,21 @@ import java.util.List;
 public class CreatePrivateListOfPublicationsController {
     private ListOfPublicationsRepo _listOfPublicationsRepo;
     private GenreRepo _genreRepo;
+    private ListOfPublicationsFactory _listOfPublicationsFactory;
 
     public CreatePrivateListOfPublicationsController(ListOfPublicationsRepo listOfPublicationsRepo, GenreRepo genreRepo, User user) {
         _listOfPublicationsRepo = listOfPublicationsRepo;
         _genreRepo = genreRepo;
+        _listOfPublicationsFactory = new ListOfPublicationsFactory();
     }
 
     public List<Genre> getListOfOfficialGenres() {
         return List.copyOf(_genreRepo.getListOfOfficialGenres());
     }
 
-    public ListOfPublications createListOfPublications(User user, String name, Genre genre){
-        return _listOfPublicationsRepo.createListOfPublications(user, name, genre);
+    public ListOfPublications createListOfPublications(User user, String name, Genre genre) {
+        ListOfPublications list = _listOfPublicationsFactory.createListOfPublications(user, name, genre);
+        return _listOfPublicationsRepo.addListOfPublications(list);
     }
 
 }

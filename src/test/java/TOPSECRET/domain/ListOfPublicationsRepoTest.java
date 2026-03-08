@@ -2,19 +2,13 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class ListOfPublicationsRepoTest {
 
-    @Mock
     private ListOfPublicationsFactory factory;
 
     private User _user1;
@@ -25,7 +19,8 @@ class ListOfPublicationsRepoTest {
 
     @BeforeEach
     void setUp() {
-        _repo = new ListOfPublicationsRepo(factory);
+        factory = new ListOfPublicationsFactory();
+        _repo = new ListOfPublicationsRepo();
 
         _action = new Genre("Action");
         _poetry = new Genre("Poetry");
@@ -35,13 +30,12 @@ class ListOfPublicationsRepoTest {
     }
 
     @Test
-    void createListSuccessfully() {
+    void addListOfPublicationsSuccessfully() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        when(factory.createListOfPublications(_user1, "My List", _action)).thenReturn(created);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
 
         // Act
-        ListOfPublications list = _repo.createListOfPublications(_user1, "My List", _action);
+        ListOfPublications list = _repo.addListOfPublications(created);
 
         // Assert
         assertAll(
@@ -52,50 +46,33 @@ class ListOfPublicationsRepoTest {
                 () -> assertTrue(list.isPrivate()),
                 () -> assertEquals(1, _repo.getListOfListOfPublications().size())
         );
-
-        verify(factory).createListOfPublications(_user1, "My List", _action);
     }
 
     @Test
-    void cannotCreateDuplicateList() {
+    void cannotAddDuplicateList() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        when(factory.createListOfPublications(_user1, "My List", _action)).thenReturn(created);
-
-        _repo.createListOfPublications(_user1, "My List", _action);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
+        _repo.addListOfPublications(created);
 
         // Act
-        ListOfPublications duplicate = _repo.createListOfPublications(_user1, "My List", _action);
+        ListOfPublications duplicate = _repo.addListOfPublications(created);
 
         // Assert
         assertNull(duplicate);
         assertEquals(1, _repo.getListOfListOfPublications().size());
-        verify(factory, times(2)).createListOfPublications(_user1, "My List", _action);
     }
 
     @Test
-    void createListWithNullsShouldThrow() {
-        // Arrange
-        when(factory.createListOfPublications(null, "Name", _action))
-                .thenThrow(new IllegalArgumentException("User is mandatory"));
-        when(factory.createListOfPublications(_user1, null, _action))
-                .thenThrow(new IllegalArgumentException("Name is mandatory"));
-        when(factory.createListOfPublications(_user1, "Name", null))
-                .thenThrow(new IllegalArgumentException("Genre is mandatory"));
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> _repo.createListOfPublications(null, "Name", _action));
-        assertThrows(IllegalArgumentException.class, () -> _repo.createListOfPublications(_user1, null, _action));
-        assertThrows(IllegalArgumentException.class, () -> _repo.createListOfPublications(_user1, "Name", null));
+    void addNullListShouldThrow() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> _repo.addListOfPublications(null));
     }
 
     @Test
     void getListReturnsCopy() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        when(factory.createListOfPublications(_user1, "My List", _action)).thenReturn(created);
-
-        _repo.createListOfPublications(_user1, "My List", _action);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
+        _repo.addListOfPublications(created);
 
         // Act
         List<ListOfPublications> lists = _repo.getListOfListOfPublications();
@@ -104,23 +81,23 @@ class ListOfPublicationsRepoTest {
         assertAll(
                 () -> assertEquals(1, lists.size()),
                 () -> assertThrows(UnsupportedOperationException.class,
-                        () -> lists.add(new ListOfPublications(_user1, "Other List", _poetry)))
+                        () -> lists.add(factory.createListOfPublications(_user1, "Other List", _poetry)))
         );
     }
 
     @Test
     void findPublicListsByGenreShouldReturnOnlyPublicListsOfThatGenre() {
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1, "List A", _action);
-        ListOfPublications b = new ListOfPublications(_user2, "List B", _action);
-        ListOfPublications c = new ListOfPublications(_user1, "List C", _poetry);
+        ListOfPublications a = factory.createListOfPublications(_user1, "List A", _action);
+        ListOfPublications b = factory.createListOfPublications(_user2, "List B", _action);
+        ListOfPublications c = factory.createListOfPublications(_user1, "List C", _poetry);
 
         a.makePublic();
         c.makePublic();
 
-        _repo.addListOnRepo(a);
-        _repo.addListOnRepo(b);
-        _repo.addListOnRepo(c);
+        _repo.addListOfPublications(a);
+        _repo.addListOfPublications(b);
+        _repo.addListOfPublications(c);
 
         // Act
         List<ListOfPublications> result = _repo.findPublicListsByGenre(_action);
@@ -138,8 +115,8 @@ class ListOfPublicationsRepoTest {
     @Test
     void findPublicListsByGenreShouldReturnEmptyWhenNoPublicListsForThatGenre() {
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1, "List A", _action);
-        _repo.addListOnRepo(a);
+        ListOfPublications a = factory.createListOfPublications(_user1, "List A", _action);
+        _repo.addListOfPublications(a);
 
         // Act
         List<ListOfPublications> result = _repo.findPublicListsByGenre(_action);
@@ -152,9 +129,9 @@ class ListOfPublicationsRepoTest {
     @Test
     void findPublicListsByGenreShouldReturnImmutableCopy() {
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1, "List A", _action);
+        ListOfPublications a = factory.createListOfPublications(_user1, "List A", _action);
         a.makePublic();
-        _repo.addListOnRepo(a);
+        _repo.addListOfPublications(a);
 
         // Act
         List<ListOfPublications> result = _repo.findPublicListsByGenre(_action);
@@ -164,32 +141,15 @@ class ListOfPublicationsRepoTest {
     }
 
     @Test
-    void returnFalseWhenListIsNull() {
-        // Act
-        boolean result = _repo.addListOnRepo(null);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void storeListAndReturnTrueWhenListIsValid() {
-        // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1, "MyActionList", _action);
-
-        // Act
-        boolean result = _repo.addListOnRepo(list1);
-
-        // Assert
-        assertTrue(result);
-        assertEquals(1, _repo.getListOfListOfPublications().size());
+    void findPublicListsByGenre_nullGenre_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> _repo.findPublicListsByGenre(null));
     }
 
     @Test
     void findListsByUserShouldReturnOnlyListsOfThatUser() {
         // Arrange
-        _repo.addListOnRepo(new ListOfPublications(_user1, "U1 List", _action));
-        _repo.addListOnRepo(new ListOfPublications(_user2, "U2 List", _action));
+        _repo.addListOfPublications(factory.createListOfPublications(_user1, "U1 List", _action));
+        _repo.addListOfPublications(factory.createListOfPublications(_user2, "U2 List", _action));
 
         // Act
         List<ListOfPublications> result = _repo.findListsByUser(_user1);
@@ -210,8 +170,8 @@ class ListOfPublicationsRepoTest {
     @Test
     void findByOwnerNameAndGenreShouldReturnListWhenExists() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        _repo.addListOnRepo(created);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
+        _repo.addListOfPublications(created);
 
         // Act
         ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1, "My List", _action);
@@ -224,8 +184,8 @@ class ListOfPublicationsRepoTest {
     @Test
     void findByOwnerNameAndGenre_ignoresCase() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        _repo.addListOnRepo(created);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
+        _repo.addListOfPublications(created);
 
         // Act
         ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1, "my list", _action);
@@ -238,8 +198,8 @@ class ListOfPublicationsRepoTest {
     @Test
     void findByOwnerNameAndGenre_trimsName() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1, "My List", _action);
-        _repo.addListOnRepo(created);
+        ListOfPublications created = factory.createListOfPublications(_user1, "My List", _action);
+        _repo.addListOfPublications(created);
 
         // Act
         ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1, "  My List  ", _action);
