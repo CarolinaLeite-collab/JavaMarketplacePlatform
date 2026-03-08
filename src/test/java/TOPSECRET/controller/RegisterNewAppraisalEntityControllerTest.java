@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RegisterNewAppraisalEntityControllerTest {
     private RegisterNewAppraisalEntityController controller;
     private PublicationTypeRepo publicationTypeRepo;
+    private GenreFactory genreFactory;
     private GenreRepo genreRepo;
     private AppraisalEntityRepo appraisalEntityRepo;
 
@@ -19,7 +20,8 @@ class RegisterNewAppraisalEntityControllerTest {
     void setUp() {
         PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
         publicationTypeRepo = new PublicationTypeRepo(publicationTypeFactory);
-        genreRepo = new GenreRepo();
+        genreFactory = new GenreFactory();
+        genreRepo = new GenreRepo(genreFactory);
         appraisalEntityRepo = new AppraisalEntityRepo();
 
         publicationTypeRepo.addPublicationType("book");

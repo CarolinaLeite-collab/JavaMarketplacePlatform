@@ -25,9 +25,10 @@ class ListOfPublicationsTest {
                 new Email ("russia@isep.com")
         );
 
-        GenreRepo genreRepo = new GenreRepo();
-        _actionGenre = genreRepo.addGenre("Action");
-        _poetryGenre = genreRepo.addGenre("Poetry");
+        GenreFactory _genreFactory = new GenreFactory();
+        GenreRepo _genreRepo = new GenreRepo(_genreFactory);
+        _actionGenre = _genreRepo.addGenre("Action");
+        _poetryGenre = _genreRepo.addGenre("Poetry");
     }
 
     @Test

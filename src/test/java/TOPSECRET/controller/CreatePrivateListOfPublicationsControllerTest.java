@@ -14,6 +14,7 @@ class CreatePrivateListOfPublicationsControllerTest {
     private Genre _actionGenre;
     private Genre _poetryGenre;
     private GenreRepo _genreRepo;
+    private GenreFactory _genreFactory = new GenreFactory();
     private ListOfPublicationsRepo _repo;
     private CreatePrivateListOfPublicationsController _controller;
 
@@ -21,7 +22,7 @@ class CreatePrivateListOfPublicationsControllerTest {
     void setUp() {
         _user1 = new User(new Name("Joaquim"), new Email("test@isep.com"));
 
-        _genreRepo = new GenreRepo();
+        _genreRepo = new GenreRepo(_genreFactory);
         _actionGenre = _genreRepo.addGenre("Action");
         _poetryGenre = _genreRepo.addGenre("poetry");
 

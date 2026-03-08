@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GetListOfOfficialGenresControllerTest {
 
     private User _user;
+    private GenreFactory _genreFactory;
     private GenreRepo _genreRepo;
     private GetListOfOfficialGenresController _getListOfOfficialGenresController;
 
@@ -21,7 +22,8 @@ class GetListOfOfficialGenresControllerTest {
                 new Name("Zé Isep"),
                 new Email("ze@isep.pt")
         );
-        _genreRepo = new GenreRepo();
+        _genreFactory = new GenreFactory();
+        _genreRepo = new GenreRepo(_genreFactory);
         _getListOfOfficialGenresController = new GetListOfOfficialGenresController(_genreRepo, _user);
 
     }
