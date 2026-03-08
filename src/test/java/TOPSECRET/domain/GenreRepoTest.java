@@ -1,69 +1,103 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.configuration.IMockitoConfiguration;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GenreRepoTest {
 
-    @Test
-    void test_a_constructor_genre_repo(){
+    private GenreFactory _genreFactoryDouble;
+    private Genre _genreDouble1;
+    private Genre _genreDouble2;
 
-        //act
-        new GenreRepo();
+    @BeforeEach
+    void setUp() {
+        _genreFactoryDouble = mock(GenreFactory.class);
+        _genreDouble1 = mock(Genre.class);
+        _genreDouble2 = mock(Genre.class);
+
+        when(_genreFactoryDouble.createGenre("New Genre")).thenReturn(_genreDouble1);
+        when(_genreFactoryDouble.createGenre("Another Genre")).thenReturn(_genreDouble2);
 
     }
 
     @Test
-    void testAddGenreCreateNewGenre() {
-        GenreRepo gr = new GenreRepo();
-        Genre g = gr.addGenre("Action");
+    void addNewGenreToRepoShouldSucceed() {
+        String genreName = "New Genre";
 
-        assertEquals("Action", g.getGenre());   // correct content
-        assertNotNull(g);   // created
+        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        Genre addedGenre = repo.addGenre(genreName);
+
+        assertEquals(_genreDouble1, addedGenre);
+        assertEquals(1, repo.getListOfOfficialGenres().size());
+        assertEquals(genreName, repo.getListOfOfficialGenres().get(0).getGenre());
+
     }
 
     @Test
-    void testAddGenreIfGenreAlreadyExistsInRepo() {
-        GenreRepo gr = new GenreRepo();
-        gr.addGenre("Science Fiction");
-        Genre g = gr.addGenre("Science Fiction");
-        assertNull(g);
+    void addMultipleNewGenresToRepoShouldSucceed() {
+        String genreName = "New Genre";
+        String genre2Name = "Another Genre";
+
+        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        Genre addedGenre = repo.addGenre(genreName);
+        Genre addedGenre2 = repo.addGenre(genre2Name);
+
+        assertEquals(_genreDouble1, addedGenre);
+        assertEquals(_genreDouble2, addedGenre2);
+        assertEquals(2, repo.getListOfOfficialGenres().size());
+        assertEquals(genreName, repo.getListOfOfficialGenres().get(0).getGenre());
+        assertEquals(genre2Name, repo.getListOfOfficialGenres().get(1).getGenre());
+
     }
 
     @Test
-    void test_get_list_of_genres_should_return_list_with_genres() {
+    void addExistingGenreToRepoShouldFail() {
+        String genreName = "Another Genre";
 
-        //arrange
-        GenreRepo gr = new GenreRepo();
-        gr.addGenre("Science Fiction");
-        gr.addGenre("Romance");
-        Genre SciFi = new Genre("Science Fiction");
+        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
 
-        //act
-        List<Genre> listOfOfficialGenres = gr.getListOfOfficialGenres();
+        repo.addGenre(genreName);
 
-        //assert
+        // Attempting to add genreName again
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addGenre(genreName));
+        assertEquals("This genre already exists", exception.getMessage());
+
+    }
+
+    @Test
+    void getListOfGenresShouldReturnListOfGenres() {
+        String genreName = "New Genre";
+        String genre2Name = "Another Genre";
+
+        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        repo.addGenre(genreName);
+        repo.addGenre(genre2Name);
+
+        List<Genre> listOfOfficialGenres = repo.getListOfOfficialGenres();
+
         assertNotNull(listOfOfficialGenres);
         assertEquals(2, listOfOfficialGenres.size());
-        assertFalse(listOfOfficialGenres.isEmpty());
-        assertTrue(listOfOfficialGenres.contains(SciFi));
+        assertEquals(genreName, listOfOfficialGenres.get(0).getGenre());
+        assertEquals(genre2Name, listOfOfficialGenres.get(1).getGenre());
 
     }
 
     @Test
-    void test_get_list_of_genres_should_return_list_of_genres() {
-        GenreRepo gr = new GenreRepo();
+    void getListOfNoGenresShouldReturnIsEmpty() {
+        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
 
-        List<Genre> listOfOfficialGenres = gr.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = repo.getListOfOfficialGenres();
 
-        //assert
         assertNotNull(listOfOfficialGenres);
         assertTrue(listOfOfficialGenres.isEmpty());
 
-
     }
-
 }
