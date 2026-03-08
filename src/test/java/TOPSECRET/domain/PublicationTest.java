@@ -426,7 +426,7 @@ class PublicationTest {
     @Test
     void getters_returnEdition_whenSet() {
         Edition ed = new Edition(
-                300,
+                new NumberOfPages(30),
                 null,
                 LocalDate.of(1940, 2, 3),
                 Binding.SADDLE_STITCH,

@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 public class NumberOfPages {
     private int _numberOfPages;
 
@@ -12,5 +14,16 @@ public class NumberOfPages {
 
     public int getNumberOfPages() {
         return _numberOfPages;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof NumberOfPages that)) return false;
+        return _numberOfPages == that._numberOfPages;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(_numberOfPages);
     }
 }

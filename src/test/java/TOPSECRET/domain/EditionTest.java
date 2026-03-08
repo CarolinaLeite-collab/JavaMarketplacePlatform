@@ -11,7 +11,7 @@ public class EditionTest {
     void validEditionWithIssn() {
         Edition edit = new Edition(
                 new ISSN("1018-4783"),
-                30,
+                new NumberOfPages(30),
                 3,
                 LocalDate.of(2001, 4, 23),
                 Binding.SADDLE_STITCH,
@@ -21,7 +21,7 @@ public class EditionTest {
                 Language.of("pt", "Portuguese", "Português"));
 
         assertEquals(3, edit.getEditionNumber());
-        assertEquals(30, edit.getNumberOfPages());
+        assertEquals(new NumberOfPages(30), edit.getNumberOfPages());
         assertNotNull(edit);
         assertNotNull(edit.getIssn());
         assertNull(edit.getIsbn());
@@ -31,7 +31,7 @@ public class EditionTest {
     void invalidEditionWithoutIssn() {
         assertThrows(IllegalArgumentException.class, () -> new Edition(
                 (ISSN) null,    // null as object ISSN - ISSN not exist
-                30,
+                new NumberOfPages(30),
                 3,
                 LocalDate.of(2001, 4, 23),
                 Binding.SADDLE_STITCH,
@@ -46,7 +46,7 @@ public class EditionTest {
     void validEditionWithIsbn() {
         Edition edit1 = new Edition (
                 new ISBN("0306406152"),
-                250,
+                new NumberOfPages(250),
                 1,
                 LocalDate.of(1992, 5, 12),
                 Binding.PUR,
@@ -64,7 +64,7 @@ public class EditionTest {
     void invalidEditionWithoutIsbn() {
         assertThrows(IllegalArgumentException.class, () -> new Edition(
                 (ISBN) null,    // null as object ISBN - ISBN not exist
-                250,
+                new NumberOfPages(250),
                 1,
                 LocalDate.of(1992, 5, 12),
                 Binding.PUR,
@@ -79,7 +79,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    300,
+                    new NumberOfPages(300),
                     null,
                     LocalDate.of(1940, 2, 3),
                     Binding.SADDLE_STITCH,
@@ -92,7 +92,7 @@ public class EditionTest {
     @Test
     void validEditionWithoutIssnAndIsbnAndWithNullEditionNumber(){
         Edition edit2 = new Edition(
-                300,
+                new NumberOfPages(30),
                 null,
                 LocalDate.of(1940, 2, 3),
                 Binding.SADDLE_STITCH,
@@ -109,7 +109,7 @@ public class EditionTest {
     @Test
     void validEditionWithoutIssnAndIsbnWithEditionNumberOne() {
         Edition edit3 = new Edition(
-                10,
+                new NumberOfPages(30),
                 1,   // boundary value
                 LocalDate.of(2022, 10, 1),
                 Binding.SADDLE_STITCH,
@@ -127,7 +127,7 @@ public class EditionTest {
     void invalidEditionWithoutIssnAndIsbnWithNegativeEditionNumber(){
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    100,
+                    new NumberOfPages(30),
                     -1,
                     LocalDate.of(1940, 11, 1),
                     Binding.SADDLE_STITCH,
@@ -142,7 +142,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    100,
+                    new NumberOfPages(30),
                     null,
                     LocalDate.of(2001, 4, 23),
                     Binding.PUR,
@@ -156,7 +156,7 @@ public class EditionTest {
     void validEditionWithEditionNumberOne() {
         Edition edit4 = new Edition(
                 new ISSN ("1018-4783"),
-                10,
+                new NumberOfPages(30),
                 1,
                 LocalDate.of(2020, 1, 1),
                 Binding.PUR,
@@ -173,7 +173,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    300,
+                    new NumberOfPages(30),
                     -3,
                     LocalDate.of(2001, 4, 23),
                     Binding.SADDLE_STITCH,
@@ -188,7 +188,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    30,
+                    new NumberOfPages(30),
                     0,
                     LocalDate.of(2001, 4, 23),
                     Binding.SADDLE_STITCH,
@@ -203,7 +203,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISSN("1018-4783"),
-                    30,
+                    new NumberOfPages(30),
                     0,
                     LocalDate.of(2020, 1, 1),
                     Binding.SADDLE_STITCH,
@@ -218,7 +218,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    -30,
+                    new NumberOfPages(-30),
                     1,
                     LocalDate.of(2001, 4, 23),
                     Binding.SADDLE_STITCH,
@@ -233,7 +233,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISBN("0306406152"),
-                    0,
+                    new NumberOfPages(0),
                     1,
                     LocalDate.of(2001, 4, 23),
                     Binding.SADDLE_STITCH,
@@ -249,7 +249,7 @@ public class EditionTest {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
                     new ISSN("1018-4783"),
-                    0,
+                    new NumberOfPages(0),
                     1,
                     LocalDate.of(2020, 1, 1),
                     Binding.SADDLE_STITCH,
@@ -263,7 +263,7 @@ public class EditionTest {
     void invalidEditionWithoutIssnAndIsbnButZeroNumberOfPages() {
         assertThrows(IllegalArgumentException.class, () -> {
             new Edition(
-                    0,
+                    new NumberOfPages(0),
                     1,
                     LocalDate.of(2020, 1, 1),
                     Binding.SADDLE_STITCH,
@@ -277,7 +277,7 @@ public class EditionTest {
     void validEditionWithOneNumberOfPages(){
         Edition edit5 = new Edition(
                 new ISSN ("1018-4783"),
-                1,   // boundary valid value
+                new NumberOfPages(1), // boundary valid value
                 2,
                 LocalDate.of(2020, 11, 1),
                 Binding.PUR,
@@ -287,7 +287,7 @@ public class EditionTest {
                 Language.of("pt", "Portuguese", "Português")
         );
 
-        assertEquals(1, edit5.getNumberOfPages());
+        assertEquals(new NumberOfPages(1), edit5.getNumberOfPages());
     }
 
     @Test
@@ -297,10 +297,11 @@ public class EditionTest {
         Dimension dim = new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS);
         Weight w = new Weight(224.7, Weight.WeightUnit.GRAMS);
         Language lang = Language.of ("pt", "Portuguese", "Português");
+        NumberOfPages pages = new NumberOfPages(30);
 
         Edition edit6 = new Edition (
                 new ISSN ("1018-4783"),
-                30,
+                pages,
                 3,
                 date,
                 Binding.SADDLE_STITCH,
@@ -310,7 +311,7 @@ public class EditionTest {
                 lang);
 
         assertEquals(3, edit6.getEditionNumber());
-        assertEquals(30, edit6.getNumberOfPages());
+        assertEquals(pages, edit6.getNumberOfPages());
         assertEquals(date, edit6.getPublicationDate());
         assertEquals(Binding.SADDLE_STITCH, edit6.getBinding());
         assertEquals(descript, edit6.getDescription());
