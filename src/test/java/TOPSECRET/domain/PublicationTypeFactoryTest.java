@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mockConstruction;
 class PublicationTypeFactoryTest {
 
     @Test
-    void shouldCreatePublicationType(){
+    void shouldCreatePublicationType() throws InstantiationException {
 
         //SUT
         PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
@@ -21,6 +21,10 @@ class PublicationTypeFactoryTest {
             //Assert
             assertNotNull(publicationTypeResult);
             assertEquals(1, mockedConstruction.constructed().size());
+
+        } catch (InstantiationException e) {
+
+            throw new InstantiationException ("Publication Type not successfully created!" + e.getMessage());
 
         }
 

@@ -9,9 +9,17 @@ package TOPSECRET.domain;
 
 public class PublicationTypeFactory {
 
-    public PublicationType createPublicationType(String publicationTypeName) {
+    public PublicationType createPublicationType(String publicationTypeName) throws InstantiationException {
+
+        try {
 
             return new PublicationType(publicationTypeName);
+
+        } catch  (Exception e) {
+
+            throw new InstantiationException ("Publication Type not successfully created!" +  e.getMessage());
+
+        }
 
     }
 

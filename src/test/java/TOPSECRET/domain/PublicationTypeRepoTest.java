@@ -14,7 +14,7 @@ class PublicationTypeRepoTest {
     private PublicationType _pubTypeDouble2;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InstantiationException {
 
         _ptfDouble = mock(PublicationTypeFactory.class);
         _pubTypeDouble1 = mock(PublicationType.class);
@@ -31,7 +31,7 @@ class PublicationTypeRepoTest {
 
 
     @Test
-    void addPublicationTypeShouldReturnPublicationType() {
+    void addPublicationTypeShouldReturnPublicationType() throws InstantiationException {
         // Arrange
         String pubTypeName = "BOOK";
 
@@ -46,7 +46,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldAddPublicationTypeSuccessfullyAndListNotEmpty() {
+    void shouldAddPublicationTypeSuccessfullyAndListNotEmpty() throws InstantiationException {
         // Arrange
         String pubTypeName = "BOOK";
 
@@ -61,7 +61,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldNotAllowDuplicatePublicationTypes() {
+    void shouldNotAllowDuplicatePublicationTypes() throws InstantiationException {
         //Arrange
         String pubTypeName = "MAGAZINE";
         when(_pubTypeDouble2.isSamePublicationType(pubTypeName)).thenReturn(true);
@@ -77,7 +77,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldBeAbleToAddMultiplePublicationTypes() {
+    void shouldBeAbleToAddMultiplePublicationTypes() throws InstantiationException {
         //Arrange
         String pubTypeName = "MAGAZINE";
         String pubTypeName2 = "BOOK";
@@ -96,7 +96,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldThrowCorrectMessageOnDuplicatePublicationTypes() {
+    void shouldThrowCorrectMessageOnDuplicatePublicationTypes() throws InstantiationException {
         // Arrange
         String pubTypeName = "BOOK";
         when(_pubTypeDouble1.isSamePublicationType(pubTypeName)).thenReturn(true);

@@ -22,7 +22,7 @@ public class AddPublicationTypeController {
 
     }
 
-    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
+    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException, InstantiationException {
 
         return _ptr.addPublicationType(publicationTypeName);
 

@@ -12,14 +12,14 @@ import static org.mockito.Mockito.*;
 
 class AddPublicationTypeControllerTest {
 
-    private User _admin;
+    private User _adminDouble;
     private PublicationTypeRepo _ptrDouble;
     private PublicationType _pubTypeDouble;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InstantiationException {
 
-        _admin = mock (User.class);
+        _adminDouble = mock (User.class);
         _ptrDouble = mock(PublicationTypeRepo.class);
         _pubTypeDouble = mock(PublicationType.class);
         when(_ptrDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
@@ -27,13 +27,13 @@ class AddPublicationTypeControllerTest {
     }
 
     @Test
-    void addPublicationTypeToRepoAndReturnsCreatedType() {
+    void addPublicationTypeToRepoAndReturnsCreatedType() throws InstantiationException {
 
         //arrange
         String publicationTypeName = "book";
 
         //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _admin);
+        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _adminDouble);
 
         //act
 
@@ -46,7 +46,7 @@ class AddPublicationTypeControllerTest {
     }
 
     @Test
-    void addPublicationTypeThrowsWhenTypeAlreadyExists() {
+    void addPublicationTypeThrowsWhenTypeAlreadyExists() throws InstantiationException {
 
         //Arrange
         String publicationTypeName = "book";
@@ -54,7 +54,7 @@ class AddPublicationTypeControllerTest {
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _admin);
+        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble, _adminDouble);
 
         //act and assert
         assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
