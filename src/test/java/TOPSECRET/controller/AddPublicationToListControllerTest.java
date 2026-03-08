@@ -12,10 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class AddPublicationToListControllerTest {
 
     private ListOfPublicationsRepo _listRepo;
+    private ListOfPublicationsFactory _listFactory;
     private LibraryRepo _libraryRepo;
     private AddPublicationToListController _controller;
 
     private UserRepo _userRepo;
+    private GenreFactory _genreFactory;
     private GenreRepo _genreRepo;
 
     private User _user;
@@ -26,11 +28,13 @@ class AddPublicationToListControllerTest {
     @BeforeEach
     void setUp() {
         _listRepo = new ListOfPublicationsRepo();
+        _listFactory = new ListOfPublicationsFactory();
         _libraryRepo = new LibraryRepo(_libraryFactory);
         _controller = new AddPublicationToListController(_listRepo, _libraryRepo);
 
         _userRepo = new UserRepo();
-        _genreRepo = new GenreRepo();
+        _genreFactory = new GenreFactory();
+        _genreRepo = new GenreRepo(_genreFactory);
 
         _user = _userRepo.registerNewUser("User One", "user1@mail.com");
 
@@ -39,8 +43,12 @@ class AddPublicationToListControllerTest {
 
         _library = _libraryRepo.addLibrary(_user);
 
-        ListOfPublications myList = _listRepo.createListOfPublications(_user, "My List", _action);
+        ListOfPublications myList = _listFactory.createListOfPublications(_user, "My List", _action);
         assertNotNull(myList);
+
+        // store list in repo so controller can find it
+        _listRepo.addListOfPublications(myList);
+
     }
 
     // getMyLists
@@ -48,7 +56,7 @@ class AddPublicationToListControllerTest {
     @Test
     void getMyListsShouldReturnOnlyListsOfThatUser() {
         User user2 = _userRepo.registerNewUser("User Two", "user2@mail.com");
-        _listRepo.createListOfPublications(user2, "Other List", _action);
+        _listFactory.createListOfPublications(user2, "Other List", _action);
 
         List<ListOfPublications> result = _controller.getMyLists(_user);
 
