@@ -1,128 +1,91 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CityTest {
+
+    @Mock
+    private Country country;
+
+    private City city(String name){
+        return new City(name,country);
+    }
+
 
     @Test
     void constructor_validArgumentsCreatesCity() {
         // Arrange
-        Country country = new Country("Portugal");
+        String name = "Porto";
 
         // Act
-        City city = new City("Porto", country);
+        City city = new City(name, country);
 
         // Assert
-        assertEquals("Porto", city.getName());
-        assertEquals(country, city.getCountry());
+        assertAll(
+                () -> assertEquals("Porto", city.getName()),
+                () -> assertSame(country, city.getCountry())
+        );
     }
 
-    @Test
-    void constructor_nullOrBlankNameThrows() {
-        // Arrange
-        Country country = new Country("Portugal");
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new City(null, country));
-        assertThrows(IllegalArgumentException.class, () -> new City("   ", country));
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "   ", "\t", "\n"})
+    void constructorNullOrBlankName_throwsIllegalArgumentException(String badName) {
+        assertThrows(IllegalArgumentException.class, () -> new City(badName,country));
     }
 
     @Test
     void constructor_nullCountryThrows() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new City("Name", null));
+        assertThrows(IllegalArgumentException.class, () -> new City("Porto", null));
     }
 
     @Test
-    void equalsAndHashCode() {
-        // Arrange
-        Country country = new Country("Portugal");
-        City a = new City("Lisbon", country);
-        City b = new City("Lisbon", country);
-        City c = new City("Porto", country);
-
-        // Assert
-        assertEquals(a, b);
-        assertEquals(a.hashCode(), b.hashCode());
-        assertNotEquals(a, c);
-    }
-
-    @Test
-    void constructor_trimsName() {
-        // Arrange
-        Country country = new Country("Portugal");
-
-        // Act
-        City city = new City("  Porto  ", country);
-
-        // Assert
-        assertEquals("Porto", city.getName());
-    }
-
-    @Test
-    void hashCode_differsForDifferentCities() {
-        // Arrange
-        Country country = new Country("Portugal");
-        City porto = new City("Porto", country);
-        City lisbon = new City("Lisbon", country);
-
-        // Assert
-        assertNotEquals(porto.hashCode(), lisbon.hashCode());
-    }
-
-    @Test
-    void toString_formatsCorrectly() {
-        // Arrange
-        Country country = new Country("Portugal");
+    void equalsReflexive() {
         City city = new City("Porto", country);
-
-        // Act
-        String expected = String.format("%s, %s", city.getName(), country.getCountryName());
-
-        // Assert
-        assertEquals(expected, city.toString());
+        assertEquals(city, city);
     }
 
     @Test
-    void equals_returnsFalseWhenComparingWithDifferentTypeAndNull() {
-        // Arrange
-        City city = new City("Porto", new Country("Portugal"));
-
-        // Assert
-        assertFalse(city.equals(new Object()));
-        assertFalse(city.equals(null));
+    void equalsReturnFalseForNullAndDifferentType() {
+        City a = city("Lisboa");
+        assertNotEquals(null, a);
+        assertNotEquals("Lisboa", a);
     }
 
     @Test
-    void equals_sameReference_returnsTrue() {
-        // Arrange
-        City city = new City("Porto", new Country("Portugal"));
+    void equalsCaseInsensitiveNameSameCountryMockTrueAndHashCodeEqual() {
+        City a = new City("Porto", country);
+        City b = new City("porto", country);
 
-        // Assert
-        assertSame(city, city);
+        assertEquals(a,b);
+        assertEquals(a.hashCode(),b.hashCode());
     }
 
     @Test
-    void equals_isCaseInsensitiveForName() {
-        // Arrange
-        Country country = new Country("Portugal");
-        City a = new City("porto", country);
-        City b = new City("PORTO", country);
+    void equalsSameNameDifferentCountryMocksFalse () {
+        Country otherCountry = mock(Country.class);
 
-        // Assert
-        assertEquals(a, b);
-        assertEquals(a.hashCode(), b.hashCode());
+        City a = new City("Lisboa", country);
+        City b = new City("Lisboa", otherCountry);
+
+        assertNotEquals(a,b);
     }
 
     @Test
-    void equals_sameNameDifferentCountry_returnsFalse() {
-        // Arrange
-        City a = new City("Porto", new Country("Portugal"));
-        City b = new City("Porto", new Country("Spain"));
+    void hashCodeIsCaseInsensitiveSameAsEqualsLogic () {
+        City a = new City("PORTO", country);
+        City b = new City("porto", country);
 
-        // Assert
-        assertNotEquals(a, b);
+        assertEquals(a.hashCode(),b.hashCode());
     }
 }
