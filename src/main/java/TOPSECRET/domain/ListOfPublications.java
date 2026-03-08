@@ -49,21 +49,8 @@ public class ListOfPublications {
     public boolean isPrivate() {
         return _isPrivate;
     }
-
     public void makePublic() {
         _isPrivate = false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ListOfPublications lop)) return false;
-        return Objects.equals(_user, lop._user) && Objects.equals(_name, lop._name) && Objects.equals(_genre, lop._genre);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_user, _name, _genre);
     }
 
     public List<Publication> getPublications() {
@@ -86,4 +73,17 @@ public class ListOfPublications {
         _publications.add(publication);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListOfPublications lop)) return false;
+        return Objects.equals(_user, lop.getUser())
+                && Objects.equals(_name, lop.getName())
+                && Objects.equals(_genre, lop.getGenre());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUser(), getName(), getGenre());
+    }
 }
