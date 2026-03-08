@@ -4,92 +4,98 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
-    private User _buyer;
-    private AuctionRepo _auctionRepo;
-    private Author _author;
-    private GetItemsOnAuctionOfAGivenAuthorController _controller;
+    private User _buyerDouble;
+    private AuctionRepo _auctionRepoDouble;
+    private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
-        _buyer = new User(new Name("Buyer"), new Email("buyer@test.com"));
-        _auctionRepo = new AuctionRepo();
-        _author = new Author("Seneca");
-        _controller = new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepo, _buyer);
+        _buyerDouble = mock(User.class);
+        _auctionRepoDouble = mock(AuctionRepo.class);
+        _authorDouble = mock(Author.class);
     }
 
     @Test
-    void constructor_acceptsValidDependencies() {
-        // Act: ensuring constructor accepts repositories and buyer without exceptions
-        new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepo, _buyer);
+    void testAConstructor() {
+
+        //SUT
+        new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepoDouble, _buyerDouble);
+
     }
 
     @Test
-    void getAuctionItemsByAuthor_returnsEmpty_whenNoAuctions() {
-        // Act
-        List<Item> items = _controller.getAuctionItemsByAuthor(_author);
+    void getAuctionItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems() {
+        //Arrange
+        when(_auctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of());
+
+        //SUT
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepoDouble, _buyerDouble);
+
+        //Act
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
 
         // Assert
-        assertNotNull(items);
-        assertTrue(items.isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAuctionItemsByAuthor_returnsItemsForMatchingAuthor() {
-        // Arrange: publication, item and auction for the target author
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(_author)
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+    void getAuctionItemsByAuthorReturnsListWithCorrectSize() {
+        // Arrange
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Item _item1 = mock(Item.class);
+        Item _item2 = mock(Item.class);
 
-        _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        when(_auctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2));
+
+        //SUT
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepoDouble, _buyerDouble);
 
         // Act
-        List<Item> items = _controller.getAuctionItemsByAuthor(new Author("sEnEcA"));
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
 
         // Assert
-        assertEquals(1, items.size());
-        assertSame(item, items.get(0));
+        assertEquals(2, result.size());
     }
 
     @Test
-    void getAuctionItemsByAuthor_returnsEmpty_whenAuthorDoesNotMatch() {
-        // Arrange: publication and auction for a different author
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Different"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+    void getAuctionItemsByAuthorReturnsListContainingCorrectItems() {
+        // Arrange
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Item _item1 = mock(Item.class);
+        Item _item2 = mock(Item.class);
+        Item _item3 = mock(Item.class);
 
-        _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        when(_auctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2, _item3));
+
+        //SUT
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepoDouble, _buyerDouble);
 
         // Act
-        List<Item> items = _controller.getAuctionItemsByAuthor(_author);
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
 
         // Assert
-        assertNotNull(items);
-        assertTrue(items.isEmpty());
+        assertTrue(result.containsAll(List.of(_item1, _item2, _item3)));
     }
+
+    @Test
+    void getAuctionItemsByAuthorShouldCallRepoWithCorrectAuthor() {
+
+        //SUT / Arrange
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_auctionRepoDouble, _buyerDouble);
+
+        //Act
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
+
+        //Assert
+        verify(_auctionRepoDouble, times(1)).getAuctionItemsByAuthor(_authorDouble);
+
+    }
+
 }
