@@ -1,24 +1,25 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class CityTest {
 
-    @Mock
     private Country country;
 
-    private City city(String name){
-        return new City(name,country);
+    @BeforeEach
+    void setUp() {
+        country = mock(Country.class);
+    }
+
+    private City city(String name) {
+        return new City(name, country);
     }
 
 
@@ -41,7 +42,7 @@ class CityTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   ", "\t", "\n"})
     void constructorNullOrBlankName_throwsIllegalArgumentException(String badName) {
-        assertThrows(IllegalArgumentException.class, () -> new City(badName,country));
+        assertThrows(IllegalArgumentException.class, () -> new City(badName, country));
     }
 
     @Test
@@ -67,8 +68,8 @@ class CityTest {
         City a = new City("Porto", country);
         City b = new City("porto", country);
 
-        assertEquals(a,b);
-        assertEquals(a.hashCode(),b.hashCode());
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
@@ -78,7 +79,7 @@ class CityTest {
         City a = new City("Lisboa", country);
         City b = new City("Lisboa", otherCountry);
 
-        assertNotEquals(a,b);
+        assertNotEquals(a, b);
     }
 
     @Test
@@ -86,6 +87,6 @@ class CityTest {
         City a = new City("PORTO", country);
         City b = new City("porto", country);
 
-        assertEquals(a.hashCode(),b.hashCode());
+        assertEquals(a.hashCode(), b.hashCode());
     }
 }
