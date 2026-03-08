@@ -18,12 +18,16 @@ autoactivate off
 
 
 actor User as U
-participant "UI1:UI" as UI
-participant "Ctl1:GetPublicListsByGenreController" as C
-participant "_lopr:ListOfPublicationsRepo" as R
+participant ":UI" as UI
+participant "Ctl:GetPublicListsByGenreController" as C
+participant "lopr:ListOfPublicationsRepo" as R
+participant "lop:ListOfPublications" as lop
+
 
 U -> UI: I want to get a list (name and user) of the \npublicly published lists of a given genre
+activate UI
 UI --> U: What genre?
+deactivate UI
 
 U -> UI: Genre
 activate UI
@@ -31,18 +35,39 @@ activate UI
 UI -> C: getPublicListsByGenre(Genre)
 activate C
 
-C -> C: validateGenreNotNull()
 C -> R: findPublicListsByGenre(Genre)
 activate R
 
-R -> R: filterPublicByGenre()\n(!isPrivate && genre matches)
-R --> C: publicLists: List<ListOfPublications>
+create " publicLists : List <ListOfPublications>" as List
+R -> List: create()
+
+
+loop for each _lop in _lopr
+    R -> lop: isPrivate()
+    activate lop
+    R -> lop: getGenre()
+    opt !isPrivate && getGenre(genre)==true
+
+        R -> List : add
+        activate List
+        List --> R : true
+        deactivate List
+
+    end
+end
+deactivate lop
+
+
+
+create "copyOfPublicLists: List<ListOfPublications>" as Copy
+R -> Copy: List.copyOf(publicList)
+R --> C: copyOfPublicLists
 deactivate R
 
-C --> UI: publicLists
+C --> UI: copyOfPublicLists
 deactivate C
 
-UI --> U: Done!
+UI --> U: shows list (name, user)
 deactivate UI
 
 @enduml

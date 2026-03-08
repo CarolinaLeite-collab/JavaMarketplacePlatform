@@ -5,69 +5,31 @@ skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk
 skinparam classBackgroundColor WhiteSmoke
 skinparam classAttributeIconSize 0
-hide circle
 
-class UI {
-  +requestPublicListsByGenre()
-  +displayGenrePrompt()
-  +selectGenre(genre: Genre)
-  +displayPublicLists(lists: List<ListOfPublications>)
+
+class GetPublicListsByGenreUI {
 }
 
 class GetPublicListsByGenreController {
-  -_repo: ListOfPublicationsRepo
-  +GetPublicListsByGenreController(repo: ListOfPublicationsRepo)
+
   +getPublicListsByGenre(genre: Genre): List<ListOfPublications>
 }
 
 class ListOfPublicationsRepo {
-  -_listsOfListOfPublications: List<ListOfPublications>
-  -_genreRepo: GenreRepo
-  +createListOfPublications(user: User, name: String, genre: Genre): ListOfPublications
   +findPublicListsByGenre(genre: Genre): List<ListOfPublications>
-  +getListOfListOfPublications(): List<ListOfPublications>
 }
 
 class ListOfPublications {
-  -_user: User
-  -_name: String
-  -_genre: Genre
-  -_isPrivate: boolean
-
-  +ListOfPublications(user: User, name: String, genre: Genre)
   +getUser(): User
   +getName(): String
   +getGenre(): Genre
   +isPrivate(): boolean
-  +makePublic()
 }
 
-class User {
-  -_name: Name
-  -_address: Address
-  -_email: Email
-  -_phone: Phone
-  +getName(): Name
-  +getEmail(): String
-}
 
-class Genre {
-  -_genre: String
-  +Genre(genre: String)
-  +getGenre(): String
-}
+GetPublicListsByGenreUI "1"..> "1" GetPublicListsByGenreController : invokes
+GetPublicListsByGenreController "1" ..> "1" ListOfPublicationsRepo : calls
+ListOfPublicationsRepo "1"--> "*"ListOfPublications : stores
 
-class GenreRepo {
-  -_genres: List<Genre>
-  +create(genreName: String): Genre
-  +getListOfOfficialGenres(): List<Genre>
-}
-
-UI --> GetPublicListsByGenreController : uses
-GetPublicListsByGenreController --> ListOfPublicationsRepo : delegates to
-ListOfPublicationsRepo --> ListOfPublications : stores/returns
-ListOfPublications --> User
-ListOfPublications --> Genre
-ListOfPublicationsRepo --> GenreRepo
 
 @enduml
