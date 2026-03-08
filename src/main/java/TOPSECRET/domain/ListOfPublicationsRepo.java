@@ -12,14 +12,20 @@ import java.util.List;
  */
 public class ListOfPublicationsRepo {
     private final List<ListOfPublications> _listsOfListOfPublications;
+    private final ListOfPublicationsFactory _factory;
 
     public ListOfPublicationsRepo() {
+        this(new ListOfPublicationsFactory());
+    }
+
+    public ListOfPublicationsRepo(ListOfPublicationsFactory factory) {
         _listsOfListOfPublications = new ArrayList<>();
+        _factory = factory;
     }
 
     public ListOfPublications createListOfPublications(User user, String name, Genre genre){
 
-        ListOfPublications newList = new ListOfPublications(user, name, genre);
+        ListOfPublications newList = _factory.createListOfPublications(user, name, genre);
 
         if (existsListOfPublications(newList))
             return null;
@@ -99,7 +105,6 @@ public class ListOfPublicationsRepo {
         }
         return null;
     }
-
 }
 
 
