@@ -8,57 +8,82 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class RegisterNewAppraisalEntityControllerTest {
-    private RegisterNewAppraisalEntityController controller;
-    private PublicationTypeRepo publicationTypeRepo;
-    private GenreFactory genreFactory;
-    private GenreRepo genreRepo;
-    private AppraisalEntityRepo appraisalEntityRepo;
+    private AppraisalEntity _appraisalEntityDouble;
+    private Name _nameDouble;
+    private GenreRepo _genreRepoDouble;
+    private List<Genre> _genres;
+    private Genre _genreDouble;
+    private PublicationTypeRepo _typeRepoDouble;
+    private List<PublicationType> _publicationTypes;
+    private PublicationType _publicationTypeDouble;
+    private AppraisalEntityRepo _entityRepoDouble;
 
     @BeforeEach
-    void setUp() throws InstantiationException {
-        PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
-        publicationTypeRepo = new PublicationTypeRepo(publicationTypeFactory);
-        genreFactory = new GenreFactory();
-        genreRepo = new GenreRepo(genreFactory);
-        appraisalEntityRepo = new AppraisalEntityRepo();
+    void setUp() throws InstantiationException{
+        _nameDouble = mock(Name.class);
 
-        publicationTypeRepo.addPublicationType("book");
-        genreRepo.addGenre("romance");
-        genreRepo.addGenre("fantasy");
+        _genreDouble = mock(Genre.class);
+        _genres = new ArrayList<>();
+        _genres.add(_genreDouble);
 
-        controller = new RegisterNewAppraisalEntityController(
-                appraisalEntityRepo, publicationTypeRepo, genreRepo);
-    }
+        _genreRepoDouble = mock(GenreRepo.class);
+        when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(_genres);
 
-    @Test
-    void should_return_false_if_fields_are_empty() {
-        List types = controller.getPublicationTypes();
-        List genres = controller.getGenres();
+        _publicationTypeDouble = mock(PublicationType.class);
+        _publicationTypes = new ArrayList<>();
+        _publicationTypes.add(_publicationTypeDouble);
 
-        assertFalse(types.isEmpty());
-        assertFalse(genres.isEmpty());
+        _typeRepoDouble = mock(PublicationTypeRepo.class);
+        when(_typeRepoDouble.getAll()).thenReturn(_publicationTypes);
+
+        _appraisalEntityDouble = mock(AppraisalEntity.class);
+
+        _entityRepoDouble = mock (AppraisalEntityRepo.class);
+        when(_entityRepoDouble.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_appraisalEntityDouble);
+
     }
 
     @Test
     void should_get_publicationTypes_from_repo() {
+
+        // SUT
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
+
+        // act
         List types = controller.getPublicationTypes();
 
-        assertEquals(types, publicationTypeRepo.getAll());
+        // assert
+        assertEquals(_publicationTypes, types);
+        verify(_typeRepoDouble).getAll();
     }
 
     @Test
     void should_get_genres_from_repo() {
+
+        // SUT
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
+
+        // act
         List genres = controller.getGenres();
 
-        assertEquals(genres, genreRepo.getListOfOfficialGenres());
+        // assert
+        assertEquals(_genres, genres);
+        verify(_genreRepoDouble).getListOfOfficialGenres();
     }
 
     @Test
     void should_successfully_call_appraisal_entity_creation_method() {
-        AppraisalEntity newAppEnt = controller.registerNewAppraisalEntity(new Name ("publicationName"), new ArrayList<PublicationType>(), new ArrayList<Genre>());
 
-        assertNotNull(newAppEnt);
+        // SUT
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
+
+        // act
+        controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+
+        // assert
+        verify(_entityRepoDouble).registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
     }
 }

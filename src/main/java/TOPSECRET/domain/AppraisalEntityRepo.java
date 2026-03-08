@@ -8,16 +8,18 @@ import java.util.List;
  * <p>
  * Provides operations to check existence by {@link Name} and create new appraisal entities
  * with associated {@link PublicationType}s and {@link Genre}s. Ensures uniqueness by name
- * before creation, throwing {@link IllegalStateException} if a duplicate is detected.
+ * before creation, throwing {@link IllegalArgumentException} if a duplicate is detected.
  *
  * @see AppraisalEntity
  */
 
 public class AppraisalEntityRepo {
     private final List<AppraisalEntity> _appraisalEntities;
+    private AppraisalEntityFactory _factoryAppraisalEntity;
 
-    public AppraisalEntityRepo() {
+    public AppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
         _appraisalEntities = new ArrayList<>();
+        _factoryAppraisalEntity = factoryAppraisalEntity;
     }
 
     private boolean appraisalEntityExists(Name name) {
@@ -29,25 +31,16 @@ public class AppraisalEntityRepo {
         return false;
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
-        if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        if (publicationTypes == null) {
-            throw new IllegalArgumentException("Publication type cannot be null");
-        }
-        if (genres == null) {
-            throw new IllegalArgumentException("Genre cannot be null");
-        }
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
 
         if (appraisalEntityExists(name)) {
-            throw new IllegalStateException("This appraisal entity already exists");
+            throw new IllegalArgumentException("This appraisal entity already exists");
         }
 
         List<PublicationType> typesCopy = new ArrayList<>(publicationTypes);
         List<Genre> genresCopy = new ArrayList<>(genres);
 
-        AppraisalEntity appraisalEntity = new AppraisalEntity(name, typesCopy, genresCopy);
+        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, typesCopy, genresCopy);
 
         _appraisalEntities.add(appraisalEntity);
 
