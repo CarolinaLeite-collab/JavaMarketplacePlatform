@@ -17,7 +17,7 @@ class RegisterNewAppraisalEntityControllerTest {
     private AppraisalEntityRepo appraisalEntityRepo;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InstantiationException {
         PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
         publicationTypeRepo = new PublicationTypeRepo(publicationTypeFactory);
         genreFactory = new GenreFactory();
