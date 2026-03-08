@@ -12,14 +12,17 @@ import java.util.List;
  * </p>
  */
 public class CreatePrivateListOfPublicationsController {
-    private ListOfPublicationsRepo _listOfPublicationsRepo;
-    private GenreRepo _genreRepo;
-    private ListOfPublicationsFactory _listOfPublicationsFactory;
 
-    public CreatePrivateListOfPublicationsController(ListOfPublicationsRepo listOfPublicationsRepo, GenreRepo genreRepo, User user) {
+    private final ListOfPublicationsRepo _listOfPublicationsRepo;
+    private final GenreRepo _genreRepo;
+
+    public CreatePrivateListOfPublicationsController(
+            ListOfPublicationsRepo listOfPublicationsRepo,
+            GenreRepo genreRepo,
+            User user) {
+
         _listOfPublicationsRepo = listOfPublicationsRepo;
         _genreRepo = genreRepo;
-        _listOfPublicationsFactory = new ListOfPublicationsFactory();
     }
 
     public List<Genre> getListOfOfficialGenres() {
@@ -27,8 +30,6 @@ public class CreatePrivateListOfPublicationsController {
     }
 
     public ListOfPublications createListOfPublications(User user, String name, Genre genre) {
-        ListOfPublications list = _listOfPublicationsFactory.createListOfPublications(user, name, genre);
-        return _listOfPublicationsRepo.addListOfPublications(list);
+        return _listOfPublicationsRepo.addListOfPublications(user, name, genre);
     }
-
 }

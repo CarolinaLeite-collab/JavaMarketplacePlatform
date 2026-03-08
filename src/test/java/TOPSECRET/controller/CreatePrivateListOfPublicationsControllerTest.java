@@ -7,70 +7,88 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 
 class CreatePrivateListOfPublicationsControllerTest {
 
-    private User _user1;
-    private Genre _actionGenre;
-    private Genre _poetryGenre;
-    private GenreRepo _genreRepo;
-    private GenreFactory _genreFactory = new GenreFactory();
-    private ListOfPublicationsRepo _repo;
-    private CreatePrivateListOfPublicationsController _controller;
+    private ListOfPublicationsRepo repo;
+    private GenreRepo genreRepo;
+    private CreatePrivateListOfPublicationsController controller;
+
+    private User user;
+    private Genre action;
+    private Genre poetry;
 
     @BeforeEach
     void setUp() {
-        _user1 = new User(new Name("Joaquim"), new Email("test@isep.com"));
+        repo = mock(ListOfPublicationsRepo.class);
+        genreRepo = mock(GenreRepo.class);
 
-        _genreRepo = new GenreRepo(_genreFactory);
-        _actionGenre = _genreRepo.addGenre("Action");
-        _poetryGenre = _genreRepo.addGenre("poetry");
+        controller = new CreatePrivateListOfPublicationsController(repo, genreRepo, null);
 
-        _repo = new ListOfPublicationsRepo();
-        _controller = new CreatePrivateListOfPublicationsController(_repo, _genreRepo, _user1);
+        user = new User(new Name("Joaquim"), new Email("test@isep.com"));
+        action = new Genre("Action");
+        poetry = new Genre("Poetry");
     }
 
     @Test
-    void shouldcreateListSuccessfully() {
-        // Arrange & Act
-        ListOfPublications list = _controller.createListOfPublications(_user1, "My List", _actionGenre);
+    void shouldCreateListSuccessfully() {
+        // Arrange
+        ListOfPublications list = new ListOfPublications(user, "My List", action);
+
+        when(repo.addListOfPublications(user, "My List", action)).thenReturn(list);
+
+        // Act
+        ListOfPublications result = controller.createListOfPublications(user, "My List", action);
 
         // Assert
-        assertNotNull(list);
-        assertEquals(1, _repo.getListOfListOfPublications().size());
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertEquals(list, result)
+        );
+        verify(repo).addListOfPublications(user, "My List", action);
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        _controller.createListOfPublications(_user1, "My List", _actionGenre);
+        when(repo.addListOfPublications(user, "My List", action)).thenReturn(null);
 
         // Act
-        ListOfPublications duplicate = _controller.createListOfPublications(_user1, "My List", _actionGenre);
+        ListOfPublications duplicate = controller.createListOfPublications(user, "My List", action);
 
         // Assert
         assertNull(duplicate);
-        assertEquals(1, _repo.getListOfListOfPublications().size());
+        verify(repo).addListOfPublications(user, "My List", action);
     }
 
     @Test
     void getListOfOfficialGenresReturnsUnmodifiableList() {
-        List<Genre> officialGenres = _controller.getListOfOfficialGenres();
+        // Arrange
+        when(genreRepo.getListOfOfficialGenres()).thenReturn(List.of(action, poetry));
 
-        assertThrows(UnsupportedOperationException.class, () -> officialGenres.add(new Genre("Horror")));
+        // Act
+        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> officialGenres.add(new Genre("Horror")));
     }
 
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
-        List<Genre> officialGenres = _controller.getListOfOfficialGenres();
+        // Arrange
+        when(genreRepo.getListOfOfficialGenres()).thenReturn(List.of(action, poetry));
 
-        assertNotNull(officialGenres);
-        assertEquals(2, officialGenres.size());
-        assertTrue(officialGenres.contains(_actionGenre));
-        assertTrue(officialGenres.contains(_poetryGenre));
+        // Act
+        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+
+        // Assert
+        assertAll(
+                () -> assertEquals(2, officialGenres.size()),
+                () -> assertTrue(officialGenres.contains(action)),
+                () -> assertTrue(officialGenres.contains(poetry))
+        );
     }
-
-
-
-
 }

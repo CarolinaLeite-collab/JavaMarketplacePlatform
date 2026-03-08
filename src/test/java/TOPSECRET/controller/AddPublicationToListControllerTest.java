@@ -43,11 +43,8 @@ class AddPublicationToListControllerTest {
 
         _library = _libraryRepo.addLibrary(_user);
 
-        ListOfPublications myList = _listFactory.createListOfPublications(_user, "My List", _action);
+        ListOfPublications myList = _listRepo.addListOfPublications(_user, "My List", _action);
         assertNotNull(myList);
-
-        // store list in repo so controller can find it
-        _listRepo.addListOfPublications(myList);
 
     }
 

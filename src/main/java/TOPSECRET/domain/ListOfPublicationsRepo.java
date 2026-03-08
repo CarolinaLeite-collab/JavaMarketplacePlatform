@@ -10,33 +10,27 @@ import java.util.List;
  * It ensures that duplicate lists (same user, name, and genre) are not allowed.
  * </p>
  */
+
 public class ListOfPublicationsRepo {
     private final List<ListOfPublications> _listsOfListOfPublications;
+    private final ListOfPublicationsFactory _factory;
 
     public ListOfPublicationsRepo() {
-        _listsOfListOfPublications = new ArrayList<>();
+        this(new ListOfPublicationsFactory());
     }
 
-    public ListOfPublications addListOfPublications(ListOfPublications list) {
-        if (list == null) {
-            throw new IllegalArgumentException("List is mandatory");
-        }
+    public ListOfPublicationsRepo(ListOfPublicationsFactory factory) {
+        _listsOfListOfPublications = new ArrayList<>();
+        _factory = factory;
+    }
 
-        if (existsListOfPublications(list)) {
+    public ListOfPublications addListOfPublications(User user, String name, Genre genre) {
+        ListOfPublications newList = _factory.createListOfPublications(user, name, genre);
+        if (_listsOfListOfPublications.contains(newList)) {
             return null;
         }
-
-        _listsOfListOfPublications.add(list);
-        return list;
-    }
-
-    private boolean existsListOfPublications(ListOfPublications listOfPublications) {
-        for (ListOfPublications lp1 : _listsOfListOfPublications) {
-            if (lp1.equals(listOfPublications)) {
-                return true;
-            }
-        }
-        return false;
+        _listsOfListOfPublications.add(newList);
+        return newList;
     }
 
     public List<ListOfPublications> getListOfListOfPublications() {
@@ -94,6 +88,3 @@ public class ListOfPublicationsRepo {
         return null;
     }
 }
-
-
-
