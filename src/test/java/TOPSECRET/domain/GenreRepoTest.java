@@ -26,6 +26,9 @@ public class GenreRepoTest {
         when(_genreFactoryDouble.createGenre("New Genre")).thenReturn(_genreDouble1);
         when(_genreFactoryDouble.createGenre("Another Genre")).thenReturn(_genreDouble2);
 
+        when(_genreDouble1.getGenre()).thenReturn("New Genre");
+        when(_genreDouble2.getGenre()).thenReturn("Another Genre");
+
     }
 
     @Test
