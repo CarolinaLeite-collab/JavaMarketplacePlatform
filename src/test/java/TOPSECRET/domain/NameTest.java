@@ -1,91 +1,94 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class NameTest {
 
-    @Test
-    void shouldCreateNameWithValidSimpleName() {
-        Name name = new Name("Jose Mourinho");
-        assertEquals("Jose Mourinho", name.get_Name());
+    private static void assertValidName (String rawInput, String expectedNormalized) {
+
+        //Arrange
+
+        //Act
+        Name name = new Name(rawInput);
+
+        //Assert
+        assertAll(
+                () -> assertEquals(expectedNormalized, name.get_Name()),
+                () -> assertEquals(expectedNormalized, name.toString())
+        );
+    }
+
+    private static void assertInvalidName (String rawImput) {
+        assertThrows(IllegalArgumentException.class, () -> new Name(rawImput));
+    }
+
+    @ParameterizedTest
+    @MethodSource("validNames")
+    void constuctorValidInputsCreatesNormalizedName (String input, String expected) {
+        assertValidName(input, expected);
+    }
+
+    private static Stream<org.junit.jupiter.params.provider.Arguments> validNames() {
+        return Stream.of(
+                org.junit.jupiter.params.provider.Arguments.of("Jose Mourinho", "Jose Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("José Mourinho", "José Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("  José   Mourinho  ", "José Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("Ana-Maria", "Ana-Maria"),
+                org.junit.jupiter.params.provider.Arguments.of("D'Avila", "D'Avila"),
+                org.junit.jupiter.params.provider.Arguments.of("Al", "Al"),
+                org.junit.jupiter.params.provider.Arguments.of("A".repeat(80), "A".repeat(80))
+        );
     }
 
     @Test
-    void shouldAllowAccentedLetters() {
-        Name name = new Name("José Mourinho");
-        assertEquals("José Mourinho", name.get_Name());
+    void constructorNullThrowsIllegalArgumentException() {
+        assertInvalidName(null);
     }
 
-    @Test
-    void shouldAllowHyphenAndApostrophe() {
-        Name n1 = new Name("Ana-Maria");
-        assertEquals("Ana-Maria", n1.get_Name());
-
-        Name n2 = new Name("D'Avila");
-        assertEquals("D'Avila", n2.get_Name());
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "  ", "\t", "\n", "\t \n"})
+    void constructorBlankLikeInputsThrowsIllegalArgumentException(String bad) {
+        assertInvalidName(bad);
     }
 
-    @Test
-    void shouldNormalizeSpacesTrimAndCollapse() {
-        Name name = new Name("   José     Mourinho   ");
-        assertEquals("José Mourinho", name.get_Name());
+    @ParameterizedTest
+    @MethodSource("invalidLengths")
+    void constructorInvalidLengthsThrowsIllegalArgumentException(String bad) {
+        assertInvalidName(bad);
     }
 
-    @Test
-    void shouldRejectNull() {
-        assertThrows(IllegalArgumentException.class, () -> new Name(null));
+    private static Stream<String> invalidLengths() {
+        return Stream.of(
+                "A",
+                "A".repeat(81)
+        );
     }
 
-    @Test
-    void shouldRejectBlankOrOnlySpaces() {
-        assertThrows(IllegalArgumentException.class, () -> new Name(""));
-        assertThrows(IllegalArgumentException.class, () -> new Name("   "));
-        assertThrows(IllegalArgumentException.class, () -> new Name("\t \n"));
+    @ParameterizedTest
+    @ValueSource(strings = {"Jose2 Mourinho", "1234"})
+    void constructorNumbersNotAllowedThrowsIllegalArgumentException(String bad) {
+        assertInvalidName(bad);
     }
 
-    @Test
-    void shouldRejectTooShortOrTooLong() {
-        assertThrows(IllegalArgumentException.class, () -> new Name("A"));
-
-        String longName = "A".repeat(81);
-        assertThrows(IllegalArgumentException.class, () -> new Name(longName));
+    @ParameterizedTest
+    @ValueSource(strings = {"Jose_Mourinho", "Jose@Mourinho", "Jose.Mourinho"})
+    void constructorInvalidSymbolsThrowsIllegalArgumentException(String bad) {
+        assertInvalidName(bad);
     }
 
-    @Test
-    void shouldAcceptBoundaryLengths() {
-        Name min = new Name("Al"); // 2 chars
-        assertEquals("Al", min.get_Name());
-
-        Name max = new Name("A".repeat(80)); // 80 chars
-        assertEquals("A".repeat(80), max.get_Name());
+    @ParameterizedTest
+    @ValueSource(strings = {"-Jose", "Jose-", "'Jose", "Jose'"})
+    void constructorStartOrEndWithSeparatorThrowsIllegalArgumentException(String bad) {
+        assertInvalidName(bad);
     }
 
-    @Test
-    void shouldRejectNumbers() {
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose2 Mourinho"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("1234"));
-    }
-
-    @Test
-    void shouldRejectInvalidSymbols() {
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose_Mourinho"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose@Mourinho"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose.Mourinho"));
-    }
-
-    @Test
-    void shouldRejectStartingOrEndingWithSeparator() {
-        assertThrows(IllegalArgumentException.class, () -> new Name("-Jose"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose-"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("'Jose"));
-        assertThrows(IllegalArgumentException.class, () -> new Name("Jose'"));
-    }
-
-    @Test
-    void toStringShouldReturnValue() {
-        Name name = new Name("José Mourinho");
-        assertEquals("José Mourinho", name.toString());
-    }
 }
