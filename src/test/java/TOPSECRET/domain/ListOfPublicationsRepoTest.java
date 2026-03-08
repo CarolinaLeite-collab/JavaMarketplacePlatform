@@ -19,19 +19,14 @@ class   ListOfPublicationsRepoTest {
 
     @BeforeEach
     void setUp() {
-        _genreRepo = new GenreRepo();
-        _userRepo = new UserRepo();
+
         _repo = new ListOfPublicationsRepo();
 
-        _action = _genreRepo.addGenre("Action");
-        _poetry = _genreRepo.addGenre("Poetry");
-
-        assertNotNull(_action);
-        assertNotNull(_poetry);
-
+        _action = new Genre("Action");
+        _poetry = new Genre("Poetry");
 
         _user1 = new User(new Name("Joaquim"), new Email("test@isep.com"));
-        _user2 = _userRepo.registerNewUser("User Two", "user2@mail.com");
+        _user2 = new User(new Name("User Two"), new Email("user2@mail.com"));
     }
 
     @Test
