@@ -1,6 +1,9 @@
 package TOPSECRET.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Period;
 import java.time.Year;
@@ -10,6 +13,17 @@ class ItemTest {
 
     private ZonedDateTime auctionStartDate = ZonedDateTime.now().plusDays(1);
     private ZonedDateTime auctionEndDate = ZonedDateTime.now().plusDays(2);
+    private Publication _publicationDouble;
+    private Condition _conditionDouble;
+
+
+    @BeforeEach
+    void setUp() {
+
+        _publicationDouble = mock(Publication.class);
+        _conditionDouble = mock(Condition.class);
+
+    }
 
     @Test
     void itemIsCreatedWithPublicationAndCondition() {
@@ -253,6 +267,58 @@ class ItemTest {
         // Act + Assert
         assertNull(item.getDirectSale(),
                 "Getter must return null when no DirectSale is assigned");
+    }
+
+    // Isolated test of isByAuthor method
+    @Test
+    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
+
+        //Arrange
+        Author _author = mock(Author.class);
+        when(_publicationDouble.isByAuthor(_author)).thenReturn(true);
+
+        // SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByAuthor(_author);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
+
+        //Arrange
+        Author _author2 = mock(Author.class);
+        when(_publicationDouble.isByAuthor(_author2)).thenReturn(false);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByAuthor(_author2);
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void isByAuthorShouldDelegateToPublication() {
+        //Arrange
+        Author _author = mock(Author.class);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        item.isByAuthor(_author);
+
+        //Assert
+        verify(_publicationDouble, times(1)).isByAuthor(_author);
     }
 
 }

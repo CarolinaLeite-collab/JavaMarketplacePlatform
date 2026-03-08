@@ -62,4 +62,10 @@ public class Item {
         return auction;
 
     }
+
+    public boolean isByAuthor(Author author) {
+
+        return publication.isByAuthor(author);
+
+    }
 }
