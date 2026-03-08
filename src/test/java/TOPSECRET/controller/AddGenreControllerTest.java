@@ -5,47 +5,64 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class AddGenreControllerTest {
 
-    //Set up test objects
-    private User _admin;
-    private GenreRepo _genreRepo;
+
+    private User _adminDouble;
+    private GenreRepo _genreRepoDouble;
+    private Genre _genreDouble;
     private AddGenreController _addGenreController;
-    private Country _country;
-    private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp() {
-        _countryFactory = new CountryFactory();
-        _country = _countryFactory.createClass("Portugal");
-        _admin = new User(
-                new Name ("Maria"),
-                new Address ("Rua senhor de matosinhos", "81", Address.BuildingType.HOUSE, "Matosinhos", "Porto", _country, "4300-111", null ),
-                new Email ("test@gmail.com"),
-                new Phone( new PhonePrefix("+351"),"911234567"));
+        _adminDouble = mock(User.class);
+        _genreRepoDouble = mock(GenreRepo.class);
+        _genreDouble = mock(Genre.class);
 
-        _genreRepo = new GenreRepo();
-        _addGenreController = new AddGenreController(_genreRepo, _admin);
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+
     }
 
     @Test
-    void contructorControllerAddGenre() {
-        new AddGenreController(_genreRepo, _admin);
+    void constructorAddGenreControllerShouldCreateController() {
+        //AddGenreController controller = new AddGenreController(_genreRepoDouble, _adminDouble);
+
+        // _addGenreController is already created in @BeforeEach with mocked dependencies
+        assertNotNull(_addGenreController);
     }
 
     @Test
-    void genreIsCreated() {
-        Genre genre = _addGenreController.addGenre("Action");
-        assertNotNull(genre);
-        assertEquals("Action", genre.getGenre());
+    void addGenreShouldReturnGenreFromRepo() {
+        String genreName = "Action";
+
+        when(_genreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
+
+        Genre genreAdded = _addGenreController.addGenre(genreName);
+
+        assertNotNull(genreAdded);
+        assertEquals(_genreDouble, genreAdded);
+        verify(_genreRepoDouble).addGenre(genreName);
     }
 
     @Test
-    void genreIsNullWhenExistsInRepo() {
-        _addGenreController.addGenre("Action");
-        Genre genre = _addGenreController.addGenre("Action");
-        assertNull(genre);
+    void addGenreThrowsWhenAlreadyExistsInRepo() {
+        String genreName = "Action";
+
+        when(_genreRepoDouble.addGenre(genreName))
+                .thenReturn(_genreDouble) // first call: genre is added
+                .thenThrow(new IllegalArgumentException("This genre already exists"));     // second call: repo signals duplication
+
+        Genre firstAddedGenre = _addGenreController.addGenre(genreName);
+
+        // Second attempt to add the same genre
+        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(genreName));
+
+        assertNotNull(firstAddedGenre);
+        assertEquals("This genre already exists", secondAttemptThrows.getMessage());
+        verify(_genreRepoDouble, times(2)).addGenre(genreName); // proves repo was called twice
     }
 
 }
