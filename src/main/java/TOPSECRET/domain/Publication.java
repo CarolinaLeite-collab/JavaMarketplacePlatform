@@ -171,6 +171,12 @@ public class Publication {
         return genre.equals(this._genre);
     }
 
+    public boolean isByAuthor(Author author) {
+
+        return author.equals(this._author);
+
+    }
+
     //getters
     public PublicationType getPublicationType() {
         return _publicationType;

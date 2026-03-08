@@ -8,9 +8,34 @@ import java.time.LocalDate;
 import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationTest {
     //Happy path
+
+    private PublicationType _publicationTypeDouble;
+    private Identifier _identifierDouble;
+    private Year _yearDouble;
+    private Title _titleDouble;
+    private Author _authorDouble;
+    private PublishingCompany _publishingCompanyDouble;
+    private Edition _editionDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        _publicationTypeDouble = mock(PublicationType.class);
+        _identifierDouble = mock(Identifier.class);
+        _yearDouble = mock(Year.class);
+        _titleDouble = mock(Title.class);
+        _authorDouble = mock(Author.class);
+        _publishingCompanyDouble = mock(PublishingCompany.class);
+        _editionDouble = mock(Edition.class);
+
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+
+    }
 
     @Test
     void buildBook_withAllMandatoryFields_succeeds() {
@@ -447,6 +472,57 @@ class PublicationTest {
                 .build();
 
         assertEquals(ed, p.getEdition());
+    }
+
+    // Isolated test of isByAuthor method
+    @Test
+    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
+
+        //SUT / Arrange
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        //Act
+
+        boolean result = p.isByAuthor(_authorDouble);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
+
+        //Arrange
+
+        Author _author2 = mock(Author.class);
+
+        //SUT
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        //Act
+
+        boolean result = p.isByAuthor(_author2);
+
+        //Assert
+        assertFalse(result);
+
     }
 }
 
