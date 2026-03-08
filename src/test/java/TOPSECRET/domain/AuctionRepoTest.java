@@ -29,6 +29,10 @@ class AuctionRepoTest {
     private ZonedDateTime _start;
     private ZonedDateTime _end;
 
+    //Doubles
+
+    private AuctionFactory _auctionFactoryDouble;
+
     @BeforeEach
     void setUp() {
         _repo = new AuctionRepo();
@@ -70,6 +74,13 @@ class AuctionRepoTest {
         publicationYear = Year.of(2019);
         defaultAuthorName = "Someone";
         defaultPublisherName = "SomePub";
+
+        // Setting up Doubles
+
+        _auctionFactoryDouble = mock(AuctionFactory.class);
+
+
+
     }
 
     @Test
@@ -700,4 +711,131 @@ class AuctionRepoTest {
         assertSame(item, results.get(0));
         verify(auction).isByPublication(publication);
     }
+
+    //Isolated tests
+
+    @Test
+    void getAuctionItemsByAuthorShouldReturnListOfItemsByAuthor() throws InstantiationException {
+
+        //Arrange
+        Auction _auction1 = mock(Auction.class);
+        Auction _auction2 = mock(Auction.class);
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+        Price _startingPriceDouble = mock(Price.class);
+        Author _authorDouble = mock(Author.class);
+
+        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction1);
+        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction2);
+
+        when(_auction1.isByAuthor(_authorDouble)).thenReturn(true);
+        when(_auction2.isByAuthor(_authorDouble)).thenReturn(true);
+        when(_auction1.getItem()).thenReturn(_itemDouble1);
+        when(_auction2.getItem()).thenReturn(_itemDouble2);
+
+        //SUT
+        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
+        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
+
+        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
+
+        //Assert
+        assertEquals(2, results.size());
+
+    }
+
+    @Test
+    void getAuctionItemsByAuthorShouldReturnEmptyListOfItemsIfNotByAuthor() throws InstantiationException {
+
+        //Arrange
+        Auction _auction1 = mock(Auction.class);
+        Auction _auction2 = mock(Auction.class);
+        Auction _auction3 = mock(Auction.class);
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+        Item _itemDouble3 = mock(Item.class);
+        Price _startingPriceDouble = mock(Price.class);
+        Author _authorDouble = mock(Author.class);
+
+        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction1);
+        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction2);
+        when(_auctionFactoryDouble.create(_itemDouble3, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction3);
+
+        when(_auction1.isByAuthor(_authorDouble)).thenReturn(false);
+        when(_auction2.isByAuthor(_authorDouble)).thenReturn(false);
+        when(_auction3.isByAuthor(_authorDouble)).thenReturn(false);
+        when(_auction1.getItem()).thenReturn(_itemDouble1);
+        when(_auction2.getItem()).thenReturn(_itemDouble2);
+        when(_auction3.getItem()).thenReturn(_itemDouble3);
+
+
+        //SUT
+        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
+
+
+        //Act
+        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
+        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
+        _ar.createAuction(_itemDouble3, _startingPriceDouble, _start, _end);
+
+        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
+
+        //Assert
+        assertEquals(0, results.size());
+
+    }
+
+    @Test
+    void getAuctionItemsByAuthorShouldListOfItemsOfOnlyItemsByAuthor() throws InstantiationException {
+
+        //Arrange
+        Auction _auction1 = mock(Auction.class);
+        Auction _auction2 = mock(Auction.class);
+        Auction _auction3 = mock(Auction.class);
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+        Item _itemDouble3 = mock(Item.class);
+        Price _startingPriceDouble = mock(Price.class);
+        Author _authorDouble = mock(Author.class);
+
+        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction1);
+        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction2);
+        when(_auctionFactoryDouble.create(_itemDouble3, _startingPriceDouble, _start, _end))
+                .thenReturn(_auction3);
+
+        when(_auction1.isByAuthor(_authorDouble)).thenReturn(true);
+        when(_auction2.isByAuthor(_authorDouble)).thenReturn(true);
+        when(_auction3.isByAuthor(_authorDouble)).thenReturn(false);
+        when(_auction1.getItem()).thenReturn(_itemDouble1);
+        when(_auction2.getItem()).thenReturn(_itemDouble2);
+        when(_auction3.getItem()).thenReturn(_itemDouble3);
+
+        //SUT
+        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
+        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
+        _ar.createAuction(_itemDouble3, _startingPriceDouble, _start, _end);
+
+        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
+
+        //Assert
+        assertTrue(results.contains(_itemDouble1));
+        assertTrue(results.contains(_itemDouble2));
+        assertFalse(results.contains(_itemDouble3));
+        assertEquals(2, results.size());
+
+    }
+
 }

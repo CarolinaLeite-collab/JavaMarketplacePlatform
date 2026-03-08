@@ -147,23 +147,20 @@ public class Auction {
     }
 
     public boolean isByAuthor(Author author) {
-        if (_item.getPublication().getAuthor().equals(author)) {
-            return true;
-        }
-        return false;
+
+        return _item.isByAuthor(author);
+
     }
 
     public boolean isByPublication(Publication publication) {
-        if (_item.getPublication().equals(publication)) {
-            return true;
-        }
-        return false;
+
+        return _item.getPublication().equals(publication);
+
     }
 
     public boolean isByPublisher(PublishingCompany publisher) {
-        if (_item.getPublication().getPublisher().equals(publisher)) {
-            return true;
-        }
-        return false;
+
+        return _item.getPublication().getPublisher().equals(publisher);
+
     }
 }

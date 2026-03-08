@@ -18,6 +18,15 @@ class AuctionTest {
     private Price _outrightPrice; // optional (nullable)
     private User _buyer;
     private Bids _bids;
+
+
+    //Isolated
+    private Publication _publicationDouble;
+    private Item _itemDouble;
+    private Price _startingPriceDouble;
+    private Price _outrightPriceDouble; // optional (nullable)
+    private User _buyerDouble;
+    private Bids _bidsDouble;
     private ZonedDateTime _auctionStart1;
     private ZonedDateTime _auctionEnd1;
 
@@ -49,8 +58,21 @@ class AuctionTest {
         bids.addBid(bid1);
         bids.addBid(bid2);
         _bids = bids;
+
+        // Isolated setup
+
+        _publicationDouble = mock(Publication.class);
+        _itemDouble = mock(Item.class);
+        _startingPriceDouble = mock(Price.class);
+        _outrightPriceDouble = mock(Price.class);
+        _buyerDouble = mock(User.class);
+        _bidsDouble = mock(Bids.class);
         _auctionStart1 = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
         _auctionEnd1 = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+
     }
 
     //test a sucessful auction
@@ -484,5 +506,57 @@ class AuctionTest {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(auction);
+    }
+
+    // Isolated test of isByAuthor method
+    @Test
+    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
+
+        //Arrange
+        Author _author = mock(Author.class);
+        when(_itemDouble.isByAuthor(_author)).thenReturn(true);
+
+        // SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        boolean result = auction.isByAuthor(_author);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
+
+        //Arrange
+        Author _author2 = mock(Author.class);
+        when(_itemDouble.isByAuthor(_author2)).thenReturn(false);
+
+        // SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        boolean result = auction.isByAuthor(_author2);
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void isByAuthorShouldDelegateToItem() {
+        //Arrange
+        Author _author = mock(Author.class);
+
+        //SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        auction.isByAuthor(_author);
+
+        //Assert
+        verify(_itemDouble, times(1)).isByAuthor(_author);
     }
 }
