@@ -39,7 +39,7 @@ public enum DimensionUnit {
             throw new IllegalArgumentException("Dimension unit cannot be null or empty");
         }
 
-        String normalized = input.trim().toUpperCase();
+        String normalized = input.trim().replace(".", "").toUpperCase();
 
         if (CENTIMETER_VARIANTS.contains(normalized)) {
             return CENTIMETERS;

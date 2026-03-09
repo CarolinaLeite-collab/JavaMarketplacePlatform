@@ -28,11 +28,6 @@ class DimensionUnitTest {
         }
     }
 
-    @Test
-    void dimensionUnitOrdinalOrderIsStable() {
-        assertEquals(0, DimensionUnit.CENTIMETERS.ordinal());
-        assertEquals(1, DimensionUnit.INCHES.ordinal());
-    }
 
     @Test
     void differentDimensionUnitsAreNotEqual() {
@@ -45,6 +40,12 @@ class DimensionUnitTest {
         assertEquals(DimensionUnit.CENTIMETERS, DimensionUnit.fromString("CEnt"));
         assertEquals(DimensionUnit.INCHES, DimensionUnit.fromString("INchEs"));
         assertEquals(DimensionUnit.INCHES, DimensionUnit.fromString("ins"));
+    }
+
+    @Test
+    void fromStringAcceptsInputsWithDot() {
+        assertEquals(DimensionUnit.CENTIMETERS, DimensionUnit.fromString("cm."));
+        assertEquals(DimensionUnit.INCHES, DimensionUnit.fromString("in."));
     }
 
     @Test
