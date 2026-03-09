@@ -8,79 +8,73 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class RegisterCityControllerTest {
 
-    private CityRepo _cityRepo;
-    private CountryRepo _countryRepo;
-    private RegisterCityController _sut;
-    private Country _portugal;
-    private CountryFactory _countryFactory;
+    private CityRepo cityRepo;
+    private CountryRepo countryRepo;
+    private RegisterCityController controller;
+
+    private Country country;
+    private City city;
 
     @BeforeEach
-    void setUp() throws InstantiationException {
-        _cityRepo = new CityRepo();
-        _countryFactory = new CountryFactory();
-        _countryRepo = new CountryRepo(_countryFactory);
-        _portugal = _countryRepo.registerCountry("Portugal");
-        _sut = new RegisterCityController(_cityRepo, _countryRepo);
+    void setUp() {
+        cityRepo = mock(CityRepo.class);
+        countryRepo = mock(CountryRepo.class);
+
+        controller = new RegisterCityController(cityRepo, countryRepo);
+
+        country = mock(Country.class);
+        city = mock(City.class);
     }
 
     @Test
-    void registerCity_happyPath() {
-        // Act
-        City c = _sut.registerCity("Porto", _portugal);
-
-        // Assert
-        assertNotNull(c);
-        assertEquals("Porto", c.getName());
-        assertEquals(_portugal, c.getCountry());
+    void constructor_withRepositories_doesNotThrow() {
+        assertDoesNotThrow(() -> new RegisterCityController(cityRepo, countryRepo));
     }
 
     @Test
-    void registerCity_duplicateThrows() {
+    void getCountries_returnsCountriesFromRepository() {
         // Arrange
-        _sut.registerCity("Porto", _portugal);
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () -> _sut.registerCity("Porto", _portugal));
-    }
-
-    @Test
-    void registerCity_nullCountryThrows() {
-        // Act & Assert
-        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> _sut.registerCity("Porto", null));
-        assertEquals("Country cannot be null", error.getMessage());
-    }
-
-    @Test
-    void registerCity_blankOrNullCityNameThrows() {
-        // Act & Assert
-        IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
-                () -> _sut.registerCity("", _portugal));
-        assertEquals("City name cannot be null or blank", error.getMessage());
-    }
-
-    @Test
-    void registerCity_trimmedDuplicateNameThrows() {
-        // Arrange
-        _sut.registerCity("Porto", _portugal);
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () -> _sut.registerCity(" Porto ", _portugal));
-    }
-
-    // Tests that getCountries() returns the actual list from the repo and not an empty list.
-    @Test void getCountries_returnsAllCountriesFromRepo() {
-        // Arrange
-        _countryRepo.registerCountry("Spain");
+        List<Country> countries = List.of(country);
+        when(countryRepo.getAllCountries()).thenReturn(countries);
 
         // Act
-        List<Country> result = _sut.getCountries();
+        List<Country> result = controller.getCountries();
 
         // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("PORTUGAL")));
-        assertTrue(result.stream().anyMatch(c -> c.getCountryName().equals("SPAIN"))); }
+        assertEquals(1, result.size());
+        assertSame(country, result.get(0));
+        verify(countryRepo, times(1)).getAllCountries();
+    }
+
+    @Test
+    void registerCity_callsRepoAndReturnsCreatedCity() {
+        // Arrange
+        when(cityRepo.add("Porto", country)).thenReturn(city);
+
+        // Act
+        City result = controller.registerCity("Porto", country);
+
+        // Assert
+        assertSame(city, result);
+        verify(cityRepo, times(1)).add("Porto", country);
+    }
+
+    @Test
+    void registerCity_whenRepoThrowsException_propagatesException() {
+        // Arrange
+        when(cityRepo.add("Porto", country))
+                .thenThrow(new IllegalStateException("City already exists for this country"));
+
+        // Act & Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> controller.registerCity("Porto", country)
+        );
+    }
 }

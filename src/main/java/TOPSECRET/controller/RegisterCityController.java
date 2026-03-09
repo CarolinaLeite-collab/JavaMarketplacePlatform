@@ -1,11 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.City;
-import TOPSECRET.domain.CityRepo;
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.CountryRepo;
+import TOPSECRET.domain.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller responsible for registering new cities in the system.
@@ -23,12 +21,12 @@ public class RegisterCityController {
     /**
      * Creates a controller with the repositories required to register cities.
      *
-     * @param cityRepo repository where new cities will be stored
+     * @param cityRepo repository where new cities will be registered
      * @param countryRepo repository used to validate and list countries
      */
     public RegisterCityController(CityRepo cityRepo, CountryRepo countryRepo) {
-        _cityRepo = cityRepo;
-        _countryRepo = countryRepo;
+        _cityRepo = Objects.requireNonNull(cityRepo, "CityRepo cannot be null");
+        _countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
     }
 
     /**
@@ -39,28 +37,13 @@ public class RegisterCityController {
     }
 
     /**
-     * Normalizes the provided name, validates it against duplicates, and registers a new city.
+     * Registers a new city in the system.
      *
-     * @param name display name of the city to register
-     * @param country parent country of the city
-     * @return the saved {@link City} instance
-     * @throws IllegalArgumentException when {@code name} is missing or {@code country} is null
-     * @throws IllegalStateException when a city with the same normalized name already exists in the country
+     * @param name city name
+     * @param country country to which the city belongs
+     * @return the registered city
      */
     public City registerCity(String name, Country country) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("City name cannot be null or blank");
-        }
-        if (country == null) {
-            throw new IllegalArgumentException("Country cannot be null");
-        }
-
-        String normalizedName = name.trim();
-        if (_cityRepo.existsByNameAndCountry(normalizedName, country)) {
-            throw new IllegalStateException("City already exists for this country");
-        }
-
-        City city = new City(normalizedName, country);
-        return _cityRepo.save(city);
+        return _cityRepo.add(name, country);
     }
 }
