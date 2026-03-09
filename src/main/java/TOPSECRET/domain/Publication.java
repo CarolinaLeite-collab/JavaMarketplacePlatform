@@ -177,6 +177,10 @@ public class Publication {
 
     }
 
+    public boolean isByGenre(Genre genre) {
+        return genre.equals(_genre);
+    }
+
     //getters
     public PublicationType getPublicationType() {
         return _publicationType;

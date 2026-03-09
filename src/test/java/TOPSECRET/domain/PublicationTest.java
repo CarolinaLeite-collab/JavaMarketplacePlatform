@@ -21,6 +21,7 @@ class PublicationTest {
     private Author _authorDouble;
     private PublishingCompany _publishingCompanyDouble;
     private Edition _editionDouble;
+    private Genre _genreDouble;
 
     @BeforeEach
     void setUp() {
@@ -32,6 +33,7 @@ class PublicationTest {
         _authorDouble = mock(Author.class);
         _publishingCompanyDouble = mock(PublishingCompany.class);
         _editionDouble = mock(Edition.class);
+        _genreDouble = mock(Genre.class);
 
         when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
 
@@ -523,6 +525,52 @@ class PublicationTest {
         //Assert
         assertFalse(result);
 
+    }
+
+    @Test
+    void isByGenreShouldReturnTrueWhenGenreMatches() {
+
+        //SUT / Arrange
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .genre(_genreDouble)
+                .build();
+
+        //Act
+        boolean result = p.isByGenre(_genreDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
+
+        //Arrange
+        Genre _genre2 = mock(Genre.class);
+
+        //SUT
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        //Act
+        boolean result = p.isByGenre(_genre2);
+
+        //Assert
+        assertFalse(result);
     }
 }
 
