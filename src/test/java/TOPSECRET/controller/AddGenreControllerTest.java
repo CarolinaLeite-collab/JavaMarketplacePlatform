@@ -19,24 +19,22 @@ public class AddGenreControllerTest {
     void setUp() {
         _adminDouble = mock(User.class);
         _genreRepoDouble = mock(GenreRepo.class);
-        _genreDouble = mock(Genre.class);
-
-        //SUT
-        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
 
     }
 
     @Test
     void constructorAddGenreControllerShouldCreateController() {
-        // AddGenreController controller = new AddGenreController(_genreRepoDouble, _adminDouble);
-
-        // _addGenreController is already created in @BeforeEach with mocked dependencies
-        assertNotNull(_addGenreController);
+        new AddGenreController(_genreRepoDouble, _adminDouble);
     }
 
     @Test
     void addGenreShouldReturnGenreFromRepo() {
         String genreName = "Action";
+
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+
+        _genreDouble = mock(Genre.class);
 
         when(_genreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
 
@@ -50,6 +48,11 @@ public class AddGenreControllerTest {
     @Test
     void addGenreThrowsWhenAlreadyExistsInRepo() {
         String genreName = "Action";
+
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+
+        _genreDouble = mock(Genre.class);
 
         when(_genreRepoDouble.addGenre(genreName))
                 .thenReturn(_genreDouble) // first call: genre is added
