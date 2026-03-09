@@ -51,11 +51,11 @@ class ShareListPubliclyControllerTest {
     @Test
     void makesListPublicWhenInitiallyPrivate() {
         // shareListPublicly() – changes list visibility from private to public
-        doNothing().when(_listOfPublications).switchVisibility();
+        doNothing().when(_listOfPublications).makePublic();
 
         boolean result = _controller.shareListPublicly(_listOfPublications);
 
         assertTrue(result);
-        verify(_listOfPublications).switchVisibility();
+        verify(_listOfPublications).makePublic();
     }
 }

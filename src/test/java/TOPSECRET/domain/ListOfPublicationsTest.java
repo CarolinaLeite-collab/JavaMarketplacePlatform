@@ -122,8 +122,6 @@ class ListOfPublicationsTest {
         assertTrue(list.isPrivate());
     }
 
-
-
     @Test
     void makePublicShouldMakeListPublic() {
         // Arrange
@@ -148,21 +146,6 @@ class ListOfPublicationsTest {
         // Assert
         assertFalse(list.isPrivate());
     }
-
-//    @Test
-//    void makeListPrivateWhenPublic() {
-//        // switchVisibility() – changes visibility from public back to private
-//        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
-//
-//        list.switchVisibility();
-//        assertFalse(list.isPrivate());
-//
-//        list.switchVisibility();
-//        assertTrue(list.isPrivate());
-//    }
-
-
-
 
     @Test
     void addPublicationShouldAddSuccessfully() {
@@ -201,4 +184,29 @@ class ListOfPublicationsTest {
         );
         assertEquals("Publication already in list", ex.getMessage());
     }
+    @Test
+    void getPublicationsShouldReturnImmutableCopy() {
+        // Arrange
+        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        Publication _pubDouble = mock(Publication.class); // stub
+        list.addPublication(_pubDouble);
+
+        // Act
+        var publications = list.getPublications();
+
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> publications.add(_pubDouble));
+    }
+
+    //    @Test
+//    void makeListPrivateWhenPublic() {
+//        // switchVisibility() – changes visibility from public back to private
+//        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
+//
+//        list.switchVisibility();
+//        assertFalse(list.isPrivate());
+//
+//        list.switchVisibility();
+//        assertTrue(list.isPrivate());
+//    }
 }

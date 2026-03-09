@@ -33,7 +33,6 @@ public class ListOfPublications {
         _publications = new ArrayList<>();
     }
 
-
     public User getUser() {
         return _user;
     }
@@ -49,6 +48,7 @@ public class ListOfPublications {
     public boolean isPrivate() {
         return _isPrivate;
     }
+
     public void makePublic() {
         _isPrivate = false;
     }
@@ -57,9 +57,6 @@ public class ListOfPublications {
         return List.copyOf(_publications);
     }
 
-    public void switchVisibility() {
-        _isPrivate = !_isPrivate;
-    }
 
     public void addPublication(Publication publication) {
         if (publication == null) {
@@ -86,4 +83,9 @@ public class ListOfPublications {
     public int hashCode() {
         return Objects.hash(getUser(), getName(), getGenre());
     }
+
+    //    public void switchVisibility() {
+//        _isPrivate = !_isPrivate;
+//    }
+
 }
