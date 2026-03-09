@@ -75,9 +75,9 @@ class UserTest {
     @Test
     void constructorShouldAllowNullAddress() {
         //Act
-        User user = new User(_nameDouble, _addressDouble, _emailDouble, null);
+        User user = new User(_nameDouble, null, _emailDouble, _phoneDouble);
         //Assert
-        assertNull(user.getPhone());
+        assertNull(user.getAddress());
     }
 
     @Test
@@ -89,9 +89,9 @@ class UserTest {
     @Test
     void constructorShouldAllowNullPhoneNumber() {
         //Act
-        User user = new User(_nameDouble, null, _emailDouble, _phoneDouble);
+        User user = new User(_nameDouble, _addressDouble, _emailDouble, null);
         //Assert
-        assertNull(user.getAddress());
+        assertNull(user.getPhone());
     }
 
     @Test
@@ -106,16 +106,17 @@ class UserTest {
     }
 
     @Test
-    void test_toString() {
+    void testToString() {
 
-        User t = new User(_nameDouble, _emailDouble);
-        User t2 = new User(_nameDouble, _emailDouble);
+        // arrange
+        when(_nameDouble.toString()).thenReturn("Tiago");
 
-        assertEquals(t.toString(), t2.toString());
+        User user = new User(_nameDouble, _emailDouble);
+        assertEquals("Tiago", user.toString());
     }
 
     @Test
-    void test_equals() {
+    void testEquals() {
 
         Name _nameDouble3 = mock(Name.class);
         when(_nameDouble3.get_Name()).thenReturn("Magalhaes");
@@ -137,7 +138,7 @@ class UserTest {
     }
 
     @Test
-    void test_hash_code_same_email() {
+    void testHashCodeSameEmail() {
 
         User t = new User(_nameDouble, _emailDouble2);
         User t2 = new User(_nameDouble2, _emailDouble2);
@@ -147,7 +148,7 @@ class UserTest {
     }
 
     @Test
-    void test_hash_code_different_email() {
+    void testHashCodeDifferentEmail() {
 
         User t = new User(_nameDouble, _emailDouble);
         User t2 = new User(_nameDouble2, _emailDouble2);
