@@ -4,64 +4,128 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+
+import TOPSECRET.domain.City;
+import TOPSECRET.domain.CityFactory;
+import TOPSECRET.domain.CityRepo;
+import TOPSECRET.domain.Country;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class CityRepoTest {
 
+    private CityFactory factory;
     private CityRepo repo;
+
+    private City city1;
+    private City city2;
+
     private Country country;
+    private Country otherCountry;
 
     @BeforeEach
     void setUp() {
-        repo = new CityRepo();
+        factory = mock(CityFactory.class);
+        repo = new CityRepo(factory);
+
+        city1 = mock(City.class);
+        city2 = mock(City.class);
+
         country = new Country("Portugal");
+        otherCountry = new Country("Spain");
+
+        when(city1.getName()).thenReturn("Porto");
+        when(city1.getCountry()).thenReturn(country);
+
+        when(city2.getName()).thenReturn("Lisbon");
+        when(city2.getCountry()).thenReturn(country);
     }
 
     @Test
-    void save_and_exists() {
+    void constructor_withFactory_doesNotThrow() {
+        assertDoesNotThrow(() -> new CityRepo(factory));
+    }
+
+    @Test
+    void constructor_withNullFactory_throwsNullPointerException() {
+        // Act & Assert
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> new CityRepo(null)
+        );
+
+        assertEquals("CityFactory cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void add_callsFactoryAndStoresReturnedCity() {
         // Arrange
-        City city = new City("Porto", country);
+        when(factory.createCity("Porto", country)).thenReturn(city1);
 
         // Act
-        assertFalse(repo.existsByNameAndCountry("Porto", country));
-        City saved = repo.save(city);
+        City created = repo.add("Porto", country);
 
         // Assert
-        assertNotNull(saved);
+        assertSame(city1, created);
+        verify(factory, times(1)).createCity("Porto", country);
         assertTrue(repo.existsByNameAndCountry("Porto", country));
-
-        // Act & Assert: duplicate saves return null
-        assertNull(repo.save(new City("Porto", country)));
     }
 
     @Test
-    void save_nullThrows() {
+    void add_duplicateCity_throwsIllegalStateException() {
+        // Arrange
+        when(factory.createCity("Porto", country)).thenReturn(city1);
+        repo.add("Porto", country);
+
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.save(null));
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> repo.add("Porto", country)
+        );
+
+        assertEquals("City already exists for this country", exception.getMessage());
+        verify(factory, times(1)).createCity("Porto", country);
     }
 
     @Test
     void existsByNameAndCountry_isCaseInsensitiveAndTrims() {
         // Arrange
-        repo.save(new City("Porto", country));
+        when(factory.createCity("Porto", country)).thenReturn(city1);
+        repo.add("Porto", country);
 
-        // Act & Assert
-        assertTrue(repo.existsByNameAndCountry(" porto ", country));
+        // Act
+        boolean exists = repo.existsByNameAndCountry(" porto ", country);
+
+        // Assert
+        assertTrue(exists);
     }
 
     @Test
-    void getAll_returnsUnmodifiableCopy() {
-        // Arrange
-        City porto = repo.save(new City("Porto", country));
-        City lisbon = repo.save(new City("Lisbon", country));
-
+    void existsByNameAndCountry_returnsFalseWhenNotFound() {
         // Act
-        var all = repo.getAll();
+        boolean exists = repo.existsByNameAndCountry("Braga", country);
 
         // Assert
-        assertEquals(2, all.size());
-        assertTrue(all.contains(porto));
-        assertTrue(all.contains(lisbon));
-        assertThrows(UnsupportedOperationException.class, () -> all.add(new City("Braga", country)));
+        assertFalse(exists);
+    }
+
+    @Test
+    void existsByNameAndCountry_returnsFalseForDifferentCountry() {
+        // Arrange
+        when(factory.createCity("Porto", country)).thenReturn(city1);
+        repo.add("Porto", country);
+
+        // Act
+        boolean exists = repo.existsByNameAndCountry("Porto", otherCountry);
+
+        // Assert
+        assertFalse(exists);
     }
 
     @Test
@@ -73,8 +137,32 @@ class CityRepoTest {
     }
 
     @Test
-    void existsByNameAndCountry_returnsFalseWhenNotFound() {
-        // Act & Assert
-        assertFalse(repo.existsByNameAndCountry("Braga", country));
+    void getAll_returnsUnmodifiableList() {
+        // Arrange
+        when(factory.createCity("Porto", country)).thenReturn(city1);
+        when(factory.createCity("Lisbon", country)).thenReturn(city2);
+
+        repo.add("Porto", country);
+        repo.add("Lisbon", country);
+
+        // Act
+        List<City> all = repo.getAll();
+
+        // Assert
+        assertEquals(2, all.size());
+        assertTrue(all.contains(city1));
+        assertTrue(all.contains(city2));
+        assertThrows(UnsupportedOperationException.class, () -> all.add(mock(City.class)));
+    }
+
+    @Test
+    void getAll_whenEmpty_returnsEmptyUnmodifiableList() {
+        // Act
+        List<City> all = repo.getAll();
+
+        // Assert
+        assertNotNull(all);
+        assertTrue(all.isEmpty());
+        assertThrows(UnsupportedOperationException.class, () -> all.add(mock(City.class)));
     }
 }

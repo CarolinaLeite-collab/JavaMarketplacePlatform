@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Repository for managing {@link City} instances.
@@ -13,37 +14,48 @@ import java.util.List;
  */
 
 public class CityRepo {
-    private final List<City> _cities = new ArrayList<>();
+    private final List<City> _cities;
+    private final CityFactory _cityFactory;
+
+    public CityRepo(CityFactory cityFactory) {
+        _cities = new ArrayList<>();
+        _cityFactory = Objects.requireNonNull(cityFactory, "CityFactory cannot be null");
+    }
 
     /**
      * Checks if a city already exists under the provided name and country.
      *
-     * @param name city name, case is ignored
+     * @param name    city name, case is ignored
      * @param country country to which the city belongs
      * @return {@code true} when a matching city exists, {@code false} otherwise
      */
     public boolean existsByNameAndCountry(String name, Country country) {
-        // Treat null name or country as "no match" (don't throw) so callers can safely query without null-checking
-        if (name == null || country == null) return false;
-
+        if (name == null || country == null) {
+            return false;
+        }
         String normalized = name.trim();
 
-        for (City c : _cities) {
-            if (c.getName().equalsIgnoreCase(normalized) && c.getCountry().equals(country)) return true;
+        for (City city : _cities) {
+            if (city.getName().equalsIgnoreCase(normalized) && city.getCountry().equals(country)) {
+                return true;
+            }
         }
         return false;
     }
 
     /**
-     * Saves a city in the repository when it does not yet exist.
+     * Creates and saves a city in the repository when it does not yet exist.
      *
-     * @param city city to persist
-     * @return the saved city or {@code null} when a duplicate was detected
+     * @param name    city name
+     * @param country country to which the city belongs
+     * @return the saved city
      */
-    public City save(City city) {
-        if (city == null) throw new IllegalArgumentException("City cannot be null");
-        if (existsByNameAndCountry(city.getName(), city.getCountry())) return null;
+    public City add(String name, Country country) {
+        if (existsByNameAndCountry(name, country)) {
+            throw new IllegalStateException("City already exists for this country");
+        }
 
+        City city = _cityFactory.createCity(name, country);
         _cities.add(city);
         return city;
     }
