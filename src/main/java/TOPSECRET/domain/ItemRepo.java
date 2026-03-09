@@ -19,17 +19,17 @@ import java.util.List;
 
 public class ItemRepo {
 
-    private final List<Item> items = new ArrayList<>();
-    private ItemFactory itemFactory;
+    private final List<Item> _items = new ArrayList<>();
+    private ItemFactory _itemFactory;
 
     public ItemRepo() {
-        itemFactory = new ItemFactory();
+        _itemFactory = new ItemFactory();
     }
 
     public boolean exists(Publication publication) {
         if (publication == null) return false;
 
-        for (Item item : items) {
+        for (Item item : _items) {
             if (item.getPublication().equals(publication)) {
                 return true;
             }
@@ -42,13 +42,23 @@ public class ItemRepo {
             throw new IllegalArgumentException("Item for this publication already exists!");
         }
 
-        Item item = itemFactory.createItem(publication, condition);
-        items.add(item);
+        Item item = _itemFactory.createItem(publication, condition);
+        _items.add(item);
         return item;
     }
 
     public List<Item> getAll() {
-        return Collections.unmodifiableList(items);
+        return Collections.unmodifiableList(_items);
+    }
+
+    public List<Item> getDifferentOf(List<Item> existentItems) {
+        List<Item> result = new ArrayList<>();
+        for (Item item : _items) {
+            if (!existentItems.contains(item)) {
+                result.add(item);
+            }
+        }
+        return List.copyOf(result);
     }
 }
 
