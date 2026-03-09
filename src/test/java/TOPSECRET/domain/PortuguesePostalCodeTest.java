@@ -20,6 +20,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals(expected, result);
     }
+
     @Test
     void shouldInstantiatePortuguesePostalCodeWithValidDataWithExtraSpaces(){
         //Arrange
@@ -33,6 +34,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals(expected, result);
     }
+
     @Test
     void shouldReturnNormalizedPostalCodeReplacingSpaceswithDash(){
         //Arrange
@@ -46,6 +48,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals(expected, result);
     }
+
     @Test
     void shouldReturnNormalizedPostalCodeReplacingIntroducingDash(){
         //Arrange
@@ -59,12 +62,14 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals(expected, result);
     }
+
     @Test
     void shouldThrowForNullCountry(){
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
                 ()-> new PortuguesePostalCode(null,"3720-748"));
     }
+
     @Test
     void shouldThrowForNullPostalCode(){
         //Arrange
@@ -76,6 +81,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals("Postal code cannot be null",exception.getMessage());
     }
+
     @Test
     void shouldThrowForCountryNotPortugal(){
         //Arrange
@@ -87,6 +93,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals("Postal code must belong to Portugal",exception.getMessage());
     }
+
     @Test
     void shouldThrowForInvalidPostalCodePattern(){
         //Arrange
@@ -98,6 +105,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals("Portuguese postal code has 7 digits", exception.getMessage());
     }
+
     @Test
     void shouldThrowForInvalidPostalCodePatternWithLetters(){
         //Arrange
@@ -109,6 +117,7 @@ class PortuguesePostalCodeTest {
         //Assert
         assertEquals("Invalid Portuguese postal code", exception.getMessage());
     }
+
     @Test
     void shouldThrowForEmptyPostalCode(){
         //Arrange
@@ -118,7 +127,6 @@ class PortuguesePostalCodeTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 ()-> new PortuguesePostalCode(country," "));
         //Assert
-        assertEquals("Invalid Portuguese postal code", exception.getMessage());
+        assertEquals("Portuguese postal code has 7 digits", exception.getMessage());
     }
-
 }
