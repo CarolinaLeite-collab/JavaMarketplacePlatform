@@ -8,10 +8,12 @@ public class PortuguesePostalCode implements PostalCode {
         if (!isCountryPortugal(country)){
             throw new IllegalArgumentException("Postal code must belong to Portugal");
         }
-        if (!isValidPortuguesePostalCode(postalCode)) {
+        String normalized = normalizePostalCode(postalCode);
+
+        if (!isValidPortuguesePostalCode(normalized)) {
             throw new IllegalArgumentException("Invalid Portuguese postal code");
         }
-        this._postalCode = postalCode.trim();
+        this._postalCode = normalized;
         this._country = country;
     }
 
@@ -20,13 +22,29 @@ public class PortuguesePostalCode implements PostalCode {
         return _country;
     }
 
-    private boolean isValidPortuguesePostalCode(String postalCode) {
-        if (postalCode == null || postalCode.trim().isEmpty()) return false;
+    @Override
+    public String getValue() {
+        return _postalCode;
+    }
 
-        return postalCode.trim().matches("[1-9]\\d{3}-\\d{3}");
+    private boolean isValidPortuguesePostalCode(String normalizedPostalCode) {
+        return normalizedPostalCode.matches("[1-9]\\d{3}-\\d{3}");
     }
 
     private boolean isCountryPortugal(Country country){
         return country != null && "PORTUGAL".equals(country.getCountryName());
+    }
+
+    private String normalizePostalCode(String postalCode) {
+        if (postalCode == null) {
+            throw new IllegalArgumentException("Postal code cannot be null");
+        }
+        // remove everything except digits
+        String digits = postalCode.replaceAll("\\D", "");
+        if (digits.length() != 7) {
+            throw new IllegalArgumentException("Portuguese postal code has 7 digits");
+        }
+        // format NNNN-NNN
+        return digits.substring(0, 4) + "-" + digits.substring(4);
     }
 }

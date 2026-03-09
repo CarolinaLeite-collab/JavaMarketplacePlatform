@@ -13,13 +13,52 @@ class PortuguesePostalCodeTest {
         String postalCode = "3720-748";
         Country country = mock(Country.class);
         when(country.getCountryName()).thenReturn("PORTUGAL");
+        String expected = "PORTUGAL";
         //Act
         PortuguesePostalCode ptPostalCode = new PortuguesePostalCode(country,postalCode);
-        Country result = ptPostalCode.getPostalCodeCountry();
+        String result = ptPostalCode.getPostalCodeCountry().getCountryName();
         //Assert
-        assertEquals(result,country);
+        assertEquals(expected, result);
     }
-
+    @Test
+    void shouldInstantiatePortuguesePostalCodeWithValidDataWithExtraSpaces(){
+        //Arrange
+        String postalCode = "3720 - 748";
+        Country country = mock(Country.class);
+        when(country.getCountryName()).thenReturn("PORTUGAL");
+        String expected = "3720-748";
+        //Act
+        PortuguesePostalCode ptPostalCode = new PortuguesePostalCode(country,postalCode);
+        String result = ptPostalCode.getValue();
+        //Assert
+        assertEquals(expected, result);
+    }
+    @Test
+    void shouldReturnNormalizedPostalCodeReplacingSpaceswithDash(){
+        //Arrange
+        String postalCode = "3720 748";
+        Country country = mock(Country.class);
+        when(country.getCountryName()).thenReturn("PORTUGAL");
+        String expected = "3720-748";
+        //Act
+        PortuguesePostalCode ptPostalCode = new PortuguesePostalCode(country,postalCode);
+        String result = ptPostalCode.getValue();
+        //Assert
+        assertEquals(expected, result);
+    }
+    @Test
+    void shouldReturnNormalizedPostalCodeReplacingIntroducingDash(){
+        //Arrange
+        String postalCode = "3720748";
+        Country country = mock(Country.class);
+        when(country.getCountryName()).thenReturn("PORTUGAL");
+        String expected = "3720-748";
+        //Act
+        PortuguesePostalCode ptPostalCode = new PortuguesePostalCode(country,postalCode);
+        String result = ptPostalCode.getValue();
+        //Assert
+        assertEquals(expected, result);
+    }
     @Test
     void shouldThrowForNullCountry(){
         //Act & Assert
@@ -35,7 +74,7 @@ class PortuguesePostalCodeTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 ()-> new PortuguesePostalCode(country,null));
         //Assert
-        assertEquals("Invalid Portuguese postal code",exception.getMessage());
+        assertEquals("Postal code cannot be null",exception.getMessage());
     }
     @Test
     void shouldThrowForCountryNotPortugal(){
@@ -56,6 +95,17 @@ class PortuguesePostalCodeTest {
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 ()-> new PortuguesePostalCode(country,"345"));
+        //Assert
+        assertEquals("Portuguese postal code has 7 digits", exception.getMessage());
+    }
+    @Test
+    void shouldThrowForInvalidPostalCodePatternWithLetters(){
+        //Arrange
+        Country country = mock(Country.class);
+        when(country.getCountryName()).thenReturn("PORTUGAL");
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                ()-> new PortuguesePostalCode(country,"0720-748"));
         //Assert
         assertEquals("Invalid Portuguese postal code", exception.getMessage());
     }
