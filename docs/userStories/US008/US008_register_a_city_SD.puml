@@ -16,14 +16,14 @@ skinparam ArrowColor #57595BAA
 autonumber
 autoactivate off
 
-actor Administrator as Adm
+actor Administrator as Admin
 participant ":RegisterCityUI" as UI
-participant ":CityRegisterController" as Ctl
+participant ":RegisterCityController" as Ctl
 participant "_cr:CountryRepo" as CountryRepo
 participant "_cir:CityRepo" as CityRepo
+participant ":CityFactory" as Factory
 
-' 1. Admin requests to register a new city
-Adm -> UI: select "Register city"
+Admin -> UI: I want to register a new City.
 activate UI
 
 UI -> Ctl: getCountries()
@@ -35,33 +35,33 @@ deactivate CountryRepo
 UI <-- Ctl: listOfCountries
 deactivate Ctl
 
-UI -> Adm: show form (city name, listOfCountries)
+UI -> Admin: show form (city name, listOfCountries)
 deactivate UI
-Adm -> UI: select country; enter cityName
-activate UI
 
-' 3. UI submits city creation (passes selected country, already validated by list)
+Admin -> UI: select country; enter cityName
+activate UI
 UI -> Ctl: registerCity(cityName, country)
 activate Ctl
 
-Ctl -> Ctl: validate inputs
-Ctl -> CityRepo: existsByNameAndCountry(cityName, country)
-CityRepo --> Ctl: boolean
+Ctl -> CityRepo: RegisterCity(cityName, country)
+        activate CityRepo
 
-' 5. Persist city when valid
-Ctl -> CityRepo: save(new City(cityName, country))
-activate CityRepo
-create "c1:City" as c1
-CityRepo -> c1: create(cityName, country)
-activate c1
-c1 --> CityRepo: new city
-deactivate c1
-CityRepo --> Ctl: c1
-deactivate CityRepo
+    opt existsByNameAndCountry(cityName, country) == false
 
-' 6. UI feedback (mirror US007: object then message)
-Ctl --> UI: c1
+        CityRepo -> Factory: createCity(cityName, country)
+        activate Factory
+        create "newCity:City" as instance
+        Factory -> instance: create(cityName, country)
+        Factory --> CityRepo: newCity
+        deactivate Factory
+        CityRepo -> CityRepo: add(newCity)
+    end
+
+    CityRepo --> Ctl: RegisteredCity
+    deactivate CityRepo
+
+Ctl --> UI: RegisteredCity
 deactivate Ctl
-UI --> Adm: City registered successfully!
+UI --> Admin: City registered successfully!
 deactivate UI
 @enduml
