@@ -42,6 +42,7 @@ opt !genreExists(genreName)
         create "genre:Genre"
         gf -> "genre:Genre": create(genreName)
         gf --> gr : genre
+        deactivate gf
         gr -> list: add(genre)
         activate list
         list --> gr: true
