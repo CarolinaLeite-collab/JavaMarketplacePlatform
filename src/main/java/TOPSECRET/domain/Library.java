@@ -19,6 +19,7 @@ public class Library {
     private User _owner;
 
     private List<Publication> _publications = new ArrayList<>();
+    private List<Item> _items = new ArrayList<>();
 
 
     public Library(User user){
@@ -104,6 +105,19 @@ public class Library {
             return false;
         }
         _publications.add(selectedPublication);
+        return true;
+    }
+
+    public List<Item> getAllItems() {
+        return List.copyOf(_items);
+    }
+
+    public boolean addItemToLibrary(Item selectedItem, User user) {
+        if (selectedItem == null) {
+            return false;
+        }
+
+        _items.add(selectedItem);
         return true;
     }
 }
