@@ -13,20 +13,26 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam classAttributeIconSize 0
 
-
+' ===== UI =====
 class RegisterCityUI {
 
 }
-
+' ===== ENTITY =====
 class City {
   + City(name: String, country: Country)
   + getName(): String
   + getCountry(): Country
 }
 
+' ===== FACTORY =====
+class CityFactory {
+  + createCity(CityName : String, Country : Country) : City
+}
+
+' ===== REPOSITORY =====
 class CityRepo {
   + existsByNameAndCountry(name: String, country: Country): boolean
-  + save(city: City): City
+  + add(city: City): City
   + getAll(): List<City>
 }
 
@@ -35,13 +41,15 @@ class CountryRepo {
   + findByName(countryName: String): Country
 }
 
-class CityRegisterController {
+class RegisterCityController {
   + getCountries(): List<Country>
   + registerCity(name: String, country: Country): City
 }
 
-RegisterCityUI "1" ..> "1" CityRegisterController : invokes
-CityRegisterController "1" --> "1" CountryRepo : uses
-CityRegisterController "1" --> "1" CityRepo : uses
+RegisterCityUI "1" ..> "1" RegisterCityController : invokes
+RegisterCityController "1" --> "1" CountryRepo : calls
+RegisterCityController "1" --> "1" CityRepo : calls
+CityRepo "1" --> "1"CityFactory: uses
+CityFactory "1" --> "*" City: creates
 CityRepo "1" --> "*" City : manages
 @enduml
