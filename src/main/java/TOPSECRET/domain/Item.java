@@ -68,4 +68,10 @@ public class Item {
         return publication.isByAuthor(author);
 
     }
+
+    public boolean isByGenre(Genre genre) {
+
+        return publication.isByGenre(genre);
+
+    }
 }

@@ -321,4 +321,54 @@ class ItemTest {
         verify(_publicationDouble, times(1)).isByAuthor(_author);
     }
 
+    @Test
+    void isByGenreShouldReturnTrueWhenGenreMatches() {
+
+        //Arrange
+        Genre _genre = mock(Genre.class);
+        when(_publicationDouble.isByGenre(_genre)).thenReturn(true);
+
+        // SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByGenre(_genre);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
+
+        //Arrange
+        Genre _genre2 = mock(Genre.class);
+        when(_publicationDouble.isByGenre(_genre2)).thenReturn(false);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByGenre(_genre2);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByGenreShouldDelegateToPublication() {
+        //Arrange
+        Genre _genre = mock(Genre.class);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        item.isByGenre(_genre);
+
+        //Assert
+        verify(_publicationDouble, times(1)).isByGenre(_genre);
+    }
+
 }
