@@ -94,4 +94,31 @@ class ItemRepoTest {
         List<Item> list2 = repo.getAll();
         assertEquals(2, list2.size());
     }
+
+    @Test
+    void shouldReturnEmptyListWhenAllItemsExist() {
+        ItemRepo repo = new ItemRepo();
+
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+
+        List<Item> existentItems = List.of(_itemDouble1, _itemDouble2);
+
+        List<Item> result = repo.getDifferentOf(existentItems);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldHandleEmptyInputList() {
+        ItemRepo repo = new ItemRepo();
+
+        List<Item> existentItems = List.of();
+
+        List<Item> result = repo.getDifferentOf(existentItems);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 }

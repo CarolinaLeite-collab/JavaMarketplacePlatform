@@ -12,26 +12,32 @@ import java.util.List;
  */
 
 public class AddPublicationOnLibraryController {
-    private final PublicationRepo _publicationRepo;
     private final LibraryRepo _libraryRepo;
+    private final Library _library;
+    private final ItemRepo _itemRepo;
 
-    public AddPublicationOnLibraryController(PublicationRepo publicationRepo,  LibraryRepo libraryRepo) {
-        _publicationRepo = publicationRepo;
+    public AddPublicationOnLibraryController(LibraryRepo libraryRepo, Library library, ItemRepo itemRepo) {
         _libraryRepo = libraryRepo;
+        _library = library;
+        _itemRepo = itemRepo;
     }
 
     public Library getMyLibrary(User user) {
         return _libraryRepo.findByUser(user);
     }
 
-    public List<Publication> getListOfAvailablePublications(User user) {
-        Library myLibrary = getMyLibrary(user);
-        List<Publication> existentPublication = myLibrary.getAllPublications();
-        return _publicationRepo.getDifferentOf(existentPublication);
+    public List<Item> getAllItems() {
+        return _library.getAllItems();
     }
 
-    public boolean addPublicationToLibrary(Publication selectedPublication, User user) {
+    public List<Item> getListOfAvailableItems(User user) {
         Library myLibrary = getMyLibrary(user);
-        return myLibrary.addPublicationToLibrary(selectedPublication);
+        List<Item> existentItems = myLibrary.getAllItems();
+        return _itemRepo.getDifferentOf(existentItems);
+    }
+
+    public boolean addItemToLibrary(Item selectedItem, User user) {
+        Library myLibrary = getMyLibrary(user);
+        return myLibrary.addItemToLibrary(selectedItem, user);
     }
 }

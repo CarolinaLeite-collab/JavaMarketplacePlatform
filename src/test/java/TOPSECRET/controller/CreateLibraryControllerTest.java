@@ -9,63 +9,46 @@ import static org.mockito.Mockito.*;
 
 class CreateLibraryControllerTest {
 
-    //Set up test objects
+
     private User _userDouble;
     private LibraryRepo _repoDouble;
-    private CreateLibraryController _createLibraryController;
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
         _repoDouble = mock(LibraryRepo.class);
-        _createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
     }
 
 
     @Test
-    //test create library
-    void test_create_a_library_for_1_user() {
+    void createLibraryShouldReturnLibrary() {
 
-        //Arrange
-        Library libraryDouble = mock(Library.class);
-        when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
-
-        //act
-        Library myLibrary = _createLibraryController.createLibrary(_userDouble);
-
-        //assert
-        assertEquals(libraryDouble, myLibrary);
-
-    }
-
-    @Test
-    void create_a_second_library_for_same_user_should_return_exception(){
-
-        //arrange
-       when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
-
-        //tries to add another library
-        //assert
-        assertThrows(IllegalStateException.class,()->{
-            _createLibraryController.createLibrary(_userDouble);
-        });
-
-    }
-
-    @Test
-    void createMyLibrary_should_delegate_to_repo(){
         // Arrange
-        Library libraryDouble = mock(Library.class);
+        Library libraryDouble = mock(Library.class); //stub
         when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
+        CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble);
 
         // Act
-        _createLibraryController.createLibrary(_userDouble);
+        Library myLibrary = createLibraryController.createLibrary(_userDouble);
 
         // Assert
+        assertEquals(libraryDouble, myLibrary);
         verify(_repoDouble).addLibrary(_userDouble);
+
     }
 
+    @Test
+    void createLibraryShouldThrowWhenLibraryAlreadyExist(){
+
+        // Arrange
+       when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
+       CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble);
 
 
-}
+        // Act & Assert
+        assertThrows(IllegalStateException.class,
+                ()-> createLibraryController.createLibrary(_userDouble));
+        }
+
+    }
