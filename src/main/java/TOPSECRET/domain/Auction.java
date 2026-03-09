@@ -34,14 +34,15 @@ public class Auction {
     private ZonedDateTime _auctionStartDate;
     private ZonedDateTime _auctionEndDate;
     private User _buyer;
-    private Bids _bids;
+    private BidRepo _bids;
+    private BidFactory _bidFactory;
 
 
     // 1. Private constructor takes _outrightPrice as an argument
     public Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
-        _bids = new Bids();
+        _bids = new BidRepo(_bidFactory);
 
 
         if (isOutrightPriceValid(outrightPrice)) {
@@ -71,7 +72,7 @@ public class Auction {
         _item = item;
         _startingPrice = startingPrice;
         _outrightPrice = null;
-        _bids = new Bids();
+        _bids = new BidRepo(_bidFactory);
 
         if (isAuctionStartDateValid(auctionStartDate)) {
             this._auctionStartDate = auctionStartDate;
@@ -93,7 +94,7 @@ public class Auction {
         return _item;
     }
 
-    public Bids getBids() {
+    public BidRepo getBids() {
         return _bids;
     }
 

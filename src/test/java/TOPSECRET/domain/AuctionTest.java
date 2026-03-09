@@ -17,7 +17,7 @@ class AuctionTest {
     private Price _startingPrice;
     private Price _outrightPrice; // optional (nullable)
     private User _buyer;
-    private Bids _bids;
+    private BidRepo _bidRepo;
 
 
     //Isolated
@@ -26,7 +26,7 @@ class AuctionTest {
     private Price _startingPriceDouble;
     private Price _outrightPriceDouble; // optional (nullable)
     private User _buyerDouble;
-    private Bids _bidsDouble;
+    private BidRepo _bidRepoDouble;
     private ZonedDateTime _auctionStart1;
     private ZonedDateTime _auctionEnd1;
 
@@ -54,10 +54,10 @@ class AuctionTest {
         User antonio = new User(new Name("Antonio"), address, new Email("ar@email.com"), phoneNumber1);
         Bid bid1 = new Bid(ze, new Price(100.0, Currency.EUR));
         Bid bid2 = new Bid(antonio, new Price(102.0, Currency.EUR));
-        Bids bids = new Bids();
+        BidRepo bids = new BidRepo(new BidFactory());
         bids.addBid(bid1);
         bids.addBid(bid2);
-        _bids = bids;
+        _bidRepo = bids;
 
         // Isolated setup
 
@@ -66,7 +66,7 @@ class AuctionTest {
         _startingPriceDouble = mock(Price.class);
         _outrightPriceDouble = mock(Price.class);
         _buyerDouble = mock(User.class);
-        _bidsDouble = mock(Bids.class);
+        _bidRepoDouble = mock(BidRepo.class);
         _auctionStart1 = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
         _auctionEnd1 = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
 
@@ -314,11 +314,11 @@ class AuctionTest {
         Auction auction = new Auction(_item, _startingPrice, start, end);
 
         // Act
-        Bids bids = auction.getBids();
+        BidRepo bidRepo = auction.getBids();
 
         // Assert
-        assertNotNull(bids);
-        assertThrows(IllegalStateException.class, () -> bids.getHighestBid());
+        assertNotNull(bidRepo);
+        assertThrows(IllegalStateException.class, () -> bidRepo.getHighestBid());
     }
 
     @Test
@@ -461,7 +461,7 @@ class AuctionTest {
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
         setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
 
-        Bids bids = mock(Bids.class);
+        BidRepo bids = mock(BidRepo.class);
         setPrivateField(auction, "_bids", bids);
 
         Bid bid = new Bid(_buyer, new Price(25.0, Currency.EUR));
@@ -483,7 +483,7 @@ class AuctionTest {
         User bidder = new User(new Name("Carla"), new Email("carla@example.com"));
         Bid highestBid = new Bid(bidder, new Price(40.0, Currency.EUR));
 
-        Bids bids = mock(Bids.class);
+        BidRepo bids = mock(BidRepo.class);
         when(bids.getHighestBid()).thenReturn(highestBid);
         setPrivateField(auction, "_bids", bids);
 
