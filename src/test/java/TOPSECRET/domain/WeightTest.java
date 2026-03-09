@@ -2,6 +2,9 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WeightTest {
@@ -20,108 +23,173 @@ public class WeightTest {
     }
 
     // Constructor tests - VALID
+
     @Test
-    void constructor_validKilograms() {
-        assertNotNull(fiveKg);
-        assertEquals(5.0, fiveKg.get_value());
-        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.get_weightUnit());
+    void constructorZeroWeight() {
+        assertEquals(0.0, zeroGrams.getValue());
+        assertEquals(Weight.WeightUnit.GRAMS, zeroGrams.getWeightUnit());
     }
-    @Test
-    void constructor_validGrams() {
-        Weight grams = new Weight(1000.0, Weight.WeightUnit.GRAMS);
-        assertEquals(1000.0, grams.get_value());
-        assertEquals(Weight.WeightUnit.GRAMS, grams.get_weightUnit());
-    }
-    @Test
-    void constructor_validOunces() {
-        Weight ounces = new Weight(10.5, Weight.WeightUnit.OUNCES);
-        assertEquals(10.5, ounces.get_value());
-        assertEquals(Weight.WeightUnit.OUNCES, ounces.get_weightUnit());
-    }
-    @Test
-    void constructor_validPounds() {
-        Weight pounds = new Weight(11.0, Weight.WeightUnit.POUNDS);
-        assertEquals(11.0, pounds.get_value());
-        assertEquals(Weight.WeightUnit.POUNDS, pounds.get_weightUnit());
-    }
-    @Test
-    void constructor_zeroWeight() {
-        assertEquals(0.0, zeroGrams.get_value());
+
+    @ParameterizedTest
+    @EnumSource(Weight.WeightUnit.class)
+    void constructorValidWeightWithAllUnitsCreatesWeight(Weight.WeightUnit unit) {
+        Weight weight = new Weight(1.5, unit);
+        assertEquals(1.5, weight.getValue());
+        assertEquals(unit, weight.getWeightUnit());
     }
 
     // Constructor tests - INVALID
     @Test
-    void constructor_negativeKilograms() {
+    void constructorNegativeWeightThrowsIllegalArgumentException() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             new Weight(-5.0, Weight.WeightUnit.KILOGRAMS);
         });
         assertEquals("weight cannot be negative.", exception.getMessage());
     }
-    @Test
-    void constructor_negativeGrams() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Weight(-100.0, Weight.WeightUnit.GRAMS);
-        });
+
+    @ParameterizedTest
+    @EnumSource(Weight.WeightUnit.class)
+    void constructorNegativeWeightWithAnyUnitThrowsIllegalArgumentException(Weight.WeightUnit unit) {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new Weight(-1.0, unit));
         assertEquals("weight cannot be negative.", exception.getMessage());
     }
     @Test
-    void constructor_negativeOunces() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Weight(-20.0, Weight.WeightUnit.OUNCES);
-        });
-        assertEquals("weight cannot be negative.", exception.getMessage());
+    void constructorNanValueThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new Weight(Double.NaN, Weight.WeightUnit.KILOGRAMS));
+        assertEquals("NaN is not a finite number", exception.getMessage());
     }
     @Test
-    void constructor_negativePounds() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new Weight(-0.5, Weight.WeightUnit.POUNDS);
-        });
-        assertEquals("weight cannot be negative.", exception.getMessage());
+    void constructorPositiveInfinityThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new Weight(Double.POSITIVE_INFINITY, Weight.WeightUnit.GRAMS));
+
+        assertEquals("Infinity is not a finite number", exception.getMessage());
+    }
+    @Test
+    void constructorNegativeInfinityThrowsIllegalArgumentException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> new Weight(Double.NEGATIVE_INFINITY, Weight.WeightUnit.POUNDS));
+        assertEquals("-Infinity is not a finite number", exception.getMessage());
+    }
+    @Test
+    void constructorNullWeightUnitThrowsNullPointerException() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> new Weight(5.0, null));
+
+        assertEquals("weightUnit is required.", exception.getMessage());
+    }
+
+    // Getters
+    @Test
+    void getValueReturnsCorrectValue() {
+        assertEquals(5.0, fiveKg.getValue());
+        assertEquals(0.0, zeroGrams.getValue());
+        assertEquals(10.0, tenOunces.getValue());
+        assertEquals(3.0, threePounds.getValue());
+    }
+
+    @Test
+    void getWeightUnitReturnsCorrectUnit() {
+        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.getWeightUnit());
+        assertEquals(Weight.WeightUnit.GRAMS, zeroGrams.getWeightUnit());
+        assertEquals(Weight.WeightUnit.OUNCES, tenOunces.getWeightUnit());
+        assertEquals(Weight.WeightUnit.POUNDS, threePounds.getWeightUnit());
     }
 
     // toString() tests
     @Test
-    void toString_kilograms() {
+    void toStringKilograms() {
         String expected = "Weight: 5.0 kg";
         assertEquals(expected, fiveKg.toString());
     }
     @Test
-    void toString_grams() {
+    void toStringGrams() {
         Weight grams = new Weight(1000.0, Weight.WeightUnit.GRAMS);
         assertEquals("Weight: 1000.0 g", grams.toString());
     }
     @Test
-    void toString_ounces() {
+    void toStringOunces() {
         Weight ounces = new Weight(10.5, Weight.WeightUnit.OUNCES);
         assertEquals("Weight: 10.5 oz", ounces.toString());
     }
     @Test
-    void toString_pounds() {
+    void toStringPounds() {
         Weight pounds = new Weight(11.02, Weight.WeightUnit.POUNDS);
         assertEquals("Weight: 11.02 lb", pounds.toString());
     }
 
     @Test
-    void toString_zeroWeight() {
+    void toStringZeroWeight() {
         assertEquals("Weight: 0.0 g", zeroGrams.toString());
     }
 
-    // Getter tests
+    // WeightUnit behaviour
     @Test
-    void getValueCorrectly() {
-        assertEquals(5.0, fiveKg.get_value());
+    void getAbbreviationReturnsCorrectValueForAllUnits() {
+        assertEquals("kg", Weight.WeightUnit.KILOGRAMS.getAbbreviation());
+        assertEquals("g", Weight.WeightUnit.GRAMS.getAbbreviation());
+        assertEquals("oz", Weight.WeightUnit.OUNCES.getAbbreviation());
+        assertEquals("lb", Weight.WeightUnit.POUNDS.getAbbreviation());
     }
     @Test
-    void getWeightUnitCorrectly() {
-        assertEquals(Weight.WeightUnit.KILOGRAMS, fiveKg.get_weightUnit());
+    void weightUnitToStringReturnsAbbreviationForAllUnits() {
+        assertEquals("kg", Weight.WeightUnit.KILOGRAMS.toString());
+        assertEquals("g", Weight.WeightUnit.GRAMS.toString());
+        assertEquals("oz", Weight.WeightUnit.OUNCES.toString());
+        assertEquals("lb", Weight.WeightUnit.POUNDS.toString());
     }
 
-    // Enum abbreviation tests
+    // equals
     @Test
-    void weightUnit_abbreviation_returnsCorrectValue() {
-        assertEquals("kg", fiveKg.get_weightUnit().get_abbreviation());
-        assertEquals("g", zeroGrams.get_weightUnit().get_abbreviation());
-        assertEquals("oz", tenOunces.get_weightUnit().get_abbreviation());
-        assertEquals("lb", threePounds.get_weightUnit().get_abbreviation());
+    void equalsSameReferenceReturnsTrue() {
+        assertEquals(fiveKg, fiveKg);
+    }
+    @Test
+    void equalsSameValueAndSameUnitReturnsTrue() {
+        Weight other = new Weight(5.0, Weight.WeightUnit.KILOGRAMS);
+        assertEquals(fiveKg, other);
+        assertEquals(other, fiveKg);
+    }
+    @Test
+    void equalsDifferentValueReturnsFalse() {
+        Weight other = new Weight(6.0, Weight.WeightUnit.KILOGRAMS);
+        assertNotEquals(fiveKg, other);
+    }
+    @Test
+    void equalsDifferentUnitReturnsFalse() {
+        Weight other = new Weight(5.0, Weight.WeightUnit.GRAMS);
+        assertNotEquals(fiveKg, other);
+    }
+    @Test
+    void equalsNullReturnsFalse() {
+        assertNotEquals(fiveKg, null);
+    }
+    @Test
+    void equalsDifferentTypeReturnsFalse() {
+        assertNotEquals(fiveKg, "Weight: 5.0 kg");
+    }
+
+    // hashCode
+    @Test
+    void equalWeightsHaveSameHashCode() {
+        Weight w1 = new Weight(5.0, Weight.WeightUnit.KILOGRAMS);
+        Weight w2 = new Weight(5.0, Weight.WeightUnit.KILOGRAMS);
+        assertEquals(w1, w2);
+        assertEquals(w1.hashCode(), w2.hashCode());
+    }
+    @Test
+    void hashCodeDifferentValueReturnsDifferentHashCode() {
+        Weight other = new Weight(6.0, Weight.WeightUnit.KILOGRAMS);
+        assertNotEquals(fiveKg, other);
+        assertNotEquals(fiveKg.hashCode(), other.hashCode());
+    }
+    @Test
+    void hashCodeDifferentUnitReturnsDifferentHashCode() {
+        Weight other = new Weight(5.0, Weight.WeightUnit.GRAMS);
+
+        assertNotEquals(fiveKg, other);
+        assertNotEquals(fiveKg.hashCode(), other.hashCode());
     }
 }
