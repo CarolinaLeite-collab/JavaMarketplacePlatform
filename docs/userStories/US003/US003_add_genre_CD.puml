@@ -19,14 +19,11 @@ class AddGenreUI {
 }
 
 class AddGenreController {
-    - _genreRepo : GenreRepo
     - _admin : User
     + addGenre(genreName : String) : Genre
 }
 
 class GenreRepo {
-    - _genresList : List<Genre>
-    - _genreFactory : GenreFactory
     - genreExists(genreName : String) : boolean
     + addGenre(genreName : String) : Genre
 }
@@ -42,9 +39,9 @@ class Genre {
 
 '==== Relationships ====
 AddGenreUI "1" ..> "1" AddGenreController : uses
-AddGenreController "1" --> "1" GenreRepo : uses
-GenreRepo "1" --> "1" GenreFactory : uses
-GenreRepo "1" --> "*" Genre : manages
+AddGenreController "1" --> "_genreRepo 1" GenreRepo : uses
+GenreRepo "1" --> "_genreFactory 1" GenreFactory : uses
+GenreRepo "1" -----> "_genresList *" Genre : manages
 GenreFactory "1" --> "*" Genre : creates
 
 note right of AddGenreController
