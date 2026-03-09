@@ -20,43 +20,103 @@ autoactivate off
 
 actor User
 participant "UI1:AddPublicationUI"
-participant "Ctl1:AddPublicationOnLibrary"
-participant "_pr:PublicationRepo"
-participant "myLibrary:Library"
+participant "Ctl1:AddPublicationOnLibraryController"
+participant "_lwr:LiteraryWorkRepo"
+participant "_er:EditionRepo"
 participant "_lr:LibraryRepo"
+participant "_ir:ItemRepo"
+participant "_if:ItemFactory"
+participant "myLibrary:Library"
 
-User -> "UI1:AddPublicationUI" : I want to add a publication to my library
+'========================================
+' 1 - OBTER LITERARY WORK
+'========================================
+
+User -> "UI1:AddPublicationUI" : I want to add a item to my library
 activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailablePublications(user)
-activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : getMyLibrary(user)
-activate "_lr:LibraryRepo"
-"_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
-deactivate "_lr:LibraryRepo"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : existentPublications = getAllPublications()
-"myLibrary:Library" -> "myLibrary:Library" : copyList
-"Ctl1:AddPublicationOnLibrary" -> "_pr:PublicationRepo" : listOfPublicationToSelect = getDifferentOf(existentPublications)
-"_pr:PublicationRepo" -> "_pr:PublicationRepo" : copyList
-"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : listOfPublicationToSelect
-deactivate "Ctl1:AddPublicationOnLibrary"
-"UI1:AddPublicationUI" --> User : Select what available publications you want to add
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibraryController" : startAddItem()
+activate "Ctl1:AddPublicationOnLibraryController"
+"Ctl1:AddPublicationOnLibraryController" -> "_lwr:LiteraryWorkRepo" : getAllLiteraryWork()
+activate "_lwr:LiteraryWorkRepo"
+"_lwr:LiteraryWorkRepo" -> "_lwr:LiteraryWorkRepo" : copyList()
+"_lwr:LiteraryWorkRepo" --> "Ctl1:AddPublicationOnLibraryController" : List<LiteraryWork>
+deactivate "_lwr:LiteraryWorkRepo"
+"Ctl1:AddPublicationOnLibraryController" --> "UI1:AddPublicationUI" : List<LiteraryWork>
+deactivate "Ctl1:AddPublicationOnLibraryController"
+"UI1:AddPublicationUI" --> User : Select the publication you want to add.
+deactivate "UI1:AddPublicationUI"
+
+'========================================
+' 2 - OBTER EDIÇÕES
+'========================================
+
+User -> "UI1:AddPublicationUI" : Selection
+activate "UI1:AddPublicationUI"
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibraryController" : selectedLiteraryWork
+activate "Ctl1:AddPublicationOnLibraryController"
+"Ctl1:AddPublicationOnLibraryController" -> "_er:EditionRepo" :  getListOfEdition(selectedLiteraryWork)
+activate "_er:EditionRepo"
+"_er:EditionRepo" -> "_er:EditionRepo" : copyList()
+"_er:EditionRepo" --> "Ctl1:AddPublicationOnLibraryController" : list<Edition>
+deactivate "_er:EditionRepo"
+"Ctl1:AddPublicationOnLibraryController" --> "UI1:AddPublicationUI" : list<Edition>
+deactivate "Ctl1:AddPublicationOnLibraryController"
+"UI1:AddPublicationUI" --> User : Select what Item you want to add
 deactivate "UI1:AddPublicationUI"
 User -> "UI1:AddPublicationUI" : Selection
 activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addPublicationToLibrary(selectedPublication, user)
-activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication, user)
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibraryController" : selectedEdition
+activate "Ctl1:AddPublicationOnLibraryController"
+
+'========================================
+' 3 - SELEÇÃO DA CONDIÇÃO
+'========================================
+
+"Ctl1:AddPublicationOnLibraryController" -> "UI1:AddPublicationUI" : requestCondition()
+deactivate "Ctl1:AddPublicationOnLibraryController"
+"UI1:AddPublicationUI" --> User : What is the condition of this Item?
+deactivate "UI1:AddPublicationUI"
+User -> "UI1:AddPublicationUI" : Selection
+activate "UI1:AddPublicationUI"
+"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibraryController" :selectedCondition
+activate "Ctl1:AddPublicationOnLibraryController"
+
+'========================================
+' 4 - SELEÇÃO DA LIBRARY
+'========================================
+
+"Ctl1:AddPublicationOnLibraryController" -> "_lr:LibraryRepo" : findByUser(user)
+activate "_lr:LibraryRepo"
+"_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibraryController" : "myLibrary:Library"
+deactivate "_lr:LibraryRepo"
+
+'========================================
+' 5 - CRIAR ITEM
+'========================================
+
+"Ctl1:AddPublicationOnLibraryController" -> "_ir:ItemRepo" : createItem(selectedEdition, selectedCondition)
+activate "_ir:ItemRepo"
+"_ir:ItemRepo" -> "_if:ItemFactory" : createItem(selectedEdition, selectedCondition)
+activate "_if:ItemFactory"
+create "myItem:Item" as instance
+"_if:ItemFactory" -> instance
+"_if:ItemFactory" --> "_ir:ItemRepo" : newItem
+deactivate "_if:ItemFactory"
+"_ir:ItemRepo" --> "Ctl1:AddPublicationOnLibraryController" : newItem
+deactivate "_ir:ItemRepo"
+
+'========================================
+' 6 - ADICIONAR À BIBLIOTECA
+'========================================
+
+"Ctl1:AddPublicationOnLibraryController" -> "myLibrary:Library" : addItemToLibrary(myItem)
 activate "myLibrary:Library"
-"myLibrary:Library" -> "myLibrary:Library" : verifyUnique(selectedPublication)
-"myLibrary:Library" -> "myLibrary:Library" : addPublicationToLibrary(selectedPublication)
-"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : true
+"myLibrary:Library" -> "myLibrary:Library" : addItemToLibrary(myItem)
+"myLibrary:Library" --> "Ctl1:AddPublicationOnLibraryController" : true
 deactivate "myLibrary:Library"
-"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : true
-deactivate "Ctl1:AddPublicationOnLibrary"
+"Ctl1:AddPublicationOnLibraryController" --> "UI1:AddPublicationUI" : true
+deactivate "Ctl1:AddPublicationOnLibraryController"
 "UI1:AddPublicationUI" --> User : Done!
 deactivate "UI1:AddPublicationUI"
-
-
-
 
 @enduml

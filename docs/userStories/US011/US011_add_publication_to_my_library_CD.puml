@@ -17,32 +17,59 @@ skinparam classAttributeIconSize 0
 
 class AddPublicationOnLibraryUI
 
-class Ctl1:AddPublicationOnLibrary {
+class AddPublicationOnLibraryController {
     + getMyLibrary(user : User) : Library
-    + getListOfAvailablePublications(user : User) : List<Publication>
-    + addPublicationToLibrary(selectedPublication : Publication, user : User) : boolean
-
+    + getListOfEditions(literaryWork : LiteraryWork) : List<Edition>
+    + getAllLiteraryWork() : List<LiteraryWork>
+    + createItem(selectedEdition : Edition, condition : Condition) : Item
+    + addItemToLibrary(selectedItem : Item, user : User) : boolean
 }
 
-class _pr:PublicationRepo {
-    + getDifferentOf(existentPublications : List<Publication>) : List<Publication>
+class LiteraryWorkRepo {
+    + _literaryWorks : List<LiteraryWork>
+    + getAllLiteraryWork() : List<LiteraryWork>
 }
 
-class myLibrary:Library {
-    - _publications : List<Publication>
-    + getAllPublications() : List<Publication>
-    + addPublicationToLibrary(selectedPublication) : Publication) : boolean
-    - copyOfLibrary() : List<Publication>
-    - verifyUnique(selectedPublication : Publication) : boolean
+class EditionRepo {
+    + _editions : List<Edition>
+    + _editionFactory : EditionFactory
+    + getListOfEditions(literaryWork : LiteraryWork) : List<Edition>
 }
 
-class _lr:LibraryRepo {
-     + findByUser(user : User) : Library
+class Library {
+    + _owner : User
+    + _items : List<Item>
+    + addItemToLibrary(myItem : Item) : boolean
+}
+
+class LibraryRepo {
+    + _libraries : List<Library>
+    + _libraryFactory : LibraryFactory
+    + findByUser(user : User) : Library
+}
+
+class ItemRepo {
+    + _items : List<Item>
+    + createItem(selectedEdition : Edition, selectedCondition : Condition) : Item
+}
+
+class ItemFactory {
+     + createItem(selectedEdition : Edition, selectedCondition : Condition) : Item
+}
+
+class Item {
+    + _edition : Edition
+    + _condition : Condition
 }
 
 
-"AddPublicationOnLibraryUI" "1" -- "1" "Ctl1:AddPublicationOnLibrary" : request >
-"Ctl1:AddPublicationOnLibrary" "1" -- "1" "_pr:PublicationRepo" : queries >
-"Ctl1:AddPublicationOnLibrary" "1" -- "1" "myLibrary:Library" : uses >
-"Ctl1:AddPublicationOnLibrary" "1" -- "1" "_lr:LibraryRepo" : queries >
+"AddPublicationOnLibraryUI" "1" .. "1" "AddPublicationOnLibraryController" : request >
+"AddPublicationOnLibraryController" "1" ... "1" "Library" : addItemToLibrary >
+"AddPublicationOnLibraryController" "1"  .. "1" "LibraryRepo" : queries >
+"AddPublicationOnLibraryController" "1" .. "1" "LiteraryWorkRepo" : queries >
+"AddPublicationOnLibraryController" "1" .. "1" "EditionRepo" : queries >
+"AddPublicationOnLibraryController" "1" .. "1" "ItemRepo" : queries >
+"ItemRepo" "1" --> "1" "ItemFactory" : createItem >
+"ItemFactory" "1" .. "1" Item : <<create>> >
+"Library" "1" --> "*" Item : stores >
 @enduml
