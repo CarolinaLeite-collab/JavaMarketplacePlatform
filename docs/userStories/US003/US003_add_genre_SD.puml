@@ -13,15 +13,16 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ArrowColor #57595BAA
 skinparam ActivationBackgroundColor WhiteSmoke
-hidefootbox
+hide footbox
 
 autonumber
 
 actor Administrator
-participant "U1:UIAddGenre" as UI
-participant "Ctl1:AddGenreController" as Ctl
-participant "_gr:GenreRepo" as gr
-participant "_listgr:List <Genre>" as list
+participant ":AddGenreUI" as UI
+participant ":AddGenreController" as Ctl
+participant "_genreRepo:GenreRepo" as gr
+participant "_genreFactory:GenreFactory" as gf
+participant "_genresList:List <Genre>" as list
 
 Administrator -> UI: I want to add a publication genre
 activate UI
@@ -35,15 +36,19 @@ activate Ctl
 Ctl -> gr: addGenre(genreName)
 activate gr
 
-opt existsGenre(genreName) == false
+opt !genreExists(genreName)
+        gr -> gf : createGenre(genreName)
+        activate gf
         create "genre:Genre"
-        gr -> "genre:Genre": create(genreName)
+        gf -> "genre:Genre": create(genreName)
+        gf --> gr : genre
         gr -> list: add(genre)
         activate list
+        list --> gr: true
+        deactivate list
     end
 
-list --> gr: true
-deactivate list
+
 gr --> Ctl: genre
 deactivate gr
 
