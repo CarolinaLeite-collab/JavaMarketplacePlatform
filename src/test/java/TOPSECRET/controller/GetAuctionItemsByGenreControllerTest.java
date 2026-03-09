@@ -3,81 +3,67 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.time.ZonedDateTime;
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetAuctionItemsByGenreControllerTest {
 
-    private User _user;
-    private AuctionRepo _auctionRepo;
-    private Genre _genre;
-    private GetAuctionItemsByGenreController  _controller;
+    private User _buyerUserDouble;
+    private AuctionRepo _auctionRepoDouble;
+    private Genre _genreDouble;
 
     @BeforeEach
     void setUp() {
 
-        _user = new User(
-                new Name("Zé Isep"),
-                new Email("test@isep.pt"));
-        _auctionRepo = new AuctionRepo();
-        _genre = new Genre("Action");
-        _controller = new GetAuctionItemsByGenreController(_auctionRepo, _user);
+        _buyerUserDouble = mock(User.class);
 
+        _genreDouble = mock (Genre.class);
+
+        _auctionRepoDouble = mock(AuctionRepo.class);
     }
 
     @Test
-    void test_auction_items_by_genre_controller(){
+    void testAuctionItemsByGenreController(){
 
-        //act
-        new GetAuctionItemsByGenreController(_auctionRepo, _user);
-
+        // SUT
+        new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
     }
 
     @Test
-    void test_get_auction_items_by_genre_with_auction_should_return_a_not_empty_list(){
+    void testGetAuctionItemsByGenreWithAuctionShouldReturnANotEmptyList(){
 
-        Publication _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .genre(_genre)
-                .build();
-        Item item = new Item(_publication, Condition.FAIR);
+        // arrange
+        Item _itemDouble = mock(Item.class);
+        List<Item> itemsList = List.of(_itemDouble);
+        when(_auctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(itemsList);
 
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
+        // SUT
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
 
-        Price price = new Price(5.0, Currency.EUR);
+        // act
+        List<Item> items = controller.getAuctionItemsByGenre(_genreDouble);
 
-        _auctionRepo.createAuction(item, price, _startDate, _endDate );
-
-        List<Item> items = _controller.getAuctionItemsByGenre(_genre);
-
-        assertNotNull(items);
-        assertFalse(items.isEmpty());
-
-
-
+        // assert
+        assertEquals(itemsList, items);
+        verify(_auctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
     }
 
     @Test
-    void test_get_auction_items_by_genre_with_no_auction_should_return_empty_list(){
+    void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
 
-        //arrange and act
-        List<Item> listOfAuctionItemsByGenre = _controller.getAuctionItemsByGenre(_genre);
+        // arrange
+        when(_auctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(List.of());
+
+        // SUT
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
+
+        // act
+        List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreDouble);
 
         //assert
-        assertNotNull(listOfAuctionItemsByGenre);
         assertTrue(listOfAuctionItemsByGenre.isEmpty());
-
+        verify(_auctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
     }
-
 }
