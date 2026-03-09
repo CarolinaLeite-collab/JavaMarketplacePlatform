@@ -559,4 +559,53 @@ class AuctionTest {
         //Assert
         verify(_itemDouble, times(1)).isByAuthor(_author);
     }
+
+    @Test
+    void isByGenreShouldReturnTrueWhenGenreMatches() {
+
+        //Arrange
+        Genre _genre = mock(Genre.class);
+        when(_itemDouble.isByGenre(_genre)).thenReturn(true);
+
+        // SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        boolean result = auction.isByGenre(_genre);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
+
+        //Arrange
+        Genre _genre2 = mock(Genre.class);
+        when(_itemDouble.isByGenre(_genre2)).thenReturn(false);
+
+        // SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        boolean result = auction.isByGenre(_genre2);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByGenreShouldDelegateToItem() {
+        //Arrange
+        Genre _genre = mock(Genre.class);
+
+        //SUT
+        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+
+        //Act
+        auction.isByGenre(_genre);
+
+        //Assert
+        verify(_itemDouble, times(1)).isByGenre(_genre);
+    }
 }

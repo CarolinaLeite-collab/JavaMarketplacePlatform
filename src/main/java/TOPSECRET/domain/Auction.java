@@ -140,10 +140,7 @@ public class Auction {
     }
 
     public boolean isByGenre( Genre genre) {
-        if (_item.getPublication().getGenre().equals(genre)) {
-            return true;
-        }
-        return false;
+        return _item.isByGenre(genre);
     }
 
     public boolean isByAuthor(Author author) {
