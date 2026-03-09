@@ -14,18 +14,24 @@ skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
 '==== Classes ====
-class UIAddGenre {
+class AddGenreUI {
 
 }
 
 class AddGenreController {
-    - _genre : GenreRepo
+    - _genreRepo : GenreRepo
+    - _admin : User
     + addGenre(genreName : String) : Genre
 }
 
 class GenreRepo {
-    - _genres : List<Genre>
-    - existsGenre(genreName : String) : boolean
+    - _genresList : List<Genre>
+    - _genreFactory : GenreFactory
+    - genreExists(genreName : String) : boolean
+    + addGenre(genreName : String) : Genre
+}
+
+class GenreFactory {
     + createGenre(genreName : String) : Genre
 }
 
@@ -35,8 +41,16 @@ class Genre {
 }
 
 '==== Relationships ====
-UIAddGenre "1" ..> "1" AddGenreController : uses
-AddGenreController "1" ..> "1" GenreRepo : uses
+AddGenreUI "1" ..> "1" AddGenreController : uses
+AddGenreController "1" --> "1" GenreRepo : uses
+GenreRepo "1" --> "1" GenreFactory : uses
 GenreRepo "1" --> "*" Genre : manages
+GenreFactory "1" --> "*" Genre : creates
+
+note right of AddGenreController
+    Right now, User is simply
+    required for Controller's
+    constructor
+endNote
 
 @enduml
