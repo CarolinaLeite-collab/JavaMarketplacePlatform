@@ -1,68 +1,68 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublishingCompany;
-import TOPSECRET.domain.PublisherRepo;
+import TOPSECRET.domain.PublishingCompanyRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class RegisterPublishingCompanyControllerTest {
 
-    private PublisherRepo _publisherRepo;
-    private RegisterPublishingCompanyController _controller;
+    private PublishingCompanyRepo _publishingCompanyRepoDouble;
 
     @BeforeEach
     void setUp() {
-        _publisherRepo = new PublisherRepo();
-        _controller = new RegisterPublishingCompanyController(_publisherRepo);
-        // First registered publisher
-        _publisherRepo.registerPublisher("Penguin Random House");
+
+        _publishingCompanyRepoDouble = mock(PublishingCompanyRepo.class);
+
     }
 
     @Test
-    void usingConstructorRegisterPublisherController() {
-        // tests our controller object was created successfully
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publisherRepo);
-        assertNotNull(controller);
+    void constructor_Should_InitializeController() {
+
+        // Arrange & Act
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publishingCompanyRepoDouble);
+
     }
 
     @Test
-    void registeringNewPublisher() {
-        // delegating task of registering to PublisherRepo and returning the registered Publisher
-        PublishingCompany newPublisher = _controller.registerPublisher("Bertrand Editora");
-        assertNotNull(newPublisher);
-        assertEquals("Bertrand Editora", newPublisher.getName());
+    void should_register_new_PublishingCompany() {
+
+        //Arrange
+        String publishingCompanyName = "Bertrand Editora";
+        PublishingCompany pc = mock(PublishingCompany.class);
+
+        when(_publishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenReturn(pc);
+
+        //SUT
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publishingCompanyRepoDouble);
+
+        //Act
+        PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(publishingCompanyName);
+
+        //Assert
+        assertEquals(pc, publishingCompanyResult);
+        verify(_publishingCompanyRepoDouble).registerPublishingCompany(publishingCompanyName);
+
     }
 
     @Test
-    void registeringNewPublisherAfterTrimAndSpaceNormalization() {
-        // delegating task of registering to PublisherRepo and returning the registered Publisher
-        PublishingCompany newPublisher = _controller.registerPublisher(" Porto  Editora  ");
-        assertNotNull(newPublisher);
-        assertEquals("Porto Editora", newPublisher.getName());
-    }
+    void adding_Existing_PublishingCompany_Throws_When_Already_Exists() {
 
-    @Test
-    void registeringExistingPublisher() {
-        PublishingCompany newPublisher = _controller.registerPublisher("Penguin Random House");
-        assertNull(newPublisher);
-    }
+        //Arrange
+        String publishingCompanyName = "Bertrand Editora";
+        PublishingCompany pc = mock(PublishingCompany.class);
 
-    @Test
-    void registeringExistingPublisherTrimAndSpaceNormalizationCaseInsensitive() {
-        PublishingCompany duplicatePublisher = _controller.registerPublisher("  PENGUIN   raNDom  houSE ");
-        assertNull(duplicatePublisher);
-    }
+        when(_publishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenThrow(
+                new IllegalArgumentException("Publishing Company with name " + publishingCompanyName + " already exists."));
 
-    @Test
-    void registeringEmptyPublisher(){
-        assertThrows(IllegalArgumentException.class, () -> _controller.registerPublisher(" "));
-    }
+        //SUT
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publishingCompanyRepoDouble);
 
-    @Test
-    void registeringInvalidPublisher(){
-        assertThrows(IllegalArgumentException.class, () -> _controller.registerPublisher(null));
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(publishingCompanyName));
+
     }
 
 }
