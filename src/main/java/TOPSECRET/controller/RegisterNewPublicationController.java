@@ -29,17 +29,24 @@ public class RegisterNewPublicationController {
                                            Edition edition,
                                            Genre genre) {
 
-        Publication myPublication = Publication.builder()
-                .type(publicationType)
-                .identifier(identifier)
-                .year(publicationYear)
-                .title(title)
-                .author(author)
-                .publisher(publisher)
-                .edition(edition)
-                .genre(genre)
-                .build();
+//        Publication myPublication = Publication.builder()
+//                .type(publicationType)
+//                .identifier(identifier)
+//                .year(publicationYear)
+//                .title(title)
+//                .author(author)
+//                .publisher(publisher)
+//                .edition(edition)
+//                .genre(genre)
+//                .build();
 
-        return _publicationRepo.add(myPublication);
+        return _publicationRepo.addPublication(publicationType,
+                identifier,
+                publicationYear,
+                title,
+                author,
+                publisher,
+                edition,
+                genre);
     }
 }

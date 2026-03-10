@@ -6,13 +6,15 @@ import org.junit.jupiter.api.Test;
 import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class RegisterNewPublicationControllerTest {
 
     @Test
     void registerNewPublicationController_withSucess() {
         //arrange
-        PublicationRepo pubRepo = new PublicationRepo();
+        PublicationFactory _pfDouble = mock(PublicationFactory.class);
+        PublicationRepo pubRepo = new PublicationRepo(_pfDouble);
         RegisterNewPublicationController controller =
                 new RegisterNewPublicationController(pubRepo);
         PublicationType type = new PublicationType("BOOK");
@@ -40,7 +42,8 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublication_whenPublicationAlreadyExists_throwsIllegalArgumentException() {
         //arrange
-        PublicationRepo repo = new PublicationRepo();
+        PublicationFactory _pfDouble = mock(PublicationFactory.class);
+        PublicationRepo repo = new PublicationRepo(_pfDouble);
         RegisterNewPublicationController controller = new RegisterNewPublicationController(repo);
 
         PublicationType type = new PublicationType("BOOK");
