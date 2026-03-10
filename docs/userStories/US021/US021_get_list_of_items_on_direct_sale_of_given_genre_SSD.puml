@@ -1,5 +1,6 @@
 @startuml
-title US021 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - System Sequence Diagram
+title US021 – "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" - SSD
+hidefootbox
 
 '==== basic style ====
 skinparam monochrome false
@@ -11,18 +12,19 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
-hidefootbox
 
-actor User
-participant "MiteLovers" as System
+' --- Actor and participants ---
+actor Buyer
+participant ":MiteLovers" as System
 
-User -> System: I want the list of items, on direct sale, of a given genre.
+' --- System dialog ---
+Buyer -> System: I want the list of items on direct sale of a given genre
 activate System
-System --> User: What is the genre?
+System --> Buyer: What is the genre?
 deactivate System
-User -> System: Genre.
+Buyer -> System: genreName
 activate System
-System --> User: Here is the list!
+System --> Buyer: Here is the list!
 deactivate System
 
 @enduml
