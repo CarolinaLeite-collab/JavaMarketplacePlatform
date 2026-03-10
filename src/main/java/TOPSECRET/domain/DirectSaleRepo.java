@@ -32,11 +32,11 @@ public class DirectSaleRepo {
         return directSale;
     }
 
-    public List<Item> getDirectSaleItemsByAuthor(Author author) {
+    public List<Item> getDirectSaleItemsByAuthor(Author authorName) {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByAuthor(author)) {
+            if (directSale.isByAuthor(authorName)) {
                 list.add(directSale.getItem());
             }
         }
