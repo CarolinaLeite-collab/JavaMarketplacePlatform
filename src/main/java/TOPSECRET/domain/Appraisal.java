@@ -15,7 +15,6 @@ public class Appraisal {
     private final LocalDateTime _appraisalDate;
     private final String _objectDescription;
 
-    //constructor with validation on whether the fields are null/empty
     public Appraisal(Price valueEstimate, LocalDateTime appraisalDate, String objectDescription) {
 
         if (valueEstimate == null) {
@@ -50,9 +49,9 @@ public class Appraisal {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Appraisal other)) return false;
-        return _valueEstimate.equals(other._valueEstimate)
-                && _appraisalDate.equals(other._appraisalDate)
-                && _objectDescription.equals(other._objectDescription);
+        return _valueEstimate.equals(other.getValueEstimate())
+                && _appraisalDate.equals(other.getAppraisalDate())
+                && _objectDescription.equals(other.getObjectDescription());
     }
 
     @Override
@@ -64,7 +63,7 @@ public class Appraisal {
     public String toString() {
         return "Appraisal:" +
                 " appraisal date=" + _appraisalDate +
-                ", object description='" + _objectDescription +
+                ", object description='" + _objectDescription + "'" +
                 ", value estimate=" + _valueEstimate;
     }
 }

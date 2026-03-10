@@ -14,104 +14,184 @@ class AppraisalTest {
     private static final String _validDescription =  "The book is in great condition, with only slight use marks.";
 
     @Test
-    void tests_creation_of_valid_appraisal() {
+    void creationOfValidAppraisalShouldSucceed() {
 
-        Price _priceDouble = mock(Price.class);
-        Appraisal appraisal = new Appraisal(_priceDouble, _fixedDate,_validDescription);
+        // Arrange
+        Price priceDouble = mock(Price.class);
 
-        assertEquals(_priceDouble, appraisal.getValueEstimate());
+        // Act
+        Appraisal appraisal = new Appraisal(priceDouble, _fixedDate,_validDescription);
+
+        // Assert
+        assertEquals(priceDouble, appraisal.getValueEstimate());
         assertEquals(_fixedDate, appraisal.getAppraisalDate());
         assertEquals(_validDescription, appraisal.getObjectDescription());
     }
 
     @Test
-    void should_return_exception_for_null_value_estimate() {
+    void constructorShouldThrowWhenValueEstimateIsNull() {
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Appraisal(null, _fixedDate, _validDescription));
     }
 
     @Test
-    void should_return_exception_for_null_appraisal_date() {
-        Price priceDouble = mock(Price.class);
+    void constructorShouldThrowWhenAppraisalDateIsNull() {
 
+        // Arrange
+        Price priceDouble = mock(Price.class); // stub
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Appraisal(priceDouble, null, _validDescription));
     }
 
     @Test
-    void should_return_exception_for_empty_description() {
+    void constructorShouldThrowWhenDescriptionIsEmpty() {
 
+        // Arrange
         Price priceDouble = mock(Price.class);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Appraisal(priceDouble, _fixedDate, ""));
     }
     @Test
-    void should_return_exception_for_blank_description() {
+    void constructorShouldThrowWhenDescriptionIsBlank() {
 
+        // Arrange
         Price priceDouble = mock(Price.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Appraisal(priceDouble, _fixedDate, "   "));
+                () -> new Appraisal(priceDouble, _fixedDate, "   ")); //SUT
     }
 
     @Test
-    void tests_whether_equality_depends_on_all_fields() {
+    void constructorShouldThrowWhenDescriptionIsNull() {
+        // Arrange
+        Price priceDouble = mock(Price.class);
 
-        Price _priceDouble = mock(Price.class);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Appraisal(priceDouble, _fixedDate, null)); // SUT
+    }
 
-        Appraisal a1 = new Appraisal(_priceDouble, _fixedDate,_validDescription);
-        Appraisal a2 = new Appraisal(_priceDouble, _fixedDate,_validDescription);
+    @Test
+    void equalAppraisalsShouldBeEqual () {
 
+        // Arrange
+        Price priceDouble = mock(Price.class);
+        Appraisal a1 = new Appraisal(priceDouble, _fixedDate,_validDescription);
+        Appraisal a2 = new Appraisal(priceDouble, _fixedDate,_validDescription);
+
+        // Act & Assert
         assertEquals(a1, a2);
         assertEquals(a1.hashCode(), a2.hashCode());
     }
 
     @Test
-    void tests_whether_different_price_makes_appraisal_not_equal() {
+    void appraisalsWithDifferentFieldsShouldHaveDifferentHashCodes() {
+
+        // Arrange
+        Price priceDouble1 = mock(Price.class);
+        Price priceDouble2 = mock(Price.class);
+        LocalDateTime otherDate = LocalDateTime.of(2025, 6, 1, 10, 0);
+        Appraisal a1 = new Appraisal(priceDouble1, _fixedDate, _validDescription);
+        Appraisal a2 = new Appraisal(priceDouble2, otherDate, "Other description");
+
+        // Act & Assert
+        assertNotEquals(a1.hashCode(), a2.hashCode()); // SUT
+    }
+
+    @Test
+    void appraisalsWithDifferentPriceShouldNotBeEqual() {
+
+        // Arrange
         Price priceDouble = mock(Price.class);
         Price priceDouble1 = mock(Price.class);
-
         Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription );
         Appraisal differentPrice = new Appraisal(priceDouble1, _fixedDate, _validDescription );
 
+        // Act & Assert
         assertNotEquals(a1, differentPrice);
     }
 
     @Test
-    void tests_whether_different_date_makes_appraisals_not_equal() {
+    void appraisalsWithDifferentDateShouldNotBeEqual() {
 
-        Price _priceDouble = mock(Price.class);
-        LocalDateTime _differentDate = LocalDateTime.of(2025, 1, 5, 10, 0);
+        // Arrange
+        Price priceDouble = mock(Price.class);
+        LocalDateTime otherDate = LocalDateTime.of(2025, 1, 5, 10, 0);
+        Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription );
+        Appraisal differentDate = new Appraisal(priceDouble, otherDate , _validDescription );
 
-        Appraisal a1 = new Appraisal(_priceDouble, _fixedDate, _validDescription );
-        Appraisal differentDate = new Appraisal(_priceDouble, _differentDate , _validDescription );
-
+        // Act & Assert
         assertNotEquals(a1, differentDate);
     }
 
     @Test
-    void tests_whether_different_description_makes_appraisals_not_equal() {
+    void appraisalsWithDifferentDescriptionShouldNotBeEqual() {
 
-        Price _priceDouble = mock(Price.class);
+        // Arrange
+        Price priceDouble = mock(Price.class);
+        Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription);
+        Appraisal a2 = new Appraisal(priceDouble, _fixedDate, "Different description");
 
-        Appraisal a1 = new Appraisal(_priceDouble, _fixedDate, _validDescription);
-        Appraisal a2 = new Appraisal(_priceDouble, _fixedDate, "Different description");
-
+        // Act & Assert
         assertNotEquals(a1, a2);
     }
 
+
     @Test
-    void tests_whether_to_string_contains_key_information() {
+    void appraisalShouldNotEqualNull() {
+        // Arrange
+        Price priceDouble = mock(Price.class); // stub
+        Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
+
+        // Act & Assert
+        assertNotEquals(null, appraisal); // SUT
+    }
+
+    @Test
+    void appraisalShouldEqualItself() {
+
+        // Arrange
+        Price priceDouble = mock(Price.class); // stub
+        Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
+
+        // Act & Assert
+        assertEquals(appraisal, appraisal); // SUT
+    }
+
+    @Test
+    void appraisalShouldNotEqualDifferentType() {
+
+        // Arrange
+        Price priceDouble = mock(Price.class); // stub
+        Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
+
+        // Act & Assert
+        assertFalse(appraisal.equals("not an appraisal")); // SUT
+    }
+
+    @Test
+    void toStringShouldContainKeyInformation() {
+
+        // Arrange
         Price priceDouble = mock(Price.class);
         when(priceDouble.toString()).thenReturn("10.0 €");
-
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription );
+
+        // Act
         String text = appraisal.toString();
 
+        // Assert
         assertTrue(text.contains("Appraisal"));
         assertTrue(text.contains(_validDescription));
         assertTrue(text.contains("10.0 €"));
+        assertTrue(text.contains("2025-01-01"));
     }
 
 }
