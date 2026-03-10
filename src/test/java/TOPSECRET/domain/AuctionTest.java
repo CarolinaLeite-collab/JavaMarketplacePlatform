@@ -403,19 +403,24 @@ class AuctionTest {
         // Assert
         assertFalse(result);
     }
-
+    // Author: Pedro"
     @Test
     void acceptBidAddsBidWhenAuctionIsActiveAndPriceIsAboveStartingPrice() throws Exception {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_item, _startingPrice, startFuture, endFuture);
+        // #SUT
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
         setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
 
-        Bid bid = new Bid(_buyer, new Price(25.0, Currency.EUR));
+        Bid bid = mock(Bid.class);
+        Price bidPrice = mock(Price.class);
+        when(bid.getOfferPrice()).thenReturn(bidPrice);
+        when(bidPrice.getValue()).thenReturn(25.0);
+        when(bid.getBidder()).thenReturn(_buyerDouble);
 
         // Act
         auction.acceptBid(bid);
@@ -423,22 +428,29 @@ class AuctionTest {
         // Assert
         assertSame(bid, auction.getBids().getHighestBid());
     }
-
+    // Author: Pedro"
     @Test
     void finalizeAuctionSetsBuyerAndFinalPriceToHighestBid() throws Exception {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_item, _startingPrice, startFuture, endFuture);
+        // #SUT
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
         setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
 
-        User bidder1 = new User(new Name("Ana"), new Email("ana@example.com"));
-        User bidder2 = new User(new Name("Bruno"), new Email("bruno@example.com"));
-        Bid lower = new Bid(bidder1, new Price(20.0, Currency.EUR));
-        Bid higher = new Bid(bidder2, new Price(30.0, Currency.EUR));
+        Bid lower = mock(Bid.class);
+        Price lowerPrice = mock(Price.class);
+        when(lower.getOfferPrice()).thenReturn(lowerPrice);
+        when(lowerPrice.getValue()).thenReturn(20.0);
+        Bid higher = mock(Bid.class);
+        Price higherPrice = mock(Price.class);
+        when(higher.getOfferPrice()).thenReturn(higherPrice);
+        when(higherPrice.getValue()).thenReturn(30.0);
+        User bidder2 = mock(User.class);
+        when(higher.getBidder()).thenReturn(bidder2);
 
         // Act
         auction.acceptBid(lower);
@@ -449,13 +461,13 @@ class AuctionTest {
         assertSame(bidder2, getPrivateField(auction, "_buyer"));
         assertEquals(higher.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
-
+    // Author: Pedro"
     @Test
     void acceptBidDelegatesToBidsCollection() throws Exception {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_item, _startingPrice, startFuture, endFuture);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -464,7 +476,10 @@ class AuctionTest {
         BidRepo bids = mock(BidRepo.class);
         setPrivateField(auction, "_bids", bids);
 
-        Bid bid = new Bid(_buyer, new Price(25.0, Currency.EUR));
+        Bid bid = mock(Bid.class);
+        Price bidPrice = mock(Price.class);
+        when(bid.getOfferPrice()).thenReturn(bidPrice);
+        when(bidPrice.getValue()).thenReturn(25.0);
 
         // Act
         auction.acceptBid(bid);
@@ -472,16 +487,19 @@ class AuctionTest {
         // Assert
         verify(bids).addBid(bid);
     }
-
+    // Author: Pedro"
     @Test
     void finalizeAuctionUsesHighestBidFromBidsCollection() throws Exception {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_item, _startingPrice, startFuture, endFuture);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
 
-        User bidder = new User(new Name("Carla"), new Email("carla@example.com"));
-        Bid highestBid = new Bid(bidder, new Price(40.0, Currency.EUR));
+        User bidder = mock(User.class);
+        Bid highestBid = mock(Bid.class);
+        Price highestPrice = mock(Price.class);
+        when(highestBid.getBidder()).thenReturn(bidder);
+        when(highestBid.getOfferPrice()).thenReturn(highestPrice);
 
         BidRepo bids = mock(BidRepo.class);
         when(bids.getHighestBid()).thenReturn(highestBid);
@@ -495,13 +513,13 @@ class AuctionTest {
         assertSame(bidder, getPrivateField(auction, "_buyer"));
         assertEquals(highestBid.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
-
+    // Author: Pedro"
     private void setPrivateField(Auction auction, String fieldName, Object value) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(auction, value);
     }
-
+    // Author: Pedro"
     private Object getPrivateField(Auction auction, String fieldName) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
