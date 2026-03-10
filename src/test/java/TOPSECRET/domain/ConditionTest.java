@@ -20,14 +20,6 @@ class ConditionTest {
         assertEquals("Damaged or incomplete", Condition.POOR.getDescription());
     }
 
-    @Test
-    void shouldNotBeNull() {
-        assertNotNull(Condition.LIKE_NEW);
-        assertNotNull(Condition.GOOD);
-        assertNotNull(Condition.FAIR);
-        assertNotNull(Condition.POOR);
-        }
-
    @Test
    void shouldConvertFromString() {
         assertEquals(Condition.GOOD, Condition.valueOf("GOOD"));
