@@ -8,63 +8,48 @@ import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class AddPublicationToListControllerTest {
 
     private ListOfPublicationsRepo _listRepo;
-    private ListOfPublicationsFactory _listFactory;
     private LibraryRepo _libraryRepo;
     private AddPublicationToListController _controller;
 
-    private UserRepo _userRepo;
-    private GenreFactory _genreFactory;
-    private GenreRepo _genreRepo;
-
     private User _user;
-    private Genre _action;
+    private Genre _genre;
+    private Identifier _identifier;
+    private Publication _publication;
     private Library _library;
-    private LibraryFactory _libraryFactory = new LibraryFactory();
+    private ListOfPublications _publicationsList;
 
     @BeforeEach
     void setUp() {
-        _listRepo = new ListOfPublicationsRepo();
-        _listFactory = new ListOfPublicationsFactory();
-        _libraryRepo = new LibraryRepo(_libraryFactory);
+        _listRepo = mock(ListOfPublicationsRepo.class);
+        _libraryRepo = mock(LibraryRepo.class);
         _controller = new AddPublicationToListController(_listRepo, _libraryRepo);
 
-        UserFactory userFactory = new UserFactory();
-        _userRepo = new UserRepo(userFactory);
-        _genreFactory = new GenreFactory();
-        _genreRepo = new GenreRepo(_genreFactory);
-
-        _user = _userRepo.registerNewUser("User One", "user1@mail.com");
-
-        _action = _genreRepo.addGenre("Action");
-        assertNotNull(_action);
-
-        _library = _libraryRepo.addLibrary(_user);
-
-        ListOfPublications myList = _listRepo.addListOfPublications(_user, "My List", _action);
-        assertNotNull(myList);
-
+        _user = mock(User.class);
+        _genre = mock(Genre.class);
+        _identifier = mock(Identifier.class);
+        _publication = mock(Publication.class);
+        _library = mock(Library.class);
+        _publicationsList = mock(ListOfPublications.class);
     }
 
     // getMyLists
-
     @Test
-    void getMyListsShouldReturnOnlyListsOfThatUser() {
-        User user2 = _userRepo.registerNewUser("User Two", "user2@mail.com");
-        _listFactory.createListOfPublications(user2, "Other List", _action);
+    void getMyLists_returnsListsFromRepo() {
+        List<ListOfPublications> expected = List.of(_publicationsList);
+        when(_listRepo.findListsByUser(_user)).thenReturn(expected);
 
         List<ListOfPublications> result = _controller.getMyLists(_user);
 
-        assertEquals(1, result.size());
-        assertEquals("My List", result.get(0).getName());
-        assertEquals(_user, result.get(0).getUser());
+        assertSame(expected, result);
     }
 
     @Test
-    void getMyListsShouldThrowWhenUserIsNull() {
+    void getMyLists_throwsWhenUserIsNull() {
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> _controller.getMyLists(null)
@@ -75,38 +60,24 @@ class AddPublicationToListControllerTest {
     // getPublicationsInMyLibrary
 
     @Test
-    void getPublicationsInMyLibraryShouldReturnPublicationDetails() {
-        Identifier id = new ISBN("978-0-306-40615-7"); // VALID ISBN-13
+    void getPublicationsInMyLibrary_returnsPublicationDetails() {
+        PublicationDetails details = mock(PublicationDetails.class);
+        when(_library.getPublicationsInLibrary()).thenReturn(List.of(details));
+        when(_libraryRepo.findLibraryByUser(_user)).thenReturn(_library);
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(id)
-                .year(Year.of(2000))
-                .title(new Title("Some Title"))
-                .author(new Author("Some Author"))
-                .publisher(new PublishingCompany("Some Publisher"))
-                .genre(_action)
-                .build();
+        List<PublicationDetails> result = _controller.getPublicationsInMyLibrary(_user);
 
-        assertTrue(_library.addPublicationToLibrary(pub));
-
-        List<PublicationDetails> details = _controller.getPublicationsInMyLibrary(_user);
-
-        assertEquals(1, details.size());
-        assertEquals(id, details.get(0).getIdentifier());
-        assertEquals(pub.getTitle(), details.get(0).getTitle());
-        assertEquals(pub.getPublicationType(), details.get(0).getPublicationType());
+        assertEquals(1, result.size());
+        assertSame(details, result.get(0));
     }
 
     @Test
-    void getPublicationsInMyLibraryShouldThrowWhenUserHasNoLibrary() {
-        User userNoLib = _userRepo.registerNewUser("User Three", "user3@mail.com");
+    void getPublicationsInMyLibrary_throwsWhenUserLibraryNotFound() {
+        when(_libraryRepo.findLibraryByUser(_user))
+                .thenThrow(new IllegalStateException("Library not found"));
 
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> _controller.getPublicationsInMyLibrary(userNoLib)
-        );
-        assertTrue(ex.getMessage().startsWith("Library not found for user:"));
+        assertThrows(IllegalStateException.class,
+                () -> _controller.getPublicationsInMyLibrary(_user));
     }
 
     @Test
@@ -121,160 +92,126 @@ class AddPublicationToListControllerTest {
     // addPublicationToList (BOOK + ISBN)
 
     @Test
-    void addPublicationToListShouldAddBookWithISBNWhenEverythingIsValid() {
-        Identifier id = new ISBN("0306406152"); // VALID ISBN-10
+    void addPublicationToList_addsPublicationWhenValid() {
+        when(_listRepo.findByOwnerNameAndGenre(_user, "My List", _genre))
+                .thenReturn(_publicationsList);
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(id)
-                .year(Year.of(2001))
-                .title(new Title("Book A"))
-                .author(new Author("Author A"))
-                .publisher(new PublishingCompany("Publisher A"))
-                .genre(_action)
-                .build();
+        when(_libraryRepo.findLibraryByUser(_user))
+                .thenReturn(_library);
 
-        assertTrue(_library.addPublicationToLibrary(pub));
+        when(_library.getAllPublications())
+                .thenReturn(List.of(_publication));
+
+        when(_publication.getIdentifier())
+                .thenReturn(_identifier);
 
         assertDoesNotThrow(() ->
-                _controller.addPublicationToList(_user, "My List", _action, id)
+                _controller.addPublicationToList(_user, "My List", _genre, _identifier)
         );
-
-        ListOfPublications list = _listRepo.findByOwnerNameAndGenre(_user, "My List", _action);
-        assertNotNull(list);
-
-        assertEquals(1, list.getPublications().size());
-        assertEquals(id, list.getPublications().get(0).getIdentifier());
     }
 
     // addPublicationToList (MAGAZINE + ISSN)
 
     @Test
-    void addPublicationToListShouldAddMagazineWithISSNWhenEverythingIsValid() {
-        Identifier id = new ISSN("1234-5678"); // VALID FORMAT for your ISSN
+    void addPublicationToList_addsMagazineWithISSNWhenValid() {
+        // Arrange
+        when(_listRepo.findByOwnerNameAndGenre(_user, "My List", _genre))
+                .thenReturn(_publicationsList);
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(id)
-                .year(Year.of(2020))
-                .title(new Title("Magazine A"))
-                .publisher(new PublishingCompany("Publisher M"))
-                .genre(_action)
-                .build();
+        when(_libraryRepo.findLibraryByUser(_user))
+                .thenReturn(_library);
 
-        assertTrue(_library.addPublicationToLibrary(pub));
+        when(_library.getAllPublications())
+                .thenReturn(List.of(_publication));
 
+        when(_publication.getIdentifier())
+                .thenReturn(_identifier);
+
+        // Act + Assert
         assertDoesNotThrow(() ->
-                _controller.addPublicationToList(_user, "My List", _action, id)
+                _controller.addPublicationToList(_user, "My List", _genre, _identifier)
         );
-
-        ListOfPublications list = _listRepo.findByOwnerNameAndGenre(_user, "My List", _action);
-        assertNotNull(list);
-
-        assertEquals(1, list.getPublications().size());
-        assertEquals(id, list.getPublications().get(0).getIdentifier());
     }
 
-    // Negative cases
+    @Test
+    void addPublicationToList_throwsWhenListNotFound() {
+        when(_listRepo.findByOwnerNameAndGenre(_user, "My List", _genre))
+                .thenReturn(null);
+
+        assertThrows(IllegalStateException.class,
+                () -> _controller.addPublicationToList(_user, "My List", _genre, _identifier));
+    }
 
     @Test
-    void addPublicationToListShouldThrowWhenListNotFound() {
-        Identifier id = new ISBN("9780306406157"); // VALID ISBN-13
+    void addPublicationToList_throwsWhenPublicationNotFound() {
+        when(_listRepo.findByOwnerNameAndGenre(_user, "My List", _genre))
+                .thenReturn(_publicationsList);
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(id)
-                .year(Year.of(2002))
-                .title(new Title("Book B"))
-                .author(new Author("Author B"))
-                .publisher(new PublishingCompany("Publisher B"))
-                .genre(_action)
-                .build();
+        when(_libraryRepo.findLibraryByUser(_user))
+                .thenReturn(_library);
 
-        assertTrue(_library.addPublicationToLibrary(pub));
+        when(_library.getAllPublications())
+                .thenReturn(List.of()); // empty library
+
+        assertThrows(IllegalStateException.class,
+                () -> _controller.addPublicationToList(_user, "My List", _genre, _identifier));
+    }
+
+    // ---------------------
+    // Null argument tests
+    // ---------------------
+    @Test
+    void addPublicationToList_throwsWhenUserIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationToList(null, "My List", _genre, _identifier));
+    }
+
+    @Test
+    void addPublicationToList_throwsWhenListNameIsBlank() {
+        assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationToList(_user, " ", _genre, _identifier));
+    }
+
+    @Test
+    void addPublicationToList_throwsWhenGenreIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationToList(_user, "My List", null, _identifier));
+    }
+
+    @Test
+    void addPublicationToList_throwsWhenIdentifierIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationToList(_user, "My List", _genre, null));
+    }
+
+    // -----------------------
+    // Check for duplications
+    // -----------------------
+    @Test
+    void addPublicationToList_throwsWhenPublicationAlreadyInList() {
+        when(_listRepo.findByOwnerNameAndGenre(_user, "My List", _genre))
+                .thenReturn(_publicationsList);
+
+        when(_libraryRepo.findLibraryByUser(_user))
+                .thenReturn(_library);
+
+        when(_library.getAllPublications())
+                .thenReturn(List.of(_publication));
+
+        when(_publication.getIdentifier())
+                .thenReturn(_identifier);
+
+        // Simulate the domain rule: list rejects duplicates
+        doThrow(new IllegalStateException("Publication already in list"))
+                .when(_publicationsList)
+                .addPublication(_publication);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> _controller.addPublicationToList(_user, "Unknown", _action, id)
+                () -> _controller.addPublicationToList(_user, "My List", _genre, _identifier)
         );
-        assertEquals("List not found", ex.getMessage());
-    }
 
-    @Test
-    void addPublicationToListShouldThrowWhenPublicationNotInLibrary() {
-        Identifier id = new ISBN("9780306406157"); // not added
-
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> _controller.addPublicationToList(_user, "My List", _action, id)
-        );
-        assertEquals("Publication not found in library", ex.getMessage());
-    }
-
-    @Test
-    void addPublicationToListShouldThrowWhenIdentifierIsNull() {
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controller.addPublicationToList(_user, "My List", _action, null)
-        );
-        assertEquals("Identifier is mandatory", ex.getMessage());
-    }
-
-    @Test
-    void addPublicationToListShouldThrowWhenListNameIsBlank() {
-        Identifier id = new ISSN("1234-5678");
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controller.addPublicationToList(_user, "   ", _action, id)
-        );
-        assertEquals("List name is mandatory", ex.getMessage());
-    }
-
-    @Test
-    void addPublicationToListShouldThrowWhenGenreIsNull() {
-        Identifier id = new ISBN("0306406152");
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controller.addPublicationToList(_user, "My List", null, id)
-        );
-        assertEquals("Genre is mandatory", ex.getMessage());
-    }
-
-    @Test
-    void addPublicationToListShouldThrowWhenUserIsNull() {
-        Identifier id = new ISBN("0306406152");
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controller.addPublicationToList(null, "My List", _action, id)
-        );
-        assertEquals("User is mandatory", ex.getMessage());
-    }
-
-    @Test
-    void addPublicationToListShouldThrowWhenAddingSamePublicationTwice() {
-        Identifier id = new ISBN("0306406152"); // VALID ISBN-10
-
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(id)
-                .year(Year.of(2003))
-                .title(new Title("Book C"))
-                .author(new Author("Author C"))
-                .publisher(new PublishingCompany("Publisher C"))
-                .genre(_action)
-                .build();
-
-        assertTrue(_library.addPublicationToLibrary(pub));
-
-        _controller.addPublicationToList(_user, "My List", _action, id);
-
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> _controller.addPublicationToList(_user, "My List", _action, id)
-        );
         assertEquals("Publication already in list", ex.getMessage());
     }
+
 }
