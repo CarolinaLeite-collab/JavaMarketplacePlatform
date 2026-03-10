@@ -11,51 +11,47 @@ import static org.mockito.Mockito.*;
 
 class GetPublicListsByGenreControllerTest {
 
-    private GetPublicListsByGenreController _controller;
     private ListOfPublicationsRepo _repoDouble;
-
     private Genre _genreDouble;
-    private User _userDouble;
 
     @BeforeEach
     void setUp() {
 
         _repoDouble = mock(ListOfPublicationsRepo.class);
-        _controller = new GetPublicListsByGenreController(_repoDouble);
-
         _genreDouble = mock(Genre.class);
-        _userDouble = mock(User.class);
     }
 
     @Test
     void controllerShouldReturnPublicListsByGenre() {
 
-        //Arrange
-        ListOfPublications _listA = mock(ListOfPublications.class);
-        when(_listA.getName()).thenReturn("List A");
-        when(_listA.getUser()).thenReturn(_userDouble);
-        when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(_listA));
+        // Arrange
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
+        ListOfPublications listA = mock(ListOfPublications.class);
+        User userDouble = mock(User.class);
+        when(listA.getName()).thenReturn("List A");
+        when(listA.getUser()).thenReturn(userDouble);
+        when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
 
-        //At
-        List<ListOfPublications> result = _controller.getPublicListsByGenre(_genreDouble); //SUT
+        // Act
+        List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);
 
-        //Assert
+        // Assert
         assertEquals("List A", result.get(0).getName());
-        assertEquals(_userDouble, result.get(0).getUser());
+        assertEquals(userDouble, result.get(0).getUser());
         verify(_repoDouble).findPublicListsByGenre(_genreDouble);
 
     }
 
     @Test
     void controllerShouldThrowWhenGenreIsNull() {
-        //Arrange
-        //(no additional setup needed beyond setup)
 
+        // Arrange
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> _controller.getPublicListsByGenre(null) //(SUT)
+                () -> controller.getPublicListsByGenre(null)
         );
         assertEquals("Genre is mandatory", ex.getMessage());
     }
@@ -63,13 +59,14 @@ class GetPublicListsByGenreControllerTest {
     @Test
     void controllerShouldReturnEmptyListWhenNoPublicListsOfGenreExists() {
 
-        //Arrange
+        // Arrange
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
         when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
 
-        //Act
-        List<ListOfPublications> result = _controller.getPublicListsByGenre(_genreDouble); //SUT
+        // Act
+        List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);
 
-        //Assert
+        // Assert
         assertTrue(result.isEmpty());
     }
 }
