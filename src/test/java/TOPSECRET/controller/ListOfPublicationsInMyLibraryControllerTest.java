@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 class ListOfPublicationsInMyLibraryControllerTest {
     private User _user;
     private LibraryRepo _libraryRepo;
-    private ListOfPublicationsInMyLibraryController _sut;
     private Library _myLibrary;
 
     @BeforeEach
@@ -21,26 +20,29 @@ class ListOfPublicationsInMyLibraryControllerTest {
         _myLibrary = mock(Library.class);
         _libraryRepo = mock(LibraryRepo.class);
         when(_libraryRepo.findByUser(_user)).thenReturn(_myLibrary);
-        _sut = new ListOfPublicationsInMyLibraryController(_libraryRepo);
     }
 
     @Test
     void shouldReturnEmptyListWhenLibraryExistsButEmpty() {
-        // Arrange
+        //Arrange
         when(_myLibrary.getPublicationsInLibrary()).thenReturn(List.of());
-        // Act
-        List<PublicationDetails> result = _sut.getListOfPublications(_user);
-        // Assert
+        //SUT
+        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepo);
+        //Act
+        List<PublicationDetails> result = controller.getListOfPublications(_user);
+        //Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void shouldReturnListOfPublicationsInLibrary() {
-        // Arrange
+        //Arrange
         PublicationDetails details = mock(PublicationDetails.class);
         when(_myLibrary.getPublicationsInLibrary()).thenReturn(List.of(details));
+        //SUT
+        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepo);
         //Act
-        List<PublicationDetails> result = _sut.getListOfPublications(_user);
+        List<PublicationDetails> result = controller.getListOfPublications(_user);
         //Assert
         assertEquals(List.of(details), result);
     }

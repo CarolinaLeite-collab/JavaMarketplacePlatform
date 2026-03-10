@@ -21,7 +21,7 @@ class CountryFactoryTest {
                              })) {
             CountryFactory factory = new CountryFactory();
             // act
-            Country newCountry = factory.createClass(countryName);
+            Country newCountry = factory.createFactory(countryName);
             //assert
             assertEquals(countryName, newCountry.getCountryName());
         }

@@ -10,99 +10,102 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class CountryRepoTest {
-    private CountryRepo _sut;
     private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp() {
         _countryFactory = mock(CountryFactory.class);
-        _sut = new CountryRepo(_countryFactory);
     }
 
     @Test
     void shouldConstructRepoSuccessfully() {
-        // Assert
-        assertNotNull(_sut);
-        assertEquals(0, _sut.getAllCountries().size());
+        //Act
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Assert
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        // Act
-        Country result = _sut.registerCountry("Portugal");
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(1, _sut.getAllCountries().size());
-        assertEquals(portugal, _sut.getAllCountries().get(0));
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        Country result = countryRepo.registerCountry("Portugal");
+        //Assert
+        assertEquals(portugal, result);
     }
 
     @Test
     void shouldRegistersMultipleUniqueCountries() throws InstantiationException {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
 
         Country germany = mock(Country.class);
-        when(_countryFactory.createClass("Germany")).thenReturn(germany);
-
-        // Act
-        Country first = _sut.registerCountry("Portugal");
-        Country second = _sut.registerCountry("Germany");
-
-        // Assert
+        when(_countryFactory.createFactory("Germany")).thenReturn(germany);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        Country first = countryRepo.registerCountry("Portugal");
+        Country second = countryRepo.registerCountry("Germany");
+        //Assert
         assertNotNull(first);
         assertNotNull(second);
-        assertEquals(2, _sut.getAllCountries().size());
+        assertEquals(2, countryRepo.getAllCountries().size());
     }
 
     @Test
     void shouldReturnNullIfCountryIsDuplicate() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal, portugal);
-        // Act
-        Country first = _sut.registerCountry("Portugal");
-        Country Duplicate = _sut.registerCountry("Portugal");
-        // Assert
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal, portugal);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        Country first = countryRepo.registerCountry("Portugal");
+        Country Duplicate = countryRepo.registerCountry("Portugal");
+        //Assert
         assertNotNull(first);
         assertNull(Duplicate);
-        assertEquals(1, _sut.getAllCountries().size());
+        assertEquals(1, countryRepo.getAllCountries().size());
     }
 
     @Test
     void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
 
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(_countryFactory.createClass("portugal")).thenReturn(portugal);
-        when(_countryFactory.createClass(" Portugal ")).thenReturn(portugal);
-        // Act
-        Country first = _sut.registerCountry("Portugal");
-        Country second = _sut.registerCountry("portugal");
-        Country third = _sut.registerCountry(" Portugal ");
-        // Assert
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory(" Portugal ")).thenReturn(portugal);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        Country first = countryRepo.registerCountry("Portugal");
+        Country second = countryRepo.registerCountry("portugal");
+        Country third = countryRepo.registerCountry(" Portugal ");
+        //Assert
         assertNotNull(first);
         assertNull(second);
         assertNull(third);
-        assertEquals(1, _sut.getAllCountries().size());
+        assertEquals(1, countryRepo.getAllCountries().size());
     }
 
     @Test
     void shouldReturnsUnmodifiedListOfCountries() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        // Act
-        _sut.registerCountry("Portugal");
-        List<Country> countries = _sut.getAllCountries();
-
-        // Assert
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        countryRepo.registerCountry("Portugal");
+        List<Country> countries = countryRepo.getAllCountries();
+        //Assert
         assertEquals(1, countries.size());
         assertThrows(UnsupportedOperationException.class, () -> countries.add(new Country("Germany")));
     }
@@ -110,39 +113,44 @@ class CountryRepoTest {
     //Test findByName() method
     @Test
     void findByName_shouldReturnsNullWhenNameIsNull() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
-        // Act
-        _sut.registerCountry("Portugal");
-        // Assert
-        assertNull(_sut.findByName(null));
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        countryRepo.registerCountry("Portugal");
+        //Assert
+        assertNull(countryRepo.findByName(null));
     }
 
     @Test
-    void findByName_shouldFindsCountryIgnoringCaseAndSpaces() {
-        // Arrange
+    void findByName_shouldFindCountryIgnoringCaseAndSpaces() {
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
-        // Act
-        _sut.registerCountry("Portugal");
-        // Assert
-        assertEquals(portugal, _sut.findByName("portugal"));
-        assertEquals(portugal, _sut.findByName(" Portugal "));
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        countryRepo.registerCountry("Portugal");
+        //Assert
+        assertEquals(portugal, countryRepo.findByName("portugal"));
+        assertEquals(portugal, countryRepo.findByName(" Portugal "));
     }
 
     @Test
     void findByName_shouldReturnNullWhenCountryNotFound() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
-        // Act
-        _sut.registerCountry("Portugal");
-        // Assert
-        assertNull(_sut.findByName("Germany"));
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+        //SUT
+        CountryRepo countryRepo = new CountryRepo(_countryFactory);
+        //Act
+        countryRepo.registerCountry("Portugal");
+        //Assert
+        assertNull(countryRepo.findByName("Germany"));
     }
-
 }

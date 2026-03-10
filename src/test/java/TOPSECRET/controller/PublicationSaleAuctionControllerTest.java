@@ -32,7 +32,7 @@ class PublicationSaleAuctionControllerTest {
         itemRepo = new ItemRepo();
         auctionRepo = new AuctionRepo();
         _countryFactory = new CountryFactory();
-        _country = _countryFactory.createClass("Portugal");
+        _country = _countryFactory.createFactory("Portugal");
         controller = new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo);
 
         testUser = new User(

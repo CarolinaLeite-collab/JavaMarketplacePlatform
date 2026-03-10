@@ -22,7 +22,6 @@ participant ":AddGenreUI" as UI
 participant ":AddGenreController" as Ctl
 participant "_genreRepo:GenreRepo" as gr
 participant "_genreFactory:GenreFactory" as gf
-participant "_genresList:List <Genre>" as list
 
 Administrator -> UI: I want to add a publication genre
 activate UI
@@ -36,27 +35,25 @@ activate Ctl
 Ctl -> gr: addGenre(genreName)
 activate gr
 
-opt !genreExists(genreName)
+gr -> gr : genreExists(genreName)
         gr -> gf : createGenre(genreName)
         activate gf
-        create "genre:Genre"
-        gf -> "genre:Genre": create(genreName)
-        gf --> gr : genre
+        create "genreName:Genre"
+        gf -> "genreName:Genre": create(genreName)
+        gf --> gr : genreName
         deactivate gf
-        gr -> list: add(genre)
-        activate list
-        list --> gr: true
-        deactivate list
-    end
+        gr -> gr: add(genreName)
 
 
-gr --> Ctl: genre
+
+
+gr --> Ctl: genreName
 deactivate gr
 
-Ctl --> UI: genre
+Ctl --> UI: genreName
 deactivate Ctl
 
-UI --> Administrator: genre added successfully to the \nofficial genre list!
+UI --> Administrator: genreName added successfully \nto the official genre list!
 deactivate UI
 
 @enduml

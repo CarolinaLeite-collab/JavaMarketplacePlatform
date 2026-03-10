@@ -15,22 +15,21 @@ public class CountryRepo {
     private final List<Country> _countries;
     private final CountryFactory _countryFactory;
 
-    public CountryRepo (CountryFactory countryFactory) {
+    public CountryRepo(CountryFactory countryFactory){
         _countries = new ArrayList<>();
         _countryFactory = Objects.requireNonNull(countryFactory, "CountryFactory cannot be null");
     }
 
-    public Country registerCountry (String countryName) {
-
-        Country newCountry = _countryFactory.createClass(countryName);
+    public Country registerCountry(String countryName){
+        Country newCountry = _countryFactory.createFactory(countryName);
 
         if (existsCountry(newCountry))  {
             return null;
         }
         else  {
             _countries.add(newCountry);
+            return newCountry;
         }
-        return newCountry;
     }
 
     private boolean existsCountry(Country country) {
@@ -50,9 +49,10 @@ public class CountryRepo {
         if (name == null) {
             return null;
         }
-        String normalized = name.trim().replaceAll("\\s+", " ");
+        String normalized = name.trim().replaceAll("\\s+", " ").toUpperCase();
         for (Country c : _countries) {
-            if (normalized.equalsIgnoreCase(c.getCountryName())) return c;
+            if (c.isNamed(normalized))
+                return c;
         }
         return null;
     }

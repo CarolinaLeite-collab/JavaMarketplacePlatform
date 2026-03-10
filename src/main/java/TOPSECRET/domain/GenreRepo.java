@@ -11,11 +11,11 @@ import java.util.List;
  */
 
 public class GenreRepo {
-    private final List<Genre> _genres;
+    private final List<Genre> _genresList;
     private final GenreFactory _genreFactory;
 
     public GenreRepo(GenreFactory genreFactory) {
-        _genres = new ArrayList<>();
+        _genresList = new ArrayList<>();
         _genreFactory = genreFactory;
     }
 
@@ -26,20 +26,20 @@ public class GenreRepo {
         }
 
         Genre genre = _genreFactory.createGenre(genreName);
-        _genres.add(genre);
+        _genresList.add(genre);
         return genre;
     }
 
     // Checks if a genre with the given name already exists in the repository.
     private boolean genreExists(String genreName) {
         Genre existingGenre = _genreFactory.createGenre(genreName);
-        return _genres.contains(existingGenre);
+        return _genresList.contains(existingGenre);
     }
 
     // Gets the list of official genres, and uses copyOf for encapsulation
     public List<Genre> getListOfOfficialGenres() {
 
-        return List.copyOf(_genres);
+        return List.copyOf(_genresList);
 
     }
 

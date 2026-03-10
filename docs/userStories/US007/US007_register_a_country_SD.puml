@@ -41,9 +41,9 @@ activate CTL
 CTL -> CR: registerCountry (countryName)
 activate CR
 
-CR -> FACTORY: createClass (countryName)
+CR -> FACTORY: createFactory (countryName)
 create "c1:Country"
-FACTORY -> "c1:Country": createClass (countryName)
+FACTORY -> "c1:Country": createFactory (countryName)
 FACTORY --> CR :c1
 
 opt existsCountry (country) == false

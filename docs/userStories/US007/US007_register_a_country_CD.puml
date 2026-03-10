@@ -20,7 +20,7 @@ Class Country {
 - _countryName : String
 }
 Class CountryFactory {
-+ createClass(countryName : String)
++ createFactory(countryName : String)
 }
 Class CountryRepo {
 - _countries : List<Country>
