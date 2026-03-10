@@ -17,7 +17,7 @@ class CityFactoryTest {
     }
 
     @Test
-    void createCity_withValidData_returnsCity() {
+    void createCityWithValidDataReturnsCity() {
         // Arrange
         String cityName = "Porto";
 
@@ -31,7 +31,7 @@ class CityFactoryTest {
     }
 
     @Test
-    void createCity_returnsNewInstanceEachTime() {
+    void createCityReturnsNewInstanceEachTime() {
         // Act
         City city1 = factory.createCity("Porto", country);
         City city2 = factory.createCity("Porto", country);
@@ -42,19 +42,19 @@ class CityFactoryTest {
     }
 
     @Test
-    void createCity_withNullName_throwsException() {
+    void createCityWithNullNameThrowsException() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> factory.createCity(null, country));
     }
 
     @Test
-    void createCity_withBlankName_throwsException() {
+    void createCityWithBlankNameThrowsException() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> factory.createCity("   ", country));
     }
 
     @Test
-    void createCity_withNullCountry_throwsException() {
+    void createCityWithNullCountryThrowsException() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> factory.createCity("Porto", null));
     }
