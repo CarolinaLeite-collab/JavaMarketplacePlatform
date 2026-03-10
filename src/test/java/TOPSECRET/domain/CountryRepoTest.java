@@ -81,7 +81,7 @@ class CountryRepoTest {
     void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
 
         when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
         when(_countryFactory.createClass("portugal")).thenReturn(portugal);
@@ -117,24 +117,24 @@ class CountryRepoTest {
     //Test findByName() method
     @Test
     void findByName_shouldReturnsNullWhenNameIsNull() {
-        // Arrange
+        //Arrange
         Country portugal = mock(Country.class);
         when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
-        // Act
+        //Act
         countryRepo.registerCountry("Portugal");
-        // Assert
+        //Assert
         assertNull(countryRepo.findByName(null));
     }
 
     @Test
-    void findByName_shouldFindsCountryIgnoringCaseAndSpaces() {
+    void findByName_shouldFindCountryIgnoringCaseAndSpaces() {
         //Arrange
         Country portugal = mock(Country.class);
         when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -149,7 +149,7 @@ class CountryRepoTest {
         //Arrange
         Country portugal = mock(Country.class);
         when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(portugal.getCountryName()).thenReturn("PORTUGAL");
+        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
