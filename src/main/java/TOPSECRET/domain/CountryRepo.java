@@ -21,7 +21,7 @@ public class CountryRepo {
     }
 
     public Country registerCountry(String countryName){
-        Country newCountry = _countryFactory.createClass(countryName);
+        Country newCountry = _countryFactory.createFactory(countryName);
 
         if (existsCountry(newCountry))  {
             return null;

@@ -29,7 +29,7 @@ class CountryRepoTest {
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -42,10 +42,10 @@ class CountryRepoTest {
     void shouldRegistersMultipleUniqueCountries() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
 
         Country germany = mock(Country.class);
-        when(_countryFactory.createClass("Germany")).thenReturn(germany);
+        when(_countryFactory.createFactory("Germany")).thenReturn(germany);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -61,7 +61,7 @@ class CountryRepoTest {
     void shouldReturnNullIfCountryIsDuplicate() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal, portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal, portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -79,9 +79,9 @@ class CountryRepoTest {
         Country portugal = mock(Country.class);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
 
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
-        when(_countryFactory.createClass("portugal")).thenReturn(portugal);
-        when(_countryFactory.createClass(" Portugal ")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory(" Portugal ")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -99,7 +99,7 @@ class CountryRepoTest {
     void shouldReturnsUnmodifiedListOfCountries() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -115,7 +115,7 @@ class CountryRepoTest {
     void findByName_shouldReturnsNullWhenNameIsNull() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
@@ -129,7 +129,7 @@ class CountryRepoTest {
     void findByName_shouldFindCountryIgnoringCaseAndSpaces() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
@@ -144,7 +144,7 @@ class CountryRepoTest {
     void findByName_shouldReturnNullWhenCountryNotFound() {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createClass("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);

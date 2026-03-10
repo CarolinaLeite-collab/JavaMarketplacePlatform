@@ -31,7 +31,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @BeforeEach
     void setUp() {
         _countryFactory = new CountryFactory();
-        _country = _countryFactory.createClass("Portugal");
+        _country = _countryFactory.createFactory("Portugal");
         libraryRepo = new LibraryRepo(_libraryFactory);
         publicationRepo = new PublicationRepo();
         itemRepo = new ItemRepo();

@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import java.util.Locale;
-
 /**
  * Factory responsible for creating {@link Country} instances.
  * <p>
@@ -9,7 +7,7 @@ import java.util.Locale;
  * into an {@link InstantiationException}.
  */
 public class CountryFactory {
-    public Country createClass(String countryName) {
+    public Country createFactory(String countryName) {
             return new Country(countryName);
     }
 
