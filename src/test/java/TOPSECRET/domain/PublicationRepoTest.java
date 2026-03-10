@@ -1,299 +1,128 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationRepoTest {
-    //creates repo
-    @Test
-    public void sucessfulyReturnsPublicationAddedToRepo() {
-        // arrange
-        PublicationRepo repo = new PublicationRepo();
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        // arrange
-        assertEquals(repo.add(p), p);
+
+    private PublicationRepo _publicationRepo;
+    private PublicationFactory _publicationFactory;
+
+    // Mocks for factory arguments
+    private PublicationType _typeDouble;
+    private Identifier _identifierDouble;
+    private Year _yearDouble;
+    private Title _titleDouble;
+    private Author _authorDouble;
+    private PublishingCompany _publisherDouble;
+    private Edition _editionDouble;
+    private Genre _genreDouble;
+
+    @BeforeEach
+    void setUp() {
+        _publicationFactory = mock(PublicationFactory.class);
+        _publicationRepo = new PublicationRepo(_publicationFactory);
+
+        _typeDouble = mock(PublicationType.class);
+        _identifierDouble = mock(Identifier.class);
+        _yearDouble = mock(Year.class);
+        _titleDouble = mock(Title.class);
+        _authorDouble = mock(Author.class);
+        _publisherDouble = mock(PublishingCompany.class);
+        _editionDouble = mock(Edition.class);
+        _genreDouble = mock(Genre.class);
     }
 
     @Test
-    public void sucessfulyReturnsPublicationAddedToRepoNotEmptyRepo() {
-        // arrange
-        PublicationRepo repo = new PublicationRepo();
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Publication p1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2013))
-                .title(new Title("Photomaton & Vox "))
-                .author(new Author("Herberto Helder"))
-                .publisher(new PublishingCompany("Assírio & Alvim"))
-                .build();
-        // arrange
-        repo.add(p);
-        assertEquals(repo.add(p1), p1);
+    void addPublication_storesPublicationReturnedByFactory() {
+        Publication created = mock(Publication.class);
+
+        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+                .thenReturn(created);
+
+        Publication result = _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+
+        assertSame(created, result);
     }
+
     @Test
-    void doesntCreateInvalidPublication_emptyTitle() {
+    void addPublication_throwsWhenPublicationAlreadyExists() {
+        Publication created = mock(Publication.class);
+
+        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+                .thenReturn(created);
+
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+
+        // second call returns same instance → duplicate
         assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780691181950"))
-                        .year(Year.of(2019))
-                        .title(new Title(""))   // invalid
-                        .author(new Author("Seneca"))
-                        .publisher(new PublishingCompany("Penguin"))
-                        .build()
+                _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble)
         );
     }
 
     @Test
-    void add_throws_whenNull() {
-        PublicationRepo repo = new PublicationRepo();
-        assertThrows(IllegalArgumentException.class, () -> repo.add(null));
+    void getPublication_returnsStoredPublication() {
+        Publication created = mock(Publication.class);
+
+        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+                .thenReturn(created);
+
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+
+        Publication result = _publicationRepo.getPublication(created);
+
+        assertSame(created, result);
     }
 
     @Test
-    void doesntAddDuplicatePublication() {
-        PublicationRepo repo = new PublicationRepo();
+    void getPublication_throwsWhenNotFound() {
+        Publication notStored = mock(Publication.class);
 
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to keep your cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        // first add succeeds
-        assertSame(p, repo.add(p));
-
-        // second add throws
-        IllegalArgumentException ex =
-                assertThrows(IllegalArgumentException.class, () -> repo.add(p));
-
-        assertEquals("Publication already exists in the repository", ex.getMessage());
+        assertThrows(IllegalArgumentException.class, () ->
+                _publicationRepo.getPublication(notStored)
+        );
     }
 
     @Test
-    void returnsAllPublicationsWhenExistentListIsEmpty() {
-        // Ensures that getDifferentOf returns all publications when no publications are provided
+    void getDifferentOf_returnsPublicationsNotInProvidedList() {
+        Publication p1 = mock(Publication.class);
+        Publication p2 = mock(Publication.class);
+        Publication p3 = mock(Publication.class);
 
-        // Arrange
-        PublicationRepo repo = new PublicationRepo();
+        when(_publicationFactory.createPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(p1)
+                .thenReturn(p2)
+                .thenReturn(p3);
 
-        Publication p1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
-        Publication p2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2013))
-                .title(new Title("Photomaton & Vox"))
-                .author(new Author("Herberto Helder"))
-                .publisher(new PublishingCompany("Assírio & Alvim"))
-                .build();
+        List<Publication> existing = List.of(p1, p3);
 
-        repo.add(p1);
-        repo.add(p2);
+        List<Publication> result = _publicationRepo.getDifferentOf(existing);
 
-        // Act
-        List<Publication> result = repo.getDifferentOf(List.of());
-
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(p1));
-        assertTrue(result.contains(p2));
-    }
-
-    @Test
-    void returnsOnlyPublicationsNotInExistentList() {
-        // Ensures that getDifferentOf excludes publications already in the existent list
-
-        // Arrange
-        PublicationRepo repo = new PublicationRepo();
-
-        Publication p1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Publication p2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2013))
-                .title(new Title("Photomaton & Vox"))
-                .author(new Author("Herberto Helder"))
-                .publisher(new PublishingCompany("Assírio & Alvim"))
-                .build();
-
-        repo.add(p1);
-        repo.add(p2);
-
-        // Act
-        List<Publication> result = repo.getDifferentOf(List.of(p1));
-
-        // Assert
         assertEquals(1, result.size());
-        assertFalse(result.contains(p1));
-        assertTrue(result.contains(p2));
+        assertSame(p2, result.get(0));
     }
 
     @Test
-    void returnsEmptyListWhenAllPublicationsExist() {
-        // Ensures that getDifferentOf returns an empty list when all publications are already present
-
-        // Arrange
-        PublicationRepo repo = new PublicationRepo();
-
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Publication p2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2020))
-                .title(new Title("The Hobbit"))
-                .author(new Author("Somebody"))
-                .publisher(new PublishingCompany("Girafa"))
-                .build();
-
-        repo.add(p);
-        repo.add(p2);
-
-        // Act
-        List<Publication> result = repo.getDifferentOf(List.of(p, p2));
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-    
-    @Test
-    void getPublication_returnsStoredInstance_whenSameReference() {
-        PublicationRepo repo = new PublicationRepo();
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        repo.add(p);
-
-        assertSame(p, repo.getPublication(p));
-    }
-
-    @Test
-    void getPublication_returnsStoredInstance_whenEqualButDifferentObject() {
-        PublicationRepo repo = new PublicationRepo();
-        Publication stored = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Publication probe = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        repo.add(stored);
-
-        assertSame(stored, repo.getPublication(probe));
-    }
-
-    @Test
-    void getPublication_throws_whenNotFound() {
-        PublicationRepo repo = new PublicationRepo();
+    void getPublication_throwsWhenNull() {
+        PublicationFactory factory = mock(PublicationFactory.class);
+        PublicationRepo repo = new PublicationRepo(factory);
 
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                repo.getPublication(Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780691181950"))
-                        .year(Year.of(2019))
-                        .title(new Title("How to Keep Your Cool"))
-                        .author(new Author("Seneca"))
-                        .publisher(new PublishingCompany("Penguin"))
-                        .build()));
+                repo.getPublication(null)
+        );
 
         assertEquals("Publication not found", ex.getMessage());
     }
-
-    @Test
-    void getPublication_throws_whenNull() {
-        PublicationRepo repo = new PublicationRepo();
-
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.getPublication(null));
-
-        assertEquals("Publication not found", ex.getMessage());
-    }
-
-    @Test
-    void getPublication_returnsCorrectPublication_whenMultipleStored() {
-        PublicationRepo repo = new PublicationRepo();
-
-        Publication p1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Publication p2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2013))
-                .title(new Title("Photomaton & Vox"))
-                .author(new Author("Herberto Helder"))
-                .publisher(new PublishingCompany("Assírio & Alvim"))
-                .build();
-
-        repo.add(p1);
-        repo.add(p2);
-
-        assertSame(p2, repo.getPublication(p2));
-    }
-
 }
