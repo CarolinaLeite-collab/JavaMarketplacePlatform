@@ -22,7 +22,7 @@ public class PublicationTypeRepo {
 
     }
 
-    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException, InstantiationException {
+    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
 
         // Verifies if PublicationType already exists in the repo
         if (publicationTypeExists(publicationTypeName)) {

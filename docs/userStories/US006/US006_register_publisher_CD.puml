@@ -36,7 +36,7 @@ class PublishingCompany {
   - publishingCompanyName: String
   + PublishingCompany(publishingCompanyName: String)
 }
-' NOTE: getName() to be used in unit tests, but is not in US006 SD
+
 RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
 RegisterPublishingCompanyController "1" ..> "1" PublishingCompanyRepo : calls
 PublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : uses

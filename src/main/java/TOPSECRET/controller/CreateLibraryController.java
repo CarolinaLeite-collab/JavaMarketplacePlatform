@@ -16,9 +16,9 @@ import TOPSECRET.domain.User;
 
 public class CreateLibraryController {
 
-    private LibraryRepo _libraryRepo;
+    private final LibraryRepo _libraryRepo;
 
-    public CreateLibraryController(LibraryRepo lr, User user){
+    public CreateLibraryController(LibraryRepo lr){
 
         _libraryRepo =lr;
 

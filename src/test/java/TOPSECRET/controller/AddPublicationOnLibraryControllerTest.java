@@ -1,139 +1,102 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.time.Year;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class AddPublicationOnLibraryControllerTest {
 
-    private AddPublicationOnLibraryController _controller;
-    private PublicationRepo _publicationRepo;
-    private LibraryRepo _libraryRepo;
-    private User _user;
-    private Publication _p1;
-    private Publication _p2;
-    private CountryFactory _countryFactory;
-    private LibraryFactory _libraryFactory = new LibraryFactory();
-    private Country _country;
+    @Test
+    void shouldReturnLibraryOfUser() {
 
-    @BeforeEach
-    void setUp() {
-        _publicationRepo = new PublicationRepo();
-        _libraryRepo = new LibraryRepo(_libraryFactory);
-        _controller = new AddPublicationOnLibraryController(_publicationRepo, _libraryRepo);
-        _countryFactory = new CountryFactory();
-        _country = _countryFactory.createClass("Portugal");        _user = new User(
-                new Name("Maria"),
-                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", _country, "1000-205", null),
-                new Email("maria123@hotmail.com"),
-                new Phone(new PhonePrefix("+351"), "918902632"));
-        _p1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        _p2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789723701241"))
-                .year(Year.of(2020))
-                .title(new Title("The Hobbit"))
-                .author(new Author("Somebody"))
-                .publisher(new PublishingCompany("Girafa"))
-                .build();
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        User _userDouble = mock(User.class);
 
-        _publicationRepo.add(_p1);
-        _publicationRepo.add(_p2);
+        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
 
-        _libraryRepo.addLibrary(_user);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
+
+        Library result = controller.getMyLibrary(_userDouble);
+
+        assertEquals(_libraryDouble, result);
+        verify(_libraryRepoDouble).findByUser(_userDouble);
     }
 
     @Test
-    void shouldReturnLibraryOfGivenUser() {
-        // Checks if the user's library is correctly returned
+    void shouldReturnAllItemsFromLibrary() {
 
-        // Act
-        Library result = _controller.getMyLibrary(_user);
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
 
-        // Assert
-        assertNotNull(result);
-        assertEquals(_user, result.getUser());
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+
+        List<Item> items = List.of(_itemDouble1, _itemDouble2);
+
+        when(_libraryDouble.getAllItems()).thenReturn(items);
+
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
+
+        List<Item> result = controller.getAllItems();
+
+        assertEquals(items, result);
+        verify(_libraryDouble).getAllItems();
     }
 
     @Test
-    void shouldReturnAllPublicationsWhenLibraryIsEmpty() {
-        // Verifies that all publications are returned when the user's library is empty
+    void shouldReturnListOfAvailableItems() {
 
-        // Act
-        List<Publication> result = _controller.getListOfAvailablePublications(_user);
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        User _userDouble = mock(User.class);
 
-        // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(_p1));
-        assertTrue(result.contains(_p2));
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+
+        List<Item> existingItems = List.of(_itemDouble1);
+        List<Item> availableItems = List.of(_itemDouble2);
+
+        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getAllItems()).thenReturn(existingItems);
+        when(_itemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
+
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
+
+        List<Item> result = controller.getListOfAvailableItems(_userDouble);
+
+        assertEquals(availableItems, result);
+
+        verify(_libraryRepoDouble).findByUser(_userDouble);
+        verify(_libraryDouble).getAllItems();
+        verify(_itemRepoDouble).getDifferentOf(existingItems);
     }
 
     @Test
-    void shouldReturnOnlyPublicationsNotInLibrary() {
-        // Verifies that only publications not already present in the user's library are returned
+    void shouldAddItemToLibrary() {
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        User _userDouble = mock(User.class);
+        Item _idemDouble = mock(Item.class);
 
-        // Arrange
-        _controller.addPublicationToLibrary(_p1, _user);
+        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.addItemToLibrary(_idemDouble, _userDouble)).thenReturn(true);
 
-        // Act
-        List<Publication> result = _controller.getListOfAvailablePublications(_user);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
 
-        // Assert
-        assertEquals(1, result.size());
-        assertFalse(result.contains(_p1));
-        assertTrue(result.contains(_p2));
-    }
+        boolean result = controller.addItemToLibrary(_idemDouble, _userDouble);
 
-    @Test
-    void shouldAddPublicationToLibrary() {
-        // Checks that a publication is correctly added to the library
-
-        // Act
-        boolean result = _controller.addPublicationToLibrary(_p1, _user);
-
-        // Assert
         assertTrue(result);
 
-        Library library = _controller.getMyLibrary(_user);
-        assertTrue(library.getAllPublications().contains(_p1));
-    }
-
-    @Test
-    void shouldNotAllowDuplicatePublicationInLibrary() {
-        // Checks that adding a duplicate publication is rejected
-
-        // Arrange
-        _controller.addPublicationToLibrary(_p1, _user);
-
-        // Act
-        boolean result = _controller.addPublicationToLibrary(_p1, _user);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenLibraryDoesNotExist() {
-        // Verifies that an exception is thrown when attempting to retrieve a library for a user without one
-        User otherUser = new User(new Name("João"),
-                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE, "Lisboa",
-                        "Lisboa", _country, "1000-205", null),
-                new Email("joao123@hotmail.com"),
-                new Phone(new PhonePrefix("+351"), "918902632"));
-
-        assertThrows(IllegalStateException.class, () -> _controller.getMyLibrary(otherUser)
-        );
+        verify(_libraryRepoDouble).findByUser(_userDouble);
+        verify(_libraryDouble).addItemToLibrary(_idemDouble, _userDouble);
     }
 }

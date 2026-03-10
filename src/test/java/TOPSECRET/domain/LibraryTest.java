@@ -193,5 +193,43 @@ class LibraryTest {
         assertTrue(library.getAllPublications().isEmpty());
     }
 
+    @Test
+    void getAllItemsReturnsCopyOfItems() {
+        Item _idemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+        Library _library = new Library(_userDouble);
+
+        _library.addItemToLibrary(_idemDouble1, _userDouble);
+        _library.addItemToLibrary(_itemDouble2, _userDouble);
+
+        List<Item> result = _library.getAllItems();
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains(_idemDouble1));
+        assertTrue(result.contains(_itemDouble2));
+    }
+
+    @Test
+    void addItemToLibraryAddsItem() {
+        Item _itemDouble = mock(Item.class);
+        Library _library = new Library(_userDouble);
+
+        boolean result = _library.addItemToLibrary(_itemDouble, _userDouble);
+
+        assertTrue(result);
+        assertEquals(1, _library.getAllItems().size());
+        assertTrue(_library.getAllItems().contains(_itemDouble));
+    }
+
+    @Test
+    void addItemToLibraryReturnsFalseWhenItemIsNull() {
+        Library _library = new Library(_userDouble);
+
+        boolean result = _library.addItemToLibrary(null, _userDouble);
+
+        assertFalse(result);
+        assertTrue(_library.getAllItems().isEmpty());
+    }
+
 
 }

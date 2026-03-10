@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import java.util.Objects;
+
 /**
  * <h3>Item represents a publication that has been listed for sale.</h3>
  * <p>
@@ -73,5 +75,19 @@ public class Item {
 
         return publication.isByGenre(genre);
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Item other)) return false;
+
+        return Objects.equals(publication, other.publication)
+                && condition == other.condition;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(publication, condition);
     }
 }

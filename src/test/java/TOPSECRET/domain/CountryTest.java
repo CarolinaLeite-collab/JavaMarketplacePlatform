@@ -24,68 +24,130 @@ class CountryTest {
 
     @Test
     void shouldThrowIfCountryNameIsNull() {
-        // Act & Assert
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country(null));
     }
 
     @Test
     void shouldThrowIfCountryNameIsEmpty() {
-        // Act & Assert
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country("   "));
     }
 
     @Test
     void shouldThrowIfCountryNameHasIllegalChar() {
-        // Act & Assert
+        //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Country("#portugal"));
     }
 
     @Test
     void shouldReturnTrueForCountriesWithSameName() {
-        // Arrange
+        //Arrange
         Country c1 = new Country("France");
         Country c2 = new Country(" France ");
-        // Act
+        //Act
         boolean result = c1.equals(c2);
-        // Assert
+        //Assert
         assertTrue(result);
     }
 
     @Test
     void shouldReturnTrueForSameCountryReference() {
-        // Arrange
+        //Arrange
         Country c1 = new Country("France");
-        // Act
+        //Act
         boolean result = c1.equals(c1);
-        // Assert
+        //Assert
         assertTrue(result);
     }
 
     @Test
     void shouldReturnFalseForDifferentCountries() {
-        // Arrange
+        //Arrange
         Country c1 = new Country("France");
         Country c2 = new Country("Germany");
-        // Act
+        //Act
         boolean result = c1.equals(c2);
-        // Assert
+        //Assert
         assertFalse(result);
     }
 
     @Test
     void shouldReturnFalseWhenComparedWithNull() {
-        // Arrange
+        //Act
         Country country = new Country("France");
-        // Assert
+        //Assert
         assertNotEquals(null, country);
     }
 
     @Test
     void shouldReturnFalseWhenComparedWithDifferentType() {
-        // Arrange
+        //Arrange
         Country country = new Country("France");
-        // Assert
+        //Act & Assert
         assertNotEquals("France", country);
         assertFalse(country.equals("Portugal"));
+    }
+    //isNamed() method Tests
+    @Test
+    void shouldReturnTrueWhenIsNamedTheSame(){
+        //Arrange
+        String name = "FRANCE";
+        Country country = new Country("FRANCE");
+        //Act
+        boolean result = country.isNamed(name);
+        //Assert
+        assertTrue(result);
+    }
+    @Test
+    void shouldReturnTrueWhenIsNamedTheSameUnsanitizedName(){
+        //Arrange
+        String name = " France ";
+        Country country = new Country("FRANCE");
+        //Act
+        boolean result = country.isNamed(name);
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenIsNamedTheSame(){
+        //Arrange
+        String name = "Spain";
+        Country country = new Country("FRANCE");
+        //Act
+        boolean result = country.isNamed(name);
+        //Assert
+        assertFalse(result);
+    }
+    //isOneOf() method Tests
+    @Test
+    void shouldReturnTrueWhenNameIsOneOf(){
+        //Arrange
+        Country country = new Country("France");
+        //Act
+        boolean result = country.isOneOf("Spain", "Portugal", "France");
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenNameIsNotInList() {
+        //Arrange
+        Country country = new Country("Portugal");
+        //Act
+        boolean result = country.isOneOf("Spain", "France", "Germany");
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldMatchCountryIgnoringCaseAndSpaces() {
+        //Arrange
+        Country country = new Country("Portugal");
+        //Act
+        boolean result = country.isOneOf("   portugal  ", "spain");
+        // Assert
+        assertTrue(result);
     }
 }

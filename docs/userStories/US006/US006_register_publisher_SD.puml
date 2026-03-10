@@ -19,7 +19,6 @@ autoactivate off
 ' --- Actor and participants ---
 actor "Admin" as Administrator
 participant ":RegisterPublishingCompanyUI" as UI
-' note over "UI": not implementing UI now; %n() placeholder for tests
 participant ":RegisterPublishingCompanyController" as Ctl
 participant ":PublishingCompanyRepo" as Repo
 participant ":PublishingCompanyFactory" as Factory
@@ -38,16 +37,16 @@ activate "Repo"
 opt publishingCompanyExists(publishingCompanyName) == false
         "Repo" -> "Factory" : createPublishingCompany(publishingCompanyName)
         activate "Factory"
-        create "p1:PublishingCompany"
-        "Factory" -> "p1:PublishingCompany": create(publishingCompanyName)
-        "Factory" --> "Repo": p1
+        create "pc1:PublishingCompany"
+        "Factory" -> "pc1:PublishingCompany": create(publishingCompanyName)
+        "Factory" --> "Repo": pc1
         deactivate "Factory"
-        "Repo" -> "Repo": add(p1);
+        "Repo" -> "Repo": add(pc1);
         end
 
-"Repo" --> "Ctl": p1
+"Repo" --> "Ctl": pc1
 deactivate "Repo"
-"Ctl" --> "UI": p1
+"Ctl" --> "UI": pc1
 deactivate "Ctl"
 "UI" --> Administrator: Registered successfully!
 deactivate "UI"

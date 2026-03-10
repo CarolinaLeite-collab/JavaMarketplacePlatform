@@ -2,8 +2,6 @@
 'https://plantuml.com/class-diagram
 title US011 – "As a user, I want to add a publication to my library" - CD
 
-
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -17,59 +15,34 @@ skinparam classAttributeIconSize 0
 
 class AddPublicationOnLibraryUI
 
-class AddPublicationOnLibraryController {
-    + getMyLibrary(user : User) : Library
-    + getListOfEditions(literaryWork : LiteraryWork) : List<Edition>
-    + getAllLiteraryWork() : List<LiteraryWork>
-    + createItem(selectedEdition : Edition, condition : Condition) : Item
+class AddPublicationOnLibrary {
+    + getListOfAvailableItems(user : User) : List<Item>
     + addItemToLibrary(selectedItem : Item, user : User) : boolean
 }
 
-class LiteraryWorkRepo {
-    + _literaryWorks : List<LiteraryWork>
-    + getAllLiteraryWork() : List<LiteraryWork>
-}
-
-class EditionRepo {
-    + _editions : List<Edition>
-    + _editionFactory : EditionFactory
-    + getListOfEditions(literaryWork : LiteraryWork) : List<Edition>
+class ItemRepo {
+    + getDifferentOf(existentItems : List<Item>) : List<Item>
 }
 
 class Library {
-    + _owner : User
-    + _items : List<Item>
-    + addItemToLibrary(myItem : Item) : boolean
+    - _items : List<Item>
+    + getAllItems() : List<Item>
+    + addItemToLibrary(selectedItem : Item) : boolean
+    - copyList() : List<Item>
+    - verifyUnique(selectedItem : Item) : boolean
 }
 
 class LibraryRepo {
-    + _libraries : List<Library>
-    + _libraryFactory : LibraryFactory
-    + findByUser(user : User) : Library
+     + getMyLibrary(user : User) : Library
 }
 
-class ItemRepo {
-    + _items : List<Item>
-    + createItem(selectedEdition : Edition, selectedCondition : Condition) : Item
-}
-
-class ItemFactory {
-     + createItem(selectedEdition : Edition, selectedCondition : Condition) : Item
-}
-
-class Item {
-    + _edition : Edition
-    + _condition : Condition
-}
+class Item
 
 
-"AddPublicationOnLibraryUI" "1" .. "1" "AddPublicationOnLibraryController" : request >
-"AddPublicationOnLibraryController" "1" ... "1" "Library" : addItemToLibrary >
-"AddPublicationOnLibraryController" "1"  .. "1" "LibraryRepo" : queries >
-"AddPublicationOnLibraryController" "1" .. "1" "LiteraryWorkRepo" : queries >
-"AddPublicationOnLibraryController" "1" .. "1" "EditionRepo" : queries >
-"AddPublicationOnLibraryController" "1" .. "1" "ItemRepo" : queries >
-"ItemRepo" "1" --> "1" "ItemFactory" : createItem >
-"ItemFactory" "1" .. "1" Item : <<create>> >
-"Library" "1" --> "*" Item : stores >
+AddPublicationOnLibraryUI "1" .. "1" AddPublicationOnLibrary : request >
+AddPublicationOnLibrary "1" .. "1" ItemRepo : queries >
+AddPublicationOnLibrary "1" .. "1" Library : addItemTo >
+AddPublicationOnLibrary "1" .. "1" LibraryRepo : queries >
+Library "1" -- "*" Item : stores >
+
 @enduml
