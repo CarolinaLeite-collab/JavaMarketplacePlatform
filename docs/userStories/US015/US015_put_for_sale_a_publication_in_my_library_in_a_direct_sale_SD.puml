@@ -1,8 +1,7 @@
 @startuml
 title US015 -"As a User, I want to put for sale a publication %n() in my library in a direct sale" - SD
-hidefootbox
+hide footbox
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -16,89 +15,62 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-' --- Actor and participants ---
 actor User
 participant ":PublicationInLibraryForDirectSaleUI" as UI
-participant ":PublicationInLibraryForDirectSaleCTL" as Ctl
+participant ":PublicationInLibraryForDirectSaleController" as Ctl
 participant ":LibraryRepo" as LibraryRepo
 participant "userLibrary:Library" as userLibrary
-participant ":PublicationRepo" as PublicationRepo
-participant ":ItemRepo" as ItemRepo
 participant ":DirectSaleRepo" as DirectSaleRepo
+participant ":DirectSaleFactory" as DirectSaleFactory
+participant "directSale:DirectSale" as directSale
 
-' --- System dialog ---
-User -> UI: I want to put for direct sale a publication in my library.
-activate "UI"
+User -> UI: I want to put for direct sale a publication in my library
+activate UI
 
-' --- Get the user's library ---
-UI -> Ctl: getPublicationsInLibraryList(user)
-activate "Ctl"
-Ctl -> LibraryRepo: findByUser(user)
-activate "LibraryRepo"
+UI -> Ctl: getItemsInLibrary(user)
+activate Ctl
+Ctl -> LibraryRepo: findLibraryByUser(user)
+activate LibraryRepo
 LibraryRepo --> Ctl: userLibrary
-deactivate "LibraryRepo"
+deactivate LibraryRepo
 
-' --- Get the list of publications in the User's library ---
-Ctl -> userLibrary: getPublicationsInLibrary()
-activate "userLibrary"
-userLibrary --> Ctl: publicationsList
-deactivate "userLibrary"
-Ctl --> UI: publicationsList
-deactivate "Ctl"
-' --- Done! ---
+Ctl -> userLibrary: getItemsInLibrary()
+activate userLibrary
+userLibrary --> Ctl: itemsList
+deactivate userLibrary
 
-UI --> User: What publication?
-deactivate "UI"
-User -> UI: publication
-activate "UI"
-UI --> User: What is it's condition?
-deactivate "UI"
-User -> "UI": condition
-activate "UI"
-UI --> User: Please fill the Direct Sale form.
-deactivate "UI"
-User -> UI: DirectSale(price, timeLimit)
-activate "UI"
+Ctl --> UI: itemsList
+deactivate Ctl
+UI --> User: Which item would you like to sell?
+deactivate UI
 
-' --- Get the selected publication ---
-UI -> Ctl: addPublicationForDirectSale(publication)
-activate "Ctl"
-Ctl -> PublicationRepo: getPublication(publication)
-activate "PublicationRepo"
-PublicationRepo --> Ctl: publication
-deactivate "PublicationRepo"
-' --- Done! ---
+User -> UI: item.
+activate UI
 
-' ---  Instance the physical copy (item) of the selected publication ---
-Ctl -> ItemRepo: createItem(publication, condition)
-activate "ItemRepo"
-create "item:Item" as itemInstance
-ItemRepo -> itemInstance:
-ItemRepo --> Ctl: item
-deactivate "ItemRepo"
+UI --> User: What is the price and time limit for this sale?
+User -> UI: price, time limit
+deactivate UI
 
-' --- Create a direct sale ---
+UI -> Ctl: addItemForDirectSale(item, price, timeLimit)
+activate Ctl
+
 Ctl -> DirectSaleRepo: createDirectSale(item, price, timeLimit)
 activate DirectSaleRepo
-create "directSale:DirectSale" as directSaleInstance
-DirectSaleRepo -> directSaleInstance:
 
-' --- Details on relationship between Item and DirectSale ---
-note over directSaleInstance
-A directSale can only exist
-in association with an item.
-end note
+DirectSaleRepo -> DirectSaleFactory: createDirectSale(item, price, timeLimit)
+activate DirectSaleFactory
+create directSale
+DirectSaleFactory -> directSale: create(item, price, timeLimit)
+DirectSaleFactory --> DirectSaleRepo: directSale
+deactivate DirectSaleFactory
 
-' --- Return to user ---
+DirectSaleRepo -> DirectSaleRepo: add(directSale)
 DirectSaleRepo --> Ctl: directSale
-deactivate "DirectSaleRepo"
-Ctl -> itemInstance: setDirectSale(directSale)
-activate "itemInstance"
-itemInstance --> Ctl: void
-deactivate "itemInstance"
-Ctl --> UI: True
-deactivate "Ctl"
+deactivate DirectSaleRepo
+
+Ctl --> UI: directSale
+deactivate Ctl
 UI --> User: Your item was successfully put up for sale!
-deactivate "UI"
+deactivate UI
 
 @enduml
