@@ -27,39 +27,29 @@ public class LibraryRepo {
     }
 
     public Library addLibrary(User user){
-
-        //if user already has a library, throw exception (library will not be created)
         if (libraryExists(user)) {
 
             throw new IllegalStateException("User already has a library!");
 
         }
-
-        //instantiate new Library
         Library myLibrary = _libraryFactory.createLibrary(user);
 
-        //add to libraryRepo
         _libraries.add(myLibrary);
 
-        //returns the library;
         return myLibrary;
-
     }
 
     private boolean libraryExists(User user){
 
-        for  (Library lib : _libraries){
+        for  (Library lib : _libraries) {
 
-            if (lib.belongsTo(user)){
+            if (lib.belongsTo(user)) {
 
                 return true;
-
             }
 
         }
-
         return false;
-
     }
 
     /**
