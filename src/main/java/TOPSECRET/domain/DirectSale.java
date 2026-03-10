@@ -44,15 +44,9 @@ public class DirectSale {
         }
     }
 
-    public boolean isByAuthor (Author author) {
+    public boolean isByAuthor (Author authorName) {
 
-        if (item.getPublication().getAuthor().equals(author)) {
-
-            return true;
-
-        }
-
-        return false;
+        return item.isByAuthor(authorName);
 
     }
 

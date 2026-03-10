@@ -1,12 +1,31 @@
 package TOPSECRET.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import java.time.Period;
 import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class DirectSaleTest {
+
+    private Item _itemDouble;
+    private Price _priceDouble;
+    private Period _periodDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        _itemDouble = mock(Item.class);
+        _priceDouble = mock(Price.class);
+        _periodDouble = mock(Period.class);
+
+    }
+
 
     @Test
     void createsDirectSaleWithPriceAndTimeLimit() {
@@ -106,70 +125,56 @@ class DirectSaleTest {
         assertEquals("Time limit cannot be negative", ex.getMessage());
     }
 
+    // Isolated IsByAuthor Test
     @Test
-    void test_isByAuthor_should_return_true_when_author_matches() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
 
-        Price price = new Price(15.0, Currency.USD);
+        //Arrange
+        Author _authorDouble = mock(Author.class);
+        when(_itemDouble.isByAuthor(_authorDouble)).thenReturn(true);
 
-        DirectSale sale = new DirectSale(item, price, null);
+        // SUT
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
 
-        Author author = new Author("Seneca");
+        //Act
+        boolean result = ds.isByAuthor(_authorDouble);
 
-        assertTrue(sale.isByAuthor(author));
+        //Assert
+        assertTrue(result);
 
     }
 
     @Test
-    void test_is_by_author_should_return_true_when_author_matches_case_insensitive() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
 
-        Price price = new Price(15.0, Currency.USD);
+        //Arrange
+        Author _author2 = mock(Author.class);
+        when(_itemDouble.isByAuthor(_author2)).thenReturn(false);
 
-        DirectSale sale = new DirectSale(item, price, null);
+        // SUT
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
 
-        Author author = new Author("sEnEcA");
+        //Act
+        boolean result = ds.isByAuthor(_author2);
 
-        assertTrue(sale.isByAuthor(author));
+        //Assert
+        assertFalse(result);
 
     }
 
     @Test
-    void test_is_by_author_should_return_false_when_author_does_not_match() {
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+    void isByAuthorShouldDelegateToItem() {
+        //Arrange
+        Author _author = mock(Author.class);
 
-        Price price = new Price(15.0, Currency.USD);
+        //SUT
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
 
-        DirectSale sale = new DirectSale(item, price, null);
+        //Act
+        ds.isByAuthor(_author);
 
-        Author author = new Author("Soren Kirkegaard");
-
-        assertFalse(sale.isByAuthor(author));
-
+        //Assert
+        verify(_itemDouble, times(1)).isByAuthor(_author);
     }
 
     @Test
