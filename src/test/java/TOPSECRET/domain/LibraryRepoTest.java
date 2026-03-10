@@ -11,76 +11,96 @@ class LibraryRepoTest {
 
     private User _userDouble;
     private LibraryFactory _libraryFactoryDouble;
-    private LibraryRepo _libraryRepo;
-
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
         _libraryFactoryDouble = mock(LibraryFactory.class);
-        _libraryRepo = new LibraryRepo(_libraryFactoryDouble);
 
     }
 
     @Test
-    void testCreatingANewLibrary(){
+    void addLibraryShouldReturnLibrary() {
 
-        //arrange
+        // Arrange
+        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
 
-        //act
-        Library mylibrary = _libraryRepo.addLibrary(_userDouble);
+        // Act
+        Library mylibrary = libraryRepo.addLibrary(_userDouble);
 
-        //assert
+        // Assert
         assertEquals(libraryDouble, mylibrary);
     }
 
     @Test
-    void testAddingASecondLibraryShouldThrowAnException(){
+    void addLibraryShouldThrowAnExceptionWhenLibraryAlreadyExists() {
 
-        //Arrange
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
-        when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
-
-        //act
-        Library newLibrary = _libraryRepo.addLibrary(_userDouble);
-
-        //
-        assertThrows(IllegalStateException.class, () -> _libraryRepo.addLibrary(_userDouble));
-
-
-    }
-
-
-
-    @Test
-    void findByUserShouldReturnCorrectLibraryWhenExists() {
         // Arrange
+        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
-
-        _libraryRepo.addLibrary(_userDouble);
 
         // Act
-        Library actualLibrary = _libraryRepo.findLibraryByUser(_userDouble);
+        Library newLibrary = libraryRepo.addLibrary(_userDouble);
+
+        // Assert
+        assertThrows(IllegalStateException.class, () -> libraryRepo.addLibrary(_userDouble));
+    }
+
+    @Test
+    void findLibraryByUserShouldReturnLibraryWhenExists() {
+
+        // Arrange
+        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        Library libraryDouble = mock(Library.class);
+        when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
+        when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
+
+        libraryRepo.addLibrary(_userDouble);
+
+        // Act
+        Library actualLibrary = libraryRepo.findLibraryByUser(_userDouble);
 
         // Assert
         assertEquals(libraryDouble, actualLibrary);
     }
 
+    @Test
+    void addLibraryShouldSucceedWhenOtherUserAlreadyHasLibrary() {
+        // Arrange
+        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        User otherUserDouble = mock(User.class);
+        Library libraryDouble = mock(Library.class);
+
+        when(libraryDouble.belongsTo(otherUserDouble)).thenReturn(true);
+        when(libraryDouble.belongsTo(_userDouble)).thenReturn(false);
+        when(_libraryFactoryDouble.createLibrary(otherUserDouble)).thenReturn(libraryDouble);
+
+        libraryRepo.addLibrary(otherUserDouble); // state setup
+
+        Library libraryDouble2 = mock(Library.class);
+        when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble2);
+
+        // Act
+        Library result = libraryRepo.addLibrary(_userDouble);
+
+        // Assert
+        assertEquals(libraryDouble2, result);
+    }
 
     @Test
-    void findByUser_shouldThrowExceptionWhenLibraryDoesNotExist() {
+    void findLibraryByUserShouldThrowExceptionWhenLibraryDoesNotExist() {
 
+        // Arrange
+        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> _libraryRepo.findLibraryByUser(_userDouble));
+                () -> libraryRepo.findLibraryByUser(_userDouble));
     }
-
 }
