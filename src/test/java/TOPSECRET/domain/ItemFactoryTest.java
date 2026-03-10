@@ -10,7 +10,7 @@ class ItemFactoryTest {
 
     @Test
     void shouldSuccessfullyCreateItem() {
-        //arrange
+        //Arrange
         Publication publication = mock(Publication.class);
         Condition condition = Condition.LIKE_NEW;
         try (MockedConstruction<Item> mocked =
@@ -19,15 +19,12 @@ class ItemFactoryTest {
                                  when(mock.getCondition())
                                          .thenReturn(condition);
                              })) {
-
+            //SUT
+            ItemFactory factory = new ItemFactory();
+            //Act
+            Item newItem = factory.createItem(publication, condition);
+            //Assert
+            assertEquals(condition, newItem.getCondition());
         }
-        //SUT
-        ItemFactory factory = new ItemFactory();
-
-        //act
-        Item newItem = factory.createItem(publication, condition);
-
-        //assert
-        assertEquals(condition, newItem.getCondition());
     }
 }
