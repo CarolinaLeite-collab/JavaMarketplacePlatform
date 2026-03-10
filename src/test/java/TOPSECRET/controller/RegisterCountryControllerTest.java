@@ -11,23 +11,27 @@ import static org.mockito.Mockito.when;
 
 class RegisterCountryControllerTest {
     private CountryRepo _countryRepo;
-    private RegisterCountryController _sut;
 
     @BeforeEach
     void setUp(){
         _countryRepo = mock(CountryRepo.class);
-        _sut = new RegisterCountryController(_countryRepo);
     }
 
     @Test
     void constructsControllerSuccessfully() {
-        // act and assert
-        assertNotNull(_sut);
+        //Act
+        //SUT
+        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
+        //Assert
+        assertNotNull(controller);
     }
 
     @Test
     void throwsExceptionNullCountryRepo() {
-        // act and assert
+        //Act
+        //SUT
+        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
+        //Assert
         assertThrows(NullPointerException.class, () ->
                 new RegisterCountryController(null));
     }
@@ -39,8 +43,10 @@ class RegisterCountryControllerTest {
         when(user.hasRole(Role.ADMIN)).thenReturn(true);
         Country portugal = mock(Country.class);
         when(_countryRepo.registerCountry("Portugal")).thenReturn(portugal);
+        //SUT
+        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
         //Act
-        Country country = _sut.registerCountry("Portugal", user);
+        Country country = controller.registerCountry("Portugal", user);
         // Assert
         assertNotNull(country);
     }
@@ -50,15 +56,19 @@ class RegisterCountryControllerTest {
         //Arrange
         User user = mock(User.class);
         when(user.hasRole(Role.ADMIN)).thenReturn(false);
-        // Act & Assert
-        Assertions.assertThrows(SecurityException.class, () -> _sut.registerCountry("Portugal", user));
+        //SUT
+        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
+        //Act & Assert
+        Assertions.assertThrows(SecurityException.class, () -> controller.registerCountry("Portugal", user));
     }
 
     @Test
     void shouldNotRegisterNullUser(){
-        // Arrange
-        // Act & Assert
+        //Arrange
+        //SUT
+        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
+        //Act & Assert
         assertThrows(NullPointerException.class,
-                () -> _sut.registerCountry("Portugal", null));
+                () -> controller.registerCountry("Portugal", null));
     }
 }
