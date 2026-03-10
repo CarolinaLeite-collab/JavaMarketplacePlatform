@@ -4,61 +4,71 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-public class AppraisalEntityTest {
+class AppraisalEntityTest {
 
-    private Name name;
-    private List<PublicationType> pubType;
-    private List<Genre> genre;
+    private Name _nameDouble;
+    private PublicationType _publicationType1;
+    private PublicationType _publicationType2;
+    private Genre _genreDouble1;
+    private Genre _genreDouble2;
 
     @BeforeEach
-    void setUp() {
-        name = new Name("HelpingzTM");
-        pubType = new ArrayList<>();
-        genre = new ArrayList<>();
+    void setup() {
+        _nameDouble = mock(Name.class);
+        _publicationType1 = mock(PublicationType.class);
+        _publicationType2 = mock(PublicationType.class);
+        _genreDouble1 = mock(Genre.class);
+        _genreDouble2 = mock(Genre.class);
+
+        when(_nameDouble.toString()).thenReturn("Name");
+        when(_publicationType1.getPublicationType()).thenReturn("Book");
+        when(_publicationType2.getPublicationType()).thenReturn("Magazine");
+        when(_genreDouble1.getGenre()).thenReturn("Science Fiction");
+        when(_genreDouble2.getGenre()).thenReturn("Fantasy");
     }
 
     @Test
-    void should_create_appraisal_entity_with_correct_data() {
-        PublicationType type1 = new PublicationType("ugly book");
-        PublicationType type2 = new PublicationType("pretty book");
-        Genre genre1 = new Genre("romance");
-        List<PublicationType> types = pubType;
-        List<Genre> genres = genre;
+    void should_create_AppraisalEntity_successfully() {
+        // Arrange
+        List<PublicationType> publicationTypes = Arrays.asList(_publicationType1, _publicationType2);
+        List<Genre> genres = Arrays.asList(_genreDouble1, _genreDouble2);
 
-        pubType.add(type1);
-        pubType.add(type2);
-        genre.add(genre1);
+        // Act
+        AppraisalEntity entity = new AppraisalEntity(_nameDouble, publicationTypes, genres);
 
-
-        AppraisalEntity entity = new AppraisalEntity(name, types, genres);
-
-        assertEquals(name, entity.getName());
-        assertEquals(pubType, entity.getPublicationTypes());
-        assertEquals(genre, entity.getGenres());
+        // Assert
+        assertNotNull(entity);
     }
 
     @Test
-    void should_copy_lists_correctly() {
-        PublicationType type1 = new PublicationType("ugly book");
-        PublicationType type2 = new PublicationType("pretty book");
-        Genre genre1 = new Genre("romance");
+    void should_return_AppraisalEntity_data_successfully() {
+        // Arrange
+        List<PublicationType> _publicationTypes = new ArrayList<>();
+        _publicationTypes.add(_publicationType1);
+        _publicationTypes.add(_publicationType2);
 
-        pubType.add(type1);
-        pubType.add(type2);
-        genre.add(genre1);
+        List<Genre> _genres = new ArrayList<>();
+        _genres.add(_genreDouble1);
+        _genres.add(_genreDouble2);
 
-        AppraisalEntity entity = new AppraisalEntity(name, pubType, genre);
+        AppraisalEntity entity = new AppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
-        assertEquals(2, entity.getPublicationTypes().size());
-        assertEquals(1, entity.getGenres().size());
-        assertTrue(entity.getPublicationTypes().contains(type2));
-        assertTrue(entity.getPublicationTypes().contains(type1));
-        assertTrue(entity.getGenres().contains(genre1));
+        // Act
+        Name _entityName = entity.getName();
+        List<PublicationType> _entityPublicationTypes = entity.getPublicationTypes();
+        List<Genre> _entityGenres = entity.getGenres();
+
+        // Assert
+        assertEquals(_nameDouble, _entityName);
+        assertEquals(_publicationTypes, _entityPublicationTypes);
+        assertEquals(_genres, _entityGenres);
     }
 
 }
