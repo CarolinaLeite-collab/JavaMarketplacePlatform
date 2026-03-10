@@ -8,8 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class GenreRepoTest {
 
@@ -19,28 +18,28 @@ public class GenreRepoTest {
 
     @BeforeEach
     void setUp() {
+        // this double is used in every test
         _genreFactoryDouble = mock(GenreFactory.class);
-        _genreDouble1 = mock(Genre.class);
-        _genreDouble2 = mock(Genre.class);
-
-        when(_genreFactoryDouble.createGenre("New Genre")).thenReturn(_genreDouble1);
-        when(_genreFactoryDouble.createGenre("Another Genre")).thenReturn(_genreDouble2);
-
-        when(_genreDouble1.getGenre()).thenReturn("New Genre");
-        when(_genreDouble2.getGenre()).thenReturn("Another Genre");
-
     }
 
     @Test
     void addNewGenreToRepoShouldSucceed() {
         String genreName = "New Genre";
 
+        _genreDouble1 = mock(Genre.class);
+
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble1);
+
         GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+
         Genre addedGenre = repo.addGenre(genreName);
 
         assertEquals(_genreDouble1, addedGenre);
         assertEquals(1, repo.getListOfOfficialGenres().size());
-        assertEquals(genreName, repo.getListOfOfficialGenres().get(0).getGenre());
+        assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
+
+        // the below is called twice: once in genreExists method (not stored), once in addGenre (is stored)
+        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
 
     }
 
@@ -49,21 +48,35 @@ public class GenreRepoTest {
         String genreName = "New Genre";
         String genre2Name = "Another Genre";
 
+        _genreDouble1 = mock(Genre.class);
+        _genreDouble2 = mock(Genre.class);
+
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble1);
+        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(_genreDouble2);
+
         GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+
         Genre addedGenre = repo.addGenre(genreName);
         Genre addedGenre2 = repo.addGenre(genre2Name);
 
         assertEquals(_genreDouble1, addedGenre);
         assertEquals(_genreDouble2, addedGenre2);
         assertEquals(2, repo.getListOfOfficialGenres().size());
-        assertEquals(genreName, repo.getListOfOfficialGenres().get(0).getGenre());
-        assertEquals(genre2Name, repo.getListOfOfficialGenres().get(1).getGenre());
+        assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
+        assertEquals(addedGenre2, repo.getListOfOfficialGenres().get(1));
+
+        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
+        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genre2Name);
 
     }
 
     @Test
     void addExistingGenreToRepoShouldFail() {
         String genreName = "Another Genre";
+
+        _genreDouble1 = mock(Genre.class);
+
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble1);
 
         GenreRepo repo = new GenreRepo(_genreFactoryDouble);
 
@@ -73,6 +86,8 @@ public class GenreRepoTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addGenre(genreName));
         assertEquals("This genre already exists", exception.getMessage());
 
+        verify(_genreFactoryDouble,atLeastOnce()).createGenre(genreName);
+
     }
 
     @Test
@@ -80,7 +95,17 @@ public class GenreRepoTest {
         String genreName = "New Genre";
         String genre2Name = "Another Genre";
 
+        _genreDouble1 = mock(Genre.class);
+        _genreDouble2 = mock(Genre.class);
+
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble1);
+        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(_genreDouble2);
+
+        when(_genreDouble1.getGenre()).thenReturn(genreName);
+        when(_genreDouble2.getGenre()).thenReturn(genre2Name);
+
         GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+
         repo.addGenre(genreName);
         repo.addGenre(genre2Name);
 
@@ -90,6 +115,9 @@ public class GenreRepoTest {
         assertEquals(2, listOfOfficialGenres.size());
         assertEquals(genreName, listOfOfficialGenres.get(0).getGenre());
         assertEquals(genre2Name, listOfOfficialGenres.get(1).getGenre());
+
+        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
+        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genre2Name);
 
     }
 
