@@ -5,51 +5,43 @@ import java.util.List;
 
 /**
  * Repository responsible for managing {@link User} entities.
- * <p>
- * This class provides operations to check existence by {@link Email} and create new users
- * with associated {@link Name} and {@link Email}. Ensures uniqueness by email
- * before creation, throwing {@link IllegalStateException} if a duplicate is detected.
- * </p>
  */
-
 public class UserRepo {
 
-    private List<User> _users;
+    private final List<User> _users = new ArrayList<>();
+    private final UserFactory _userFactory;
 
-    public UserRepo() {
-        _users = new ArrayList<>();
+    public UserRepo(UserFactory userFactory) {
+        _userFactory = userFactory;
     }
 
-    //Register user to repo
     public User registerNewUser(String name, String email) {
 
-        //verify if user is in repo
-        if (UserExists(email)) {
-
+        if (userExists(email)) {
             throw new IllegalStateException("User already exists");
         }
-        //Register new name and email
-        Email newUserEmail = new Email(email);
+
         Name newUserName = new Name(name);
+        Email newUserEmail = new Email(email);
 
-        //Register New User
-        User newUser = new User(newUserName, newUserEmail);
-
-        //add user to userRepo
+        User newUser = _userFactory.createUser(newUserName, newUserEmail);
         _users.add(newUser);
 
         return newUser;
     }
 
-    //verify if user is in repo, by checking email uniqueness
-    private boolean UserExists(String email) {
+    private boolean userExists(String email) {
         String emailFormat = email.trim().toLowerCase();
 
-        for (User u1 : _users) {
-            if (emailFormat.equals(u1.getEmail())) {
+        for (User user : _users) {
+            if (emailFormat.equals(user.getEmail())) {
                 return true;
             }
         }
         return false;
+    }
+
+    public List<User> getAll() {
+        return List.copyOf(_users);
     }
 }

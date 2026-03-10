@@ -4,67 +4,87 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class UserRepoTest {
 
-    private UserRepo repo;
+    private UserFactory _userFactoryDouble;
+    private User _userDouble1;
+    private User _userDouble2;
 
     @BeforeEach
     void setUp() {
-        repo = new UserRepo();
+        _userFactoryDouble = mock(UserFactory.class);
+        _userDouble1 = mock(User.class);
+        _userDouble2 = mock(User.class);
+
+        when(_userFactoryDouble.createUser(any(Name.class), any(Email.class)))
+                .thenReturn(_userDouble1, _userDouble2);
+
+        when(_userDouble1.getEmail()).thenReturn("tiago@example.com");
+        when(_userDouble2.getEmail()).thenReturn("ana@example.com");
     }
 
     @Test
-    void registerNewUser_shouldCreateAndReturnUser_whenValidInputs() {
-        // arrange
-        String name = "Tiago";
-        String email = "tiago@example.com";
+    void registerNewUserShouldReturnUser() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
 
-        // act
-        User created = repo.registerNewUser(name, email);
+        User result = repo.registerNewUser("Tiago", "tiago@example.com");
 
-        // assert
-        assertNotNull(created);
-        assertEquals("tiago@example.com", created.getEmail());
+        assertEquals(_userDouble1, result);
     }
 
     @Test
-    void registerNewUser_shouldThrowIllegalStateException_whenUserAlreadyExists_sameExactEmail() {
-        // arrange
+    void shouldRegisterNewUserSuccessfullyAndListNotEmpty() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
+
         repo.registerNewUser("Tiago", "tiago@example.com");
 
-        // act + assert
-        IllegalStateException ex = assertThrows(
+        assertEquals(1, repo.getAll().size());
+    }
+
+    @Test
+    void shouldNotAllowDuplicateUsers() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
+
+        repo.registerNewUser("Tiago", "tiago@example.com");
+
+        assertThrows(IllegalStateException.class,
+                () -> repo.registerNewUser("Outro", "tiago@example.com"));
+    }
+
+    @Test
+    void shouldNotAllowDuplicateUsersIgnoringCaseAndSpaces() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
+
+        repo.registerNewUser("Tiago", "tiago@example.com");
+
+        assertThrows(IllegalStateException.class,
+                () -> repo.registerNewUser("Outro", "  TiAgO@Example.com  "));
+    }
+
+    @Test
+    void shouldBeAbleToRegisterMultipleUsers() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
+
+        repo.registerNewUser("Tiago", "tiago@example.com");
+        repo.registerNewUser("Ana", "ana@example.com");
+
+        assertEquals(2, repo.getAll().size());
+    }
+
+    @Test
+    void shouldThrowCorrectMessageOnDuplicateUsers() {
+        UserRepo repo = new UserRepo(_userFactoryDouble);
+        repo.registerNewUser("Tiago", "tiago@example.com");
+
+        IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> repo.registerNewUser("Outro", "tiago@example.com")
         );
 
-        assertEquals("User already exists", ex.getMessage());
-    }
-
-    @Test
-    void registerNewUser_shouldThrowIllegalStateException_whenUserAlreadyExists_ignoreCaseAndSpaces() {
-        // arrange
-        repo.registerNewUser("Tiago", "tiago@example.com");
-
-        // act + assert
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> repo.registerNewUser("Outro", "  TiAgO@Example.com  ")
-        );
-
-        assertEquals("User already exists", ex.getMessage());
-    }
-
-    @Test
-    void registerNewUser_shouldAllowDifferentEmails() {
-        // arrange + act
-        User u1 = repo.registerNewUser("Tiago", "tiago@example.com");
-        User u2 = repo.registerNewUser("Ana", "ana@example.com");
-
-        // assert
-        assertNotNull(u1);
-        assertNotNull(u2);
-        assertNotEquals(u1.getEmail(), u2.getEmail());
+        assertEquals("User already exists", exception.getMessage());
     }
 }
