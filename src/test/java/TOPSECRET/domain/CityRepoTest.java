@@ -18,6 +18,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 class CityRepoTest {
 
     private CityFactory factory;
@@ -37,8 +45,8 @@ class CityRepoTest {
         city1 = mock(City.class);
         city2 = mock(City.class);
 
-        country = new Country("Portugal");
-        otherCountry = new Country("Spain");
+        country = mock(Country.class);
+        otherCountry = mock(Country.class);
 
         when(city1.getName()).thenReturn("Porto");
         when(city1.getCountry()).thenReturn(country);
@@ -48,12 +56,12 @@ class CityRepoTest {
     }
 
     @Test
-    void constructor_withFactory_doesNotThrow() {
+    void constructorWithFactoryDoesNotThrow() {
         assertDoesNotThrow(() -> new CityRepo(factory));
     }
 
     @Test
-    void constructor_withNullFactory_throwsNullPointerException() {
+    void constructorWithNullFactoryThrowsNullPointerException() {
         // Act & Assert
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
@@ -64,7 +72,7 @@ class CityRepoTest {
     }
 
     @Test
-    void add_callsFactoryAndStoresReturnedCity() {
+    void addCallsFactoryAndStoresReturnedCity() {
         // Arrange
         when(factory.createCity("Porto", country)).thenReturn(city1);
 
@@ -78,7 +86,7 @@ class CityRepoTest {
     }
 
     @Test
-    void add_duplicateCity_throwsIllegalStateException() {
+    void addDuplicateCityThrowsIllegalStateException() {
         // Arrange
         when(factory.createCity("Porto", country)).thenReturn(city1);
         repo.add("Porto", country);
@@ -94,7 +102,7 @@ class CityRepoTest {
     }
 
     @Test
-    void existsByNameAndCountry_isCaseInsensitiveAndTrims() {
+    void existsByNameAndCountryIsCaseInsensitiveAndTrims() {
         // Arrange
         when(factory.createCity("Porto", country)).thenReturn(city1);
         repo.add("Porto", country);
@@ -107,7 +115,7 @@ class CityRepoTest {
     }
 
     @Test
-    void existsByNameAndCountry_returnsFalseWhenNotFound() {
+    void existsByNameAndCountryReturnsFalseWhenNotFound() {
         // Act
         boolean exists = repo.existsByNameAndCountry("Braga", country);
 
@@ -116,7 +124,7 @@ class CityRepoTest {
     }
 
     @Test
-    void existsByNameAndCountry_returnsFalseForDifferentCountry() {
+    void existsByNameAndCountryReturnsFalseForDifferentCountry() {
         // Arrange
         when(factory.createCity("Porto", country)).thenReturn(city1);
         repo.add("Porto", country);
@@ -129,7 +137,7 @@ class CityRepoTest {
     }
 
     @Test
-    void existsByNameAndCountry_nullArgumentsReturnFalse() {
+    void existsByNameAndCountryNullArgumentsReturnFalse() {
         // Act & Assert
         assertFalse(repo.existsByNameAndCountry(null, country));
         assertFalse(repo.existsByNameAndCountry("Porto", null));
@@ -137,7 +145,7 @@ class CityRepoTest {
     }
 
     @Test
-    void getAll_returnsUnmodifiableList() {
+    void getAllReturnsUnmodifiableList() {
         // Arrange
         when(factory.createCity("Porto", country)).thenReturn(city1);
         when(factory.createCity("Lisbon", country)).thenReturn(city2);
@@ -156,7 +164,7 @@ class CityRepoTest {
     }
 
     @Test
-    void getAll_whenEmpty_returnsEmptyUnmodifiableList() {
+    void getAll_whenEmptyReturnsEmptyUnmodifiableList() {
         // Act
         List<City> all = repo.getAll();
 
