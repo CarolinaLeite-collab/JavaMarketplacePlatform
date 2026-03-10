@@ -37,6 +37,19 @@ public class Country {
             _countryName = sanitizedCountryName(countryName);
     }
 
+    public boolean isNamed(String name) {
+        return _countryName.equals(sanitizedCountryName(name));
+    }
+
+    public boolean isOneOf(String... names) {
+        for (String name : names) {
+            if (_countryName.equals(sanitizedCountryName(name))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Added getter to allow other components to locate countries by name
     public String getCountryName() {
         return _countryName;
