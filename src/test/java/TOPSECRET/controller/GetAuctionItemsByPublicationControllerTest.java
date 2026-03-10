@@ -4,76 +4,61 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GetAuctionItemsByPublicationControllerTest {
 
-    private User _buyer;
-    private AuctionRepo _auctionRepo;
-    private Publication _publication;
+    private User _buyerDouble;
+    private AuctionRepo _auctionRepoDouble;
+    private Publication _publicationDouble;
     private GetAuctionItemsByPublicationController _controller;
 
     @BeforeEach
     void setUp() {
+        _buyerDouble = mock(User.class);
+        _auctionRepoDouble = mock(AuctionRepo.class);
+        _publicationDouble = mock(Publication.class);
 
-        _buyer = new User(new Name("Zé Isep"), new Email("test@isep.pt"));
-        _auctionRepo = new AuctionRepo();
-        _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        _controller = new GetAuctionItemsByPublicationController(_auctionRepo, _buyer);
-
+        _controller = new GetAuctionItemsByPublicationController(_auctionRepoDouble, _buyerDouble);
     }
 
     @Test
     void shouldReturnAuctionItemsForGivenPublication() {
         // Arrange
-        Item item1 = new Item(_publication, Condition.GOOD);
-        Item item2 = new Item(_publication, Condition.FAIR);
+        Item _item1Double = mock(Item.class);
+        Item _item2Double = mock(Item.class);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = start.plusDays(5);
-
-        _auctionRepo.createAuction(item1, new Price(10,Currency.EUR), start, end);
-        _auctionRepo.createAuction(item2, new Price(20,Currency.EUR), start, end);
+        when(_auctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+                .thenReturn(List.of(_item1Double, _item2Double));
 
         // Act
-        List<Item> result = _controller.getAuctionItemsByPublication(_publication);
+        List<Item> result = _controller.getAuctionItemsByPublication(_publicationDouble);
 
         // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.contains(item1));
-        assertTrue(result.contains(item2));
+        assertAll(
+                () -> assertEquals(2, result.size()),
+                () -> assertTrue(result.contains(_item1Double)),
+                () -> assertTrue(result.contains(_item2Double))
+        );
     }
 
     @Test
     void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
         // Arrange
-        Publication otherPublication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2020))
-                .title(new Title("Different Book"))
-                .author(new Author("Different Author"))
-                .publisher(new PublishingCompany("Other Publisher"))
-                .build();
+        Publication _publicationDouble = mock(Publication.class);
+
+        when(_auctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+                .thenReturn(List.of());
 
         // Act
-        List<Item> result = _controller.getAuctionItemsByPublication(otherPublication);
+        List<Item> result = _controller.getAuctionItemsByPublication(_publicationDouble);
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
-
 }
