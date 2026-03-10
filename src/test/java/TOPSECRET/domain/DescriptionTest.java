@@ -82,6 +82,12 @@ public class DescriptionTest {
         assertEquals("Description cannot be empty!", exception.getMessage());
     }
     @Test
+    public void setter_nullThrowsException() {
+        Description description = new Description("Original Description");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> description.setDescription(null));
+        assertEquals("Description cannot be empty!", exception.getMessage());
+    }
+    @Test
     public void setter_tooLongThrowsException() {
         Description description = new Description("Original Description");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> description.setDescription(tooLongText));
@@ -94,6 +100,12 @@ public class DescriptionTest {
         description.setDescription(maxLengthText);
         assertEquals(Description.MAX_LENGTH, description.getLength());
         assertEquals(maxLengthText, description.getDescription());
+    }
+    @Test
+    public void toStringReflectsUpdatedDescription() {
+        Description description = new Description("Short");
+        description.setDescription("New text");
+        assertEquals("New text (8/500)", description.toString());
     }
     @Test
     public void setter_acceptsMaxLengthWithSurroundingSpaces() {
@@ -114,3 +126,4 @@ public class DescriptionTest {
         assertEquals("Amazing Magazine! (17/500)", description.toString());
     }
 }
+
