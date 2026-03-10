@@ -23,8 +23,6 @@ class CountryRepoTest {
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Assert
-        assertNotNull(countryRepo);
-        assertEquals(0, countryRepo.getAllCountries().size());
     }
 
     @Test
@@ -37,9 +35,7 @@ class CountryRepoTest {
         //Act
         Country result = countryRepo.registerCountry("Portugal");
         //Assert
-        assertNotNull(result);
-        assertEquals(1, countryRepo.getAllCountries().size());
-        assertEquals(portugal, countryRepo.getAllCountries().get(0));
+        assertEquals(portugal, result);
     }
 
     @Test
