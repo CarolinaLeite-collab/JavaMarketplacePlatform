@@ -24,7 +24,7 @@ public class AddPublicationToListController {
 
     public List<PublicationDetails> getPublicationsInMyLibrary(User user) {
         if (user == null) throw new IllegalArgumentException("User is mandatory");
-        Library lib = _libraryRepo.findByUser(user); // throws if not found
+        Library lib = _libraryRepo.findLibraryByUser(user); // throws if not found
         return lib.getPublicationsInLibrary();
     }
 
@@ -40,7 +40,7 @@ public class AddPublicationToListController {
             throw new IllegalStateException("List not found");
         }
 
-        Library lib = _libraryRepo.findByUser(user);
+        Library lib = _libraryRepo.findLibraryByUser(user);
 
         Publication publication = findPublicationByIdentifier(lib.getAllPublications(), identifier);
         if (publication == null) {

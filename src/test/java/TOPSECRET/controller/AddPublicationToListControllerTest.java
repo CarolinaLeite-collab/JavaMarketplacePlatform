@@ -32,7 +32,8 @@ class AddPublicationToListControllerTest {
         _libraryRepo = new LibraryRepo(_libraryFactory);
         _controller = new AddPublicationToListController(_listRepo, _libraryRepo);
 
-        _userRepo = new UserRepo();
+        UserFactory userFactory = new UserFactory();
+        _userRepo = new UserRepo(userFactory);
         _genreFactory = new GenreFactory();
         _genreRepo = new GenreRepo(_genreFactory);
 

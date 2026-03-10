@@ -67,7 +67,7 @@ class LibraryRepoTest {
         _libraryRepo.addLibrary(_userDouble);
 
         // Act
-        Library actualLibrary = _libraryRepo.findByUser(_userDouble);
+        Library actualLibrary = _libraryRepo.findLibraryByUser(_userDouble);
 
         // Assert
         assertEquals(libraryDouble, actualLibrary);
@@ -80,7 +80,7 @@ class LibraryRepoTest {
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> _libraryRepo.findByUser(_userDouble));
+                () -> _libraryRepo.findLibraryByUser(_userDouble));
     }
 
 }

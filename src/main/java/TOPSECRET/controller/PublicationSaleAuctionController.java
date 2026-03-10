@@ -34,7 +34,7 @@ public class PublicationSaleAuctionController {
         if (user == null) {
             throw new IllegalArgumentException("User required");
         }
-        Library userLibrary = _libraryRepo.findByUser(user);
+        Library userLibrary = _libraryRepo.findLibraryByUser(user);
         return userLibrary.getPublicationsInLibrary(); //This is an immutable list
    }
 
@@ -53,7 +53,7 @@ public class PublicationSaleAuctionController {
         }
 
         // Following US016 SD flow: get real publication from user's library -> create Item -> create Auction -> link between item and its auction
-        Library userLibrary = _libraryRepo.findByUser(user);
+        Library userLibrary = _libraryRepo.findLibraryByUser(user);
         Publication actualPublicationInLibrary = userLibrary.getPublicationFromLibrary(publication);
         Item item = _itemRepo.createItem(actualPublicationInLibrary, condition);
         Auction auction = _auctionRepo.createAuction(item, startPrice, startDate, endDate);

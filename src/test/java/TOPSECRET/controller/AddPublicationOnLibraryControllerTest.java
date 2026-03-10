@@ -18,14 +18,14 @@ class AddPublicationOnLibraryControllerTest {
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
         User _userDouble = mock(User.class);
 
-        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
 
         AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
 
         Library result = controller.getMyLibrary(_userDouble);
 
         assertEquals(_libraryDouble, result);
-        verify(_libraryRepoDouble).findByUser(_userDouble);
+        verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
     }
 
     @Test
@@ -40,14 +40,14 @@ class AddPublicationOnLibraryControllerTest {
 
         List<Item> items = List.of(_itemDouble1, _itemDouble2);
 
-        when(_libraryDouble.getAllItems()).thenReturn(items);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(items);
 
         AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
 
         List<Item> result = controller.getAllItems();
 
         assertEquals(items, result);
-        verify(_libraryDouble).getAllItems();
+        verify(_libraryDouble).getItemsInLibrary();
     }
 
     @Test
@@ -64,8 +64,8 @@ class AddPublicationOnLibraryControllerTest {
         List<Item> existingItems = List.of(_itemDouble1);
         List<Item> availableItems = List.of(_itemDouble2);
 
-        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getAllItems()).thenReturn(existingItems);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(existingItems);
         when(_itemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
 
         AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
@@ -74,8 +74,8 @@ class AddPublicationOnLibraryControllerTest {
 
         assertEquals(availableItems, result);
 
-        verify(_libraryRepoDouble).findByUser(_userDouble);
-        verify(_libraryDouble).getAllItems();
+        verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
+        verify(_libraryDouble).getItemsInLibrary();
         verify(_itemRepoDouble).getDifferentOf(existingItems);
     }
 
@@ -87,8 +87,8 @@ class AddPublicationOnLibraryControllerTest {
         User _userDouble = mock(User.class);
         Item _idemDouble = mock(Item.class);
 
-        when(_libraryRepoDouble.findByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.addItemToLibrary(_idemDouble, _userDouble)).thenReturn(true);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.addItemToLibrary(_idemDouble)).thenReturn(true);
 
         AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
 
@@ -96,7 +96,7 @@ class AddPublicationOnLibraryControllerTest {
 
         assertTrue(result);
 
-        verify(_libraryRepoDouble).findByUser(_userDouble);
-        verify(_libraryDouble).addItemToLibrary(_idemDouble, _userDouble);
+        verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
+        verify(_libraryDouble).addItemToLibrary(_idemDouble);
     }
 }

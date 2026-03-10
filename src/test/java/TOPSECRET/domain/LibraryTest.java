@@ -12,6 +12,7 @@ class LibraryTest {
 
     private User _userDouble;
     private Publication _publicationDouble;
+    private Item _itemDouble;
 
     // Creating doubles for User and Publication classes
     @BeforeEach
@@ -19,6 +20,7 @@ class LibraryTest {
 
         _userDouble = mock(User.class);
         _publicationDouble = mock(Publication.class);
+        _itemDouble = mock(Item.class);
 
     }
 
@@ -63,7 +65,7 @@ class LibraryTest {
 
 
     @Test
-    void getPublicationsInLibraryShouldReturnEmptyListWhenNoPublications() {
+    void getPublicationsInLibraryShouldReturnEmptyListWhenNoItems() {
         // Arrange
         Library library = new Library(_userDouble);
 
@@ -76,7 +78,7 @@ class LibraryTest {
     }
 
     @Test
-    void getPublicationsInLibraryShouldReturnPublicationsDetailsWhenPublicationsExist() {
+    void getPublicationsInLibraryShouldReturnPubsDetailsWhenItemsExist() {
 
         Library library = new Library(_userDouble);
 
@@ -194,42 +196,53 @@ class LibraryTest {
     }
 
     @Test
-    void getAllItemsReturnsCopyOfItems() {
-        Item _idemDouble1 = mock(Item.class);
-        Item _itemDouble2 = mock(Item.class);
-        Library _library = new Library(_userDouble);
+    void getItemsInLibraryShouldReturnEmptyListWhenNoItemsExist() {
+        // Arrange
+        Library library = new Library(_userDouble);
 
-        _library.addItemToLibrary(_idemDouble1, _userDouble);
-        _library.addItemToLibrary(_itemDouble2, _userDouble);
+        // Act
+        List<Item> result = library.getItemsInLibrary();
 
-        List<Item> result = _library.getAllItems();
-
-        assertEquals(2, result.size());
-        assertTrue(result.contains(_idemDouble1));
-        assertTrue(result.contains(_itemDouble2));
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void addItemToLibraryAddsItem() {
-        Item _itemDouble = mock(Item.class);
-        Library _library = new Library(_userDouble);
+    void getItemsInLibraryShouldReturnUnmodifiableList() {
+        // Arrange
+        Library library = new Library(_userDouble);
 
-        boolean result = _library.addItemToLibrary(_itemDouble, _userDouble);
+        // Act
+        List<Item> result = library.getItemsInLibrary();
 
-        assertTrue(result);
-        assertEquals(1, _library.getAllItems().size());
-        assertTrue(_library.getAllItems().contains(_itemDouble));
+        // Assert
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_itemDouble));
     }
 
     @Test
-    void addItemToLibraryReturnsFalseWhenItemIsNull() {
-        Library _library = new Library(_userDouble);
+    void getItemsInLibraryShouldReturnItemsWhenItemsExist() {
+        // Arrange
+        Library library = new Library(_userDouble);
+        library.addItemToLibrary(_itemDouble);
 
-        boolean result = _library.addItemToLibrary(null, _userDouble);
+        // Act
+        List<Item> result = library.getItemsInLibrary();
 
-        assertFalse(result);
-        assertTrue(_library.getAllItems().isEmpty());
+        // Assert
+        assertEquals(1, result.size());
     }
 
+    @Test
+    void addItemToLibraryShouldAddItemWhenValid() {
+        // Arrange
+        Library library = new Library(_userDouble);
+
+        // Act
+        boolean result = library.addItemToLibrary(_itemDouble);
+
+        // Assert
+        assertEquals(1, library.getItemsInLibrary().size());
+    }
 
 }

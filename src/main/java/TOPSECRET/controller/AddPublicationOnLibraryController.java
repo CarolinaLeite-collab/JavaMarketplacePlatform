@@ -23,21 +23,21 @@ public class AddPublicationOnLibraryController {
     }
 
     public Library getMyLibrary(User user) {
-        return _libraryRepo.findByUser(user);
+        return _libraryRepo.findLibraryByUser(user);
     }
 
     public List<Item> getAllItems() {
-        return _library.getAllItems();
+        return _library.getItemsInLibrary();
     }
 
     public List<Item> getListOfAvailableItems(User user) {
         Library myLibrary = getMyLibrary(user);
-        List<Item> existentItems = myLibrary.getAllItems();
+        List<Item> existentItems = myLibrary.getItemsInLibrary();
         return _itemRepo.getDifferentOf(existentItems);
     }
 
     public boolean addItemToLibrary(Item selectedItem, User user) {
         Library myLibrary = getMyLibrary(user);
-        return myLibrary.addItemToLibrary(selectedItem, user);
+        return myLibrary.addItemToLibrary(selectedItem);
     }
 }

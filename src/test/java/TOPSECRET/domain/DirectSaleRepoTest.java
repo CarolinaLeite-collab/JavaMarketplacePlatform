@@ -57,7 +57,7 @@ class DirectSaleRepoTest {
         Price price = mock(Price.class);
         Period timeLimit = null;
 
-        when(factory.create(item, price, timeLimit)).thenReturn(ds1);
+        when(factory.createDirectSale(item, price, timeLimit)).thenReturn(ds1);
         when(ds1.isByAuthor(author)).thenReturn(true); // para provar que foi guardado
 
         // Act
@@ -65,7 +65,7 @@ class DirectSaleRepoTest {
 
         // Assert
         assertSame(ds1, created);
-        verify(factory, times(1)).create(item, price, timeLimit);
+        verify(factory, times(1)).createDirectSale(item, price, timeLimit);
 
         List<Item> items = repo.getDirectSaleItemsByAuthor(author);
         assertEquals(1, items.size());
@@ -78,7 +78,7 @@ class DirectSaleRepoTest {
         Item item = mock(Item.class);
         Price price = mock(Price.class);
 
-        when(factory.create(eq(item), eq(price), isNull()))
+        when(factory.createDirectSale(eq(item), eq(price), isNull()))
                 .thenThrow(new InstantiationException("boom"));
 
         // Act & Assert
@@ -97,7 +97,7 @@ class DirectSaleRepoTest {
     @Test
     void getDirectSaleItemsByAuthor_filtersCorrectly() throws Exception {
         // Arrange: meter 2 directSales lá dentro via factory
-        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
 
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
@@ -115,7 +115,7 @@ class DirectSaleRepoTest {
 
     @Test
     void getDirectSaleItemsByPublication_filtersCorrectly() throws Exception {
-        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
 
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
@@ -131,7 +131,7 @@ class DirectSaleRepoTest {
 
     @Test
     void getDirectSaleItemByPublisher_filtersCorrectly() throws Exception {
-        when(factory.create(any(), any(), any())).thenReturn(ds1, ds2);
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
 
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
@@ -148,7 +148,7 @@ class DirectSaleRepoTest {
 
     @Test
     void getDirectSaleItemsByGenre_usesPublicationMatchGenre() throws Exception {
-        when(factory.create(any(), any(), any())).thenReturn(ds1);
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1);
 
         // ds1.getItem() -> item1 (já stubbed)
         when(item1.getPublication()).thenReturn(publication);

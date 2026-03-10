@@ -26,8 +26,8 @@ public class DirectSaleRepo {
         _directSales = new ArrayList<>();
     }
 
-    public DirectSale createDirectSale(Item item, Price price, Period timeLimit) throws InstantiationException {
-        DirectSale directSale = _factory.create(item, price, timeLimit);
+    public DirectSale createDirectSale(Item item, Price price, Period timeLimit) {
+        DirectSale directSale = _factory.createDirectSale(item, price, timeLimit);
         _directSales.add(directSale);
         return directSale;
     }
@@ -79,4 +79,3 @@ public class DirectSaleRepo {
         return List.copyOf(list);
     }
 }
-// analise design teste e implementação

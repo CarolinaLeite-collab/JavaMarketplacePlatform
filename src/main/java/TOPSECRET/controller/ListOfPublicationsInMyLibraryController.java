@@ -24,7 +24,7 @@ public class ListOfPublicationsInMyLibraryController {
     }
 
  public List<PublicationDetails> getListOfPublications(User user) {
-        Library library = _libraryRepo.findByUser(user);
+        Library library = _libraryRepo.findLibraryByUser(user);
             return library.getPublicationsInLibrary();
     }
 }

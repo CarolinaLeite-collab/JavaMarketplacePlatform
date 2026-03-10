@@ -70,7 +70,7 @@ public class LibraryRepo {
      * @throws IllegalStateException if no Library exists for the given userID
      */
 
-    public Library findByUser(User user){
+    public Library findLibraryByUser(User user){
         for (Library lib : _libraries){
             if (lib.belongsTo(user)){
                 return lib;

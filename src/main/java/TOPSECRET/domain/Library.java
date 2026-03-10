@@ -21,7 +21,6 @@ public class Library {
     private List<Publication> _publications = new ArrayList<>();
     private List<Item> _items = new ArrayList<>();
 
-
     public Library(User user){
 
         if (user == null)
@@ -108,16 +107,20 @@ public class Library {
         return true;
     }
 
-    public List<Item> getAllItems() {
+    public List<Item> getItemsInLibrary() {
         return List.copyOf(_items);
     }
 
-    public boolean addItemToLibrary(Item selectedItem, User user) {
-        if (selectedItem == null) {
+    public boolean addItemToLibrary(Item item) {
+        if (item == null) {
             return false;
         }
 
-        _items.add(selectedItem);
+        if (_items.contains(item)) {
+            return false;
+        }
+
+        _items.add(item);
         return true;
     }
 }
