@@ -1,8 +1,7 @@
 @startuml
-title US001 - "As an Administrator, I want to register a user in the system" - SD
-hidefootbox
+title US001 – "As an Administrator, I want to register a user in the system" %n() SD
+hide footbox
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -16,46 +15,43 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-' --- Actor and participants ---
-actor Admin
-participant "UI1:RegisterNewUserUI" as UI
-participant "Ctl1:RegisterNewUserController" as Ctl
-participant "_ur:UserRepo" as UR
+actor "Admin" as Administrator
+participant ":RegisterNewUserUI" as UI
+participant ":RegisterNewUserController" as Ctl
+participant ":UserRepo" as Repo
+participant ":UserFactory" as Factory
 
-' --- UI interaction ---
-Admin -> UI: I want to register a user in the system
-activate UI
-UI --> Admin:What is the name and the email
-deactivate UI
+Administrator -> "UI": I want to register a user in the system.
+activate "UI"
+"UI" --> Administrator: What is the name and the email?
+Administrator -> "UI": name, email
+"UI" -> "Ctl": registerNewUser(name, email)
+activate "Ctl"
+"Ctl" -> "Repo": registerNewUser(name, email)
+activate "Repo"
 
+opt userExists(email) == false
+    create "newName:Name"
+    "Repo" -> "newName:Name": create(name)
 
-Admin -> UI: Name, test@email.pt
-activate UI
+    create "newEmail:Email"
+    "Repo" -> "newEmail:Email": create(email)
 
+    "Repo" -> "Factory": createUser(newName, newEmail)
+    activate "Factory"
+    create "newUser:User"
+    "Factory" -> "newUser:User": create(newName, newEmail)
+    "Factory" --> "Repo": newUser
+    deactivate "Factory"
 
-
-UI -> Ctl: registerNewUser(name, email )
-activate Ctl
-
-' --- Verify user existence and create ---
-Ctl -> UR: registerNewUser(name, email)
-activate UR
-opt If email does not exist
-
-' --- Create email, name and User---
-create "newEmail:Email"
-UR -> "newEmail:Email": createEmail(email)
-create "newName:Name"
-UR -> "newName:Name": createName(name)
-create "newUser:User"
-UR -> "newUser:User": createUser(name, email)
-UR -> UR: add newUser
+    "Repo" -> "Repo": add(newUser)
 end
-UR --> Ctl: newUser
-deactivate UR
-Ctl --> UI:newUser
-deactivate Ctl
-UI --> Admin: New User registered!
-deactivate UI
+
+"Repo" --> "Ctl": newUser
+deactivate "Repo"
+"Ctl" --> "UI": newUser
+deactivate "Ctl"
+"UI" --> Administrator: Registered successfully!
+deactivate "UI"
 
 @enduml
