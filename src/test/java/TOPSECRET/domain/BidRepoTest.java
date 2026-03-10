@@ -56,8 +56,8 @@ class BidRepoTest {
 
 
         Price priceDouble2 = mock(Price.class);
-        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
-        when(priceDouble1.getValue()).thenReturn(102.0);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble2.getValue()).thenReturn(102.0);
 
         Bid bidDouble1 = mock(Bid.class);
         when(bidDouble1.getOfferPrice()).thenReturn(priceDouble1);
