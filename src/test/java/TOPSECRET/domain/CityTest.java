@@ -11,15 +11,15 @@ import static org.mockito.Mockito.*;
 
 class CityTest {
 
-    private Country country;
+    private Country _countryDouble;
 
     @BeforeEach
     void setUp() {
-        country = mock(Country.class);
+        _countryDouble = mock(Country.class);
     }
 
     private City city(String name) {
-        return new City(name, country);
+        return new City(name, _countryDouble);
     }
 
 
@@ -29,12 +29,12 @@ class CityTest {
         String name = "Porto";
 
         // Act
-        City city = new City(name, country);
+        City city = new City(name, _countryDouble);
 
         // Assert
         assertAll(
                 () -> assertEquals("Porto", city.getName()),
-                () -> assertSame(country, city.getCountry())
+                () -> assertSame(_countryDouble, city.getCountry())
         );
     }
 
@@ -42,7 +42,7 @@ class CityTest {
     @NullAndEmptySource
     @ValueSource(strings = {" ", "   ", "\t", "\n"})
     void constructorNullOrBlankName_throwsIllegalArgumentException(String badName) {
-        assertThrows(IllegalArgumentException.class, () -> new City(badName, country));
+        assertThrows(IllegalArgumentException.class, () -> new City(badName, _countryDouble));
     }
 
     @Test
@@ -52,7 +52,7 @@ class CityTest {
 
     @Test
     void equalsReflexive() {
-        City city = new City("Porto", country);
+        City city = new City("Porto", _countryDouble);
         assertEquals(city, city);
     }
 
@@ -65,8 +65,8 @@ class CityTest {
 
     @Test
     void equalsCaseInsensitiveNameSameCountryMockTrueAndHashCodeEqual() {
-        City a = new City("Porto", country);
-        City b = new City("porto", country);
+        City a = new City("Porto", _countryDouble);
+        City b = new City("porto", _countryDouble);
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
@@ -76,7 +76,7 @@ class CityTest {
     void equalsSameNameDifferentCountryMocksFalse () {
         Country otherCountry = mock(Country.class);
 
-        City a = new City("Lisboa", country);
+        City a = new City("Lisboa", _countryDouble);
         City b = new City("Lisboa", otherCountry);
 
         assertNotEquals(a, b);
@@ -84,8 +84,8 @@ class CityTest {
 
     @Test
     void hashCodeIsCaseInsensitiveSameAsEqualsLogic () {
-        City a = new City("PORTO", country);
-        City b = new City("porto", country);
+        City a = new City("PORTO", _countryDouble);
+        City b = new City("porto", _countryDouble);
 
         assertEquals(a.hashCode(), b.hashCode());
     }
