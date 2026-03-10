@@ -82,10 +82,10 @@ class DirectSaleRepoTest {
         Price price = mock(Price.class);
 
         when(_factoryDouble.createDirectSale(eq(item), eq(price), isNull()))
-                .thenThrow(new InstantiationException("boom"));
+                .thenThrow(new IllegalStateException("boom"));
 
         // Act & Assert
-        assertThrows(InstantiationException.class, () -> repo.createDirectSale(item, price, null));
+        assertThrows(IllegalStateException.class, () -> repo.createDirectSale(item, price, null));
     }
 
     @Test
