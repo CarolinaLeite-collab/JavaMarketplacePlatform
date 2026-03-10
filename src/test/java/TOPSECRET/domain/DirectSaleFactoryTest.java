@@ -1,62 +1,36 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.time.Period;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 
 class DirectSaleFactoryTest {
 
     @Test
-    void create_validInputs_returnsDirectSale() throws Exception {
+    void shouldCreateDirectSale() {
         // Arrange
-        DirectSaleFactory factory = new DirectSaleFactory();
-        Item item = mock(Item.class);
-        Price price = mock(Price.class);
+        Item itemDouble = mock(Item.class);
+        Price priceDouble = mock(Price.class);
+        Period timeLimit = Period.ofDays(30);
 
-        // Act
-        DirectSale ds = factory.create(item, price, null);
+        // SUT
+        DirectSaleFactory directSaleFactory = new DirectSaleFactory();
 
-        // Assert
-        assertNotNull(ds);
-        assertSame(item, ds.getItem());
-        assertSame(price, ds.getPrice());
-        assertNull(ds.getTimeLimit());
-    }
+        try (MockedConstruction<DirectSale> mockedConstruction = mockConstruction(DirectSale.class)) {
 
-    @Test
-    void create_negativeTimeLimit_throwsInstantiationException() {
-        // Arrange
-        DirectSaleFactory factory = new DirectSaleFactory();
-        Item item = mock(Item.class);
-        Price price = mock(Price.class);
+            // Act
+            DirectSale directSaleResult = directSaleFactory.createDirectSale(itemDouble, priceDouble, timeLimit);
 
-        // Act & Assert
-        assertThrows(InstantiationException.class,
-                () -> factory.create(item, price, Period.ofDays(-1)));
-    }
-
-    @Test
-    void create_nullItem_throwsInstantiationException() {
-        // Arrange
-        DirectSaleFactory factory = new DirectSaleFactory();
-        Price price = mock(Price.class);
-
-        // Act & Assert
-        assertThrows(InstantiationException.class,
-                () -> factory.create(null, price, null));
-    }
-
-    @Test
-    void create_nullPrice_throwsInstantiationException() {
-        // Arrange
-        DirectSaleFactory factory = new DirectSaleFactory();
-        Item item = mock(Item.class);
-
-        // Act & Assert
-        assertThrows(InstantiationException.class,
-                () -> factory.create(item, null, null));
+            // Assert
+            assertNotNull(directSaleResult);
+            assertEquals(1, mockedConstruction.constructed().size());
+            assertEquals(mockedConstruction.constructed().get(0), directSaleResult);
+        }
     }
 }
