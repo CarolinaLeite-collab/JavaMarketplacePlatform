@@ -65,6 +65,16 @@ class ListOfPublicationsTest {
     }
 
     @Test
+    void hashCodeShouldReturnTrueForSameArguments() {
+        // Arrange
+        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+
+        // Act & Assert
+        assertEquals(list1.hashCode(), list2.hashCode());
+    }
+
+    @Test
     void equalsShouldReturnFalseForDifferentUser() {
         // Arrange
         ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
@@ -72,6 +82,16 @@ class ListOfPublicationsTest {
 
         // Act & Assert
         assertNotEquals(list1, list2);
+    }
+
+    @Test
+    void hashCodeShouldReturnFalseForDifferentUser() {
+        // Arrange
+        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfPublications list2 = new ListOfPublications(_user2Double, "My List", _genre1Double);
+
+        // Act & Assert
+        assertNotEquals(list1.hashCode(), list2.hashCode());
     }
 
     @Test
@@ -85,6 +105,16 @@ class ListOfPublicationsTest {
     }
 
     @Test
+    void hashCodeShouldReturnFalseForDifferentName() {
+        // Arrange
+        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfPublications list2 = new ListOfPublications(_user1Double, "Other List", _genre1Double);
+
+        // Act & Assert
+        assertNotEquals(list1.hashCode(), list2.hashCode());
+    }
+
+    @Test
     void equalsShouldReturnFalseForDifferentGenre() {
         // Arrange
         ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
@@ -92,6 +122,16 @@ class ListOfPublicationsTest {
 
         // Act & Assert
         assertNotEquals(list1, list2);
+    }
+
+    @Test
+    void hashCodeShouldReturnFalseForDifferentGenre() {
+        // Arrange
+        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre2Double);
+
+        // Act & Assert
+        assertNotEquals(list1.hashCode(), list2.hashCode());
     }
 
     @Test
