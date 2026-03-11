@@ -12,307 +12,126 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AuctionTest {
-    private Publication _publication;
-    private Item _item;
-    private Price _startingPrice;
-    private Price _outrightPrice; // optional (nullable)
-    private User _buyer;
-    private BidRepo _bidRepo;
-
-
-    //Isolated
-    private Publication _publicationDouble;
     private Item _itemDouble;
     private Price _startingPriceDouble;
     private Price _outrightPriceDouble; // optional (nullable)
     private User _buyerDouble;
-    private BidRepo _bidRepoDouble;
-    private ZonedDateTime _auctionStart1;
-    private ZonedDateTime _auctionEnd1;
+    private ZonedDateTime _auctionStart;
+    private ZonedDateTime _auctionEnd;
 
     @BeforeEach
     void setUp() {
-        _buyer = new User(new Name("Joaquim"), new Email("test@isep.com"));
-
-        _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .genre(new Genre("action"))
-                .build();
-        _item = new Item(_publication, Condition.GOOD);
-        _startingPrice = new Price(10.0, Currency.EUR);
-        _outrightPrice = new Price(50.0, Currency.EUR);
-        Country country = new Country("Portugal");
-        Address address = mock(Address.class);
-//        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", country, "6969-200", null);
-        PhonePrefix prefix = new PhonePrefix("+351");
-        Phone phoneNumber1 = new Phone(prefix, "919999999");
-        User ze = new User(new Name("Ze"), address, new Email("reader@email.com"), phoneNumber1);
-        User antonio = new User(new Name("Antonio"), address, new Email("ar@email.com"), phoneNumber1);
-        Bid bid1 = new Bid(ze, new Price(100.0, Currency.EUR));
-        Bid bid2 = new Bid(antonio, new Price(102.0, Currency.EUR));
-        BidRepo bids = new BidRepo(new BidFactory());
-        bids.addBid(bid1);
-        bids.addBid(bid2);
-        _bidRepo = bids;
-
-        // Isolated setup
-
-        _publicationDouble = mock(Publication.class);
+        _buyerDouble = mock(User.class);
         _itemDouble = mock(Item.class);
         _startingPriceDouble = mock(Price.class);
         _outrightPriceDouble = mock(Price.class);
-        _buyerDouble = mock(User.class);
-        _bidRepoDouble = mock(BidRepo.class);
-        _auctionStart1 = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
-        _auctionEnd1 = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+        _auctionStart = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+        _auctionEnd = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+            }
 
+    @Test
+    void constructorShouldBuildAuctionWithoutOutrightPrice() {
+        // Act
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Assert
+        assertNotNull(auction);
+        assertEquals(_itemDouble, auction.getItem());
+        verify(_itemDouble).setAuction(auction);
+    }
+
+    @Test
+    void constructorShouldBuildAuctionWithOutrightPrice() {
+        // Arrange
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
         when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+
+        // Act
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Assert
+        assertNotNull(auction);
+        assertEquals(_itemDouble, auction.getItem());
+        verify(_itemDouble).setAuction(auction);
+    }
+
+
+    @Test
+    void constructorShouldThrowWhenEndDateIsBeforeStartDate() {
+        // Arrange
+        ZonedDateTime endBeforeStart = ZonedDateTime.of(2026, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_itemDouble, _startingPriceDouble, _auctionStart, endBeforeStart)); // SUT
+    }
+
+    @Test
+    void constructorShouldThrowWhenStartDateIsInvalid() {
+        // Arrange
+        ZonedDateTime pastDate = ZonedDateTime.now().minusDays(1);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_itemDouble, _startingPriceDouble, pastDate, _auctionEnd)); // SUT
+    }
+
+    @Test
+    void acceptBidShouldThrowWhenAuctionIsNotActive() {
+        // Arrange
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _auctionStart, _auctionEnd); // SUT
+        User buyerDouble = mock(User.class); // stub
+        Bid bidDouble = mock(Bid.class); // stub
+        Price bidPriceDouble = mock(Price.class); // stub
+        when(bidDouble.getOfferPrice()).thenReturn(bidPriceDouble);
+        when(bidPriceDouble.getValue()).thenReturn(105.0);
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
 
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.acceptBid(bidDouble)); // SUT
     }
-
-    //test a sucessful auction
     @Test
-    void constructorBuildsAuctionWithoutOutrightPrice() {
+    void constructorShouldThrowWhenOutrightPriceIsNotGreaterThanStartingPrice() {
         // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
-        // Act
-        Auction auction = new Auction(_item, _startingPrice, auctionStart, auctionEnd);
-        // Assert
-        assertNotNull(auction);
-        assertEquals(_item, auction.getItem());
-        assertNotNull(_item.getAuction());
-        assertSame(auction, _item.getAuction());
-    }
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(10.0);
 
-
-    @Test
-    void constructorBuildsAuctionWithOutrightPrice() {
-        // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
-        // Act
-        Auction auction = new Auction(_item, _startingPrice, _outrightPrice, auctionStart, auctionEnd);
-        // Assert
-        assertNotNull(auction);
-        assertEquals(_item, auction.getItem());
-        assertNotNull(_item.getAuction());
-        assertSame(auction, _item.getAuction());
-    }
-
-    //test a unsucessful auction
-    //Exception date related
-    @Test
-    void throwsExceptionEndDateBeforeStartDate() {
-        // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2026-02-01T00:00:00+00:00[Europe/Lisbon]");
-        // Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new Auction(_item, _startingPrice, auctionStart, auctionEnd));
-        // Assert
-        assertEquals("Invalid end date", exception.getMessage());
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd)); // SUT
     }
 
     @Test
-    void throwsExceptionStartDateinvalid() {
+    void constructorWithOutrightShouldThrowWhenStartDateIsInvalid() {
         // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2025-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
-        // Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new Auction(_item, _startingPrice, auctionStart, auctionEnd));
-        // Assert
-        assertEquals("Invalid start date", exception.getMessage());
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        ZonedDateTime pastDate = ZonedDateTime.now().minusDays(1);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, pastDate, _auctionEnd)); // SUT
     }
 
     @Test
-    void acceptBid_throwsexceptionInvalidBidTimeAuctionNotActive() {
+    void constructorWithOutrightShouldThrowWhenEndDateIsBeforeStartDate() {
         // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime now = ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Bid bid3 = new Bid(_buyer, new Price(105.0, Currency.EUR));
-        Auction auction = new Auction(_item, _startingPrice, auctionStart, auctionEnd);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        ZonedDateTime endBeforeStart = ZonedDateTime.of(2026, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
 
-        // Act
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> auction.acceptBid(bid3)
-        );
-        // Assert
-        assertEquals("Invalid Bid", ex.getMessage());
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, endBeforeStart)); // SUT
     }
-    @Test
-    void test_is_by_genre_should_return_true_when_genre_matches() {
-
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Genre _genre= new Genre("action");
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByGenre(_genre);
-
-        // Assert
-        assertTrue(result);
-
-    }
-    @Test
-    void test_is_by_genre_should_return_true_when_genre_matches_case_insensitive() {
-
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Genre _genre= new Genre("ActioN");
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByGenre(_genre);
-
-        // Assert
-        assertTrue(result);
-
-    }
-
-    @Test
-    void test_is_by_genre_should_return_false_when_genre_does_not_match() {
-
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Genre _genre= new Genre("Horror");
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByGenre(_genre);
-
-        // Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void constructorThrowsWhenOutrightPriceIsNotGreaterThanStartingPrice() {
-        // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime auctionEnd = ZonedDateTime.parse("2027-02-01T00:00:00+00:00[Europe/Lisbon]");
-
-        // Act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_item, _startingPrice, new Price(10.0, Currency.EUR), auctionStart, auctionEnd));
-
-        // Assert
-        assertEquals("Invalid outright price", ex.getMessage());
-    }
-
-    @Test
-    void constructorWithOutrightThrowsWhenStartDateInvalid() {
-        // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.now().minusDays(1);
-        ZonedDateTime auctionEnd = ZonedDateTime.now().plusDays(1);
-
-        // Act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_item, _startingPrice, _outrightPrice, auctionStart, auctionEnd));
-
-        // Assert
-        assertEquals("Invalid start date", ex.getMessage());
-    }
-
-    @Test
-    void constructorWithOutrightThrowsWhenEndDateBeforeStartDate() {
-        // Arrange
-        ZonedDateTime auctionStart = ZonedDateTime.now().plusDays(2);
-        ZonedDateTime auctionEnd = ZonedDateTime.now().plusDays(1);
-
-        // Act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_item, _startingPrice, _outrightPrice, auctionStart, auctionEnd));
-
-        // Assert
-        assertEquals("Invalid end date", ex.getMessage());
-    }
-
-    @Test
-    void test_is_by_author_should_return_true_when_author_matches() {
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Author author = _item.getPublication().getAuthor();
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByAuthor(author);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void test_is_by_author_should_return_true_when_author_matches_case_insensitive() {
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Author author = new Author(_item.getPublication().getAuthor().getName().toUpperCase());
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByAuthor(author);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void test_is_by_author_should_return_false_when_author_does_not_match() {
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        Author differentAuthor = new Author("Different");
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByAuthor(differentAuthor);
-
-        // Assert
-        assertFalse(result);
-    }
-
     @Test
     void getBidsReturnsNonNullEvenWhenEmpty() {
         // Arrange
         ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
         ZonedDateTime end = start.plusHours(1);
 
-        Auction auction = new Auction(_item, _startingPrice, start, end);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, start, end);
 
         // Act
         BidRepo bidRepo = auction.getBids();
@@ -322,88 +141,6 @@ class AuctionTest {
         assertThrows(IllegalStateException.class, () -> bidRepo.getHighestBid());
     }
 
-    @Test
-    void shouldReturnTrueForMatchingPublication() {
-        // Arrange
-        Auction auction = new Auction(_item, _startingPrice, _outrightPrice, _auctionStart1, _auctionEnd1);
-
-        // Act
-        boolean result = auction.isByPublication(_publication);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseForDifferentPublication() {
-        // Arrange
-        Publication otherPublication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("838894522X"))
-                .year(Year.of(2020))
-                .title(new Title("Louis I. Khan: The idea of order"))
-                .author(new Author("Klaus-Peter Gast"))
-                .publisher(new PublishingCompany("Birkhauser"))
-                .build();
-
-        Auction auction = new Auction(_item, _startingPrice, _outrightPrice, _auctionStart1, _auctionEnd1);
-
-        // Act
-        boolean result = auction.isByPublication(otherPublication);
-
-        // Assert
-        assertFalse(result);
-    }
-    @Test
-    void should_return_true_when_publisher_matches_and_be_case_insensitive() {
-        // Arrange
-        Publication publication1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("PeNgUin"))
-                .genre(new Genre("action"))
-                .build();
-        Item item1 = new Item(publication1, Condition.GOOD);
-
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        PublishingCompany publisher1 = _item.getPublication().getPublisher();
-        PublishingCompany publisher2 = item1.getPublication().getPublisher();
-
-        Auction auction1 = new Auction(_item, _startingPrice, _startDate, _endDate);
-        Auction auction2 = new Auction(_item, _outrightPrice, _startDate, _endDate);
-
-        // Act
-        boolean result1 = auction1.isByPublisher(publisher1);
-        boolean result2 = auction2.isByPublisher(publisher2);
-
-        // Assert
-        assertTrue(result1);
-        assertTrue(result2);
-    }
-
-    @Test
-    void should_return_false_when_publisher_does_not_match() {
-        // Arrange
-        ZonedDateTime _startDate =
-                ZonedDateTime.parse("2027-01-01T00:00:00+00:00[Europe/Lisbon]");
-        ZonedDateTime _endDate =
-                ZonedDateTime.parse("2027-01-02T00:00:00+00:00[Europe/Lisbon]");
-        PublishingCompany publisher3 = new PublishingCompany("Porto Editora");
-
-        Auction auction = new Auction(_item, _startingPrice, _startDate, _endDate);
-
-        // Act
-        boolean result = auction.isByPublisher(publisher3);
-
-        // Assert
-        assertFalse(result);
-    }
     // Author: Pedro"
     @Test
     void acceptBidAddsBidWhenAuctionIsActiveAndPriceIsAboveStartingPrice() throws Exception {
@@ -429,6 +166,7 @@ class AuctionTest {
         // Assert
         assertSame(bid, auction.getBids().getHighestBid());
     }
+
     // Author: Pedro"
     @Test
     void finalizeAuctionSetsBuyerAndFinalPriceToHighestBid() throws Exception {
@@ -462,6 +200,7 @@ class AuctionTest {
         assertSame(bidder2, getPrivateField(auction, "_buyer"));
         assertEquals(higher.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
+
     // Author: Pedro"
     @Test
     void acceptBidDelegatesToBidsCollection() throws Exception {
@@ -488,6 +227,7 @@ class AuctionTest {
         // Assert
         verify(bids).addBid(bid);
     }
+
     // Author: Pedro"
     @Test
     void finalizeAuctionUsesHighestBidFromBidsCollection() throws Exception {
@@ -514,12 +254,14 @@ class AuctionTest {
         assertSame(bidder, getPrivateField(auction, "_buyer"));
         assertEquals(highestBid.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
+
     // Author: Pedro"
     private void setPrivateField(Auction auction, String fieldName, Object value) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(auction, value);
     }
+
     // Author: Pedro"
     private Object getPrivateField(Auction auction, String fieldName) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
@@ -534,9 +276,11 @@ class AuctionTest {
         //Arrange
         Author _author = mock(Author.class);
         when(_itemDouble.isByAuthor(_author)).thenReturn(true);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         // SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByAuthor(_author);
@@ -552,9 +296,11 @@ class AuctionTest {
         //Arrange
         Author _author2 = mock(Author.class);
         when(_itemDouble.isByAuthor(_author2)).thenReturn(false);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         // SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByAuthor(_author2);
@@ -568,9 +314,11 @@ class AuctionTest {
     void isByAuthorShouldDelegateToItem() {
         //Arrange
         Author _author = mock(Author.class);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         //SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         auction.isByAuthor(_author);
@@ -585,9 +333,11 @@ class AuctionTest {
         //Arrange
         Genre _genre = mock(Genre.class);
         when(_itemDouble.isByGenre(_genre)).thenReturn(true);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         // SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByGenre(_genre);
@@ -602,9 +352,11 @@ class AuctionTest {
         //Arrange
         Genre _genre2 = mock(Genre.class);
         when(_itemDouble.isByGenre(_genre2)).thenReturn(false);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         // SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByGenre(_genre2);
@@ -617,14 +369,106 @@ class AuctionTest {
     void isByGenreShouldDelegateToItem() {
         //Arrange
         Genre _genre = mock(Genre.class);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
 
         //SUT
-        Auction auction = new Auction(_itemDouble,_startingPriceDouble,_outrightPriceDouble, _auctionStart1, _auctionEnd1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         auction.isByGenre(_genre);
 
         //Assert
         verify(_itemDouble, times(1)).isByGenre(_genre);
+    }
+
+    // Isolated test of isByPublishingCompany method
+    @Test
+    void isByPublisherShouldReturnTrueWhenPublisherMatches() {
+        // Arrange
+        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
+        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(true);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        boolean result = auction.isByPublishingCompany(publisherDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByPublisherShouldReturnFalseWhenPublisherDoesNotMatch() {
+        // Arrange
+        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
+        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(false);
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        boolean result = auction.isByPublishingCompany(publisherDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByPublisherShouldDelegateToItem() {
+        // Arrange
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        auction.isByPublishingCompany(publisherDouble);
+
+        // Assert
+        verify(_itemDouble).isByPublishingCompany(publisherDouble);
+    }
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationMatches() {
+        // Arrange
+        Publication publicationDouble = mock(Publication.class); // stub
+        when(_itemDouble.isByPublication(publicationDouble)).thenReturn(true);
+
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        boolean result = auction.isByPublication(publicationDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByPublicationShouldReturnFalseWhenPublicationDoesNotMatch() {
+        // Arrange
+        Publication publicationDouble = mock(Publication.class); // stub
+        when(_itemDouble.isByPublication(publicationDouble)).thenReturn(false);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        boolean result = auction.isByPublication(publicationDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByPublicationShouldDelegateToItem() {
+        // Arrange
+        Publication publicationDouble = mock(Publication.class); // stub
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, _auctionStart, _auctionEnd); // SUT
+
+        // Act
+        auction.isByPublication(publicationDouble);
+
+        // Assert
+        verify(_itemDouble).isByPublication(publicationDouble);
     }
 }

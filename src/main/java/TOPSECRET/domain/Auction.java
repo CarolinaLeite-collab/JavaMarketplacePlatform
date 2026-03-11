@@ -42,7 +42,7 @@ public class Auction {
     public Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
-        _bids = new BidRepo(_bidFactory);
+        _bids = new BidRepo( new BidFactory());
 
 
         if (isOutrightPriceValid(outrightPrice)) {
@@ -72,7 +72,7 @@ public class Auction {
         _item = item;
         _startingPrice = startingPrice;
         _outrightPrice = null;
-        _bids = new BidRepo(_bidFactory);
+        _bids = new BidRepo(new BidFactory());
 
         if (isAuctionStartDateValid(auctionStartDate)) {
             this._auctionStartDate = auctionStartDate;
@@ -152,13 +152,13 @@ public class Auction {
 
     public boolean isByPublication(Publication publication) {
 
-        return _item.getPublication().equals(publication);
+        return _item.isByPublication(publication);
 
     }
 
-    public boolean isByPublisher(PublishingCompany publisher) {
+    public boolean isByPublishingCompany(PublishingCompany publisher) {
 
-        return _item.getPublication().getPublisher().equals(publisher);
+        return _item.isByPublishingCompany(publisher);
 
     }
 }
