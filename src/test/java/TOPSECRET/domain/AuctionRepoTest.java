@@ -514,8 +514,8 @@ class AuctionRepoTest {
         repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
 
         // Act
-        List<Item> item1 = repo.getAuctionItemsByPublisher(new PublishingCompany("pubLIshEr1"));
-        List<Item> item2 = repo.getAuctionItemsByPublisher(publisher2);
+        List<Item> item1 = repo.getAuctionItemsByPublishingCompany(new PublishingCompany("pubLIshEr1"));
+        List<Item> item2 = repo.getAuctionItemsByPublishingCompany(publisher2);
 
         // Assert
         assertEquals(1, item1.size());
@@ -548,7 +548,7 @@ class AuctionRepoTest {
         repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
 
         // Act
-        List<Item> item3 = repo.getAuctionItemsByPublisher(null);
+        List<Item> item3 = repo.getAuctionItemsByPublishingCompany(null);
 
         // Assert
         assertNotNull(item3);
@@ -669,19 +669,19 @@ class AuctionRepoTest {
         ZonedDateTime end = ZonedDateTime.now().plusDays(2);
 
         Auction auction = mock(Auction.class);
-        when(auction.isByPublisher(publisher)).thenReturn(true);
+        when(auction.isByPublishingCompany(publisher)).thenReturn(true);
         when(auction.getItem()).thenReturn(item);
         when(factory.create(item, price, start, end)).thenReturn(auction);
 
         repo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByPublisher(publisher);
+        List<Item> results = repo.getAuctionItemsByPublishingCompany(publisher);
 
         // Assert
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
-        verify(auction).isByPublisher(publisher);
+        verify(auction).isByPublishingCompany(publisher);
     }
 
     @Test

@@ -122,7 +122,7 @@ public class AuctionRepo {
     }
 
     /**
-     * Retrieves a list of items currently on auction that belong to a specific publisher.
+     * Retrieves a list of items currently on auction that belong to a specific publishingCompany.
      * <p>
      * This method creates and returns a copy of the list to preserve encapsulation
      * and prevent external modifications to the internal repository state.
@@ -131,12 +131,12 @@ public class AuctionRepo {
      * @return A new list containing items that match the given publisher.
      */
 
-    public List<Item> getAuctionItemsByPublisher(PublishingCompany publisher) {
+    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 
         for (Auction auction : itemsOnAuction) {
-            if (auction.isByPublisher(publisher)){
+            if (auction.isByPublishingCompany(publisher)){
                 listOfAuctionItemsByPublisher.add(auction.getItem());
             }
         }
