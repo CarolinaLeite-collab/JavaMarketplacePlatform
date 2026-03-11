@@ -190,6 +190,27 @@ class AuctionRepoTest {
     }
 
     @Test
+    void createAuctionWithOutrightThrowsWhenFactoryFails() throws Exception {
+        // Arrange
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
+        Price outright = mock(Price.class);
+
+        when(factory.create(item, price, outright, start, end))
+                .thenThrow(new InstantiationException("outright failure"));
+
+        // Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> localRepo.createAuction(item, price, outright, start, end));
+
+        // Assert
+        assertTrue(ex.getMessage().contains("Unable to create auction"));
+        verify(factory).create(item, price, outright, start, end);
+    }
+
+    @Test
     void getAuctionItemsByGenreFiltersCorrectlyAndIsCaseInsensitive() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
