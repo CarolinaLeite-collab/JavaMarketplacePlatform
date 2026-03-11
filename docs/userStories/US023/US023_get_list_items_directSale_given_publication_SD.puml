@@ -24,6 +24,8 @@ participant ":UIGetDirectSaleItemsByPublications" as UI
 participant ":GetDirectSaleItemsByPublicationsController" as Ctl
 participant "_dsRepo:DirectSaleRepo" as dsr
 participant "_ds:DirectSale" as ds
+participant ":Item" as item
+participant ":Publication" as pub
 
 Buyer -> UI: I want to get a list of items on direct sale of a publication
 activate UI
@@ -42,20 +44,30 @@ create "listOfDirectSaleItemsByPublication: List<Item>" as list
 dsr -> list: create()
 loop for each _ds in _dsRepo
         dsr -> ds: isByPublication(publication)
-        opt isByPublication == true
-            dsr -> list: add(_ds.getItem())
-            activate list
-            list --> dsr: true
-            deactivate list
-        end
+        activate ds
+        ds -> item: isByPublication(publication)
+        activate item
+        item -> pub: equals()
+        activate pub
+        pub --> item: true
+        deactivate pub
+        item --> ds: true
+        deactivate item
+        ds --> dsr: true
+        deactivate ds
+        dsr -> list: add(_ds.getItem())
+        activate list
+        list --> dsr: true
+        deactivate list
+
 end
 
 create "copyOfListOfDirectSaleItemsByPublication: List<Item>" as copy
-dsr -> copy: List.copyof(ListOfDirectSaleItemsByPublication)
+dsr -> copy: List.copyof(listOfDirectSaleItemsByPublication)
 dsr --> Ctl: copyOfListOfDirectSaleItemsByPublication
 deactivate dsr
 Ctl --> UI: copyOfListOfDirectSaleItemsByPublication
 deactivate Ctl
-UI --> Buyer: Items list of a publication on direct sale displayed
+UI --> Buyer: Here is a list of items on direct sale of publication
 deactivate UI
 @enduml
