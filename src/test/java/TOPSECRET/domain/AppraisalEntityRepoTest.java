@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 class AppraisalEntityRepoTest {
 
-    private AppraisalEntity _entity;
+    private AppraisalEntity _entityDouble;
     private AppraisalEntityFactory _factoryDouble;
     private List<Genre> _genres;
     private Genre _genreDouble;
@@ -23,29 +23,31 @@ class AppraisalEntityRepoTest {
     void setUp() {
 
         _genreDouble = mock(Genre.class);
-        when(_genreDouble.getGenre()).thenReturn("Self-Help");
 
         _genres = new ArrayList<>();
         _genres.add(_genreDouble);
 
         _publicationTypeDouble = mock(PublicationType.class);
-        when(_publicationTypeDouble.getPublicationType()).thenReturn("Book");
 
         _publicationTypes = new ArrayList<>();
         _publicationTypes.add(_publicationTypeDouble);
 
         _nameDouble = mock(Name.class);
-        when(_nameDouble.get_Name()).thenReturn("Livraria Alfarrabista");
 
-        _entity = new AppraisalEntity(_nameDouble, _publicationTypes, _genres);
+        _entityDouble = mock(AppraisalEntity.class);
+        when(_entityDouble.getGenres()).thenReturn(_genres);
+        when(_entityDouble.getPublicationTypes()).thenReturn(_publicationTypes);
+        when(_entityDouble.getName()).thenReturn(_nameDouble);
 
         _factoryDouble = mock(AppraisalEntityFactory.class);
-        when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entity);
 
     }
 
     @Test
-    void should_add_new_appraisalEntity() {
+    void shouldAddNewAppraisalEntity() {
+
+        // arrange
+        when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entityDouble);
 
         // SUT
         AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
@@ -60,7 +62,37 @@ class AppraisalEntityRepoTest {
     }
 
     @Test
-    void should_throw_exception_when_duplicate_name() {
+    void shouldReturnFalseWhenNameIsDifferent() {
+
+        //arrange
+        Name _otherNameDouble = mock(Name.class);
+        when(_otherNameDouble.get_Name()).thenReturn("DifferentName");
+
+        AppraisalEntity _otherEntityDouble = mock(AppraisalEntity.class);
+        when(_otherEntityDouble.getName()).thenReturn(_otherNameDouble);
+
+        when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entityDouble);
+
+        when(_factoryDouble.createAppraisalEntity(_otherNameDouble, _publicationTypes, _genres)).thenReturn(_otherEntityDouble);
+
+        // SUT
+        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+
+        // act
+        repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+
+        AppraisalEntity entity = repo.registerNewAppraisalEntity(_otherNameDouble, _publicationTypes, _genres);
+
+        // assert
+        assertNotNull(entity);
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDuplicateName() throws IllegalArgumentException {
+
+        // arrange
+        when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entityDouble);
 
         //SUT
         AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
@@ -74,7 +106,18 @@ class AppraisalEntityRepoTest {
     }
 
     @Test
-    void should_avoid_external_lists_alterations() {
+    void shouldAvoidExternalListsAlterations() {
+
+        // arrange
+        AppraisalEntity _entityDouble1= mock(AppraisalEntity.class);
+
+        List<Genre> genresCopy = new ArrayList<>(_genres);
+        List<PublicationType> typesCopy = new ArrayList<>(_publicationTypes);
+
+        when(_entityDouble1.getGenres()).thenReturn(genresCopy);
+        when(_entityDouble1.getPublicationTypes()).thenReturn(typesCopy);
+        when(_entityDouble1.getName()).thenReturn(_nameDouble);
+        when(_factoryDouble.createAppraisalEntity(_nameDouble, typesCopy, genresCopy)).thenReturn(_entityDouble1);
 
         // SUT
         AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
