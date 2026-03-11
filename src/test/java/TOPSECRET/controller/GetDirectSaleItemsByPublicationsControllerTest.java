@@ -4,82 +4,74 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class GetDirectSaleItemsByPublicationsControllerTest {
-    private User _buyer;
-    private DirectSaleRepo _dsr;
-    private Publication _publication;
-    private Publication _publication2;
+
+    private User _buyerDouble;
+    private DirectSaleRepo _dsrDouble;
+    private Publication _publicationDouble;
     private GetDirectSaleItemsByPublicationsController _controller;
 
     @BeforeEach
     void setUp(){
-            _buyer = new User(
-                new Name("Maria Francisca"),
-                new Email("test@gmail.com"));
-
-        _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        _publication2 = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("2316-9133"))
-                .year(Year.of(2022))
-                .title(new Title("Science Weekly"))
-                .publisher(new PublishingCompany("Nature"))
-                .build();
-
-        _dsr = new DirectSaleRepo();
-
-        _controller = new GetDirectSaleItemsByPublicationsController(_dsr, _buyer);
+            _buyerDouble = mock(User.class);
+            _dsrDouble = mock(DirectSaleRepo.class);
+            _publicationDouble = mock(Publication.class);
 
     }
 
     @Test
-    void testDirectSaleItemsByPublicationController(){
+    void testDirectSaleItemsByPublicationControllerConstructor(){
 
-        new GetDirectSaleItemsByPublicationsController(_dsr, _buyer);
+        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
 
     }
 
     @Test
-    void testShouldReturnDirectSaleItemsByPublication() throws InstantiationException {
-        Item item = new  Item(_publication, Condition.GOOD);
+    void getDirectSaleItemsByPublicationShouldReturnEmptyListWhenThereAreNoItems(){
 
-        _dsr.createDirectSale(item, new Price(20.0, Currency.EUR), null);
+        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
 
-        List<Item> result = _controller.getDirectSaleItemsByPublication(_publication);
+        when(_dsrDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of());
 
-        assertFalse(result.isEmpty());
-        assertEquals(item, result.get(0));  // get the first value from the list that is equal to item
+        List<Item> resultList  = _controller.getDirectSaleItemsByPublication(_publicationDouble);
+
+        assertNotNull(resultList);
+        assertTrue(resultList.isEmpty());
+
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationsBookWithNoDirectSalesShouldReturnEmptyList() {
+    void getDirectSaleItemsByPublicationShouldReturnList() {
 
-        List<Item> listOfDirectSaleItemsByPublication = _controller.getDirectSaleItemsByPublication(_publication);
+        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
 
-        assertNotNull(listOfDirectSaleItemsByPublication);
-        assertTrue(listOfDirectSaleItemsByPublication.isEmpty());
+        Item itemDouble = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
+
+        when(_dsrDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of(itemDouble, itemDouble2));
+
+        List<Item> resultList = _controller.getDirectSaleItemsByPublication(_publicationDouble);
+
+        assertFalse(resultList.isEmpty());
+        assertEquals(2, resultList.size());
+        assertEquals(itemDouble, resultList.get(0));
+        assertEquals(itemDouble2, resultList.get(1));
+        assertTrue(resultList.containsAll(List.of(itemDouble, itemDouble2)));
     }
 
     @Test
-    void testGetDirectSaleItemsByPublicationsMagazineWithNoDirectSalesShouldReturnEmptyList() {
+    void getDirectSaleItemsByPublicationShouldCallDirectSaleRepo() {
 
-        List<Item> listOfDirectSaleItemsByPublication = _controller.getDirectSaleItemsByPublication(_publication2);
+        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
 
-        assertNotNull(listOfDirectSaleItemsByPublication);
-        assertTrue(listOfDirectSaleItemsByPublication.isEmpty());
+        List<Item> listOfDirectSaleItemsByPublication = _controller.getDirectSaleItemsByPublication(_publicationDouble);
+
+        verify(_dsrDouble,  times(1)).getDirectSaleItemsByPublication(_publicationDouble);
     }
 
 }
