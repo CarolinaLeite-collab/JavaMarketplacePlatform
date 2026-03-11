@@ -84,8 +84,6 @@ class ShoppingCartTest {
         assertThrows(UnsupportedOperationException.class, () -> cart.getListings().add(null));
     }
 
-    // --- New tests to improve mutation coverage ---
-
     @Test
     void removeNonExistingListingReturnsFalseAndDoesNotChangeState() {
         // Arrange

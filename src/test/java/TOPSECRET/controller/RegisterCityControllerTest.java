@@ -16,8 +16,6 @@ class RegisterCityControllerTest {
 
     private CityRepo cityRepo;
     private CountryRepo countryRepo;
-    private RegisterCityController controller;
-
     private Country country;
     private City city;
 
@@ -25,9 +23,6 @@ class RegisterCityControllerTest {
     void setUp() {
         cityRepo = mock(CityRepo.class);
         countryRepo = mock(CountryRepo.class);
-
-        controller = new RegisterCityController(cityRepo, countryRepo);
-
         country = mock(Country.class);
         city = mock(City.class);
     }
@@ -43,6 +38,9 @@ class RegisterCityControllerTest {
         List<Country> countries = List.of(country);
         when(countryRepo.getAllCountries()).thenReturn(countries);
 
+        //SUT
+        RegisterCityController controller = new RegisterCityController(cityRepo, countryRepo);
+
         // Act
         List<Country> result = controller.getCountries();
 
@@ -57,6 +55,9 @@ class RegisterCityControllerTest {
         // Arrange
         when(cityRepo.add("Porto", country)).thenReturn(city);
 
+        //SUT
+        RegisterCityController controller = new RegisterCityController(cityRepo, countryRepo);
+
         // Act
         City result = controller.registerCity("Porto", country);
 
@@ -70,6 +71,9 @@ class RegisterCityControllerTest {
         // Arrange
         when(cityRepo.add("Porto", country))
                 .thenThrow(new IllegalStateException("City already exists for this country"));
+
+        //SUT
+        RegisterCityController controller = new RegisterCityController(cityRepo, countryRepo);
 
         // Act & Assert
         assertThrows(

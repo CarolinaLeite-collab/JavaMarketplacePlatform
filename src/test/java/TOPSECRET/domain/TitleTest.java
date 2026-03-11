@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TitleTest {
 
     @Test
-    void validTitle() throws InstantiationException {
+    void validTitle() {
 
         //arrange
         String myTitle = "My Title";
@@ -16,12 +16,12 @@ class TitleTest {
         Title title = new Title(myTitle);
 
         //assert
-        assertEquals(title.getTitle(), myTitle);
+        assertEquals(myTitle, title.getTitle());
 
     }
 
     @Test
-    void validTrimWhitespace() throws InstantiationException {
+    void validTrimWhitespace() {
 
         //arrange
         String myTitle = "  My Title ";
@@ -30,12 +30,12 @@ class TitleTest {
         Title title = new Title(myTitle);
 
         //assert
-        assertEquals(title.getTitle(), "My Title");
+        assertEquals("My Title", title.getTitle());
 
     }
 
     @Test
-    void validMixCapitalizationTitle() throws InstantiationException {
+    void validMixCapitalizationTitle() {
 
         //arrange
         String mixCapitalizedTitle = "The cat in the Hat";
@@ -44,12 +44,12 @@ class TitleTest {
         Title title = new Title(mixCapitalizedTitle);
 
         //assert
-        assertEquals(title.getLowercaseTitle(), "the cat in the hat");
+        assertEquals("the cat in the hat", title.getLowercaseTitle());
 
     }
 
     @Test
-    void validMixCapitalizationAndWhitespace() throws InstantiationException {
+    void validMixCapitalizationAndWhitespace() {
 
         //arrange
         String mixCapitalizedWhitespaceTitle = " pRide and prejUdice     ";
@@ -138,14 +138,14 @@ class TitleTest {
     void titleNotEqualsToNull() {
         Title title = new Title("My Title");
 
-        assertNotEquals(title, null);
+        assertNotEquals(null, title);
     }
 
     @Test
     void titleNotEqualsToDifferentType() {
         Title title = new Title("My Title");
 
-        assertNotEquals(title, "My Title");
+        assertNotEquals("My Title", title);
     }
 
     @Test

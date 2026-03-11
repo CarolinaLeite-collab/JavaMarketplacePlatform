@@ -10,7 +10,6 @@ import static org.mockito.Mockito.*;
 
 class RegisterNewUserControllerTest {
 
-    private RegisterNewUserController _registerNewUserController;
     private UserRepo _userRepoDouble;
     private User _adminDouble;
     private User _userDouble;
@@ -23,7 +22,6 @@ class RegisterNewUserControllerTest {
 
         when(_userRepoDouble.registerNewUser("Tiago", "test@email.pt")).thenReturn(_userDouble);
 
-        _registerNewUserController = new RegisterNewUserController(_userRepoDouble, _adminDouble);
     }
 
     @Test
@@ -31,6 +29,9 @@ class RegisterNewUserControllerTest {
         // Arrange
         String name = "Tiago";
         String email = "test@email.pt";
+
+        //SUT
+        RegisterNewUserController _registerNewUserController = new RegisterNewUserController(_userRepoDouble, _adminDouble);
 
         // Act
         User created = _registerNewUserController.registerNewUser(name, email);
@@ -48,6 +49,9 @@ class RegisterNewUserControllerTest {
 
         when(_userRepoDouble.registerNewUser(name, email))
                 .thenThrow(new IllegalStateException("User already exists"));
+
+        //SUT
+        RegisterNewUserController _registerNewUserController = new RegisterNewUserController(_userRepoDouble, _adminDouble);
 
         // Act + Assert
         assertThrows(

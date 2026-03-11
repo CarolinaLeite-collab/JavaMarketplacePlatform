@@ -13,10 +13,9 @@ import static org.mockito.Mockito.when;
 class RegisterNewPublicationControllerTest {
 
     @Test
-    void registerPublication_callsRepoWithCorrectArguments() {
+    void registerPublicationCallsRepoWithCorrectArguments() {
+        //arrange
         PublicationRepo _publicationRepo = mock(PublicationRepo.class);
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(_publicationRepo);
-
         PublicationType _typeDouble = mock(PublicationType.class);
         Identifier _identifierDouble = mock(Identifier.class);
         Year _yearDouble = mock(Year.class);
@@ -25,26 +24,33 @@ class RegisterNewPublicationControllerTest {
         PublishingCompany _publisherDouble = mock(PublishingCompany.class);
         Edition _editionDouble = mock(Edition.class);
         Genre _genreDouble = mock(Genre.class);
-
         Publication expected = mock(Publication.class);
         when(_publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(expected);
 
+        //SUT
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(_publicationRepo);
+
+        //act
         Publication result = controller.registerPublication(
                 _typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble
         );
 
+        //assert
         assertSame(expected, result);
     }
 
     @Test
-    void registerPublication_throwsWhenRepoThrows() {
-        PublicationRepo repo = mock(PublicationRepo.class);
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(repo);
-
-        when(repo.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+    void registerPublicationThrowsWhenRepoThrows() {
+        //arrange
+        PublicationRepo repoDouble = mock(PublicationRepo.class);
+        when(repoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
+        //SUT
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(repoDouble);
+
+        //act and assert
         assertThrows(IllegalArgumentException.class, () ->
                 controller.registerPublication(
                         mock(PublicationType.class),
@@ -60,7 +66,8 @@ class RegisterNewPublicationControllerTest {
     }
 
     @Test
-    void constructor_throwsWhenRepoIsNull() {
+    void constructorThrowsWhenRepoIsNull() {
+        //assert
         assertThrows(NullPointerException.class, () ->
                 new RegisterNewPublicationController(null)
         );

@@ -19,7 +19,7 @@ class RegisterPublishingCompanyControllerTest {
     }
 
     @Test
-    void constructor_Should_InitializeController() {
+    void constructorShouldInitializeController() {
 
         // Arrange & Act
         RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publishingCompanyRepoDouble);
@@ -27,13 +27,13 @@ class RegisterPublishingCompanyControllerTest {
     }
 
     @Test
-    void should_register_new_PublishingCompany() {
+    void shouldRegisterNewPublishingCompany() {
 
         //Arrange
         String publishingCompanyName = "Bertrand Editora";
-        PublishingCompany pc = mock(PublishingCompany.class);
+        PublishingCompany pcDouble = mock(PublishingCompany.class);
 
-        when(_publishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenReturn(pc);
+        when(_publishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
 
         //SUT
         RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_publishingCompanyRepoDouble);
@@ -42,17 +42,16 @@ class RegisterPublishingCompanyControllerTest {
         PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(publishingCompanyName);
 
         //Assert
-        assertEquals(pc, publishingCompanyResult);
+        assertEquals(pcDouble, publishingCompanyResult);
         verify(_publishingCompanyRepoDouble).registerPublishingCompany(publishingCompanyName);
 
     }
 
     @Test
-    void adding_Existing_PublishingCompany_Throws_When_Already_Exists() {
+    void addingExistingPublishingCompanyThrowsWhenAlreadyExists() {
 
         //Arrange
         String publishingCompanyName = "Bertrand Editora";
-        PublishingCompany pc = mock(PublishingCompany.class);
 
         when(_publishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenThrow(
                 new IllegalArgumentException("Publishing Company with name " + publishingCompanyName + " already exists."));

@@ -28,9 +28,6 @@ class RegisterCountryControllerTest {
 
     @Test
     void throwsExceptionNullCountryRepo() {
-        //Act
-        //SUT
-        RegisterCountryController controller = new RegisterCountryController(_countryRepo);
         //Assert
         assertThrows(NullPointerException.class, () ->
                 new RegisterCountryController(null));
@@ -39,14 +36,14 @@ class RegisterCountryControllerTest {
     @Test
     void shouldRegisterCountrySuccessfully(){
         //Arrange
-        User user = mock(User.class);
-        when(user.hasRole(Role.ADMIN)).thenReturn(true);
-        Country portugal = mock(Country.class);
-        when(_countryRepo.registerCountry("Portugal")).thenReturn(portugal);
+        User userDouble = mock(User.class);
+        when(userDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        Country portugalDouble = mock(Country.class);
+        when(_countryRepo.registerCountry("Portugal")).thenReturn(portugalDouble);
         //SUT
         RegisterCountryController controller = new RegisterCountryController(_countryRepo);
         //Act
-        Country country = controller.registerCountry("Portugal", user);
+        Country country = controller.registerCountry("Portugal", userDouble);
         // Assert
         assertNotNull(country);
     }
@@ -54,12 +51,12 @@ class RegisterCountryControllerTest {
     @Test
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin(){
         //Arrange
-        User user = mock(User.class);
-        when(user.hasRole(Role.ADMIN)).thenReturn(false);
+        User userDouble = mock(User.class);
+        when(userDouble.hasRole(Role.ADMIN)).thenReturn(false);
         //SUT
         RegisterCountryController controller = new RegisterCountryController(_countryRepo);
         //Act & Assert
-        Assertions.assertThrows(SecurityException.class, () -> controller.registerCountry("Portugal", user));
+        Assertions.assertThrows(SecurityException.class, () -> controller.registerCountry("Portugal", userDouble));
     }
 
     @Test

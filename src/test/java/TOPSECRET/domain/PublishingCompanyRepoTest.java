@@ -19,7 +19,7 @@ class PublishingCompanyRepoTest {
     }
 
     @Test
-    void should_create_PublishingCompanyRepo() {
+    void shouldCreatePublishingCompanyRepo() {
 
         //Act
         PublishingCompanyRepo repo = new PublishingCompanyRepo(_pcfDouble);
@@ -29,7 +29,7 @@ class PublishingCompanyRepoTest {
     }
 
     @Test
-    void should_add_PublishingCompany_to_PublishingCompanyRepo() throws InstantiationException {
+    void shouldAddPublishingCompanyToPublishingCompanyRepo() {
 
         //Arrange
         PublishingCompany _pubCompanyDouble1 = mock(PublishingCompany.class);
@@ -49,7 +49,7 @@ class PublishingCompanyRepoTest {
     }
 
     @Test
-    void should_fail_to_add_duplicated_PublishingCompany() {
+    void shouldFailToAddDuplicatedPublishingCompany() {
 
         // Arrange
         String publishingCompanyName = "TASCHEN";
@@ -59,7 +59,7 @@ class PublishingCompanyRepoTest {
 
         when(_pcfDouble.createPublishingCompany("TASCHEN")).thenReturn(pc1, pc2);
 
-        //Sut
+        //SUT
         PublishingCompanyRepo repo = new PublishingCompanyRepo(_pcfDouble);
 
         // Act
