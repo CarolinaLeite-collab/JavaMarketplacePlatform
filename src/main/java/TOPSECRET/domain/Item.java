@@ -32,6 +32,7 @@ public class Item {
     public Publication getPublication() {
         return publication;
     }
+
     public Condition getCondition() {
         return condition;
     }
@@ -75,6 +76,11 @@ public class Item {
 
         return publication.isByGenre(genre);
 
+    }
+
+    public boolean isByPublication(Publication publication) {
+
+        return publication.equals(this.publication);
     }
 
     @Override

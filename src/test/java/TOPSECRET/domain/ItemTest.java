@@ -321,6 +321,8 @@ class ItemTest {
         verify(_publicationDouble, times(1)).isByAuthor(_author);
     }
 
+    // Isolated test of isByGenre method
+
     @Test
     void isByGenreShouldReturnTrueWhenGenreMatches() {
 
@@ -370,5 +372,32 @@ class ItemTest {
         //Assert
         verify(_publicationDouble, times(1)).isByGenre(_genre);
     }
+
+    // Isolated test of isByPublication method
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationMatches() {
+
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        boolean result = item.isByPublication(_publicationDouble);
+
+        assertTrue(result);
+
+
+    }
+
+    @Test
+    void isByPublicationShouldReturnFalseWhenPublicationIsDifferent() {
+
+        Publication _publicationDouble2 = mock(Publication.class);
+
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        boolean result = item.isByPublication(_publicationDouble2);
+
+        assertFalse(result);
+    }
+
 
 }
