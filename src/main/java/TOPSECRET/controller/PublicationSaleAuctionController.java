@@ -61,9 +61,13 @@ public class PublicationSaleAuctionController {
         Library userLibrary = _libraryRepo.findLibraryByUser(user);
         Publication actualPublicationInLibrary = userLibrary.getPublicationFromLibrary(publication);
         Item item = _itemFactory.createItem(actualPublicationInLibrary, condition);
-        Auction auction = _auctionFactory.createAuction(item, startPrice, startDate, endDate);
-        item.setAuction(auction);
-        return auction;
+        try {
+            Auction auction = _auctionFactory.createAuction(item, startPrice, startDate, endDate);
+            item.setAuction(auction);
+            return auction;
+        } catch (InstantiationException ex) {
+            return null;
+        }
     }
 
 }

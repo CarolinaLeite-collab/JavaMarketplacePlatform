@@ -131,8 +131,8 @@ class ItemTest {
 
         AuctionRepo repo = new AuctionRepo();
 
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
                 () -> repo.createAuction(
                         item,
                         new Price(5.0, Currency.EUR),

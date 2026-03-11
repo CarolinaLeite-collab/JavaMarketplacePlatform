@@ -75,12 +75,12 @@ class PublicationSaleAuctionControllerTest {
         // Arrange
         User userWithoutLibrary = mock(User.class);
         when(libraryRepo.findLibraryByUser(userWithoutLibrary))
-                .thenThrow(new IllegalStateException("Library not found for user: " + userWithoutLibrary));
+                .thenThrow(new IllegalStateException("Library not found for user"));
 
         // Act / Assert
         assertThrows(IllegalStateException.class,
                 () -> controller.getLibraryPublicationList(userWithoutLibrary),
-                "Library not found for user: " + userWithoutLibrary.toString());
+                "Library not found for user");
     }
 
     @Test
@@ -243,7 +243,7 @@ class PublicationSaleAuctionControllerTest {
     }
 
     @Test
-    void testPutPublicationOnAuctionSuccess() {
+    void testPutPublicationOnAuctionSuccess() throws InstantiationException {
         // Arrange
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
