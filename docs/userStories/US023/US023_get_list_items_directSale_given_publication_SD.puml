@@ -1,5 +1,5 @@
 @startuml
-title "US023 - As a Buyer, I want to get the list of items on direct sale of a given publication" - SSD
+title "US023 - As a Buyer, I want to get the list of items on direct sale of a given publication" - SD
 hidefootbox
 
 '==== basic style ====
@@ -20,8 +20,8 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant "U1:UIGetDirectSaleItemsByPublications" as UI
-participant "Ctl1:GetDirectSaleItemsByPublicationsController" as Ctl
+participant ":UIGetDirectSaleItemsByPublications" as UI
+participant ":GetDirectSaleItemsByPublicationsController" as Ctl
 participant "_dsRepo:DirectSaleRepo" as dsr
 participant "_ds:DirectSale" as ds
 
@@ -37,20 +37,20 @@ UI -> Ctl: getDirectSaleItemsByPublication(publication)
 activate Ctl
 Ctl -> dsr: getDirectSaleItemsByPublication(publication)
 activate dsr
-create "listOfDirectSaleItemsByPublication: List<item>" as list
+create "listOfDirectSaleItemsByPublication: List<Item>" as list
 
-dsr -> list: create(listOfDirectSaleItemsByPublication)
-loop for each ds in dsRepo
+dsr -> list: create()
+loop for each _ds in _dsRepo
         dsr -> ds: isByPublication(publication)
         opt isByPublication == true
-            dsr -> list: add(directSale.getItem())
+            dsr -> list: add(_ds.getItem())
             activate list
             list --> dsr: true
             deactivate list
         end
 end
 
-create "copyOfListOfDirectSaleItemsByPublication: List<item>" as copy
+create "copyOfListOfDirectSaleItemsByPublication: List<Item>" as copy
 dsr -> copy: List.copyof(ListOfDirectSaleItemsByPublication)
 dsr --> Ctl: copyOfListOfDirectSaleItemsByPublication
 deactivate dsr
