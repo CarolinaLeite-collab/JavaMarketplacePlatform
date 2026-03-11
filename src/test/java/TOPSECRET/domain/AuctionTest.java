@@ -47,7 +47,8 @@ class AuctionTest {
         _startingPrice = new Price(10.0, Currency.EUR);
         _outrightPrice = new Price(50.0, Currency.EUR);
         Country country = new Country("Portugal");
-        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", country, "6969-200", null);
+        Address address = mock(Address.class);
+//        Address address = new Address("Rua de S. Tomé", "Porto", Address.BuildingType.HOUSE, "Porto", "Porto", country, "6969-200", null);
         PhonePrefix prefix = new PhonePrefix("+351");
         Phone phoneNumber1 = new Phone(prefix, "919999999");
         User ze = new User(new Name("Ze"), address, new Email("reader@email.com"), phoneNumber1);

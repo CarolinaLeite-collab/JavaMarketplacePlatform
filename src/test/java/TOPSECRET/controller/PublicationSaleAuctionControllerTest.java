@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * <h3>Unit tests for PublicationSaleAuctionController (US016)</h3>
@@ -34,12 +35,12 @@ class PublicationSaleAuctionControllerTest {
         _countryFactory = new CountryFactory();
         _country = _countryFactory.createFactory("Portugal");
         controller = new PublicationSaleAuctionController(libraryRepo, itemRepo, auctionRepo);
-
-        testUser = new User(
-                new Name("John Test"),
-                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", _country, "4000-123", null),
-                new Email("test@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "999999999"));
+        testUser = mock(User.class);
+//        testUser = new User(
+//                new Name("John Test"),
+//                new Address("Test Road", "123", Address.BuildingType.HOUSE, "Porto", "Porto", _country, "4000-123", null),
+//                new Email("test@isep.ipp.pt"),
+//                new Phone(new PhonePrefix("+351"), "999999999"));
         testLibrary = libraryRepo.addLibrary(testUser);
 
     }
@@ -77,12 +78,13 @@ class PublicationSaleAuctionControllerTest {
     void testGetLibraryPublicationListForUserWithoutLibrary(){
 
         //instantiate new user that doesn't have a library
-        User userWithoutLibrary = new User(
-                new Name("NoLibrary"),
-                new Address("NoLib Road", "456", Address.BuildingType.HOUSE,
-                        "Porto", "Porto", _country, "4000-456", null),
-                new Email("nolib@isep.ipp.pt"),
-                new Phone(new PhonePrefix("+351"), "888888888"));
+        User userWithoutLibrary = mock(User.class);
+//        User userWithoutLibrary = new User(
+//                new Name("NoLibrary"),
+//                new Address("NoLib Road", "456", Address.BuildingType.HOUSE,
+//                        "Porto", "Porto", _country, "4000-456", null),
+//                new Email("nolib@isep.ipp.pt"),
+//                new Phone(new PhonePrefix("+351"), "888888888"));
 
         assertThrows(IllegalStateException.class,
                 () -> controller.getLibraryPublicationList(userWithoutLibrary),
