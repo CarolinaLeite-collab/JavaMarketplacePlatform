@@ -22,8 +22,4 @@ public class NumberOfPages {
         return _numberOfPages == that._numberOfPages;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(_numberOfPages);
-    }
 }
