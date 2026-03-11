@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,7 +39,7 @@ class GetListOfOfficialGenresControllerTest {
         when(_genreRepo.getListOfOfficialGenres()).thenReturn(List.of(genre1,genre2));
 
         //act
-        List<Genre> listOfOfficialGenres = _genreRepo.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = _getListOfOfficialGenresController.getListOfOfficialGenres();
 
         //assert
         assertNotNull(listOfOfficialGenres);
