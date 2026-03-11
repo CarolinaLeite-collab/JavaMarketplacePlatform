@@ -3,82 +3,78 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
 
-    private User _buyer;
-    private DirectSaleRepo _dsr;
-    private Author _author;
-    private PublishingCompany _publisher;
-    private Publication _publication;
     private Item _item;
-    private GetItemsOnDirectSaleOfAGivenPublishingCompanyController _getItemsOnDirectSaleOfAGivenPublishingCompanyController;
+    private PublishingCompany _publisher;
+    private GetItemsOnDirectSaleOfAGivenPublishingCompanyController _sut;
+
+    @Mock
+    private DirectSaleRepo _directSaleRepo;
 
     @BeforeEach
     void setUp() {
 
-        _buyer = new User(
-                new Name("Zé Isep"),
-                new Email("test@isep.pt"));
-
-        _author = new Author("Seneca");
-
-        _publication = Publication.builder()
+        MockitoAnnotations.openMocks(this);
+        _publisher = new PublishingCompany("Penguin");
+        Publication publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
                 .year(Year.of(2019))
                 .title(new Title("How to Keep Your Cool"))
                 .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
+                .publisher(_publisher)
                 .build();
-
-        _item = new Item(_publication, Condition.GOOD);
-
-        _dsr = new DirectSaleRepo();
-        _publisher = new PublishingCompany("Penguin");
-        _getItemsOnDirectSaleOfAGivenPublishingCompanyController = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_dsr, _buyer);
-
+        _item = new Item(publication, Condition.GOOD);
+        // SUT
+        _sut = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepo);
     }
 
     @Test
-    void test_a_direct_sale_items_by_publisher_controller(){
+    void constructorThrowsNullPointerExceptionWhenDirectSaleRepoIsNull() {
 
-        //act
-        new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_dsr, _buyer);
-
+        assertThrows(NullPointerException.class, () -> new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(null));
     }
 
     @Test
-    void test_get_direct_sale_items_by_publisher_with_no_direct_sales_should_return_empty_list(){
+    void getDirectSaleItemByPublisherThrowsIllegalArgumentExceptionWhenPublisherIsNull() {
 
-        //act
-        List<Item> listOfDirectSaleItemsByPublisher = _getItemsOnDirectSaleOfAGivenPublishingCompanyController.getDirectSaleItemByPublisher(_publisher);
-
-        //assert
-        assertNotNull(listOfDirectSaleItemsByPublisher);
-        assertTrue(listOfDirectSaleItemsByPublisher.isEmpty());
-
+        assertThrows(IllegalArgumentException.class, () -> _sut.getDirectSaleItemByPublisher(null));
     }
 
     @Test
-    void test_get_direct_sale_items_by_publisher_with_direct_sales_should_return_non_empty_list() throws InstantiationException {
+    void getDirectSaleItemByPublisherDelegatesToRepository() {
 
-        //arrange
-        _dsr.createDirectSale(_item, new Price(25.0,Currency.EUR), null);
-        _dsr.createDirectSale(_item, new Price(35.0,Currency.EUR), null);
+        List<Item> expected = List.of(_item);
+        when(_directSaleRepo.getDirectSaleItemByPublisher(_publisher)).thenReturn(expected);
 
-        //act
-        List<Item> listOfDirectSaleItemsByPublisher = _getItemsOnDirectSaleOfAGivenPublishingCompanyController.getDirectSaleItemByPublisher(_publisher);
+        List<Item> actual = _sut.getDirectSaleItemByPublisher(_publisher);
 
-        //assert
-        assertNotNull(listOfDirectSaleItemsByPublisher);
-        assertFalse(listOfDirectSaleItemsByPublisher.isEmpty());
+        verify(_directSaleRepo).getDirectSaleItemByPublisher(_publisher);
+        assertSame(expected, actual);
+        assertFalse(actual.isEmpty());
+    }
 
+    @Test
+    void getDirectSaleItemByPublisherReturnsEmptyListWhenRepositoryReturnsEmpty() {
 
+        List<Item> expected = List.of();
+        when(_directSaleRepo.getDirectSaleItemByPublisher(_publisher)).thenReturn(expected);
+
+        List<Item> actual = _sut.getDirectSaleItemByPublisher(_publisher);
+
+        verify(_directSaleRepo).getDirectSaleItemByPublisher(_publisher);
+        assertNotNull(actual);
+        assertTrue(actual.isEmpty());
+        assertEquals(expected, actual);
     }
 }

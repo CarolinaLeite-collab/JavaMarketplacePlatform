@@ -3,23 +3,33 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.DirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublishingCompany;
-import TOPSECRET.domain.User;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Controller that delegates direct sale item queries to the repository.
+ */
 public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
-    private DirectSaleRepo _dsr;
+    private final DirectSaleRepo _directSaleRepo;
 
-    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(DirectSaleRepo dsr, User buyer) {
+    /**
+     * @param directSaleRepo repository holding direct sale items
+     */
+    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(DirectSaleRepo directSaleRepo) {
 
-        _dsr = dsr;
+        _directSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
     }
 
+    /**
+     * Delegates the retrieval of direct sale items for a publisher to the repository.
+     */
     public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
 
-        List<Item> directSaleItemByPublisher = _dsr.getDirectSaleItemByPublisher(publisher);
-
-        return directSaleItemByPublisher;
+        if (publisher == null) {
+            throw new IllegalArgumentException("publisher");
+        }
+        return _directSaleRepo.getDirectSaleItemByPublisher(publisher);
     }
 }
