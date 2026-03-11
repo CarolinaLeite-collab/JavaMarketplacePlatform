@@ -17,10 +17,12 @@ autonumber
 autoactivate off
 
 actor Administrator as Admin
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
 Admin -> System: I want to register an Author
+activate System
 System --> Admin: Done!
+deactivate System
 
 
 deactivate System

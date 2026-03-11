@@ -17,31 +17,34 @@ class UICreateAuthor {
 }
 
 class CreateAuthorController {
-  -authorRepo: AuthorRepo
   +CreateAuthorController(ar: AuthorRepo)
   +createAuthor(authorName: String): Author
 }
 
-note right of CreateAuthorController
+/'note right of CreateAuthorController
 Validates authorName (null/blank)
 Trims before delegating to AuthorRepo
-end note
+end note'/
 
 class AuthorRepo {
   -authors: List<Author>
-  +create(authorName: String): Author
-  +existsByName(name: String): boolean
+  +createAuthor(authorName: String): Author
+/'  +existsByName(name: String): boolean'/
   +findAll(): List<Author>
 }
 
+class AuthorFactory {
+  +createAuthor(authorName: String): Author
+}
+
 class Author {
-  -name: String
-  +Author(authorName: String)
+  -authorName: String
   +getName(): String
 }
 
-UICreateAuthor --> CreateAuthorController : uses
-CreateAuthorController --> AuthorRepo : delegates to
-AuthorRepo --> Author : creates/returns
+UICreateAuthor "1"..>"1" CreateAuthorController : uses
+CreateAuthorController "1"..> "1" AuthorRepo : delegates to
+AuthorRepo "1" --> "1" AuthorFactory : uses
+AuthorFactory "1"-->"*" Author : creates
 
 @enduml

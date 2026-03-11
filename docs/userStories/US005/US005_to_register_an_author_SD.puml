@@ -18,32 +18,35 @@ autoactivate off
 actor Administrator
 
 
-Administrator -> "U1:UICreateAuthor": I want to register an Author
-"U1:UICreateAuthor" --> Administrator: What is the author's name?
+Administrator -> ":UICreateAuthor": I want to register an Author
+":UICreateAuthor" --> Administrator: What is the author's name?
 
-Administrator -> "U1:UICreateAuthor": authorName
-activate "U1:UICreateAuthor"
+Administrator -> ":UICreateAuthor": authorName
+activate ":UICreateAuthor"
 
-"U1:UICreateAuthor" -> "Ctl1:CreateAuthorController": createAuthor(authorName)
+":UICreateAuthor" -> ":CreateAuthorController": createAuthor(authorName)
 
-activate "Ctl1:CreateAuthorController"
-"Ctl1:CreateAuthorController" -> "Ctl1:CreateAuthorController": validateAndTrim(authorName)
-"Ctl1:CreateAuthorController"-> "_ar:AuthorRepo": create(normalizedName)
+activate ":CreateAuthorController"
+":CreateAuthorController"-> ":AuthorRepo": createAuthor(authorName)
 
-activate "_ar:AuthorRepo"
-"_ar:AuthorRepo" -> "_ar:AuthorRepo": existsByName(normalizedName)
-"_ar:AuthorRepo" --> "_ar:AuthorRepo": false
+activate ":AuthorRepo"
+opt existsByName(authorName) == false
+":AuthorRepo" -> ":AuthorFactory": createAuthor(authorName)
 
+activate ":AuthorFactory"
 create "myAuthor:Author"
-"_ar:AuthorRepo" -> "myAuthor:Author": new(normalizedName))
-"myAuthor:Author" --> "_ar:AuthorRepo": myAuthor
-"_ar:AuthorRepo" --> "Ctl1:CreateAuthorController": myAuthor
-deactivate "_ar:AuthorRepo"
+":AuthorFactory" -> "myAuthor:Author": create(authorName)
+":AuthorFactory" --> ":AuthorRepo": myAuthor
+deactivate ":AuthorFactory"
+":AuthorRepo" -> ":AuthorRepo": add(myAuthor)
+end
+":AuthorRepo" --> ":CreateAuthorController": myAuthor
+deactivate ":AuthorRepo"
 
-"Ctl1:CreateAuthorController" --> "U1:UICreateAuthor": myAuthor
-deactivate "Ctl1:CreateAuthorController"
+":CreateAuthorController" --> ":UICreateAuthor": myAuthor
+deactivate ":CreateAuthorController"
 
-"U1:UICreateAuthor" --> Administrator: Done!
-deactivate "U1:UICreateAuthor"
+":UICreateAuthor" --> Administrator: Done!
+deactivate ":UICreateAuthor"
 
 @enduml
