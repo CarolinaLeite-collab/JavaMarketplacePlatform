@@ -78,8 +78,8 @@ class AuctionRepoTest {
         when(auction1.isByGenre(genre)).thenReturn(true);
         when(auction2.isByGenre(genre)).thenReturn(true);
 
-        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction1);
-        when(auctionFactory.create(item3, price2, start, end)).thenReturn(auction2);
+        when(auctionFactory.createAuction(item1, startingPrice, start, end)).thenReturn(auction1);
+        when(auctionFactory.createAuction(item3, price2, start, end)).thenReturn(auction2);
 
         repo.createAuction(item1, startingPrice, start, end);
         repo.createAuction(item3, price2, start, end);
@@ -105,7 +105,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByGenre(action)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         // Act
         Auction created = localRepo.createAuction(item, price, start, end);
@@ -115,7 +115,7 @@ class AuctionRepoTest {
         assertNotNull(created);
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
-        verify(factory).create(item, price, start, end);
+        verify(factory).createAuction(item, price, start, end);
     }
 
     @Test
@@ -130,7 +130,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByGenre(action)).thenReturn(true);
-        when(factory.create(item, price, outright, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, outright, start, end)).thenReturn(auction);
 
         // Act
         Auction created = localRepo.createAuction(item, price, outright, start, end);
@@ -140,7 +140,7 @@ class AuctionRepoTest {
         assertNotNull(created);
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
-        verify(factory).create(item, price, outright, start, end);
+        verify(factory).createAuction(item, price, outright, start, end);
     }
 
     @Test
@@ -154,7 +154,7 @@ class AuctionRepoTest {
         ZonedDateTime badStart = ZonedDateTime.now().minusDays(1);
         ZonedDateTime goodEnd = ZonedDateTime.now().plusDays(1);
 
-        when(factory.create(item, price, badStart, goodEnd))
+        when(factory.createAuction(item, price, badStart, goodEnd))
                 .thenThrow(new InstantiationException("Invalid start date"));
 
         // Act
@@ -163,7 +163,7 @@ class AuctionRepoTest {
 
         // Assert
         assertTrue(ex.getMessage().contains("Invalid start date"));
-        verify(factory).create(item, price, badStart, goodEnd);
+        verify(factory).createAuction(item, price, badStart, goodEnd);
     }
 
     @Test
@@ -177,7 +177,7 @@ class AuctionRepoTest {
         ZonedDateTime goodStart = ZonedDateTime.now().plusDays(2);
         ZonedDateTime badEnd = ZonedDateTime.now().plusDays(1);
 
-        when(factory.create(item, price, goodStart, badEnd))
+        when(factory.createAuction(item, price, goodStart, badEnd))
                 .thenThrow(new InstantiationException("Invalid end date"));
 
         // Act
@@ -186,7 +186,7 @@ class AuctionRepoTest {
 
         // Assert
         assertTrue(ex.getMessage().contains("Invalid end date"));
-        verify(factory).create(item, price, goodStart, badEnd);
+        verify(factory).createAuction(item, price, goodStart, badEnd);
     }
 
     @Test
@@ -198,7 +198,7 @@ class AuctionRepoTest {
         Price price = mock(Price.class);
         Price outright = mock(Price.class);
 
-        when(factory.create(item, price, outright, start, end))
+        when(factory.createAuction(item, price, outright, start, end))
                 .thenThrow(new InstantiationException("outright failure"));
 
         // Act
@@ -207,7 +207,7 @@ class AuctionRepoTest {
 
         // Assert
         assertTrue(ex.getMessage().contains("Unable to create auction"));
-        verify(factory).create(item, price, outright, start, end);
+        verify(factory).createAuction(item, price, outright, start, end);
     }
 
     @Test
@@ -229,8 +229,8 @@ class AuctionRepoTest {
         when(auctionA.isByGenre(actionUpper)).thenReturn(true);
         when(auctionB.isByGenre(romance)).thenReturn(true);
 
-        when(factory.create(itemA, price, start, end)).thenReturn(auctionA);
-        when(factory.create(itemB, price, start, end)).thenReturn(auctionB);
+        when(factory.createAuction(itemA, price, start, end)).thenReturn(auctionA);
+        when(factory.createAuction(itemB, price, start, end)).thenReturn(auctionB);
 
         localRepo.createAuction(itemA, price, start, end);
         localRepo.createAuction(itemB, price, start, end);
@@ -254,7 +254,7 @@ class AuctionRepoTest {
     void getAuctionItemsByGenreWithNullGenreReturnsEmptyList() throws Exception {
         // Arrange
         Auction auction = mockAuctionWithItem(item1);
-        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction);
+        when(auctionFactory.createAuction(item1, startingPrice, start, end)).thenReturn(auction);
 
         repo.createAuction(item1, startingPrice, start, end);
 
@@ -278,7 +278,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(author)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -302,7 +302,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(authorLower)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -326,7 +326,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(author)).thenReturn(false);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -350,7 +350,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(author)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -374,9 +374,9 @@ class AuctionRepoTest {
         when(auction2.isByPublication(pub1)).thenReturn(true);
         when(auction3.isByPublication(pub1)).thenReturn(false);
 
-        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction1);
-        when(auctionFactory.create(item2, startingPrice, start, end)).thenReturn(auction2);
-        when(auctionFactory.create(item3, startingPrice, start, end)).thenReturn(auction3);
+        when(auctionFactory.createAuction(item1, startingPrice, start, end)).thenReturn(auction1);
+        when(auctionFactory.createAuction(item2, startingPrice, start, end)).thenReturn(auction2);
+        when(auctionFactory.createAuction(item3, startingPrice, start, end)).thenReturn(auction3);
 
         repo.createAuction(item1, startingPrice, start, end);
         repo.createAuction(item2, startingPrice, start, end);
@@ -397,7 +397,7 @@ class AuctionRepoTest {
         // Arrange
         Auction auction = mockAuctionWithItem(item3);
         when(auction.isByPublication(pub1)).thenReturn(false);
-        when(auctionFactory.create(item3, startingPrice, start, end)).thenReturn(auction);
+        when(auctionFactory.createAuction(item3, startingPrice, start, end)).thenReturn(auction);
 
         repo.createAuction(item3, startingPrice, start, end);
 
@@ -439,8 +439,8 @@ class AuctionRepoTest {
         when(auctionA.isByPublishingCompany(publisher1)).thenReturn(true);
         when(auctionB.isByPublishingCompany(publisher2)).thenReturn(true);
 
-        when(factory.create(itemA, price, start, end)).thenReturn(auctionA);
-        when(factory.create(itemB, price, start, end)).thenReturn(auctionB);
+        when(factory.createAuction(itemA, price, start, end)).thenReturn(auctionA);
+        when(factory.createAuction(itemB, price, start, end)).thenReturn(auctionB);
 
         localRepo.createAuction(itemA, price, start, end);
         localRepo.createAuction(itemB, price, start, end);
@@ -464,7 +464,7 @@ class AuctionRepoTest {
     void should_return_empty_list_when_null_publisher() throws Exception {
         // Arrange
         Auction auction = mockAuctionWithItem(item1);
-        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction);
+        when(auctionFactory.createAuction(item1, startingPrice, start, end)).thenReturn(auction);
 
         repo.createAuction(item1, startingPrice, start, end);
 
@@ -489,14 +489,14 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByGenre(localGenre)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         // Act
         Auction created = localRepo.createAuction(item, price, start, end);
 
         // Assert
         assertSame(auction, created);
-        verify(factory).create(item, price, start, end);
+        verify(factory).createAuction(item, price, start, end);
 
         List<Item> results = localRepo.getAuctionItemsByGenre(localGenre);
         assertEquals(1, results.size());
@@ -514,14 +514,14 @@ class AuctionRepoTest {
         Price outright = mock(Price.class);
 
         Auction auction = mockAuctionWithItem(item);
-        when(factory.create(item, price, outright, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, outright, start, end)).thenReturn(auction);
 
         // Act
         Auction created = localRepo.createAuction(item, price, outright, start, end);
 
         // Assert
         assertSame(auction, created);
-        verify(factory).create(item, price, outright, start, end);
+        verify(factory).createAuction(item, price, outright, start, end);
     }
 
     @Test
@@ -533,7 +533,7 @@ class AuctionRepoTest {
         Item item = mock(Item.class);
         Price price = mock(Price.class);
 
-        when(factory.create(item, price, start, end)).thenThrow(new InstantiationException("boom"));
+        when(factory.createAuction(item, price, start, end)).thenThrow(new InstantiationException("boom"));
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -541,7 +541,7 @@ class AuctionRepoTest {
 
         // Assert
         assertTrue(ex.getMessage().contains("Unable to create auction"));
-        verify(factory).create(item, price, start, end);
+        verify(factory).createAuction(item, price, start, end);
     }
 
     @Test
@@ -556,7 +556,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(author)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -581,7 +581,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByPublishingCompany(publisher)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -606,7 +606,7 @@ class AuctionRepoTest {
 
         Auction auction = mockAuctionWithItem(item);
         when(auction.isByPublication(publication)).thenReturn(true);
-        when(factory.create(item, price, start, end)).thenReturn(auction);
+        when(factory.createAuction(item, price, start, end)).thenReturn(auction);
 
         localRepo.createAuction(item, price, start, end);
 
@@ -631,9 +631,9 @@ class AuctionRepoTest {
         Price startingPriceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
 
-        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble1, startingPriceDouble, start, end))
                 .thenReturn(auction1);
-        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble2, startingPriceDouble, start, end))
                 .thenReturn(auction2);
 
         when(auction1.isByAuthor(authorDouble)).thenReturn(true);
@@ -663,11 +663,11 @@ class AuctionRepoTest {
         Price startingPriceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
 
-        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble1, startingPriceDouble, start, end))
                 .thenReturn(auction1);
-        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble2, startingPriceDouble, start, end))
                 .thenReturn(auction2);
-        when(auctionFactory.create(itemDouble3, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble3, startingPriceDouble, start, end))
                 .thenReturn(auction3);
 
         when(auction1.isByAuthor(authorDouble)).thenReturn(false);
@@ -700,11 +700,11 @@ class AuctionRepoTest {
         Price startingPriceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
 
-        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble1, startingPriceDouble, start, end))
                 .thenReturn(auction1);
-        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble2, startingPriceDouble, start, end))
                 .thenReturn(auction2);
-        when(auctionFactory.create(itemDouble3, startingPriceDouble, start, end))
+        when(auctionFactory.createAuction(itemDouble3, startingPriceDouble, start, end))
                 .thenReturn(auction3);
 
         when(auction1.isByAuthor(authorDouble)).thenReturn(true);
