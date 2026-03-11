@@ -23,10 +23,15 @@ public class AuctionFactory {
      * @throws InstantiationException when auction creation fails
      */
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
-                          ZonedDateTime auctionEndDate){
+                          ZonedDateTime auctionEndDate) throws InstantiationException {
 
+        try {
             return new Auction(item, startingPrice, auctionStartDate, auctionEndDate);
-
+        } catch (Exception ex) {
+            InstantiationException wrapped = new InstantiationException(ex.getMessage());
+            wrapped.initCause(ex);
+            throw wrapped;
+        }
     }
 
     /**
@@ -41,8 +46,14 @@ public class AuctionFactory {
      * @throws InstantiationException when auction creation fails
      */
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
-                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) throws InstantiationException {
 
+        try {
             return new Auction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+        } catch (Exception ex) {
+            InstantiationException wrapped = new InstantiationException(ex.getMessage());
+            wrapped.initCause(ex);
+            throw wrapped;
+        }
     }
 }

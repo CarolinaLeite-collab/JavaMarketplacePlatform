@@ -44,16 +44,30 @@ public class AuctionRepo {
 
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-        Auction auction = auctionFactory.createAuction(item, startingPrice, auctionStartDate, auctionEndDate);
-        itemsOnAuction.add(auction);
-        return auction;
+        try {
+            Auction auction = auctionFactory.createAuction(item, startingPrice, auctionStartDate, auctionEndDate);
+            itemsOnAuction.add(auction);
+            return auction;
+        } catch (InstantiationException ex) {
+            if (ex.getCause() instanceof IllegalStateException) {
+                throw (IllegalStateException) ex.getCause();
+            }
+            throw new IllegalArgumentException("Unable to create auction: " + ex.getMessage(), ex);
+        }
     }
 
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
                                  ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
-        itemsOnAuction.add(auction);
-        return auction;
+        try {
+            Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+            itemsOnAuction.add(auction);
+            return auction;
+        } catch (InstantiationException ex) {
+            if (ex.getCause() instanceof IllegalStateException) {
+                throw (IllegalStateException) ex.getCause();
+            }
+            throw new IllegalArgumentException("Unable to create auction: " + ex.getMessage(), ex);
+        }
     }
 
     /**
