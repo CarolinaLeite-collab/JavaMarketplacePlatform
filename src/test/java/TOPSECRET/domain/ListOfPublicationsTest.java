@@ -28,7 +28,7 @@ class ListOfPublicationsTest {
         // Assert
         assertNotNull(list);
         assertTrue(list.isPrivate());
-        assertTrue(list.getPublications().isEmpty());
+        assertTrue(list.getItems().isEmpty());
 
     }
 
@@ -188,54 +188,55 @@ class ListOfPublicationsTest {
     }
 
     @Test
-    void addPublicationShouldAddSuccessfully() {
+    void addItemShouldAddSuccessfully() {
         // Arrange
         ListOfPublications list = new ListOfPublications(_user1Double, "Lista",_genre1Double);
-        Publication _pubDouble = mock(Publication.class); // stub
+        Item _itemDouble = mock(Item.class);
 
         // Act
-        list.addPublication(_pubDouble);
+        list.addItem(_itemDouble);
 
         // Assert
-        assertEquals(1, list.getPublications().size());
-        assertEquals(_pubDouble, list.getPublications().get(0));
+        assertEquals(1, list.getItems().size());
+        assertEquals(_itemDouble, list.getItems().get(0));
     }
 
     @Test
-    void addPublicationShouldThrowWhenNull() {
+    void addItemShouldThrowWhenNull() {
         // Arrange
         ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> list.addPublication(null));
+        assertThrows(IllegalArgumentException.class, () -> list.addItem(null));
     }
 
     @Test
-    void addPublicationShouldThrowWhenDuplicate() {
+    void addItemShouldThrowWhenDuplicate() {
         // Arrange
         ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
-        Publication _pubDouble = mock(Publication.class); // stub
-        list.addPublication(_pubDouble);
+        Item _itemDouble = mock(Item.class);
+
+        list.addItem(_itemDouble);
 
         // Act & Assert
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> list.addPublication(_pubDouble) // SUT
+                () -> list.addItem(_itemDouble) // SUT
         );
-        assertEquals("Publication already in list", ex.getMessage());
+        assertEquals("Item already in list", ex.getMessage());
     }
     @Test
-    void getPublicationsShouldReturnImmutableCopy() {
+    void getItemsShouldReturnImmutableCopy() {
         // Arrange
         ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
-        Publication _pubDouble = mock(Publication.class); // stub
-        list.addPublication(_pubDouble);
+        Item _itemDouble = mock(Item.class);
+        list.addItem(_itemDouble);
 
         // Act
-        var publications = list.getPublications();
+        var publications = list.getItems();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> publications.add(_pubDouble));
+        assertThrows(UnsupportedOperationException.class, () -> publications.add(_itemDouble));
     }
 
     //    @Test

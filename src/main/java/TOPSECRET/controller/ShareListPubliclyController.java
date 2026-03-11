@@ -3,7 +3,13 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.ListOfPublications;
 import TOPSECRET.domain.ListOfPublicationsRepo;
 import TOPSECRET.domain.User;
+import TOPSECRET.domain.UserRepo;
+
 import java.util.List;
+
+/**
+ * Controller responsible for sharing publicly a list of of a {@link User}.
+ */
 
 public class ShareListPubliclyController {
     private final ListOfPublicationsRepo _listOfPublicationsRepo;

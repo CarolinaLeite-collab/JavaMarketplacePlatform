@@ -17,7 +17,7 @@ public class ListOfPublications {
     private String _name;
     private Genre _genre;
     private boolean _isPrivate;
-    private List<Publication> _publications;
+    private List<Item> _items;
 
 
     public ListOfPublications(User user, String name, Genre genre) {
@@ -30,7 +30,7 @@ public class ListOfPublications {
         _name = name;
         _genre = genre;
         _isPrivate = true;
-        _publications = new ArrayList<>();
+        _items = new ArrayList<>();
     }
 
     public User getUser() {
@@ -53,21 +53,21 @@ public class ListOfPublications {
         _isPrivate = false;
     }
 
-    public List<Publication> getPublications() {
-        return List.copyOf(_publications);
+    public List<Item> getItems() {
+        return List.copyOf(_items);
     }
 
 
-    public void addPublication(Publication publication) {
-        if (publication == null) {
-            throw new IllegalArgumentException("Publication is mandatory");
+    public void addItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item is mandatory");
         }
 
-        if (_publications.contains(publication)) {
-            throw new IllegalStateException("Publication already in list");
+        if (_items.contains(item)) {
+            throw new IllegalStateException("Item already in list");
         }
 
-        _publications.add(publication);
+        _items.add(item);
     }
 
     @Override

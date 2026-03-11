@@ -11,24 +11,24 @@ import static org.mockito.Mockito.*;
 
 class ShareListPubliclyControllerTest {
 
-    private ShareListPubliclyController _controller;
     private ListOfPublications _listOfPublications;
     private ListOfPublicationsRepo _listOfPublicationsRepo;
     private User _user;
-
 
     @BeforeEach
     void setUp() {
         _listOfPublications = mock(ListOfPublications.class);
         _listOfPublicationsRepo = mock(ListOfPublicationsRepo.class);
         _user = mock(User.class);
-        _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
     }
 
     @Test
     void returnListFromRepo() {
         //arrange
         when(_listOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
+
+        //SUT
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
 
         //act
         List<ListOfPublications> result = _controller.getListOfLists(_user);
@@ -39,7 +39,8 @@ class ShareListPubliclyControllerTest {
 
     @Test
     void shouldReturnFalseWhenSelectedListIsNull() {
-        // shareListPublicly() – returns false when selected list is null
+        //SUT
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
 
         //act
         boolean result = _controller.shareListPublicly(null);
@@ -50,11 +51,16 @@ class ShareListPubliclyControllerTest {
 
     @Test
     void makesListPublicWhenInitiallyPrivate() {
-        // shareListPublicly() – changes list visibility from private to public
+        //arrange
         doNothing().when(_listOfPublications).makePublic();
 
+        //SUT
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+
+        //act
         boolean result = _controller.shareListPublicly(_listOfPublications);
 
+        //assert
         assertTrue(result);
         verify(_listOfPublications).makePublic();
     }

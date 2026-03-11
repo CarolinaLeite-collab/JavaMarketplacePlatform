@@ -28,32 +28,35 @@ public class AddPublicationToListController {
         return lib.getPublicationsInLibrary();
     }
 
-    public void addPublicationToList(User user, String listName, Genre genre, Identifier identifier) {
+    public void addItemToList(User user, String listName, Genre genre, Item item) {
 
         if (user == null) throw new IllegalArgumentException("User is mandatory");
         if (listName == null || listName.isBlank()) throw new IllegalArgumentException("List name is mandatory");
         if (genre == null) throw new IllegalArgumentException("Genre is mandatory");
-        if (identifier == null) throw new IllegalArgumentException("Identifier is mandatory");
+        if (item == null) throw new IllegalArgumentException("Item is mandatory");
 
         ListOfPublications myList = _listRepo.findByOwnerNameAndGenre(user, listName, genre);
+
         if (myList == null) {
             throw new IllegalStateException("List not found");
         }
 
         Library lib = _libraryRepo.findLibraryByUser(user);
 
-        Publication publication = findPublicationByIdentifier(lib.getAllPublications(), identifier);
-        if (publication == null) {
-            throw new IllegalStateException("Publication not found in library");
+        Item returnedItem = findItemInListOfPublications(lib.getItemsInLibrary(), item);
+
+        if (returnedItem == null) {
+            throw new IllegalStateException("Item not found in library");
         }
 
-        myList.addPublication(publication);
+        myList.addItem(returnedItem);
     }
 
-    private Publication findPublicationByIdentifier(List<Publication> publications, Identifier identifier) {
-        for (Publication p : publications) {
-            if (p.getIdentifier().equals(identifier)) {
-                return p;
+    private Item findItemInListOfPublications(List<Item> items, Item item) {
+
+        for (Item i : items) {
+            if (i.equals(item)) {
+                return i;
             }
         }
         return null;
