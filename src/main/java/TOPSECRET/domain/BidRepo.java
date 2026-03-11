@@ -15,15 +15,24 @@ import java.util.Objects;
 public class BidRepo {
 
     private List<Bid> _bids;
+    private BidFactory _bidFactory;
 
     //public constructor
     public BidRepo(BidFactory bidFactory) {
         _bids = new ArrayList<>();
+        _bidFactory = bidFactory;
+    }
+
+    public Bid createBid(User bidder, Price offerPrice) {
+        Bid bid = _bidFactory.createBid(bidder, offerPrice);
+
+        _bids.add(Objects.requireNonNull(bid, "Bid must not be null"));
+
+        return bid;
     }
 
     public void addBid(Bid bid) {
-        _bids.add(Objects.requireNonNull(bid, "Bid must not be null"));
-    // validate that same value list is not already on the list
+        _bids.add(bid);
     }
 
     //method to get Highest Bid

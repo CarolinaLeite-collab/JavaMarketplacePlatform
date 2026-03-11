@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,8 +12,26 @@ class BidRepoTest {
     private BidRepo bidRepo;
     private BidFactory bidFactoryDouble;
 
+    @Test
+    void shouldSuccessfullyCreateBid(){
+        //arrange
+        bidFactoryDouble = mock(BidFactory.class);
+        bidRepo = new BidRepo(bidFactoryDouble);
 
-    //test constructor
+        User bidderDouble = mock(User.class);
+        Price offerPriceDouble = mock(Price.class);
+        Bid expectedBidDouble = mock(Bid.class);
+
+        when(bidFactoryDouble.createBid(bidderDouble, offerPriceDouble))
+                .thenReturn(expectedBidDouble);
+
+        // act
+        Bid bid = bidRepo.createBid(bidderDouble, offerPriceDouble);
+
+        // assert
+        assertNotNull(bid);
+    }
+
     @Test
     void getHighestBidFail_EmptyBidList() {
         //arrange
@@ -41,6 +60,7 @@ class BidRepoTest {
         double result = bidRepo.getHighestBid().getOfferPrice().getValue();
 
         //assert
+        assertNotNull(bidDouble);
         assertEquals(100, result);
     }
 
