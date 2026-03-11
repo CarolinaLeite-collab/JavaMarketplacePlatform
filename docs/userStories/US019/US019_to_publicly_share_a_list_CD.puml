@@ -17,23 +17,22 @@ skinparam classAttributeIconSize 0
 class ShareListPubliclyUI
 
 class ShareListPubliclyController {
-    - _listOfPublicationsRepo : ListOfPublicationsRepo
     + findListsByUser(user : User) : List<ListOfPublications>
     + shareListPublicly(list : ListOfPublications) : boolean
 }
 
 class ListOfPublicationsRepo {
     - _listsOfListOfPublications : List<ListOfPublications>
-    + addListOnRep() : boolean
+    + addListOfPublications() : boolean
 }
 
 class ListOfPublications {
     - _name : String
     - _user : User
-    - _publications : List<Publication>
+    - _items : List<Item>
     - _isPrivate : Boolean
-    + switchVisibility() : void
-    + getPublications() : void
+    + makePublic() : void
+    + getItems() : List<Item>
 }
 
 "ShareListPubliclyUI" "1" --> "1" "ShareListPubliclyController" : request
