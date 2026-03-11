@@ -32,29 +32,33 @@ public class DirectSaleRepo {
         return directSale;
     }
 
-    public List<Item> getDirectSaleItemsByAuthor(Author author) {
+    public List<Item> getDirectSaleItemsByAuthor(Author authorName) {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByAuthor(author)) {
+            if (directSale.isByAuthor(authorName)) {
                 list.add(directSale.getItem());
             }
         }
         return List.copyOf(list);
     }
 
-    public List<Item> getDirectSaleItemsByGenre(Genre genre) {
+    public List<Item> getDirectSaleItemsByGenre(Genre genreName) {
+
         List<Item> list = new ArrayList<>();
 
-        for (int i = 0; i < _directSales.size(); i++) {
-            DirectSale directSale = _directSales.get(i);
-            Publication publication = directSale.getItem().getPublication();
+        for (DirectSale directSale : _directSales) {
 
-            if (publication.matchGenre(genre)) {
+            if (directSale.isByGenre(genreName)) {
+
                 list.add(directSale.getItem());
+
             }
+
         }
+
         return List.copyOf(list);
+
     }
 
     public List<Item> getDirectSaleItemsByPublication(Publication publication) {

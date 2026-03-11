@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class PublicationTest {
-    //Happy path
 
     private PublicationType _publicationTypeDouble;
     private Identifier _identifierDouble;
@@ -35,502 +34,23 @@ class PublicationTest {
         _editionDouble = mock(Edition.class);
         _genreDouble = mock(Genre.class);
 
+        when(_titleDouble.getTitle()).thenReturn("Title");
+        when(_authorDouble.getName()).thenReturn("Author");
+        when(_publishingCompanyDouble.getName()).thenReturn("Publishing Company");
+        when(_editionDouble.getEditionNumber()).thenReturn(Integer.valueOf("1"));
+        when(_genreDouble.getGenre()).thenReturn("Genre");
+    }
+
+    // --------------
+    // Success tests
+    // --------------
+    @Test
+    void Build_Book_with_all_fields_succeeds() {
         when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
 
-    }
-
-    @Test
-    void buildBook_withAllMandatoryFields_succeeds() {
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        assertNotNull(p);
-        assertEquals("BOOK", p.getPublicationType().getPublicationType());
-        assertEquals(Year.of(2019), p.getPublicationYear());
-    }
-
-    @Test
-    void buildMagazine_withoutAuthor_succeeds() {
-        Publication p = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("1234-5678"))
-                .year(Year.of(2022))
-                .title(new Title("Science Weekly"))
-                .publisher(new PublishingCompany("Nature"))
-                .build();
-
-        assertNotNull(p);
-        assertNull(p.getAuthor());
-    }
-
-    @Nested
-    class MatchGenreTests {
-
-        private Publication publication;
-
-        @BeforeEach
-        void setUp() {
-            publication = Publication.builder()
-                    .type(new PublicationType("BOOK"))
-                    .identifier(new ISBN("9780691181950"))
-                    .year(Year.of(2019))
-                    .title(new Title("How to Keep Your Cool"))
-                    .author(new Author("Seneca"))
-                    .publisher(new PublishingCompany("Penguin"))
-                    .genre(new Genre("History"))
-                    .build();
-        }
-
-        @Test
-        void matchGenre_withSameGenre_returnsTrue() {
-            assertTrue(publication.matchGenre(new Genre("History")));
-        }
-
-        @Test
-        void matchGenre_withDifferentGenre_returnsFalse() {
-            assertFalse(publication.matchGenre(new Genre("Fantasy")));
-        }
-
-        @Test
-        void matchGenre_withNullGenre_returnsFalse() {
-            assertFalse(publication.matchGenre(null));
-        }
-    }
-
-    @Test
-    void build_throws_whenMissingPublicationType() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .identifier(new ISBN("9780618260300"))
-                        .year(Year.of(2010))
-                        .title(new Title("T"))
-                        .author(new Author("A"))
-                        .publisher(new PublishingCompany("P"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("publicationType"));
-    }
-
-    @Test
-    void build_throws_whenMissingIdentifier() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .year(Year.of(2010))
-                        .title(new Title("T"))
-                        .author(new Author("A"))
-                        .publisher(new PublishingCompany("P"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("identifier"));
-    }
-
-    @Test
-    void build_throws_whenMissingYear() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780618260300"))
-                        .title(new Title("T"))
-                        .author(new Author("A"))
-                        .publisher(new PublishingCompany("P"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("publicationYear"));
-    }
-
-    @Test
-    void build_throws_whenMissingTitle() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780618260300"))
-                        .year(Year.of(2010))
-                        .author(new Author("A"))
-                        .publisher(new PublishingCompany("P"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("title"));
-    }
-
-    @Test
-    void buildBook_throws_whenMissingAuthor() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780618260300"))
-                        .year(Year.of(2010))
-                        .title(new Title("T"))
-                        .publisher(new PublishingCompany("P"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("author"));
-    }
-
-    @Test
-    void buildBook_throws_whenMissingPublisher() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("BOOK"))
-                        .identifier(new ISBN("9780618260300"))
-                        .year(Year.of(2010))
-                        .title(new Title("T"))
-                        .author(new Author("A"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("publisher"));
-    }
-
-    @Test
-    void buildMagazine_throws_whenMissingPublisher() {
-        var ex = assertThrows(IllegalArgumentException.class, () ->
-                Publication.builder()
-                        .type(new PublicationType("MAGAZINE"))
-                        .identifier(new ISSN("1234-5679")) // or whatever your ISSN type is
-                        .year(Year.of(2010))
-                        .title(new Title("T"))
-                        .build()
-        );
-        assertTrue(ex.getMessage().contains("publisher"));
-    }
-
-    @Test
-    void equals_bookYear1970_usesTitleAndYear_notIdentifier() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780618260300"))
-                .year(Year.of(1970))
-                .title(new Title("Same"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780136091813")) // different id
-                .year(Year.of(1970))
-                .title(new Title("Same"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertEquals(a, b);
-    }
-
-    @Test
-    void equals_bookYear1971_usesIdentifier() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780618260300"))
-                .year(Year.of(1971))
-                .title(new Title("Same"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780136091813")) // different id
-                .year(Year.of(1971))
-                .title(new Title("Same"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_magazineYear1976_usesTitleAndYear_notIdentifier() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("1234-5678"))
-                .year(Year.of(1976))
-                .title(new Title("Same"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("9999-9999")) // different ISSN
-                .year(Year.of(1976))
-                .title(new Title("Same"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertEquals(a, b);
-    }
-
-    @Test
-    void equals_magazineYear1977_usesIdentifier() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("1234-5678"))
-                .year(Year.of(1977))
-                .title(new Title("Same"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("9999-9999")) // different ISSN
-                .year(Year.of(1977))
-                .title(new Title("Same"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertNotEquals(a, b);
-    }
-
-    @Test
-    void equals_returnsFalse_whenNull() {
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("T"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertFalse(p.equals(null));
-    }
-
-    @Test
-    void equals_returnsFalse_whenDifferentClass() {
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("T"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-        assertFalse(p.equals("not a publication"));
-    }
-
-    @Test
-    void equals_defaultType_comparesTitleAndYear() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("NEWSPAPER")) // triggers default
-                .identifier(new NoIdentifier())
-                .year(Year.of(1900))
-                .title(new Title("Same"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("NEWSPAPER"))
-                .identifier(new NoIdentifier())
-                .year(Year.of(1900))
-                .title(new Title("Same"))
-                .build();
-
-        assertEquals(a, b);
-    }
-    @Test
-    void equals_isReflexive_returnsTrueForSameInstance() {
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("T"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertTrue(p.equals(p));
-    }
-    @Test
-    void equals_bookYear1970_returnsFalse_whenTitleDiffers() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780618260300"))
-                .year(Year.of(1970))                 // <= 1970 forces title+year comparison
-                .title(new Title("Title A"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780136091813")) // different id (ignored for <= 1970)
-                .year(Year.of(1970))
-                .title(new Title("Title B"))          // different title -> Objects.equals(...) becomes false
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertNotEquals(a, b);
-    }
-    @Test
-    void equals_defaultType_returnsFalse_whenTitleDiffersButYearSame() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("NEWSPAPER"))
-                .identifier(new NoIdentifier())
-                .year(Year.of(1900))
-                .title(new Title("A"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("NEWSPAPER"))
-                .identifier(new NoIdentifier())
-                .year(Year.of(1900)) // same year
-                .title(new Title("B")) // different title
-                .build();
-
-        assertNotEquals(a, b);
-    }
-    @Test
-    void equals_defaultType_returnsFalse_whenTitleOrYearDiffers() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("NEWSPAPER")) // triggers default
-                .identifier(new NoIdentifier())
-                .year(Year.of(1900))
-                .title(new Title("Same"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("NEWSPAPER"))
-                .identifier(new NoIdentifier())
-                .year(Year.of(1901))              // different year (or change title)
-                .title(new Title("Same"))
-                .build();
-
-        assertNotEquals(a, b);
-    }
-    @Test
-    void equals_magazineYear1976_returnsFalse_whenTitleDiffers() {
-        Publication a = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("1234-5678"))
-                .year(Year.of(1976))               // <= 1976 → title + year comparison
-                .title(new Title("Magazine A"))
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        Publication b = Publication.builder()
-                .type(new PublicationType("MAGAZINE"))
-                .identifier(new ISSN("9999-9999")) // different ISSN (ignored in this branch)
-                .year(Year.of(1976))
-                .title(new Title("Magazine B"))    // different title → equals(...) must be false
-                .publisher(new PublishingCompany("P"))
-                .build();
-
-        assertNotEquals(a, b);
-    }
-
-
-    @Test
-    void getters_returnPublisherGenreTitleID() {
-        PublishingCompany pub = new PublishingCompany("Penguin");
-        Genre gen = new Genre("Science Fiction");
-        Title tl = new Title("T");
-        Identifier id = new ISBN("9780691181950");
-
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(id)          // use same instance
-                .year(Year.of(2019))
-                .title(tl)               // use same instance
-                .author(new Author("A"))
-                .publisher(pub)          // use same instance
-                .genre(gen)              // use same instance
-                .build();
-
-        assertSame(pub, p.getPublisher());
-        assertSame(gen, p.getGenre());
-        assertSame(tl, p.getTitle());
-        assertSame(id, p.getIdentifier());
-    }
-
-    //needs to be altered when class edition is correct
-    @Test
-    void getters_returnEdition_whenSet() {
-        Edition ed = new Edition(
-                new NumberOfPages(30),
-                null,
-                LocalDate.of(1940, 2, 3),
-                Binding.SADDLE_STITCH,
-                new Description("Old book"),
-                new Dimension(21, 29.7, 1, DimensionUnit.CENTIMETERS),
-                new Weight(224.7, Weight.WeightUnit.GRAMS),
-                Language.of("pt", "Portuguese", "Português"));
-
-
-        Publication p = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("T"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .edition(ed)
-                .build();
-
-        assertEquals(ed, p.getEdition());
-    }
-
-    // Isolated test of isByAuthor method
-    @Test
-    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
-
-        //SUT / Arrange
-        Publication p = Publication.builder()
-                .type(_publicationTypeDouble)
-                .identifier(_identifierDouble)
-                .year(_yearDouble)
-                .title(_titleDouble)
-                .author(_authorDouble)
-                .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
-                .build();
-
-        //Act
-
-        boolean result = p.isByAuthor(_authorDouble);
-
-        //Assert
-        assertTrue(result);
-
-    }
-
-    @Test
-    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
-
-        //Arrange
-
-        Author _author2 = mock(Author.class);
-
-        //SUT
-        Publication p = Publication.builder()
-                .type(_publicationTypeDouble)
-                .identifier(_identifierDouble)
-                .year(_yearDouble)
-                .title(_titleDouble)
-                .author(_authorDouble)
-                .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
-                .build();
-
-        //Act
-
-        boolean result = p.isByAuthor(_author2);
-
-        //Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void isByGenreShouldReturnTrueWhenGenreMatches() {
-
-        //SUT / Arrange
+        // Act
         Publication p = Publication.builder()
                 .type(_publicationTypeDouble)
                 .identifier(_identifierDouble)
@@ -542,20 +62,644 @@ class PublicationTest {
                 .genre(_genreDouble)
                 .build();
 
-        //Act
-        boolean result = p.isByGenre(_genreDouble);
+        // Assert
+        assertNotNull(p);
+        assertSame(_publicationTypeDouble, p.getPublicationType());
+        assertSame(_identifierDouble, p.getIdentifier());
+        assertSame(_yearDouble, p.getPublicationYear());
+        assertSame(_titleDouble, p.getTitle());
+        assertSame(_authorDouble, p.getAuthor());
+        assertSame(_publishingCompanyDouble, p.getPublisher());
+        assertSame(_editionDouble, p.getEdition());
+        assertSame(_genreDouble, p.getGenre());
+    }
 
-        //Assert
+    @Test
+    void Build_Book_with_only_the_mandatory_fields_succeeds() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        // Act
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotNull(p);
+        assertSame(_publicationTypeDouble, p.getPublicationType());
+        assertSame(_identifierDouble, p.getIdentifier());
+        assertSame(_yearDouble, p.getPublicationYear());
+        assertSame(_titleDouble, p.getTitle());
+        assertSame(_authorDouble, p.getAuthor());
+        assertSame(_publishingCompanyDouble, p.getPublisher());
+    }
+
+    @Test
+    void Build_Magazine_without_Author_succeeds() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("MAGAZINE");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        // Act
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotNull(p);
+        assertSame(_publicationTypeDouble, p.getPublicationType());
+        assertSame(_identifierDouble, p.getIdentifier());
+        assertSame(_yearDouble, p.getPublicationYear());
+        assertSame(_titleDouble, p.getTitle());
+        assertSame(_publishingCompanyDouble, p.getPublisher());
+    }
+
+//    @Nested
+//    class MatchGenreTests {
+//
+//        private Publication publication;
+//
+//        @BeforeEach
+//        void setUp() {
+//            publication = Publication.builder()
+//                    .type(new PublicationType("BOOK"))
+//                    .identifier(new ISBN("9780691181950"))
+//                    .year(Year.of(2019))
+//                    .title(new Title("How to Keep Your Cool"))
+//                    .author(new Author("Seneca"))
+//                    .publisher(new PublishingCompany("Penguin"))
+//                    .genre(new Genre("History"))
+//                    .build();
+//        }
+//
+//        @Test
+//        void matchGenre_withSameGenre_returnsTrue() {
+//            assertTrue(publication.matchGenre(new Genre("History")));
+//        }
+//
+//        @Test
+//        void matchGenre_withDifferentGenre_returnsFalse() {
+//            assertFalse(publication.matchGenre(new Genre("Fantasy")));
+//        }
+//
+//        @Test
+//        void matchGenre_withNullGenre_returnsFalse() {
+//            assertFalse(publication.matchGenre(null));
+//        }
+//    }
+
+    // --------------------
+    // Negative path tests
+    // --------------------
+    @Test
+    void Build_Throws_when_missing_PublicationType() {
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .identifier(_identifierDouble)
+                        .year(_yearDouble)
+                        .title(_titleDouble)
+                        .author(_authorDouble)
+                        .publisher(_publishingCompanyDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Throws_when_missing_Identifier() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .year(_yearDouble)
+                        .title(_titleDouble)
+                        .author(_authorDouble)
+                        .publisher(_publishingCompanyDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Throws_when_missing_Year() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .identifier(_identifierDouble)
+                        .title(_titleDouble)
+                        .author(_authorDouble)
+                        .publisher(_publishingCompanyDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Throws_when_missing_Title() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .identifier(_identifierDouble)
+                        .year(_yearDouble)
+                        .author(_authorDouble)
+                        .publisher(_publishingCompanyDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Book_throws_when_missing_Author() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .identifier(_identifierDouble)
+                        .year(_yearDouble)
+                        .title(_titleDouble)
+                        .publisher(_publishingCompanyDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Book_throws_when_missing_Publisher() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .identifier(_identifierDouble)
+                        .year(_yearDouble)
+                        .title(_titleDouble)
+                        .author(_authorDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Build_Magazine_throws_when_missing_Publisher() {
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("MAGAZINE");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(Integer.valueOf("2026"));
+
+        assertThrows(IllegalArgumentException.class, () ->
+                Publication.builder()
+                        .type(_publicationTypeDouble)
+                        .identifier(_identifierDouble)
+                        .year(_yearDouble)
+                        .title(_titleDouble)
+                        .build()
+        );
+    }
+
+    @Test
+    void Books_from_1970_or_before_are_compared_by_Title_and_Year() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_yearDouble.getValue()).thenReturn(1970);
+
+        // Two different identifiers
+        Identifier idA = mock(Identifier.class);
+        Identifier idB = mock(Identifier.class);
+        when(idA.getIdentifier()).thenReturn("ID-A");
+        when(idB.getIdentifier()).thenReturn("ID-B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idA)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idB)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertEquals(a, b);
+    }
+
+    @Test
+    void Books_from_1970_return_false_when_Title_Differs() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(1970);
+
+        // Two different titles
+        Title titleA = mock(Title.class);
+        Title titleB = mock(Title.class);
+        when(titleA.getTitle()).thenReturn("Title A");
+        when(titleB.getTitle()).thenReturn("Title B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble) // ignored for <= 1970
+                .year(_yearDouble)
+                .title(titleA)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble) // ignored for <= 1970
+                .year(_yearDouble)
+                .title(titleB)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void Books_from_earlier_than_1970_are_compared_by_the_Identifier() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_yearDouble.getValue()).thenReturn(1971);
+
+        // Different identifiers
+        Identifier idA = mock(Identifier.class);
+        Identifier idB = mock(Identifier.class);
+        when(idA.getIdentifier()).thenReturn("ID-A");
+        when(idB.getIdentifier()).thenReturn("ID-B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idA)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idB)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void Magazines_from_1976_and_before_are_compared_by_title_and_year() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("MAGAZINE");
+        when(_yearDouble.getValue()).thenReturn(1976);
+
+        Identifier idA = mock(Identifier.class);
+        Identifier idB = mock(Identifier.class);
+        when(idA.getIdentifier()).thenReturn("ISSN-A");
+        when(idB.getIdentifier()).thenReturn("ISSN-B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idA)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idB)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertEquals(a, b);
+    }
+
+    @Test
+    void Magazine_from_1976_or_before_returns_false_when_title_differs() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("MAGAZINE");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(1976);
+
+        // Two different titles
+        Title titleA = mock(Title.class);
+        Title titleB = mock(Title.class);
+        when(titleA.getTitle()).thenReturn("Magazine A");
+        when(titleB.getTitle()).thenReturn("Magazine B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble) // ignored for <= 1976
+                .year(_yearDouble)
+                .title(titleA)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble) // ignored for <= 1976
+                .year(_yearDouble)
+                .title(titleB)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void Magazines_older_than_1976_are_compared_using_the_identifier() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("MAGAZINE");
+        when(_yearDouble.getValue()).thenReturn(1977);
+
+        Identifier idA = mock(Identifier.class);
+        Identifier idB = mock(Identifier.class);
+        when(idA.getIdentifier()).thenReturn("ISSN-A");
+        when(idB.getIdentifier()).thenReturn("ISSN-B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idA)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idB)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void equals_returnsFalse_whenNull() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Act + Assert
+        assertFalse(p.equals(null));
+    }
+
+    @Test
+    void equals_returnsFalse_whenDifferentClass() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Act + Assert
+        assertFalse(p.equals("not a publication"));
+    }
+
+    @Test
+    void Default_publicationType_compares_Title_And_Year() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("NEWSPAPER");
+        when(_yearDouble.getValue()).thenReturn(1900);
+        when(_titleDouble.getTitle()).thenReturn("Same");
+
+        // Two different identifiers (ignored for default types)
+        Identifier idA = mock(Identifier.class);
+        Identifier idB = mock(Identifier.class);
+        when(idA.getIdentifier()).thenReturn("ID-A");
+        when(idB.getIdentifier()).thenReturn("ID-B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idA)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(idB)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertEquals(a, b);
+    }
+
+    @Test
+    void Default_publicationType_returns_false_when_title_differs() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("NEWSPAPER");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(1900);
+
+        // Two different titles
+        Title titleA = mock(Title.class);
+        Title titleB = mock(Title.class);
+        when(titleA.getTitle()).thenReturn("A");
+        when(titleB.getTitle()).thenReturn("B");
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(titleA)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(titleB)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void Default_publicationType_returns_false_when_year_differs() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("NEWSPAPER");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+
+        // Two different years
+        Year yearA = mock(Year.class);
+        Year yearB = mock(Year.class);
+        when(yearA.getValue()).thenReturn(1900);
+        when(yearB.getValue()).thenReturn(1901);
+
+        Publication a = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(yearA)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        Publication b = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(yearB)
+                .title(_titleDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void Equals_is_reflective_returns_true_for_same_instance() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .build();
+
+        // Assert
+        assertTrue(p.equals(p));
+    }
+
+    @Test
+    void getters_returnPublisherGenreTitleID() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        // Act
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .genre(_genreDouble)
+                .build();
+
+        // Assert: same instances, not copies
+        assertSame(_publicationTypeDouble, p.getPublicationType());
+        assertSame(_identifierDouble, p.getIdentifier());
+        assertSame(_yearDouble, p.getPublicationYear());
+        assertSame(_titleDouble, p.getTitle());
+        assertSame(_authorDouble, p.getAuthor());
+        assertSame(_publishingCompanyDouble, p.getPublisher());
+        assertSame(_genreDouble, p.getGenre());
+    }
+
+    // ----------------------
+    // Tests for specific UC
+    // ----------------------
+
+    // Isolated test of isByAuthor method
+    @Test
+    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble) // same instance passed to isByAuthor
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        // Act
+        boolean result = p.isByAuthor(_authorDouble);
+
+        // Assert
         assertTrue(result);
     }
 
     @Test
-    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
+    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
 
-        //Arrange
-        Genre _genre2 = mock(Genre.class);
+        Author otherAuthor = mock(Author.class);
 
-        //SUT
         Publication p = Publication.builder()
                 .type(_publicationTypeDouble)
                 .identifier(_identifierDouble)
@@ -566,11 +710,63 @@ class PublicationTest {
                 .edition(_editionDouble)
                 .build();
 
-        //Act
-        boolean result = p.isByGenre(_genre2);
+        // Act
+        boolean result = p.isByAuthor(otherAuthor);
 
-        //Assert
+        // Assert
         assertFalse(result);
     }
+
+    @Test
+    void isByGenreShouldReturnTrueWhenGenreMatches() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .genre(_genreDouble) // same instance passed to isByGenre
+                .build();
+
+        // Act
+        boolean result = p.isByGenre(_genreDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        Genre otherGenre = mock(Genre.class);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        // Act
+        boolean result = p.isByGenre(otherGenre);
+
+        // Assert
+        assertFalse(result);
+    }
+
 }
 

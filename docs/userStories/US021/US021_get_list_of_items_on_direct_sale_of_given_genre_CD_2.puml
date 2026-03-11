@@ -18,20 +18,36 @@ class GetDirectSaleItemsByGenreUI {
 }
 
 class GetDirectSaleItemsByGenreController {
-  - _directSaleRepo : DirectSaleRepo
-  +getDirectSaleItemsByGenre(genreName : Genre) : List<Item>
+- _directSaleRepo : DirectSaleRepo
++getDirectSaleItemsByGenre(genre: Genre) : List<Item>
 }
 
 class DirectSaleRepo {
-  +getDirectSaleItemsByGenre(genreName : Genre) : List<Item>
++getDirectSaleItemsByGenre(genreName : Genre) : List<Item>
 }
 
 class DirectSale {
-+ isByGenre(genreName : Genre) : boolean
++isByGenre(genreName : Genre) : boolean
++getItem(): Item
+}
+
+class Item {
+  +isByGenre(genreName : Genre) : boolean
+}
+
+class Publication {
++isByGenre(genreName : Genre) : boolean
+}
+
+class Genre {
+-_genreName : String
 }
 
 GetDirectSaleItemsByGenreUI "1"..>"1" GetDirectSaleItemsByGenreController : invokes
 GetDirectSaleItemsByGenreController "1"..>"1" DirectSaleRepo : calls
 DirectSaleRepo "1" --> "*" DirectSale : acesses
+DirectSale "1" --> "1" Item : contains
+Item "1" --> "1" Publication : contains
+Publication "1" -->"1..*" Genre : contains
 
 @enduml

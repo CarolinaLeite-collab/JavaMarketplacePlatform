@@ -33,12 +33,12 @@ class RegisterCityControllerTest {
     }
 
     @Test
-    void constructor_withRepositories_doesNotThrow() {
+    void constructorWithRepositoriesDoesNotThrow() {
         assertDoesNotThrow(() -> new RegisterCityController(cityRepo, countryRepo));
     }
 
     @Test
-    void getCountries_returnsCountriesFromRepository() {
+    void getCountriesReturnsCountriesFromRepository() {
         // Arrange
         List<Country> countries = List.of(country);
         when(countryRepo.getAllCountries()).thenReturn(countries);
@@ -53,7 +53,7 @@ class RegisterCityControllerTest {
     }
 
     @Test
-    void registerCity_callsRepoAndReturnsCreatedCity() {
+    void registerCityCallsRepoAndReturnsCreatedCity() {
         // Arrange
         when(cityRepo.add("Porto", country)).thenReturn(city);
 
@@ -66,7 +66,7 @@ class RegisterCityControllerTest {
     }
 
     @Test
-    void registerCity_whenRepoThrowsException_propagatesException() {
+    void registerCityWhenRepoThrowsExceptionPropagatesException() {
         // Arrange
         when(cityRepo.add("Porto", country))
                 .thenThrow(new IllegalStateException("City already exists for this country"));

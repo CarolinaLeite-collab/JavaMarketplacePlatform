@@ -8,79 +8,99 @@ import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetDirectSaleItemsByAuthorControllerTest {
 
-    private User _user;
-    private DirectSaleRepo _dsr;
-    private Author _author;
-    private Publication _publication;
-    private Item _item;
-    private GetDirectSaleItemsByAuthorController _getDirectSaleItemsByAuthorController;
+    private User _userDouble;
+    private DirectSaleRepo _dsrDouble;
+    private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
 
-        _user = new User(
-                new Name("Zé Isep"),
-                new Email("test@isep.pt"));
-
-        _author = new Author("Seneca");
-
-        _publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        _item = new Item(_publication, Condition.GOOD);
-
-        _dsr = new DirectSaleRepo();
-        _author = new Author("Seneca");
-        _getDirectSaleItemsByAuthorController = new GetDirectSaleItemsByAuthorController(_dsr, _user);
+        _userDouble = mock(User.class);
+        _dsrDouble = mock(DirectSaleRepo.class);
+        _authorDouble = mock(Author.class);
 
     }
 
     @Test
-    void test_a_direct_sale_items_by_author_controller(){
+    void testAConstructor(){
+
+        //act / SUT
+        new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+
+    }
+
+    @Test
+    void getDirectSaleItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems(){
+
+        //arrange
+        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of());
+
+        //SUT
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
 
         //act
-        new GetDirectSaleItemsByAuthorController(_dsr, _user);
-
-    }
-
-    @Test
-    void test_get_direct_sale_items_by_author_with_no_direct_sales_should_return_empty_list(){
-
-        //arrange and act
-        List<Item> listOfDirectSaleItemsByAuthor = _getDirectSaleItemsByAuthorController.getDirectSaleItemsByAuthor(_author);
+        List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
 
         //assert
-        assertNotNull(listOfDirectSaleItemsByAuthor);
         assertTrue(listOfDirectSaleItemsByAuthor.isEmpty());
 
     }
 
     @Test
-    void test_get_direct_sale_items_by_author_with_no_direct_sales_should_return_non_empty_list() throws InstantiationException {
-
-        //act
-        _dsr.createDirectSale(_item, new Price(20.0,Currency.EUR), null);
-        _dsr.createDirectSale(_item, new Price(25.0,Currency.EUR), null);
+    void getDirectSaleItemsByAuthorReturnsListWithCorrectSize() throws InstantiationException {
 
         //arrange
-        List<Item> listOfDirectSaleItemsByAuthor = _getDirectSaleItemsByAuthorController.getDirectSaleItemsByAuthor(_author);
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+
+        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
+
+        //SUT
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+
+        //act
+        List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
 
         //assert
-        assertNotNull(listOfDirectSaleItemsByAuthor);
-        assertFalse(listOfDirectSaleItemsByAuthor.isEmpty());
-
+        assertEquals(2, listOfDirectSaleItemsByAuthor.size());
 
     }
 
+    @Test
+    void getDirectSaleItemsByAuthorReturnsListContainingCorrectItems() {
 
+        //arrange
+        Item _itemDouble1 = mock(Item.class);
+        Item _itemDouble2 = mock(Item.class);
+
+        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
+
+        //SUT
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+
+        //act
+        List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
+
+        //assert
+        assertTrue(listOfDirectSaleItemsByAuthor.containsAll(List.of(_itemDouble1, _itemDouble2)));
+
+    }
+
+    @Test
+    void getDirectSaleItemsByAuthorShouldCallRepoWithCorrectAuthor() {
+
+        //arrange / SUT
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+
+        //act
+        ctl.getDirectSaleItemsByAuthor(_authorDouble);
+
+        //assert
+        verify(_dsrDouble, times(1)).getDirectSaleItemsByAuthor(_authorDouble);
+    }
 
 }

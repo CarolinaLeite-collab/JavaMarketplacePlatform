@@ -1,5 +1,5 @@
 @startuml
-title US021 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - Sequence Diagram
+title US021 – "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -17,57 +17,53 @@ autonumber
 autoactivate off
 
 actor Buyer
-participant ":UIListDirectSaleItemsByGenre" as UI
-participant ":GetDirectSaleItemsByGenreController" as CTL
-participant ":DirectSaleRepository" as DSR
-participant ":DirectSale" as DS
-participant ":Item" as Itm
-participant ":Publication" as Pub
+participant ":UIGetItemsOnDirectSaleByGenre" as UI
+participant ":GetItemsOnDirectSaleByGenreController" as CTL
+participant "_dsr:DirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DS
 
 '-- Dialog --'
-
-activate Buyer
-Buyer -> UI : I want the list of items, in direct sale,\nof a given genre
+Buyer -> UI : I want the list of items in direct sale\nof a given genre
 activate UI
 
 UI --> Buyer : What is the genre?
-Buyer -> UI : The genre is genre
+deactivate UI
+
+Buyer -> UI :genreName
+activate UI
 
 '-- System interaction --'
-
-UI -> CTL : getDirectSaleItemsByGenre(genre)
+UI -> CTL : getDirectSaleItemsByGenre(genreName)
 activate CTL
 
-CTL -> DSR : getDirectSaleItemsByGenre(genre)
+CTL -> DSR : getDirectSaleItemsByGenre(genreName)
 activate DSR
 
-loop for each DirectSale
-    DSR -> DS : getItem()
-    activate DS
+create "listOfItemsOnDirectSaleByGenre:List<Item>" as List
+DSR -> List: create()
 
-    DS -> Itm : getPublication()
-    activate Itm
+' --- To run through each directSale available and check the genre associated with the corresponding Item ---
+loop for each directSale in _dsr
+    DSR -> DS : isByGenre(genreName)
 
-    Itm -> Pub : matchGenre(genre)
-    activate Pub
-
-    opt publication.matchGenre(genre)
-        DSR -> DSR : add Item to result list
+    opt isByGenre == true
+        DSR -> List: add (directSale.getItem())
+        activate List
+        List -> DSR: true
+        deactivate List
     end
-
-    deactivate Pub
-    deactivate Itm
-    deactivate DS
 end
 
-DSR --> CTL : List<Item>
+create "ListCopyOfItemsOnDirectSaleByGenre: List<Item>" as ListCopy
+
+DSR -> ListCopy: List.copyOf(ListOfItemsOnDirectSaleByGenre)
+DSR --> CTL: copyOfListCopyOfItemsOnDirectSaleByGenre
 deactivate DSR
 
-CTL --> UI : List<Item>
+CTL --> UI: copyOfListCopyOfItemsOnDirectSaleByGenre
 deactivate CTL
 
-UI --> Buyer : show items
+UI --> Buyer: Here's the list!
 deactivate UI
-deactivate Buyer
 
 @enduml

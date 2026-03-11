@@ -23,9 +23,9 @@ public class GetDirectSaleItemsByAuthorController {
 
     }
 
-    public List<Item> getDirectSaleItemsByAuthor (Author author) {
+    public List<Item> getDirectSaleItemsByAuthor (Author authorName) {
 
-        List<Item> directSaleItemsByAuthor = _dsr.getDirectSaleItemsByAuthor(author);
+        List<Item> directSaleItemsByAuthor = _dsr.getDirectSaleItemsByAuthor(authorName);
 
         return directSaleItemsByAuthor;
 

@@ -21,15 +21,16 @@ class GetItemsOnAuctionOfAGivenAuthorUI {
 
 class GetItemsOnAuctionOfAGivenAuthorCtl {
 - ar : AuctionRepo
-+ getAuctionItemsByAuthor(authorName) : List<Item>
++ getAuctionItemsByAuthor(authorName: Author) : List<Item>
 }
 
 class AuctionRepo {
-+ getAuctionItemsByAuthor(authorName) : List<Item>
+- _itemsOnAuction : List<Auction>
++ getAuctionItemsByAuthor(authorName: Author) : List<Item>
 }
 
 class Auction {
-+ isByAuthor(authorName) : boolean
++ isByAuthor(authorName: Author) : boolean
 }
 
 GetItemsOnAuctionOfAGivenAuthorUI "1" ..> "1" GetItemsOnAuctionOfAGivenAuthorCtl : invokes

@@ -68,62 +68,7 @@ class PublishingCompanyRepoTest {
         // Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.registerPublishingCompany(publishingCompanyName));
         assertEquals("Publishing Company with name " + publishingCompanyName + " already exists.",exception.getMessage());
+
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-//
-//    @Test
-//    void registeringNewPublisher(){
-//        PublishingCompany pub1 = repo.registerPublishingCompany("Pendant Publishing");
-//        assertNotNull(pub1);
-//        assertEquals("Pendant Publishing", pub1.getName());
-//    }
-//
-//    @Test
-//    void registeringNewPublisherAfterTrimAndSpaceNormalization(){
-//        PublishingCompany pub1 = repo.registerPublishingCompany(" Simon   &  Schuster  ");
-//        assertNotNull(pub1);
-//        assertEquals("Simon & Schuster", pub1.getName());
-//    }
-//
-//    @Test
-//    void registeringExistingPublisher() {
-//       PublishingCompany pub1 = repo.registerPublishingCompany("Penguin Random House"); // already registered in setUp repo
-//       assertNull(pub1); // duplicate returns null
-//    }
-//
-//    @Test
-//    void registeringExistingPublisherTrimAndSpaceNormalizationCaseInsensitive() {
-//        PublishingCompany pub1 = repo.registerPublishingCompany("   PengUin   RAndom  HOUSE ");
-//        assertNull(pub1);
-//    }
-//
-//    @Test
-//    void RegisteringEmptyPublisher() {
-//        // Publisher constructor throws IllegalArgumentException on empty/whitespace
-//        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-//            repo.registerPublishingCompany(" "); // whitespace triggers trim().isEmpty() in Publisher constructor
-//        });
-//        assertEquals("Publisher name cannot be null, empty or blank", ex.getMessage());
-//    }
-//
-//    @Test
-//    void registeringInvalidPublisher() {
-//        // Publisher constructor throws IllegalArgumentException on invalid
-//        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-//            repo.registerPublishingCompany(null);
-//        });
-//        assertEquals("Publisher name cannot be null, empty or blank", ex.getMessage());
-//    }
-//
-//}

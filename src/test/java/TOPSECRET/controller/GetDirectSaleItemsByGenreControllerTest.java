@@ -1,40 +1,70 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.Period;
 import java.util.List;
 
-import static TOPSECRET.domain.Currency.EUR;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetDirectSaleItemsByGenreControllerTest {
 
-    @Test
-    void shouldReturnItemsByGenreThroughController() throws InstantiationException {
+    private User _buyerDouble;
+    private DirectSaleRepo _directSaleRepoDouble;
+    private Genre _genreDouble;
 
-        Genre fantasy = new Genre("Fantasy");
+    @BeforeEach
+    void setUp() {
 
-        Publication book1 = Publication.builder()
-                .type(new PublicationType("Book"))
-                .identifier(new ISBN("9780691181950"))
-                .year(java.time.Year.of(2023))
-                .title(new Title("Controller Book"))
-                .author(new Author("Author D"))
-                .publisher(new PublishingCompany("Publisher D"))
-                .genre(fantasy)
-                .build();
+        _buyerDouble = mock(User.class);
+        _genreDouble = mock (Genre.class);
+        _directSaleRepoDouble = mock(DirectSaleRepo.class);
 
-        Item item = new Item(book1, Condition.GOOD);
-        DirectSaleRepo directSaleRepo = new DirectSaleRepo();
-        directSaleRepo.createDirectSale(item, new Price(30, EUR), Period.ofDays(14));
-        GetDirectSaleItemsByGenreController controller =
-                new GetDirectSaleItemsByGenreController(directSaleRepo);
-
-        List<Item> result = controller.getDirectSaleItemsByGenre(fantasy);
-
-        assertEquals(1, result.size());
-        assertEquals(item, result.get(0));
     }
+
+    @Test
+    void test_DirectSale_Items_by_genre_Controller(){
+
+        // SUT
+        new GetDirectSaleItemsByGenreController(_directSaleRepoDouble, _buyerDouble);
+
+    }
+
+    @Test
+    void testGetAuctionItemsByGenreWithAuctionShouldReturnANotEmptyList(){
+
+        // arrange
+        Item _itemDouble = mock(Item.class);
+        List<Item> itemsList = List.of(_itemDouble);
+        when(_directSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(itemsList);
+
+        // SUT
+        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_directSaleRepoDouble, _buyerDouble);
+
+        // act
+        List<Item> items = controller.getDirectSaleItemsByGenre(_genreDouble);
+
+        // assert
+        assertEquals(itemsList, items);
+
+    }
+
+    @Test
+    void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
+
+        // arrange
+        when(_directSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(List.of());
+
+        // SUT
+        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_directSaleRepoDouble, _buyerDouble);
+
+        // act
+        List<Item> listOfDirectSaleItemsByGenre = controller.getDirectSaleItemsByGenre(_genreDouble);
+
+        //assert
+        assertTrue(listOfDirectSaleItemsByGenre.isEmpty());
+
+    }
+
 }

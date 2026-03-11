@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,37 +14,34 @@ import java.util.List;
  */
 
 public class PublicationRepo {
-    private List<Publication> _publications;
 
-    public PublicationRepo() {
+    private List<Publication> _publications;
+    private final PublicationFactory _publicationFactory;
+
+    public PublicationRepo(PublicationFactory publicationFactory) {
         _publications = new ArrayList<>();
+        _publicationFactory = publicationFactory;
     }
 
-    public Publication add(Publication myPublication) {
-        // see if its null
-        if (myPublication == null) throw new IllegalArgumentException("Publication is required");
-        //already present? Then don't add
-        boolean present = publicationAlreadyExists(myPublication);
-        if (present) {
+    public Publication addPublication(PublicationType type,
+                           Identifier identifier,
+                           Year year,
+                           Title title,
+                           Author author,
+                           PublishingCompany publisher,
+                           Edition edition,
+                           Genre genre) {
+
+        Publication newPublication = _publicationFactory.createPublication(type, identifier, year, title, author, publisher, edition, genre);
+
+        if (_publications.contains(newPublication)) {  // Replaces the "publicationAlreadyExists" method
             throw new IllegalArgumentException("Publication already exists in the repository");
         }
-        //now we know publication does not exist so...
-        //add myPublicationInfo to repo
-        _publications.add(myPublication);
-
-        //return myPublication
-        return myPublication;
+        _publications.add(newPublication);
+        return newPublication;
     }
 
-    private boolean publicationAlreadyExists(Publication myPublication) {
-        for (Publication publication : _publications) {
-            if (publication.equals(myPublication))
-                return true;
-        }
-        return false;
-    }
-
-    //check publications that are still out of library
+    //check publications that are still out of the library
     public List<Publication> getDifferentOf(List<Publication> existentPublications) {
         List<Publication> result = new ArrayList<>();
         for (Publication publication : _publications){
@@ -60,5 +58,4 @@ public class PublicationRepo {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
     }
-
 }

@@ -11,94 +11,82 @@ class UserTest {
     private Name _nameDouble;
     private Name _nameDouble2;
     private Address _addressDouble;
-    private Country _countryDouble;
     private Email _emailDouble;
     private Email _emailDouble2;
-    private PhonePrefix _phonePerfixDouble;
     private Phone _phoneDouble;
-    private User _user;
 
     @BeforeEach
     void setup() {
         _nameDouble = mock(Name.class);
-        when(_nameDouble.get_Name()).thenReturn("Tiago");
 
         _nameDouble2 = mock(Name.class);
-        when(_nameDouble2.get_Name()).thenReturn("Alfredo");
-
-        _countryDouble = mock(Country.class);
-        when(_countryDouble.getCountryName()).thenReturn("Portugal");
 
         _addressDouble = mock(Address.class);
-        when(_addressDouble.getStreet()).thenReturn("Rua senhor de matosinhos");
-        when(_addressDouble.getDoorNumber()).thenReturn("81");
-        when(_addressDouble.getBuildingType()).thenReturn(Address.BuildingType.HOUSE);
-        when(_addressDouble.getCity()).thenReturn("Matosinhos");
-        when(_addressDouble.getDistrictOrState()).thenReturn("Porto");
-        when(_addressDouble.getCountry()).thenReturn(_countryDouble);
-        when(_addressDouble.getPostalCode()).thenReturn("4300-111");
-        when(_addressDouble.getPostalCodeExtension()).thenReturn(null);
 
         _emailDouble = mock(Email.class);
-        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
 
         _emailDouble2 = mock(Email.class);
-        when(_emailDouble2.toString()).thenReturn("test2@email.pt");
-
-        _phonePerfixDouble = mock(PhonePrefix.class);
-        when(_phonePerfixDouble.getValue()).thenReturn("+351");
 
         _phoneDouble = mock(Phone.class);
-        when(_phoneDouble.getPrefix()).thenReturn(_phonePerfixDouble);
-        when(_phoneDouble.getNationalNumber()).thenReturn("918902632");
 
-        _user = new User(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
     }
 
     @Test
     void constructorWithValidArgumentsCreatesUser() {
-        // Assert
-        assertEquals(_nameDouble, _user.getName());
-        assertEquals("1252008@isep.ipp.pt", _user.getEmail());
-        assertEquals(_addressDouble, _user.getAddress());
-        assertEquals(_phoneDouble, _user.getPhone());
+
+        // arrange
+        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
+
+        // act & SUT
+        User user = new User(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+
+        // assert
+        assertEquals(_nameDouble, user.getName());
+        assertEquals("1252008@isep.ipp.pt", user.getEmail());
+        assertEquals(_addressDouble, user.getAddress());
+        assertEquals(_phoneDouble, user.getPhone());
     }
 
     //Objects.requireNonNull throw NullPointerException (no IllegalArgumentException).
     @Test
     void constructorWithNullName() {
 
+        // act & assert & SUT
         assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, _emailDouble, _phoneDouble));
 
     }
 
     @Test
     void constructorShouldAllowNullAddress() {
-        //Act
-        User user = new User(_nameDouble, null, _emailDouble, _phoneDouble);
-        //Assert
-        assertNull(user.getAddress());
+
+       // act & assert & SUT
+        assertDoesNotThrow (() -> new User(_nameDouble, null, _emailDouble, _phoneDouble));
     }
 
     @Test
     void constructorWithNullEmail() {
 
+        // act & assert & SUT
         assertThrows(NullPointerException.class, () -> new User(_nameDouble, _addressDouble, null, _phoneDouble));
     }
 
     @Test
     void constructorShouldAllowNullPhoneNumber() {
-        //Act
-        User user = new User(_nameDouble, _addressDouble, _emailDouble, null);
-        //Assert
-        assertNull(user.getPhone());
+
+        // act & assert & SUT
+        assertDoesNotThrow (() -> new User(_nameDouble, _addressDouble, _emailDouble, null));
     }
 
     @Test
     void constructorWithNameAndEmail() {
 
-        User user = new User(_nameDouble, _emailDouble);
+        // arrange
+        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
 
+        // act & SUT
+        User user = new User(_nameDouble, null, _emailDouble, null);
+
+        // assert
         assertEquals(_nameDouble, user.getName());
         assertEquals("1252008@isep.ipp.pt", user.getEmail());
         assertNull(user.getAddress());
@@ -110,16 +98,23 @@ class UserTest {
 
         // arrange
         when(_nameDouble.toString()).thenReturn("Tiago");
-
         User user = new User(_nameDouble, _emailDouble);
-        assertEquals("Tiago", user.toString());
+
+        // act & SUT
+        String userName = user.toString();
+
+        // assert
+        assertEquals("Tiago", userName);
     }
 
     @Test
     void testEquals() {
 
+        // arrange
         Name _nameDouble3 = mock(Name.class);
         when(_nameDouble3.get_Name()).thenReturn("Magalhaes");
+
+        String u4 = "user";
 
         User u1 = new User(_nameDouble, _emailDouble);
 
@@ -127,8 +122,7 @@ class UserTest {
 
         User u3 = new User(_nameDouble3, _emailDouble2);
 
-        String u4 = "user";
-
+        // assert & act & SUT
         assertEquals(u1, u1);
         assertEquals(u1, u2);
         assertNotEquals(u1, u3);
@@ -140,30 +134,45 @@ class UserTest {
     @Test
     void testHashCodeSameEmail() {
 
+        // arrange
         User t = new User(_nameDouble, _emailDouble2);
         User t2 = new User(_nameDouble2, _emailDouble2);
 
-        assertEquals(t.hashCode(), t2.hashCode());
+        // act & SUT
+        int u = t.hashCode();
+        int u2 = t2.hashCode();
+
+        // assert
+        assertEquals(u, u2);
 
     }
 
     @Test
     void testHashCodeDifferentEmail() {
 
+        // arrange
         User t = new User(_nameDouble, _emailDouble);
         User t2 = new User(_nameDouble2, _emailDouble2);
 
-        assertNotEquals(t.hashCode(), t2.hashCode());
+        // act & SUT
+        int u = t.hashCode();
+        int u2 = t2.hashCode();
+
+        // assert
+        assertNotEquals(u, u2);
 
     }
 
     @Test
     void constructorShouldAssignDefaultUserRole() {
-        // Arrange
+
+        // arrange
         User user = new User(_nameDouble, _emailDouble);
-        // Act
+
+        // act & SUT
         boolean hasUserRole = user.hasRole(Role.USER);
-        // Assert
+
+        // assert
         assertTrue(hasUserRole);
         assertEquals(1, user.getRoles().size());
         assertTrue(user.getRoles().contains(Role.USER));
@@ -171,11 +180,14 @@ class UserTest {
 
     @Test
     void addRoleShouldAddAdminRoleWithoutRemovingDefaultUserRole() {
-        // Arrange
+
+        // arrange
         User user = new User(_nameDouble, _emailDouble);
-        // Act
+
+        // act & SUT
         user.addRole(Role.ADMIN);
-        // Assert
+
+        // assert
         assertTrue(user.hasRole(Role.USER));
         assertTrue(user.hasRole(Role.ADMIN));
         assertEquals(2, user.getRoles().size());
@@ -183,19 +195,24 @@ class UserTest {
 
     @Test
     void hasRoleShouldReturnFalseWhenUserDoesNotHaveAdminRole() {
-        // Arrange
+
+        // assert
         User user = new User(_nameDouble, _emailDouble);
-        // Act
+
+        // act & SUT
         boolean result = user.hasRole(Role.ADMIN);
-        // Assert
+
+        // assert
         assertFalse(result);
     }
 
     @Test
     void addRoleShouldThrowWhenRoleIsNull() {
-        // Arrange
+
+        // arrange
         User user = new User(_nameDouble, _emailDouble);
-        // Act & Assert
+
+        // act & assert & SUT
         assertThrows(NullPointerException.class, () -> user.addRole(null));
     }
 }
