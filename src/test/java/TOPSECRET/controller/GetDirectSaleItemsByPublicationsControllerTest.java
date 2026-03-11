@@ -14,49 +14,47 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
     private User _buyerDouble;
     private DirectSaleRepo _dsrDouble;
     private Publication _publicationDouble;
-    private GetDirectSaleItemsByPublicationsController _controller;
 
     @BeforeEach
     void setUp(){
             _buyerDouble = mock(User.class);
             _dsrDouble = mock(DirectSaleRepo.class);
             _publicationDouble = mock(Publication.class);
-
     }
 
     @Test
     void testDirectSaleItemsByPublicationControllerConstructor(){
 
-        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
+        //SUT
+        new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
 
     }
 
     @Test
     void getDirectSaleItemsByPublicationShouldReturnEmptyListWhenThereAreNoItems(){
-
-        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
-
+        //Arrange
         when(_dsrDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of());
-
-        List<Item> resultList  = _controller.getDirectSaleItemsByPublication(_publicationDouble);
-
+        //SUT
+        GetDirectSaleItemsByPublicationsController controller  = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
+        //Act
+        List<Item> resultList  = controller.getDirectSaleItemsByPublication(_publicationDouble);
+        //Assert
         assertNotNull(resultList);
         assertTrue(resultList.isEmpty());
-
     }
 
     @Test
     void getDirectSaleItemsByPublicationShouldReturnList() {
-
-        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
-
+        //Arrange
         Item itemDouble = mock(Item.class);
         Item itemDouble2 = mock(Item.class);
 
         when(_dsrDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of(itemDouble, itemDouble2));
-
-        List<Item> resultList = _controller.getDirectSaleItemsByPublication(_publicationDouble);
-
+        // SUT
+        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
+        //Act
+        List<Item> resultList = controller.getDirectSaleItemsByPublication(_publicationDouble);
+        //Assert
         assertFalse(resultList.isEmpty());
         assertEquals(2, resultList.size());
         assertEquals(itemDouble, resultList.get(0));
@@ -66,12 +64,11 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
 
     @Test
     void getDirectSaleItemsByPublicationShouldCallDirectSaleRepo() {
-
-        _controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
-
-        List<Item> listOfDirectSaleItemsByPublication = _controller.getDirectSaleItemsByPublication(_publicationDouble);
-
+        // SUT
+        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_dsrDouble, _buyerDouble);
+        //Act
+        List<Item> listOfDirectSaleItemsByPublication = controller.getDirectSaleItemsByPublication(_publicationDouble);
+        //Assert
         verify(_dsrDouble,  times(1)).getDirectSaleItemsByPublication(_publicationDouble);
     }
-
 }
