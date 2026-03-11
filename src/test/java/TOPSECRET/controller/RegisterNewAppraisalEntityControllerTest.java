@@ -47,6 +47,15 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
+    void registerNewAppraisalEntityControllerTest(){
+
+        // SUT
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
+
+        assertNotNull(controller);
+    }
+
+    @Test
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
@@ -81,9 +90,10 @@ class RegisterNewAppraisalEntityControllerTest {
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
 
         // act
-        controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+        AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
         // assert
+        assertEquals(_appraisalEntityDouble, result);
         verify(_entityRepoDouble).registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
     }
 }
