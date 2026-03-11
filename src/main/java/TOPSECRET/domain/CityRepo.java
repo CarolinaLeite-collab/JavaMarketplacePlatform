@@ -22,13 +22,6 @@ public class CityRepo {
         _cityFactory = Objects.requireNonNull(cityFactory, "CityFactory cannot be null");
     }
 
-    /**
-     * Checks if a city already exists under the provided name and country.
-     *
-     * @param name    city name, case is ignored
-     * @param country country to which the city belongs
-     * @return {@code true} when a matching city exists, {@code false} otherwise
-     */
     public boolean existsByNameAndCountry(String name, Country country) {
         if (name == null || country == null) {
             return false;
@@ -43,13 +36,6 @@ public class CityRepo {
         return false;
     }
 
-    /**
-     * Creates and saves a city in the repository when it does not yet exist.
-     *
-     * @param name    city name
-     * @param country country to which the city belongs
-     * @return the saved city
-     */
     public City add(String name, Country country) {
         if (existsByNameAndCountry(name, country)) {
             throw new IllegalStateException("City already exists for this country");
@@ -60,9 +46,6 @@ public class CityRepo {
         return city;
     }
 
-    /**
-     * Returns an unmodifiable view of all cities stored so far.
-     */
     public List<City> getAll() {
         return Collections.unmodifiableList(_cities);
     }

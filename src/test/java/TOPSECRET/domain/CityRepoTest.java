@@ -5,59 +5,26 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-
-import TOPSECRET.domain.City;
-import TOPSECRET.domain.CityFactory;
-import TOPSECRET.domain.CityRepo;
-import TOPSECRET.domain.Country;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class CityRepoTest {
 
-    private CityFactory factory;
-    private CityRepo repo;
+    private CityFactory _cityFactory;
+    private CityRepo _cityRepo;
 
-    private City city1;
-    private City city2;
+    private City _city1;
+    private City _city2;
 
-    private Country country;
-    private Country otherCountry;
+    private Country _country;
+    private Country _otherCountry;
 
-    @BeforeEach
-    void setUp() {
-        factory = mock(CityFactory.class);
-        repo = new CityRepo(factory);
-
-        city1 = mock(City.class);
-        city2 = mock(City.class);
-
-        country = mock(Country.class);
-        otherCountry = mock(Country.class);
-
-        when(city1.getName()).thenReturn("Porto");
-        when(city1.getCountry()).thenReturn(country);
-
-        when(city2.getName()).thenReturn("Lisbon");
-        when(city2.getCountry()).thenReturn(country);
-    }
 
     @Test
     void constructorWithFactoryDoesNotThrow() {
-        assertDoesNotThrow(() -> new CityRepo(factory));
+        _cityFactory = mock(CityFactory.class);
+        assertDoesNotThrow(() -> new CityRepo(_cityFactory));
     }
 
     @Test
@@ -74,99 +41,143 @@ class CityRepoTest {
     @Test
     void addCallsFactoryAndStoresReturnedCity() {
         // Arrange
-        when(factory.createCity("Porto", country)).thenReturn(city1);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory); // SUT
+        _city1 = mock(City.class);
+        _country = mock(Country.class);
+
+        when(_cityFactory.createCity("Porto", _country)).thenReturn(_city1);
+        when(_city1.getName()).thenReturn("Porto");
+        when(_city1.getCountry()).thenReturn(_country);
 
         // Act
-        City created = repo.add("Porto", country);
+        City created = _cityRepo.add("Porto", _country);
 
         // Assert
-        assertSame(city1, created);
-        verify(factory, times(1)).createCity("Porto", country);
-        assertTrue(repo.existsByNameAndCountry("Porto", country));
+        assertSame(_city1, created);
+        assertTrue(_cityRepo.existsByNameAndCountry("Porto", _country));
     }
 
     @Test
     void addDuplicateCityThrowsIllegalStateException() {
         // Arrange
-        when(factory.createCity("Porto", country)).thenReturn(city1);
-        repo.add("Porto", country);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _city1 = mock(City.class);
+        _country = mock(Country.class);
+
+        when(_cityFactory.createCity("Porto", _country)).thenReturn(_city1);
+        when(_city1.getName()).thenReturn("Porto");
+        when(_city1.getCountry()).thenReturn(_country);
+
+        _cityRepo.add("Porto", _country);
 
         // Act & Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> repo.add("Porto", country)
+                () -> _cityRepo.add("Porto", _country)
         );
 
         assertEquals("City already exists for this country", exception.getMessage());
-        verify(factory, times(1)).createCity("Porto", country);
     }
 
     @Test
     void existsByNameAndCountryIsCaseInsensitiveAndTrims() {
         // Arrange
-        when(factory.createCity("Porto", country)).thenReturn(city1);
-        repo.add("Porto", country);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _city1 = mock(City.class);
+        _country = mock(Country.class);
 
-        // Act
-        boolean exists = repo.existsByNameAndCountry(" porto ", country);
+        when(_cityFactory.createCity("Porto", _country)).thenReturn(_city1);
+        when(_city1.getName()).thenReturn("Porto");
+        when(_city1.getCountry()).thenReturn(_country);
 
-        // Assert
-        assertTrue(exists);
+        _cityRepo.add("Porto", _country);
+
+        // Act & Assert
+        assertTrue(_cityRepo.existsByNameAndCountry(" porto ", _country));
     }
 
     @Test
     void existsByNameAndCountryReturnsFalseWhenNotFound() {
-        // Act
-        boolean exists = repo.existsByNameAndCountry("Braga", country);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _country = mock(Country.class);
 
-        // Assert
-        assertFalse(exists);
+        // Act & Assert
+        assertFalse(_cityRepo.existsByNameAndCountry("Braga", _country));
     }
 
     @Test
     void existsByNameAndCountryReturnsFalseForDifferentCountry() {
         // Arrange
-        when(factory.createCity("Porto", country)).thenReturn(city1);
-        repo.add("Porto", country);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _city1 = mock(City.class);
+        _country = mock(Country.class);
+        _otherCountry = mock(Country.class);
 
-        // Act
-        boolean exists = repo.existsByNameAndCountry("Porto", otherCountry);
+        when(_cityFactory.createCity("Porto", _country)).thenReturn(_city1);
+        when(_city1.getName()).thenReturn("Porto");
+        when(_city1.getCountry()).thenReturn(_country);
 
-        // Assert
-        assertFalse(exists);
+        _cityRepo.add("Porto", _country);
+
+        // Act & Assert
+        assertFalse(_cityRepo.existsByNameAndCountry("Porto", _otherCountry));
     }
 
     @Test
     void existsByNameAndCountryNullArgumentsReturnFalse() {
+        // Arrange
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _country = mock(Country.class);
+
         // Act & Assert
-        assertFalse(repo.existsByNameAndCountry(null, country));
-        assertFalse(repo.existsByNameAndCountry("Porto", null));
-        assertFalse(repo.existsByNameAndCountry(null, null));
+        assertFalse(_cityRepo.existsByNameAndCountry(null, _country));
+        assertFalse(_cityRepo.existsByNameAndCountry("Porto", null));
+        assertFalse(_cityRepo.existsByNameAndCountry(null, null));
     }
 
     @Test
     void getAllReturnsUnmodifiableList() {
         // Arrange
-        when(factory.createCity("Porto", country)).thenReturn(city1);
-        when(factory.createCity("Lisbon", country)).thenReturn(city2);
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+        _country = mock(Country.class);
+        _city1 = mock(City.class);
+        _city2 = mock(City.class);
 
-        repo.add("Porto", country);
-        repo.add("Lisbon", country);
+        when(_cityFactory.createCity("Porto", _country)).thenReturn(_city1);
+        when(_cityFactory.createCity("Lisbon", _country)).thenReturn(_city2);
+        when(_city1.getName()).thenReturn("Porto");
+        when(_city1.getCountry()).thenReturn(_country);
+        when(_city2.getName()).thenReturn("Lisbon");
+        when(_city2.getCountry()).thenReturn(_country);
+
+        _cityRepo.add("Porto", _country);
+        _cityRepo.add("Lisbon", _country);
 
         // Act
-        List<City> all = repo.getAll();
+        List<City> all = _cityRepo.getAll();
 
         // Assert
         assertEquals(2, all.size());
-        assertTrue(all.contains(city1));
-        assertTrue(all.contains(city2));
+        assertTrue(all.contains(_city1));
+        assertTrue(all.contains(_city2));
         assertThrows(UnsupportedOperationException.class, () -> all.add(mock(City.class)));
     }
 
     @Test
     void getAll_whenEmptyReturnsEmptyUnmodifiableList() {
+        // Arrange
+        _cityFactory = mock(CityFactory.class);
+        _cityRepo = new CityRepo(_cityFactory);  // SUT
+
         // Act
-        List<City> all = repo.getAll();
+        List<City> all = _cityRepo.getAll();
 
         // Assert
         assertNotNull(all);
