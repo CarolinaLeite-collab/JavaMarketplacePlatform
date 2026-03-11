@@ -31,7 +31,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.create(item, startingPrice, start, end);
+            Auction created = factory.createAuction(item, startingPrice, start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
@@ -60,7 +60,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.create(item, startingPrice, outrightPrice, start, end);
+            Auction created = factory.createAuction(item, startingPrice, outrightPrice, start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
@@ -82,7 +82,7 @@ class AuctionFactoryTest {
         ZonedDateTime end = start.plusDays(1);
 
         assertThrows(InstantiationException.class,
-                () -> factory.create(null, startingPrice, start, end));
+                () -> factory.createAuction(null, startingPrice, start, end));
     }
 
     @Test
@@ -97,6 +97,6 @@ class AuctionFactoryTest {
         when(outrightPrice.getValue()).thenReturn(100d);
 
         assertThrows(InstantiationException.class,
-                () -> factory.create(null, startingPrice, outrightPrice, start, end));
+                () -> factory.createAuction(null, startingPrice, outrightPrice, start, end));
     }
 }

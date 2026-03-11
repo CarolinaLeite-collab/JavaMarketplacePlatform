@@ -22,13 +22,11 @@ public class AuctionFactory {
      * @return created {@link Auction}
      * @throws InstantiationException when auction creation fails
      */
-    public Auction create(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
-                          ZonedDateTime auctionEndDate) throws InstantiationException {
-        try {
+    public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
+                          ZonedDateTime auctionEndDate){
+
             return new Auction(item, startingPrice, auctionStartDate, auctionEndDate);
-        } catch (final Exception e) {
-            throw new InstantiationException("Unable to instantiate Auction: " + e.getMessage());
-        }
+
     }
 
     /**
@@ -42,13 +40,9 @@ public class AuctionFactory {
      * @return created {@link Auction}
      * @throws InstantiationException when auction creation fails
      */
-    public Auction create(Item item, Price startingPrice, Price outrightPrice,
-                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate)
-            throws InstantiationException {
-        try {
+    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
+                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+
             return new Auction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
-        } catch (final Exception e) {
-            throw new InstantiationException("Unable to instantiate Auction: " + e.getMessage());
-        }
     }
 }
