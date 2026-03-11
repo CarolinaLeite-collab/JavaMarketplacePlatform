@@ -1,0 +1,78 @@
+@startuml
+
+title US021 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - Level 3 SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor Buyer
+participant ":GetItemsOnDirectSaleOfAGivenGenreUI" as UI
+participant ":GetItemsOnDirectSaleOfAGivenGenreController" as CTL
+participant "_dsr:DirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DS
+participant ":Item" as IT
+participant ":Publication" as PUB
+
+
+
+' --- Dialog ---
+Buyer -> UI: I want the list of items in direct sale \nof a given genre
+activate UI
+UI --> Buyer: What is the genre?
+deactivate UI
+Buyer -> UI: genreName
+activate UI
+
+'-- System interaction --'
+UI -> CTL: getDirectSaleItemsByGenre(genreName)
+activate CTL
+CTL -> DSR: getDirectSaleItemsByGenre(genreName)
+activate DSR
+
+create "listOfItemsOnDirectSaleByGenre: List<Item>" as List
+DSR -> List: create()
+
+' --- To run through each directSale available and check the genre associated with the corresponding Item ---
+loop for each directSale in _dsr
+    DSR -> DS: isByGenre(genreName)
+    activate DS
+    DS -> IT: isByGenre(genreName)
+    activate IT
+    IT -> PUB: isByGenre(genreName)
+    activate PUB
+    PUB --> IT: true
+    deactivate PUB
+    IT --> DS: true
+    deactivate IT
+    DS --> DSR: true
+    deactivate DS
+    DSR -> List: add(directSale.getItem())
+    activate List
+    List --> DSR: true
+    deactivate List
+end
+
+create "copyOfListOfItemsOnDirectSaleByGenre: List<Item>" as Copy
+
+DSR -> Copy: List.copyOf(listOfItemsOnDirectSaleByGenre)
+DSR --> CTL: copyOfListOfItemsOnDirectSaleByGenre
+deactivate DSR
+CTL --> UI: copyOfListOfItemsOnDirectSaleByGenre
+deactivate CTL
+UI --> Buyer: Here's the list!
+deactivate UI
+
+@enduml
