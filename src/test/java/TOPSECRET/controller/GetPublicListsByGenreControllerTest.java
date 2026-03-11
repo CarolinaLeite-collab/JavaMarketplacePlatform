@@ -25,12 +25,13 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnPublicListsByGenre() {
 
         // Arrange
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
         ListOfPublications listA = mock(ListOfPublications.class);
         User userDouble = mock(User.class);
         when(listA.getName()).thenReturn("List A");
         when(listA.getUser()).thenReturn(userDouble);
         when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
+        // SUT
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);
@@ -46,7 +47,8 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldThrowWhenGenreIsNull() {
 
         // Arrange
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
+        //SUT
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
@@ -60,8 +62,9 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnEmptyListWhenNoPublicListsOfGenreExists() {
 
         // Arrange
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble); // SUT
         when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
+        // SUT
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);

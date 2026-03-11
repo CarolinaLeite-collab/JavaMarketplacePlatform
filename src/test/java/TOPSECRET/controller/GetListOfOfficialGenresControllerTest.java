@@ -10,36 +10,36 @@ import static org.mockito.Mockito.*;
 
 class GetListOfOfficialGenresControllerTest {
 
-    private User _user;
-    private GenreRepo _genreRepo;
-    private GetListOfOfficialGenresController _getListOfOfficialGenresController;
+    private User _userDouble;
+    private GenreRepo _genreRepoDouble;
 
     @Test
-    void test_a_constructor_get_official_genres_controller() {
-        _user = mock(User.class);
-        _genreRepo = mock(GenreRepo.class);
-        _getListOfOfficialGenresController = new GetListOfOfficialGenresController(_genreRepo, _user);
+    void testConstructorGetOfficialGenresController() {
+        //arrange
+        _userDouble = mock(User.class);
+        _genreRepoDouble = mock(GenreRepo.class);
         //act
-        new GetListOfOfficialGenresController(_genreRepo, _user);
-
+        //SUT
+        new GetListOfOfficialGenresController(_genreRepoDouble, _userDouble);
     }
 
     @Test
-    void test_get_list_of_official_genres_should_return_list_with_genres() {
+    void testGetListOfOfficialGenresShouldReturnListWithGenres() {
         //arrange
-        _user = mock(User.class);
-        _genreRepo = mock(GenreRepo.class);
-        _getListOfOfficialGenresController = new GetListOfOfficialGenresController(_genreRepo, _user);
+        _userDouble = mock(User.class);
+        _genreRepoDouble = mock(GenreRepo.class);
+        //SUT
+        GetListOfOfficialGenresController controller = new GetListOfOfficialGenresController(_genreRepoDouble, _userDouble);
 
         Genre genre1 = mock(Genre.class);
         when(genre1.getGenre()).thenReturn("fiction");
         Genre genre2 = mock(Genre.class);
         when(genre2.getGenre()).thenReturn("romance");
 
-        when(_genreRepo.getListOfOfficialGenres()).thenReturn(List.of(genre1,genre2));
+        when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(genre1,genre2));
 
         //act
-        List<Genre> listOfOfficialGenres = _getListOfOfficialGenresController.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = controller.getListOfOfficialGenres();
 
         //assert
         assertNotNull(listOfOfficialGenres);
@@ -48,19 +48,19 @@ class GetListOfOfficialGenresControllerTest {
     }
 
     @Test
-    void test_get_list_of_official_genres_should_return_empty_list_if_no_genres_were_added() {
+    void testGetListOfOfficialGenresShouldReturnEmptyListIfNoGenresWereAdded() {
         //arrange
-        _user = mock(User.class);
-        _genreRepo = mock(GenreRepo.class);
-        _getListOfOfficialGenresController = new GetListOfOfficialGenresController(_genreRepo, _user);
+        _userDouble = mock(User.class);
+        _genreRepoDouble = mock(GenreRepo.class);
+        //SUT
+        GetListOfOfficialGenresController controller = new GetListOfOfficialGenresController(_genreRepoDouble, _userDouble);
 
         //act
-        List<Genre> listOfOfficialGenres = _getListOfOfficialGenresController.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = controller.getListOfOfficialGenres();
 
         //assert
         assertNotNull(listOfOfficialGenres);
         assertTrue(listOfOfficialGenres.isEmpty());
 
     }
-
 }

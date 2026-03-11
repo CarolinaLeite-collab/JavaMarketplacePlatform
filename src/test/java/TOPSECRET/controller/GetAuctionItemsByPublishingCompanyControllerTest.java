@@ -73,18 +73,18 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
     @Test
     void shouldReturnEmptyWhenPublishingCompanyDoesNotMatch() {
         // Arrange
-        PublishingCompany otherPublisher = mock(PublishingCompany.class);
-        when(_auctionRepoDouble.getAuctionItemsByPublishingCompany(otherPublisher)).thenReturn(List.of());
+        PublishingCompany otherPublisherDouble = mock(PublishingCompany.class);
+        when(_auctionRepoDouble.getAuctionItemsByPublishingCompany(otherPublisherDouble)).thenReturn(List.of());
 
         //SUT
         GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_auctionRepoDouble, _buyerDouble);
 
         // Act
-        List<Item> items = ctl.getAuctionItemsByPublishingCompany(otherPublisher);
+        List<Item> items = ctl.getAuctionItemsByPublishingCompany(otherPublisherDouble);
 
         // Assert
         assertNotNull(items);
         assertTrue(items.isEmpty());
-        verify(_auctionRepoDouble).getAuctionItemsByPublishingCompany(otherPublisher);
+        verify(_auctionRepoDouble).getAuctionItemsByPublishingCompany(otherPublisherDouble);
     }
 }

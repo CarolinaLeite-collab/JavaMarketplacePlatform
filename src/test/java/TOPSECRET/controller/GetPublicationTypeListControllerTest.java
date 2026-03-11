@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.domain.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationTypeRepo;
 import org.junit.jupiter.api.Test;
 
@@ -18,45 +17,39 @@ class GetPublicationTypeListControllerTest {
         // Arrange
         PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
         PublicationType publicationType = mock(PublicationType.class);
-
         when(repo.getAll()).thenReturn(List.of(publicationType));
-
+        //SUT
         GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
-
         // Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
-
         // Assert
         assertTrue(List.of(publicationType).equals(result));
     }
 
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist() {
-        // Arrange
-        PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
-
-        when(repo.getAll()).thenReturn(List.of());
-
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
-
-        // Act
+        //Arrange
+        PublicationTypeRepo repoDouble = mock(PublicationTypeRepo.class);
+        when(repoDouble.getAll()).thenReturn(List.of());
+        //SUT
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(repoDouble);
+        //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
-
-        // Assert
+        //Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void returnedListShouldNotBeModifiable() {
-        PublicationTypeRepo repo = mock(PublicationTypeRepo.class);
-        PublicationType publicationType = mock(PublicationType.class);
-
-        when(repo.getAll()).thenReturn(List.of(publicationType));
-
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(repo);
-
+        //Arrange
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        PublicationTypeRepo repoDouble = mock(PublicationTypeRepo.class);
+        when(repoDouble.getAll()).thenReturn(List.of(publicationTypeDouble));
+        //SUT
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(repoDouble);
+        //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
-
+        //Assert
         assertThrows(UnsupportedOperationException.class, () -> result.clear());
 
     }
