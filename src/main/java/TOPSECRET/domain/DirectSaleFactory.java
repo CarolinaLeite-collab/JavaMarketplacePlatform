@@ -5,8 +5,7 @@ import java.time.Period;
 /**
  * Factory responsible for creating {@link DirectSale } instances.
  * <p>
- * Any exception thrown during the creation process is wrapped
- * into an {@link IllegalArgumentException}.
+ * @throws IllegalArgumentException if item or price is null, or if timeLimit is negative
  */
 
 public class DirectSaleFactory {
