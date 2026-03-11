@@ -768,5 +768,57 @@ class PublicationTest {
         assertFalse(result);
     }
 
+    // Isolated test of isByPublishingCompany method
+    @Test
+    void isByPublishingCompanyShouldReturnTrueWhenPublishingCompanyMatches() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble) // same instance passed to isByAuthor
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        // Act
+        boolean result = p.isByPublishingCompany(_publishingCompanyDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByPublishingCompanyShouldReturnFalseWhenPublishingCompanyIsDifferent() {
+        // Arrange
+        when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
+        when(_identifierDouble.getIdentifier()).thenReturn("ID");
+        when(_yearDouble.getValue()).thenReturn(2019);
+
+        PublishingCompany otherPublishingCompany = mock(PublishingCompany.class);
+
+        Publication p = Publication.builder()
+                .type(_publicationTypeDouble)
+                .identifier(_identifierDouble)
+                .year(_yearDouble)
+                .title(_titleDouble)
+                .author(_authorDouble)
+                .publisher(_publishingCompanyDouble)
+                .edition(_editionDouble)
+                .build();
+
+        // Act
+        boolean result = p.isByPublishingCompany(otherPublishingCompany);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
 }
 

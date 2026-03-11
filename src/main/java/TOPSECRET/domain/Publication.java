@@ -169,6 +169,10 @@ public class Publication {
         return Objects.equals(_genre, genre);
     }
 
+    public boolean isByPublishingCompany(PublishingCompany publisher) {
+
+        return Objects.equals(_publisher, publisher); }
+
     // -----------
     // 4: Getters
     // -----------
