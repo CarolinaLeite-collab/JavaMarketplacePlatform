@@ -44,24 +44,16 @@ public class AuctionRepo {
 
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-        try {
-            Auction auction = auctionFactory.createAuction(item, startingPrice, auctionStartDate, auctionEndDate);
-            itemsOnAuction.add(auction);
-            return auction;
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException("Unable to create auction: " + e.getMessage(), e);
-        }
+        Auction auction = auctionFactory.createAuction(item, startingPrice, auctionStartDate, auctionEndDate);
+        itemsOnAuction.add(auction);
+        return auction;
     }
 
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
                                  ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        try {
-            Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
-            itemsOnAuction.add(auction);
-            return auction;
-        } catch (InstantiationException e) {
-            throw new IllegalArgumentException("Unable to create auction: " + e.getMessage(), e);
-        }
+        Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+        itemsOnAuction.add(auction);
+        return auction;
     }
 
     /**
