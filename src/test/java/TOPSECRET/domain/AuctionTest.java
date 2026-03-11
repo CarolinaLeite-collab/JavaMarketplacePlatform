@@ -92,6 +92,28 @@ class AuctionTest {
                 () -> auction.acceptBid(bidDouble)); // SUT
     }
     @Test
+    void acceptBidThrowsWhenBidPriceEqualsStartingPrice() throws Exception {
+        // Arrange
+        when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime endFuture = startFuture.plusDays(1);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
+
+        ZonedDateTime now = ZonedDateTime.now();
+        setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
+        setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
+
+        Bid bid = mock(Bid.class);
+        Price bidPrice = mock(Price.class);
+        when(bid.getOfferPrice()).thenReturn(bidPrice);
+        when(bidPrice.getValue()).thenReturn(10.0);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.acceptBid(bid));
+    }
+
+    @Test
     void constructorShouldThrowWhenOutrightPriceIsNotGreaterThanStartingPrice() {
         // Arrange
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
@@ -141,7 +163,6 @@ class AuctionTest {
         assertThrows(IllegalStateException.class, () -> bidRepo.getHighestBid());
     }
 
-    // Author: Pedro"
     @Test
     void acceptBidAddsBidWhenAuctionIsActiveAndPriceIsAboveStartingPrice() throws Exception {
         // Arrange
@@ -167,7 +188,7 @@ class AuctionTest {
         assertSame(bid, auction.getBids().getHighestBid());
     }
 
-    // Author: Pedro"
+
     @Test
     void finalizeAuctionSetsBuyerAndFinalPriceToHighestBid() throws Exception {
         // Arrange
@@ -201,7 +222,7 @@ class AuctionTest {
         assertEquals(higher.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
 
-    // Author: Pedro"
+
     @Test
     void acceptBidDelegatesToBidsCollection() throws Exception {
         // Arrange
@@ -228,7 +249,6 @@ class AuctionTest {
         verify(bids).addBid(bid);
     }
 
-    // Author: Pedro"
     @Test
     void finalizeAuctionUsesHighestBidFromBidsCollection() throws Exception {
         // Arrange
@@ -255,14 +275,12 @@ class AuctionTest {
         assertEquals(highestBid.getOfferPrice(), getPrivateField(auction, "_finalPrice"));
     }
 
-    // Author: Pedro"
     private void setPrivateField(Auction auction, String fieldName, Object value) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(auction, value);
     }
 
-    // Author: Pedro"
     private Object getPrivateField(Auction auction, String fieldName) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
         field.setAccessible(true);
@@ -472,3 +490,4 @@ class AuctionTest {
         verify(_itemDouble).isByPublication(publicationDouble);
     }
 }
+
