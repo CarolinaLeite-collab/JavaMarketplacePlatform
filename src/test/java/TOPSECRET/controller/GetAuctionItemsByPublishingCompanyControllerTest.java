@@ -4,87 +4,87 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class GetAuctionItemsByPublishingCompanyControllerTest {
 
+    private User _buyerDouble;
+    private AuctionRepo _auctionRepoDouble;
+    private PublishingCompany _publisherDouble;
 
-    private User _buyer;
-    private AuctionRepo _auctionRepo;
-    private PublishingCompany _publisher;
-    private GetAuctionItemsByPublishingCompanyController _controller;
+    private Item _item1Double;
+    private Item _item2Double;
 
     @BeforeEach
     void setUp() {
-        _buyer = new User(new Name("Buyer"), new Email("buyer@test.com"));
-        _auctionRepo = new AuctionRepo();
-        _publisher = new PublishingCompany("Seneca");
-        _controller = new GetAuctionItemsByPublishingCompanyController(_publisher, _auctionRepo, _buyer);
+        _buyerDouble = mock(User.class);
+        _auctionRepoDouble = mock(AuctionRepo.class);
+        _publisherDouble = mock(PublishingCompany.class);
+
+        _item1Double = mock(Item.class);
+        _item2Double = mock(Item.class);
     }
 
     @Test
-    void should_return_empty_list_when_no_auctions() {
-        List<Item> items = _controller.getAuctionItemsByPublisher(_publisher);
+    void constructorWithValidDependenciesDoesNotThrow() {
+        assertDoesNotThrow(() ->
+                new GetAuctionItemsByPublishingCompanyController(_auctionRepoDouble, _buyerDouble));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoAuctions() {
+        // Arrange
+        when(_auctionRepoDouble.getAuctionItemsByPublishingCompany(_publisherDouble)).thenReturn(List.of());
+
+        //SUT
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_auctionRepoDouble, _buyerDouble);
+
+        // Act
+        List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
+
+        // Assert
         assertNotNull(items);
         assertTrue(items.isEmpty());
+        verify(_auctionRepoDouble).getAuctionItemsByPublishingCompany(_publisherDouble);
     }
 
     @Test
-    void should_return_correct_list_for_publisher() {
-        PublishingCompany publisher1 = new PublishingCompany("publisher1");
+    void shouldReturnCorrectListForPublishingCompany() {
+        // Arrange
+        List<Item> expectedItems = List.of(_item1Double, _item2Double);
+        when(_auctionRepoDouble.getAuctionItemsByPublishingCompany(_publisherDouble)).thenReturn(expectedItems);
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(publisher1)
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+        //SUT
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_auctionRepoDouble, _buyerDouble);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        // Act
+        List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
 
-        _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
-
-        //when publisher's name matches exactly
-        List<Item> items1 = _controller.getAuctionItemsByPublisher(new PublishingCompany("publisher1"));
-        assertEquals(1, items1.size());
-        assertSame(item, items1.get(0));
-
-        //testing case insensitiveness
-        List<Item> items2 = _controller.getAuctionItemsByPublisher(new PublishingCompany("pUbLisheR1"));
-        assertEquals(1, items2.size());
-        assertSame(item, items2.get(0));
+        // Assert
+        assertEquals(2, items.size());
+        assertSame(_item1Double, items.get(0));
+        assertSame(_item2Double, items.get(1));
+        verify(_auctionRepoDouble).getAuctionItemsByPublishingCompany(_publisherDouble);
     }
 
     @Test
-    void should_return_empty_when_publisher_does_not_match() {
-        PublishingCompany publisher1 = new PublishingCompany("publisher1");
+    void shouldReturnEmptyWhenPublishingCompanyDoesNotMatch() {
+        // Arrange
+        PublishingCompany otherPublisher = mock(PublishingCompany.class);
+        when(_auctionRepoDouble.getAuctionItemsByPublishingCompany(otherPublisher)).thenReturn(List.of());
 
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(publisher1)
-                .build();
-        Item item = new Item(pub, Condition.GOOD);;
+        //SUT
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_auctionRepoDouble, _buyerDouble);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        // Act
+        List<Item> items = ctl.getAuctionItemsByPublishingCompany(otherPublisher);
 
-        _auctionRepo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
-
-        List<Item> items = _controller.getAuctionItemsByPublisher(new PublishingCompany("publisher2"));
+        // Assert
         assertNotNull(items);
         assertTrue(items.isEmpty());
+        verify(_auctionRepoDouble).getAuctionItemsByPublishingCompany(otherPublisher);
     }
-
 }
