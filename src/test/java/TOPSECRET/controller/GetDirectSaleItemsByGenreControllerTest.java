@@ -24,7 +24,7 @@ class GetDirectSaleItemsByGenreControllerTest {
     }
 
     @Test
-    void test_DirectSale_Items_by_genre_Controller(){
+    void testDirectSaleItemsByGenreController(){
 
         // SUT
         new GetDirectSaleItemsByGenreController(_directSaleRepoDouble, _buyerDouble);
