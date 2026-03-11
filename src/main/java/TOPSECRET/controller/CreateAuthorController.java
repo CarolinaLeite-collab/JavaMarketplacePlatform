@@ -13,18 +13,17 @@ import TOPSECRET.domain.AuthorRepo;
 
 public class CreateAuthorController {
 
-    private final AuthorRepo authorRepo;
+    private AuthorRepo _authorRepo;
 
     public CreateAuthorController(AuthorRepo ar) {
-        authorRepo = ar;
+        _authorRepo = ar;
     }
 
-    // Delegates creation to the repository
     public Author createAuthor (String authorName){
         if (authorName == null || authorName.isBlank()){
             throw new IllegalArgumentException("Author name is mandatory");
         }
-        return authorRepo.create(authorName.trim());
+        return _authorRepo.createAuthor(authorName.trim());
     }
 
 

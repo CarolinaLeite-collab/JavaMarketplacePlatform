@@ -13,10 +13,15 @@ import java.util.List;
 
 public class AuthorRepo {
 
-    private List<Author> authors = new ArrayList<>();
+    private List<Author> _authors;
+    private AuthorFactory _authorFactory;
 
+    public AuthorRepo(AuthorFactory authorFactory){
+        _authorFactory = new AuthorFactory();
+        _authors = new ArrayList<>();
+    }
     // Repository creates and returns the Author
-    public Author create(String authorName) {
+    public Author createAuthor(String authorName) {
         if (authorName == null || authorName.isBlank()) {
             throw new IllegalArgumentException("Author name is mandatory");
         }
@@ -26,16 +31,18 @@ public class AuthorRepo {
             throw new IllegalStateException("Author already exists");
         }
 
-            Author author = new Author(normalizedName);
-            authors.add(author);
-            return author;
+        Author author = _authorFactory.createAuthor(normalizedName);
+
+        _authors.add(author);
+
+        return author;
     }
 
     public boolean existsByName(String name) {
-        return authors.stream().anyMatch(a -> a.getName().equalsIgnoreCase(name));
+        return _authors.stream().anyMatch(a -> a.getName().equalsIgnoreCase(name));
     }
 
     public List<Author> findAll() {
-        return new ArrayList<>(authors);
+        return new ArrayList<>(_authors);
     }
 }
