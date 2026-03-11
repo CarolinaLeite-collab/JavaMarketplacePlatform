@@ -32,8 +32,19 @@ _item : Item
 + getItem() : Item
 }
 
+class Item {
++ isByPublication(publication : Publication) : boolean
+}
+
+class Publication {
++ equals(object : Object) : boolean
+}
+
 UIGetDirectSaleItemsByPublication "1" ..> "1" GetDirectSaleItemsByPublicationsController : uses
-GetDirectSaleItemsByPublicationsController "1" --> "_dsr 1" DirectSaleRepo : uses
+GetDirectSaleItemsByPublicationsController "1" --> "_dsRepo 1" DirectSaleRepo : uses
 DirectSaleRepo "1" --> "_directSales *" DirectSale : manages
+DirectSale "1" --> "1" Item : contains
+Item "1" --> "1" Publication : contains
+
 
 @enduml
