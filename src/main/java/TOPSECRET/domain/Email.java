@@ -29,7 +29,7 @@ public final class Email {
         String trimmed = email.trim();
 
         // Throws exception if email has invalid format
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
+        if (!EMAIL_PATTERN.matcher(trimmed).matches()) {
             throw new IllegalArgumentException("Invalid email format!");
         }
 

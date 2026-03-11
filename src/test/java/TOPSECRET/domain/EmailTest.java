@@ -6,30 +6,29 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class EmailTest {
 
-    // Constructor test
     @Test
-    void test_a_constructor() {
+    void constructorShouldBuildEmail() {
 
-        // arrange
+        // Arrange
         String email1= "test@testing.com";
 
-        // act
+        // Act
         Email email = new Email (email1);
 
+        // Assert
+        assertNotNull(email);
     }
 
-
-    // Test invalid email formats
     @Test
-    void test_invalid_email_format() {
+    void testInvalidEmailFormat() {
 
-        // arrange
+        // Arrange
         String email1 = "test123.com";
         String email2 = "@testing.com";
         String email3 = "I/am/testing@123.com";
         String email4 = "how@about@this.com";
 
-        // act and assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Email(email1));
         assertThrows(IllegalArgumentException.class, () -> new Email(email2));
         assertThrows(IllegalArgumentException.class, () -> new Email(email3));
@@ -37,112 +36,128 @@ class EmailTest {
 
     }
 
-    // Test blank or null email formats
     @Test
-    void test_blank_or_null_email() {
+    void constructorShouldThrowWhenEmailIsNull() {
 
-        // arrange
+        // Arrange
         String email1 = null;
-        String email2 = "";
 
-        // act and assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Email(email1));
-        assertThrows(IllegalArgumentException.class, () -> new Email(email2));
-
     }
 
-    // Test correct email capitalization and extra spaces
     @Test
-    void test_email_capitalization() {
+    void constructorShouldThrowWhenEmailIsEmpty() {
 
-        // arrange
+        // Arrange
+        String email = "";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Email(email));
+    }
+
+    @Test
+    void constructorShouldThrowWhenEmailIsBlank() {
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Email("   "));
+    }
+
+    @Test
+    void constructorShouldNormaliseEmailToLowercase() {
+
+        // Arrange
         String email1 = "TEST@SOMETHING.COM";
         String email2 = " TEST@SOMETHING.COM ";
         Email emailTest = new Email(email1);
-        Email email2Test = new Email(email1);
+        Email email2Test = new Email(email2);
 
-        // act
+        // Act
         String emailToTest = emailTest.getValue();
         String emailToTest2 = email2Test.getValue();
 
-        // assert
+        // Assert
         assertEquals(emailToTest, "test@something.com");
         assertEquals(emailToTest2, "test@something.com");
 
     }
 
-    // Test equals method
     @Test
-    void test_equals_should_return_true_for_same_object() {
-        // arrange and act
+    void equalsShouldReturnTrueForSameObject() {
+
+        // Arrange
         Email email = new Email("test@testing.com");
 
-        // assert
-        assertEquals(email, email);
+        // Act
+        boolean result = email.equals(email);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
-    void test_equals_should_return_false_for_null_object() {
-        // arrange and act
+    void testEqualsShouldReturnFalseForNullObject() {
+
+        // Arrange & Act
         Email email = new Email("test@testing.com");
 
-        // assert
+        // Assert
         assertNotEquals(email, null);
     }
 
     @Test
-    void test_equals_should_return_false_for_different_classes() {
-        // arrange and act
+    void equalsShouldReturnFalseForDifferentClass() {
+
+        // Arrange & Act
         Email email = new Email("test@testing.com");
         String differentClass = "differentClass";
 
-        // assert
+        // Assert
         assertNotEquals(email, differentClass);
     }
 
     @Test
-    void test_equals_should_return_false_for_different_emails() {
-        // arrange and act
+    void equalsShouldReturnFalseForDifferentEmails() {
+
+        // Arrange & Act
         Email email1 = new Email("test1@testing.com");
         Email email2 = new Email("test2@testing.com");
 
-        // assert
+        // Assert
         assertNotEquals(email1, email2);
     }
 
     @Test
-    void test_equals_should_return_true_for_same_email() {
+    void equalsShouldReturnTrueForSameEmailWithDifferentCase() {
 
-        // arrange
+        // Arrange
         String email1 = "IamAeMaIL@TESting.COM";
         String email2 = "iAMaEmAil@tesTING.com";
 
-        // act
+        // Act
         Email emailTest1 = new Email(email1);
         Email emailTest2 = new Email(email2);
 
-        // assert
+        // Assert
         assertEquals(emailTest1, emailTest2);
     }
 
-
-
-    // Test toString method
     @Test
-    void test_toString() {
+    void toStringShouldReturnLowercaseEmail() {
 
-        // arrange
+        // Arrange
         String email1 = "testing@123.com";
         String email2 = "TESTING@123.com";
 
         String email3 = "test@testing.com";
         String email4 = "test@testing.com";
 
-        // act
+        // Act
         Email emailTest1 = new Email(email2);
         Email emailTest2 = new Email(email3);
 
-        // assert
+        // Assert
         assertEquals(email1, emailTest1.toString());
         assertEquals(email4, emailTest2.toString());
 
@@ -150,29 +165,28 @@ class EmailTest {
 
     // Test hash equals method
     @Test
-    void test_different_hashes_should_not_be_same() {
-        // act and arrange
+    void hashCodeShouldBeDifferentForDifferentEmails() {
+
+        // Arrange & Act
         Email email1 = new Email("test1@testing.com");
         Email email2 = new Email("test2@testing.com");
 
-        // assert
+        // Assert
         assertNotEquals(email1.hashCode(), email2.hashCode());
     }
 
-
     @Test
-    void test_hash_equals() {
+    void hashCodeShouldBeEqualForSameEmail() {
 
-        // arrange
+        // Arrange
         String email1 = "IamAeMaIL@TESting.COM";
         String email2 = "iAMaEmAil@tesTING.com";
 
-        // act
+        // Act
         Email emailTest1 = new Email(email1);
         Email emailTest2 = new Email(email2);
 
-        // assert
+        // Assert
         assertEquals(emailTest1.hashCode(), emailTest2.hashCode());
     }
-
 }
