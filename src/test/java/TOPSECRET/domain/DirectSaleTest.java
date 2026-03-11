@@ -565,4 +565,45 @@ class DirectSaleTest {
         verify(_itemDouble, times(1)).isByGenre(genre);
     }
 
+    // isByPublication isolated tests
+
+    @Test
+    void isByPublicationShouldReturnTrueWhenPublicationMatches() {
+
+        Publication publicationDouble = mock(Publication.class);
+        when(_itemDouble.isByPublication(publicationDouble)).thenReturn(true);
+
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        boolean result = directSale.isByPublication(publicationDouble);
+
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByPublicationShouldReturnFalseWhenPublicationIsDifferent(){
+        Publication publicationDouble = mock(Publication.class);
+        when(_itemDouble.isByPublication(publicationDouble)).thenReturn(false);
+
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        boolean result = directSale.isByPublication(publicationDouble);
+
+        assertFalse(result);
+
+    }
+
+    @Test
+    void isByPublicationShouldDelegateToItem(){
+        Publication publicationDouble = mock(Publication.class);
+
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        directSale.isByPublication(publicationDouble);
+
+        verify(_itemDouble, times(1)).isByPublication(publicationDouble);
+
+    }
+
 }
