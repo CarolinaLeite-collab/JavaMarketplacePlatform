@@ -1,5 +1,5 @@
 @startuml
-title "US023 - As a Buyer, I want to get the list of items on \ndirect sale of a given publication - SSD"
+title "US023 - As a Buyer, I want to get the list of items on \ndirect sale of a given publication - CD"
 
 
 '==== basic style ====
@@ -19,22 +19,21 @@ class UIGetDirectSaleItemsByPublication {
 }
 
 class GetDirectSaleItemsByPublicationsController {
-    - _dsr : DirectSaleRepo
     + getDirectSaleItemsByPublication(publication : Publication) : List<Item>
 }
 
 class DirectSaleRepo {
-    - _directSales : List<DirectSale>
     + getDirectSaleItemsByPublication(publication : Publication) : List<Item>
 }
 
 class DirectSale {
 _item : Item
 + isByPublication(publication : Publication) : boolean
++ getItem() : Item
 }
 
 UIGetDirectSaleItemsByPublication "1" ..> "1" GetDirectSaleItemsByPublicationsController : uses
-GetDirectSaleItemsByPublicationsController "1" ..> "1" DirectSaleRepo : uses
-DirectSaleRepo "1" --> "*" DirectSale : manages
+GetDirectSaleItemsByPublicationsController "1" --> "_dsr 1" DirectSaleRepo : uses
+DirectSaleRepo "1" --> "_directSales *" DirectSale : manages
 
 @enduml
