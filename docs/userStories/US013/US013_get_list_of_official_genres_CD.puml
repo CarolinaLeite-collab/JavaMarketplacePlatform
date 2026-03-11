@@ -2,7 +2,6 @@
 'https://plantuml.com/class-diagram
 title US013 – "As a user, I want to get the list of official genres" - CD
 
-
 '==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
@@ -19,14 +18,11 @@ class GetListOfOfficialGenresUI {
 }
 
 class GetListOfOfficialGenresController {
--_gr: GenreRepo
 +getListOfOfficialGenres(): List<Genre>
 
 }
 
 class GenreRepo {
-
-
 +getListOfOfficialGenres(): List<Genre>
 
 }

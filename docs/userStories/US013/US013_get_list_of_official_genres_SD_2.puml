@@ -20,7 +20,7 @@ autoactivate off
 actor User
 participant ":GetListOfOfficialGenresUI" as UI
 participant ":GetListOfOfficialGenresController" as CTL
-participant "gr:GenreRepo" as GR
+participant ":GenreRepo" as GR
 
 ' --- UI interaction ---
 User -> UI: I want to get the list of official genres
