@@ -1,4 +1,5 @@
 package TOPSECRET.domain;
+import java.time.LocalDate;
 
 /**
  * Represents a specific edition of a publication, such as a book or magazine.
@@ -8,8 +9,6 @@ package TOPSECRET.domain;
  * Validates that editions have positive page counts and edition numbers, and ensures that books have ISBN and magazines have ISSN when required.
  * </p>
  */
-
-import java.time.LocalDate;
 
 public class Edition {
     private final ISSN _issn;
@@ -104,10 +103,5 @@ public class Edition {
     public Weight getWeight() { return _weight; }
     public Language getLanguage() { return _language; }
 
-
-    private void validatePages(int numberOfPages) {
-        if (numberOfPages <= 0)
-            throw new IllegalArgumentException("Number of pages must be positive");
-    }
 
 }
