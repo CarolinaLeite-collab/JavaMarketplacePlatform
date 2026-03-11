@@ -47,7 +47,7 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
-    void should_get_publicationTypes_from_repo() {
+    void shouldGetPublicationTypesFromRepo() {
 
         // SUT
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
@@ -61,7 +61,7 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
-    void should_get_genres_from_repo() {
+    void shouldGetGenresFromRepo() {
 
         // SUT
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
@@ -75,7 +75,7 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
-    void should_successfully_call_appraisal_entity_creation_method() {
+    void shouldSuccessfullyCallAppraisalEntityCreationMethod() {
 
         // SUT
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _typeRepoDouble, _genreRepoDouble);
