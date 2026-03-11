@@ -18,14 +18,19 @@ public class PublicationSaleAuctionController {
     private final LibraryRepo _libraryRepo;
     private final ItemRepo _itemRepo;
     private final AuctionRepo _auctionRepo;
+    private final ItemFactory _itemFactory;
+    private final AuctionFactory _auctionFactory;
 
-    public PublicationSaleAuctionController(LibraryRepo libraryRepo, ItemRepo itemRepo, AuctionRepo auctionRepo) {
-        if (libraryRepo == null || itemRepo == null || auctionRepo == null) {
-            throw new NullPointerException("Repositories are required");
+    public PublicationSaleAuctionController(LibraryRepo libraryRepo, ItemRepo itemRepo, AuctionRepo auctionRepo,
+                                            ItemFactory itemFactory, AuctionFactory auctionFactory) {
+        if (libraryRepo == null || itemRepo == null || auctionRepo == null || itemFactory == null || auctionFactory == null) {
+            throw new NullPointerException("Repositories and factories are required");
         }
         _libraryRepo = libraryRepo;
         _itemRepo = itemRepo;
         _auctionRepo = auctionRepo;
+        _itemFactory = itemFactory;
+        _auctionFactory = auctionFactory;
 
     }
 
@@ -55,8 +60,8 @@ public class PublicationSaleAuctionController {
         // Following US016 SD flow: get real publication from user's library -> create Item -> create Auction -> link between item and its auction
         Library userLibrary = _libraryRepo.findLibraryByUser(user);
         Publication actualPublicationInLibrary = userLibrary.getPublicationFromLibrary(publication);
-        Item item = _itemRepo.createItem(actualPublicationInLibrary, condition);
-        Auction auction = _auctionRepo.createAuction(item, startPrice, startDate, endDate);
+        Item item = _itemFactory.createItem(actualPublicationInLibrary, condition);
+        Auction auction = _auctionFactory.createAuction(item, startPrice, startDate, endDate);
         item.setAuction(auction);
         return auction;
     }
