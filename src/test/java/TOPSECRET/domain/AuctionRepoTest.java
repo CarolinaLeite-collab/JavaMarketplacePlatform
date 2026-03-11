@@ -2,10 +2,10 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,264 +13,210 @@ import static org.mockito.Mockito.*;
 
 class AuctionRepoTest {
 
-    private PublicationType bookType;
-    private Year publicationYear;
-    private String defaultAuthorName;
-    private String defaultPublisherName;
+    private AuctionRepo repo;
+    private AuctionFactory auctionFactory;
 
-    private AuctionRepo _repo;
-    private Publication _pub1;
-    private Publication _pub2;
-    private Item _item1;
-    private Item _item2;
-    private Item _item3;
-    private Genre _genre;
-    private Price _startingPrice;
-    private ZonedDateTime _start;
-    private ZonedDateTime _end;
-
-    //Doubles
-
-    private AuctionFactory _auctionFactoryDouble;
+    private Publication pub1;
+    private Publication pub2;
+    private Item item1;
+    private Item item2;
+    private Item item3;
+    private Genre genre;
+    private Price startingPrice;
+    private ZonedDateTime start;
+    private ZonedDateTime end;
 
     @BeforeEach
     void setUp() {
-        _repo = new AuctionRepo();
+        auctionFactory = mock(AuctionFactory.class);
+        repo = mockRepoWithFactory(auctionFactory);
 
-        _genre = new Genre("action");
+        genre = mock(Genre.class);
+        pub1 = mock(Publication.class);
+        pub2 = mock(Publication.class);
+        item1 = mock(Item.class);
+        item2 = mock(Item.class);
+        item3 = mock(Item.class);
+        startingPrice = mock(Price.class);
 
-        _pub1 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("1111111111"))
-                .year(Year.of(2020))
-                .title(new Title("Architectonica Percepta"))
-                .author(new Author("Paulo Providência"))
-                .publisher(new PublishingCompany("Park Books"))
-                .genre(_genre)
-                .build();
+        start = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+        end = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
+    }
 
-        _pub2 = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("838894522X"))
-                .year(Year.of(1980))
-                .title(new Title("Louis I. Khan: The idea of order"))
-                .author(new Author("Klaus-Peter Gast"))
-                .publisher(new PublishingCompany("Birkhauser"))
-                .genre(_genre)
-                .build();
+    private AuctionRepo mockRepoWithFactory(AuctionFactory factory) {
+        return mock(AuctionRepo.class, withSettings()
+                .useConstructor(factory)
+                .defaultAnswer(Answers.CALLS_REAL_METHODS));
+    }
 
-        _item1 = new Item(_pub1, Condition.GOOD);
-        _item2 = new Item(_pub1, Condition.FAIR);
-        _item3 = new Item(_pub2, Condition.LIKE_NEW);
-
-
-
-        _startingPrice = new Price(10.0, Currency.EUR);
-
-        _start = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-        _end = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-
-        bookType = new PublicationType("BOOK");
-        publicationYear = Year.of(2019);
-        defaultAuthorName = "Someone";
-        defaultPublisherName = "SomePub";
-
-        // Setting up Doubles
-
-        _auctionFactoryDouble = mock(AuctionFactory.class);
-
-
-
+    private Auction mockAuctionWithItem(Item item) {
+        Auction auction = mock(Auction.class);
+        when(auction.getItem()).thenReturn(item);
+        return auction;
     }
 
     @Test
     void testGetAuctionItemsByGenreNoAuctionShouldReturnEmptyList() {
-
         // Arrange
         // (no auctions created)
 
         // Act
-        List<Item> emptyList = _repo.getAuctionItemsByGenre(_genre);
+        List<Item> emptyList = repo.getAuctionItemsByGenre(genre);
 
         // Assert
         assertNotNull(emptyList);
         assertTrue(emptyList.isEmpty());
-
     }
 
     @Test
-    void testGetAuctionItemsByGenreWithAuctionsShouldReturnNonEmptyList() {
-
+    void testGetAuctionItemsByGenreWithAuctionsShouldReturnNonEmptyList() throws Exception {
         // Arrange
-        _repo.createAuction(_item1, _startingPrice, _start, _end);
-        _repo.createAuction(_item3, new Price(25.0, Currency.EUR), _start, _end);
+        Auction auction1 = mockAuctionWithItem(item1);
+        Auction auction2 = mockAuctionWithItem(item3);
+        Price price2 = mock(Price.class);
+
+        when(auction1.isByGenre(genre)).thenReturn(true);
+        when(auction2.isByGenre(genre)).thenReturn(true);
+
+        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction1);
+        when(auctionFactory.create(item3, price2, start, end)).thenReturn(auction2);
+
+        repo.createAuction(item1, startingPrice, start, end);
+        repo.createAuction(item3, price2, start, end);
 
         // Act
-        List<Item> list = _repo.getAuctionItemsByGenre(_genre);
+        List<Item> list = repo.getAuctionItemsByGenre(genre);
 
         // Assert
         assertNotNull(list);
         assertFalse(list.isEmpty());
+        verify(auction1).isByGenre(genre);
+        verify(auction2).isByGenre(genre);
     }
 
-
     @Test
-    void createAuctionAddsAuctionAndCanBeRetrievedByGenre() {
+    void createAuctionAddsAuctionAndCanBeRetrievedByGenre() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
+        Genre action = mock(Genre.class);
 
-        Genre action = new Genre("Action");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(new Author(defaultAuthorName))
-                .publisher(new PublishingCompany(defaultPublisherName))
-                .genre(action)
-                .build();
-        Item item = new Item(_pub1, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByGenre(action)).thenReturn(true);
+        when(factory.create(item, price, start, end)).thenReturn(auction);
 
         // Act
-        Auction auction = repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        Auction created = localRepo.createAuction(item, price, start, end);
+        List<Item> results = localRepo.getAuctionItemsByGenre(action);
 
         // Assert
-        assertNotNull(auction);
-
-        List<Item> results = repo.getAuctionItemsByGenre(action);
+        assertNotNull(created);
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
+        verify(factory).create(item, price, start, end);
     }
 
     @Test
-    void createAuctionWithOutrightAddsAuctionAndCanBeRetrievedByGenre() {
+    void createAuctionWithOutrightAddsAuctionAndCanBeRetrievedByGenre() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
+        Price outright = mock(Price.class);
+        Genre action = mock(Genre.class);
 
-        Genre action = new Genre("Action");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(new Author(defaultAuthorName))
-                .publisher(new PublishingCompany(defaultPublisherName))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByGenre(action)).thenReturn(true);
+        when(factory.create(item, price, outright, start, end)).thenReturn(auction);
 
         // Act
-        Auction auction = repo.createAuction(item, new Price(10.0, Currency.EUR), new Price(20.0, Currency.EUR), start, end);
+        Auction created = localRepo.createAuction(item, price, outright, start, end);
+        List<Item> results = localRepo.getAuctionItemsByGenre(action);
 
         // Assert
-        assertNotNull(auction);
-
-        List<Item> results = repo.getAuctionItemsByGenre(action);
+        assertNotNull(created);
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
+        verify(factory).create(item, price, outright, start, end);
     }
 
     @Test
-    void createAuctionThrowsWhenStartDateIsNotInFuture() {
+    void createAuctionThrowsWhenStartDateIsNotInFuture() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre g = new Genre("X");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(new Author(defaultAuthorName))
-                .publisher(new PublishingCompany(defaultPublisherName))
-                .genre(g)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        ZonedDateTime badStart = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime goodEnd = ZonedDateTime.now().plusDays(1);
 
-        ZonedDateTime start = ZonedDateTime.now().minusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(1);
+        when(factory.create(item, price, badStart, goodEnd))
+                .thenThrow(new InstantiationException("Invalid start date"));
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> repo.createAuction(item, new Price(5.0, Currency.EUR), start, end));
+                () -> localRepo.createAuction(item, price, badStart, goodEnd));
 
         // Assert
         assertTrue(ex.getMessage().contains("Invalid start date"));
+        verify(factory).create(item, price, badStart, goodEnd);
     }
 
     @Test
-    void createAuctionThrowsWhenEndDateBeforeStartDate() {
+    void createAuctionThrowsWhenEndDateBeforeStartDate() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre g = new Genre("Y");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(new Author(defaultAuthorName))
-                .publisher(new PublishingCompany(defaultPublisherName))
-                .genre(g)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        ZonedDateTime goodStart = ZonedDateTime.now().plusDays(2);
+        ZonedDateTime badEnd = ZonedDateTime.now().plusDays(1);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(2);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(1);
+        when(factory.create(item, price, goodStart, badEnd))
+                .thenThrow(new InstantiationException("Invalid end date"));
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> repo.createAuction(item, new Price(5.0, Currency.EUR), start, end));
+                () -> localRepo.createAuction(item, price, goodStart, badEnd));
 
         // Assert
         assertTrue(ex.getMessage().contains("Invalid end date"));
+        verify(factory).create(item, price, goodStart, badEnd);
     }
 
     @Test
-    void getAuctionItemsByGenreFiltersCorrectlyAndIsCaseInsensitive() {
+    void getAuctionItemsByGenreFiltersCorrectlyAndIsCaseInsensitive() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
-        Genre action = new Genre("Action");
-        Genre romance = new Genre("Romance");
+        Genre actionUpper = mock(Genre.class);
+        Genre romance = mock(Genre.class);
 
-        Publication pubA = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("0306406152"))
-                .year(publicationYear)
-                .title(new Title("A"))
-                .author(new Author("A"))
-                .publisher(new PublishingCompany("P"))
-                .genre(action)
-                .build();
-        Item itemA = new Item(pubA, Condition.GOOD);
+        Item itemA = mock(Item.class);
+        Item itemB = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Publication pubB = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("B"))
-                .author(new Author("B"))
-                .publisher(new PublishingCompany("P"))
-                .genre(romance)
-                .build();
-        Item itemB = new Item(pubB, Condition.GOOD);
+        Auction auctionA = mockAuctionWithItem(itemA);
+        Auction auctionB = mockAuctionWithItem(itemB);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        when(auctionA.isByGenre(actionUpper)).thenReturn(true);
+        when(auctionB.isByGenre(romance)).thenReturn(true);
 
-        repo.createAuction(itemA, new Price(1.0, Currency.EUR), start, end);
-        repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
+        when(factory.create(itemA, price, start, end)).thenReturn(auctionA);
+        when(factory.create(itemB, price, start, end)).thenReturn(auctionB);
+
+        localRepo.createAuction(itemA, price, start, end);
+        localRepo.createAuction(itemB, price, start, end);
 
         // Act
-        List<Item> actionResult = repo.getAuctionItemsByGenre(new Genre("ACTION"));
-        List<Item> romanceResult = repo.getAuctionItemsByGenre(romance);
+        List<Item> actionResult = localRepo.getAuctionItemsByGenre(actionUpper);
+        List<Item> romanceResult = localRepo.getAuctionItemsByGenre(romance);
 
         // Assert
         assertEquals(1, actionResult.size());
@@ -278,29 +224,18 @@ class AuctionRepoTest {
 
         assertEquals(1, romanceResult.size());
         assertSame(itemB, romanceResult.get(0));
+
+        verify(auctionA).isByGenre(actionUpper);
+        verify(auctionB).isByGenre(romance);
     }
 
     @Test
-    void getAuctionItemsByGenreWithNullGenreReturnsEmptyList() {
+    void getAuctionItemsByGenreWithNullGenreReturnsEmptyList() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        Auction auction = mockAuctionWithItem(item1);
+        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction);
 
-        Genre action = new Genre("Action");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(new Author(defaultAuthorName))
-                .publisher(new PublishingCompany(defaultPublisherName))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        repo.createAuction(item1, startingPrice, start, end);
 
         // Act
         List<Item> results = repo.getAuctionItemsByGenre(null);
@@ -308,168 +243,156 @@ class AuctionRepoTest {
         // Assert
         assertNotNull(results);
         assertTrue(results.isEmpty());
+        verify(auction).isByGenre(null);
     }
 
     @Test
-    void getAuctionItemsByAuthorReturnsMatchingItems() {
+    void getAuctionItemsByAuthorReturnsMatchingItems() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Author author = mock(Author.class);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre action = new Genre("Action");
-        Author author = new Author("Author A");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(author)
-                .publisher(new PublishingCompany("Pub"))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByAuthor(author)).thenReturn(true);
+        when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByAuthor(author);
+        List<Item> results = localRepo.getAuctionItemsByAuthor(author);
 
         // Assert
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
+        verify(auction).isByAuthor(author);
     }
 
     @Test
-    void getAuctionItemsByAuthorIsCaseInsensitive() {
+    void getAuctionItemsByAuthorIsCaseInsensitive() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Author authorLower = mock(Author.class);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre action = new Genre("Action");
-        Author author = new Author("Author A");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(author)
-                .publisher(new PublishingCompany("Pub"))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByAuthor(authorLower)).thenReturn(true);
+        when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByAuthor(new Author("author a"));
+        List<Item> results = localRepo.getAuctionItemsByAuthor(authorLower);
 
         // Assert
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
+        verify(auction).isByAuthor(authorLower);
     }
 
     @Test
-    void getAuctionItemsByAuthorReturnsEmptyListWhenNoMatch() {
+    void getAuctionItemsByAuthorReturnsEmptyListWhenNoMatch() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Author author = mock(Author.class);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre action = new Genre("Action");
-        Author author = new Author("Author A");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(author)
-                .publisher(new PublishingCompany("Pub"))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByAuthor(author)).thenReturn(false);
+        when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByAuthor(new Author("Other"));
+        List<Item> results = localRepo.getAuctionItemsByAuthor(author);
 
         // Assert
         assertNotNull(results);
         assertTrue(results.isEmpty());
+        verify(auction).isByAuthor(author);
     }
 
     @Test
-    void getAuctionItemsByAuthorReturnsDefensiveCopy() {
+    void getAuctionItemsByAuthorReturnsDefensiveCopy() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
+        Author author = mock(Author.class);
+        Item item = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Genre action = new Genre("Action");
-        Author author = new Author("Author A");
-        Publication publication = Publication.builder()
-                .type(bookType)
-                .identifier(new ISBN("9789896710453"))
-                .year(publicationYear)
-                .title(new Title("Sample"))
-                .author(author)
-                .publisher(new PublishingCompany("Pub"))
-                .genre(action)
-                .build();
-        Item item = new Item(publication, Condition.GOOD);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByAuthor(author)).thenReturn(true);
+        when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> first = repo.getAuctionItemsByAuthor(author);
+        List<Item> first = localRepo.getAuctionItemsByAuthor(author);
         first.clear();
-
-        List<Item> second = repo.getAuctionItemsByAuthor(author);
+        List<Item> second = localRepo.getAuctionItemsByAuthor(author);
 
         // Assert
         assertEquals(1, second.size());
     }
 
     @Test
-    void shouldReturnAllItemsForGivenPublication() {
+    void shouldReturnAllItemsForGivenPublication() throws Exception {
         // Arrange
-        _repo.createAuction(_item1, _startingPrice, _start, _end);
-        _repo.createAuction(_item2, _startingPrice, _start, _end);
-        _repo.createAuction(_item3, _startingPrice, _start, _end);
+        Auction auction1 = mockAuctionWithItem(item1);
+        Auction auction2 = mockAuctionWithItem(item2);
+        Auction auction3 = mockAuctionWithItem(item3);
+
+        when(auction1.isByPublication(pub1)).thenReturn(true);
+        when(auction2.isByPublication(pub1)).thenReturn(true);
+        when(auction3.isByPublication(pub1)).thenReturn(false);
+
+        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction1);
+        when(auctionFactory.create(item2, startingPrice, start, end)).thenReturn(auction2);
+        when(auctionFactory.create(item3, startingPrice, start, end)).thenReturn(auction3);
+
+        repo.createAuction(item1, startingPrice, start, end);
+        repo.createAuction(item2, startingPrice, start, end);
+        repo.createAuction(item3, startingPrice, start, end);
 
         // Act
-        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+        List<Item> result = repo.getAuctionItemsByPublication(pub1);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(_item1));
-        assertTrue(result.contains(_item2));
-        assertFalse(result.contains(_item3));
+        assertTrue(result.contains(item1));
+        assertTrue(result.contains(item2));
+        assertFalse(result.contains(item3));
     }
 
     @Test
-    void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
+    void shouldReturnEmptyListWhenNoAuctionMatchesPublication() throws Exception {
         // Arrange
-        _repo.createAuction(_item3, _startingPrice, _start, _end); // only pub2 item
+        Auction auction = mockAuctionWithItem(item3);
+        when(auction.isByPublication(pub1)).thenReturn(false);
+        when(auctionFactory.create(item3, startingPrice, start, end)).thenReturn(auction);
+
+        repo.createAuction(item3, startingPrice, start, end);
 
         // Act
-        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+        List<Item> result = repo.getAuctionItemsByPublication(pub1);
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+        verify(auction).isByPublication(pub1);
     }
 
     @Test
     void shouldReturnEmptyListWhenRepoIsEmpty() {
         // Act
-        List<Item> result = _repo.getAuctionItemsByPublication(_pub1);
+        List<Item> result = repo.getAuctionItemsByPublication(pub1);
 
         // Assert
         assertNotNull(result);
@@ -477,109 +400,84 @@ class AuctionRepoTest {
     }
 
     @Test
-    void should_filter_correctly_and_be_case_insensitive() {
+    void should_filter_correctly_and_be_case_insensitive() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        AuctionFactory factory = mock(AuctionFactory.class);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
-        PublishingCompany publisher1 = new PublishingCompany("publisher1");
-        PublishingCompany publisher2 = new PublishingCompany("publisher2");
+        PublishingCompany publisher1 = mock(PublishingCompany.class);
+        PublishingCompany publisher2 = mock(PublishingCompany.class);
 
-        Publication pubA = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("0306406152"))
-                .year(Year.of(2019))
-                .title(new Title("A"))
-                .author(new Author("A"))
-                .publisher(publisher1)
-                .genre(new Genre("action"))
-                .build();
+        Item itemA = mock(Item.class);
+        Item itemB = mock(Item.class);
+        Price price = mock(Price.class);
 
-        Publication pubB = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9789896710453"))
-                .year(Year.of(2019))
-                .title(new Title("B"))
-                .author(new Author("B"))
-                .publisher(publisher2)
-                .genre(new Genre("romance"))
-                .build();
+        Auction auctionA = mockAuctionWithItem(itemA);
+        Auction auctionB = mockAuctionWithItem(itemB);
 
-        Item itemA = new Item(pubA, Condition.GOOD);
-        Item itemB = new Item(pubB, Condition.GOOD);
+        when(auctionA.isByPublishingCompany(publisher1)).thenReturn(true);
+        when(auctionB.isByPublishingCompany(publisher2)).thenReturn(true);
 
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        when(factory.create(itemA, price, start, end)).thenReturn(auctionA);
+        when(factory.create(itemB, price, start, end)).thenReturn(auctionB);
 
-        repo.createAuction(itemA, new Price(1.0, Currency.EUR), start, end);
-        repo.createAuction(itemB, new Price(1.0, Currency.EUR), start, end);
+        localRepo.createAuction(itemA, price, start, end);
+        localRepo.createAuction(itemB, price, start, end);
 
         // Act
-        List<Item> item1 = repo.getAuctionItemsByPublishingCompany(new PublishingCompany("pubLIshEr1"));
-        List<Item> item2 = repo.getAuctionItemsByPublishingCompany(publisher2);
+        List<Item> itemList1 = localRepo.getAuctionItemsByPublishingCompany(publisher1);
+        List<Item> itemList2 = localRepo.getAuctionItemsByPublishingCompany(publisher2);
 
         // Assert
-        assertEquals(1, item1.size());
-        assertSame(itemA, item1.get(0));
+        assertEquals(1, itemList1.size());
+        assertSame(itemA, itemList1.get(0));
 
-        assertEquals(1, item2.size());
-        assertSame(itemB, item2.get(0));
+        assertEquals(1, itemList2.size());
+        assertSame(itemB, itemList2.get(0));
+
+        verify(auctionA).isByPublishingCompany(publisher1);
+        verify(auctionB).isByPublishingCompany(publisher2);
     }
+
     @Test
-    void should_return_empty_list_when_null_publisher() {
+    void should_return_empty_list_when_null_publisher() throws Exception {
         // Arrange
-        AuctionRepo repo = new AuctionRepo();
+        Auction auction = mockAuctionWithItem(item1);
+        when(auctionFactory.create(item1, startingPrice, start, end)).thenReturn(auction);
 
-        PublishingCompany publisher1 = new PublishingCompany("publisher1");
-        Publication pubA = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("0306406152"))
-                .year(Year.of(2019))
-                .title(new Title("A"))
-                .author(new Author("A"))
-                .publisher(publisher1)
-                .genre(new Genre("action"))
-                .build();
-
-        Item item = new Item(pubA, Condition.GOOD);
-
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-
-        repo.createAuction(item, new Price(10.0, Currency.EUR), start, end);
+        repo.createAuction(item1, startingPrice, start, end);
 
         // Act
-        List<Item> item3 = repo.getAuctionItemsByPublishingCompany(null);
+        List<Item> itemList = repo.getAuctionItemsByPublishingCompany(null);
 
         // Assert
-        assertNotNull(item3);
-        assertTrue(item3.isEmpty());
+        assertNotNull(itemList);
+        assertTrue(itemList.isEmpty());
+        verify(auction).isByPublishingCompany(null);
     }
 
     @Test
     void createAuctionUsesFactoryAndStoresAuction() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
-        Genre genre = new Genre("X");
+        Price price = mock(Price.class);
+        Genre localGenre = mock(Genre.class);
 
-        Auction auction = mock(Auction.class);
-        when(auction.isByGenre(genre)).thenReturn(true);
-        when(auction.getItem()).thenReturn(item);
+        Auction auction = mockAuctionWithItem(item);
+        when(auction.isByGenre(localGenre)).thenReturn(true);
         when(factory.create(item, price, start, end)).thenReturn(auction);
 
         // Act
-        Auction created = repo.createAuction(item, price, start, end);
+        Auction created = localRepo.createAuction(item, price, start, end);
 
         // Assert
         assertSame(auction, created);
         verify(factory).create(item, price, start, end);
 
-        List<Item> results = repo.getAuctionItemsByGenre(genre);
+        List<Item> results = localRepo.getAuctionItemsByGenre(localGenre);
         assertEquals(1, results.size());
         assertSame(item, results.get(0));
     }
@@ -588,19 +486,17 @@ class AuctionRepoTest {
     void createAuctionWithOutrightUsesFactoryAndStoresAuction() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        Price outright = new Price(15.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Price price = mock(Price.class);
+        Price outright = mock(Price.class);
 
-        Auction auction = mock(Auction.class);
+        Auction auction = mockAuctionWithItem(item);
         when(factory.create(item, price, outright, start, end)).thenReturn(auction);
 
         // Act
-        Auction created = repo.createAuction(item, price, outright, start, end);
+        Auction created = localRepo.createAuction(item, price, outright, start, end);
 
         // Assert
         assertSame(auction, created);
@@ -611,44 +507,40 @@ class AuctionRepoTest {
     void createAuctionWrapsFactoryInstantiationException() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Price price = mock(Price.class);
 
         when(factory.create(item, price, start, end)).thenThrow(new InstantiationException("boom"));
 
         // Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> repo.createAuction(item, price, start, end));
+                () -> localRepo.createAuction(item, price, start, end));
 
         // Assert
         assertTrue(ex.getMessage().contains("Unable to create auction"));
+        verify(factory).create(item, price, start, end);
     }
 
     @Test
     void getAuctionItemsByAuthorUsesAuctionPredicate() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
-        Author author = new Author("Author X");
+        Author author = mock(Author.class);
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Price price = mock(Price.class);
 
-        Auction auction = mock(Auction.class);
+        Auction auction = mockAuctionWithItem(item);
         when(auction.isByAuthor(author)).thenReturn(true);
-        when(auction.getItem()).thenReturn(item);
         when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        repo.createAuction(item, price, start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByAuthor(author);
+        List<Item> results = localRepo.getAuctionItemsByAuthor(author);
 
         // Assert
         assertEquals(1, results.size());
@@ -660,23 +552,20 @@ class AuctionRepoTest {
     void getAuctionItemsByPublisherUsesAuctionPredicate() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
-        PublishingCompany publisher = new PublishingCompany("Publisher X");
+        PublishingCompany publisher = mock(PublishingCompany.class);
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Price price = mock(Price.class);
 
-        Auction auction = mock(Auction.class);
+        Auction auction = mockAuctionWithItem(item);
         when(auction.isByPublishingCompany(publisher)).thenReturn(true);
-        when(auction.getItem()).thenReturn(item);
         when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        repo.createAuction(item, price, start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByPublishingCompany(publisher);
+        List<Item> results = localRepo.getAuctionItemsByPublishingCompany(publisher);
 
         // Assert
         assertEquals(1, results.size());
@@ -688,23 +577,20 @@ class AuctionRepoTest {
     void getAuctionItemsByPublicationUsesAuctionPredicate() throws Exception {
         // Arrange
         AuctionFactory factory = mock(AuctionFactory.class);
-        AuctionRepo repo = new AuctionRepo(factory);
+        AuctionRepo localRepo = mockRepoWithFactory(factory);
 
         Publication publication = mock(Publication.class);
         Item item = mock(Item.class);
-        Price price = new Price(5.0, Currency.EUR);
-        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime end = ZonedDateTime.now().plusDays(2);
+        Price price = mock(Price.class);
 
-        Auction auction = mock(Auction.class);
+        Auction auction = mockAuctionWithItem(item);
         when(auction.isByPublication(publication)).thenReturn(true);
-        when(auction.getItem()).thenReturn(item);
         when(factory.create(item, price, start, end)).thenReturn(auction);
 
-        repo.createAuction(item, price, start, end);
+        localRepo.createAuction(item, price, start, end);
 
         // Act
-        List<Item> results = repo.getAuctionItemsByPublication(publication);
+        List<Item> results = localRepo.getAuctionItemsByPublication(publication);
 
         // Assert
         assertEquals(1, results.size());
@@ -712,130 +598,112 @@ class AuctionRepoTest {
         verify(auction).isByPublication(publication);
     }
 
-    //Isolated tests
+    // Isolated tests
 
     @Test
     void getAuctionItemsByAuthorShouldReturnListOfItemsByAuthor() throws InstantiationException {
+        // Arrange
+        Auction auction1 = mock(Auction.class);
+        Auction auction2 = mock(Auction.class);
+        Item itemDouble1 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
+        Price startingPriceDouble = mock(Price.class);
+        Author authorDouble = mock(Author.class);
 
-        //Arrange
-        Auction _auction1 = mock(Auction.class);
-        Auction _auction2 = mock(Auction.class);
-        Item _itemDouble1 = mock(Item.class);
-        Item _itemDouble2 = mock(Item.class);
-        Price _startingPriceDouble = mock(Price.class);
-        Author _authorDouble = mock(Author.class);
+        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+                .thenReturn(auction1);
+        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+                .thenReturn(auction2);
 
-        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction1);
-        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction2);
+        when(auction1.isByAuthor(authorDouble)).thenReturn(true);
+        when(auction2.isByAuthor(authorDouble)).thenReturn(true);
+        when(auction1.getItem()).thenReturn(itemDouble1);
+        when(auction2.getItem()).thenReturn(itemDouble2);
 
-        when(_auction1.isByAuthor(_authorDouble)).thenReturn(true);
-        when(_auction2.isByAuthor(_authorDouble)).thenReturn(true);
-        when(_auction1.getItem()).thenReturn(_itemDouble1);
-        when(_auction2.getItem()).thenReturn(_itemDouble2);
+        // Act
+        repo.createAuction(itemDouble1, startingPriceDouble, start, end);
+        repo.createAuction(itemDouble2, startingPriceDouble, start, end);
 
-        //SUT
-        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
+        List<Item> results = repo.getAuctionItemsByAuthor(authorDouble);
 
-        //Act
-        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
-        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
-
-        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
-
-        //Assert
+        // Assert
         assertEquals(2, results.size());
-
     }
 
     @Test
     void getAuctionItemsByAuthorShouldReturnEmptyListOfItemsIfNotByAuthor() throws InstantiationException {
+        // Arrange
+        Auction auction1 = mock(Auction.class);
+        Auction auction2 = mock(Auction.class);
+        Auction auction3 = mock(Auction.class);
+        Item itemDouble1 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
+        Item itemDouble3 = mock(Item.class);
+        Price startingPriceDouble = mock(Price.class);
+        Author authorDouble = mock(Author.class);
 
-        //Arrange
-        Auction _auction1 = mock(Auction.class);
-        Auction _auction2 = mock(Auction.class);
-        Auction _auction3 = mock(Auction.class);
-        Item _itemDouble1 = mock(Item.class);
-        Item _itemDouble2 = mock(Item.class);
-        Item _itemDouble3 = mock(Item.class);
-        Price _startingPriceDouble = mock(Price.class);
-        Author _authorDouble = mock(Author.class);
+        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+                .thenReturn(auction1);
+        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+                .thenReturn(auction2);
+        when(auctionFactory.create(itemDouble3, startingPriceDouble, start, end))
+                .thenReturn(auction3);
 
-        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction1);
-        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction2);
-        when(_auctionFactoryDouble.create(_itemDouble3, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction3);
+        when(auction1.isByAuthor(authorDouble)).thenReturn(false);
+        when(auction2.isByAuthor(authorDouble)).thenReturn(false);
+        when(auction3.isByAuthor(authorDouble)).thenReturn(false);
+        when(auction1.getItem()).thenReturn(itemDouble1);
+        when(auction2.getItem()).thenReturn(itemDouble2);
+        when(auction3.getItem()).thenReturn(itemDouble3);
 
-        when(_auction1.isByAuthor(_authorDouble)).thenReturn(false);
-        when(_auction2.isByAuthor(_authorDouble)).thenReturn(false);
-        when(_auction3.isByAuthor(_authorDouble)).thenReturn(false);
-        when(_auction1.getItem()).thenReturn(_itemDouble1);
-        when(_auction2.getItem()).thenReturn(_itemDouble2);
-        when(_auction3.getItem()).thenReturn(_itemDouble3);
+        // Act
+        repo.createAuction(itemDouble1, startingPriceDouble, start, end);
+        repo.createAuction(itemDouble2, startingPriceDouble, start, end);
+        repo.createAuction(itemDouble3, startingPriceDouble, start, end);
 
+        List<Item> results = repo.getAuctionItemsByAuthor(authorDouble);
 
-        //SUT
-        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
-
-
-        //Act
-        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
-        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
-        _ar.createAuction(_itemDouble3, _startingPriceDouble, _start, _end);
-
-        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
-
-        //Assert
+        // Assert
         assertEquals(0, results.size());
-
     }
 
     @Test
     void getAuctionItemsByAuthorShouldListOfItemsOfOnlyItemsByAuthor() throws InstantiationException {
+        // Arrange
+        Auction auction1 = mock(Auction.class);
+        Auction auction2 = mock(Auction.class);
+        Auction auction3 = mock(Auction.class);
+        Item itemDouble1 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
+        Item itemDouble3 = mock(Item.class);
+        Price startingPriceDouble = mock(Price.class);
+        Author authorDouble = mock(Author.class);
 
-        //Arrange
-        Auction _auction1 = mock(Auction.class);
-        Auction _auction2 = mock(Auction.class);
-        Auction _auction3 = mock(Auction.class);
-        Item _itemDouble1 = mock(Item.class);
-        Item _itemDouble2 = mock(Item.class);
-        Item _itemDouble3 = mock(Item.class);
-        Price _startingPriceDouble = mock(Price.class);
-        Author _authorDouble = mock(Author.class);
+        when(auctionFactory.create(itemDouble1, startingPriceDouble, start, end))
+                .thenReturn(auction1);
+        when(auctionFactory.create(itemDouble2, startingPriceDouble, start, end))
+                .thenReturn(auction2);
+        when(auctionFactory.create(itemDouble3, startingPriceDouble, start, end))
+                .thenReturn(auction3);
 
-        when(_auctionFactoryDouble.create(_itemDouble1, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction1);
-        when(_auctionFactoryDouble.create(_itemDouble2, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction2);
-        when(_auctionFactoryDouble.create(_itemDouble3, _startingPriceDouble, _start, _end))
-                .thenReturn(_auction3);
+        when(auction1.isByAuthor(authorDouble)).thenReturn(true);
+        when(auction2.isByAuthor(authorDouble)).thenReturn(true);
+        when(auction3.isByAuthor(authorDouble)).thenReturn(false);
+        when(auction1.getItem()).thenReturn(itemDouble1);
+        when(auction2.getItem()).thenReturn(itemDouble2);
+        when(auction3.getItem()).thenReturn(itemDouble3);
 
-        when(_auction1.isByAuthor(_authorDouble)).thenReturn(true);
-        when(_auction2.isByAuthor(_authorDouble)).thenReturn(true);
-        when(_auction3.isByAuthor(_authorDouble)).thenReturn(false);
-        when(_auction1.getItem()).thenReturn(_itemDouble1);
-        when(_auction2.getItem()).thenReturn(_itemDouble2);
-        when(_auction3.getItem()).thenReturn(_itemDouble3);
+        // Act
+        repo.createAuction(itemDouble1, startingPriceDouble, start, end);
+        repo.createAuction(itemDouble2, startingPriceDouble, start, end);
+        repo.createAuction(itemDouble3, startingPriceDouble, start, end);
 
-        //SUT
-        AuctionRepo _ar = new AuctionRepo(_auctionFactoryDouble);
+        List<Item> results = repo.getAuctionItemsByAuthor(authorDouble);
 
-        //Act
-        _ar.createAuction(_itemDouble1, _startingPriceDouble, _start, _end);
-        _ar.createAuction(_itemDouble2, _startingPriceDouble, _start, _end);
-        _ar.createAuction(_itemDouble3, _startingPriceDouble, _start, _end);
-
-        List<Item> results = _ar.getAuctionItemsByAuthor(_authorDouble);
-
-        //Assert
-        assertTrue(results.contains(_itemDouble1));
-        assertTrue(results.contains(_itemDouble2));
-        assertFalse(results.contains(_itemDouble3));
+        // Assert
+        assertTrue(results.contains(itemDouble1));
+        assertTrue(results.contains(itemDouble2));
+        assertFalse(results.contains(itemDouble3));
         assertEquals(2, results.size());
-
     }
-
 }
