@@ -5,89 +5,148 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class AuthorRepoTest {
+    private AuthorFactory factory;
+    private AuthorRepo repo;
 
     @Test
-    void createShouldStoreAuthorWithTrimmedName() {
-        AuthorRepo repo = new AuthorRepo();
+    void createAuthorShouldStoreAuthorWithTrimmedName() {
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        Author a = repo.create(" Ana   ");
+        //SUT
+        repo = new AuthorRepo(factory);
 
-        assertNotNull(a);
-        assertEquals("Ana", a.getName());
-
+        //act
+        Author author = repo.createAuthor(" Ana   ");
         List<Author> all = repo.findAll();
+
+        //assert
+        assertNotNull(author);
+        assertEquals("Ana", author.getName());
+
         assertEquals(1, all.size());
         assertEquals("Ana", all.get(0).getName());
     }
 
     @Test
-    void createShouldThrowWhenNameIsNull() {
-        AuthorRepo repo = new AuthorRepo();
+    void createAuthorShouldThrowWhenNameIsNull() {
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.create(null));
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(null));
+
+        //assert
         assertEquals("Author name is mandatory", ex.getMessage());
     }
 
     @Test
-    void createShouldThrowWhenNameIsBlank() {
-        AuthorRepo repo = new AuthorRepo();
+    void createAuthorShouldThrowWhenNameIsBlank() {
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        assertThrows(IllegalArgumentException.class, () -> repo.create(" "));
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act + assert
+        assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(" "));
     }
 
     @Test
-    void createShouldThrowWhenNameIsEmpty() {
-        AuthorRepo repo = new AuthorRepo();
+    void createAuthorShouldThrowWhenNameIsEmpty() {
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        assertThrows(IllegalArgumentException.class, () -> repo.create(""));
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act + assert
+        assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(""));
     }
 
     @Test
-    void createShouldThrowWhenAuthorAlreadyExistsIgnoringCase() {
-        AuthorRepo repo = new AuthorRepo();
+    void createAuthorShouldThrowWhenAuthorAlreadyExistsIgnoringCase() {
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        repo.create("Ana");
+        //SUT
+        repo = new AuthorRepo(factory);
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> repo.create("ana"));
+        //act
+        repo.createAuthor("Ana");
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> repo.createAuthor("ana"));
+
+        //assert
         assertEquals("Author already exists", ex.getMessage());
         assertEquals(1, repo.findAll().size());
     }
 
     @Test
     void findAllShouldReturnDefensiveCopy() {
-        AuthorRepo repo = new AuthorRepo();
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        repo.create("A");
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act
+        repo.createAuthor("A");
         List<Author> copy = repo.findAll();
 
         //Modifying the returned list cannot affect the repository
         copy.clear();
 
+        //assert
         assertEquals(1, repo.findAll().size()
         );
     }
 
     @Test
     void existsByNameShouldReturnFalseOnEmptyRepo() {
-        AuthorRepo repo = new AuthorRepo();
+        //arrange
+        factory = mock(AuthorFactory.class);
+
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act + assert
         assertFalse(repo.existsByName("Ana"));
     }
 
     @Test
     void existsByNameShouldReturnFalseWhenNoMatchExists() {
-        AuthorRepo repo = new AuthorRepo();
-        repo.create("Ana");
+        //arrange
+        factory = mock(AuthorFactory.class);
 
-        assertFalse(repo.existsByName("Bruno")); // <- mata o mutant "return true"
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act
+        repo.createAuthor("Ana");
+
+        //assert
+        assertFalse(repo.existsByName("Bruno"));
     }
 
     @Test
     void existsByNameShouldReturnTrueWhenMatchExistsIgnoringCase() {
-        AuthorRepo repo = new AuthorRepo();
-        repo.create("Ana");
+        //arrange
+        factory = mock(AuthorFactory.class);
 
+        //SUT
+        repo = new AuthorRepo(factory);
+
+        //act
+        repo.createAuthor("Ana");
+
+        //assert
         assertTrue(repo.existsByName("aNa"));
     }
 }
