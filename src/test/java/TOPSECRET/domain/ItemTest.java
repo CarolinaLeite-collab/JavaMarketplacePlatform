@@ -399,5 +399,58 @@ class ItemTest {
         assertFalse(result);
     }
 
+    // Isolated test of isByPublishingCompany method
+    @Test
+    void isByPublishingCompanyShouldReturnTrueWhenPublishingCompanyMatches() {
+
+        //Arrange
+        PublishingCompany _publisher = mock(PublishingCompany.class);
+        when(_publicationDouble.isByPublishingCompany(_publisher)).thenReturn(true);
+
+        // SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByPublishingCompany(_publisher);
+
+        //Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void isByPublishingCompanyShouldReturnFalseWhenPublishingCompanyIsDifferent() {
+
+        //Arrange
+        PublishingCompany _publisher2 = mock(PublishingCompany.class);
+        when(_publicationDouble.isByPublishingCompany(_publisher2)).thenReturn(false);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        boolean result = item.isByPublishingCompany(_publisher2);
+
+        //Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void isByPublishingCompanyShouldDelegateToPublication() {
+        //Arrange
+        PublishingCompany _publisher = mock(PublishingCompany.class);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        //Act
+        item.isByPublishingCompany(_publisher);
+
+        //Assert
+        verify(_publicationDouble, times(1)).isByPublishingCompany(_publisher);
+    }
+
+
 
 }

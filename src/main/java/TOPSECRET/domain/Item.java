@@ -78,6 +78,11 @@ public class Item {
 
     }
 
+    public boolean isByPublishingCompany( PublishingCompany publisher) {
+
+        return publication.isByPublishingCompany(publisher);
+    }
+
     public boolean isByPublication(Publication publication) {
 
         return publication.equals(this.publication);
