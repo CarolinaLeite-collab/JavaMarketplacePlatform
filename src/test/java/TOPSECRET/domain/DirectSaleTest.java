@@ -2,8 +2,6 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.time.Period;
 import java.time.Year;
 
@@ -15,17 +13,15 @@ class DirectSaleTest {
 
     private Item _itemDouble;
     private Price _priceDouble;
-    private Period _periodDouble;
+    private Period _period;
 
     @BeforeEach
     void setUp() {
 
         _itemDouble = mock(Item.class);
         _priceDouble = mock(Price.class);
-        _periodDouble = mock(Period.class);
-
+        _period = Period.ofMonths(3);
     }
-
 
     @Test
     void createsDirectSaleWithPriceAndTimeLimit() {
@@ -134,7 +130,7 @@ class DirectSaleTest {
         when(_itemDouble.isByAuthor(_authorDouble)).thenReturn(true);
 
         // SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
         boolean result = ds.isByAuthor(_authorDouble);
@@ -152,7 +148,7 @@ class DirectSaleTest {
         when(_itemDouble.isByAuthor(_author2)).thenReturn(false);
 
         // SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
         boolean result = ds.isByAuthor(_author2);
@@ -168,7 +164,7 @@ class DirectSaleTest {
         Author _author = mock(Author.class);
 
         //SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _periodDouble);
+        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
         ds.isByAuthor(_author);
@@ -518,6 +514,55 @@ class DirectSaleTest {
 
         assertTrue(sale.isByPublication(pub1));
 
+    }
+
+    @Test
+    void isByGenre_should_return_true_when_Genre_matches() {
+
+        //Arrange
+        Genre genre = mock(Genre.class);
+        when(_itemDouble.isByGenre(genre)).thenReturn(true);
+
+        // SUT
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        //Act
+        boolean result = directSale.isByGenre(genre);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isByGenre_should_return_false_when_Genre_is_different() {
+
+        //Arrange
+        Genre genre = mock(Genre.class);
+        when(_itemDouble.isByGenre(genre)).thenReturn(false);
+
+        // SUT
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        //Act
+        boolean result = directSale.isByGenre(genre);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByGenre_should_delegate_to_Item() {
+        //Arrange
+        Genre genre = mock(Genre.class);
+
+        //SUT
+        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+
+        //Act
+        directSale.isByGenre(genre);
+
+        //Assert
+        verify(_itemDouble, times(1)).isByGenre(genre);
     }
 
 }

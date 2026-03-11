@@ -66,4 +66,11 @@ public class DirectSale {
         }
         return false;
     }
+
+    public boolean isByGenre(Genre genreName) {
+
+        return item.isByGenre(genreName);
+
+    }
+
 }
