@@ -2,6 +2,13 @@ package TOPSECRET.domain;
 
 import java.time.Period;
 
+/**
+ * Factory responsible for creating {@link DirectSale } instances.
+ * <p>
+ * Any exception thrown during the creation process is wrapped
+ * into an {@link IllegalArgumentException}.
+ */
+
 public class DirectSaleFactory {
 
     public DirectSale createDirectSale(Item item, Price price, Period timeLimit) {
