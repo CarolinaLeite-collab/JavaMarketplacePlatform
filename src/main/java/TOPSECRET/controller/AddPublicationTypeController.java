@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationType;
 import TOPSECRET.domain.PublicationTypeRepo;
+import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 
 /**
@@ -16,13 +17,16 @@ public class AddPublicationTypeController {
 
     private final PublicationTypeRepo _ptr;
 
-    public AddPublicationTypeController(PublicationTypeRepo _ptr, User _admin) {
+    public AddPublicationTypeController(PublicationTypeRepo _ptr) {
 
         this._ptr = _ptr;
 
     }
 
-    public PublicationType addPublicationType(String publicationTypeName) {
+    public PublicationType addPublicationType(String publicationTypeName, User admin) {
+        if(!admin.hasRole(Role.ADMIN)){
+            throw new SecurityException("User is not allowed to add publication type");
+        }
 
         return _ptr.addPublicationType(publicationTypeName);
 

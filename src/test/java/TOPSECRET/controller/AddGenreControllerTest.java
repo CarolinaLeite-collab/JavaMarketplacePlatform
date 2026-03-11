@@ -9,37 +9,44 @@ import static org.mockito.Mockito.*;
 
 public class AddGenreControllerTest {
 
-
-    private User _adminDouble;
     private GenreRepo _genreRepoDouble;
     private Genre _genreDouble;
     private AddGenreController _addGenreController;
 
     @BeforeEach
     void setUp() {
-        _adminDouble = mock(User.class);
         _genreRepoDouble = mock(GenreRepo.class);
 
     }
 
     @Test
     void constructorAddGenreControllerShouldCreateController() {
-        new AddGenreController(_genreRepoDouble, _adminDouble);
+        //arrange
+        User _adminDouble = mock(User.class);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+
+        //SUT
+        new AddGenreController(_genreRepoDouble);
     }
 
     @Test
     void addGenreShouldReturnGenreFromRepo() {
+        //arrange
         String genreName = "Action";
 
-        //SUT
-        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+        User _adminDouble = mock(User.class);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         _genreDouble = mock(Genre.class);
-
         when(_genreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
 
-        Genre genreAdded = _addGenreController.addGenre(genreName);
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble);
 
+        //act
+        Genre genreAdded = _addGenreController.addGenre(genreName, _adminDouble);
+
+        //assert
         assertNotNull(genreAdded);
         assertEquals(_genreDouble, genreAdded);
         verify(_genreRepoDouble).addGenre(genreName);
@@ -47,10 +54,11 @@ public class AddGenreControllerTest {
 
     @Test
     void addGenreThrowsWhenAlreadyExistsInRepo() {
+        //arrange
         String genreName = "Action";
 
-        //SUT
-        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+        User _adminDouble = mock(User.class);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         _genreDouble = mock(Genre.class);
 
@@ -58,14 +66,37 @@ public class AddGenreControllerTest {
                 .thenReturn(_genreDouble) // first call: genre is added
                 .thenThrow(new IllegalArgumentException("This genre already exists"));     // second call: repo signals duplication
 
-        Genre firstAddedGenre = _addGenreController.addGenre(genreName);
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble);
 
+        //act
+        Genre firstAddedGenre = _addGenreController.addGenre(genreName, _adminDouble);
+
+        //assert
         // Second attempt to add the same genre
-        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(genreName));
+        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(genreName, _adminDouble));
 
         assertNotNull(firstAddedGenre);
         assertEquals("This genre already exists", secondAttemptThrows.getMessage());
         verify(_genreRepoDouble, times(2)).addGenre(genreName); // proves repo was called twice
+    }
+
+    @Test
+    void addGenreThrowsWhenUserIsNotAdmin() {
+        //arrange
+        User _adminDouble = mock(User.class);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        String genreName = "Action";
+        _genreDouble = mock(Genre.class);
+        when(_genreDouble.getGenre()).thenReturn(genreName);
+
+        //SUT
+        _addGenreController = new AddGenreController(_genreRepoDouble);
+
+        //act + assert
+        assertThrows(SecurityException.class,  () -> _addGenreController.addGenre(genreName, _adminDouble));
+
     }
 
 }

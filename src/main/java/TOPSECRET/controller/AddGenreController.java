@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.GenreRepo;
+import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 
 /**
@@ -14,16 +15,18 @@ import TOPSECRET.domain.User;
 
 public class AddGenreController {
     private final GenreRepo _genreRepo;
-    private final User _admin;
 
-    public AddGenreController(GenreRepo genreRepo, User admin) {
+    public AddGenreController(GenreRepo genreRepo) {
         _genreRepo = genreRepo;
-        _admin = admin;
     }
 
+    public Genre addGenre(String genreName, User admin){
+        if(!admin.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not allowed to add genres");
+        }
 
-    public Genre addGenre(String genreName) {
         Genre genre = _genreRepo.addGenre(genreName);
+
         return genre;
     }
 }
