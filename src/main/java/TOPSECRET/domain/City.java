@@ -11,11 +11,10 @@ import java.util.Objects;
 
 public class City {
     private final String _name;
+    private final String _normalizedName;
     private final Country _country;
 
-    /**
-     * Creates a new city while normalizing the name and validating the country.
-     */
+    // Creates a new city while normalizing the name and validating the country.
     public City(String name, Country country) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("City name cannot be null or blank");
@@ -23,27 +22,23 @@ public class City {
         if (country == null) {
             throw new IllegalArgumentException("Country cannot be null");
         }
-        _name = name.trim();
+
+        String cleaned = name.trim().replaceAll("\\s+", " ");
+        _name = cleaned;
+        _normalizedName = cleaned.toLowerCase();
         _country = country;
     }
 
-    /**
-     * Returns the normalized city name.
-     */
     public String getName() {
         return _name;
     }
 
-    /**
-     * Returns the country that owns this city.
-     */
+    // Returns the country that owns this city.
     public Country getCountry() {
         return _country;
     }
 
-    /**
-     * Equality is based on case-insensitive name comparison and exact country match.
-     */
+    // Equality is based on case-insensitive name comparison and exact country match.
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,20 +46,15 @@ public class City {
         return _name.equalsIgnoreCase(city._name) && _country.equals(city._country);
     }
 
-    /**
-     * Hash code follows the same logic as {@link #equals(Object)} to stay consistent.
-     */
+    // Hash code follows the same logic as {@link #equals(Object)} to stay consistent.
     @Override
     public int hashCode() {
-        return Objects.hash(_name.toLowerCase(), _country);
+        return Objects.hash(_normalizedName, _country);
     }
 
-    /**
-     * String representation is "CityName, CountryName" to keep formatting stable for tests.
-     */
+    // String representation is "CityName, CountryName" to keep formatting stable for tests.
     @Override
     public String toString() {
-        // Use the public getter from Country so the string format is stable and testable
-        return String.format("%s, %s", _name, _country != null ? _country.getCountryName() : "");
+        return _name + ", " + _country.getCountryName();
     }
 }

@@ -64,8 +64,14 @@ class CityTest {
     }
 
     @Test
-    void equalsCaseInsensitiveNameSameCountryMockTrueAndHashCodeEqual() {
-        City a = new City("Porto", _countryDouble);
+    void constructor_normalizesInternalWhitespace() {
+        City city = new City("  New   York  ", _countryDouble);
+        assertEquals("New York", city.getName());
+    }
+
+    @Test
+    void equalsIgnoresCaseAndWhiteSpace() {
+        City a = new City(" Porto ", _countryDouble);
         City b = new City("porto", _countryDouble);
 
         assertEquals(a, b);
