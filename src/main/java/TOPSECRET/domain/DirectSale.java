@@ -12,23 +12,23 @@ import java.time.Period;
 
 public class DirectSale {
 
-    private final Item item;
-    private final Price price;
-    private final Period timeLimit; // optional
+    private final Item _item;
+    private final Price _price;
+    private final Period _timeLimit; // optional
 
     public DirectSale(Item item, Price price, Period timeLimit) {
 
         requiresItemAndPrice(item, price);
         timeLimitMustBeValid(timeLimit);
 
-        this.item = item;
-        this.price = price;
-        this.timeLimit = timeLimit;  // may be null = unlimited duration
+        _item = item;
+        _price = price;
+        _timeLimit = timeLimit;  // may be null = unlimited duration
     }
 
-    public Item getItem() { return item; }
-    public Price getPrice() { return price; }
-    public Period getTimeLimit() { return timeLimit; }
+    public Item getItem() { return _item; }
+    public Price getPrice() { return _price; }
+    public Period getTimeLimit() { return _timeLimit; }
 
     private static void requiresItemAndPrice(Item item, Price price) {
         if (item == null) {
@@ -46,27 +46,23 @@ public class DirectSale {
 
     public boolean isByAuthor (Author authorName) {
 
-        return item.isByAuthor(authorName);
+        return _item.isByAuthor(authorName);
 
     }
 
     public boolean isByPublication (Publication publication) {
 
-        return item.isByPublication(publication);
+        return _item.isByPublication(publication);
     }
 
     public boolean isByPublisher (PublishingCompany publisher) {
 
-        if (item.getPublication().getPublisher().equals(publisher)) {
-
-            return true;
-        }
-        return false;
+        return _item.isByPublishingCompany(publisher);
     }
 
     public boolean isByGenre(Genre genreName) {
 
-        return item.isByGenre(genreName);
+        return _item.isByGenre(genreName);
 
     }
 
