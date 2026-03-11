@@ -72,17 +72,17 @@ class DirectSaleRepoTest {
         assertSame(item1, items.get(0));
     }
 
-    @Test
+   @Test
     void createDirectSale_whenFactoryThrows_propagatesInstantiationException() throws Exception {
         // Arrange
         Item item = mock(Item.class);
         Price price = mock(Price.class);
 
         when(factory.createDirectSale(eq(item), eq(price), isNull()))
-                .thenThrow(new InstantiationException("boom"));
+                .thenThrow(new IllegalStateException("boom"));
 
         // Act & Assert
-        assertThrows(InstantiationException.class, () -> repo.createDirectSale(item, price, null));
+        assertThrows(IllegalStateException.class, () -> repo.createDirectSale(item, price, null));
     }
 
     @Test
@@ -109,22 +109,6 @@ class DirectSaleRepoTest {
         List<Item> items = repo.getDirectSaleItemsByAuthor(author);
 
         // Assert
-        assertEquals(1, items.size());
-        assertSame(item1, items.get(0));
-    }
-
-    @Test
-    void getDirectSaleItemsByPublication_filtersCorrectly() throws Exception {
-        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
-
-        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
-        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
-
-        when(ds1.isByPublication(publication)).thenReturn(true);
-        when(ds2.isByPublication(publication)).thenReturn(false);
-
-        List<Item> items = repo.getDirectSaleItemsByPublication(publication);
-
         assertEquals(1, items.size());
         assertSame(item1, items.get(0));
     }
@@ -160,5 +144,67 @@ class DirectSaleRepoTest {
 
         assertEquals(1, items.size());
         assertSame(item1, items.get(0));
+    }
+
+    // Isolated tests for US023
+
+    @Test
+    void getDirectSaleItemsByPublicationShouldReturnItemsOfThatPublication() {
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
+
+        when(ds1.isByPublication(publication)).thenReturn(true);
+        when(ds2.isByPublication(publication)).thenReturn(true);
+
+        when(ds1.getItem()).thenReturn(item1);
+        when(ds2.getItem()).thenReturn(item2);
+
+        repo.createDirectSale(item1, mock(Price.class), null);
+        repo.createDirectSale(item2, mock(Price.class), null);
+
+        List<Item> resultsList = repo.getDirectSaleItemsByPublication(publication);
+
+        assertEquals(2, resultsList.size());
+        assertTrue(resultsList.containsAll(List.of(item1, item2)));
+
+    }
+
+    @Test
+    void getDirectSaleItemsByPublicationShouldReturnEmptyAndUnmodifiableListWhenNoDirectSalesMatch() {
+
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
+
+        when(ds1.isByPublication(publication)).thenReturn(false);
+        when(ds2.isByPublication(publication)).thenReturn(false);
+
+        when(ds1.getItem()).thenReturn(item1);
+        when(ds2.getItem()).thenReturn(item2);
+
+        repo.createDirectSale(item1, mock(Price.class), null);
+        repo.createDirectSale(item2, mock(Price.class), null);
+
+        List<Item> resultsList = repo.getDirectSaleItemsByPublication(publication);
+
+        assertNotNull(resultsList);
+        assertTrue(resultsList.isEmpty());
+        assertThrows(UnsupportedOperationException.class, () -> resultsList.add(mock(Item.class)));
+
+    }
+
+    @Test
+    void getDirectSaleItemsByPublicationShouldReturnOnlyItemsOfGivenPublication() {
+        when(factory.createDirectSale(any(), any(), any())).thenReturn(ds1, ds2);
+
+        when(ds1.isByPublication(publication)).thenReturn(true);
+        when(ds2.isByPublication(publication)).thenReturn(false);
+
+        repo.createDirectSale(item1, mock(Price.class), null);
+        repo.createDirectSale(item2, mock(Price.class), null);
+
+        List<Item> resultsList = repo.getDirectSaleItemsByPublication(publication);
+
+        assertEquals(1, resultsList.size());
+        assertTrue(resultsList.contains(item1));
+        assertFalse(resultsList.contains(item2));
+        assertSame(item1, resultsList.get(0));
     }
 }
