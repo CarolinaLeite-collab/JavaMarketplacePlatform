@@ -15,7 +15,7 @@ class DirectSaleRepoTest {
     private DirectSaleRepo repo;
 
     private DirectSale _dsDouble1;
-    private DirectSale _ds2Double2;
+    private DirectSale _dsDouble2;
 
     private Item _itemDouble1;
     private Item _itemDouble2;
@@ -32,7 +32,7 @@ class DirectSaleRepoTest {
         repo = new DirectSaleRepo(_factoryDouble);
 
         _dsDouble1 = mock(DirectSale.class);
-        _ds2Double2 = mock(DirectSale.class);
+        _dsDouble2 = mock(DirectSale.class);
 
         _itemDouble1 = mock(Item.class);
         _itemDouble2 = mock(Item.class);
@@ -43,7 +43,7 @@ class DirectSaleRepoTest {
         _publicationDouble = mock(Publication.class);
 
         when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_ds2Double2.getItem()).thenReturn(_itemDouble2);
+        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
 
         _periodDouble = mock(Period.class);
     }
@@ -205,13 +205,13 @@ class DirectSaleRepoTest {
 
     @Test
     void getDirectSaleItemsByPublication_filtersCorrectly() throws Exception {
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _ds2Double2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
 
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
         when(_dsDouble1.isByPublication(_publicationDouble)).thenReturn(true);
-        when(_ds2Double2.isByPublication(_publicationDouble)).thenReturn(false);
+        when(_dsDouble2.isByPublication(_publicationDouble)).thenReturn(false);
 
         List<Item> items = repo.getDirectSaleItemsByPublication(_publicationDouble);
 
@@ -221,13 +221,13 @@ class DirectSaleRepoTest {
 
     @Test
     void getDirectSaleItemByPublisher_filtersCorrectly() throws Exception {
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _ds2Double2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
 
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
         repo.createDirectSale(mock(Item.class), mock(Price.class), null);
 
         when(_dsDouble1.isByPublisher(_pcDouble)).thenReturn(true);
-        when(_ds2Double2.isByPublisher(_pcDouble)).thenReturn(true);
+        when(_dsDouble2.isByPublisher(_pcDouble)).thenReturn(true);
 
         List<Item> items = repo.getDirectSaleItemByPublisher(_pcDouble);
 
@@ -237,18 +237,46 @@ class DirectSaleRepoTest {
     }
 
     @Test
-    void getDirectSaleItemsByGenre_usesPublicationMatchGenre() throws Exception {
+    void should_return_empty_list_when_no_direct_sales_match_genre() {
+
+        // Arrange
+        when(_dsDouble1.isByGenre(_genreDouble)).thenReturn(false);
         when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1);
 
-        // ds1.getItem() -> item1 (já stubbed)
-        when(_itemDouble1.getPublication()).thenReturn(_publicationDouble);
-        when(_publicationDouble.matchGenre(_genreDouble)).thenReturn(true);
+        DirectSaleRepo dsr = new DirectSaleRepo(_factoryDouble);
+        repo.createDirectSale(mock(Item.class), mock(Price.class), Period.ofDays(10));
 
-        repo.createDirectSale(mock(Item.class), mock(Price.class), null);
+        // Act
+        List<Item> result = repo.getDirectSaleItemsByGenre(_genreDouble);
 
-        List<Item> items = repo.getDirectSaleItemsByGenre(_genreDouble);
+        // Assert
+        assertTrue(result.isEmpty());
 
-        assertEquals(1, items.size());
-        assertSame(_itemDouble1, items.get(0));
     }
+
+    @Test
+    void should_return_items_matching_genre() {
+
+        // Arrange
+        when(_dsDouble1.isByGenre(_genreDouble)).thenReturn(true);
+        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
+
+        when(_dsDouble2.isByGenre(_genreDouble)).thenReturn(true);
+        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+
+        repo.createDirectSale(mock(Item.class), mock(Price.class), Period.ofDays(10));
+        repo.createDirectSale(mock(Item.class), mock(Price.class), Period.ofDays(5));
+
+        // Act
+        List<Item> result = repo.getDirectSaleItemsByGenre(_genreDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(_itemDouble1));
+        assertTrue(result.contains(_itemDouble2));
+
+    }
+
 }
