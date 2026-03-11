@@ -9,8 +9,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 
 class AuctionFactoryTest {
 
@@ -70,5 +72,31 @@ class AuctionFactoryTest {
             assertSame(start, params.get(3));
             assertSame(end, params.get(4));
         }
+    }
+
+    @Test
+    void shouldWrapExceptionWhenItemNullWithoutOutright() {
+        AuctionFactory factory = new AuctionFactory();
+        Price startingPrice = mock(Price.class);
+        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end = start.plusDays(1);
+
+        assertThrows(InstantiationException.class,
+                () -> factory.create(null, startingPrice, start, end));
+    }
+
+    @Test
+    void shouldWrapExceptionWhenItemNullWithOutright() {
+        AuctionFactory factory = new AuctionFactory();
+        Price startingPrice = mock(Price.class);
+        Price outrightPrice = mock(Price.class);
+        ZonedDateTime start = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime end = start.plusDays(1);
+
+        when(startingPrice.getValue()).thenReturn(50d);
+        when(outrightPrice.getValue()).thenReturn(100d);
+
+        assertThrows(InstantiationException.class,
+                () -> factory.create(null, startingPrice, outrightPrice, start, end));
     }
 }
