@@ -23,6 +23,8 @@ participant ":LibraryRepo" as LibraryRepo
 participant "userLibrary: Library" as userLibrary
 participant ":ItemRepo" as ItemRepo
 participant ":AuctionRepo" as AuctionRepo
+participant ":ItemFactory" as ItemFactory
+participant ":AuctionFactory" as AuctionFactory
 
 ' Design of happy path
 
@@ -48,17 +50,16 @@ deactivate Controller
 UI --> User : Which publication?
 User -> UI : publication
 UI --> User : What is its condition?
-User -> UI : condition
-UI --> User : Please provide auction details
+User -> UI : Please provide auction details
 User -> UI : startingPrice, auctionStartDate, auctionEndDate
 UI -> Controller: putPublicationOnAuction(user, publication, %n()condition, startPrice, startDate, endDate)
 activate Controller
 note over Controller: LibraryRepo: Same retrieval logic %n()as in getLibraryPublicationList(user) %n()but for separate use case
 Controller -> LibraryRepo: findByUser(user)
 activate LibraryRepo
-LibraryRepo--> Controller: userLibrary: Library
+LibraryRepo --> Controller: userLibrary: Library
 deactivate LibraryRepo
-Controller -> userLibrary :getPublicationFromLibrary(publication)
+Controller -> userLibrary : getPublicationFromLibrary(publication)
 activate userLibrary
 userLibrary --> Controller : p1
 deactivate userLibrary
@@ -68,26 +69,37 @@ note left Controller
  that Library, then is turned into
  an Item to be put for sale in auction
 end note
+
 Controller -> ItemRepo : createItem(p1, condition)
 activate ItemRepo
+ItemRepo -> ItemFactory : createItem(p1, condition)
+activate ItemFactory
 create i1 as "i1: Item"
-ItemRepo -> i1 :
+ItemFactory --> i1 : create()
+ItemFactory --> ItemRepo : i1
+deactivate ItemFactory
 ItemRepo --> Controller : i1
 deactivate ItemRepo
+
 Controller -> AuctionRepo : createAuction(i1, startPrice, startDate, endDate)
 activate AuctionRepo
+AuctionRepo -> AuctionFactory : createAuction(i1, startPrice, startDate, endDate)
+activate AuctionFactory
 create a1 as "a1: Auction"
-AuctionRepo -> a1 :
+AuctionFactory --> a1: create()
+AuctionFactory --> AuctionRepo : a1
+deactivate AuctionFactory
 AuctionRepo --> Controller : a1
 deactivate AuctionRepo
+
 Controller -> i1 : setAuction(a1)
 activate i1
 i1 --> Controller : [ok]
 deactivate i1
+
 Controller --> UI : a1
 deactivate Controller
 UI --> User : Your item was successfully put up for sale in an auction
 deactivate UI
-
 
 @enduml
