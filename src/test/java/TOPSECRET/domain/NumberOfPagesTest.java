@@ -5,17 +5,22 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NumberOfPagesTest {
+
     @Test
     void shouldSucceedForValidNumberOfPages(){
         //arrange
         int number = 67;
         NumberOfPages numberOfPages = new NumberOfPages(number);
 
+        NumberOfPages numberOfPages2 = new NumberOfPages(number);
+
         //act
         int pages = numberOfPages.getNumberOfPages();
 
         //assert
+        assertNotNull(numberOfPages);
         assertEquals(number, pages);
+        assertEquals(numberOfPages, numberOfPages2);
     }
 
     @Test
