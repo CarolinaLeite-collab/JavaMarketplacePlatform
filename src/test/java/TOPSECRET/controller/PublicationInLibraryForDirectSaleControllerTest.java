@@ -103,20 +103,20 @@ class PublicationInLibraryForDirectSaleControllerTest {
     void testAddItemForDirectSaleSuccess() {
         DirectSale directSale = mock(DirectSale.class);
 
-        when(directSaleRepo.createDirectSale(testItem, testPrice, timeLimit))
+        when(directSaleRepo.addDirectSale(testItem, testPrice, timeLimit))
                 .thenReturn(directSale);
 
         DirectSale result = controller.addItemForDirectSale(testItem, testPrice, timeLimit);
 
         assertNotNull(result);
         assertEquals(directSale, result);
-        verify(directSaleRepo).createDirectSale(testItem, testPrice, timeLimit);
+        verify(directSaleRepo).addDirectSale(testItem, testPrice, timeLimit);
         verify(testItem).setDirectSale(directSale);
     }
 
     @Test
     void testAddItemForDirectSaleWhenItemAlreadyInDirectSale() {
-        when(directSaleRepo.createDirectSale(testItem, testPrice, timeLimit))
+        when(directSaleRepo.addDirectSale(testItem, testPrice, timeLimit))
                 .thenReturn(mock(DirectSale.class));
 
         doThrow(new IllegalStateException("Item is already in a direct sale."))

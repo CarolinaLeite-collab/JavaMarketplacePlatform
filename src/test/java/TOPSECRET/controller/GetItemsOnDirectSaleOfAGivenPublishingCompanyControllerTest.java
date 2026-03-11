@@ -55,11 +55,11 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherDelegatesToRepository() {
 
         List<Item> expected = List.of(_item);
-        when(_directSaleRepo.getDirectSaleItemByPublisher(_publisher)).thenReturn(expected);
+        when(_directSaleRepo.getDirectSaleItemsByPublisher(_publisher)).thenReturn(expected);
 
         List<Item> actual = _sut.getDirectSaleItemByPublisher(_publisher);
 
-        verify(_directSaleRepo).getDirectSaleItemByPublisher(_publisher);
+        verify(_directSaleRepo).getDirectSaleItemsByPublisher(_publisher);
         assertSame(expected, actual);
         assertFalse(actual.isEmpty());
     }
@@ -68,11 +68,11 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherReturnsEmptyListWhenRepositoryReturnsEmpty() {
 
         List<Item> expected = List.of();
-        when(_directSaleRepo.getDirectSaleItemByPublisher(_publisher)).thenReturn(expected);
+        when(_directSaleRepo.getDirectSaleItemsByPublisher(_publisher)).thenReturn(expected);
 
         List<Item> actual = _sut.getDirectSaleItemByPublisher(_publisher);
 
-        verify(_directSaleRepo).getDirectSaleItemByPublisher(_publisher);
+        verify(_directSaleRepo).getDirectSaleItemsByPublisher(_publisher);
         assertNotNull(actual);
         assertTrue(actual.isEmpty());
         assertEquals(expected, actual);

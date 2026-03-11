@@ -43,7 +43,7 @@ public class PublicationInLibraryForDirectSaleController {
             throw new IllegalArgumentException("Price required");
         }
 
-        DirectSale directSale = directSaleRepo.createDirectSale(item, price, timeLimit);
+        DirectSale directSale = directSaleRepo.addDirectSale(item, price, timeLimit);
         item.setDirectSale(directSale);
 
         return directSale;

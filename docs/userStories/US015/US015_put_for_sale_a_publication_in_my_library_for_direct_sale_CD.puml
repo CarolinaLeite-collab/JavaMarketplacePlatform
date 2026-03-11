@@ -46,7 +46,7 @@ class Item {
 class DirectSaleRepo {
   - _directSales: List<DirectSale>
   - _factory: DirectSaleFactory
-  + createDirectSale(item: Item, price: Price, timeLimit: Period): DirectSale
+  + addDirectSale(item: Item, price: Price, timeLimit: Period): DirectSale
 }
 
 class DirectSaleFactory {

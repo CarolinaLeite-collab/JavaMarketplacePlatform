@@ -54,7 +54,7 @@ deactivate UI
 UI -> Ctl: addItemForDirectSale(item, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleRepo: createDirectSale(item, price, timeLimit)
+Ctl -> DirectSaleRepo: addDirectSale(item, price, timeLimit)
 activate DirectSaleRepo
 
 DirectSaleRepo -> DirectSaleFactory: createDirectSale(item, price, timeLimit)

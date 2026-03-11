@@ -30,6 +30,6 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
         if (publisher == null) {
             throw new IllegalArgumentException("publisher");
         }
-        return _directSaleRepo.getDirectSaleItemByPublisher(publisher);
+        return _directSaleRepo.getDirectSaleItemsByPublisher(publisher);
     }
 }
