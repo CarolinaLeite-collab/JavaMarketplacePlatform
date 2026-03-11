@@ -5,7 +5,7 @@ import TOPSECRET.domain.*;
 import java.util.List;
 
 public class GetAuctionItemsByPublicationController {
-    private AuctionRepo _ar;
+    private final AuctionRepo _ar;
 
     public GetAuctionItemsByPublicationController(AuctionRepo auctionRepo, User buyer){
 
