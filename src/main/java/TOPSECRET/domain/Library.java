@@ -123,4 +123,13 @@ public class Library {
         _items.add(item);
         return true;
     }
+
+    public Item getItem(Item item) {
+        for (Item item1 : _items) {
+            if (item.equals(item1)) {
+                return item1;
+            }
+        }
+        return null;
+    }
 }
