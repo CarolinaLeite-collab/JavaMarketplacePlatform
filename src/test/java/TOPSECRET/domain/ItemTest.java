@@ -39,6 +39,7 @@ class ItemTest {
 
     @Test
     void itemIsCreatedWithPublicationAndCondition() {
+        // Arrange
         Publication publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -49,11 +50,13 @@ class ItemTest {
                 .build();
         Item item = new Item(publication, Condition.GOOD);
 
+        // Assert
         assertEquals(Condition.GOOD, item.getCondition());
     }
 
     @Test
     void canSetDirectSaleWhenNoAuctionExists() {
+        // Arrange
         Publication publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -67,11 +70,13 @@ class ItemTest {
         DirectSale directSale =
                 new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
 
+        // Assert
         assertDoesNotThrow(() -> item.setDirectSale(directSale));
     }
 
     @Test
     void canSetAuctionWhenNoDirectSaleExists() {
+        // Arrange
         Publication publication = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -90,11 +95,13 @@ class ItemTest {
                 auctionEndDate
         );
 
+        // Assert
         assertDoesNotThrow(() -> item.setAuction(auction));
     }
 
     @Test
     void cannotSetDirectSaleIfAuctionAlreadyExists() {
+        // Arrange
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -122,11 +129,13 @@ class ItemTest {
                 () -> item.setDirectSale(directSale)
         );
 
+        // Assert
         assertEquals("Item is already in an auction.", exception.getMessage());
     }
 
     @Test
     void cannotSetAuctionIfDirectSaleAlreadyExists() {
+        // Arrange
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -153,11 +162,13 @@ class ItemTest {
                 )
         );
 
+        // Assert
         assertTrue(exception.getMessage().contains("Item is already in a direct sale."));
     }
 
     @Test
     void settingDirectSaleDoesNotOverwriteCondition() {
+        // Arrange
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -172,11 +183,13 @@ class ItemTest {
                 new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
         item.setDirectSale(ds);
 
+        // Assert
         assertEquals(Condition.POOR, item.getCondition());
     }
 
     @Test
     void settingAuctionDoesNotOverwriteCondition() {
+        // Arrange
         Publication pub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780691181950"))
@@ -196,12 +209,13 @@ class ItemTest {
         );
         item.setAuction(auction);
 
+        // Assert
         assertEquals(Condition.LIKE_NEW, item.getCondition());
     }
 
     @Test
     void puttingPublicationOnAuctionWrongAuctionItem(){
-
+        // Arrange
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780141036144"))
@@ -214,6 +228,7 @@ class ItemTest {
         Item item = new Item(testPub, Condition.GOOD);
         Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
 
+        // Assert
         assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
                 "This Auction does not belong to this Item.");
 
@@ -221,7 +236,7 @@ class ItemTest {
 
     @Test
     void puttingPublicationOnDirectSaleWrongDirectSaleItem(){
-
+        // Arrange
         Publication testPub = Publication.builder()
                 .type(new PublicationType("BOOK"))
                 .identifier(new ISBN("9780141036144"))
@@ -234,6 +249,7 @@ class ItemTest {
         Item item = new Item(testPub, Condition.GOOD);
         DirectSale wrongDirectSaleItem = new DirectSale(new Item(testPub, Condition.POOR), new Price(10.0, Currency.EUR), Period.ofMonths(3));
 
+        // Assert
         assertThrows(IllegalArgumentException.class, () -> item.setDirectSale(wrongDirectSaleItem),
                 "This DirectSale does not belong to this Item.");
 
@@ -390,10 +406,13 @@ class ItemTest {
     @Test
     void isByPublicationShouldReturnTrueWhenPublicationMatches() {
 
+        // SUT
         Item item = new Item(_publicationDouble, _conditionDouble);
 
+        // Act
         boolean result = item.isByPublication(_publicationDouble);
 
+        // Assert
         assertTrue(result);
 
 
@@ -402,12 +421,16 @@ class ItemTest {
     @Test
     void isByPublicationShouldReturnFalseWhenPublicationIsDifferent() {
 
+        // Arrange
         Publication _publicationDouble2 = mock(Publication.class);
 
+        // SUT
         Item item = new Item(_publicationDouble, _conditionDouble);
 
+        // Act
         boolean result = item.isByPublication(_publicationDouble2);
 
+        // Assert
         assertFalse(result);
     }
 
@@ -462,7 +485,4 @@ class ItemTest {
         //Assert
         verify(_publicationDouble, times(1)).isByPublishingCompany(_publisher);
     }
-
-
-
 }
