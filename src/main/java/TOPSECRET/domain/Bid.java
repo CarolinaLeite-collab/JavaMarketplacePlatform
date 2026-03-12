@@ -2,7 +2,6 @@ package TOPSECRET.domain;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -23,15 +22,6 @@ public class Bid {
     private final Price _offerPrice; // Final: offer price is immutable
     private final Instant _bidDate; //Final: historical timestamp
 
-
-    /**
-     * Creates a new Bid with the current timestamp.
-     *
-     * @param bidder The user placing the bid
-     * @param offerPrice The amount being offered
-     * @throws IllegalArgumentException if validation fails
-     */
-
     public Bid(User bidder, Price offerPrice) {
         this(bidder, offerPrice, Clock.systemDefaultZone());
     }
@@ -51,33 +41,19 @@ public class Bid {
 
     //Getters
 
-    /**
-     * Returns the user who placed this bid.
-     * @return the bidder
-     */
     public User getBidder() {
         return _bidder;
     }
 
-    /**
-     * Returns the monetary amount offered in this bid.
-     * @return the offer price
-     */
     public Price getOfferPrice() {
         return _offerPrice;
     }
 
-    /**
-     * Returns when this bid was placed.
-     * @return the bid date
-     */
     public Instant getBidDate() {
         return _bidDate;
     }
 
-    //Validation Method
-
-
+    //Validation Methods
     private void validateBidder(User bidder) {
         if (bidder == null) {
             throw new IllegalArgumentException("Bidder cannot be null");
