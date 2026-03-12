@@ -44,8 +44,8 @@ class ListOfPublicationsFactoryTest {
     @Test
     void shouldSuccessfullyCreatePublicList() {
         // arrange
-        User user = mock(User.class);
-        Genre genre = mock(Genre.class);
+        User _userDouble = mock(User.class);
+        Genre _genreDouble = mock(Genre.class);
 
         try (MockedConstruction<ListOfPublications> mocked =
                      mockConstruction(ListOfPublications.class,
@@ -58,7 +58,7 @@ class ListOfPublicationsFactoryTest {
 
             // act
             ListOfPublications newList =
-                    factory.createPublicListOfPublications(user, "My List", genre);
+                    factory.createPublicListOfPublications(_userDouble, "My List", _genreDouble);
 
             // assert
             assertNotNull(newList);
