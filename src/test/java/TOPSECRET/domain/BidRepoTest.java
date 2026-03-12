@@ -68,30 +68,26 @@ class BidRepoTest {
     void getHighestBid_MultipleBids_firstHighest() {
         //arrange
         bidFactoryDouble = mock(BidFactory.class);
-        bidRepo = new BidRepo(bidFactoryDouble);
-
-        Price priceDouble1 = mock(Price.class);
-        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
-        when(priceDouble1.getValue()).thenReturn(105.0);
-
-
-        Price priceDouble2 = mock(Price.class);
-        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
-        when(priceDouble2.getValue()).thenReturn(102.0);
-
         Bid bidDouble1 = mock(Bid.class);
-        when(bidDouble1.getOfferPrice()).thenReturn(priceDouble1);
-
         Bid bidDouble2 = mock(Bid.class);
-        when(bidDouble2.getOfferPrice()).thenReturn(priceDouble2);
+        Price priceDouble1 = mock(Price.class);
+        Price priceDouble2 = mock(Price.class);
 
-        //act
+        when(priceDouble1.getValue()).thenReturn(105.0);
+        when(bidDouble1.getOfferPrice()).thenReturn(priceDouble1);
+        when(bidDouble2.getOfferPrice()).thenReturn(priceDouble1);
+
+        // SUT
+        BidRepo bidRepo = new BidRepo(bidFactoryDouble);
+
+        // Act
         bidRepo.addBid(bidDouble1);
         bidRepo.addBid(bidDouble2);
-        double result = bidRepo.getHighestBid().getOfferPrice().getValue();
+
+        Bid result = bidRepo.getHighestBid();
 
         //assert
-        assertEquals(105, result);
+        assertEquals(bidDouble1, result);
     }
 
     @Test
