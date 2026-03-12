@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserRatingTest {
 
     @Test
-    void tests_whether_constants_exist() {
+    void testsWhetherConstantsExist() {
         assertNotNull(UserRating.ONE_STAR);
         assertNotNull(UserRating.TWO_STARS);
         assertNotNull(UserRating.THREE_STARS);
@@ -16,7 +16,7 @@ class UserRatingTest {
     }
 
     @Test
-    void tests_whether_stars_are_correcty_returned() {
+    void testsWhetherStarsAreCorrectlyReturned() {
         assertEquals("★", UserRating.ONE_STAR.toString());
         assertEquals("★★", UserRating.TWO_STARS.toString());
         assertEquals("★★★", UserRating.THREE_STARS.toString());
@@ -25,7 +25,7 @@ class UserRatingTest {
     }
 
     @Test
-    void tests_whether_ratings_are_accessible_via_values() {
+    void testsWhetherRatingsAreAccessibleViaValues() {
         UserRating[] ratings = UserRating.values();
 
         assertEquals(5, ratings.length);
@@ -37,12 +37,12 @@ class UserRatingTest {
     }
 
     @Test
-    void tests_whether_valueOf_works() {
+    void testsWhetherValueOfWorks() {
         assertEquals(UserRating.THREE_STARS, UserRating.valueOf("THREE_STARS"));
     }
 
     @Test
-    void tests_whether_different_ratings_are_not_equal() {
+    void testsWhetherDifferentRatingsAreNotEqual() {
         assertNotEquals(UserRating.ONE_STAR, UserRating.FIVE_STARS);
     }
 }

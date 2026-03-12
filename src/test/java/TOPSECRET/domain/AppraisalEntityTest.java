@@ -40,10 +40,10 @@ class AppraisalEntityTest {
         List<PublicationType> publicationTypes = Arrays.asList(_publicationType1, _publicationType2);
         List<Genre> genres = Arrays.asList(_genreDouble1, _genreDouble2);
 
-        // Act
+        // SUT
         AppraisalEntity entity = new AppraisalEntity(_nameDouble, publicationTypes, genres);
 
-        // Assert
+        // Act & Assert
         assertNotNull(entity);
     }
 
@@ -58,6 +58,7 @@ class AppraisalEntityTest {
         _genres.add(_genreDouble1);
         _genres.add(_genreDouble2);
 
+        //SUT
         AppraisalEntity entity = new AppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
         // Act
