@@ -29,4 +29,27 @@ class UserFactoryTest {
             assertEquals(1, mockedConstruction.constructed().size());
         }
     }
+
+    @Test
+    void shouldCreateUserTypeB() {
+
+        //Arrange
+        Name nameDouble = mock(Name.class);
+        Email emailDouble = mock(Email.class);
+        Address addressDouble = mock(Address.class);
+        Phone phoneDouble = mock(Phone.class);
+
+        // SUT
+        UserFactory userFactory = new UserFactory();
+
+        try (MockedConstruction<User> mockedConstruction = mockConstruction(User.class)) {
+
+            //Act
+            User userTypeB_Result = userFactory.createUserTypeB(nameDouble, addressDouble, emailDouble, phoneDouble);
+
+            //Assert
+            assertNotNull(userTypeB_Result);
+            assertEquals(1, mockedConstruction.constructed().size());
+        }
+    }
 }
