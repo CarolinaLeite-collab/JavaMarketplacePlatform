@@ -48,7 +48,7 @@ class NumberOfPagesTest {
     void equalsReturnsFalseForDifferentType() {
         NumberOfPages n1 = new NumberOfPages(50);
 
-        assertNotEquals("50", n1);
+        assertNotEquals(n1, "50");
     }
 
     @Test
