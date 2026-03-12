@@ -10,20 +10,20 @@ package TOPSECRET.domain;
 
 public class PaymentProcessing {
 
-    private Price _finalPrice;
-    private User _buyer;
-    private User _seller;
+    private final Price _finalPrice;
+    private final User _buyer;
+    private final User _seller;
     //private PaymentMethod _paymentMethod; //to be updated later
 
-    public PaymentProcessing(Price _finalPrice, User _buyer, User _seller) {
+    public PaymentProcessing(Price finalPrice, User buyer, User seller) {
 
-        this._finalPrice = _finalPrice;
-        this._buyer = _buyer;
-        this._seller = _seller;
+        _finalPrice = finalPrice;
+        _buyer = buyer;
+        _seller = seller;
 
     }
 
     public boolean isSuccessful() {
-        return true; // placeholder
+        return true;
     }
 }
