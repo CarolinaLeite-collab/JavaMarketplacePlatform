@@ -5,7 +5,6 @@ import TOPSECRET.domain.CountryRepo;
 import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 
-import java.util.Objects;
 
 /**
  * Controller responsible for handling the country registration use case.
@@ -15,19 +14,21 @@ import java.util.Objects;
  * countries to {@link CountryRepo}.
  * </p>
  */
+
 public class RegisterCountryController {
     private final CountryRepo _countryRepo;
 
-    public RegisterCountryController(CountryRepo countryRepo) {
-        this._countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
-    }
+    public RegisterCountryController(CountryRepo countryRepo, User _admin) {
 
-    public Country registerCountry(String countryName, User user) {
-        Objects.requireNonNull(user, "User cannot be null");
-
-        if (!user.hasRole(Role.ADMIN)) {
+        if (!_admin.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not authorized to register countries");
         }
+
+        this._countryRepo = countryRepo;
+    }
+
+    public Country registerCountry(String countryName) throws InstantiationException {
+
         return _countryRepo.registerCountry(countryName);
     }
 }
