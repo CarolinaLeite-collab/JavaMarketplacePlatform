@@ -9,6 +9,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link ListOfPublicationsRepo}.
+ *
+ * <p>The following Mockito doubles are used:
+ * <ul>
+ *   <li>{@link ListOfPublicationsFactory} — mocked collaborator (creation dependency)</li>
+ *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
+ * </ul>
+ */
+
 class ListOfPublicationsRepoTest {
 
     private ListOfPublicationsFactory _factoryDouble;
