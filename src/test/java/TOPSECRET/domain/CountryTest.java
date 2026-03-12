@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class CountryTest {
@@ -10,8 +9,6 @@ class CountryTest {
     void shouldConstructCountrySuccessfully() {
         //Arrange & act
         Country country = new Country("France");
-        //Assert
-        assertNotNull(country);
     }
 
     @Test
@@ -88,7 +85,7 @@ class CountryTest {
         assertNotEquals("France", country);
         assertFalse(country.equals("Portugal"));
     }
-    //isNamed() method Tests
+
     @Test
     void shouldReturnTrueWhenIsNamedTheSame(){
         //Arrange
@@ -99,6 +96,7 @@ class CountryTest {
         //Assert
         assertTrue(result);
     }
+
     @Test
     void shouldReturnTrueWhenIsNamedTheSameUnsanitizedName(){
         //Arrange
@@ -120,7 +118,7 @@ class CountryTest {
         //Assert
         assertFalse(result);
     }
-    //isOneOf() method Tests
+
     @Test
     void shouldReturnTrueWhenNameIsOneOf(){
         //Arrange

@@ -3,30 +3,10 @@ package TOPSECRET.domain;
 import java.util.Locale;
 
 /**
- * Represents a country registered in the system.
- *
+ * Represents a country identified by its validated and normalized name.
  * <p>
- * A {@code Country} is uniquely identified by its name. The name is validated
- * and normalized during construction.
- * </p>
- *
- * <p><b>Normalization rules:</b></p>
- * <ul>
- *   <li>Leading and trailing whitespace is removed.</li>
- *   <li>Multiple spaces between words are collapsed into a single space.</li>
- *   <li>The resulting name is converted to uppercase using {@link Locale#ROOT}.</li>
- * </ul>
- *
- * <p><b>Validation rules:</b></p>
- * <ul>
- *   <li>The name cannot be {@code null}.</li>
- *   <li>The name cannot be empty.</li>
- *   <li>Only Unicode letters and single spaces between words are allowed.</li>
- * </ul>
- *
- * <p>
- * Instances of {@code Country} are considered equal if their normalized names
- * are equal, using a case-insensitive comparison.
+ * The name cannot be null, empty, or contain invalid characters.
+ * Comparison methods normalize input before matching.
  * </p>
  */
 
@@ -50,7 +30,6 @@ public class Country {
         return false;
     }
 
-    // Added getter to allow other components to locate countries by name
     public String getCountryName() {
         return _countryName;
     }
@@ -63,13 +42,12 @@ public class Country {
         if (result.isEmpty()) {
             throw new IllegalArgumentException("Country name cannot be empty");
         }
-        // Only allows Unicode letters and spaces
-        // must start and end with a letter and words may only be separated by a single space
+
         String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
         if (!result.matches(pattern)) {
             throw new IllegalArgumentException("Invalid country name: " + countryName);
         }
-        //eliminates multiple spaces and converts to uppercase
+
         result = result.replaceAll("\\s+", " ").toUpperCase(Locale.ROOT);
 
         return result;
