@@ -10,20 +10,23 @@ class PublicationDetailsTest {
    @Test
     void publicationDetailsShouldExtractAllFieldsFromPublication() {
         // Arrange
-        Publication _publicationDouble = mock(Publication.class);
+        Item _itemDouble = mock(Item.class);
         Title _titleDouble = mock(Title.class);
         Author _authorDouble = mock(Author.class);
+        Publication _publicationDouble = mock(Publication.class);
         PublicationType _publicationTypeDouble = mock(PublicationType.class);
         Identifier _identifierDouble = mock(Identifier.class);
 
-       when(_publicationDouble.getTitle()).thenReturn(_titleDouble);
-       when(_publicationDouble.getAuthor()).thenReturn(_authorDouble);
-       when(_publicationDouble.getPublicationType()).thenReturn(_publicationTypeDouble);
-       when(_publicationDouble.getIdentifier()).thenReturn(_identifierDouble);
+        when(_itemDouble.getPublication()).thenReturn(_publicationDouble);
+
+       when(_itemDouble.getPublication().getTitle()).thenReturn(_titleDouble);
+       when(_itemDouble.getPublication().getAuthor()).thenReturn(_authorDouble);
+       when(_itemDouble.getPublication().getPublicationType()).thenReturn(_publicationTypeDouble);
+       when(_itemDouble.getPublication().getIdentifier()).thenReturn(_identifierDouble);
 
 
         // SUT
-        PublicationDetails details = new PublicationDetails(_publicationDouble);
+        PublicationDetails details = new PublicationDetails(_itemDouble);
 
         //Act + Assert
         assertNotNull(details);

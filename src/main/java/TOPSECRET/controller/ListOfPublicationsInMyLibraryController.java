@@ -16,12 +16,14 @@ import java.util.List;
 
 public class ListOfPublicationsInMyLibraryController {
     private final LibraryRepo _libraryRepo;
+
     public ListOfPublicationsInMyLibraryController(LibraryRepo libraryRepo){
         _libraryRepo = libraryRepo;
     }
 
- public List<Item> getListOfItems(User user) {
+ public List<PublicationDetails> getListOfPublicationDetails (User user) {
         Library library = _libraryRepo.findLibraryByUser(user);
-            return library.getItemsInLibrary();
+
+        return library.getPublicationDetails();
     }
 }

@@ -15,11 +15,11 @@ public class PublicationDetails {
     private final PublicationType _publicationType;
     private final Identifier identifier;
 
-    public PublicationDetails(Publication publication) {
-        _title = publication.getTitle();
-        _author = publication.getAuthor();
-        _publicationType = publication.getPublicationType();
-        identifier = publication.getIdentifier();
+    public PublicationDetails(Item item) {
+        _title = item.getPublication().getTitle();
+        _author = item.getPublication().getAuthor();
+        _publicationType = item.getPublication().getPublicationType();
+        identifier = item.getPublication().getIdentifier();
 
     }
     public Title getTitle() {

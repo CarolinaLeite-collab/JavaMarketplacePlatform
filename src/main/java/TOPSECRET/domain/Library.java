@@ -17,8 +17,6 @@ import java.util.List;
 public class Library {
 
     private User _owner;
-
-    private List<Publication> _publications = new ArrayList<>();
     private List<Item> _items = new ArrayList<>();
 
     Library(User user){
@@ -38,26 +36,19 @@ public class Library {
         return _owner;
     }
 
-    /**
-     * Manages the items stored in the library.
-     *
-     * <p>This set of operations allows retrieving, adding, and searching for
-     * {@link Item} objects maintained by the library.</p>
-     *
-     * <ul>
-     *     <li>{@link #getItemsInLibrary()} returns an <strong>unmodifiable list</strong>
-     *     containing all items currently stored in the library.</li>
-     *     <li>{@link #addItemToLibrary(Item)} adds a new item to the library if it
-     *     is not {@code null} and does not already exist.</li>
-     *     <li>{@link #getItem(Item)} searches for and returns the matching item
-     *     stored in the library using {@link Object#equals(Object)}, or
-     *     {@code null} if no match is found.</li>
-     * </ul>
-     *
-     * <p>The returned collections are immutable to preserve encapsulation
-     * and prevent external modification of the library's internal state.</p>
-     */
+    public List<PublicationDetails> getPublicationDetails() {
 
+        List <PublicationDetails> listWithDetails = new ArrayList<>();
+
+        for (Item p : _items) {
+
+            PublicationDetails pDetails = new PublicationDetails(p);
+
+            listWithDetails.add(pDetails);
+        }
+
+        return Collections.unmodifiableList(listWithDetails);
+    }
 
     public List<Item> getItemsInLibrary() {
         return List.copyOf(_items);

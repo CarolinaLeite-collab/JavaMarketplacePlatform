@@ -40,7 +40,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         // SUT
         ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
         // Act
-        List<Item> result = controller.getListOfItems(_userDouble);
+        List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);
         // Assert
         assertTrue(result.isEmpty());
     }
@@ -48,12 +48,18 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnListOfItemsInLibrary() {
         // Arrange
-        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
+        PublicationDetails publicationDetailsDouble = mock(PublicationDetails.class);
+
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_myLibraryDouble.getPublicationDetails()).thenReturn(List.of(publicationDetailsDouble));
+
         // SUT
         ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
+
         //Act
-        List<Item> result = controller.getListOfItems(_userDouble);
+        List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);
+
         //Assert
-        assertEquals(List.of(_itemDouble), result);
+        assertEquals(List.of(publicationDetailsDouble), result);
     }
 }
