@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Title {
 
     /**
-     * Title of a publication from PublicationInfo. Cannot be null, empty, or whitespace‑only.
+     * Title of a publication from Publication. Cannot be null, empty, or whitespace‑only.
      */
 
     private final String _title;

@@ -19,10 +19,10 @@ class AppraisalTest {
         // Arrange
         Price priceDouble = mock(Price.class);
 
-        // Act
+        // SUT
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate,_validDescription);
 
-        // Assert
+        // Act & Assert
         assertEquals(priceDouble, appraisal.getValueEstimate());
         assertEquals(_fixedDate, appraisal.getAppraisalDate());
         assertEquals(_validDescription, appraisal.getObjectDescription());
@@ -83,6 +83,8 @@ class AppraisalTest {
 
         // Arrange
         Price priceDouble = mock(Price.class);
+
+        //SUT
         Appraisal a1 = new Appraisal(priceDouble, _fixedDate,_validDescription);
         Appraisal a2 = new Appraisal(priceDouble, _fixedDate,_validDescription);
 
@@ -98,6 +100,8 @@ class AppraisalTest {
         Price priceDouble1 = mock(Price.class);
         Price priceDouble2 = mock(Price.class);
         LocalDateTime otherDate = LocalDateTime.of(2025, 6, 1, 10, 0);
+
+        //SUT
         Appraisal a1 = new Appraisal(priceDouble1, _fixedDate, _validDescription);
         Appraisal a2 = new Appraisal(priceDouble2, otherDate, "Other description");
 
@@ -111,6 +115,8 @@ class AppraisalTest {
         // Arrange
         Price priceDouble = mock(Price.class);
         Price priceDouble1 = mock(Price.class);
+
+        //SUT
         Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription );
         Appraisal differentPrice = new Appraisal(priceDouble1, _fixedDate, _validDescription );
 
@@ -124,6 +130,8 @@ class AppraisalTest {
         // Arrange
         Price priceDouble = mock(Price.class);
         LocalDateTime otherDate = LocalDateTime.of(2025, 1, 5, 10, 0);
+
+        //SUT
         Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription );
         Appraisal differentDate = new Appraisal(priceDouble, otherDate , _validDescription );
 
@@ -136,6 +144,8 @@ class AppraisalTest {
 
         // Arrange
         Price priceDouble = mock(Price.class);
+
+        //SUT
         Appraisal a1 = new Appraisal(priceDouble, _fixedDate, _validDescription);
         Appraisal a2 = new Appraisal(priceDouble, _fixedDate, "Different description");
 
@@ -148,10 +158,12 @@ class AppraisalTest {
     void appraisalShouldNotEqualNull() {
         // Arrange
         Price priceDouble = mock(Price.class); // stub
+
+        //SUT
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
 
         // Act & Assert
-        assertNotEquals(null, appraisal); // SUT
+        assertNotEquals(null, appraisal);
     }
 
     @Test
@@ -159,10 +171,12 @@ class AppraisalTest {
 
         // Arrange
         Price priceDouble = mock(Price.class); // stub
+
+        //SUT
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
 
         // Act & Assert
-        assertEquals(appraisal, appraisal); // SUT
+        assertEquals(appraisal, appraisal);
     }
 
     @Test
@@ -170,10 +184,12 @@ class AppraisalTest {
 
         // Arrange
         Price priceDouble = mock(Price.class); // stub
+
+        //SUT
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription);
 
         // Act & Assert
-        assertFalse(appraisal.equals("not an appraisal")); // SUT
+        assertFalse(appraisal.equals("not an appraisal"));
     }
 
     @Test
@@ -182,6 +198,8 @@ class AppraisalTest {
         // Arrange
         Price priceDouble = mock(Price.class);
         when(priceDouble.toString()).thenReturn("10.0 €");
+
+        //SUT
         Appraisal appraisal = new Appraisal(priceDouble, _fixedDate, _validDescription );
 
         // Act

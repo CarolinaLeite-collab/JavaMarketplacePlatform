@@ -15,6 +15,7 @@ class AddPublicationTypeControllerTest {
 
     private PublicationTypeRepo _ptrDouble;
     private PublicationType _pubTypeDouble;
+    private AddPublicationTypeController _addPublicationTypeController;
 
     @BeforeEach
     void setUp() throws InstantiationException {
@@ -25,19 +26,42 @@ class AddPublicationTypeControllerTest {
     }
 
     @Test
+    void constructorAddPublicationTypeControllerShouldCreateController() {
+
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+
+        //SUT
+        new  AddPublicationTypeController(_ptrDouble, adminDouble);
+
+    }
+
+    @Test
+    void addPublicationTypeThrowsWhenUserIsNotAdmin() {
+        //arrange
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        String publicationTypeName = "book";
+
+        //act + assert
+        assertThrows(SecurityException.class, () -> _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
+    }
+
+    @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
-        User admin = mock(User.class);
-        when(admin.hasRole(Role.ADMIN)).thenReturn(true);
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         String publicationTypeName = "book";
 
         //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble);
+        _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
 
         //act
 
-        PublicationType pubTypeResult = controller.addPublicationType(publicationTypeName, admin);
+        PublicationType pubTypeResult = _addPublicationTypeController.addPublicationType(publicationTypeName);
 
         //assert
         assertEquals(_pubTypeDouble, pubTypeResult);
@@ -50,32 +74,17 @@ class AddPublicationTypeControllerTest {
 
         //arrange
 
-        User admin = mock(User.class);
-        when(admin.hasRole(Role.ADMIN)).thenReturn(true);
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         String publicationTypeName = "book";
         when(_ptrDouble.addPublicationType("book"))
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble);
+       _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
 
         //act + assert
-        assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName, admin));
-    }
-
-    @Test
-    void addPublicationTypeThrowsWhenUserIsNotAdmin() {
-        //arrange
-        User admin = mock(User.class);
-        when(admin.hasRole(Role.ADMIN)).thenReturn(false);
-
-        String publicationTypeName = "book";
-
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_ptrDouble);
-
-        //act + assert
-        assertThrows(SecurityException.class, () -> controller.addPublicationType(publicationTypeName, admin));
+        assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));
     }
 }

@@ -45,7 +45,8 @@ class PublicationFactoryTest {
     }
 
     @Test
-    void createPublication_returnsNonNullPublication() {
+    void createPublicationReturnsNonNullPublication() {
+        //Arrange
         Publication p = factory.createPublication(
                 _typeDouble,
                 _identifierDouble,
@@ -57,11 +58,13 @@ class PublicationFactoryTest {
                 _genreDouble
         );
 
+        //Act + Assert
         assertNotNull(p);
     }
 
     @Test
-    void createPublication_storesExactInstances() {
+    void createPublicationStoresExactInstances() {
+        //Arrange
         Publication p = factory.createPublication(
                 _typeDouble,
                 _identifierDouble,
@@ -73,6 +76,7 @@ class PublicationFactoryTest {
                 _genreDouble
         );
 
+        //Act + Assert
         assertSame(_typeDouble, p.getPublicationType());
         assertSame(_identifierDouble, p.getIdentifier());
         assertSame(_yearDouble, p.getPublicationYear());
@@ -84,7 +88,8 @@ class PublicationFactoryTest {
     }
 
     @Test
-    void createPublication_usesProvidedPublicationType() {
+    void createPublicationUsesProvidedPublicationType() {
+        //Arrange
         when(_typeDouble.getPublicationType()).thenReturn("MAGAZINE");
 
         Publication p = factory.createPublication(
@@ -98,11 +103,13 @@ class PublicationFactoryTest {
                 _genreDouble
         );
 
+        //Act + Assert
         assertEquals("MAGAZINE", p.getPublicationType().getPublicationType());
     }
 
     @Test
     void createPublication_allowsNullOptionalFields() {
+        //Arrange
         Publication p = factory.createPublication(
                 _typeDouble,
                 _identifierDouble,
@@ -114,6 +121,7 @@ class PublicationFactoryTest {
                 null    // genre
         );
 
+        //Act + Assert
         assertNotNull(p);
         assertNull(p.getEdition());
         assertNull(p.getGenre());

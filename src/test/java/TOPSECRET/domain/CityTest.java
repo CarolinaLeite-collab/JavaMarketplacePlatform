@@ -9,6 +9,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link City}.
+ *
+ * <p>{@link Country} is mocked as a dummy — City only holds a reference to it,
+ * never interrogates its behaviour.</p>
+ *
+ * <p>No other Mockito doubles are used — {@link City} is a pure Value Object.</p>
+ */
+
 class CityTest {
 
     private Country _countryDouble;

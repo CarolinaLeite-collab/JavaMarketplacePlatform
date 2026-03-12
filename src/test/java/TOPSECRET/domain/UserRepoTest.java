@@ -29,62 +29,78 @@ class UserRepoTest {
 
     @Test
     void registerNewUserShouldReturnUser() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
 
+        //Act
         User result = repo.registerNewUser("Tiago", "tiago@example.com");
 
+        //Assert
         assertEquals(_userDouble1, result);
     }
 
     @Test
     void shouldRegisterNewUserSuccessfullyAndListNotEmpty() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
 
+        //Act
         repo.registerNewUser("Tiago", "tiago@example.com");
 
+        //Assert
         assertEquals(1, repo.getAll().size());
     }
 
     @Test
     void shouldNotAllowDuplicateUsers() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
 
         repo.registerNewUser("Tiago", "tiago@example.com");
 
+        //Act + Assert
         assertThrows(IllegalStateException.class,
                 () -> repo.registerNewUser("Outro", "tiago@example.com"));
     }
 
     @Test
     void shouldNotAllowDuplicateUsersIgnoringCaseAndSpaces() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
 
         repo.registerNewUser("Tiago", "tiago@example.com");
 
+        //Act + Assert
         assertThrows(IllegalStateException.class,
                 () -> repo.registerNewUser("Outro", "  TiAgO@Example.com  "));
     }
 
     @Test
     void shouldBeAbleToRegisterMultipleUsers() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
 
+        //Act
         repo.registerNewUser("Tiago", "tiago@example.com");
         repo.registerNewUser("Ana", "ana@example.com");
 
+        //Assert
         assertEquals(2, repo.getAll().size());
     }
 
     @Test
     void shouldThrowCorrectMessageOnDuplicateUsers() {
-        UserRepo repo = new UserRepo(_userFactoryDouble);
+        //Arrange
+        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
         repo.registerNewUser("Tiago", "tiago@example.com");
 
+        //Act
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> repo.registerNewUser("Outro", "tiago@example.com")
         );
 
+        //Assert
         assertEquals("User already exists", exception.getMessage());
     }
 }

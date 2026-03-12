@@ -10,6 +10,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link GetAuctionItemsByPublicationController}.
+ *
+ * <p>The System Under Test (SUT) is isolated using Mockito doubles:
+ * <ul>
+ *   <li>{@link AuctionRepo} — mocked collaborator (repository dependency)</li>
+ *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Publication} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Item} — mocked dummy (used only as return value)</li>
+ * </ul>
+ */
+
 class GetAuctionItemsByPublicationControllerTest {
 
     private User _buyerDouble;

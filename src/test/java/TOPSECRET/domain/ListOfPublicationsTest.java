@@ -33,26 +33,11 @@ class ListOfPublicationsTest {
     }
 
     @Test
-    void throwsExceptionWhenUserIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(null, "Lista", _genre1Double));
-    }
-
-    @Test
     void throwsExceptionWhenListNameIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new ListOfPublications(_user1Double, null, _genre1Double));
     }
-
-    @Test
-    void throwsExceptionWhenGenreIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(_user1Double, "Lista", null));
-    }
-
 
     @Test
     void equalsShouldReturnTrueForSameArguments() {

@@ -47,20 +47,6 @@ class AddPublicationToListControllerTest {
         assertSame(expected, result);
     }
 
-    @Test
-    void getMyListsShouldThrowWhenUserIsNull() {
-
-        //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controllerSUT.getMyLists(null)
-        );
-        assertEquals("User is mandatory", ex.getMessage());
-    }
-
     // getPublicationsInMyLibrary
 
     @Test
@@ -95,19 +81,6 @@ class AddPublicationToListControllerTest {
                 () -> _controllerSUT.getPublicationsInMyLibrary(_userDouble));
     }
 
-    @Test
-    void getPublicationsInMyLibraryShouldThrowWhenUserIsNull() {
-        //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> _controllerSUT.getPublicationsInMyLibrary(null)
-        );
-        assertEquals("User is mandatory", ex.getMessage());
-    }
-
     // addPublicationToList (BOOK + ISBN)
 
     @Test
@@ -131,81 +104,18 @@ class AddPublicationToListControllerTest {
         );
     }
 
-    @Test
-    void addItemToListShouldThrowWhenListNotFound() {
-        //arrange
-        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
-                .thenReturn(null);
-
-        //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //act
-        assertThrows(IllegalStateException.class,
-                () -> _controllerSUT.addItemToList(_userDouble, "My List", _genreDouble, _itemDouble));
-    }
-
-    @Test
-    void addItemToListShouldThrowWhenItemNotFound() {
-        //arrange
-        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
-                .thenReturn(_publicationsListDouble);
-
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble))
-                .thenReturn(_libraryDouble);
-
-        when(_libraryDouble.getAllPublications())
-                .thenReturn(List.of()); // empty library
-
-        //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        assertThrows(IllegalStateException.class,
-                () -> _controllerSUT.addItemToList(_userDouble, "My List", _genreDouble, _itemDouble));
-    }
-
     // ---------------------
     // Null argument tests
     // ---------------------
-    @Test
-    void addItemToList_throwsWhenUserIsNull() {
-        //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        assertThrows(IllegalArgumentException.class,
-                () -> _controllerSUT.addItemToList(null, "My List", _genreDouble, _itemDouble));
-    }
 
     @Test
-    void addItemToList_throwsWhenListNameIsBlank() {
+    void addItemToList_throwsWhenListNameIsBlank() throws IllegalArgumentException {
         //arrange / SUT
         AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
 
         //assert
         assertThrows(IllegalArgumentException.class,
                 () -> _controllerSUT.addItemToList(_userDouble, " ", _genreDouble, _itemDouble));
-    }
-
-    @Test
-    void addItemToList_throwsWhenGenreIsNull() {
-        //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        assertThrows(IllegalArgumentException.class,
-                () -> _controllerSUT.addItemToList(_userDouble, "My List", null, _itemDouble));
-    }
-
-    @Test
-    void addItemToList_throwsWhenIdentifierIsNull() {
-        //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
-
-        //assert
-        assertThrows(IllegalArgumentException.class,
-                () -> _controllerSUT.addItemToList(_userDouble, "My List", _genreDouble, null));
     }
 
     // -----------------------

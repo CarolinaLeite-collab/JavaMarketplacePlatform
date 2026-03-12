@@ -3,7 +3,6 @@ package TOPSECRET.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.lang.reflect.Field;
@@ -97,7 +96,7 @@ class AuctionTest {
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture); //SUT
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -153,6 +152,7 @@ class AuctionTest {
         ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
         ZonedDateTime end = start.plusHours(1);
 
+        //SUT
         Auction auction = new Auction(_itemDouble, _startingPriceDouble, start, end);
 
         // Act
@@ -228,7 +228,7 @@ class AuctionTest {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture); //SUT
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -254,7 +254,7 @@ class AuctionTest {
         // Arrange
         ZonedDateTime startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = startFuture.plusDays(1);
-        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture);
+        Auction auction = new Auction(_itemDouble, _startingPriceDouble, startFuture, endFuture); //SUT
 
         User bidder = mock(User.class);
         Bid highestBid = mock(Bid.class);

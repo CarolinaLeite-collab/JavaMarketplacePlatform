@@ -12,117 +12,136 @@ import static org.mockito.Mockito.*;
 
 class PublicationInLibraryForDirectSaleControllerTest {
 
-    private PublicationInLibraryForDirectSaleController controller;
-    private LibraryRepo libraryRepo;
-    private DirectSaleRepo directSaleRepo;
-    private User testUser;
-    private Library testLibrary;
-    private Item testItem;
-    private Price testPrice;
-    private Period timeLimit;
+    private PublicationInLibraryForDirectSaleController _controller;
+    private LibraryRepo _libraryRepoDouble;
+    private DirectSaleRepo _directSaleRepoDouble;
+    private User _userDouble;
+    private Library _libraryDouble;
+    private Item _itemDouble;
+    private Price _priceDouble;
+    private Period _timeLimitDouble;
 
     @BeforeEach
     void setUp() {
-        libraryRepo = mock(LibraryRepo.class);
-        directSaleRepo = mock(DirectSaleRepo.class);
-        testUser = mock(User.class);
-        testLibrary = mock(Library.class);
-        testItem = mock(Item.class);
-        testPrice = mock(Price.class);
-        timeLimit = Period.ofDays(30);
+        _libraryRepoDouble = mock(LibraryRepo.class);
+        _directSaleRepoDouble = mock(DirectSaleRepo.class);
+        _userDouble = mock(User.class);
+        _libraryDouble = mock(Library.class);
+        _itemDouble = mock(Item.class);
+        _priceDouble = mock(Price.class);
+        _timeLimitDouble = Period.ofDays(30);
 
-        controller = new PublicationInLibraryForDirectSaleController(libraryRepo, directSaleRepo);
+        _controller = new PublicationInLibraryForDirectSaleController(_libraryRepoDouble, _directSaleRepoDouble); //SUT
     }
 
     @Test
     void testConstructorPublicationInLibraryForDirectSaleController() {
+        //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(libraryRepo, directSaleRepo));
+                new PublicationInLibraryForDirectSaleController(_libraryRepoDouble, _directSaleRepoDouble));
     }
 
     @Test
     void testGetItemsInLibraryNullUser() {
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.getItemsInLibrary(null));
+                _controller.getItemsInLibrary(null));
     }
 
     @Test
     void testGetItemsInLibraryForUserWithoutLibrary() {
-        when(libraryRepo.findLibraryByUser(testUser))
+        //Arrange
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble))
                 .thenThrow(new IllegalStateException("Library not found for user"));
 
+        //Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                controller.getItemsInLibrary(testUser));
+                _controller.getItemsInLibrary(_userDouble));
     }
 
     @Test
     void testGetItemsInLibraryForUserWithEmptyLibrary() {
-        when(libraryRepo.findLibraryByUser(testUser)).thenReturn(testLibrary);
-        when(testLibrary.getItemsInLibrary()).thenReturn(List.of());
+        //Arrange
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of());
 
-        List<Item> result = controller.getItemsInLibrary(testUser);
+        //Act
+        List<Item> result = _controller.getItemsInLibrary(_userDouble);
 
+        //Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
     void testGetItemsInLibraryForUserWithItemsInLibrary() {
-        when(libraryRepo.findLibraryByUser(testUser)).thenReturn(testLibrary);
-        when(testLibrary.getItemsInLibrary()).thenReturn(List.of(testItem));
+        //Arrange
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
 
-        List<Item> result = controller.getItemsInLibrary(testUser);
+        //Act
+        List<Item> result = _controller.getItemsInLibrary(_userDouble);
 
+        //Assert
         assertEquals(1, result.size());
-        assertEquals(testItem, result.get(0));
+        assertEquals(_itemDouble, result.get(0));
     }
 
     @Test
     void testGetItemsInLibraryListIsImmutable() {
-        when(libraryRepo.findLibraryByUser(testUser)).thenReturn(testLibrary);
-        when(testLibrary.getItemsInLibrary()).thenReturn(List.of(testItem));
+        //Arrange
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
 
-        List<Item> result = controller.getItemsInLibrary(testUser);
+        //Act
+        List<Item> result = _controller.getItemsInLibrary(_userDouble);
 
+        //Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Item.class)));
     }
 
     @Test
     void testAddItemForDirectSaleWithNullItem() {
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.addItemForDirectSale(null, testPrice, timeLimit));
+                _controller.addItemForDirectSale(null, _priceDouble, _timeLimitDouble));
     }
 
     @Test
     void testAddItemForDirectSaleWithNullPrice() {
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.addItemForDirectSale(testItem, null, timeLimit));
+                _controller.addItemForDirectSale(_itemDouble, null, _timeLimitDouble));
     }
 
     @Test
     void testAddItemForDirectSaleSuccess() {
-        DirectSale directSale = mock(DirectSale.class);
+        //Arrange
+        DirectSale _directSaleDouble = mock(DirectSale.class);
+        when(_directSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
+                .thenReturn(_directSaleDouble);
+        //Act
+        DirectSale result = _controller.addItemForDirectSale(_itemDouble, _priceDouble, _timeLimitDouble);
 
-        when(directSaleRepo.addDirectSale(testItem, testPrice, timeLimit))
-                .thenReturn(directSale);
-
-        DirectSale result = controller.addItemForDirectSale(testItem, testPrice, timeLimit);
-
+        //Assert
         assertNotNull(result);
-        assertEquals(directSale, result);
-        verify(directSaleRepo).addDirectSale(testItem, testPrice, timeLimit);
-        verify(testItem).setDirectSale(directSale);
+        assertEquals(_directSaleDouble, result);
+        verify(_directSaleRepoDouble).addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble);
+        verify(_itemDouble).setDirectSale(_directSaleDouble);
     }
 
     @Test
     void testAddItemForDirectSaleWhenItemAlreadyInDirectSale() {
-        when(directSaleRepo.addDirectSale(testItem, testPrice, timeLimit))
+        //Arrange
+        when(_directSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
                 .thenReturn(mock(DirectSale.class));
 
-        doThrow(new IllegalStateException("Item is already in a direct sale."))
-                .when(testItem).setDirectSale(any(DirectSale.class));
 
+        doThrow(new IllegalStateException("Item is already in a direct sale."))
+                .when(_itemDouble).setDirectSale(any(DirectSale.class));
+
+        //Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                controller.addItemForDirectSale(testItem, testPrice, timeLimit));
+                _controller.addItemForDirectSale(_itemDouble, _priceDouble, _timeLimitDouble));
     }
 }

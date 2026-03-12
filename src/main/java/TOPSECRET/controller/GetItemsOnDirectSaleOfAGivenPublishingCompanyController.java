@@ -14,22 +14,16 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     private final DirectSaleRepo _directSaleRepo;
 
-    /**
-     * @param directSaleRepo repository holding direct sale items
-     */
     public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(DirectSaleRepo directSaleRepo) {
 
         _directSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
     }
 
-    /**
-     * Delegates the retrieval of direct sale items for a publisher to the repository.
-     */
-    public List<Item> getDirectSaleItemByPublisher(PublishingCompany publisher) {
+    public List<Item> getDirectSaleItemByPublisher(PublishingCompany PublishingCompany) {
 
-        if (publisher == null) {
+        if (PublishingCompany == null) {
             throw new IllegalArgumentException("publisher");
         }
-        return _directSaleRepo.getDirectSaleItemsByPublisher(publisher);
+        return _directSaleRepo.getDirectSaleItemsByPublisher(PublishingCompany);
     }
 }

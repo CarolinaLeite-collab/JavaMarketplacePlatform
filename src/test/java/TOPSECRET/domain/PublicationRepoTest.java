@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 class PublicationRepoTest {
 
     private PublicationRepo _publicationRepo;
-    private PublicationFactory _publicationFactory;
+    private PublicationFactory _publicationFactoryDouble;
 
     // Mocks for factory arguments
     private PublicationType _typeDouble;
@@ -28,8 +28,8 @@ class PublicationRepoTest {
 
     @BeforeEach
     void setUp() {
-        _publicationFactory = mock(PublicationFactory.class);
-        _publicationRepo = new PublicationRepo(_publicationFactory);
+        _publicationFactoryDouble = mock(PublicationFactory.class);
+        _publicationRepo = new PublicationRepo(_publicationFactoryDouble); //SUT
 
         _typeDouble = mock(PublicationType.class);
         _identifierDouble = mock(Identifier.class);
@@ -42,26 +42,31 @@ class PublicationRepoTest {
     }
 
     @Test
-    void addPublication_storesPublicationReturnedByFactory() {
+    void addPublicationStoresPublicationReturnedByFactory() {
+        //Arrange
         Publication created = mock(Publication.class);
 
-        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(created);
 
+        //Act
         Publication result = _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
+        //Assert
         assertSame(created, result);
     }
 
     @Test
-    void addPublication_throwsWhenPublicationAlreadyExists() {
-        Publication created = mock(Publication.class);
+    void addPublicationThrowsWhenPublicationAlreadyExists() {
+        //Arrange
+        Publication _publicationDouble = mock(Publication.class);
 
-        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
-                .thenReturn(created);
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+                .thenReturn(_publicationDouble);
 
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
+        //Act + Assert
         // second call returns same instance → duplicate
         assertThrows(IllegalArgumentException.class, () ->
                 _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble)
@@ -69,60 +74,71 @@ class PublicationRepoTest {
     }
 
     @Test
-    void getPublication_returnsStoredPublication() {
-        Publication created = mock(Publication.class);
+    void getPublicationReturnsStoredPublication() {
+        //Arrange
+        Publication _publicationDouble = mock(Publication.class);
 
-        when(_publicationFactory.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
-                .thenReturn(created);
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+                .thenReturn(_publicationDouble);
 
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
-        Publication result = _publicationRepo.getPublication(created);
+        //Act
+        Publication result = _publicationRepo.getPublication(_publicationDouble);
 
-        assertSame(created, result);
+        //Assert
+        assertSame(_publicationDouble, result);
     }
 
     @Test
-    void getPublication_throwsWhenNotFound() {
-        Publication notStored = mock(Publication.class);
+    void getPublicationThrowsWhenNotFound() {
+        //Arrange
+        Publication _publicationDouble = mock(Publication.class);
 
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                _publicationRepo.getPublication(notStored)
+                _publicationRepo.getPublication(_publicationDouble)
         );
     }
 
     @Test
-    void getDifferentOf_returnsPublicationsNotInProvidedList() {
-        Publication p1 = mock(Publication.class);
-        Publication p2 = mock(Publication.class);
-        Publication p3 = mock(Publication.class);
+    void getDifferentOfReturnsPublicationsNotInProvidedList() {
+        //Arrange
+        Publication _publicationDouble1 = mock(Publication.class);
+        Publication _publicationDouble2 = mock(Publication.class);
+        Publication _publicationDouble3 = mock(Publication.class);
 
-        when(_publicationFactory.createPublication(any(), any(), any(), any(), any(), any(), any(), any()))
-                .thenReturn(p1)
-                .thenReturn(p2)
-                .thenReturn(p3);
+        when(_publicationFactoryDouble.createPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(_publicationDouble1)
+                .thenReturn(_publicationDouble2)
+                .thenReturn(_publicationDouble3);
 
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
-        List<Publication> existing = List.of(p1, p3);
+        List<Publication> existing = List.of(_publicationDouble1, _publicationDouble3);
 
+        //Act
         List<Publication> result = _publicationRepo.getDifferentOf(existing);
 
+        //Assert
         assertEquals(1, result.size());
-        assertSame(p2, result.get(0));
+        assertSame(_publicationDouble2, result.get(0));
     }
 
     @Test
-    void getPublication_throwsWhenNull() {
-        PublicationFactory factory = mock(PublicationFactory.class);
-        PublicationRepo repo = new PublicationRepo(factory);
+    void getPublicationThrowsWhenNull() {
+        //Arrange
+        PublicationFactory _publicationFactoryDouble = mock(PublicationFactory.class);
+        PublicationRepo repo = new PublicationRepo(_publicationFactoryDouble);
 
+        //Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
                 repo.getPublication(null)
         );
 
+        //Assert
         assertEquals("Publication not found", ex.getMessage());
     }
 }

@@ -8,6 +8,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Unit tests for {@link Library}.
+ *
+ * <p>The following Mockito doubles are used:
+ * <ul>
+ *   <li>{@link User} — mocked dummy (structural input, owner identity)</li>
+ *   <li>{@link Publication} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Item} — mocked dummy (structural input, no behaviour required)</li>
+ * </ul>
+ */
+
 class LibraryTest {
 
     private User _userDouble;

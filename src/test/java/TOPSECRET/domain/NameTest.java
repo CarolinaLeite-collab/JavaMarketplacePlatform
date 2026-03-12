@@ -10,6 +10,15 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link Name}.
+ *
+ * <p>Validates construction rules: normalization of whitespace, allowed characters,
+ * length boundaries, and rejection of invalid inputs.</p>
+ *
+ * <p>No Mockito doubles are used — {@link Name} is a pure Value Object.</p>
+ */
+
 class NameTest {
 
     private static void assertValidName (String rawInput, String expectedNormalized) {

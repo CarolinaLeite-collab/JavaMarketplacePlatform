@@ -38,9 +38,6 @@ public class ListOfPublicationsRepo {
     }
 
     public List<ListOfPublications> findPublicListsByGenre(Genre genre) {
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre is mandatory");
-        }
 
         List<ListOfPublications> result = new ArrayList<>();
         for (ListOfPublications lop : _listsOfListOfPublications) {
@@ -52,9 +49,6 @@ public class ListOfPublicationsRepo {
     }
 
     public List<ListOfPublications> findListsByUser(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User is mandatory");
-        }
 
         List<ListOfPublications> result = new ArrayList<>();
         for (ListOfPublications lop : _listsOfListOfPublications) {
@@ -66,15 +60,6 @@ public class ListOfPublicationsRepo {
     }
 
     public ListOfPublications findByOwnerNameAndGenre(User user, String name, Genre genre) {
-        if (user == null) {
-            throw new IllegalArgumentException("User is mandatory");
-        }
-        if (name == null || name.isBlank()) {
-            throw new IllegalArgumentException("List name is mandatory");
-        }
-        if (genre == null) {
-            throw new IllegalArgumentException("Genre is mandatory");
-        }
 
         String normalizedName = name.trim();
 

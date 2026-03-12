@@ -9,6 +9,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link ListOfPublicationsRepo}.
+ *
+ * <p>The following Mockito doubles are used:
+ * <ul>
+ *   <li>{@link ListOfPublicationsFactory} — mocked collaborator (creation dependency)</li>
+ *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
+ * </ul>
+ */
+
 class ListOfPublicationsRepoTest {
 
     private ListOfPublicationsFactory _factoryDouble;
@@ -80,23 +91,6 @@ class ListOfPublicationsRepoTest {
         // Assert
         assertNull(duplicate);
         assertEquals(1, repo.getListOfListOfPublications().size());
-    }
-
-    @Test
-    void addNullListShouldThrow() {
-
-        // Arrange
-        when(_factoryDouble.createListOfPublications(null, "My List", _actionDouble)).thenThrow(new IllegalArgumentException("User is mandatory"));
-        when(_factoryDouble.createListOfPublications(_user1Double, null, _actionDouble)).thenThrow(new IllegalArgumentException("Name is mandatory"));
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", null)).thenThrow(new IllegalArgumentException("Genre is mandatory"));
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(null, "My List", _actionDouble));
-        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(_user1Double, null, _actionDouble));
-        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(_user1Double, "My List", null));
     }
 
     @Test
@@ -219,16 +213,6 @@ class ListOfPublicationsRepoTest {
     }
 
     @Test
-    void findPublicListsByGenreNullGenreThrowsIllegalArgumentException() {
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class, () -> repo.findPublicListsByGenre(null));
-    }
-
-    @Test
     void findListsByUserShouldReturnOnlyListsOfThatUser() {
 
         // Arrange
@@ -260,15 +244,6 @@ class ListOfPublicationsRepoTest {
                 () -> assertEquals("U1 List", result.get(0).getName()),
                 () -> assertEquals(_user1Double, result.get(0).getUser())
         );
-    }
-
-    @Test
-    void findListsByUserNullUserThrowsIllegalArgumentException() {
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class, () -> repo.findListsByUser(null));
     }
 
     @Test
@@ -374,49 +349,5 @@ class ListOfPublicationsRepoTest {
 
         // Assert
         assertNull(result);
-    }
-
-    @Test
-    void findByOwnerNameAndGenreNullUserThrowsIllegalArgumentException() {
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByOwnerNameAndGenre(null, "My List", _actionDouble));
-    }
-
-    @Test
-    void findByOwnerNameAndGenreNullNameThrowsIllegalArgumentException() {
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByOwnerNameAndGenre(_user1Double, null, _actionDouble));
-    }
-
-    @Test
-    void findByOwnerNameAndGenreBlankNameThrowsIllegalArgumentException() {
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByOwnerNameAndGenre(_user1Double, "   ", _actionDouble));
-    }
-
-    @Test
-    void findByOwnerNameAndGenreNullGenreThrowsIllegalArgumentException() {
-
-        // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
-
-        // Assert & Act
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.findByOwnerNameAndGenre(_user1Double, "My List", null));
     }
 }

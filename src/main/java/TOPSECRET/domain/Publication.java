@@ -154,12 +154,6 @@ public class Publication {
     //  3: Matching methods
     // ---------------------
 
-    public boolean matchGenre(Genre genre) {//LEMBRAR DE MUDAR O NOME DO METODO "MATCHGENRE" PARA "ISBYGENRE" E APAGAR O METODO.
-        if (genre == null) {
-            return false;
-        }
-        return genre.equals(this._genre);
-    }
 
     public boolean isByAuthor(Author author) {
         return Objects.equals(_author, author);
