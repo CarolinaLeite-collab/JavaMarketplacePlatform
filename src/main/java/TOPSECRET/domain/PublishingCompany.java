@@ -3,7 +3,7 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- * The entity responsible for publication. Cannot be null, empty, or whitespace‑only.
+ * Represents the organization or company that formally releases the work (publication). Cannot be null, empty, or whitespace‑only.
  */
 
 public class PublishingCompany {

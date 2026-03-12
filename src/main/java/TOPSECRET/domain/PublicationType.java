@@ -3,9 +3,11 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- * Represents the description of the morphology of the {@link Publication}.
+ * Represents a classification that defines the category of a publication
+ * (e.g. book, magazine) and allows the system to classify and organize publications.
  * <p>
- * Ensures that the type name is not null or blank, and provides a getter for the type name.
+ * A publication type is defined by a name that cannot be null, empty, or blank.
+ * The name is normalized by trimming whitespace and converting it to uppercase.
  * </p>
  */
 
