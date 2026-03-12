@@ -22,10 +22,10 @@ class PublicationDetailsTest {
        when(_publicationDouble.getIdentifier()).thenReturn(_identifierDouble);
 
 
-        // Act
+        // SUT
         PublicationDetails details = new PublicationDetails(_publicationDouble);
 
-        // Assert
+        //Act + Assert
         assertNotNull(details);
         assertEquals(_titleDouble, details.getTitle());
         assertEquals(_authorDouble, details.getAuthor());
