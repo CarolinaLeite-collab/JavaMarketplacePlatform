@@ -9,6 +9,18 @@ import java.time.Period;
 import java.time.Year;
 import java.time.ZonedDateTime;
 
+/**
+ * Unit tests for {@link Item}.
+ *
+ * <p>Tests are divided into two categories:
+ * <ul>
+ *   <li><b>Integration-style</b> — use real domain objects ({@link Publication}, {@link Condition})
+ *       to verify Item behaviour end-to-end (sale/auction lifecycle, condition preservation).</li>
+ *   <li><b>Isolated</b> — use Mockito doubles for {@link Publication} and {@link Condition}
+ *       to verify delegation of {@code isByAuthor}, {@code isByGenre} and {@code isByPublication}.</li>
+ * </ul>
+ */
+
 class ItemTest {
 
     private ZonedDateTime auctionStartDate = ZonedDateTime.now().plusDays(1);
