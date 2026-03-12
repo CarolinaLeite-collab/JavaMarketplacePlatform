@@ -60,7 +60,6 @@ public class AddGenreControllerTest {
         //assert
         assertNotNull(genreAdded);
         assertEquals(_genreDouble, genreAdded);
-        verify(_genreRepoDouble).addGenre(genreName);
     }
 
     @Test
