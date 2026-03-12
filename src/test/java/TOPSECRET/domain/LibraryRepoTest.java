@@ -7,6 +7,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link LibraryRepo}.
+ *
+ * <p>The following Mockito doubles are used:
+ * <ul>
+ *   <li>{@link LibraryFactory} — mocked collaborator (creation dependency)</li>
+ *   <li>{@link User} — mocked dummy (structural input, owner identity)</li>
+ *   <li>{@link Library} — mocked collaborator (stubbed for {@code belongsTo} behaviour)</li>
+ * </ul>
+ */
+
 class LibraryRepoTest {
 
     private User _userDouble;
