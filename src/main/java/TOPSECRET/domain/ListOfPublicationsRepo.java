@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Repository responsible for managing {@link ListOfPublications} instances.
  * <p>
- * This class handles the creation, storage, and retrieval of private lists of publications.
+ * This class handles the storage, and retrieval of private lists of publications.
  * It ensures that duplicate lists (same user, name, and genre) are not allowed.
  * </p>
  */
