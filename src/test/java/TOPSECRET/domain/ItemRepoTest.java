@@ -6,6 +6,17 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
+/**
+ * Unit tests for {@link ItemRepo}.
+ *
+ * <p>The following Mockito doubles are used:
+ * <ul>
+ *   <li>{@link Publication} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Condition} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link Item} — mocked dummy (used only as input to {@code getDifferentOf})</li>
+ * </ul>
+ */
+
 class ItemRepoTest {
 
     @Test
