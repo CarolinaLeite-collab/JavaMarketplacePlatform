@@ -22,14 +22,13 @@ class CountryRepoTest {
         //Act
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
-        //Assert
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -42,10 +41,10 @@ class CountryRepoTest {
     void shouldRegistersMultipleUniqueCountries() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
 
         Country germany = mock(Country.class);
-        when(_countryFactory.createFactory("Germany")).thenReturn(germany);
+        when(_countryFactory.createCountry("Germany")).thenReturn(germany);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -58,10 +57,10 @@ class CountryRepoTest {
     }
 
     @Test
-    void shouldReturnNullIfCountryIsDuplicate() {
+    void shouldReturnNullIfCountryIsDuplicate() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal, portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal, portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -74,14 +73,14 @@ class CountryRepoTest {
     }
 
     @Test
-    void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
+    void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
 
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
-        when(_countryFactory.createFactory("portugal")).thenReturn(portugal);
-        when(_countryFactory.createFactory(" Portugal ")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry(" Portugal ")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -96,10 +95,10 @@ class CountryRepoTest {
     }
 
     @Test
-    void shouldReturnsUnmodifiedListOfCountries() {
+    void shouldReturnsUnmodifiedListOfCountries() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
         //Act
@@ -110,12 +109,11 @@ class CountryRepoTest {
         assertThrows(UnsupportedOperationException.class, () -> countries.add(new Country("Germany")));
     }
 
-    //Test findByName() method
     @Test
-    void findByName_shouldReturnsNullWhenNameIsNull() {
+    void findByName_shouldReturnsNullWhenNameIsNull() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
@@ -126,10 +124,10 @@ class CountryRepoTest {
     }
 
     @Test
-    void findByName_shouldFindCountryIgnoringCaseAndSpaces() {
+    void findByName_shouldFindCountryIgnoringCaseAndSpaces() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);
@@ -141,10 +139,10 @@ class CountryRepoTest {
     }
 
     @Test
-    void findByName_shouldReturnNullWhenCountryNotFound() {
+    void findByName_shouldReturnNullWhenCountryNotFound() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createFactory("Portugal")).thenReturn(portugal);
+        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
         CountryRepo countryRepo = new CountryRepo(_countryFactory);

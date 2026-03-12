@@ -2,7 +2,6 @@ package TOPSECRET.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Repository class for managing countries in the system.
@@ -11,17 +10,18 @@ import java.util.Objects;
  * and retrieve existing countries. The repository maintains a list of unique countries
  * based on their name.
  */
+
 public class CountryRepo {
     private final List<Country> _countries;
     private final CountryFactory _countryFactory;
 
     public CountryRepo(CountryFactory countryFactory){
         _countries = new ArrayList<>();
-        _countryFactory = Objects.requireNonNull(countryFactory, "CountryFactory cannot be null");
+        _countryFactory =  countryFactory;
     }
 
-    public Country registerCountry(String countryName){
-        Country newCountry = _countryFactory.createFactory(countryName);
+    public Country registerCountry(String countryName) throws InstantiationException {
+        Country newCountry = _countryFactory.createCountry(countryName);
 
         if (existsCountry(newCountry))  {
             return null;
