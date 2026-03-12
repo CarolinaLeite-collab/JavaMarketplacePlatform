@@ -3,9 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -25,22 +23,27 @@ class CreatePrivateListOfPublicationsControllerTest {
 
     private ListOfPublicationsRepo _repoDouble;
     private GenreRepo _genreRepoDouble;
-    private CreatePrivateListOfPublicationsController controller;
-
     private User _userDouble;
     private Genre _actionDouble;
     private Genre _poetryDouble;
 
     @BeforeEach
     void setUp() {
+
         _repoDouble = mock(ListOfPublicationsRepo.class);
         _genreRepoDouble = mock(GenreRepo.class);
-
         _userDouble = mock(User.class);
         _actionDouble = mock(Genre.class);
         _poetryDouble = mock(Genre.class);
 
-        controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, null);
+    }
+
+    @Test
+    void testCreatePrivateListOfPublicationsController(){
+
+        // SUT & Act
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, _userDouble);
+
     }
 
     @Test
@@ -48,6 +51,9 @@ class CreatePrivateListOfPublicationsControllerTest {
         // Arrange
         ListOfPublications listDouble = mock(ListOfPublications.class);
         when(_repoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
+
+        //SUT
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, _userDouble);
 
         // Act
         ListOfPublications result = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
@@ -65,6 +71,9 @@ class CreatePrivateListOfPublicationsControllerTest {
         // Arrange
         when(_repoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(null);
 
+        //SUT
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, _userDouble);
+
         // Act
         ListOfPublications duplicate = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
 
@@ -78,6 +87,9 @@ class CreatePrivateListOfPublicationsControllerTest {
         // Arrange
         when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
 
+        //SUT
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, _userDouble);
+
         // Act
         List<Genre> officialGenres = controller.getListOfOfficialGenres();
 
@@ -90,6 +102,9 @@ class CreatePrivateListOfPublicationsControllerTest {
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
         when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
+
+        //SUT
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_repoDouble, _genreRepoDouble, _userDouble);
 
         // Act
         List<Genre> officialGenres = controller.getListOfOfficialGenres();

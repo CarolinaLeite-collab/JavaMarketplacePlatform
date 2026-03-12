@@ -11,6 +11,7 @@ import java.util.List;
  * and providing access to official genres from {@link GenreRepo}.
  * </p>
  */
+
 public class CreatePrivateListOfPublicationsController {
 
     private final ListOfPublicationsRepo _listOfPublicationsRepo;
