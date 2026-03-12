@@ -10,7 +10,6 @@ import java.util.*;
 public class Genre {
 
     private final String _genre;
-    //private final User _admin;
 
     Genre(String genre) {
         if (genre == null || genre.trim().isEmpty())
