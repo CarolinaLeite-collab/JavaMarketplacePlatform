@@ -1,22 +1,15 @@
 package TOPSECRET.domain;
 
-import java.util.Objects;
-
 /**
  * Phone number composed of a {@link PhonePrefix} and a national number.
  * The national number is normalized to digits only (4–12 digits).
+ * E.164-like representation: +{prefix}{nationalNumber}.
  */
 public class Phone {
 
     private final PhonePrefix _prefix;
     private final String _nationalNumber;
 
-    /**
-     * Creates a phone with a validated prefix and national number, stripping formatting characters.
-     *
-     * @param prefix country/region prefix
-     * @param nationalNumber digits only, 4–12 characters post-normalization
-     */
     public Phone(PhonePrefix prefix, String nationalNumber) {
 
         if (prefix == null) {
@@ -43,23 +36,14 @@ public class Phone {
         _nationalNumber = cleaned;
     }
 
-    /**
-     * Returns the country/region prefix for this phone number.
-     */
     public PhonePrefix getPrefix() {
         return _prefix;
     }
 
-    /**
-     * Returns the normalized national number (digits only).
-     */
     public String getNationalNumber() {
         return _nationalNumber;
     }
 
-    /**
-     * E.164-like representation: +{prefix}{nationalNumber}.
-     */
     public String getE164() {
         return _prefix.getValue() + _nationalNumber;
     }
@@ -68,12 +52,16 @@ public class Phone {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Phone phone)) return false;
-        return _prefix.equals(phone._prefix) && _nationalNumber.equals(phone._nationalNumber);
+        String normalizedThis = _prefix.getValue().replaceAll("\\D", "") + _nationalNumber.replaceAll("\\s+", "");
+        String normalizedOther = phone._prefix.getValue().replaceAll("\\D", "") + phone._nationalNumber.replaceAll("\\s+", "");
+
+        return normalizedThis.equals(normalizedOther);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_prefix, _nationalNumber);
+        String normalized = _prefix.getValue().replaceAll("\\D", "") + _nationalNumber.replaceAll("\\s+", "");
+        return normalized.hashCode();
     }
 
     @Override
