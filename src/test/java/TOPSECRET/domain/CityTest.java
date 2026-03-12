@@ -69,7 +69,7 @@ class CityTest {
     void equalsReturnFalseForNullAndDifferentType() {
         City a = city("Lisboa");
         assertNotEquals(null, a);
-        assertNotEquals("Lisboa", a);
+        assertNotEquals(a, "Lisboa");
     }
 
     @Test
@@ -103,5 +103,25 @@ class CityTest {
         City b = new City("porto", _countryDouble);
 
         assertEquals(a.hashCode(), b.hashCode());
+    }
+    @Test
+    void hashCodeIsNonZeroForValidCity() {
+        City a = new City("Porto", _countryDouble);
+
+        // Assert
+        assertNotEquals(0, a.hashCode());
+    }
+
+    @Test
+    void toStringReturnsExpectedFormat() {
+
+        // Arrange
+        when(_countryDouble.getCountryName()).thenReturn("Portugal");
+
+        // SUT
+        City city = new City("Porto", _countryDouble);
+
+        // Assert
+        assertEquals("Porto, Portugal", city.toString());
     }
 }
