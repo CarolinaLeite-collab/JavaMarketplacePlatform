@@ -17,17 +17,16 @@ public class AddPublicationTypeController {
 
     private final PublicationTypeRepo _ptr;
 
-    public AddPublicationTypeController(PublicationTypeRepo _ptr) {
+    public AddPublicationTypeController(PublicationTypeRepo _ptr, User admin) {
+        if(!admin.hasRole(Role.ADMIN)){
+            throw new SecurityException("User is not allowed to add publication type");
+        }
 
         this._ptr = _ptr;
 
     }
 
-    public PublicationType addPublicationType(String publicationTypeName, User admin) {
-        if(!admin.hasRole(Role.ADMIN)){
-            throw new SecurityException("User is not allowed to add publication type");
-        }
-
+    public PublicationType addPublicationType(String publicationTypeName) {
         return _ptr.addPublicationType(publicationTypeName);
 
     }
