@@ -30,44 +30,41 @@ User -> UI : I want to add one of my publications to one of my lists
 activate UI
 UI -> Ctl : getMyLists(user)
 activate Ctl
-Ctl -> ListRepo : getMyLists(user)
+Ctl -> ListRepo : findListsByUser(user)
 activate ListRepo
-ListRepo --> Ctl : myLists
+ListRepo --> Ctl : List<ListOfPublications>
 deactivate ListRepo
-Ctl --> UI : myLists
+Ctl --> UI : List<ListOfPublications>
 deactivate Ctl
 UI --> User : Select what list you want to add them to
 deactivate UI
 
-User -> UI : listOfPublications
+User -> UI : listOfItems
 activate UI
-UI -> Ctl : getPublicationsInMyLibrary(user)
+UI -> Ctl : getItemsInMyLibrary(user)
 activate Ctl
-Ctl -> LibraryRepo : getPublicationsInMyLibrary(user)
+Ctl -> LibraryRepo : findLibraryByUser(user)
 activate LibraryRepo
-LibraryRepo -> myLibrary : getPublicationsInMyLibrary(user)
-activate myLibrary
-myLibrary --> LibraryRepo : publicationsInMyLibrary
-deactivate myLibrary
-LibraryRepo --> Ctl : publicationsInMyLibrary
+LibraryRepo -> Ctl : myLibrary
 deactivate LibraryRepo
-Ctl --> UI : publicationsInMyLibrary
+Ctl -> myLibrary : getItemsInLibrary()
+activate myLibrary
+myLibrary --> Ctl : List<Item>
+deactivate myLibrary
+Ctl --> UI : List<Item>
 deactivate Ctl
-UI --> User : Select what available publications you want to add
+UI --> User : Select what available Item you want to add
 deactivate UI
 
-User -> UI: publicationToAdd
+User -> UI: itemToAdd
 activate UI
-UI -> Ctl : addPublicationToList(listOfPublications, publicationToAdd)
+UI -> Ctl : addItemToList(user, myList, genre, item)
 activate Ctl
-Ctl -> ListRepo : addPublicationToList(listOfPublications, publicationToAdd)
-activate ListRepo
-ListRepo -> ListOfPublications : addPublicationToList(listOfPublications, publicationToAdd)
+Ctl  -> ListOfPublications : addItemToList(user, myList, genre, item)
 activate ListOfPublications
-ListOfPublications -> ListOfPublications : addPublication(publicationToAdd)
-ListOfPublications --> ListRepo : true
+ListOfPublications -> ListOfPublications : addItem(item)
+ListOfPublications --> Ctl: true
 deactivate ListOfPublications
-ListRepo --> Ctl: true
 deactivate ListRepo
 Ctl --> UI : true
 deactivate Ctl

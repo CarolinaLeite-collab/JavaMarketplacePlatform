@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US004 – "As an administrator, I want to register a new Appraisal Entity, including the genres and publication types it can appraise" - CD
+title US018 - As a User, I want to add one of my publications to a list of mine - CD
 
 
 '==== basic style ====
@@ -23,35 +23,28 @@ class AddPublicationToListController {
 - _libraryRepo : LibraryRepo
 - _listOfPublicationsRepo : ListOfPublicationsRepo
 + getMyLists(user : User)
-+ getPublicationsInMyLibrary(user : User)
-+ addPublicationToList(listOfPublications : ListOfPublications, publication : Publication) : ListOfPublications
++ getItemsInMyLibrary(user : User)
++ addItemToList(user : User, listName : String, genre : Genre, item : Item)
 }
 
 class ListOfPublicationsRepo {
 -_user : User
-+ addPublicationToList(listOfPublications : ListOfPublications, publication : Publication) : ListOfPublications
-}
-
-class LibraryRepo {
-- _user : User
-- _library : Library
-+ getPublicationsInMyLibrary(user : User) : List<Publication>
++ getMyLists(user : User)
 }
 
 class Library {
--_publications : List<Publication>
-+ getPublicationsInMyLibrary(user : User) : List<Publication>
+-_items : List<Item>
++ getItemsInLibrary() : List<Item>
 }
 
 class ListOfPublications{
-- _publications : List<Publication>
-+ addPublication(publication : Publication)
+- _items : List<Item>
++ addItem(item : Item)
 }
 
 AddPublicationToListUI "1" ..> "1" AddPublicationToListController : uses
-AddPublicationToListController "1" ..> "1" LibraryRepo : accesses
-LibraryRepo "1" -> "*" Library : uses
 AddPublicationToListController "1" ..> "1"ListOfPublicationsRepo : uses >
 ListOfPublicationsRepo "1" --> "*" ListOfPublications : updates
+AddPublicationToListController "1" --> Library : request
 
 @enduml
