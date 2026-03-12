@@ -77,4 +77,42 @@ class PriceTest {
         assertNotEquals(price1, price2);
         assertNotEquals(price1, _price);
     }
+
+    @Test
+    void samePriceObjectShouldBeEqual() {
+        //arrange
+        Price price1 = new Price(100.0, _currency);
+
+        //assert
+        assertTrue(price1.equals(price1));
+    }
+
+    @Test
+    void differentObjectTypesShouldNotBeEqual() {
+        //arrange
+        Price price1 = new Price(100.0, _currency);
+        String price = "price";
+
+        //assert
+        assertNotEquals(price1, price);
+    }
+
+    @Test
+    void hashCodeShouldBeEqualForEqualObjects() {
+        //arrange
+        Price price1 = new Price(100.0, _currency);
+        Price price2 = new Price(100.0, _currency);
+
+        assertEquals(price1.hashCode(), price2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldNotBeEqualForDifferentObjects() {
+        //arrange
+        Price price1 = new Price(100.0, _currency);
+        Price price2 = new Price(12.0, _currency);
+
+        //assert
+        assertNotEquals(price1.hashCode(), price2.hashCode());
+    }
 }
