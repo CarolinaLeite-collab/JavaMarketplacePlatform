@@ -27,9 +27,9 @@ public class AddPublicationToListController {
         return _listRepo.findListsByUser(user);
     }
 
-    public List<PublicationDetails> getPublicationsInMyLibrary(User user) {
+    public List<Item> getItemsInMyLibrary(User user) {
         Library lib = _libraryRepo.findLibraryByUser(user); // throws if not found
-        return lib.getPublicationsInLibrary();
+        return lib.getItemsInLibrary();
     }
 
     public void addItemToList(User user, String listName, Genre genre, Item item) {

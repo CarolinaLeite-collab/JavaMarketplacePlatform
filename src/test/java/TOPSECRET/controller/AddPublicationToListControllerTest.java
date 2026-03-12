@@ -47,28 +47,26 @@ class AddPublicationToListControllerTest {
         assertSame(expected, result);
     }
 
-    // getPublicationsInMyLibrary
+    // getItemsInMyLibrary
 
     @Test
-    void getPublicationsInMyLibraryShouldReturnPublicationDetails() {
+    void getItemsInMyLibraryShouldReturnItemsList() {
         //arrange
-        PublicationDetails details = mock(PublicationDetails.class);
-        when(_libraryDouble.getPublicationsInLibrary()).thenReturn(List.of(details));
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
 
         //SUT
         AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
 
         //act
-        List<PublicationDetails> result = _controllerSUT.getPublicationsInMyLibrary(_userDouble);
+        List<Item> result = _controllerSUT.getItemsInMyLibrary(_userDouble);
 
         //assert
         assertEquals(1, result.size());
-        assertSame(details, result.get(0));
     }
 
     @Test
-    void getPublicationsInMyLibraryShouldThrowWhenUserLibraryNotFound() {
+    void getItemsInMyLibraryShouldThrowWhenUserLibraryNotFound() {
         //arrange
         when(_libraryRepoDouble.findLibraryByUser(_userDouble))
                 .thenThrow(new IllegalStateException("Library not found"));
@@ -78,7 +76,7 @@ class AddPublicationToListControllerTest {
 
         //assert
         assertThrows(IllegalStateException.class,
-                () -> _controllerSUT.getPublicationsInMyLibrary(_userDouble));
+                () -> _controllerSUT.getItemsInMyLibrary(_userDouble));
     }
 
     // addPublicationToList (BOOK + ISBN)
@@ -109,7 +107,7 @@ class AddPublicationToListControllerTest {
     // ---------------------
 
     @Test
-    void addItemToList_throwsWhenListNameIsBlank() throws IllegalArgumentException {
+    void addItemToList_throwsWhenListNameIsBlank() {
         //arrange / SUT
         AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
 
