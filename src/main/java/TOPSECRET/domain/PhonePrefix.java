@@ -3,17 +3,13 @@ package TOPSECRET.domain;
 import java.util.Objects;
 
 /**
- * Phone country/area prefix normalized to leading '+' and 1–3 digits.
+ * Phone country/area prefix normalized to leading '+' and 1–3 digits
+ * * @param rawPrefix user input representing a country or region dial code
  */
 public class PhonePrefix {
 
-    private final String _value; // normalized with leading '+'
+    private final String _value;
 
-    /**
-     * Normalizes a raw prefix string into a format starting with a '+' and 1-3 digits.
-     *
-     * @param rawPrefix user input representing a country or region dial code
-     */
     public PhonePrefix(String rawPrefix) {
         if (rawPrefix == null) {
             throw new IllegalArgumentException("Phone prefix cannot be null");
@@ -35,9 +31,6 @@ public class PhonePrefix {
         _value = "+" + normalized;
     }
 
-    /**
-     * Returns the canonical prefix string (e.g., "+351").
-     */
     public String getValue() {
         return _value;
     }

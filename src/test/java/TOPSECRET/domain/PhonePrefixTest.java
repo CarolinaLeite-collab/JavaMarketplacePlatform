@@ -7,8 +7,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class PhonePrefixTest {
 
     @Test
+    void shouldCreatePhonePrefix() {
+        // SUT
+        new PhonePrefix("+351");
+    }
+
+    @Test
     void acceptsPrefixWithPlusOrWithout() {
-        // Act
+        // Arrange Act
         PhonePrefix p1 = new PhonePrefix("+351");
         PhonePrefix p2 = new PhonePrefix("351");
 
@@ -31,7 +37,7 @@ class PhonePrefixTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new PhonePrefix(null));
         assertThrows(IllegalArgumentException.class, () -> new PhonePrefix(" "));
-        assertThrows(IllegalArgumentException.class, () -> new PhonePrefix("+1234")); // 4 digits
+        assertThrows(IllegalArgumentException.class, () -> new PhonePrefix("+1234"));
     }
 
     @Test
