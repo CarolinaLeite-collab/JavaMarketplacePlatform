@@ -7,22 +7,11 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-
-/**
- * Unit tests for {@link Library}.
- *
- * <p>The following Mockito doubles are used:
- * <ul>
- *   <li>{@link User} — mocked dummy (structural input, owner identity)</li>
- *   <li>{@link Publication} — mocked dummy (structural input, no behaviour required)</li>
- *   <li>{@link Item} — mocked dummy (structural input, no behaviour required)</li>
- * </ul>
- */
+import static org.mockito.Mockito.when;
 
 class LibraryTest {
 
     private User _userDouble;
-    private Publication _publicationDouble;
     private Item _itemDouble;
 
     // Creating doubles for User and Publication classes
@@ -30,7 +19,6 @@ class LibraryTest {
     void setUp() {
 
         _userDouble = mock(User.class);
-        _publicationDouble = mock(Publication.class);
         _itemDouble = mock(Item.class);
 
     }
@@ -38,13 +26,14 @@ class LibraryTest {
     @Test
     void testConstructor() {
 
+        //SUT
         new Library(_userDouble);
 
     }
 
     @Test
     void belongsTo_shouldReturnTrueWhenUserIsOwner() {
-        // Arrange
+        // Arrange / SUT
         Library library = new Library(_userDouble);
 
         // Act & Assert
@@ -55,6 +44,8 @@ class LibraryTest {
     void belongsTo_shouldReturnFalseWhenUserIsNotOwner() {
         // Arrange
         User otherUserDouble = mock(User.class);
+
+        //SUT
         Library library = new Library(_userDouble);
 
         // Act & Assert
@@ -62,10 +53,19 @@ class LibraryTest {
     }
 
     @Test
+    void ifUserIsNull_shouldReturnFalse() {
+
+        //Act
+        assertThrows(IllegalArgumentException.class, () -> new Library(null));
+    }
+
+    @Test
     void test_get_userID() {
 
-        //arrange and act
+        //arrange / SUT
         Library myLibrary = new Library(_userDouble);
+
+        //act
         User userID = myLibrary.getUser();
 
         //assert
@@ -100,7 +100,7 @@ class LibraryTest {
 
     @Test
     void getItemsInLibraryShouldReturnItemsWhenItemsExist() {
-        // Arrange
+        // Arrange / SUT
         Library library = new Library(_userDouble);
         library.addItemToLibrary(_itemDouble);
 
@@ -113,14 +113,115 @@ class LibraryTest {
 
     @Test
     void addItemToLibraryShouldAddItemWhenValid() {
-        // Arrange
+        // Arrange / SUT
         Library library = new Library(_userDouble);
 
         // Act
         boolean result = library.addItemToLibrary(_itemDouble);
 
         // Assert
-        assertEquals(1, library.getItemsInLibrary().size());
+        assertTrue(result);
+
     }
+
+    @Test
+    void addItemToLibraryShouldReturnFalseWhenItemIsNull() {
+        // Arrange / SUT
+        Library library = new Library(_userDouble);
+
+        // Act
+        boolean result = library.addItemToLibrary(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void addItemToLibraryShouldReturnFalseWhenItemIsAlreadyInLibrary() {
+        // Arrange
+        Library library = new Library(_userDouble);
+
+        // Act
+        library.addItemToLibrary(_itemDouble);
+        boolean result = library.addItemToLibrary(_itemDouble);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void getItemsInLibraryShouldItemWhenItemFound() {
+        // Arrange
+        Item _itemDouble2 = mock(Item.class);
+
+        //SUT
+        Library library = new Library(_userDouble);
+
+        //Act
+        library.addItemToLibrary(_itemDouble);
+        library.addItemToLibrary(_itemDouble2);
+
+        Item itemResult = library.getItem(_itemDouble);
+
+        //Assert
+        assertEquals(_itemDouble, itemResult);
+
+    }
+
+    @Test
+    void getItemsInLibraryShouldReturnNullWhenNoItemFound() {
+
+        // Arrange
+        Item _itemDouble2 = mock(Item.class);
+        Item _itemDouble3 = mock(Item.class);
+
+        //SUT
+        Library library = new Library(_userDouble);
+
+        //Act
+        library.addItemToLibrary(_itemDouble);
+        library.addItemToLibrary(_itemDouble2);
+
+        Item itemResult = library.getItem(_itemDouble3);
+
+        //Assert
+        assertEquals(null, itemResult);
+
+    }
+
+    @Test
+    void getPublicationDetailsShouldReturnPublicationDetails() {
+
+        //Arrange
+        Item _itemDouble2 = mock(Item.class);
+
+        when(_itemDouble.getPublication()).thenReturn(mock(Publication.class));
+        when(_itemDouble.getPublication().getTitle()).thenReturn(mock(Title.class));
+        when(_itemDouble.getPublication().getAuthor()).thenReturn(mock(Author.class));
+        when(_itemDouble.getPublication().getPublicationType()).thenReturn(mock(PublicationType.class));
+        when(_itemDouble.getPublication().getIdentifier()).thenReturn(mock(Identifier.class));
+
+        when(_itemDouble2.getPublication()).thenReturn(mock(Publication.class));
+        when(_itemDouble2.getPublication().getTitle()).thenReturn(mock(Title.class));
+        when(_itemDouble2.getPublication().getAuthor()).thenReturn(mock(Author.class));
+        when(_itemDouble2.getPublication().getPublicationType()).thenReturn(mock(PublicationType.class));
+        when(_itemDouble2.getPublication().getIdentifier()).thenReturn(mock(Identifier.class));
+
+        //SUT
+        Library library = new Library(_userDouble);
+
+        //act
+        library.addItemToLibrary(_itemDouble);
+        library.addItemToLibrary(_itemDouble2);
+
+        List<PublicationDetails> result = library.getPublicationDetails();
+
+        //assert
+        assertEquals(2, result.size());
+
+    }
+
+
 
 }
