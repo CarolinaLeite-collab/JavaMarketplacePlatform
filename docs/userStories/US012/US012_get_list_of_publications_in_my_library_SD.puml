@@ -42,7 +42,7 @@ participant "library:Library" as Lib
 User -> UI: Display List of my Publications
 activate UI
 
-UI -> Ctl: getListOfPublications(user)
+UI -> Ctl: getListOfPublicationDetails(user)
 activate Ctl
 
 Ctl -> LibRepo: findByUser(user)
@@ -50,7 +50,7 @@ activate LibRepo
 LibRepo --> Ctl: library
 deactivate LibRepo
 
-Ctl -> Lib: getPublicationsInLibrary()
+Ctl -> Lib: getPublicationDetails()
 
 create "listWithDetails: List<PublicationsDetails>" as listOfPubs
 activate Lib
@@ -58,10 +58,10 @@ Lib -> listOfPubs: create()
 
 
 
-loop for each publication in library
+loop for each item in library
 
 create "pDetails:PublicationDetails" as list
-    Lib -> list: create(publication)
+    Lib -> list: create(item)
 
     Lib -> listOfPubs: add(pDetails)
 activate listOfPubs

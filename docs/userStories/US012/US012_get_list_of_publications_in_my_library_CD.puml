@@ -19,34 +19,32 @@ class GetListOfPublicationsUI {
 }
 
 class ListOfPublicationsInMyLibraryController {
-    -_libraryRepo : LibraryRepo
-    +ListOfPublicationsInMyLibraryController(libraryRepo: LibraryRepo)
-    +getListOfPublications(user: User) : List<PublicationDetails>
+    +getListOfPublicationDetails(user: User) : List<PublicationDetails>
 }
 
 class LibraryRepo {
-      +create(user: User) : Library
-      +findByUser(user: User) : Library
+      +addLibrary(user: User) : Library
+      +findLibraryByUser(user: User) : Library
 }
 
 class Library {
   -_owner : String
-      +getUserID() : String
-      +getPublicationsInLibrary() : List<PublicationDetails>
+  +getUserID() : String
+  +getPublicationDetails() : List<PublicationDetails>
 }
 
 class PublicationDetails{
--_title : Title
-  -_author : Author
-  -_publicationType : PublicationType
-  -_isbn : ISBN
-  -_issn : ISSN
+    -_title : Title
+    -_author : Author
+    -_publicationType : PublicationType
+    -_isbn : ISBN
+    -_issn : ISSN
 }
 
 GetListOfPublicationsUI "1"..> "1"ListOfPublicationsInMyLibraryController :uses
 ListOfPublicationsInMyLibraryController "1"..> "1"LibraryRepo : uses
 LibraryRepo "1" --> "*" Library : manages
-Library "1" ..> "*" PublicationDetails
+Library "1" ..> "*" PublicationDetails : uses
 
 
 @enduml
