@@ -22,39 +22,43 @@ class PublicationTypeTest {
     @Test
     void givenValidTypeName_SavesData() {
 
-        //Assert
+        //Act + Assert
         assertEquals("BOOK", _pt1.getPublicationType());
 
     }
 
     @Test
     void givenNullTypeName_ThrowsIllegalArgumentException() {
-
+        //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(null));
 
+        //Assert
         assertEquals("Publication type name is required!", exception.getMessage());
     }
 
     @Test
     void givenBlankTypeName_ThrowsIllegalArgumentException() {
-
+        //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType("   "));
 
+        //Assert
         assertEquals("Publication type name is required!", exception.getMessage());
     }
 
     @Test
     void givenEmptyTypeName_ThrowsIllegalArgumentException() {
+        //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(""));
 
+        //Assert
         assertEquals("Publication type name is required!", exception.getMessage());
     }
 
     @Test
-    void IsSamePublicationTypeShouldReturnTrueIfSame() {
+    void isSamePublicationTypeShouldReturnTrueIfSame() {
 
         //Arrange
         String book = "book";
@@ -68,7 +72,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void IsSamePublicationTypeShouldReturnFalseIfNotSame() {
+    void isSamePublicationTypeShouldReturnFalseIfNotSame() {
 
         //Arrange
         String book = "pokemon card";
@@ -82,7 +86,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void IsSamePublicationTypeShouldReturnFalseIfNull() {
+    void isSamePublicationTypeShouldReturnFalseIfNull() {
 
         //Arrange
         String book = null;
@@ -96,7 +100,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void IsSamePublicationTypeShouldReturnFalseIfBlank() {
+    void isSamePublicationTypeShouldReturnFalseIfBlank() {
 
         //Arrange
         String book = "   ";
@@ -110,7 +114,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void IsSamePublicationTypeShouldReturnFalseIfEmpty() {
+    void isSamePublicationTypeShouldReturnFalseIfEmpty() {
 
         //Arrange
         String book = "";
@@ -126,13 +130,13 @@ class PublicationTypeTest {
     @Test
     void toStringReturnsTypeName() {
 
-        //Assert
+        //Act + Assert
         assertEquals("BOOK", _pt2.toString());
 
     }
 
     @Test
-    void SameObjectShouldAssertEquals() {
+    void sameObjectShouldAssertEquals() {
 
         //Assert
         assertEquals(_pt1, _pt1);
@@ -140,7 +144,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void DifferentObjectsWithSameNameShouldReturnEquals() {
+    void differentObjectsWithSameNameShouldReturnEquals() {
 
         //Assert
         assertEquals(_pt1, _pt2);
@@ -148,7 +152,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void DifferentObjectsWithDifferentNamesShouldAssertNotEquals() {
+    void differentObjectsWithDifferentNamesShouldAssertNotEquals() {
 
         //Assert
         assertNotEquals(_pt1, _pt3);
@@ -156,14 +160,14 @@ class PublicationTypeTest {
     }
 
     @Test
-    void ObjectsWithNullObjectShouldReturnNotEquals() {
+    void objectsWithNullObjectShouldReturnNotEquals() {
 
         assertNotEquals(null, _pt1);
 
     }
 
     @Test
-    void ObjectsWithDifferentTypesShouldReturnNotEquals() {
+    void objectsWithDifferentTypesShouldReturnNotEquals() {
 
         //Arrange
         String otherType = "publicationType";
@@ -175,17 +179,17 @@ class PublicationTypeTest {
 
 
     @Test
-    void SameNamesShouldHaveSameHashCode() {
+    void sameNamesShouldHaveSameHashCode() {
 
-        //Assert
+        //Act + Assert
         assertEquals(_pt1.hashCode(), _pt2.hashCode());
 
     }
 
     @Test
-    void DifferentNamesShouldHaveDifferentHashCode() {
+    void differentNamesShouldHaveDifferentHashCode() {
 
-        //Assert
+        //Act + Assert
         assertNotEquals(_pt1.hashCode(), _pt3.hashCode());
 
     }
