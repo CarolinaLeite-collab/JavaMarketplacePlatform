@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class DimensionUnitTest {
@@ -12,9 +11,9 @@ class DimensionUnitTest {
         assertEquals(2, dimensionUnits.length);
 
         for (DimensionUnit dimensionUnit : dimensionUnits){
-            assertNotNull(dimensionUnit); // checks both dimension units are not null
-            assertNotNull(dimensionUnit.toString()); // checks both dimension units in String format are not null
-            assertEquals(DimensionUnit.valueOf(dimensionUnit.name()), dimensionUnit); // 'round-trip' validation (DimensionUnit -> String -> DimensionUnit)
+            assertNotNull(dimensionUnit);
+            assertNotNull(dimensionUnit.toString());
+            assertEquals(DimensionUnit.valueOf(dimensionUnit.name()), dimensionUnit);
         }
 
     }
