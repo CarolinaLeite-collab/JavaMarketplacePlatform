@@ -19,51 +19,61 @@ class PriceTest {
     }
 
     @Test
-    void tests_creation_of_valid_price() {
+    void testCreationOfValidPrice() {
+        //act + assert
         assertEquals(100.0, _price.getValue());
         assertEquals(_currency, _price.getCurrency());
     }
 
     @Test
-    void should_reject_zero_value() {
+    void shouldRejectZeroValue() {
+        //act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Price(0.0, _currency));
     }
 
     @Test
-    void should_reject_negative_value() {
+    void shouldRejectNegativeValue() {
+        //act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Price(-50.0, _currency));
     }
 
     @Test
-    void should_reject_null_currency() {
+    void shouldRejectNullCurrency() {
+        //act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> new Price(150.0, null));
     }
 
     @Test
-    void tests_price_to_string_shows_value_and_symbol() {
+    void testPriceToStringShowsValueAndSymbol() {
+        //arrange
         Price eurPrice = new Price(25.0, _currency);
         Price usdPrice = new Price(30.0, _currency2);
 
+        //act + assert
         assertEquals("25.0 €", eurPrice.toString());
         assertEquals("30.0 $", usdPrice.toString());
     }
 
     @Test
-    void tests_equal_prices_are_equal() {
+    void testEqualPricesAreEqual() {
+        //arrange
         Price price1 = new Price(100.0, _currency);
 
+        //act + assert
         assertEquals(price1, _price);
         assertEquals(price1.hashCode(), _price.hashCode());
     }
 
     @Test
-    void tests_different_prices_are_not_equal() {
+    void testDifferentPricesAreNotEqual() {
+        //arrange
         Price price1 = new Price(12.0, _currency);
         Price price2= new Price(12.0, _currency2);
 
+        //assert
         assertNotEquals(price1, price2);
         assertNotEquals(price1, _price);
     }
