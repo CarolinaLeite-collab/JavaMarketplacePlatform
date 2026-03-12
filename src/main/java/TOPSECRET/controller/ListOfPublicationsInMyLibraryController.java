@@ -1,9 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.LibraryRepo;
-import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationDetails;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.*;
 
 import java.util.List;
 
@@ -23,8 +20,8 @@ public class ListOfPublicationsInMyLibraryController {
         _libraryRepo = libraryRepo;
     }
 
- public List<PublicationDetails> getListOfPublications(User user) {
+ public List<Item> getListOfItems(User user) {
         Library library = _libraryRepo.findLibraryByUser(user);
-            return library.getPublicationsInLibrary();
+            return library.getItemsInLibrary();
     }
 }

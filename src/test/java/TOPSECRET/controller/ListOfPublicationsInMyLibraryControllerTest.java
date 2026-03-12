@@ -13,12 +13,15 @@ class ListOfPublicationsInMyLibraryControllerTest {
     private User _userDouble;
     private LibraryRepo _libraryRepoDouble;
     private Library _myLibraryDouble;
+    private Item _itemDouble;
 
     @BeforeEach
     void setUp() {
         _userDouble = mock(User.class);
 
         _myLibraryDouble = mock(Library.class);
+
+        _itemDouble = mock(Item.class);
 
         _libraryRepoDouble = mock(LibraryRepo.class);
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
@@ -33,33 +36,24 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnEmptyListWhenLibraryExistsButEmpty() {
         // Arrange
-        when(_myLibraryDouble.getPublicationsInLibrary()).thenReturn(List.of());
+        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of());
         // SUT
         ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
         // Act
-        List<PublicationDetails> result = controller.getListOfPublications(_userDouble);
+        List<Item> result = controller.getListOfItems(_userDouble);
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldReturnListOfPublicationsInLibrary() {
+    void shouldReturnListOfItemsInLibrary() {
         // Arrange
-        PublicationDetails _detailsDouble = mock(PublicationDetails.class);
-        when(_myLibraryDouble.getPublicationsInLibrary()).thenReturn(List.of(_detailsDouble));
+        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
         // SUT
         ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
         //Act
-        List<PublicationDetails> result = controller.getListOfPublications(_userDouble);
+        List<Item> result = controller.getListOfItems(_userDouble);
         //Assert
-        assertEquals(List.of(_detailsDouble), result);
+        assertEquals(List.of(_itemDouble), result);
     }
-
-//    @Test
-//    void shouldThrowException_whenLibraryNotFound() {
-//        IllegalStateException exception = assertThrows(IllegalStateException.class,
-//                () -> _libraryRepo.findLibraryByUser(_user)
-//        );
-//        assertEquals("Library not found for user: Zé Isep", exception.getMessage());
-//    }
 }
