@@ -11,6 +11,15 @@ import static TOPSECRET.domain.ISBN.isValidIsbn10;
 import static TOPSECRET.domain.ISBN.isValidIsbn13;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests for {@link ISBN}.
+ *
+ * <p>Covers construction rules, validation of ISBN-10 and ISBN-13 formats,
+ * conversion between formats, normalization, and equality contract.</p>
+ *
+ * <p>No Mockito doubles are used — {@link ISBN} is a pure Value Object.</p>
+ */
+
 public class ISBNTest {
     //Constructor test
     //invalid Isbn10
@@ -155,29 +164,37 @@ public class ISBNTest {
 
     @Test
     void returnsSameIfAlreadyIsbn13() {
+        // arrange
         String isbn13 = "9780136091813";
 
+        // act
         String result = ISBN.toIsbn13(isbn13);
 
+        // assert
         assertEquals(isbn13, result);
     }
     @Test
     void isValidIsbn13_returnsFalse_whenCheckDigitIsWrong() {
+        // assert
         assertFalse(isValidIsbn13("9780306406158"));
     }
 
     @Test
     void isValidIsbn13_returnsFalse_whenNonDigitAppearsInFirst12() {
+        //assert
         assertFalse(ISBN.isValidIsbn13("97803A6406157"));
     }
+
     @Test
     void isValidIsbn13_returnsFalse_whenLastCharIsNonDigit() {
+        // assert
         assertFalse(ISBN.isValidIsbn13("978030640615X")); // last is non-digit
     }
 
     @ParameterizedTest
     @MethodSource("isbn10To13Samples")
     void toIsbn13_convertsCorrectly_forMultipleExamples(String isbn10, String expectedIsbn13) {
+        //assert
         assertEquals(expectedIsbn13, ISBN.toIsbn13(isbn10));
     }
     static Stream<Arguments> isbn10To13Samples() {
@@ -197,40 +214,53 @@ public class ISBNTest {
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> ISBN.toIsbn13("1234567890") // 10 chars, mas check digit inválido
         );
 
+        // assert
         assertEquals("Invalid ISBN", ex.getMessage());
     }
 
     @Test
     void constructor_normalizesHyphensSpacesAndLowercaseX() {
+        // arrange
         ISBN isbn = new ISBN("978-06182-60300");
+        // assert
         assertEquals("9780618260300", isbn.getIdentifier());
     }
 
     @Test
     void returnsTrueForgetIdentifierIsbn() {
+        // arrange
         ISBN isbn = new ISBN("9780618260300");
+        // act
         String result = isbn.getIdentifier();
+        // assert
         assertEquals("9780618260300", result);
     }
 
     //test equals()
     @Test
     void returnsTrueForSameIsbn() {
+        // arrange
         ISBN isbn = new ISBN("9780618260300");
+        // act
         Object o = isbn;
+        // assert
         assertEquals(isbn, o);
     }
 
     @Test
     void equalsIsReflexive() {
+        // arrange
         ISBN isbn = new ISBN("9780618260300");
+        // assert
         assertEquals(isbn, isbn);
     }
 
     @Test
     void isbn10AndIsbn13OfSameBookAreEqual() {
+        // arrange
         ISBN isbn10 = new ISBN("0618260307");
         ISBN isbn13 = new ISBN("9780618260300");
+        // assert
         assertEquals(isbn10, isbn13);
         assertEquals(isbn13, isbn10);
     }
@@ -259,7 +289,5 @@ public class ISBNTest {
     @Test
     void normalize_throwsExceptionForNullIsbnString(){
         assertThrows(IllegalArgumentException.class, () -> new ISBN(null));
-
     }
-
 }
