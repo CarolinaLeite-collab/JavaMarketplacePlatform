@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a list of publications created by a user.
+ * Represents a list of items created by a user.
  * <p>
  * Each list has a name, a genre, and an associated user.
  * By default, all lists are private. Two lists are considered equal
@@ -22,8 +22,8 @@ public class ListOfPublications {
 
     public ListOfPublications(User user, String name, Genre genre) {
 
-        if (user == null || name == null || genre == null) {
-            throw new IllegalArgumentException("List parameters cannot be null");
+        if (name == null) {
+            throw new IllegalArgumentException("List name cannot be null");
         }
 
         _user = user;
