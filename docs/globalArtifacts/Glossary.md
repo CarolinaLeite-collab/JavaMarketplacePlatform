@@ -19,11 +19,16 @@ ___
 - [Outright Price](#outright-price)
 - [Payment Processing](#payment-processing)
 - [Publication Info](#publication-info)
+- [Publishing Company](#publishing-company)
+- [Publication Type](#publication-type)
 - [Seller](#seller)
 - [Shopping Cart](#shopping-cart)
 - [Support Service](#support-service)
 - [Transaction](#transaction)
 - [User](#user)
+- [User Rating](#user-rating)
+- [Title](#title)
+- [Weight](#weight)
 
 ___
 
@@ -187,6 +192,28 @@ Catalog-level metadata describing a publication independently of any physical co
 
 ___
 
+#### Publication Type
+
+A classification that defines the category of a publication (e.g. book, magazine) and allows the system to classify and organize publications.
+
+___
+
+#### Publishing Company
+
+Represents the organization or company that formally releases the work (`publication`).
+
+___
+
+#### User Role
+
+A classification that defines the permissions and responsibilities assigned to a user within the platform. A user may hold one or more roles simultaneously.
+
+`Roles` may include:
+- `USER`, the default role assigned to every user during registration.
+- `ADMIN`, a user with elevated privileges.
+
+___
+
 #### Seller
 
 A role played by a `user` who creates `listings` to sell `items`.
@@ -238,6 +265,12 @@ A `transaction` may contain a:
 
 ___
 
+#### Title
+
+Title of a publication.
+
+___
+
 #### User
 
 A registered entity (may be a person, company, or even an AI agent) on the platform who may play one or more roles.
@@ -248,5 +281,17 @@ Users may have attributes such as:
 - `address`, physical address.
 - `email`, contact email.
 - `phoneNumber`, contact phone number.
+
+___
+
+#### User Rating
+
+Represents a user's rating using a star-based system from one to five stars.
+
+___
+
+#### Weight
+
+Represents the weight of an object along with an unit of measurement (`WeightUnit`).
 
 ___
