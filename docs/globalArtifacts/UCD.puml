@@ -1,0 +1,115 @@
+@startuml
+
+/'
+Generalized/Functionality-based UCD (version 2):
+Avoids one UC per US as in original diagram
+'/
+
+'==== Title ====
+title MiteLovers – UCD
+left to right direction
+
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor #D5E8D4
+skinparam rectangle {
+    backgroundColor CornSilk
+}
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+
+'==== entities ====
+actor "Admin" as Administrator
+actor "User" as User
+actor "Buyer" as Buyer
+
+
+rectangle "MiteLovers" {
+
+'==== Administrator ====
+
+/' Covering US001 (register user), US004 (register Appraisal Entity),
+US005 (register author), US006 (register Publishing Co)  '/
+usecase "To register new users, entities, authors, and publishers" as UC_Admin1
+
+' Covering US002 (add pub type) and US003 (add pub genre)
+usecase "To add publication types and genres" as UC_Admin3
+
+' Covering US007 (register new country), US008 (register new city)
+usecase "To register new cities and countries" as UC_Admin2
+
+
+'==== User ====
+
+/' Covering US009 (create my library),
+US010 (register new pub to be added to my library),
+US011 (add a pub to my library), US12 (get list of pubs in my library) '/
+usecase "To manage my library" as UC_User1
+
+' Covering US010 (register new pub to be added to my library)
+usecase "To register publications" as UC_User2
+
+
+' ====MAY WANT TO MERGE THE FOLLOWING 2: ===========
+
+' Covering US015 (put pub in direct sale) and US016 (put pub in auction)
+usecase "To sell publications (via direct sale or auction)" as UC_User3
+
+' ==================================================
+
+
+/' Covering US012 (get list of pubs in my lib), US013 (get list of genres),
+US014 (get list of pub types), US017 (create private list of pubs),
+US018 (add pub to list), US019 (share list), US020 (get list)'/
+usecase "To manage lists" as UC_User5
+
+
+
+' ====MAY WANT TO MERGE THE FOLLOWING 2: ===========
+
+'==== Buyer ====
+/' Covering US021 (get list of items on direct sale by genre),
+US022 (get list of items on auction by genre),
+US023 (get list of items on direct sale by pub),
+US024 (get list of items on auction by pub),
+US025 (get list of items on direct sale by author),
+US026 (get list of items on auction by author),
+US027 (get list of items on direct sale by publisher)
+US028 (get list of items on auction by publisher)'/
+usecase "To browse items on sale" as UC_Buyer1
+
+
+' ==================================================
+
+}
+
+Administrator --> UC_Admin1
+Administrator --> UC_Admin2
+Administrator --> UC_Admin3
+User --> UC_User1
+User --> UC_User2
+User --> UC_User3
+User --> UC_User5
+Buyer --> UC_Buyer1
+
+
+@enduml
