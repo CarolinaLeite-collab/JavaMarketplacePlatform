@@ -60,6 +60,7 @@ class AddPublicationOnLibraryControllerTest {
     void shouldReturnListOfAvailableItems() {
         //arrange
         LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
         User _userDouble = mock(User.class);
@@ -70,8 +71,8 @@ class AddPublicationOnLibraryControllerTest {
         List<Item> existingItems = List.of(_itemDouble1);
         List<Item> availableItems = List.of(_itemDouble2);
 
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsInLibrary()).thenReturn(existingItems);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(existingItems);
         when(_itemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
 
         //SUT
@@ -84,7 +85,38 @@ class AddPublicationOnLibraryControllerTest {
         assertEquals(availableItems, result);
 
         verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
-        verify(_libraryDouble).getItemsInLibrary();
+        verify(_myLibraryDouble).getItemsInLibrary();
+        verify(_itemRepoDouble).getDifferentOf(existingItems);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoAvailableItemsExist() {
+        // arrange
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        Library _myLibraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        User _userDouble = mock(User.class);
+
+        Item _itemDouble1 = mock(Item.class);
+
+        List<Item> existingItems = List.of(_itemDouble1);
+        List<Item> availableItems = List.of();
+
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(existingItems);
+        when(_itemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
+
+        // SUT
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
+
+        // act
+        List<Item> result = controller.getListOfAvailableItems(_userDouble);
+
+        // assert
+        assertTrue(result.isEmpty());
+        verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
+        verify(_myLibraryDouble).getItemsInLibrary();
         verify(_itemRepoDouble).getDifferentOf(existingItems);
     }
 
@@ -92,13 +124,14 @@ class AddPublicationOnLibraryControllerTest {
     void shouldAddItemToLibrary() {
         //arrange
         LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
         User _userDouble = mock(User.class);
         Item _idemDouble = mock(Item.class);
 
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.addItemToLibrary(_idemDouble)).thenReturn(true);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_myLibraryDouble.addItemToLibrary(_idemDouble)).thenReturn(true);
 
         //SUT
         AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
@@ -110,6 +143,30 @@ class AddPublicationOnLibraryControllerTest {
         assertTrue(result);
 
         verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
-        verify(_libraryDouble).addItemToLibrary(_idemDouble);
+        verify(_myLibraryDouble).addItemToLibrary(_idemDouble);
+    }
+    @Test
+    void shouldReturnFalseWhenItemNotAddedToLibrary() {
+        // arrange
+        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        Library _libraryDouble = mock(Library.class);
+        Library _myLibraryDouble = mock(Library.class);
+        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        User _userDouble = mock(User.class);
+        Item _itemDouble = mock(Item.class);
+
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_myLibraryDouble.addItemToLibrary(_itemDouble)).thenReturn(false);
+
+        // SUT
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_libraryRepoDouble, _libraryDouble, _itemRepoDouble);
+
+        // act
+        boolean result = controller.addItemToLibrary(_itemDouble, _userDouble);
+
+        // assert
+        assertFalse(result);
+        verify(_libraryRepoDouble).findLibraryByUser(_userDouble);
+        verify(_myLibraryDouble).addItemToLibrary(_itemDouble);
     }
 }
