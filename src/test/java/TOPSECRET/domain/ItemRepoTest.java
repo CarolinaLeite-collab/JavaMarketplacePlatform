@@ -132,4 +132,22 @@ class ItemRepoTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void shouldReturnListWhenOnlySomeItemsExist() {
+        //Arrange / SUT
+        ItemRepo repo = new ItemRepo();
+
+        Item _itemDouble1 = repo.createItem(mock(Publication.class), mock(Condition.class));
+        repo.createItem(mock(Publication.class), mock(Condition.class));
+
+        //Act
+        List<Item> existentItems = List.of(_itemDouble1);
+
+        List<Item> result = repo.getDifferentOf(existentItems);
+
+        //Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+    }
 }

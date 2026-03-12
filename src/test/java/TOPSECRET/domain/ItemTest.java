@@ -485,4 +485,89 @@ class ItemTest {
         //Assert
         verify(_publicationDouble, times(1)).isByPublishingCompany(_publisher);
     }
+
+    @Test
+    void getAuctionShouldReturnAnAuction() {
+        //arrange
+        Auction auctionDouble = mock(Auction.class);
+
+        //SUT
+        Item item = new Item(_publicationDouble, _conditionDouble);
+
+        when(auctionDouble.getItem()).thenReturn(item);
+
+        //act
+        item.setAuction(auctionDouble);
+        Auction result = item.getAuction();
+
+        //assert
+        assertEquals(auctionDouble, result);
+    }
+
+    @Test
+    void equalItemsShouldReturnTrueWhenObjectsAreEqual() {
+        //arrange / SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+        Item item2 = new Item(_publicationDouble, _conditionDouble);
+
+        //assert
+        assertTrue(item1.equals(item2));
+
+    }
+
+    @Test
+    void notEqualItemsShouldReturnFalseWhenObjectsAreNotEqual() {
+        //arrange
+        Publication _publicationDouble2 = mock(Publication.class);
+
+        //SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+        Item item2 = new Item(_publicationDouble2, _conditionDouble);
+
+        //assert
+        assertFalse(item1.equals(item2));
+    }
+
+    @Test
+    void equalItemsShouldReturnTrueWhenObjectIsSame() {
+        //arrange / SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+
+        //assert
+        assertTrue(item1.equals(item1));
+
+    }
+
+    @Test
+    void NotEqualObjectsShouldReturnFalseWhenObjectsAreNotSameType() {
+        //arrange / SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+        String item = "item";
+
+        //assert
+        assertFalse(item1.equals(item));
+    }
+
+    @Test
+    void hashCodeShouldBeSameWhenObjectsAreEqual() {
+        //arrange / SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+        Item item2 = new Item(_publicationDouble, _conditionDouble);
+
+        //assert
+        assertEquals(item1.hashCode(), item2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentWhenObjectsAreNotEqual() {
+        //arrange
+        Publication _publicationDouble2 = mock(Publication.class);
+
+        //SUT
+        Item item1 = new Item(_publicationDouble, _conditionDouble);
+        Item item2 = new Item(_publicationDouble2, _conditionDouble);
+
+        //assert
+        assertNotEquals(item1.hashCode(), item2.hashCode());
+    }
 }
