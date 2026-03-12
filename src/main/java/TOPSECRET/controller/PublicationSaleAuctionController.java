@@ -16,56 +16,50 @@ import java.util.List;
 public class PublicationSaleAuctionController {
 
     private final LibraryRepo _libraryRepo;
-    private final ItemRepo _itemRepo;
     private final AuctionRepo _auctionRepo;
-    private final ItemFactory _itemFactory;
-    private final AuctionFactory _auctionFactory;
+    private final Library _library;
 
-    public PublicationSaleAuctionController(LibraryRepo libraryRepo, ItemRepo itemRepo, AuctionRepo auctionRepo,
-                                            ItemFactory itemFactory, AuctionFactory auctionFactory) {
-        if (libraryRepo == null || itemRepo == null || auctionRepo == null || itemFactory == null || auctionFactory == null) {
+    public PublicationSaleAuctionController(LibraryRepo libraryRepo, AuctionRepo auctionRepo, Library library) {
+        if (libraryRepo == null || auctionRepo == null || library == null) {
             throw new NullPointerException("Repositories and factories are required");
         }
         _libraryRepo = libraryRepo;
-        _itemRepo = itemRepo;
         _auctionRepo = auctionRepo;
-        _itemFactory = itemFactory;
-        _auctionFactory = auctionFactory;
+        _library = library;
 
     }
 
-    // US016 Controller Step 1: getLibraryPublicationList(user)
-   public List<PublicationDetails> getLibraryPublicationList(User user) {
+    // US016 Controller Step 1: getLibraryItemList(user)
+   public List<Item> getLibraryItemsList(User user) {
         if (user == null) {
             throw new IllegalArgumentException("User required");
         }
         Library userLibrary = _libraryRepo.findLibraryByUser(user);
-        return userLibrary.getPublicationsInLibrary(); //This is an immutable list
+        List<Item> items = userLibrary.getItemsInLibrary();
+        return List.copyOf(items); //This is an immutable list
    }
 
-   // US016 Controller Step 2: putPublicationOnAuction(publication, condition, ...)
-      // returns true if publication successfully put on sale in auction
-    public Auction putPublicationOnAuction(User user, Publication publication, Condition condition, Price startPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
-        if (user == null || publication == null || condition == null || startPrice == null || startDate == null || endDate == null) {
-            return null; //If one of the parameters is not provided, cannot put publication on sale for auction
+//    }
+
+    // US016 Controller Step 2: putItemOnAuction
+    // returns true if publication successfully put on sale in auction
+    public Auction putItemOnAuction(Item item, Price startPrice, ZonedDateTime startDate, ZonedDateTime endDate) throws IllegalArgumentException {
+        if (item == null || startPrice == null || startDate== null || endDate == null) {
+            return null;
         }
         if (endDate.isBefore(startDate)) {
-            return null; // End date cannot be before start date
-        }
-        if (_itemRepo.exists(publication)){
-            return null; //If publication was already made into an item put on sale, cannot duplicate
+            return null;
         }
 
-        // Following US016 SD flow: get real publication from user's library -> create Item -> create Auction -> link between item and its auction
-        Library userLibrary = _libraryRepo.findLibraryByUser(user);
-        Publication actualPublicationInLibrary = userLibrary.getPublicationFromLibrary(publication);
-        Item item = _itemFactory.createItem(actualPublicationInLibrary, condition);
+        Item itemForAuction = _library.getItem(item);
+
         try {
-            Auction auction = _auctionFactory.createAuction(item, startPrice, startDate, endDate);
-            item.setAuction(auction);
-            return auction;
-        } catch (InstantiationException ex) {
+            Auction newAuction = _auctionRepo.createAuction(itemForAuction, startPrice, startDate, endDate);
+            itemForAuction.setAuction(newAuction);
+            return newAuction;
+        }
+        catch (IllegalArgumentException ex) {
             return null;
         }
     }
