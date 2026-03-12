@@ -21,7 +21,7 @@ public class Library {
     private List<Publication> _publications = new ArrayList<>();
     private List<Item> _items = new ArrayList<>();
 
-    public Library(User user){
+    Library(User user){
 
         if (user == null)
             throw new IllegalArgumentException("User is required");

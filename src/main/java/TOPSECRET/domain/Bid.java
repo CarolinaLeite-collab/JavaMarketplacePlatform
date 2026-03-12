@@ -22,11 +22,11 @@ public class Bid {
     private final Price _offerPrice; // Final: offer price is immutable
     private final Instant _bidDate; //Final: historical timestamp
 
-    public Bid(User bidder, Price offerPrice) {
+    Bid(User bidder, Price offerPrice) {
         this(bidder, offerPrice, Clock.systemDefaultZone());
     }
 
-    public Bid(User bidder, Price offerPrice, Clock clock) {
+    Bid(User bidder, Price offerPrice, Clock clock) {
         validateBidder(bidder);
         validateOfferPrice(offerPrice);
 

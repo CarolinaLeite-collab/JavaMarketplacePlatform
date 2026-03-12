@@ -8,7 +8,7 @@ package TOPSECRET.domain;
 public class Author {
     private String _name;
 
-    public Author (String name) {
+    Author (String name) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Author name cannot be null or empty");
 

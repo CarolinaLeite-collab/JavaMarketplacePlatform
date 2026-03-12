@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 
 /**
- * Controller responsible for handling the addition of new publication genres.
+ * Controller responsible for handling the addition of new genres.
  * <p>
  * This controller is stateless and acts as an intermediary between the user interface
  * and the domain layer, delegating the storage of genres to {@link GenreRepo}.

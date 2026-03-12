@@ -9,7 +9,7 @@ import java.util.Objects;
 public class PublishingCompany {
     private final String _name;
 
-    public PublishingCompany(String name){
+    PublishingCompany(String name){
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
 

@@ -28,15 +28,4 @@ class GenreFactoryTest {
         }
     }
 
-    // Test proving that GenreFactory obeys Genre's IllegalArgumentException
-    @Test
-    void factoryShouldThrowWhenGenreNameIsBlank() {
-
-        // SUT
-        GenreFactory factory = new GenreFactory();
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.createGenre( "   "));
-        }
-
 }

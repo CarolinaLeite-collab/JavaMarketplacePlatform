@@ -13,8 +13,15 @@ class GenreRepoTest {
 
     @BeforeEach
     void setUp() {
-        // this double is used in every test
         _genreFactoryDouble = mock(GenreFactory.class);
+    }
+
+    @Test
+    void constructorOfGenreRepoShouldCreateGenreRepo() {
+
+        //SUT
+        new GenreRepo(_genreFactoryDouble);
+
     }
 
     @Test

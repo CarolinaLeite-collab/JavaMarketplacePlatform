@@ -15,7 +15,7 @@ public class City {
     private final Country _country;
 
     // Creates a new city while normalizing the name and validating the country.
-    public City(String name, Country country) {
+    City(String name, Country country) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("City name cannot be null or blank");
         }

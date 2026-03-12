@@ -15,7 +15,7 @@ public class PublicationType {
 
     private final String _publicationType;
 
-    public PublicationType(String publicationTypeName) throws IllegalArgumentException {
+     PublicationType(String publicationTypeName) throws IllegalArgumentException {
 
         if (publicationTypeName == null || publicationTypeName.isBlank()) {
 

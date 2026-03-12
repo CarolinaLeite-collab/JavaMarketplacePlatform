@@ -12,7 +12,7 @@ public class Genre {
     private final String _genre;
     //private final User _admin;
 
-    public Genre(String genre) {
+    Genre(String genre) {
         if (genre == null || genre.trim().isEmpty())
             throw new IllegalArgumentException("Genre name cannot be null or empty");
 

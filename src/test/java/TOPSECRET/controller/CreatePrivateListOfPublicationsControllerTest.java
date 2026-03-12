@@ -46,8 +46,8 @@ class CreatePrivateListOfPublicationsControllerTest {
     @Test
     void shouldCreateListSuccessfully() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_userDouble, "My List", _actionDouble);
-        when(_repoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(list);
+        ListOfPublications listDouble = mock(ListOfPublications.class);
+        when(_repoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
 
         // Act
         ListOfPublications result = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
@@ -55,7 +55,7 @@ class CreatePrivateListOfPublicationsControllerTest {
         // Assert
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(list, result)
+                () -> assertEquals(listDouble, result)
         );
         verify(_repoDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
     }

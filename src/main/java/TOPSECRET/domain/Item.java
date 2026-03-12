@@ -24,7 +24,7 @@ public class Item {
     private DirectSale directSale;
     private Auction auction;
 
-    public Item(Publication publication, Condition condition) {
+    Item(Publication publication, Condition condition) {
         this.publication = publication;
         this.condition = condition;
     }

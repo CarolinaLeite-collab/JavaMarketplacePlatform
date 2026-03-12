@@ -29,9 +29,17 @@ class PublicationTypeRepoTest {
 
     }
 
+    @Test
+    void constructorOfPublicationTypeRepoShouldCreatePublicationTypeRepo() {
+
+        //SUT
+        new PublicationTypeRepo(_ptfDouble);
+
+    }
+
 
     @Test
-    void addPublicationTypeShouldReturnPublicationType() throws InstantiationException {
+    void addPublicationTypeShouldReturnPublicationType() {
         // Arrange
         String pubTypeName = "BOOK";
 
@@ -46,7 +54,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldAddPublicationTypeSuccessfullyAndListNotEmpty() throws InstantiationException {
+    void shouldAddPublicationTypeSuccessfullyAndListNotEmpty() {
         // Arrange
         String pubTypeName = "BOOK";
 
@@ -61,7 +69,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldNotAllowDuplicatePublicationTypes() throws InstantiationException {
+    void shouldNotAllowDuplicatePublicationTypes() {
         //Arrange
         String pubTypeName = "MAGAZINE";
         when(_pubTypeDouble2.isSamePublicationType(pubTypeName)).thenReturn(true);
@@ -77,7 +85,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldBeAbleToAddMultiplePublicationTypes() throws InstantiationException {
+    void shouldBeAbleToAddMultiplePublicationTypes() {
         //Arrange
         String pubTypeName = "MAGAZINE";
         String pubTypeName2 = "BOOK";
@@ -96,7 +104,7 @@ class PublicationTypeRepoTest {
     }
 
     @Test
-    void shouldThrowCorrectMessageOnDuplicatePublicationTypes() throws InstantiationException {
+    void shouldThrowCorrectMessageOnDuplicatePublicationTypes() {
         // Arrange
         String pubTypeName = "BOOK";
         when(_pubTypeDouble1.isSamePublicationType(pubTypeName)).thenReturn(true);

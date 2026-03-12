@@ -39,7 +39,7 @@ public class Auction {
 
 
     // 1. Private constructor takes _outrightPrice as an argument
-    public Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
         _bids = new BidRepo( new BidFactory());
@@ -68,7 +68,7 @@ public class Auction {
     }
 
     // 2. Public constructor without _outrightPrice as an argument
-    public Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
         _outrightPrice = null;

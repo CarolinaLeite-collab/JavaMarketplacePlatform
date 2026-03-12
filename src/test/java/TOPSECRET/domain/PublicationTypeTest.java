@@ -20,7 +20,15 @@ class PublicationTypeTest {
     }
 
     @Test
-    void givenValidTypeName_SavesData() {
+    void constructorShouldBuildPublicationType() {
+
+        //Arrange and Act
+        new PublicationType("Pokemon Card");
+
+    }
+
+    @Test
+    void givenValidTypeNameShouldSavesData() {
 
         //Act + Assert
         assertEquals("BOOK", _pt1.getPublicationType());
@@ -28,7 +36,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void givenNullTypeName_ThrowsIllegalArgumentException() {
+    void givenNullTypeNameShouldThrowIllegalArgumentException() {
         //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(null));
@@ -38,7 +46,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void givenBlankTypeName_ThrowsIllegalArgumentException() {
+    void givenBlankTypeNameShouldThrowIllegalArgumentException() {
         //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType("   "));
@@ -48,7 +56,7 @@ class PublicationTypeTest {
     }
 
     @Test
-    void givenEmptyTypeName_ThrowsIllegalArgumentException() {
+    void givenEmptyTypeNameShouldThrowIllegalArgumentException() {
         //Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> new PublicationType(""));
@@ -173,7 +181,7 @@ class PublicationTypeTest {
         String otherType = "publicationType";
 
         //Assert
-        assertNotEquals(otherType, _pt1);
+        assertFalse(_pt1.equals(otherType));
 
     }
 

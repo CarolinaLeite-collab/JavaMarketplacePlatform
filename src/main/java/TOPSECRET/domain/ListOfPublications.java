@@ -20,7 +20,7 @@ public class ListOfPublications {
     private List<Item> _items;
 
 
-    public ListOfPublications(User user, String name, Genre genre) {
+    ListOfPublications(User user, String name, Genre genre) {
 
         if (name == null) {
             throw new IllegalArgumentException("List name cannot be null");

@@ -57,7 +57,7 @@ class AddPublicationTypeControllerTest {
         String publicationTypeName = "book";
 
         //SUT
-        _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
 
         //act
 
@@ -82,7 +82,7 @@ class AddPublicationTypeControllerTest {
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-       _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));

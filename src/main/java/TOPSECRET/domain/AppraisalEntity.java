@@ -17,7 +17,7 @@ public class AppraisalEntity {
     private final List<PublicationType> _publicationTypes;
     private final List<Genre> _genres;
 
-    public AppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
+    AppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
         _name = name;
         _publicationTypes = new ArrayList<>(publicationTypes);
         _genres = new ArrayList<>(genres);

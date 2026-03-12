@@ -16,7 +16,7 @@ public class DirectSale {
     private final Price _price;
     private final Period _timeLimit; // optional
 
-    public DirectSale(Item item, Price price, Period timeLimit) {
+    DirectSale(Item item, Price price, Period timeLimit) {
 
         requiresItemAndPrice(item, price);
         timeLimitMustBeValid(timeLimit);
