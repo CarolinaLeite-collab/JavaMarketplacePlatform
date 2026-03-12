@@ -104,7 +104,6 @@ class BidRepoTest {
         when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
         when(priceDouble1.getValue()).thenReturn(100.0);
 
-
         Price priceDouble2 = mock(Price.class);
         when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
         when(priceDouble2.getValue()).thenReturn(102.0);
@@ -122,6 +121,5 @@ class BidRepoTest {
 
         //assert
         assertEquals(102, result);
-
     }
 }
