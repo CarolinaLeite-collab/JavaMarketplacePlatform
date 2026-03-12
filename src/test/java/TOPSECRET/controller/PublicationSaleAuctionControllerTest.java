@@ -8,8 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * <h3>Unit tests for PublicationSaleAuctionController (US016)</h3>
@@ -18,50 +17,49 @@ import static org.mockito.Mockito.when;
 
 class PublicationSaleAuctionControllerTest {
 
-    private PublicationSaleAuctionController controller;
     private LibraryRepo _libraryRepoDouble;
     private AuctionRepo _auctionRepoDouble;
-    private ItemFactory _itemFactoryDouble;
-    private Library _libraryDouble;
+    private Library _userLibraryDouble;
+    private Library _libraryDouble2;
     private Item _itemDouble;
     private Auction _auctionDouble;
     private User _userDouble;
-    private Publication _publicationDouble;
 
     @BeforeEach
     void setUp() {
         _libraryRepoDouble = mock(LibraryRepo.class);
         _auctionRepoDouble = mock(AuctionRepo.class);
-        _itemFactoryDouble = mock(ItemFactory.class);
         _userDouble = mock(User.class);
-        _publicationDouble = mock(Publication.class);
-        _libraryDouble = mock(Library.class);
+        _userLibraryDouble = mock(Library.class);
+        _libraryDouble2 = mock(Library.class);
         _itemDouble = mock(Item.class);
         _auctionDouble = mock(Auction.class);
-
-        // SUT
-        controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble);
 
     }
 
     @Test
     void testUsingConstructorPublicationSaleAuctionController() {
-        // Arrange / Act / Assert
-        assertDoesNotThrow(() -> new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble));
-    }
 
+        // Arrange / Act / Assert
+        assertDoesNotThrow(() -> new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _userLibraryDouble));
+    }
 
     @Test
     void testConstructorWithNullRepos() {
         // Arrange / Act / Assert
-        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(null, _auctionRepoDouble, _libraryDouble));
-        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(_libraryRepoDouble, null, _libraryDouble));
+        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(null, _auctionRepoDouble, _userLibraryDouble));
+        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(_libraryRepoDouble, null, _userLibraryDouble));
         assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, null));
     }
 
     @Test
     void testGetLibraryPublicationListNullUser() {
-        // Arrange / Act / Assert
+
+        // Arrange & SUT
+
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _userLibraryDouble);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> controller.getLibraryItemsList(null), "User required");
     }
 
@@ -70,6 +68,9 @@ class PublicationSaleAuctionControllerTest {
         // Arrange
         User _userDouble2 = mock(User.class);
         when(_libraryRepoDouble.findLibraryByUser(_userDouble2)).thenThrow(new IllegalStateException("Library not found for user"));
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _userLibraryDouble);
 
         // Act / Assert
         assertThrows(IllegalStateException.class,
@@ -80,8 +81,11 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testGetLibraryItemsListForUserWithEmptyLibrary() {
         // Arrange
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of());
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_userLibraryDouble);
+        when(_userLibraryDouble.getItemsInLibrary()).thenReturn(List.of());
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble2);
 
         // Act
         List<Item> result = controller.getLibraryItemsList(_userDouble);
@@ -94,8 +98,11 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testGetLibraryPublicationListIsImmutable() {
         //Arrange
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_userLibraryDouble);
+        when(_userLibraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble2);
 
         //Act
         List<Item> result = controller.getLibraryItemsList(_userDouble);
@@ -106,6 +113,9 @@ class PublicationSaleAuctionControllerTest {
 
     @Test
     void testPutItemOnAuctionWithNullArguments() throws InstantiationException{
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _userLibraryDouble);
+
         // Act / Assert
         assertNull(controller.putItemOnAuction(null, new Price(2, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
         assertNull(controller.putItemOnAuction(_itemDouble,null, ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
@@ -116,11 +126,49 @@ class PublicationSaleAuctionControllerTest {
 
     @Test
     void testPutPublicationOnAuctionWithInvalidDates() throws InstantiationException{
-        // Act / Assert
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _userLibraryDouble);
+
+        // Act & Assert
         assertNull(controller.putItemOnAuction(_itemDouble, new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().minusDays(1)));
     }
+    @Test
+    void shouldReturnNullWhenAuctionRepoThrowsIllegalArgumentException() throws InstantiationException {
+        //arrange
+        Price startPrice = mock(Price.class);
+        ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
 
+        when(_libraryDouble2.getItem(_itemDouble)).thenReturn(_itemDouble);
+        when(_auctionRepoDouble.createAuction(_itemDouble, startPrice, startDate, endDate))
+                .thenThrow(new IllegalArgumentException("Invalid auction parameters"));
 
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble2);
+
+        //act
+        Auction result = controller.putItemOnAuction(_itemDouble, startPrice, startDate, endDate);
+
+        //assert
+        assertNull(result);
+    }
+
+    @Test
+    void shouldReturnItemsFromUserLibrary() {
+        //arrange
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_userLibraryDouble);
+        when(_userLibraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble2);
+
+        //act
+        List<Item> result = controller.getLibraryItemsList(_userDouble);
+
+        //assert
+        assertEquals(1, result.size());
+        assertEquals(_itemDouble, result.get(0));
+    }
 
     @Test
     void testPutPublicationOnAuctionSuccess() throws InstantiationException {
@@ -129,17 +177,21 @@ class PublicationSaleAuctionControllerTest {
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
 
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_userLibraryDouble);
         when(_auctionRepoDouble.createAuction(_itemDouble, startPrice, startDate, endDate)).thenReturn(_auctionDouble);
-        when(_itemDouble.getAuction()).thenReturn(_auctionDouble);
-        when(_libraryDouble.getItem(_itemDouble)).thenReturn(_itemDouble);
+        when(_libraryDouble2.getItem(_itemDouble)).thenReturn(_itemDouble);
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_libraryRepoDouble, _auctionRepoDouble, _libraryDouble2);
 
         // Act
         Auction result = controller.putItemOnAuction(_itemDouble, startPrice, startDate, endDate);
 
         // Assert
         assertNotNull(result);
-        assertSame(_auctionDouble, result);
-        assertSame(_auctionDouble, _itemDouble.getAuction());
+        assertSame(_auctionDouble, result);;
+        verify(_itemDouble).setAuction(_auctionDouble);
+        verify(_libraryDouble2).getItem(_itemDouble);
+        verify(_auctionRepoDouble).createAuction(_itemDouble, startPrice, startDate, endDate);
     }
 }
