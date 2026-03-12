@@ -11,30 +11,32 @@ class GenreFactoryTest {
     @Test
     void factoryShouldCreateGenre() {
 
+        // Arrange & SUT
         GenreFactory factory = new GenreFactory();
 
         try (MockedConstruction<Genre> mockedConstruction = Mockito.mockConstruction(Genre.class)) {
 
+            // Act
             Genre newGenre = factory.createGenre("New Genre");
 
             Genre constructedGenre = mockedConstruction.constructed().get(0);
 
+            // Assert
             assertNotNull(newGenre);
             assertEquals(1, mockedConstruction.constructed().size());
             assertSame(newGenre, constructedGenre);
-
         }
-
     }
 
     // Test proving that GenreFactory obeys Genre's IllegalArgumentException
     @Test
-    void factoryShouldThrowWhenGenreNameIsNull() {
+    void factoryShouldThrowWhenGenreNameIsBlank() {
 
+        // SUT
         GenreFactory factory = new GenreFactory();
 
-            assertThrows(IllegalArgumentException.class, () -> factory.createGenre( "   "));
-
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> factory.createGenre( "   "));
         }
 
 }
