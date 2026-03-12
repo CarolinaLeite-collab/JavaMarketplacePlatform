@@ -20,39 +20,25 @@ class PublicationSaleAuctionUI {
 
 class PublicationSaleAuctionController {
   - _libraryRepo: LibraryRepo
-  - _itemRepo: ItemRepo
   - _auctionRepo: AuctionRepo
-  - _itemFactory: ItemFactory
-  - _auctionFactory: AuctionFactory
   --
-  + getLibraryPublicationList(user: User): List<PublicationDetails>
-  + putPublicationOnAuction(user: User, publication: Publication, condition: Condition,
-                           startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  + getLibraryItemsList(user: User): List<Item>
+  + putItemOnAuction(item : Item, startPrice : Price, startDate : ZonedDateTime,
+                            endDate : ZonedDateTime): Auction
 }
 
 class LibraryRepo {
   - _libraries: List<Library>
-  + findByUser(user: User): Library
+  + findLibraryByUser(user: User): Library
 }
 
 class Library {
-  - _owner: User
-  - _publications: List<Publication>
-  + getPublicationsInLibrary(): List<PublicationDetails>
-  + getPublicationFromLibrary(publication: Publication): Publication
-}
-
-class Publication {
-}
-
-class ItemRepo {
-  - items: List<Item>
-  + createItem(publication: Publication, condition: Condition): Item
+  - _items : List<Item>
+  + getItemsInLibrary(): List<Item>
+  + getItem(item : Item) : Item
 }
 
 class Item {
-  - publication: Publication
-  - condition: Condition
   - auction: Auction
   + setAuction(auction: Auction): void
 }
@@ -63,14 +49,6 @@ class AuctionRepo {
 }
 
 class Auction {
-  - _item: Item
-  - _startingPrice: Price
-  - _auctionStartDate: ZonedDateTime
-  - _auctionEndDate: ZonedDateTime
-}
-
-class ItemFactory {
-  + createItem(publication: Publication, condition: Condition): Item
 }
 
 class AuctionFactory {
@@ -82,35 +60,19 @@ class AuctionFactory {
 PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : uses
 
 ' Controller → Repos
-PublicationSaleAuctionController "1" --> "1" LibraryRepo : uses
-PublicationSaleAuctionController "1" --> "1" ItemRepo : uses
-PublicationSaleAuctionController "1" --> "1" AuctionRepo : uses
-PublicationSaleAuctionController "1" --> "1" ItemFactory : uses
-PublicationSaleAuctionController "1" --> "1" AuctionFactory : uses
+PublicationSaleAuctionController "1" ..> "1" LibraryRepo : uses
+PublicationSaleAuctionController "1" ..> "1" Library : uses
+PublicationSaleAuctionController "1" ..> "1" AuctionRepo : uses
 
 ' Repos → Domain objects
 LibraryRepo "1" --> "*" Library : manages
-ItemRepo "1" --> "*" Item : manages
-AuctionRepo "1" --> "*" Auction : manages
 
 ' Repos delegate creation to factories
-ItemRepo "1" --> "1" ItemFactory : delegates creation
 AuctionRepo "1" --> "1" AuctionFactory : delegates creation
+AuctionFactory "1" ..> Auction : <<create>>
 
-' Domain relationships
-Item "1" --> "1" Auction : sets
-note right of Item
-  Item has either Auction or DirectSale
-  (not both; US016 sets Auction only)
-end note
-
-Library "1" --> "*" Publication : contains
-note right of Publication
- Publication is the core domain object
- for this US016; it is stored in the user's
- Library and passed as data/parameter when
- putting it for sale in auction
-end note
+Library "1" --> "*" Item : stores
+Item --> Auction : sets
 
 note as N1
  Only US016 SD methods/attributes shown

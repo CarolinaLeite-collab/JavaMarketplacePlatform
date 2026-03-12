@@ -2,7 +2,6 @@
 title US016 – "As a User, I want to put for sale a publication in my library in an auction" %n() SD
 hide footbox
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -15,91 +14,71 @@ skinparam ActivationBackgroundColor black
 
 autonumber
 
-' --- Actor and participants ---
 actor "User" as User
-participant ":PublicationSaleAuctionUI" as UI
-participant ":PublicationSaleAuctionController" as Controller
-participant ":LibraryRepo" as LibraryRepo
+participant "UI:PublicationSaleAuctionUI" as UI
+participant "Ctl:PublicationSaleAuctionController" as Controller
+participant "_lr:LibraryRepo" as LibraryRepo
 participant "userLibrary: Library" as userLibrary
-participant ":ItemRepo" as ItemRepo
-participant ":AuctionRepo" as AuctionRepo
-participant ":ItemFactory" as ItemFactory
-participant ":AuctionFactory" as AuctionFactory
+participant "_ar:AuctionRepo" as AuctionRepo
+participant "_af:AuctionFactory" as AuctionFactory
+participant "selectedItem:Item" as selectedItem
+participant "newAuction: Auction" as newAuction
 
-' Design of happy path
-
-User -> UI : I want to put a publication in my library for sale in an auction
+User -> UI : I want to put an item from my library\nfor sale in an auction
 activate UI
-UI -> Controller : getLibraryPublicationList(user)
+
+UI -> Controller : getLibraryItemsList(user)
 activate Controller
-Controller -> LibraryRepo : findByUser(user)
+
+Controller -> LibraryRepo : findLibraryByUser(user)
 activate LibraryRepo
-LibraryRepo --> Controller : userLibrary: Library
+LibraryRepo --> Controller : userLibrary
 deactivate LibraryRepo
-Controller -> userLibrary : getPublicationsInLibrary()
+
+Controller -> userLibrary : getItemsInLibrary()
 activate userLibrary
-userLibrary --> Controller : publicationsList
-note right userLibrary
- getPublicationsInLibrary() returns publicationsList,
- an unmodifiable copy of the publications in the user’s
- library, represented as PublicationDetails objects
-end note
+userLibrary --> Controller : itemsList
 deactivate userLibrary
-Controller --> UI : publicationsList
+
+Controller --> UI : itemsList
 deactivate Controller
-UI --> User : Which publication?
-User -> UI : publication
-UI --> User : What is its condition?
-User -> UI : Please provide auction details
-User -> UI : startingPrice, auctionStartDate, auctionEndDate
-UI -> Controller: putPublicationOnAuction(user, publication, %n()condition, startPrice, startDate, endDate)
+
+UI --> User : Select the item to sell
+deactivate UI
+User -> UI : selectedItem
+activate UI
+
+UI --> User : Provide auction details
+deactivate UI
+User -> UI : startPrice, startDate, endDate
+activate UI
+
+UI -> Controller : putItemOnAuction(selectedItem,\nstartPrice, startDate, endDate)
 activate Controller
-note over Controller: LibraryRepo: Same retrieval logic %n()as in getLibraryPublicationList(user) %n()but for separate use case
-Controller -> LibraryRepo: findByUser(user)
-activate LibraryRepo
-LibraryRepo --> Controller: userLibrary: Library
-deactivate LibraryRepo
-Controller -> userLibrary : getPublicationFromLibrary(publication)
-activate userLibrary
-userLibrary --> Controller : p1
-deactivate userLibrary
-note left Controller
- Publication is retrieved from
- userLibrary, ensuring it belongs to
- that Library, then is turned into
- an Item to be put for sale in auction
-end note
 
-Controller -> ItemRepo : createItem(p1, condition)
-activate ItemRepo
-ItemRepo -> ItemFactory : createItem(p1, condition)
-activate ItemFactory
-create i1 as "i1: Item"
-ItemFactory --> i1 : create()
-ItemFactory --> ItemRepo : i1
-deactivate ItemFactory
-ItemRepo --> Controller : i1
-deactivate ItemRepo
 
-Controller -> AuctionRepo : createAuction(i1, startPrice, startDate, endDate)
+Controller -> AuctionRepo : createAuction(selectedItem, startPrice, startDate, endDate)
 activate AuctionRepo
-AuctionRepo -> AuctionFactory : createAuction(i1, startPrice, startDate, endDate)
+
+AuctionRepo -> AuctionFactory : createAuction(selectedItem, startPrice, startDate, endDate)
 activate AuctionFactory
-create a1 as "a1: Auction"
-AuctionFactory --> a1: create()
-AuctionFactory --> AuctionRepo : a1
+create newAuction
+AuctionFactory --> newAuction : create()
+AuctionFactory --> AuctionRepo : newAuction
 deactivate AuctionFactory
-AuctionRepo --> Controller : a1
+
+AuctionRepo --> Controller : newAuction
 deactivate AuctionRepo
 
-Controller -> i1 : setAuction(a1)
-activate i1
-i1 --> Controller : [ok]
-deactivate i1
+Controller -> selectedItem : setAuction(newAuction)
+activate selectedItem
+selectedItem --> Controller : ok
+deactivate selectedItem
 
-Controller --> UI : a1
+Controller --> UI : newAuction
 deactivate Controller
-UI --> User : Your item was successfully put up for sale in an auction
+
+UI --> User : Item successfully put on auction
 deactivate UI
 
 @enduml
