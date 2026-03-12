@@ -20,14 +20,23 @@ class CreateLibraryControllerTest {
         _repoDouble = mock(LibraryRepo.class);
     }
 
+    @Test
+    void testCreateLibraryController(){
+
+        // SUT
+        new CreateLibraryController(_repoDouble, _userDouble);
+    }
+
 
     @Test
     void createLibraryShouldReturnLibrary() {
 
         // Arrange
-        Library libraryDouble = mock(Library.class); //stub
+        Library libraryDouble = mock(Library.class);
         when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
-        CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble);
+
+        // SUT
+        CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
 
         // Act
         Library myLibrary = createLibraryController.createLibrary(_userDouble);
@@ -43,7 +52,9 @@ class CreateLibraryControllerTest {
 
         // Arrange
        when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
-       CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble);
+
+       // SUT
+       CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
 
 
         // Act & Assert

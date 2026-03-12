@@ -18,7 +18,7 @@ public class CreateLibraryController {
 
     private final LibraryRepo _libraryRepo;
 
-    public CreateLibraryController(LibraryRepo lr){
+    public CreateLibraryController(LibraryRepo lr, User user){
 
         _libraryRepo =lr;
 
