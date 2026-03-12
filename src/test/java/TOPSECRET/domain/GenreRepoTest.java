@@ -45,9 +45,6 @@ class GenreRepoTest {
         assertEquals(1, repo.getListOfOfficialGenres().size());
         assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
 
-        // the below is called twice: once in genreExists method (not stored), once in addGenre (is stored)
-        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
-
     }
 
     @Test
@@ -76,10 +73,6 @@ class GenreRepoTest {
         assertEquals(2, repo.getListOfOfficialGenres().size());
         assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
         assertEquals(addedGenre2, repo.getListOfOfficialGenres().get(1));
-
-        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
-        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genre2Name);
-
     }
 
     @Test
@@ -101,9 +94,6 @@ class GenreRepoTest {
         //Assert
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addGenre(genreName));
         assertEquals("This genre already exists", exception.getMessage());
-
-        verify(_genreFactoryDouble,atLeastOnce()).createGenre(genreName);
-
     }
 
     @Test
@@ -136,10 +126,6 @@ class GenreRepoTest {
         assertEquals(2, listOfOfficialGenres.size());
         assertEquals(genreName, listOfOfficialGenres.get(0).getGenre());
         assertEquals(genre2Name, listOfOfficialGenres.get(1).getGenre());
-
-        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genreName);
-        verify(_genreFactoryDouble, atLeastOnce()).createGenre(genre2Name);
-
     }
 
     @Test

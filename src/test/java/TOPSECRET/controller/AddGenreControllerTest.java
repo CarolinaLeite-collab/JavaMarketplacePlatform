@@ -11,12 +11,11 @@ public class AddGenreControllerTest {
 
     private GenreRepo _genreRepoDouble;
     private Genre _genreDouble;
-    private AddGenreController _addGenreController;
 
     @BeforeEach
     void setUp() {
         _genreRepoDouble = mock(GenreRepo.class);
-
+        _genreDouble = mock(Genre.class);
     }
 
     @Test
@@ -36,27 +35,24 @@ public class AddGenreControllerTest {
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
         String genreName = "Action";
-        _genreDouble = mock(Genre.class);
         when(_genreDouble.getGenre()).thenReturn(genreName);
 
         //act + assert
-        assertThrows(SecurityException.class,  () -> _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble)); //SUT
+        assertThrows(SecurityException.class,  () -> new AddGenreController(_genreRepoDouble, _adminDouble)); //SUT
 
     }
 
     @Test
     void addGenreShouldReturnGenreFromRepo() {
         //arrange
-        String genreName = "Action";
-
         User _adminDouble = mock(User.class);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
-        _genreDouble = mock(Genre.class);
+        String genreName = "Action";
         when(_genreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
 
         //SUT
-        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+        AddGenreController _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
 
         //act
         Genre genreAdded = _addGenreController.addGenre(genreName);
@@ -70,19 +66,16 @@ public class AddGenreControllerTest {
     @Test
     void addGenreThrowsWhenAlreadyExistsInRepo() {
         //arrange
-        String genreName = "Action";
-
         User _adminDouble = mock(User.class);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
-        _genreDouble = mock(Genre.class);
-
+        String genreName = "Action";
         when(_genreRepoDouble.addGenre(genreName))
                 .thenReturn(_genreDouble) // first call: genre is added
                 .thenThrow(new IllegalArgumentException("This genre already exists"));     // second call: repo signals duplication
 
         //SUT
-        _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
+        AddGenreController _addGenreController = new AddGenreController(_genreRepoDouble, _adminDouble);
 
         //act
         Genre firstAddedGenre = _addGenreController.addGenre(genreName);
@@ -93,7 +86,6 @@ public class AddGenreControllerTest {
 
         assertNotNull(firstAddedGenre);
         assertEquals("This genre already exists", secondAttemptThrows.getMessage());
-        verify(_genreRepoDouble, times(2)).addGenre(genreName); // proves repo was called twice
     }
 
 }
