@@ -20,10 +20,9 @@ public class CreateAuthorController {
     }
 
     public Author createAuthor (String authorName){
-        if (authorName == null || authorName.isBlank()){
-            throw new IllegalArgumentException("Author name is mandatory");
-        }
+
         return _authorRepo.createAuthor(authorName.trim());
+
     }
 
 
