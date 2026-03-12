@@ -11,18 +11,16 @@ import static org.mockito.Mockito.when;
 
 class ListOfPublicationsRepoTest {
 
-    private ListOfPublicationsFactory factoryDouble;
+    private ListOfPublicationsFactory _factoryDouble;
 
     private User _user1Double;
     private User _user2Double;
     private Genre _actionDouble;
     private Genre _poetryDouble;
-    private ListOfPublicationsRepo _repo;
 
     @BeforeEach
     void setUp() {
-        factoryDouble = mock(ListOfPublicationsFactory.class);
-        _repo = new ListOfPublicationsRepo(factoryDouble);
+        _factoryDouble = mock(ListOfPublicationsFactory.class);
 
         _actionDouble = mock(Genre.class);
         _poetryDouble = mock(Genre.class);
@@ -32,13 +30,26 @@ class ListOfPublicationsRepoTest {
     }
 
     @Test
+    void shouldCreateEmptyListOfPublication() {
+        new ListOfPublicationsRepo();
+    }
+
+    @Test
     void addListOfPublicationsSuccessfully() {
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        when(_createdDouble.getUser()).thenReturn(_user1Double);
+        when(_createdDouble.getGenre()).thenReturn(_actionDouble);
+        when(_createdDouble.getName()).thenReturn("My List");
+        when(_createdDouble.isPrivate()).thenReturn(true);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications list = _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications list = repo.addListOfPublications(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertAll(
@@ -47,48 +58,62 @@ class ListOfPublicationsRepoTest {
                 () -> assertEquals("My List", list.getName()),
                 () -> assertEquals(_actionDouble, list.getGenre()),
                 () -> assertTrue(list.isPrivate()),
-                () -> assertEquals(1, _repo.getListOfListOfPublications().size())
+                () -> assertEquals(1, repo.getListOfListOfPublications().size())
         );
     }
 
     @Test
     void cannotAddDuplicateList() {
-        // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
 
-        _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        // Arrange
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications duplicate = _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications duplicate = repo.addListOfPublications(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertNull(duplicate);
-        assertEquals(1, _repo.getListOfListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfPublications().size());
     }
 
     @Test
     void addNullListShouldThrow() {
+
         // Arrange
-        when(factoryDouble.createListOfPublications(null, "My List", _actionDouble)).thenThrow(new IllegalArgumentException("User is mandatory"));
-        when(factoryDouble.createListOfPublications(_user1Double, null, _actionDouble)).thenThrow(new IllegalArgumentException("Name is mandatory"));
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", null)).thenThrow(new IllegalArgumentException("Genre is mandatory"));
+        when(_factoryDouble.createListOfPublications(null, "My List", _actionDouble)).thenThrow(new IllegalArgumentException("User is mandatory"));
+        when(_factoryDouble.createListOfPublications(_user1Double, null, _actionDouble)).thenThrow(new IllegalArgumentException("Name is mandatory"));
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", null)).thenThrow(new IllegalArgumentException("Genre is mandatory"));
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> _repo.addListOfPublications(null, "My List", _actionDouble));
-        assertThrows(IllegalArgumentException.class, () -> _repo.addListOfPublications(_user1Double, null, _actionDouble));
-        assertThrows(IllegalArgumentException.class, () -> _repo.addListOfPublications(_user1Double, "My List", null));
+        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(null, "My List", _actionDouble));
+        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(_user1Double, null, _actionDouble));
+        assertThrows(IllegalArgumentException.class, () -> repo.addListOfPublications(_user1Double, "My List", null));
     }
 
     @Test
     void getListReturnsCopy() {
+
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
-        _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
 
         // Act
-        List<ListOfPublications> lists = _repo.getListOfListOfPublications();
+        List<ListOfPublications> lists = repo.getListOfListOfPublications();
 
         // Assert
         assertAll(
@@ -100,24 +125,41 @@ class ListOfPublicationsRepoTest {
 
     @Test
     void findPublicListsByGenreShouldReturnOnlyPublicListsOfThatGenre() {
+
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1Double, "List A", _actionDouble);
-        ListOfPublications b = new ListOfPublications(_user2Double, "List B", _actionDouble);
-        ListOfPublications c = new ListOfPublications(_user1Double, "List C", _poetryDouble);
+        ListOfPublications _listPubDouble1 = mock(ListOfPublications.class);
+        when(_listPubDouble1.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble1.getName()).thenReturn("List A");
+        when(_listPubDouble1.getUser()).thenReturn(_user1Double);
+        when(_listPubDouble1.isPrivate()).thenReturn(false);
 
-        a.makePublic();
-        c.makePublic();
 
-        when(factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(a);
-        when(factoryDouble.createListOfPublications(_user2Double, "List B", _actionDouble)).thenReturn(b);
-        when(factoryDouble.createListOfPublications(_user1Double, "List C", _poetryDouble)).thenReturn(c);
+        ListOfPublications _listPubDouble2 = mock(ListOfPublications.class);
+        when(_listPubDouble2.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble2.getName()).thenReturn("List B");
+        when(_listPubDouble2.getUser()).thenReturn(_user2Double);
+        when(_listPubDouble2.isPrivate()).thenReturn(true);
 
-        _repo.addListOfPublications(_user1Double, "List A", _actionDouble);
-        _repo.addListOfPublications(_user2Double, "List B", _actionDouble);
-        _repo.addListOfPublications(_user1Double, "List C", _poetryDouble);
+
+        ListOfPublications _listPubDouble3 = mock(ListOfPublications.class);
+        when(_listPubDouble3.getGenre()).thenReturn(_poetryDouble);
+        when(_listPubDouble3.getName()).thenReturn("List C");
+        when(_listPubDouble3.getUser()).thenReturn(_user1Double);
+        when(_listPubDouble3.isPrivate()).thenReturn(false);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble1);
+        when(_factoryDouble.createListOfPublications(_user2Double, "List B", _actionDouble)).thenReturn(_listPubDouble2);
+        when(_factoryDouble.createListOfPublications(_user1Double, "List C", _poetryDouble)).thenReturn(_listPubDouble3);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        List<ListOfPublications> result = _repo.findPublicListsByGenre(_actionDouble);
+        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
+        repo.addListOfPublications(_user2Double, "List B", _actionDouble);
+        repo.addListOfPublications(_user1Double, "List C", _poetryDouble);
+
+        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
         assertAll(
@@ -131,13 +173,22 @@ class ListOfPublicationsRepoTest {
 
     @Test
     void findPublicListsByGenreShouldReturnEmptyWhenNoPublicListsForThatGenre() {
+
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1Double, "List A", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(a);
-        _repo.addListOfPublications(_user1Double, "List A", _actionDouble);
+        ListOfPublications _listPubDouble = mock(ListOfPublications.class);
+        when(_listPubDouble.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble.getName()).thenReturn("List A");
+        when(_listPubDouble.getUser()).thenReturn(_user1Double);
+        when(_listPubDouble.isPrivate()).thenReturn(true);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        List<ListOfPublications> result = _repo.findPublicListsByGenre(_actionDouble);
+        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
+        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
         assertNotNull(result);
@@ -146,37 +197,62 @@ class ListOfPublicationsRepoTest {
 
     @Test
     void findPublicListsByGenreShouldReturnImmutableCopy() {
+
         // Arrange
-        ListOfPublications a = new ListOfPublications(_user1Double, "List A", _actionDouble);
-        a.makePublic();
-        when(factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(a);
-        _repo.addListOfPublications(_user1Double, "List A", _actionDouble);
+        ListOfPublications _listPubDouble = mock(ListOfPublications.class);
+        when(_listPubDouble.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble.getName()).thenReturn("List A");
+        when(_listPubDouble.getUser()).thenReturn(_user1Double);
+        when(_listPubDouble.isPrivate()).thenReturn(false);
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        List<ListOfPublications> result = _repo.findPublicListsByGenre(_actionDouble);
+        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
+        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(a));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_listPubDouble));
     }
 
     @Test
-    void findPublicListsByGenre_nullGenre_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> _repo.findPublicListsByGenre(null));
+    void findPublicListsByGenreNullGenreThrowsIllegalArgumentException() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
+        assertThrows(IllegalArgumentException.class, () -> repo.findPublicListsByGenre(null));
     }
 
     @Test
     void findListsByUserShouldReturnOnlyListsOfThatUser() {
-        // Arrange
-        ListOfPublications u1 = new ListOfPublications(_user1Double, "U1 List", _actionDouble);
-        ListOfPublications u2 = new ListOfPublications(_user2Double, "U2 List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "U1 List", _actionDouble)).thenReturn(u1);
-        when(factoryDouble.createListOfPublications(_user2Double, "U2 List", _actionDouble)).thenReturn(u2);
 
-        _repo.addListOfPublications(_user1Double, "U1 List", _actionDouble);
-        _repo.addListOfPublications(_user2Double, "U2 List", _actionDouble);
+        // Arrange
+        ListOfPublications _listPubDouble1 = mock(ListOfPublications.class);
+        when(_listPubDouble1.getUser()).thenReturn(_user1Double);
+        when(_listPubDouble1.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble1.getName()).thenReturn("U1 List");
+
+        ListOfPublications _listPubDouble2 = mock(ListOfPublications.class);
+        when(_listPubDouble2.getUser()).thenReturn(_user2Double);
+        when(_listPubDouble2.getGenre()).thenReturn(_actionDouble);
+        when(_listPubDouble2.getName()).thenReturn("U2 List");
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "U1 List", _actionDouble)).thenReturn(_listPubDouble1);
+        when(_factoryDouble.createListOfPublications(_user2Double, "U2 List", _actionDouble)).thenReturn(_listPubDouble2);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        List<ListOfPublications> result = _repo.findListsByUser(_user1Double);
+        repo.addListOfPublications(_user1Double, "U1 List", _actionDouble);
+        repo.addListOfPublications(_user2Double, "U2 List", _actionDouble);
+
+        List<ListOfPublications> result = repo.findListsByUser(_user1Double);
 
         // Assert
         assertAll(
@@ -187,85 +263,160 @@ class ListOfPublicationsRepoTest {
     }
 
     @Test
-    void findListsByUser_nullUser_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> _repo.findListsByUser(null));
+    void findListsByUserNullUserThrowsIllegalArgumentException() {
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
+        assertThrows(IllegalArgumentException.class, () -> repo.findListsByUser(null));
     }
 
     @Test
     void findByOwnerNameAndGenreShouldReturnListWhenExists() {
+
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
-        _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        when(_createdDouble.getUser()).thenReturn(_user1Double);
+        when(_createdDouble.getGenre()).thenReturn(_actionDouble);
+        when(_createdDouble.getName()).thenReturn("My List");
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
+        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertNotNull(found);
-        assertEquals(created, found);
+        assertEquals(_createdDouble, found);
     }
 
     @Test
-    void findByOwnerNameAndGenre_ignoresCase() {
+    void findByOwnerNameAndGenreIgnoresCase() {
+
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
-        _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        when(_createdDouble.getUser()).thenReturn(_user1Double);
+        when(_createdDouble.getGenre()).thenReturn(_actionDouble);
+        when(_createdDouble.getName()).thenReturn("My List");
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1Double, "my list", _actionDouble);
+        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "my list", _actionDouble);
 
         // Assert
         assertNotNull(found);
-        assertEquals(created, found);
+        assertEquals(_createdDouble, found);
     }
 
     @Test
-    void findByOwnerNameAndGenre_trimsName() {
+    void findByOwnerNameAndGenreTrimsName() {
+
         // Arrange
-        ListOfPublications created = new ListOfPublications(_user1Double, "My List", _actionDouble);
-        when(factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(created);
-        _repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        when(_createdDouble.getUser()).thenReturn(_user1Double);
+        when(_createdDouble.getGenre()).thenReturn(_actionDouble);
+        when(_createdDouble.getName()).thenReturn("My List");
+
+        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1Double, "  My List  ", _actionDouble);
+        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "  My List  ", _actionDouble);
 
         // Assert
         assertNotNull(found);
-        assertEquals(created, found);
+        assertEquals(_createdDouble, found);
     }
 
     @Test
-    void findByOwnerNameAndGenre_returnsNullWhenListDoesNotExist() {
+    void findByOwnerNameAndGenreReturnsNullWhenListDoesNotExist() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
         // Act
-        ListOfPublications found = _repo.findByOwnerNameAndGenre(_user1Double, "Unknown", _actionDouble);
+        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "Unknown", _actionDouble);
 
         // Assert
         assertNull(found);
     }
 
     @Test
-    void findByOwnerNameAndGenre_nullUser_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> _repo.findByOwnerNameAndGenre(null, "My List", _actionDouble));
+    void findByOwnerNameAndGenreReturnsNullWhenListExistsButDoesNotMatch() {
+
+        // Arrange
+        ListOfPublications list = mock(ListOfPublications.class);
+        when(list.getUser()).thenReturn(_user2Double);
+        when(list.getName()).thenReturn("Other List");
+        when(list.getGenre()).thenReturn(_actionDouble);
+
+        when(_factoryDouble.createListOfPublications(_user2Double, "Other List", _actionDouble))
+                .thenReturn(list);
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Act
+        repo.addListOfPublications(_user2Double, "Other List", _actionDouble);
+        ListOfPublications result = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
+
+        // Assert
+        assertNull(result);
     }
 
     @Test
-    void findByOwnerNameAndGenre_nullName_throwsIllegalArgumentException() {
+    void findByOwnerNameAndGenreNullUserThrowsIllegalArgumentException() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
         assertThrows(IllegalArgumentException.class,
-                () -> _repo.findByOwnerNameAndGenre(_user1Double, null, _actionDouble));
+                () -> repo.findByOwnerNameAndGenre(null, "My List", _actionDouble));
     }
 
     @Test
-    void findByOwnerNameAndGenre_blankName_throwsIllegalArgumentException() {
+    void findByOwnerNameAndGenreNullNameThrowsIllegalArgumentException() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
         assertThrows(IllegalArgumentException.class,
-                () -> _repo.findByOwnerNameAndGenre(_user1Double, "   ", _actionDouble));
+                () -> repo.findByOwnerNameAndGenre(_user1Double, null, _actionDouble));
     }
 
     @Test
-    void findByOwnerNameAndGenre_nullGenre_throwsIllegalArgumentException() {
+    void findByOwnerNameAndGenreBlankNameThrowsIllegalArgumentException() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
         assertThrows(IllegalArgumentException.class,
-                () -> _repo.findByOwnerNameAndGenre(_user1Double, "My List", null));
+                () -> repo.findByOwnerNameAndGenre(_user1Double, "   ", _actionDouble));
+    }
+
+    @Test
+    void findByOwnerNameAndGenreNullGenreThrowsIllegalArgumentException() {
+
+        // SUT
+        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+
+        // Assert & Act
+        assertThrows(IllegalArgumentException.class,
+                () -> repo.findByOwnerNameAndGenre(_user1Double, "My List", null));
     }
 }
