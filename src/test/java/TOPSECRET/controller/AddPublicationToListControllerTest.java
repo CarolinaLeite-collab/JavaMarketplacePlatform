@@ -79,6 +79,27 @@ class AddPublicationToListControllerTest {
                 () -> _controllerSUT.getItemsInMyLibrary(_userDouble));
     }
 
+    @Test
+    void addItemToListDoesNotFindItemInLibrary() {
+        //arrange
+        Item otherItem = mock(Item.class);
+
+        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
+                .thenReturn(_publicationsListDouble);
+        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(otherItem));
+
+        //SUT
+        AddPublicationToListController controller = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+
+        //act
+        controller.addItemToList(_userDouble, "My List", _genreDouble, _itemDouble);
+
+        // assert
+        verify(_publicationsListDouble).addItem(null);
+    }
+
+
     // addPublicationToList (BOOK + ISBN)
 
     @Test

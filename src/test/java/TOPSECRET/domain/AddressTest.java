@@ -243,6 +243,54 @@ class AddressTest {
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _validAddress.setCity("   "));
     }
+    @Test
+    void constructorNullDoorNumberThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", null, Address.BuildingType.HOUSE,
+                        "Lisboa", "Lisboa", _countryPortugal, "1000-205", null));
+    }
+
+    @Test
+    void constructorEmptyDoorNumberThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "   ", Address.BuildingType.HOUSE,
+                        "Lisboa", "Lisboa", _countryPortugal, "1000-205", null));
+    }
+
+    @Test
+    void constructorNullBuildingTypeThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "123", null,
+                        "Lisboa", "Lisboa", _countryPortugal, "1000-205", null));
+    }
+
+    @Test
+    void constructorNullCityThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE,
+                        null, "Lisboa", _countryPortugal, "1000-205", null));
+    }
+
+    @Test
+    void constructorEmptyCityThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE,
+                        "   ", "Lisboa", _countryPortugal, "1000-205", null));
+    }
+
+    @Test
+    void constructorNullCountryThrowsException() {
+        //assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("Rua Vasco da Gama", "123", Address.BuildingType.HOUSE,
+                        "Lisboa", "Lisboa", null, "1000-205", null));
+    }
+
 
     // -------------------- Postal code / atomic country change behavior --------------------
     @Test
@@ -353,6 +401,110 @@ class AddressTest {
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> address.setPostalCode(postalCode));
     }
+
+    @Test
+    void setDistrictOrState_allowsNullAndEmptyValues() {
+        //SUT
+        Address address = new Address("Rua X", "1", Address.BuildingType.HOUSE,
+                "Lisboa", null, _countryPortugal, "1000-205", null);
+
+        //act
+        address.setDistrictOrState(null);
+        assertNull(address.getDistrictOrState());
+        address.setDistrictOrState("");
+
+        //assert
+        assertEquals("", address.getDistrictOrState());
+    }
+
+    @Test
+    void setPostalCodeExtension_allowsNullAndAnyString() {
+        //SUT
+        Address address = new Address("Rua X", "1", Address.BuildingType.HOUSE,
+                "Lisboa", null, _countryPortugal, "1000-205", null);
+
+        //act
+        address.setPostalCodeExtension(null);
+        assertNull(address.getPostalCodeExtension());
+        address.setPostalCodeExtension("1234");
+
+        //assert
+        assertEquals("1234", address.getPostalCodeExtension());
+    }
+
+    @Test
+    void constructor_throwsWhenCountryIsNull() {
+        //act + assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("street", "1", Address.BuildingType.HOUSE,
+                        "city", null, null, "1000-205", null)); //SUT
+    }
+
+    @Test
+    void constructor_throwsWhenCountryNameIsNull() {
+        //arrange
+        Country c = mock(Country.class);
+        when(c.getCountryName()).thenReturn(null);
+
+        //act+assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("street", "1", Address.BuildingType.HOUSE,
+                        "city", null, c, "1000-205", null)); //SUT
+    }
+
+    @Test
+    void constructor_throwsWhenCountryNotSupportedByPostalValidation() {
+        //arrange
+        Country unknown = mock(Country.class);
+        when(unknown.getCountryName()).thenReturn("Neverland");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                new Address("street", "1", Address.BuildingType.HOUSE,
+                        "city", null, unknown, "12345", null));
+    }
+
+// -------------------- changeCountryAndPostalCode extra branches --------------------
+
+    @Test
+    void changeCountryAndPostalCode_throwsWhenCountryIsNull() {
+        //SUT
+        Address addr = new Address("Rua X", "1", Address.BuildingType.HOUSE,
+                "Lisboa", null, _countryPortugal, "1000-205", null);
+
+        //act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> addr.changeCountryAndPostalCode(null, "1000-205"));
+    }
+
+    @Test
+    void changeCountryAndPostalCode_throwsWhenPostalCodeInvalidForPortugal() {
+        //arrange
+        Country pt = mock(Country.class);
+        when(pt.getCountryName()).thenReturn("Portugal");
+
+        //SUT
+        Address addr = new Address("Rua X", "1", Address.BuildingType.HOUSE,
+                "Lisboa", null, _countryPortugal, "1000-205", null);
+
+        //act + assert
+        assertThrows(IllegalArgumentException.class,
+                () -> addr.changeCountryAndPostalCode(pt, "99999"));
+    }
+
+    @Test
+    void setPostalCode_validForUnitedKingdom_succeeds() {
+        //arrange
+        Country uk = mock(Country.class);
+        when(uk.getCountryName()).thenReturn("United Kingdom");
+
+        //SUT
+        Address address = new Address("street", "1", Address.BuildingType.HOUSE,
+                "city", null, uk, "SW1A 1AA", null);
+
+        //act + assert
+        assertEquals("SW1A 1AA", address.getPostalCode());
+    }
+
 
     private String validPostalCodeForCountry(String countryName) {
         String c = countryName.trim().toLowerCase();
