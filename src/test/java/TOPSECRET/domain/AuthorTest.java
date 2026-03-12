@@ -40,7 +40,7 @@ public class AuthorTest {
     void rejectNullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
 
     @Test
-    void test_to_equals_different_object_types(){
+    void testEqualsWithDifferentObjectTypes(){
 
         //act and arrange
         Author a = new Author("Seneca");
@@ -48,8 +48,43 @@ public class AuthorTest {
         Author b2 = null;
 
         //assert
-        assertNotEquals(a,b);
-        assertNotEquals(a,b2);
+        assertFalse(a.equals(b));
+        assertFalse(a.equals(b2));
+
+    }
+
+    @Test
+    void testEqualsWithSameObject() {
+
+        //act and arrange
+        Author a = new Author("Seneca");
+
+        //assert
+        assertTrue(a.equals(a));
+
+    }
+
+    @Test
+    void testEqualsWithDifferentAuthorObjectsSameName() {
+
+        //act and arrange
+        Author a = new Author("Seneca");
+        Author b = new Author("SeNeca");
+
+        //assert
+        assertTrue(a.equals(b));
+
+    }
+
+    @Test
+    void testEqualsWithDifferentAuthorObjectsDifferentName() {
+
+        //act and arrange
+        Author a = new Author("Seneca");
+        Author b = new Author("Justinian");
+
+        //assert
+        assertFalse(a.equals(b));
 
     }
 
