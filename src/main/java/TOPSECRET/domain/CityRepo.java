@@ -3,7 +3,6 @@ package TOPSECRET.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Repository for managing {@link City} instances.
@@ -19,7 +18,7 @@ public class CityRepo {
 
     public CityRepo(CityFactory cityFactory) {
         _cities = new ArrayList<>();
-        _cityFactory = Objects.requireNonNull(cityFactory, "CityFactory cannot be null");
+        _cityFactory = cityFactory;
     }
 
     public boolean existsByNameAndCountry(String name, Country country) {
