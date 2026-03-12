@@ -39,73 +39,25 @@ public class Library {
     }
 
     /**
-     * Returns a list of publications in this library with all required details
-     * (title, author, publication type, ISBN/ISSN) formatted for UI display.
+     * Manages the items stored in the library.
      *
-     * <p>The method iterates through all publications, extracts details via
-     * {@link PublicationDetails#PublicationDetails(Publication)}, and returns
-     * an <strong>unmodifiable list</strong> to ensure encapsulation and
-     * thread-safety.</p>
+     * <p>This set of operations allows retrieving, adding, and searching for
+     * {@link Item} objects maintained by the library.</p>
      *
-     * @return unmodifiable {@link List}&lt;{@link PublicationDetails}&gt;
-     *         containing publication details suitable for UI presentation
+     * <ul>
+     *     <li>{@link #getItemsInLibrary()} returns an <strong>unmodifiable list</strong>
+     *     containing all items currently stored in the library.</li>
+     *     <li>{@link #addItemToLibrary(Item)} adds a new item to the library if it
+     *     is not {@code null} and does not already exist.</li>
+     *     <li>{@link #getItem(Item)} searches for and returns the matching item
+     *     stored in the library using {@link Object#equals(Object)}, or
+     *     {@code null} if no match is found.</li>
+     * </ul>
+     *
+     * <p>The returned collections are immutable to preserve encapsulation
+     * and prevent external modification of the library's internal state.</p>
      */
 
-
-    public List<PublicationDetails> getPublicationsInLibrary() {
-
-        List <PublicationDetails> listWithDetails = new ArrayList<>();
-
-        for (Publication p : _publications) {
-
-            PublicationDetails pDetails = new PublicationDetails(p);
-
-            listWithDetails.add(pDetails);
-        }
-
-        return Collections.unmodifiableList(listWithDetails);
-    }
-
-    private List<Publication> copyOfLibrary() {
-        List<Publication> publicationsCopy = List.copyOf(_publications);
-        return publicationsCopy;
-    }
-
-    public List<Publication> getAllPublications() {
-        return copyOfLibrary();
-    }
-
-    public Publication getPublicationFromLibrary(Publication publication) {
-        for (Publication p : _publications) {
-            if (p.equals(publication)) {
-                return p;
-            }
-        }
-        throw new IllegalArgumentException("Publication not found in user's library");
-    }
-
-    private boolean verifyUnique(Publication selectedPublication) {
-        for (Publication check : _publications) {
-            if (selectedPublication.equals(check)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean addPublicationToLibrary(Publication selectedPublication) {
-        if (_publications == null) {
-            _publications = new ArrayList<>();
-        }
-        if (selectedPublication == null) {
-            return false;
-        }
-        if (!verifyUnique(selectedPublication)) {
-            return false;
-        }
-        _publications.add(selectedPublication);
-        return true;
-    }
 
     public List<Item> getItemsInLibrary() {
         return List.copyOf(_items);
