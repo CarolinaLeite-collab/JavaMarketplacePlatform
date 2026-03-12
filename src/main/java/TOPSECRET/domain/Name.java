@@ -40,6 +40,18 @@ public final class Name {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Name other)) return false;
+        return _name.equals(other._name);
+    }
+
+    @Override
+    public int hashCode() {
+        return _name.hashCode();
+    }
+
+    @Override
     public String toString() {
         return _name;
     }

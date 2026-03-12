@@ -14,9 +14,7 @@ class NameTest {
 
     private static void assertValidName (String rawInput, String expectedNormalized) {
 
-        //Arrange
-
-        //Act
+        //Act & SUT
         Name name = new Name(rawInput);
 
         //Assert
@@ -89,6 +87,74 @@ class NameTest {
     @ValueSource(strings = {"-Jose", "Jose-", "'Jose", "Jose'"})
     void constructorStartOrEndWithSeparatorThrowsIllegalArgumentException(String bad) {
         assertInvalidName(bad);
+    }
+
+    @Test
+    void equalsSameInstanceReturnsTrue() {
+        // Arrange
+        Name name = new Name("Jose Mourinho");
+
+        // Assert & Act & SUT
+        assertTrue(name.equals(name));
+    }
+
+    @Test
+    void equalsObjectsWithSameNormalizedValueReturnTrue() {
+        // Arrange
+        Name name1 = new Name("Jose Mourinho");
+        Name name2 = new Name("  Jose   Mourinho  ");
+
+        // Assert & Act & SUT
+        assertEquals(name1, name2);
+    }
+
+    @Test
+    void equalsObjectsWithDifferentValuesReturnFalse() {
+        // Arrange
+        Name name1 = new Name("Jose Mourinho");
+        Name name2 = new Name("Pep Guardiola");
+
+        // Assert & Act & SUT
+        assertNotEquals(name1, name2);
+    }
+
+    @Test
+    void equalsNullReturnsFalse() {
+        // Arrange
+        Name name = new Name("Jose Mourinho");
+
+        // Assert & Act & SUT
+        assertNotEquals(null, name);
+    }
+
+    @Test
+    void equalsDifferentClassReturnsFalse() {
+        // Arrange
+        Name name = new Name("Jose Mourinho");
+
+        // Assert & Act & SUT
+        assertNotEquals(name, "Jose Mourinho");
+    }
+
+    @Test
+    void hashCodeEqualObjectsHaveSameHashCode() {
+        // Arrange
+        Name n1 = new Name("Jose Mourinho");
+        Name n2 = new Name("  Jose   Mourinho ");
+
+        // Assert & Act & SUT
+        assertEquals(n1.hashCode(), n2.hashCode());
+    }
+
+    @Test
+    void hashCodeDifferentNamesProduceDifferentHashCodes() {
+
+        // Arrange
+        Name n1 = new Name("Jose Mourinho");
+        Name n2 = new Name("Pep Guardiola");
+
+        // Assert & Act & SUT
+        assertNotEquals(n1.hashCode(), n2.hashCode());
     }
 
 }
