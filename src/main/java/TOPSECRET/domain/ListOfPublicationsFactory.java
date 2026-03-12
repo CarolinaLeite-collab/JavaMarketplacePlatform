@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 /**
  * Factory responsible for creating {@link ListOfPublications} instances.
+ * @throws IllegalArgumentException if the list name is null, as enforced by {@link ListOfPublications}'s constructor.
  */
 public class ListOfPublicationsFactory {
 

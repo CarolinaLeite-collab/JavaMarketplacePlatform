@@ -61,6 +61,7 @@ class ListOfPublicationsFactoryTest {
                     factory.createPublicListOfPublications(_userDouble, "My List", _genreDouble);
 
             // assert
+            verify(newList).makePublic();
             assertNotNull(newList);
             assertEquals(1, mocked.constructed().size());
         }
