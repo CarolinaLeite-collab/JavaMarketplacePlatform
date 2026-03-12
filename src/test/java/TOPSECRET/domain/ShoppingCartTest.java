@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShoppingCartTest {
 
@@ -25,11 +27,20 @@ class ShoppingCartTest {
     @Test
     void addsListingsAndComputesTotal() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(10.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(5.5);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
 
         // Act
-        cart.addListing("listing-1", new Price(10.0, Currency.EUR));
-        cart.addListing("listing-2", new Price(5.5, Currency.EUR));
+        cart.addListing("listing-1", priceDouble1);
+        cart.addListing("listing-2", priceDouble2);
 
         // Assert
         assertEquals(15.5, cart.getTotalValue(), 0.0001);
@@ -40,30 +51,59 @@ class ShoppingCartTest {
     @Test
     void enforcesSingleCurrency() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(5.5);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.USD);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("listing-1", new Price(10.0, Currency.EUR));
+
+        //Act
+        cart.addListing("listing-1", priceDouble1);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> cart.addListing("listing-2", new Price(1.0, Currency.USD)));
+                () -> cart.addListing("listing-2", priceDouble2));
     }
 
     @Test
     void preventsDuplicateListingIds() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(5.5);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("listing-1", new Price(10.0, Currency.EUR));
+
+        //Act
+        cart.addListing("listing-1", priceDouble1);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> cart.addListing("listing-1", new Price(5.0, Currency.EUR)));
+                () -> cart.addListing("listing-1", priceDouble2));
     }
 
     @Test
     void removesListingsAndResetsCurrencyWhenEmpty() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("listing-1", new Price(10.0, Currency.EUR));
+
+        //Act
+        cart.addListing("listing-1", priceDouble1);
 
         // Act
         boolean removed = cart.removeListing("listing-1");
@@ -77,8 +117,15 @@ class ShoppingCartTest {
     @Test
     void listingsListIsUnmodifiable() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("listing-1", new Price(10.0, Currency.EUR));
+
+        //Act
+        cart.addListing("listing-1", priceDouble1);
 
         // Act & Assert
         assertThrows(UnsupportedOperationException.class, () -> cart.getListings().add(null));
@@ -87,10 +134,15 @@ class ShoppingCartTest {
     @Test
     void removeNonExistingListingReturnsFalseAndDoesNotChangeState() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(10.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("a", new Price(10.0, Currency.EUR));
 
         // Act
+        cart.addListing("a", priceDouble1);
         boolean removed = cart.removeListing("non-existent");
 
         // Assert
@@ -103,11 +155,20 @@ class ShoppingCartTest {
     @Test
     void removeOneOfMultipleListingsUpdatesTotalAndKeepsCurrency() {
         // Arrange
-        ShoppingCart cart = new ShoppingCart();
-        cart.addListing("l1", new Price(10.0, Currency.EUR));
-        cart.addListing("l2", new Price(5.0, Currency.EUR));
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
 
-        // Act
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(5.0);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
+        ShoppingCart cart = new ShoppingCart();
+
+        //Act
+        cart.addListing("l1", priceDouble1);
+        cart.addListing("l2", priceDouble2);
         boolean removed = cart.removeListing("l1");
 
         // Assert
@@ -120,10 +181,19 @@ class ShoppingCartTest {
     @Test
     void removingLastListingResetsCurrencyAndAllowsDifferentCurrencyAfterwards() {
         // Arrange
-        ShoppingCart cart = new ShoppingCart();
-        cart.addListing("only", new Price(7.0, Currency.EUR));
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.USD);
 
-        // Act
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(3.0);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.USD);
+
+        //SUT
+        ShoppingCart cart = new ShoppingCart();
+
+        //Act
+        cart.addListing("only", priceDouble1);
         boolean removedOnly = cart.removeListing("only");
 
         // Assert
@@ -132,7 +202,7 @@ class ShoppingCartTest {
         assertNull(cart.getCurrency());
 
         // Arrange
-        cart.addListing("new", new Price(3.0, Currency.USD));
+        cart.addListing("new", priceDouble2);
 
         // Assert
         assertEquals(3.0, cart.getTotalValue(), 0.0001);
@@ -142,21 +212,38 @@ class ShoppingCartTest {
 
     @Test
     void addingNullArgumentsThrows() {
-        // Arrange
+        //Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(30.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        // SUT
         ShoppingCart cart = new ShoppingCart();
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> cart.addListing(null, new Price(1.0, Currency.EUR)));
+        assertThrows(RuntimeException.class, () -> cart.addListing(null, priceDouble1));
         assertThrows(RuntimeException.class, () -> cart.addListing("id", null));
     }
 
     @Test
     void sequenceOperationsMaintainCorrectTotalsAndCurrencyTransitions() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(10.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(19.99);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble3 = mock(Price.class);
+        when(priceDouble3.getValue()).thenReturn(0.01);
+        when(priceDouble3.getCurrency()).thenReturn(Currency.EUR);
+
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("l1", new Price(10.0, Currency.EUR));
-        cart.addListing("l2", new Price(19.99, Currency.EUR));
-        cart.addListing("l3", new Price(0.01, Currency.EUR));
+        cart.addListing("l1", priceDouble1);
+        cart.addListing("l2", priceDouble2);
+        cart.addListing("l3", priceDouble3);
 
         // Act
         assertTrue(cart.removeListing("l2"));
@@ -171,8 +258,15 @@ class ShoppingCartTest {
     @Test
     void unmodifiableListRejectsAllMutations() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(5.5);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        cart.addListing("a", new Price(1.0, Currency.EUR));
+
+        //Act
+        cart.addListing("a", priceDouble1);
 
         // Act & Assert
         assertThrows(UnsupportedOperationException.class, () -> cart.getListings().add(null));
@@ -188,10 +282,16 @@ class ShoppingCartTest {
     @Test
     void removeNullIdEitherReturnsFalseOrThrowsButLeavesStateUnchanged() {
         // Arrange
-        ShoppingCart cart = new ShoppingCart();
-        cart.addListing("a", new Price(1.0, Currency.EUR));
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(1.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
 
-        // Act
+        //SUT
+        ShoppingCart cart = new ShoppingCart();
+
+        //Act
+        cart.addListing("a", priceDouble1);
+
         try {
             boolean r = cart.removeListing(null);
             assertFalse(r);
@@ -208,6 +308,19 @@ class ShoppingCartTest {
     @Test
     void addsMultipleSmallPricesAccurately() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(0.1);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.USD);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(0.2);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.USD);
+
+        Price priceDouble3 = mock(Price.class);
+        when(priceDouble3.getValue()).thenReturn(0.3);
+        when(priceDouble3.getCurrency()).thenReturn(Currency.USD);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
 
         // Act
@@ -222,12 +335,16 @@ class ShoppingCartTest {
     @Test
     void samePriceObjectAllowedForDifferentIds() {
         // Arrange
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(2.5);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.USD);
+
+        //SUT
         ShoppingCart cart = new ShoppingCart();
-        Price p = new Price(2.5, Currency.EUR);
 
         // Act
-        cart.addListing("a", p);
-        cart.addListing("b", p);
+        cart.addListing("a", priceDouble1);
+        cart.addListing("b", priceDouble1);
 
         // Assert
         assertEquals(5.0, cart.getTotalValue(), 0.0001);
@@ -239,9 +356,13 @@ class ShoppingCartTest {
     @Test
     void cartLineEqualsAndHashCodeConsistency() {
         // Arrange
-        Price p = new Price(2.0, Currency.EUR);
-        ShoppingCart.CartLine a = new ShoppingCart.CartLine("x", p);
-        ShoppingCart.CartLine b = new ShoppingCart.CartLine("x", p);
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(5.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.USD);
+
+        //SUT
+        ShoppingCart.CartLine a = new ShoppingCart.CartLine("x", priceDouble1);
+        ShoppingCart.CartLine b = new ShoppingCart.CartLine("x", priceDouble1);
 
         // Act
         boolean same = a.equals(b);
@@ -249,20 +370,27 @@ class ShoppingCartTest {
         // Assert
         assertEquals(a, a);
         assertEquals(a, b);
-        assertEquals(java.util.Objects.hash("x", p), a.hashCode());
+        assertEquals(java.util.Objects.hash("x", priceDouble1), a.hashCode());
         assertEquals(a.hashCode(), b.hashCode());
         assertEquals("x", a.getListingId());
-        assertEquals(p, a.getPrice());
+        assertEquals(priceDouble1, a.getPrice());
     }
 
     @Test
     void cartLineNotEqualsDifferentIdOrPriceAndNonCartLine() {
         // Arrange
-        Price p1 = new Price(2.0, Currency.EUR);
-        Price p2 = new Price(3.0, Currency.EUR);
-        ShoppingCart.CartLine base = new ShoppingCart.CartLine("x", p1);
-        ShoppingCart.CartLine diffId = new ShoppingCart.CartLine("y", p1);
-        ShoppingCart.CartLine diffPrice = new ShoppingCart.CartLine("x", p2);
+        Price priceDouble1 = mock(Price.class);
+        when(priceDouble1.getValue()).thenReturn(2.0);
+        when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
+
+        Price priceDouble2 = mock(Price.class);
+        when(priceDouble2.getValue()).thenReturn(3.0);
+        when(priceDouble2.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
+        ShoppingCart.CartLine base = new ShoppingCart.CartLine("x", priceDouble1);
+        ShoppingCart.CartLine diffId = new ShoppingCart.CartLine("y", priceDouble1);
+        ShoppingCart.CartLine diffPrice = new ShoppingCart.CartLine("x", priceDouble2);
 
         // Assert
         assertNotEquals(base, diffId);
