@@ -10,15 +10,15 @@ import java.util.List;
  */
 public class PublicationInLibraryForDirectSaleController {
 
-    private final LibraryRepo libraryRepo;
-    private final DirectSaleRepo directSaleRepo;
+    private final LibraryRepo _libraryRepo;
+    private final DirectSaleRepo _directSaleRepo;
 
     public PublicationInLibraryForDirectSaleController(
             LibraryRepo libraryRepo,
             DirectSaleRepo directSaleRepo
     ) {
-        this.libraryRepo = libraryRepo;
-        this.directSaleRepo = directSaleRepo;
+        _libraryRepo = libraryRepo;
+        _directSaleRepo = directSaleRepo;
     }
 
     public List<Item> getItemsInLibrary(User user) {
@@ -26,7 +26,7 @@ public class PublicationInLibraryForDirectSaleController {
             throw new IllegalArgumentException("User required");
         }
 
-        Library userLibrary = libraryRepo.findLibraryByUser(user);
+        Library userLibrary = _libraryRepo.findLibraryByUser(user);
         return userLibrary.getItemsInLibrary();
     }
 
@@ -43,7 +43,7 @@ public class PublicationInLibraryForDirectSaleController {
             throw new IllegalArgumentException("Price required");
         }
 
-        DirectSale directSale = directSaleRepo.addDirectSale(item, price, timeLimit);
+        DirectSale directSale = _directSaleRepo.addDirectSale(item, price, timeLimit);
         item.setDirectSale(directSale);
 
         return directSale;
