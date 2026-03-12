@@ -22,25 +22,11 @@ public class AuctionRepo {
         this(new AuctionFactory());
     }
 
-    /**
-     * Creates a repository with a provided factory (useful for tests).
-     *
-     * @param auctionFactory factory used to create auctions
-     */
+
     AuctionRepo(AuctionFactory auctionFactory) {
         this.itemsOnAuction = new ArrayList<>();
         this.auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
     }
-
-    /**
-     * Creates a new auction for a specific item.
-     *
-     * @param item             The item to be auctioned.
-     * @param startingPrice    The initial price at which the auction begins.
-     * @param auctionStartDate The start date and time of the auction.
-     * @param auctionEndDate   The end date and time of the auction.
-     * @return The newly created {@link Auction} instance.
-     */
 
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
@@ -70,17 +56,6 @@ public class AuctionRepo {
         }
     }
 
-    /**
-     * Retrieves a list of items currently on auction that belong to a specific genre.
-     * <p>
-     * This method creates and returns a copy of the list to preserve encapsulation
-     * and prevent external modifications to the internal repository state.
-     * </p>
-     *
-     * @param genre The genre by which to filter auction items.
-     * @return A new list containing items that match the given genre.
-     */
-
     public List<Item> getAuctionItemsByGenre(Genre genre) {
 
 
@@ -98,10 +73,7 @@ public class AuctionRepo {
 
         return copyOfListOfAuctionItemsByGenre;
     }
-    /**
-     * Retrieves a list of items currently on auction for a specific author.
-     * Returns a copy to preserve encapsulation.
-     */
+
     public List<Item> getAuctionItemsByAuthor(Author author) {
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
         for (Auction auction : itemsOnAuction) {
@@ -126,16 +98,6 @@ public class AuctionRepo {
 
         return copyOfListOfAuctionItemsByPublication;
     }
-
-    /**
-     * Retrieves a list of items currently on auction that belong to a specific publishingCompany.
-     * <p>
-     * This method creates and returns a copy of the list to preserve encapsulation
-     * and prevent external modifications to the internal repository state.
-     * </p>
-     * @param publisher The publisher by which to filter auction items.
-     * @return A new list containing items that match the given publisher.
-     */
 
     public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
 
