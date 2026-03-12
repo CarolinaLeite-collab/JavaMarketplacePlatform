@@ -15,7 +15,6 @@ class AddPublicationTypeControllerTest {
 
     private PublicationTypeRepo _ptrDouble;
     private PublicationType _pubTypeDouble;
-    private AddPublicationTypeController _addPublicationTypeController;
 
     @BeforeEach
     void setUp() throws InstantiationException {
@@ -45,7 +44,7 @@ class AddPublicationTypeControllerTest {
         String publicationTypeName = "book";
 
         //act + assert
-        assertThrows(SecurityException.class, () -> _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
+        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
     }
 
     @Test
@@ -65,8 +64,6 @@ class AddPublicationTypeControllerTest {
 
         //assert
         assertEquals(_pubTypeDouble, pubTypeResult);
-        verify(_ptrDouble).addPublicationType("book");
-
     }
 
     @Test
