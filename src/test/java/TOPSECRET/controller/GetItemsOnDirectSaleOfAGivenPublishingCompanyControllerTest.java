@@ -21,7 +21,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     }
 
     @Test
-    void contructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
+    void constructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
         //Act /SUT
         new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepoDouble);
     }
