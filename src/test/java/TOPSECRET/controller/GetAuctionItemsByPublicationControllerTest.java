@@ -25,6 +25,13 @@ class GetAuctionItemsByPublicationControllerTest {
     }
 
     @Test
+    void testAuctionItemsByPublicationController(){
+
+        // SUT
+        new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerDouble);
+    }
+
+    @Test
     void shouldReturnAuctionItemsForGivenPublication() {
 
         // Arrange
