@@ -26,6 +26,29 @@ class AddPublicationTypeControllerTest {
     }
 
     @Test
+    void constructorAddPublicationTypeControllerShouldCreateController() {
+
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+
+        //SUT
+        new  AddPublicationTypeController(_ptrDouble, adminDouble);
+
+    }
+
+    @Test
+    void addPublicationTypeThrowsWhenUserIsNotAdmin() {
+        //arrange
+        User adminDouble = mock(User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        String publicationTypeName = "book";
+
+        //act + assert
+        assertThrows(SecurityException.class, () -> _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
+    }
+
+    @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
         User adminDouble = mock(User.class);
@@ -63,17 +86,5 @@ class AddPublicationTypeControllerTest {
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));
-    }
-
-    @Test
-    void addPublicationTypeThrowsWhenUserIsNotAdmin() {
-        //arrange
-        User adminDouble = mock(User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        String publicationTypeName = "book";
-
-        //act + assert
-        assertThrows(SecurityException.class, () -> _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
     }
 }
