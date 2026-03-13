@@ -77,17 +77,21 @@ class PublicationRepoTest {
     void getPublicationReturnsStoredPublication() {
         //Arrange
         Publication _publicationDouble = mock(Publication.class);
+        Publication _publicationDouble2 = mock(Publication.class);
 
         when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
-                .thenReturn(_publicationDouble);
+                .thenReturn(_publicationDouble)
+                .thenReturn(_publicationDouble2);
 
+
+        _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
         _publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
         //Act
-        Publication result = _publicationRepo.getPublication(_publicationDouble);
+        Publication result = _publicationRepo.getPublication(_publicationDouble2);
 
         //Assert
-        assertSame(_publicationDouble, result);
+        assertSame(_publicationDouble2, result);
     }
 
     @Test
