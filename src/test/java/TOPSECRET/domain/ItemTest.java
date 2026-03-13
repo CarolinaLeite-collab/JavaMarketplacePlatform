@@ -48,6 +48,8 @@ class ItemTest {
                 .author(new Author("Seneca"))
                 .publisher(new PublishingCompany("Penguin"))
                 .build();
+
+        // Act
         Item item = new Item(publication, Condition.GOOD);
 
         // Assert
@@ -70,7 +72,7 @@ class ItemTest {
         DirectSale directSale =
                 new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
 
-        // Assert
+        // Act + Assert
         assertDoesNotThrow(() -> item.setDirectSale(directSale));
     }
 
@@ -95,7 +97,7 @@ class ItemTest {
                 auctionEndDate
         );
 
-        // Assert
+        // Act + Assert
         assertDoesNotThrow(() -> item.setAuction(auction));
     }
 
@@ -124,12 +126,11 @@ class ItemTest {
         DirectSale directSale =
                 new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
 
+        // Act + Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> item.setDirectSale(directSale)
         );
-
-        // Assert
         assertEquals("Item is already in an auction.", exception.getMessage());
     }
 
@@ -152,6 +153,7 @@ class ItemTest {
 
         AuctionRepo repo = new AuctionRepo();
 
+        // Act + Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> repo.createAuction(
@@ -161,8 +163,6 @@ class ItemTest {
                         auctionEndDate
                 )
         );
-
-        // Assert
         assertTrue(exception.getMessage().contains("Item is already in a direct sale."));
     }
 
@@ -181,6 +181,8 @@ class ItemTest {
 
         DirectSale ds =
                 new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
+
+        // Act
         item.setDirectSale(ds);
 
         // Assert
@@ -207,6 +209,8 @@ class ItemTest {
                 auctionStartDate,
                 auctionEndDate
         );
+
+        // Act
         item.setAuction(auction);
 
         // Assert
@@ -228,7 +232,7 @@ class ItemTest {
         Item item = new Item(testPub, Condition.GOOD);
         Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
 
-        // Assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
                 "This Auction does not belong to this Item.");
 
@@ -249,7 +253,7 @@ class ItemTest {
         Item item = new Item(testPub, Condition.GOOD);
         DirectSale wrongDirectSaleItem = new DirectSale(new Item(testPub, Condition.POOR), new Price(10.0, Currency.EUR), Period.ofMonths(3));
 
-        // Assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> item.setDirectSale(wrongDirectSaleItem),
                 "This DirectSale does not belong to this Item.");
 
