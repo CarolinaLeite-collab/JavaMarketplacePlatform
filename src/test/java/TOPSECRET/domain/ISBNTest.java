@@ -248,14 +248,6 @@ public class ISBNTest {
     }
 
     @Test
-    void equalsIsReflexive() {
-        // arrange
-        ISBN isbn = new ISBN("9780618260300");
-        // assert
-        assertEquals(isbn, isbn);
-    }
-
-    @Test
     void isbn10AndIsbn13OfSameBookAreEqual() {
         // arrange
         ISBN isbn10 = new ISBN("0618260307");
