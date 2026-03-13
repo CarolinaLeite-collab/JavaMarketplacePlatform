@@ -57,7 +57,7 @@ class LibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
 
         // Act
-        Library newLibrary = libraryRepo.addLibrary(_userDouble);
+        libraryRepo.addLibrary(_userDouble);
 
         // Assert
         assertThrows(IllegalStateException.class, () -> libraryRepo.addLibrary(_userDouble));
