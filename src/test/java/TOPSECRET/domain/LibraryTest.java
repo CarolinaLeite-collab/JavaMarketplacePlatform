@@ -55,7 +55,7 @@ class LibraryTest {
     @Test
     void ifUserIsNull_shouldReturnFalse() {
 
-        //Act
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () -> new Library(null));
     }
 
@@ -65,12 +65,8 @@ class LibraryTest {
         //arrange / SUT
         Library myLibrary = new Library(_userDouble);
 
-        //act
-        User userID = myLibrary.getUser();
-
         //assert
-        assertEquals(userID,myLibrary.getUser());
-
+        assertEquals(_userDouble,myLibrary.getUser());
     }
 
     @Test
@@ -82,8 +78,10 @@ class LibraryTest {
         List<Item> result = library.getItemsInLibrary();
 
         // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertAll(
+                () -> assertNotNull(result),
+                () -> assertTrue(result.isEmpty())
+        );
     }
 
     @Test
@@ -151,7 +149,7 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsInLibraryShouldItemWhenItemFound() {
+    void getItemsInLibraryShouldReturnItemWhenItemFound() {
         // Arrange
         Item _itemDouble2 = mock(Item.class);
 
@@ -186,8 +184,7 @@ class LibraryTest {
         Item itemResult = library.getItem(_itemDouble3);
 
         //Assert
-        assertEquals(null, itemResult);
-
+        assertNull(itemResult);
     }
 
     @Test
