@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,61 +18,45 @@ import static org.junit.jupiter.api.Assertions.*;
 class ISSNTest {
 
     @Test
-    void shouldCreateIssnWithValidFormat(){
-        // arrange
-        ISSN issn = new ISSN ("1234-5678");
-        // assert
-        assertEquals("1234-5678", issn.get_issn());
+    void shouldStoreAndReturnIssnValue() {
+        // Arrange
+        ISSN issn = new ISSN("1234-5678");
+
+        // Assert
+        assertAll(
+                () -> assertEquals("1234-5678", issn.get_issn()),
+                () -> assertEquals("1234-5678", issn.toString()),
+                () -> assertEquals("1234-5678", issn.getIdentifier())
+        );
     }
 
     @Test
     void shouldRejectNullIssn(){
+        // act + assert
         assertThrows(IllegalArgumentException.class, () ->
             new ISSN(null));
     }
 
     @Test
     void shouldRejectIssnWithoutHyphen(){
+        // act + assert
         assertThrows(IllegalArgumentException.class, () ->
             new ISSN("12345678"));
     }
 
-    @Test
-    void shouldRejectIssnWithLetters(){
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("1234-56B8"));
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("12A4-5678"));
+    @ParameterizedTest
+    @ValueSource(strings = {"1234-56B8", "12A4-5678"})
+    void shouldRejectIssnWithLetters(String bad) {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new ISSN(bad));
     }
 
-    @Test
-    void shouldRejectIssnWithWrongLength(){
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("123-5678"));
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("12342-2678"));
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("1234-678"));
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("1234-56782"));
+    @ParameterizedTest
+    @ValueSource(strings = {"123-5678", "12342-2678", "1234-678", "1234-56782"})
+    void shouldRejectIssnWithWrongLength(String bad) {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new ISSN(bad));
     }
-
-    @Test
-    void toSringShouldReturnIssnValue(){
-        // arrange
-        ISSN issn = new ISSN ("0000-0000");
-        // assert
-        assertEquals("0000-0000", issn.toString());
-    }
-
-    @Test
-    void getIdentifier_returnsStoredIssn() {
-        // arrange
-        ISSN issn = new ISSN("1234-5679");
-        // assert
-        assertEquals("1234-5679", issn.getIdentifier());
-    }
-
 
     @Test
     void equals_returnsTrueForSameIssn(){
@@ -93,7 +79,7 @@ class ISSNTest {
     void equals_returnsFalseForNull() {
         // arrange
         ISSN a = new ISSN("1234-5679");
-        // assert
+        // act + assert
         assertFalse(a.equals(null));
     }
 
@@ -101,7 +87,7 @@ class ISSNTest {
     void equals_returnsFalseForDifferentType() {
         // arrange
         ISSN a = new ISSN("1234-5679");
-        // assert
+        // act + assert
         assertFalse(a.equals("1234-5679"));
     }
 
