@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Unit tests for {@link Language}.
@@ -99,16 +100,17 @@ class LanguageTest {
     }
 
     @Test
-    void testPredefinedConstants() {
+    void testFromCodePredefinedAllConstants() {
+        // Assert
         assertAll(
-                () -> assertEquals("en", Language.ENGLISH.getCode()),
-                () -> assertEquals("pt", Language.PORTUGUESE.getCode()),
-                () -> assertEquals("es", Language.SPANISH.getCode()),
-                () -> assertEquals("fr", Language.FRENCH.getCode()),
-                () -> assertEquals("de", Language.GERMAN.getCode()),
-                () -> assertEquals("it", Language.ITALIAN.getCode()),
-                () -> assertEquals("zh", Language.CHINESE.getCode()),
-                () -> assertEquals("ja", Language.JAPANESE.getCode())
+                () -> assertSame(Language.ENGLISH,    Language.fromCode("en")),
+                () -> assertSame(Language.PORTUGUESE, Language.fromCode("pt")),
+                () -> assertSame(Language.SPANISH,    Language.fromCode("es")),
+                () -> assertSame(Language.FRENCH,     Language.fromCode("fr")),
+                () -> assertSame(Language.GERMAN,     Language.fromCode("de")),
+                () -> assertSame(Language.ITALIAN,    Language.fromCode("it")),
+                () -> assertSame(Language.CHINESE,    Language.fromCode("zh")),
+                () -> assertSame(Language.JAPANESE,   Language.fromCode("ja"))
         );
     }
 
@@ -176,7 +178,7 @@ class LanguageTest {
         Language lang = Language.PORTUGUESE;
 
         // Assert
-        assertNotEquals(null, lang);
+        assertFalse(lang.equals(null));
     }
 
     @Test
@@ -197,6 +199,15 @@ class LanguageTest {
 
         // Assert
         assertEquals(lang1.hashCode(), lang2.hashCode());
+    }
+
+    @Test
+    void testHashCodeBasedOnCode() {
+        // Arrange
+        Language lang = Language.of("pt", "Portuguese");
+
+        // Assert
+        assertEquals(Objects.hash("pt"), lang.hashCode());
     }
 
     @Test
