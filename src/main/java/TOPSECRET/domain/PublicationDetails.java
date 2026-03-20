@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Title;
+
 /**
  * Represents a collection of data retrieved from {@link Publication}.
  * <p>

@@ -1,8 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 
-public class Title {
+public class Title implements ValueObject {
 
     /**
      * Title of a publication from Publication. Cannot be null, empty, or whitespace‑only.
