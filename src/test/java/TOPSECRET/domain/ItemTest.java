@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.time.Period;
