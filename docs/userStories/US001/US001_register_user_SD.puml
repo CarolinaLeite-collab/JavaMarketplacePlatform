@@ -18,7 +18,8 @@ autoactivate off
 actor "Admin" as Administrator
 participant ":RegisterNewUserUI" as UI
 participant ":RegisterNewUserController" as Ctl
-participant ":UserRepo" as Repo
+participant " :IUserRepo" as I
+participant ":MemoUserRepo" as Repo
 participant ":UserFactory" as Factory
 
 Administrator -> "UI": I want to register a user in the system.
@@ -27,20 +28,24 @@ activate "UI"
 Administrator -> "UI": name, email
 "UI" -> "Ctl": registerNewUser(name, email)
 activate "Ctl"
-"Ctl" -> "Repo": registerNewUser(name, email)
+"Ctl" -> "I" : registerNewUser(name, email)
+
+"I" -> "Repo": registerNewUser(name, email)
 activate "Repo"
+
+create "newEmail:Email"
+"Repo" -->> "newEmail:Email": <<Create>>
 
 opt userExists(email) == false
     create "newName:Name"
-    "Repo" -> "newName:Name": create(name)
+    "Repo" -->> "newName:Name": <<Create>>
 
-    create "newEmail:Email"
-    "Repo" -> "newEmail:Email": create(email)
+
 
     "Repo" -> "Factory": createUser(newName, newEmail)
     activate "Factory"
     create "newUser:User"
-    "Factory" -> "newUser:User": create(newName, newEmail)
+    "Factory" -->> "newUser:User": <<Create>>
     "Factory" --> "Repo": newUser
     deactivate "Factory"
 
@@ -50,6 +55,7 @@ end
 "Repo" --> "Ctl": newUser
 deactivate "Repo"
 "Ctl" --> "UI": newUser
+
 deactivate "Ctl"
 "UI" --> Administrator: Registered successfully!
 deactivate "UI"
