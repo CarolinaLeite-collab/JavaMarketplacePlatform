@@ -15,12 +15,12 @@ skinparam classAttributeIconSize 0
 
 class AddPublicationOnLibraryUI
 
-class AddPublicationOnLibrary {
+class AddPublicationOnLibraryController {
     + getListOfAvailableItems(user : User) : List<Item>
     + addItemToLibrary(selectedItem : Item, user : User) : boolean
 }
 
-class ItemRepo {
+interface IItemRepo {
     + getDifferentOf(existentItems : List<Item>) : List<Item>
 }
 
@@ -32,17 +32,26 @@ class Library {
     - verifyUnique(selectedItem : Item) : boolean
 }
 
-class LibraryRepo {
+interface ILibraryRepo {
      + getMyLibrary(user : User) : Library
 }
 
-class Item
+class Item {}
+
+class MemLibraryRepo {
+     + getMyLibrary(user : User) : Library
+}
+
+class MemItemRepo {
+    + getDifferentOf(existentItems : List<Item>) : List<Item>
+}
 
 
-AddPublicationOnLibraryUI "1" .. "1" AddPublicationOnLibrary : request >
-AddPublicationOnLibrary "1" .. "1" ItemRepo : queries >
-AddPublicationOnLibrary "1" .. "1" Library : addItemTo >
-AddPublicationOnLibrary "1" .. "1" LibraryRepo : queries >
+AddPublicationOnLibraryUI "1" .. "1" AddPublicationOnLibraryController : request >
+AddPublicationOnLibraryController "1" .. "1" IItemRepo : queries >
+AddPublicationOnLibraryController "1" .. "1" Library : addItemTo >
+AddPublicationOnLibraryController "1" .. "1" ILibraryRepo : queries >
 Library "1" -- "*" Item : stores >
-
+IItemRepo <|.. MemItemRepo
+ILibraryRepo <|.. MemLibraryRepo
 @enduml
