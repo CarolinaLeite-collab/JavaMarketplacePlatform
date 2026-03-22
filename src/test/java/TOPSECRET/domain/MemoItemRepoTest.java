@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
- * Unit tests for {@link ItemRepo}.
+ * Unit tests for {@link MemoItemRepo}.
  *
  * <p>The following Mockito doubles are used:
  * <ul>
@@ -18,13 +18,13 @@ import static org.mockito.Mockito.mock;
  * </ul>
  */
 
-class ItemRepoTest {
+class MemoItemRepoTest {
 
     @Test
     void existsReturnsFalseWhenRepoIsEmpty() {
         // Arrange
         Publication pub = mock(Publication.class);
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         // Act
         boolean result = repo.exists(pub);
@@ -39,7 +39,7 @@ class ItemRepoTest {
         Publication pub = mock(Publication.class);
         Condition condition = mock(Condition.class);
 
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
         repo.createItem(pub, condition);
 
         // Act
@@ -52,7 +52,7 @@ class ItemRepoTest {
     @Test
     void existsReturnsFalseForNullPublication() {
         // Arrange
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         // Act
         boolean result = repo.exists(null);
@@ -67,7 +67,7 @@ class ItemRepoTest {
         Publication pub = mock(Publication.class);
         Condition condition = mock(Condition.class);
 
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         // Act
         Item item = repo.createItem(pub, condition);
@@ -86,7 +86,7 @@ class ItemRepoTest {
         Publication pub = mock(Publication.class);
         Condition condition = mock(Condition.class);
 
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
         repo.createItem(pub, condition);
 
         // Act + Assert
@@ -104,7 +104,7 @@ class ItemRepoTest {
         Publication pub = mock(Publication.class);
         Condition condition = mock(Condition.class);
 
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
         repo.createItem(pub, condition);
 
         // Act
@@ -124,7 +124,7 @@ class ItemRepoTest {
         Publication pub2 = mock(Publication.class);
         Condition condition = mock(Condition.class);
 
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
         repo.createItem(pub1, condition);
 
         // Act + Assert
@@ -140,7 +140,7 @@ class ItemRepoTest {
     @Test
     void shouldReturnEmptyListWhenAllItemsExist() {
         // Arrange
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         Item _itemDouble1 = mock(Item.class);
         Item _itemDouble2 = mock(Item.class);
@@ -161,7 +161,7 @@ class ItemRepoTest {
     @Test
     void shouldHandleEmptyInputList() {
         // Arrange
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         List<Item> existentItems = List.of();
 
@@ -178,7 +178,7 @@ class ItemRepoTest {
     @Test
     void shouldReturnListWhenOnlySomeItemsExist() {
         //Arrange / SUT
-        ItemRepo repo = new ItemRepo();
+        MemoItemRepo repo = new MemoItemRepo();
 
         Item _itemDouble1 = repo.createItem(mock(Publication.class), mock(Condition.class));
         repo.createItem(mock(Publication.class), mock(Condition.class));
