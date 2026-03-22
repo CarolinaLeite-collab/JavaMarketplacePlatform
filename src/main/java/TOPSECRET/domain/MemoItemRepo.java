@@ -24,8 +24,8 @@ public class MemoItemRepo implements IItemRepo{
     private final List<Item> _items = new ArrayList<>();
     private ItemFactory _itemFactory;
 
-    public MemoItemRepo() {
-        _itemFactory = new ItemFactory();
+    public MemoItemRepo(ItemFactory itemFactory) {
+        _itemFactory = itemFactory;
     }
 
     @Override
