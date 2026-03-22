@@ -1,4 +1,7 @@
 package TOPSECRET.domain;
+
+import TOPSECRET.domain.valueobject.Condition;
+
 /**
  * Factory responsible for creating {@link Item} instances.
  * <p>

@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Condition;
+
 import java.util.Objects;
 
 /**
