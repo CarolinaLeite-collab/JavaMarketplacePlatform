@@ -1,21 +1,21 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.UserRepo;
+import TOPSECRET.domain.*;
 
 /**
  * Controller responsible for handling the registration of a {@link User}.
- * Delegates creation/persistence to {@link UserRepo}.
+ * Delegates creation/persistence to {@link IUserRepo}.
  */
 public class RegisterNewUserController {
 
-    private final UserRepo _userRepo;
+    private final IUserRepo _userRepo;
 
-    public RegisterNewUserController(UserRepo userRepo, User admin) {
+    public RegisterNewUserController(IUserRepo userRepo, User admin) {
         _userRepo = userRepo;
     }
 
     public User registerNewUser(String name, String email) {
+
         return _userRepo.registerNewUser(name, email);
     }
 }

@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.UserRepo;
+import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,13 +9,13 @@ import static org.mockito.Mockito.*;
 
 class RegisterNewUserControllerTest {
 
-    private UserRepo _userRepoDouble;
+    private IUserRepo _userRepoDouble;
     private User _adminDouble;
     private User _userDouble;
 
     @BeforeEach
     void setUp() {
-        _userRepoDouble = mock(UserRepo.class);
+        _userRepoDouble = mock(IUserRepo.class);
         _adminDouble = mock(User.class);
         _userDouble = mock(User.class);
 

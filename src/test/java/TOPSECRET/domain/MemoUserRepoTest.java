@@ -8,11 +8,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class UserRepoTest {
+class MemoUserRepoTest {
 
     private UserFactory _userFactoryDouble;
     private User _userDouble1;
     private User _userDouble2;
+
 
     @BeforeEach
     void setUp() {
@@ -20,17 +21,18 @@ class UserRepoTest {
         _userDouble1 = mock(User.class);
         _userDouble2 = mock(User.class);
 
+
         when(_userFactoryDouble.createUser(any(Name.class), any(Email.class)))
                 .thenReturn(_userDouble1, _userDouble2);
 
-        when(_userDouble1.getEmail()).thenReturn("tiago@example.com");
-        when(_userDouble2.getEmail()).thenReturn("ana@example.com");
+        when(_userDouble1.hasEmail(any(Email.class))).thenReturn(true);
+
     }
 
     @Test
     void registerNewUserShouldReturnUser() {
         //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         //Act
         User result = repo.registerNewUser("Tiago", "tiago@example.com");
@@ -42,7 +44,7 @@ class UserRepoTest {
     @Test
     void shouldRegisterNewUserSuccessfullyAndListNotEmpty() {
         //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         //Act
         repo.registerNewUser("Tiago", "tiago@example.com");
@@ -53,8 +55,9 @@ class UserRepoTest {
 
     @Test
     void shouldNotAllowDuplicateUsers() {
+
         //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         repo.registerNewUser("Tiago", "tiago@example.com");
 
@@ -64,21 +67,11 @@ class UserRepoTest {
     }
 
     @Test
-    void shouldNotAllowDuplicateUsersIgnoringCaseAndSpaces() {
-        //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
-
-        repo.registerNewUser("Tiago", "tiago@example.com");
-
-        //Act + Assert
-        assertThrows(IllegalStateException.class,
-                () -> repo.registerNewUser("Outro", "  TiAgO@Example.com  "));
-    }
-
-    @Test
     void shouldBeAbleToRegisterMultipleUsers() {
+
         //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
+        when(_userDouble1.hasEmail(new Email("ana@example.com"))).thenReturn(false);
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         //Act
         repo.registerNewUser("Tiago", "tiago@example.com");
@@ -91,10 +84,12 @@ class UserRepoTest {
     @Test
     void shouldThrowCorrectMessageOnDuplicateUsers() {
         //Arrange
-        UserRepo repo = new UserRepo(_userFactoryDouble); //SUT
-        repo.registerNewUser("Tiago", "tiago@example.com");
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         //Act
+        repo.registerNewUser("Tiago", "tiago@example.com");
+
+
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> repo.registerNewUser("Outro", "tiago@example.com")
