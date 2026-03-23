@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Currency;
+
 import java.util.Objects;
 
 /**
