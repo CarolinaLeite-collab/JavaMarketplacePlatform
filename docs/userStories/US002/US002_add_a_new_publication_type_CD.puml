@@ -1,5 +1,5 @@
 @startuml
-title US002 - Add Publication Type to Official List - CD
+title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - CD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -17,34 +17,39 @@ class AddPublicationTypeUI
 
 ' ===== ENTITY =====
 class PublicationType {
-  - publicationTypeName : String
-  + PublicationType (publicationTypeName : String)
+  - _publicationTypeName : String
+  PublicationType (publicationTypeName : String)
   + isSamePublicationType(publicationTypeName : String) : boolean
 }
 
 ' ===== FACTORY =====
 
 class PublicationTypeFactory {
-  createPublicationType(publicationTypeName : String) : PublicationType
+  + createPublicationType(publicationTypeName : String) : PublicationType
+}
+
+' ===== INTERFACE =====
+Interface IPublicationTypeRepo {
+  + addPublicationType(publicationTypeName : String) : PublicationType
 }
 
 ' ===== REPOSITORY =====
-class PublicationTypeRepo {
+class MemoPublicationTypeRepo {
   + addPublicationType(publicationTypeName : String) : PublicationType
+  - publicationTypeExists(publicationTypeName : String) : boolean
 }
 
 ' ===== CONTROLLER =====
 class AddPublicationTypeController {
-'  - ptr : PublicationTypeRepo
-'  + createPublicationTypeController(repo : PublicationTypeRepo)
   + addPublicationType(publicationTypeName : String) : PublicationType
 }
 
 ' ===== RELATIONSHIPS =====
 AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
-AddPublicationTypeController "1" ..> "1" PublicationTypeRepo: calls
-PublicationTypeRepo "1" --> "1" PublicationTypeFactory: uses
+AddPublicationTypeController "1" ..> "1" IPublicationTypeRepo: uses
+MemoPublicationTypeRepo "1" ..|> "1" IPublicationTypeRepo: implements
+MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory: uses
 PublicationTypeFactory "1" --> "*" PublicationType: creates
-PublicationTypeRepo "1"--> "*" PublicationType: manages
+MemoPublicationTypeRepo "1"--> "*" PublicationType: manages
 
 @enduml
