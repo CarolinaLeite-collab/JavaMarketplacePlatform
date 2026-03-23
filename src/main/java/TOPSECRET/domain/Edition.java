@@ -1,4 +1,6 @@
 package TOPSECRET.domain;
+import TOPSECRET.domain.valueobject.NumberOfPages;
+
 import java.time.LocalDate;
 
 /**
