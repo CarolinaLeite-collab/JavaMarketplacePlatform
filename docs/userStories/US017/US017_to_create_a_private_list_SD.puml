@@ -22,7 +22,7 @@ actor "User"
 
 participant ":CreatePrivateListOfPublicationsUI" as UI
 participant ":CreatePrivateListOfPublicationsController" as CTL
-participant ":ListOfPublicationsRepo" as LOPR
+participant ":IListOfPublicationsRepo" as LOPR
 participant ":GenreRepo" as GR
 
 '==== UI interaction ====
@@ -49,15 +49,15 @@ deactivate UI
 activate UI
 
 '==== Use case execution ====
-UI -> CTL: createListOfPublications (user, name, genre)
+UI -> CTL: createListOfPublications\n(user, name, genre)
 activate CTL
-CTL -> LOPR: createListOfPublications (user, name, genre)
+CTL -> LOPR: createListOfPublications\n(user, name, genre)
 activate LOPR
 
     opt existsListOfPublications (listOfPublications) == false
 
         create "lop1:ListOfPublications" as lop1
-        LOPR -> lop1: create(user, name, genre)
+        LOPR -> lop1: <<create>>
         note left of lop1
                   The private attribute (_isPrivate = true)
                   is set by default in the constructor

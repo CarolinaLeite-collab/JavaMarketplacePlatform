@@ -19,15 +19,15 @@ skinparam ActivationBackgroundColor black
 actor User
 participant "UI1:ShareListPubliclyUI"
 participant "Ctl:ShareListPubliclyController"
-participant "_lr:ListOfPublicationsRepo"
+participant ":IListOfPublicationsRepo"
 participant "selectedList:ListOfPublications"
 
 
 User -> "UI1:ShareListPubliclyUI" : I want to publicly share one List of mine.
 "UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : findListsByUser()
-"Ctl:ShareListPubliclyController" -> "_lr:ListOfPublicationsRepo" : findListsByUser()
-"_lr:ListOfPublicationsRepo" -> "_lr:ListOfPublicationsRepo" : copy
-"_lr:ListOfPublicationsRepo" --> "Ctl:ShareListPubliclyController" : listOfLists
+"Ctl:ShareListPubliclyController" -> ":MemoListOfPublicationsRepo" : findListsByUser()
+":MemoListOfPublicationsRepo" -> ":MemoListOfPublicationsRepo" : copy
+":MemoListOfPublicationsRepo" --> "Ctl:ShareListPubliclyController" : listOfLists
 "Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : listOfLists
 "UI1:ShareListPubliclyUI" --> User : What List do you want to share?
 User -> "UI1:ShareListPubliclyUI" : Selected List
