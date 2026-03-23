@@ -1,8 +1,4 @@
-package TOPSECRET.ddd;
-
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.ListOfPublications;
-import TOPSECRET.domain.User;
+package TOPSECRET.domain;
 
 import java.util.List;
 

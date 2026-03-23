@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.IListOfPublicationsRepo;
-
 import java.util.ArrayList;
 import java.util.List;
 

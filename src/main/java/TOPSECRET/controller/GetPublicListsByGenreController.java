@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.ListOfPublications;
-import TOPSECRET.ddd.IListOfPublicationsRepo;
+import TOPSECRET.domain.IListOfPublicationsRepo;
 
 import java.util.List;
 
