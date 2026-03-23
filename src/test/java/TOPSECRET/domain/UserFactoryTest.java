@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -13,7 +14,7 @@ class UserFactoryTest {
     @Test
     void shouldCreateUser() {
         // Arrange
-        Name nameDouble = mock(Name.class);
+        ValueObject.Name nameDouble = mock(ValueObject.Name.class);
         Email emailDouble = mock(Email.class);
 
         // SUT
@@ -34,7 +35,7 @@ class UserFactoryTest {
     void shouldCreateUserTypeB() {
 
         //Arrange
-        Name nameDouble = mock(Name.class);
+        ValueObject.Name nameDouble = mock(ValueObject.Name.class);
         Email emailDouble = mock(Email.class);
         Address addressDouble = mock(Address.class);
         Phone phoneDouble = mock(Phone.class);

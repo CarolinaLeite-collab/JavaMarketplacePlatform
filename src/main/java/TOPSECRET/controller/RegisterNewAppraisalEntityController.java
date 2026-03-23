@@ -1,5 +1,6 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.ddd.ValueObject;
 import TOPSECRET.domain.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class RegisterNewAppraisalEntityController {
         return List.copyOf(_genreRepo.getListOfOfficialGenres());
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){
+    public AppraisalEntity registerNewAppraisalEntity(ValueObject.Name name, List<PublicationType> publicationType, List<Genre> genre){
         AppraisalEntity appraisalEntity = _appraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
         return appraisalEntity;
     }

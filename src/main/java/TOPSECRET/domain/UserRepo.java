@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class UserRepo {
             throw new IllegalStateException("User already exists");
         }
 
-        Name newUserName = new Name(name);
+        ValueObject.Name newUserName = new ValueObject.Name(name);
         Email newUserEmail = new Email(email);
 
         User newUser = _userFactory.createUser(newUserName, newUserEmail);

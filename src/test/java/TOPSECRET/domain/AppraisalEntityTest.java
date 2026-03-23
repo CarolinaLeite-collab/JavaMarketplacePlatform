@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 class AppraisalEntityTest {
 
-    private Name _nameDouble;
+    private ValueObject.Name _nameDouble;
     private PublicationType _publicationType1;
     private PublicationType _publicationType2;
     private Genre _genreDouble1;
@@ -21,7 +22,7 @@ class AppraisalEntityTest {
 
     @BeforeEach
     void setup() {
-        _nameDouble = mock(Name.class);
+        _nameDouble = mock(ValueObject.Name.class);
         _publicationType1 = mock(PublicationType.class);
         _publicationType2 = mock(PublicationType.class);
         _genreDouble1 = mock(Genre.class);
@@ -62,7 +63,7 @@ class AppraisalEntityTest {
         AppraisalEntity entity = new AppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
         // Act
-        Name _entityName = entity.getName();
+        ValueObject.Name _entityName = entity.getName();
         List<PublicationType> _entityPublicationTypes = entity.getPublicationTypes();
         List<Genre> _entityGenres = entity.getGenres();
 
