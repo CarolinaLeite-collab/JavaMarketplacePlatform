@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US018 - As a User, I want to add one of my publications to a list of mine - CD
+title US018 - "As a User, I want to add one of my publications to a list of mine" - CD
 
 
 '==== basic style ====
@@ -27,8 +27,11 @@ class AddPublicationToListController {
 + addItemToList(user : User, listName : String, genre : Genre, item : Item)
 }
 
-class ListOfPublicationsRepo {
--_user : User
+interface IListOfPublicationsRepo {
++ getMyLists(user : User)
+}
+
+class MemoListOfPublicationsRepo{
 + getMyLists(user : User)
 }
 
@@ -42,9 +45,21 @@ class ListOfPublications{
 + addItem(item : Item)
 }
 
+interface ILibraryRepo {
++ findLibraryByUser(user)
+}
+
+class MemoLibraryRepo {
++ findLibraryByUser(user)
+}
+
+
 AddPublicationToListUI "1" ..> "1" AddPublicationToListController : uses
-AddPublicationToListController "1" ..> "1"ListOfPublicationsRepo : uses >
-ListOfPublicationsRepo "1" --> "*" ListOfPublications : updates
+AddPublicationToListController "1" ..> "1" IListOfPublicationsRepo : uses >
+AddPublicationToListController "1" ..> "1" ILibraryRepo : uses >
+IListOfPublicationsRepo "1" --> "*" ListOfPublications : updates
 AddPublicationToListController "1" --> Library : request
+IListOfPublicationsRepo <|.. MemoListOfPublicationsRepo
+ILibraryRepo <|.. MemoLibraryRepo
 
 @enduml
