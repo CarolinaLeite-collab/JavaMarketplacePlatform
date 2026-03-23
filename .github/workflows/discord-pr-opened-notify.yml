@@ -1,14 +1,12 @@
-name: Notify Discord on PR Merge
+name: Notify Discord on PR Creation
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, reopened]
 
 jobs:
   notify:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-
 
     steps:
       - name: Send message to Discord
@@ -21,11 +19,10 @@ jobs:
             --arg number "${{ github.event.pull_request.number }}" \
             '{
               content: (
-                "🚀 PR #" + $number + " merged to main\n" +
-                "Title: " + $title + "\n" +
-                "Author: " + $user + "\n" +
-                "🌐 " + $url + "\n\n" +
-                "🚨 Please update your branches!"
+                "📢 New Pull Request #" + $number + "\n" +
+                "🏷️ " + $title + "\n" +
+                "👤 " + $user + "\n" +
+                "🌐 " + $url
               )
             }')" \
-          ${{ secrets.DISCORD_WEBHOOK }}
+          ${{ secrets.DISCORD_INCOMING_PR_WEBHOOK }}
