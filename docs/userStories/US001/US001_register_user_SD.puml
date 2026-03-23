@@ -18,7 +18,6 @@ autoactivate off
 actor "Admin" as Administrator
 participant ":RegisterNewUserUI" as UI
 participant ":RegisterNewUserController" as Ctl
-participant " :IUserRepo" as I
 participant ":MemoUserRepo" as Repo
 participant ":UserFactory" as Factory
 
@@ -28,9 +27,9 @@ activate "UI"
 Administrator -> "UI": name, email
 "UI" -> "Ctl": registerNewUser(name, email)
 activate "Ctl"
-"Ctl" -> "I" : registerNewUser(name, email)
+"Ctl" -> "Repo" : registerNewUser(name, email)
 
-"I" -> "Repo": registerNewUser(name, email)
+
 activate "Repo"
 
 create "newEmail:Email"
