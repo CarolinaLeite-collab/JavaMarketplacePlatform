@@ -1,19 +1,22 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.ListOfPublications;
-import TOPSECRET.domain.ListOfPublicationsRepo;
+import TOPSECRET.ddd.IListOfPublicationsRepo;
 import TOPSECRET.domain.User;
 
 import java.util.List;
 
 /**
  * Controller responsible for sharing publicly a list of of a {@link User}.
+ * <p>
+ * This controller depends on {@link IListOfPublicationsRepo} to access persisted lists.
+ * </p>
  */
 
 public class ShareListPubliclyController {
-    private final ListOfPublicationsRepo _listOfPublicationsRepo;
+    private final IListOfPublicationsRepo _listOfPublicationsRepo;
 
-    public ShareListPubliclyController(ListOfPublicationsRepo listOfPublicationsRepo) {
+    public ShareListPubliclyController(IListOfPublicationsRepo listOfPublicationsRepo) {
         _listOfPublicationsRepo = listOfPublicationsRepo;
     }
 

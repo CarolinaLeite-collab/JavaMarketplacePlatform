@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.ddd.IListOfPublicationsRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import static org.mockito.Mockito.*;
 
 class AddPublicationToListControllerTest {
 
-    private ListOfPublicationsRepo _listRepoDouble;
+    private IListOfPublicationsRepo _listRepoDouble;
     private LibraryRepo _libraryRepoDouble;
     private User _userDouble;
     private Genre _genreDouble;
@@ -21,7 +22,7 @@ class AddPublicationToListControllerTest {
 
     @BeforeEach
     void setUp() {
-        _listRepoDouble = mock(ListOfPublicationsRepo.class);
+        _listRepoDouble = mock(IListOfPublicationsRepo.class);
         _libraryRepoDouble = mock(LibraryRepo.class);
         _userDouble = mock(User.class);
         _genreDouble = mock(Genre.class);
