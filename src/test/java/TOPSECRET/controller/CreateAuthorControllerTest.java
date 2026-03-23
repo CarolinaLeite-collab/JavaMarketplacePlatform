@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Author;
-import TOPSECRET.domain.AuthorRepo;
+import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.MemoAuthorRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,12 +12,12 @@ import static org.mockito.Mockito.when;
 
 class CreateAuthorControllerTest {
 
-    private AuthorRepo _authorRepoDouble;
+    private IAuthorRepo _authorRepoDouble;
 
     @BeforeEach
     void setUp() {
 
-        _authorRepoDouble = mock(AuthorRepo.class);
+        _authorRepoDouble = mock(IAuthorRepo.class);
 
     }
     @Test
