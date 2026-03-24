@@ -1,4 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.Identifier;
 
 /**
  * Represents an ISSN (International Standard Serial Number) for a publication.
@@ -8,7 +11,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public class ISSN implements Identifier {
+public class ISSN implements Identifier, ValueObject {
 
     private final String _issn;
 
