@@ -13,43 +13,58 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam classAttributeIconSize 0
 
-' ===== UI =====
+' ===== Classes =====
 class RegisterCityUI {
 
-}
-' ===== ENTITY =====
-class City {
-  + City(name: String, country: Country)
-  + getName(): String
-  + getCountry(): Country
+class RegisterCityController {
+  + getAllCountries(): List<Country>
+  + registerCity(cityName: String, country: Country): City
 }
 
-' ===== FACTORY =====
+interface ICityRepo {
+  + registerCity(cityName : String, country : Country): City
+  + existsCityInACountry(cityName : String, country : Country): boolean
+  + getAll() : List<City>
+}
+
+class MemoCityRepo {
+  + registerCity(cityName : String, country : Country): City
+  + existsCityInACountry(cityName : String, country : Country): boolean
+  + getAll() : List<City>
+}
+
 class CityFactory {
   + createCity(CityName : String, Country : Country) : City
 }
 
-' ===== REPOSITORY =====
-class CityRepo {
-  + existsByNameAndCountry(name: String, country: Country): boolean
-  + add(city: City): City
-  + getAll(): List<City>
+class City {
+  -_name : String
+  -_country : Country
+  + getName(): String
+  + getCountry() : Country
+  + equals() : boolean
+  + toString() : String
 }
 
-class CountryRepo {
-  + getAllCountries(): List<Country>
-  + findByName(countryName: String): Country
+
+' ===== CountryRepo =====
+interface ICountryRepo{
++ getAllCountries() :List<Country>
 }
 
-class RegisterCityController {
-  + getCountries(): List<Country>
-  + registerCity(name: String, country: Country): City
+class MemoCountryRepo {
++ getAllCountries() :List<Country>
 }
 
+
+' ===== Interactions =====
 RegisterCityUI "1" ..> "1" RegisterCityController : invokes
-RegisterCityController "1" --> "1" CountryRepo : calls
-RegisterCityController "1" --> "1" CityRepo : calls
-CityRepo "1" --> "1"CityFactory: uses
-CityFactory "1" --> "*" City: creates
-CityRepo "1" --> "*" City : manages
+RegisterCityController "1" ..> "1" ICountryRepo : uses
+RegisterCityController "1" ..> "1" ICityRepo : uses
+
+ICityRepo "1" <|.. "1"MemoCityRepo
+MemoCityRepo "1" --> "1" CityFactory : uses
+CityFactory "1" --> "*" City : instantiates through
+
+ICountryRepo "1" <|.. "1"MemoCountryRepo
 @enduml

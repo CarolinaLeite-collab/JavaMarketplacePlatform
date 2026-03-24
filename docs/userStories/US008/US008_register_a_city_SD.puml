@@ -1,10 +1,8 @@
 @startuml
 title US008 - "As an Administrator, I want to register a new city in the system" - SD
-hidefootbox
 
 '==== basic style ====
 skinparam monochrome false
-skinparam shadowing true
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
@@ -15,53 +13,57 @@ skinparam ArrowColor #57595BAA
 
 autonumber
 autoactivate off
+hidefootbox
 
+' ==== Actor and participants ====
 actor Administrator as Admin
 participant ":RegisterCityUI" as UI
-participant ":RegisterCityController" as Ctl
-participant "_cr:CountryRepo" as CountryRepo
-participant "_cir:CityRepo" as CityRepo
-participant ":CityFactory" as Factory
+participant ":RegisterCityController" as CTL
+participant "_cr:MemoCountryRepo" as CouR
+participant "_cir:MemoCityRepo" as CityR
+participant ":CityFactory" as FCT
 
+'==== UI interaction ====
 Admin -> UI: I want to register a new City.
 activate UI
 
-UI -> Ctl: getCountries()
-activate Ctl
-Ctl -> CountryRepo: getAllCountries()
-activate CountryRepo
-Ctl <-- CountryRepo: listOfCountries
-deactivate CountryRepo
-UI <-- Ctl: listOfCountries
-deactivate Ctl
+UI -> CTL: getAllCountries()
+activate CTL
+CTL -> CouR: getAllCountries()
+activate CouR
+CTL <-- CouR: List.copyOfListOfCountries
+deactivate CouR
+UI <-- CTL: List.copyOfListOfCountries
+deactivate CTL
 
-UI -> Admin: show form (city name, listOfCountries)
+UI --> Admin: Please choose a country \n and provide the city name.
 deactivate UI
 
-Admin -> UI: select country; enter cityName
+Admin -> UI: country, cityName
 activate UI
-UI -> Ctl: registerCity(cityName, country)
-activate Ctl
 
-Ctl -> CityRepo: RegisterCity(cityName, country)
-        activate CityRepo
+UI -> CTL: registerCity(cityName, country)
+activate CTL
 
-    opt existsByNameAndCountry(cityName, country) == false
+CTL -> CityR: registerCity(cityName, country)
+        activate CityR
 
-        CityRepo -> Factory: createCity(cityName, country)
-        activate Factory
-        create "newCity:City" as instance
-        Factory -> instance: create(cityName, country)
-        Factory --> CityRepo: newCity
-        deactivate Factory
-        CityRepo -> CityRepo: add(newCity)
+    opt existsCityInACountry(cityName, country) == false
+
+        CityR -> FCT: createCity(cityName, country)
+        activate FCT
+        create "c1:City" as instance
+        FCT -->> instance: <<Create>>
+        FCT --> CityR: c1
+        deactivate FCT
+        CityR -> CityR: add(c1)
     end
 
-    CityRepo --> Ctl: RegisteredCity
-    deactivate CityRepo
+    CityR --> CTL: c1
+    deactivate CityR
 
-Ctl --> UI: RegisteredCity
-deactivate Ctl
+CTL --> UI: c1
+deactivate CTL
 UI --> Admin: City registered successfully!
 deactivate UI
 @enduml
