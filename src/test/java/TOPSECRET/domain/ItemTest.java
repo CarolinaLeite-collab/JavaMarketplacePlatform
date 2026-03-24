@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.Currency;
+import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

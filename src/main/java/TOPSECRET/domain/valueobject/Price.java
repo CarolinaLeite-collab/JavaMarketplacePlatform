@@ -1,6 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.Currency;
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
  * </p>
  */
 
-public class Price {
+public class Price implements ValueObject {
     private final double _value;
     private final Currency _currency;
 
