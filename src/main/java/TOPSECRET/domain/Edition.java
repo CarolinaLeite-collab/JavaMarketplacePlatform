@@ -1,4 +1,6 @@
 package TOPSECRET.domain;
+import TOPSECRET.domain.valueobject.Dimension;
+
 import java.time.LocalDate;
 
 /**

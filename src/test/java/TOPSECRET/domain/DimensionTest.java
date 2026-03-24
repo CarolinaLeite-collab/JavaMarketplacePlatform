@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Dimension;
 import TOPSECRET.domain.valueobject.DimensionUnit;
 import org.junit.jupiter.api.Test;
 

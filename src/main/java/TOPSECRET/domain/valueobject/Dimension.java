@@ -1,6 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.DimensionUnit;
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Locale;
 
@@ -12,7 +12,7 @@ import java.util.Locale;
  * </p>
  */
 
-public class Dimension {
+public class Dimension implements ValueObject {
 
     private double _width;
     private double _height;
