@@ -1,7 +1,6 @@
 @startuml
 '==== Title ====
 title US008 - "As an Administrator, I want to register a new city in the system. %n() A city must be in a country." - SSD
-hidefootbox
 
 '==== basic style ====
 skinparam monochrome false
@@ -15,22 +14,23 @@ skinparam ArrowFontColor #3B4953
 
 autonumber
 autoactivate off
+hidefootbox
 
+' ==== Actor and participants ====
 actor "Administrator" as Admin
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
-Admin -> System: I want to register a new city
+'==== UI interaction ====
+Admin -> System: I want to register a new city.
 activate System
-System --> Admin: Please choose a country and provide the city name
 
-System -> System: getAllCountries()
-System --> Admin: listOfCountries
+System --> Admin: Please choose a country and provide the city name.
+deactivate System
 
-Admin -> System: select country; enter cityName
-System --> Admin: confirm selection
+Admin -> System: country, cityName
+activate System
 
-Admin -> System: RegisterCityForm(countryName, cityName)
-System --> Admin: City registered (or error)
+System --> Admin: City successfully registered!
 deactivate System
 
 @enduml
