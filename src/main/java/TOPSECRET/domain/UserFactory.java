@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 
 import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Phone;
 
 /**
  * Factory responsible for creating {@link User} instances.

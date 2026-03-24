@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Phone;
 
 import java.util.HashSet;
 import java.util.Objects;
