@@ -15,14 +15,14 @@ import static org.mockito.Mockito.*;
 class RegisterCityControllerTest {
 
     private CityRepo cityRepo;
-    private CountryRepo countryRepo;
+    private ICountryRepo countryRepo;
     private Country country;
     private City city;
 
     @BeforeEach
     void setUp() {
         cityRepo = mock(CityRepo.class);
-        countryRepo = mock(CountryRepo.class);
+        countryRepo = mock(ICountryRepo.class);
         country = mock(Country.class);
         city = mock(City.class);
     }
