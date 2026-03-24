@@ -4,7 +4,6 @@ import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Year;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,14 +12,14 @@ import static org.mockito.Mockito.*;
 class GetDirectSaleItemsByAuthorControllerTest {
 
     private User _userDouble;
-    private DirectSaleRepo _dsrDouble;
+    private IDirectSaleRepo _dsrDouble;
     private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
-        _dsrDouble = mock(DirectSaleRepo.class);
+        _dsrDouble = mock(IDirectSaleRepo.class);
         _authorDouble = mock(Author.class);
 
     }

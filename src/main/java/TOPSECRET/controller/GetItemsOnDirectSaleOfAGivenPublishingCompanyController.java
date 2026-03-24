@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.DirectSaleRepo;
+import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublishingCompany;
 
@@ -12,11 +12,11 @@ import java.util.Objects;
  */
 public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
-    private final DirectSaleRepo _directSaleRepo;
+    private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(DirectSaleRepo directSaleRepo) {
+    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IDirectSaleRepo directSaleRepo) {
 
-        _directSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
+        _iDirectSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
     }
 
     public List<Item> getDirectSaleItemByPublisher(PublishingCompany PublishingCompany) {
@@ -24,6 +24,6 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
         if (PublishingCompany == null) {
             throw new IllegalArgumentException("publisher");
         }
-        return _directSaleRepo.getDirectSaleItemsByPublisher(PublishingCompany);
+        return _iDirectSaleRepo.getDirectSaleItemsByPublisher(PublishingCompany);
     }
 }

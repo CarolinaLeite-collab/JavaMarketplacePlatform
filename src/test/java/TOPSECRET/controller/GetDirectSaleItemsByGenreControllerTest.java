@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 class GetDirectSaleItemsByGenreControllerTest {
 
     private User _buyerDouble;
-    private DirectSaleRepo _directSaleRepoDouble;
+    private IDirectSaleRepo _directSaleRepoDouble;
     private Genre _genreDouble;
 
     @BeforeEach
@@ -19,7 +19,7 @@ class GetDirectSaleItemsByGenreControllerTest {
 
         _buyerDouble = mock(User.class);
         _genreDouble = mock (Genre.class);
-        _directSaleRepoDouble = mock(DirectSaleRepo.class);
+        _directSaleRepoDouble = mock(IDirectSaleRepo.class);
 
     }
 

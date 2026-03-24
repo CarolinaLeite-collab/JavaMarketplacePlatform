@@ -52,21 +52,22 @@ public class LibraryRepo {
         return false;
     }
 
-    /**
-     * Finds and returns the Library associated with the given user ID.
-     *
-     * @param user the unique identifier of the user whose library is being searched
-     * @return the Library instance belonging to the specified user
-     * @throws IllegalStateException if no Library exists for the given userID
-     */
-
     public Library findLibraryByUser(User user){
+
         for (Library lib : _libraries){
             if (lib.belongsTo(user)){
                 return lib;
             }
         }
+
         throw new IllegalStateException("Library not found for user: " + user.toString());
+    }
+
+    public List<Item> getItemsInLibraryByUser(User user) {
+
+        Library userLibrary = findLibraryByUser(user);
+
+        return userLibrary.getItemsInLibrary();
     }
 
 }

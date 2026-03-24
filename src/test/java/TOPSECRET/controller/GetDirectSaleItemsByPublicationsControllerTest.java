@@ -12,13 +12,13 @@ import static org.mockito.Mockito.*;
 public class GetDirectSaleItemsByPublicationsControllerTest {
 
     private User _buyerDouble;
-    private DirectSaleRepo _dsrDouble;
+    private IDirectSaleRepo _dsrDouble;
     private Publication _publicationDouble;
 
     @BeforeEach
     void setUp(){
             _buyerDouble = mock(User.class);
-            _dsrDouble = mock(DirectSaleRepo.class);
+            _dsrDouble = mock(IDirectSaleRepo.class);
             _publicationDouble = mock(Publication.class);
     }
 

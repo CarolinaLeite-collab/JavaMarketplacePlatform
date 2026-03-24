@@ -11,13 +11,13 @@ import static org.mockito.Mockito.*;
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     private Item _itemDouble;
     private PublishingCompany _publisherCompanyDouble;
-    private DirectSaleRepo _directSaleRepoDouble;
+    private IDirectSaleRepo _directSaleRepoDouble;
 
     @BeforeEach
     void setUp() {
         _publisherCompanyDouble = mock(PublishingCompany.class);
         _itemDouble = mock(Item.class);
-        _directSaleRepoDouble = mock(DirectSaleRepo.class);
+        _directSaleRepoDouble = mock(IDirectSaleRepo.class);
     }
 
     @Test

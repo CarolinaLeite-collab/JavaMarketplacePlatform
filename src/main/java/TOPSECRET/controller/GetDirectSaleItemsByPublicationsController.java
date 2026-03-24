@@ -15,22 +15,22 @@ import java.util.List;
  * </p>
  *
  * <p>
- * The controller delegates the retrieval of data to {@link DirectSaleRepo},
+ * The controller delegates the retrieval of data to {@link IDirectSaleRepo},
  * ensuring a clear separation of concerns and keeping the controller stateless.
  * </p>
  */
 
 
 public class GetDirectSaleItemsByPublicationsController {
-    private DirectSaleRepo _dsr;
+    private IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetDirectSaleItemsByPublicationsController(DirectSaleRepo dsr, User buyer){
-        _dsr = dsr;
+    public GetDirectSaleItemsByPublicationsController(IDirectSaleRepo dsr, User buyer){
+        _iDirectSaleRepo = dsr;
     }
 
     public List<Item> getDirectSaleItemsByPublication (Publication publication) {
 
-        List<Item> directSaleItemsByPublication = _dsr.getDirectSaleItemsByPublication(publication);
+        List<Item> directSaleItemsByPublication = _iDirectSaleRepo.getDirectSaleItemsByPublication(publication);
 
         return directSaleItemsByPublication;
 
