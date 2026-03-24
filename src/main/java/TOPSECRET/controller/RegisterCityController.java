@@ -8,7 +8,7 @@ import java.util.Objects;
 /**
  * Controller responsible for registering new cities in the system.
  * <p>
- * This controller interacts with {@link CityRepo} and {@link CountryRepo} to
+ * This controller interacts with {@link CityRepo} and {@link ICountryRepo} to
  * retrieve available countries and to register new {@link City} instances,
  * ensuring that city names are valid and unique within a given country.
  * </p>
@@ -16,17 +16,17 @@ import java.util.Objects;
 
 public class RegisterCityController {
     private final CityRepo _cityRepo;
-    private final CountryRepo _countryRepo;
+    private final ICountryRepo _countryRepo;
 
     /**
      * Creates a controller with the repositories required to register cities.
      *
      * @param cityRepo repository where new cities will be registered
-     * @param countryRepo repository used to validate and list countries
+     * @param memoCountryRepo repository used to validate and list countries
      */
-    public RegisterCityController(CityRepo cityRepo, CountryRepo countryRepo) {
+    public RegisterCityController(CityRepo cityRepo, ICountryRepo memoCountryRepo) {
         _cityRepo = Objects.requireNonNull(cityRepo, "CityRepo cannot be null");
-        _countryRepo = Objects.requireNonNull(countryRepo, "CountryRepo cannot be null");
+        _countryRepo = Objects.requireNonNull(memoCountryRepo, "CountryRepo cannot be null");
     }
 
     /**
