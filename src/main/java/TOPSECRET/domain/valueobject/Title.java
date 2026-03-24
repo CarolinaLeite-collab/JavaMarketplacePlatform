@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-
 import java.util.Objects;
 
 public class Title implements ValueObject {
@@ -15,7 +14,7 @@ public class Title implements ValueObject {
     public Title(String title) {
 
         if (!isValidConstructorArgument(title)) {
-            throw new IllegalArgumentException("Condition cannot be null!");
+            throw new IllegalArgumentException("Title cannot be null, empty, or blank");
         }
 
         _title = title.trim();
@@ -30,10 +29,9 @@ public class Title implements ValueObject {
     }
 
     public String getTitle() {
-        return this._title; // Return original version, not lowercased version
+        return this._title;
     }
 
-    // To standardize titles, as some entries may have varying capitalization
     public String getLowercaseTitle() {
         return this._title.toLowerCase();
     }
