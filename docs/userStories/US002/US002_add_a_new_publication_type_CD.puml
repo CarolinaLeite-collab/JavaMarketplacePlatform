@@ -28,11 +28,6 @@ class PublicationTypeFactory {
   + createPublicationType(publicationTypeName : String) : PublicationType
 }
 
-' ===== INTERFACE =====
-Interface IPublicationTypeRepo {
-  + addPublicationType(publicationTypeName : String) : PublicationType
-}
-
 ' ===== REPOSITORY =====
 class MemoPublicationTypeRepo {
   + addPublicationType(publicationTypeName : String) : PublicationType
@@ -46,8 +41,7 @@ class AddPublicationTypeController {
 
 ' ===== RELATIONSHIPS =====
 AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
-AddPublicationTypeController "1" ..> "1" IPublicationTypeRepo: uses
-MemoPublicationTypeRepo "1" ..|> "1" IPublicationTypeRepo: implements
+AddPublicationTypeController "1" ..> "1" MemoPublicationTypeRepo: uses
 MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory: uses
 PublicationTypeFactory "1" --> "*" PublicationType: creates
 MemoPublicationTypeRepo "1"--> "*" PublicationType: manages

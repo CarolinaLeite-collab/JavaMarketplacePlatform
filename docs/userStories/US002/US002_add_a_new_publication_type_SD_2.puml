@@ -20,7 +20,6 @@ autoactivate off
 actor "Administrator" as Admin
 participant "UI1:AddPublicationTypeUI" as UI
 participant "Ctl1:AddPublicationTypeCtl" as Ctl
-participant "I1:IPublicationType" as Interface
 participant "mptr %n() :MemoPublicationTypeRepo" as REPO
 participant "publicationType %n() :PublicationType" as PUBTYPE
 participant "ptf:PublicationTypeFactory" as FACTORY
@@ -34,9 +33,7 @@ Admin -> UI: publicationTypeName
 activate "UI"
 UI -> Ctl: addPublicationType %n() (publicationTypeName)
 activate "Ctl"
-Ctl -> Interface: addPublicationType %n() (publicationTypeName)
-activate "Interface"
-Interface -> REPO: addPublicationType %n() (publicationTypeName)
+Ctl -> REPO: addPublicationType %n() (publicationTypeName)
 
     loop for each publicationType in ptr
 
@@ -50,17 +47,15 @@ Interface -> REPO: addPublicationType %n() (publicationTypeName)
 REPO -> FACTORY: createPublicationType (publicationTypeName)
 activate FACTORY
 create "publicationTypeName %n() :PublicationType" as instance
-FACTORY -> instance: <<Create>>
+FACTORY -->> instance: <<Create>>
 FACTORY --> REPO: publicationTypeName
 deactivate FACTORY
 REPO -> REPO: add(publicationTypeName)
 REPO --> Ctl: publicationTypeName
-deactivate "Interface"
 deactivate "REPO"
 Ctl --> UI: publicationTypeName
 deactivate "Ctl"
 UI --> Admin: Publication Type successfully %n() added to the official type list!
 deactivate "UI"
-
 
 @enduml
