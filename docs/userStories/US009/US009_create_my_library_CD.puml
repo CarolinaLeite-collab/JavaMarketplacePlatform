@@ -21,9 +21,15 @@ class CreateLibraryController {
   + createLibrary(user:User) : Library
 }
 
-class LibraryRepo {
+interface ILibraryRepo {
+    +addLibrary(user:User) : Library
+    +findLibraryByUser(user:User) : Library
+}
+
+class MemoLibraryRepo {
   - libraryExists(user:User) : boolean
   + addLibrary(user:User) : Library
+  +findLibraryByUser(user:User) : Library
 
 }
 class LibraryFactory {
@@ -36,13 +42,11 @@ class Library {
   +belongsTo(user:User)
 }
 
-'class User {
-'}
-
 CreateLibraryUI "1" ..> "1" CreateLibraryController : invokes
-CreateLibraryController "1" ..> "1" LibraryRepo : calls
-LibraryRepo "1" --> "1" LibraryFactory : uses
-LibraryFactory "1" --> "*" Library : creates
-LibraryRepo "1" --> "*" Library : manages
+CreateLibraryController "1" ..> "1" ILibraryRepo : calls
+MemoLibraryRepo "1" ..|> "1" ILibraryRepo
+MemoLibraryRepo "1" --> "1" LibraryFactory : uses
+LibraryFactory "1" ..> "*" Library : <<create>>
+MemoLibraryRepo "1" --> "*" Library : manages
 
 @enduml
