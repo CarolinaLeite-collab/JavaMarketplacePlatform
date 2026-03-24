@@ -18,28 +18,28 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuctionOfAGivenAuthorController" as Ctl
-participant "ar:AuctionRepo" as AuctionRepo
+participant ":GetItemsOnAuction\nOfAGivenAuthorUI" as UI
+participant ":GetItemsOnAuction\nOfAGivenAuthorController" as Ctl
+participant "mAR:MemoAuctionRepo" as AuctionRepo
 participant "auction:Auction" as Auction
 
 ' --- System dialog ---
-Buyer -> UI: I want a list of Items on auction of a given author
+Buyer -> UI: I want a list of Items \non auction of a given author
 activate "UI"
 UI --> Buyer: What is the author's name?
 deactivate "UI"
-Buyer -> UI: authorName
+Buyer -> UI: authorID
 activate "UI"
-UI -> Ctl: getAuctionItemsByAuthor(authorName)
+UI -> Ctl: getAuctionItems\nByAuthor(authorID)
 activate Ctl
-Ctl -> AuctionRepo: getAuctionItemsByAuthor(authorName)
+Ctl -> AuctionRepo: getAuctionItems\nByAuthor(authorID)
 activate "AuctionRepo"
 create "listOfItemsOnAuctionByAuthor:List<Item>" as List
-AuctionRepo -> List: create()
+AuctionRepo -->> List: <<create>>
 
 ' --- To run through each auction available and check the name of the author associated with the corresponding Item ---
-loop for each auction in ar
-    AuctionRepo -> Auction: isByAuthor(authorName)
+loop for each auction in mAR
+    AuctionRepo -> Auction: isByAuthor(authorID)
 '    activate Auction
 '    Auction -> AuctionRepo: true
 '    deactivate Auction
@@ -51,11 +51,11 @@ loop for each auction in ar
     end
 end
 
-create "ListCopyOfItemsOnAuctionByAuthor: List<Item>" as ListCopy
+create "copyOfItemsOnAuctionByAuthor: List<Item>" as ListCopy
 AuctionRepo -> ListCopy: List.copyOf(ListOfItemsOnAuctionByAuthor)
-AuctionRepo --> Ctl: copyOfListOfDirectSaleItemsByAuthor
+AuctionRepo --> Ctl: copyOf\nListOfItemsOnAuctionByAuthor
 deactivate AuctionRepo
-Ctl --> UI: copyOfItemsOnAuctionByAuthor
+Ctl --> UI: copyOf\nListOfItemsOnAuctionByAuthor
 deactivate Ctl
 UI --> Buyer: Here's the list!
 deactivate UI

@@ -1,5 +1,5 @@
 @startuml
-title US026 – "As a Buyer, I want to get the list of items on auction of a given author" - Level 3 SD
+title US026 – "As a Buyer, I want to get the list of items on auction \nof a given author" - Level 3 SD
 hidefootbox
 
 '==== basic style ====
@@ -18,9 +18,9 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuctionOfAGivenAuthorController" as CTL
-participant "ar:AuctionSaleRepo" as DSR
+participant ":GetItemsOnAuction\nOfAGivenAuthorUI" as UI
+participant ":GetItemsOnAuction\nOfAGivenAuthorController" as CTL
+participant "mAR:MemoAuctionRepo" as DSR
 participant "auction:Auction" as DS
 participant "item:Item" as IT
 participant "publication:Publication" as PUB
@@ -32,22 +32,22 @@ Buyer -> UI: I want a list of Items on auction of a given author
 activate UI
 UI --> Buyer: What is the author's name?
 deactivate UI
-Buyer -> UI: author
+Buyer -> UI: authorID
 activate UI
-UI -> CTL: getAuctionItemsByAuthor(author)
+UI -> CTL: getAuctionItems\nByAuthor(authorID)
 activate CTL
-CTL -> DSR: getAuctionItemsByAuthor(author)
+CTL -> DSR: getAuctionItems\nByAuthor(authorID)
 activate DSR
 
 create "listOfItemsOnAuctionByAuthor: List<Item>" as List
-DSR -> List: create()
+DSR -->> List: <<create>>
 
-loop for each auction in ar
-    DSR -> DS: isByAuthor(author)
+loop for each auction in mAR
+    DSR -> DS: isByAuthor(authorID)
     activate DS
-    DS -> IT: isByAuthor(author)
+    DS -> IT: isByAuthor(authorID)
     activate IT
-    IT -> PUB: isByAuthor(author)
+    IT -> PUB: isByAuthor(authorID)
     activate PUB
     PUB --> IT: true
     deactivate PUB
@@ -68,9 +68,9 @@ DSR -> Copy: List.copyOf(listOfItemsOnAuctionByAuthor)
 
 'participant "author:Author" as AUT
 
-DSR --> CTL: copyOfListOfItemsOnAuctionByAuthor
+DSR --> CTL: copyOf\nListOfItemsOnAuctionByAuthor
 deactivate DSR
-CTL --> UI: copyOfListOfItemsOnAuctionByAuthor
+CTL --> UI: copyOf\nListOfItemsOnAuctionByAuthor
 deactivate CTL
 UI --> Buyer: Here's the list!
 deactivate UI
