@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +21,7 @@ class UserRepoTest {
         _userDouble1 = mock(User.class);
         _userDouble2 = mock(User.class);
 
-        when(_userFactoryDouble.createUser(any(Name.class), any(Email.class)))
+        when(_userFactoryDouble.createUser(any(ValueObject.Name.class), any(Email.class)))
                 .thenReturn(_userDouble1, _userDouble2);
 
         when(_userDouble1.getEmail()).thenReturn("tiago@example.com");

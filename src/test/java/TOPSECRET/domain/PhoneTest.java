@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Phone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +20,7 @@ class PhoneTest {
     @Test
     void shouldCreatePhoneNumber() {
 
-        new Phone (_prefixDouble,"912-345-678");
+        new Phone(_prefixDouble,"912-345-678");
     }
 
     @Test

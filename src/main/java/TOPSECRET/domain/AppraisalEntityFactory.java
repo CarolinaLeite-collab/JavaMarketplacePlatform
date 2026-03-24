@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  */
 
 public class AppraisalEntityFactory {
-    public AppraisalEntity createAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
+    public AppraisalEntity createAppraisalEntity(ValueObject.Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
         return new AppraisalEntity(name, publicationTypes, genres);
     }
 }

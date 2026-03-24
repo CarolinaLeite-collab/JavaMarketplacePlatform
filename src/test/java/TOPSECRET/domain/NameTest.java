@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -11,12 +12,12 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for {@link Name}.
+ * Unit tests for {@link ValueObject.Name}.
  *
  * <p>Validates construction rules: normalization of whitespace, allowed characters,
  * length boundaries, and rejection of invalid inputs.</p>
  *
- * <p>No Mockito doubles are used — {@link Name} is a pure Value Object.</p>
+ * <p>No Mockito doubles are used — {@link ValueObject.Name} is a pure Value Object.</p>
  */
 
 class NameTest {
@@ -24,7 +25,7 @@ class NameTest {
     private static void assertValidName (String rawInput, String expectedNormalized) {
 
         //Act & SUT
-        Name name = new Name(rawInput);
+        ValueObject.Name name = new ValueObject.Name(rawInput);
 
         //Assert
         assertAll(
@@ -34,7 +35,7 @@ class NameTest {
     }
 
     private static void assertInvalidName (String rawImput) {
-        assertThrows(IllegalArgumentException.class, () -> new Name(rawImput));
+        assertThrows(IllegalArgumentException.class, () -> new ValueObject.Name(rawImput));
     }
 
     @ParameterizedTest
@@ -101,7 +102,7 @@ class NameTest {
     @Test
     void equalsSameInstanceReturnsTrue() {
         // Arrange
-        Name name = new Name("Jose Mourinho");
+        ValueObject.Name name = new ValueObject.Name("Jose Mourinho");
 
         // Assert & Act & SUT
         assertTrue(name.equals(name));
@@ -110,8 +111,8 @@ class NameTest {
     @Test
     void equalsObjectsWithSameNormalizedValueReturnTrue() {
         // Arrange
-        Name name1 = new Name("Jose Mourinho");
-        Name name2 = new Name("  Jose   Mourinho  ");
+        ValueObject.Name name1 = new ValueObject.Name("Jose Mourinho");
+        ValueObject.Name name2 = new ValueObject.Name("  Jose   Mourinho  ");
 
         // Assert & Act & SUT
         assertEquals(name1, name2);
@@ -120,8 +121,8 @@ class NameTest {
     @Test
     void equalsObjectsWithDifferentValuesReturnFalse() {
         // Arrange
-        Name name1 = new Name("Jose Mourinho");
-        Name name2 = new Name("Pep Guardiola");
+        ValueObject.Name name1 = new ValueObject.Name("Jose Mourinho");
+        ValueObject.Name name2 = new ValueObject.Name("Pep Guardiola");
 
         // Assert & Act & SUT
         assertNotEquals(name1, name2);
@@ -130,7 +131,7 @@ class NameTest {
     @Test
     void equalsNullReturnsFalse() {
         // Arrange
-        Name name = new Name("Jose Mourinho");
+        ValueObject.Name name = new ValueObject.Name("Jose Mourinho");
 
         // Assert & Act & SUT
         assertNotEquals(null, name);
@@ -139,7 +140,7 @@ class NameTest {
     @Test
     void equalsDifferentClassReturnsFalse() {
         // Arrange
-        Name name = new Name("Jose Mourinho");
+        ValueObject.Name name = new ValueObject.Name("Jose Mourinho");
 
         // Assert & Act & SUT
         assertNotEquals(name, "Jose Mourinho");
@@ -148,8 +149,8 @@ class NameTest {
     @Test
     void hashCodeEqualObjectsHaveSameHashCode() {
         // Arrange
-        Name n1 = new Name("Jose Mourinho");
-        Name n2 = new Name("  Jose   Mourinho ");
+        ValueObject.Name n1 = new ValueObject.Name("Jose Mourinho");
+        ValueObject.Name n2 = new ValueObject.Name("  Jose   Mourinho ");
 
         // Assert & Act & SUT
         assertEquals(n1.hashCode(), n2.hashCode());
@@ -159,8 +160,8 @@ class NameTest {
     void hashCodeDifferentNamesProduceDifferentHashCodes() {
 
         // Arrange
-        Name n1 = new Name("Jose Mourinho");
-        Name n2 = new Name("Pep Guardiola");
+        ValueObject.Name n1 = new ValueObject.Name("Jose Mourinho");
+        ValueObject.Name n2 = new ValueObject.Name("Pep Guardiola");
 
         // Assert & Act & SUT
         assertNotEquals(n1.hashCode(), n2.hashCode());

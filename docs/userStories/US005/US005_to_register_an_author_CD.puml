@@ -9,7 +9,7 @@ skinparam classBackgroundColor WhiteSmoke
 skinparam classAttributeIconSize 0
 
 
-class UICreateAuthor {
+class CreateAuthorUI {
   +requestAuthorRegistration()
   +displayAuthorRegistrationForm()
   +submitAuthorName(authorName: String)
@@ -17,16 +17,22 @@ class UICreateAuthor {
 }
 
 class CreateAuthorController {
-  +CreateAuthorController(ar: AuthorRepo)
+  +CreateAuthorController(ar: MemoAuthorRepo)
   +createAuthor(authorName: String): Author
+}
+
+interface ICreateAuthor{
+  +createAuthor(authorName: String): Author
+/'  +existsByName(name: String): boolean'/
+  +findAll(): List<Author>
 }
 
 /'note right of CreateAuthorController
 Validates authorName (null/blank)
-Trims before delegating to AuthorRepo
+Trims before delegating to MemoAuthorRepo
 end note'/
 
-class AuthorRepo {
+class MemoAuthorRepo {
   -authors: List<Author>
   +createAuthor(authorName: String): Author
 /'  +existsByName(name: String): boolean'/
@@ -42,9 +48,10 @@ class Author {
   +getName(): String
 }
 
-UICreateAuthor "1"..>"1" CreateAuthorController : uses
-CreateAuthorController "1"..> "1" AuthorRepo : delegates to
-AuthorRepo "1" --> "1" AuthorFactory : uses
+CreateAuthorUI "1"..>"1" CreateAuthorController : uses
+CreateAuthorController "1"..>"1" ICreateAuthor : uses
+ICreateAuthor "1"<|.. "1" MemoAuthorRepo
+MemoAuthorRepo "1" --> "1" AuthorFactory : uses
 AuthorFactory "1"-->"*" Author : creates
 
 @enduml

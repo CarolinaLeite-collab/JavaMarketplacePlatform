@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.DimensionUnit;
+
 import java.util.Locale;
 
 /**

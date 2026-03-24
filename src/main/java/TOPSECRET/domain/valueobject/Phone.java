@@ -1,11 +1,14 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.PhonePrefix;
 
 /**
  * Phone number composed of a {@link PhonePrefix} and a national number.
  * The national number is normalized to digits only (4–12 digits).
  * E.164-like representation: +{prefix}{nationalNumber}.
  */
-public class Phone {
+public class Phone implements ValueObject {
 
     private final PhonePrefix _prefix;
     private final String _nationalNumber;

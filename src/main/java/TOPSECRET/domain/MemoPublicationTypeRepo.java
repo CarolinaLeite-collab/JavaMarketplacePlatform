@@ -11,17 +11,18 @@ import java.util.List;
  * </p>
  */
 
-public class PublicationTypeRepo {
+public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
 
     private final List<PublicationType> _publicationTypes = new ArrayList<>();
     private final PublicationTypeFactory _publicationTypeFactory;
 
-    public PublicationTypeRepo(PublicationTypeFactory publicationTypeFactory){
+    public MemoPublicationTypeRepo(PublicationTypeFactory publicationTypeFactory){
 
         _publicationTypeFactory = publicationTypeFactory;
 
     }
 
+    @Override
     public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
 
         // Verifies if PublicationType already exists in the repo
@@ -59,6 +60,7 @@ public class PublicationTypeRepo {
 
     }
 
+    @Override
     // Devolve uma cópia da lista (não quebra encapsulamento)
     public List<PublicationType> getAll() {
         return List.copyOf(_publicationTypes);

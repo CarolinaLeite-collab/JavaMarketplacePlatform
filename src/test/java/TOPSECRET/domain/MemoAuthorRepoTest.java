@@ -7,9 +7,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class AuthorRepoTest {
+class MemoAuthorRepoTest {
     private AuthorFactory factory;
-    private AuthorRepo repo;
+    private MemoAuthorRepo repo;
 
     @Test
     void createAuthorShouldStoreAuthorWithTrimmedName() {
@@ -17,7 +17,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         Author author = repo.createAuthor(" Ana   ");
@@ -37,7 +37,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(null));
@@ -52,7 +52,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(" "));
@@ -64,7 +64,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(""));
@@ -76,7 +76,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         repo.createAuthor("Ana");
@@ -94,7 +94,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         repo.createAuthor("A");
@@ -114,7 +114,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act + assert
         assertFalse(repo.existsByName("Ana"));
@@ -126,7 +126,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         repo.createAuthor("Ana");
@@ -141,7 +141,7 @@ class AuthorRepoTest {
         factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new AuthorRepo(factory);
+        repo = new MemoAuthorRepo(factory);
 
         //act
         repo.createAuthor("Ana");

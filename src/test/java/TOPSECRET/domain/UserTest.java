@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Phone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,14 +10,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class UserTest {
-    private Name _nameDouble;
+    private ValueObject.Name _nameDouble;
     private Address _addressDouble;
     private Email _emailDouble;
     private Phone _phoneDouble;
 
     @BeforeEach
     void setUp() {
-        _nameDouble = mock(Name.class);
+        _nameDouble = mock(ValueObject.Name.class);
         _addressDouble = mock(Address.class);
         _emailDouble = mock(Email.class);
         _phoneDouble = mock(Phone.class);
@@ -99,9 +101,9 @@ class UserTest {
     void testEquals() {
 
         // Arrange
-        Name nameDouble = mock(Name.class);
-        Name nameDouble2 = mock(Name.class);
-        Name nameDouble3 = mock(Name.class);
+        ValueObject.Name nameDouble = mock(ValueObject.Name.class);
+        ValueObject.Name nameDouble2 = mock(ValueObject.Name.class);
+        ValueObject.Name nameDouble3 = mock(ValueObject.Name.class);
         Email emailDouble2 = mock(Email.class);
 
         String u4 = "user";
@@ -124,7 +126,7 @@ class UserTest {
     void hashCodeShouldBeEqualForSameEmail() {
 
         // Arrange
-        Name nameDouble2 = mock(Name.class);
+        ValueObject.Name nameDouble2 = mock(ValueObject.Name.class);
         Email emailDouble2 = mock(Email.class);
         User user1 = new User(_nameDouble, emailDouble2);
         User user2 = new User(nameDouble2, emailDouble2);
@@ -142,7 +144,7 @@ class UserTest {
     void hashCodeShouldBeDifferentForDifferentEmail() {
 
         // Arrange
-        Name nameDouble2 = mock(Name.class);
+        ValueObject.Name nameDouble2 = mock(ValueObject.Name.class);
         Email emailDouble2 = mock(Email.class);
 
         // SUT
