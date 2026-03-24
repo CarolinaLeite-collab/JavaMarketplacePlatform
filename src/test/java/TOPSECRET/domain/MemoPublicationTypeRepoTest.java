@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PublicationTypeRepoTest {
+class MemoPublicationTypeRepoTest {
 
     private PublicationTypeFactory _ptfDouble;
     private PublicationType _pubTypeDouble1;
@@ -33,7 +33,7 @@ class PublicationTypeRepoTest {
     void constructorOfPublicationTypeRepoShouldCreatePublicationTypeRepo() {
 
         //SUT
-        new PublicationTypeRepo(_ptfDouble);
+        new MemoPublicationTypeRepo(_ptfDouble);
 
     }
 
@@ -44,7 +44,7 @@ class PublicationTypeRepoTest {
         String pubTypeName = "BOOK";
 
         // SUT
-        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
 
         // Act
         PublicationType pubTypeResult = repo.addPublicationType(pubTypeName);
@@ -59,7 +59,7 @@ class PublicationTypeRepoTest {
         String pubTypeName = "BOOK";
 
         // SUT
-        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
 
         // Act
         repo.addPublicationType(pubTypeName);
@@ -75,7 +75,7 @@ class PublicationTypeRepoTest {
         when(_pubTypeDouble2.isSamePublicationType(pubTypeName)).thenReturn(true);
 
         // SUT
-        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
 
         //Act
         repo.addPublicationType(pubTypeName);
@@ -92,7 +92,7 @@ class PublicationTypeRepoTest {
         String pubTypeName3 = "POKEMON_CARD";
 
         //SUT
-        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
 
         //Act
         repo.addPublicationType(pubTypeName);
@@ -110,7 +110,7 @@ class PublicationTypeRepoTest {
         when(_pubTypeDouble1.isSamePublicationType(pubTypeName)).thenReturn(true);
 
         //SUT
-        PublicationTypeRepo repo = new PublicationTypeRepo(_ptfDouble);
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
         repo.addPublicationType(pubTypeName);
 
         // Act
