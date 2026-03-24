@@ -18,10 +18,10 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor User
-participant ":CreateLibraryUI" as UI
-participant ":CreateLibraryController" as CTL
-participant ":LibraryRepo" as LR
-participant ":LibraryFactory" as LF
+participant "UI1:CreateLibraryUI" as UI
+participant "Ctl1:CreateLibraryController" as CTL
+participant "_lr:MemoLibraryRepo" as LR
+participant "_lf:LibraryFactory" as LF
 
 ' --- UI interaction ---
 User -> UI: I want to create my library
@@ -35,13 +35,11 @@ activate CTL
 CTL -> LR: addLibrary(user)
 activate LR
 
-
-
     opt libraryExists(user) == false
         LR -> LF: createLibrary(user)
         activate LF
         create "myLibrary:Library"
-        LF -> "myLibrary:Library": create(user)
+        LF --> "myLibrary:Library": <<create>>
         LF --> LR: mylibrary
         deactivate LF
 
@@ -52,10 +50,6 @@ activate LR
 
 LR --> CTL: myLibrary
 deactivate LR
-
-'activate "myLibrary:Library"
-'"myLibrary:Library" --> "_lr:LibraryRepo": myLibrary
-'deactivate "myLibrary:Library"
 
 CTL --> UI: myLibrary
 deactivate CTL
