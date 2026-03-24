@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
+import TOPSECRET.ddd.ValueObject;
 import java.util.Set;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Set;
  * </p>
  */
 
-public enum DimensionUnit {
+public enum DimensionUnit implements ValueObject {
     CENTIMETERS("centimeters"),
     INCHES("inches");
 
