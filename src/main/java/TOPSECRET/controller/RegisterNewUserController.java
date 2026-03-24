@@ -8,14 +8,15 @@ import TOPSECRET.domain.*;
  */
 public class RegisterNewUserController {
 
-    private final IUserRepo _userRepo;
+    private final IUserRepo _iUserRepo;
 
     public RegisterNewUserController(IUserRepo userRepo, User admin) {
-        _userRepo = userRepo;
+        _iUserRepo = userRepo;
     }
 
     public User registerNewUser(String name, String email) {
 
-        return _userRepo.registerNewUser(name, email);
+        return _iUserRepo.registerNewUser(name, email);
     }
+
 }

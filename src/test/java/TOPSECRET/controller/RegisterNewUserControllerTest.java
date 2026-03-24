@@ -3,24 +3,29 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RegisterNewUserControllerTest {
 
-    private IUserRepo _userRepoDouble;
+    private IUserRepo _iUserRepoDouble;
     private User _adminDouble;
     private User _userDouble;
 
     @BeforeEach
     void setUp() {
-        _userRepoDouble = mock(IUserRepo.class);
+        _iUserRepoDouble = mock(IUserRepo.class);
         _adminDouble = mock(User.class);
         _userDouble = mock(User.class);
 
-        when(_userRepoDouble.registerNewUser("Tiago", "test@email.pt")).thenReturn(_userDouble);
+        when(_iUserRepoDouble.registerNewUser("Tiago", "test@email.pt")).thenReturn(_userDouble);
 
+    }
+
+    @Test
+    void shouldConstructController() {
+        //Act & SUT
+        RegisterNewUserController registerNewUserController = new RegisterNewUserController(_iUserRepoDouble, _adminDouble);
     }
 
     @Test
@@ -30,14 +35,14 @@ class RegisterNewUserControllerTest {
         String email = "test@email.pt";
 
         //SUT
-        RegisterNewUserController _registerNewUserController = new RegisterNewUserController(_userRepoDouble, _adminDouble);
+        RegisterNewUserController registerNewUserController = new RegisterNewUserController(_iUserRepoDouble, _adminDouble);
 
         // Act
-        User created = _registerNewUserController.registerNewUser(name, email);
+        User created = registerNewUserController.registerNewUser(name, email);
 
         // Assert
         assertEquals(_userDouble, created);
-        verify(_userRepoDouble).registerNewUser("Tiago", "test@email.pt");
+        verify(_iUserRepoDouble).registerNewUser("Tiago", "test@email.pt");
     }
 
     @Test
@@ -46,16 +51,13 @@ class RegisterNewUserControllerTest {
         String name = "Someone Else";
         String email = "test@email.pt";
 
-        when(_userRepoDouble.registerNewUser(name, email))
-                .thenThrow(new IllegalStateException("User already exists"));
+        when(_iUserRepoDouble.registerNewUser(name, email)).thenThrow(new IllegalStateException("User already exists"));
 
         //SUT
-        RegisterNewUserController _registerNewUserController = new RegisterNewUserController(_userRepoDouble, _adminDouble);
+        RegisterNewUserController _registerNewUserController = new RegisterNewUserController(_iUserRepoDouble, _adminDouble);
 
         // Act + Assert
-        assertThrows(
-                IllegalStateException.class,
-                () -> _registerNewUserController.registerNewUser(name, email)
-        );
+        assertThrows(IllegalStateException.class, () -> _registerNewUserController.registerNewUser(name, email));
     }
+
 }
