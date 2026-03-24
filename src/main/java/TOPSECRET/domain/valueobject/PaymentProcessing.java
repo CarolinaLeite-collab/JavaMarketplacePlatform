@@ -1,4 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.Price;
+import TOPSECRET.domain.User;
 
 /**
  * Handles the processing of a payment between a buyer and a seller for a given price.
@@ -8,7 +12,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public class PaymentProcessing {
+public class PaymentProcessing implements ValueObject {
 
     private final Price _finalPrice;
     private final User _buyer;
