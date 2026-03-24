@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.ShoppingCart;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

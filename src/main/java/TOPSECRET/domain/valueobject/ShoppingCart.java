@@ -1,4 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.Currency;
+import TOPSECRET.domain.Price;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +13,7 @@ import java.util.Objects;
  * Shopping cart holding listings (by id) for direct purchase.
  * Enforces a single currency across all entries and unique listing IDs.
  */
-public class ShoppingCart {
+public class ShoppingCart implements ValueObject {
 
     private final List<CartLine> _listings = new ArrayList<>();
     private Currency _currency; // currency of the first added listing
