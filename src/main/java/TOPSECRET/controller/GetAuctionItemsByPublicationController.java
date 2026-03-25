@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public class GetAuctionItemsByPublicationController {
-    private final MemoAuctionRepo _ar;
+    private final IAuctionRepo _ar;
 
     public GetAuctionItemsByPublicationController(MemoAuctionRepo iAuctionRepo, User buyer){
 

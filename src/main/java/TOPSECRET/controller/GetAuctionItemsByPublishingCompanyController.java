@@ -14,7 +14,7 @@ import java.util.List;
 
 public class GetAuctionItemsByPublishingCompanyController {
 
-    private MemoAuctionRepo _iAuctionRepo;
+    private IAuctionRepo _iAuctionRepo;
 
     public GetAuctionItemsByPublishingCompanyController(MemoAuctionRepo iAuctionRepo, User buyer) {
 

@@ -1,5 +1,6 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.MemoAuctionRepo;
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 public class GetItemsOnAuctionOfAGivenAuthorController {
 
-    private final MemoAuctionRepo _iAuctionRepo;
+    private final IAuctionRepo _iAuctionRepo;
 
     /**
      * Ensures the controller has the repository it needs and validates the buyer reference.

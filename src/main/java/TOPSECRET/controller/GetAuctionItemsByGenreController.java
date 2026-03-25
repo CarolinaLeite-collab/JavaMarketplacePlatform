@@ -1,8 +1,5 @@
 package TOPSECRET.controller;
-import TOPSECRET.domain.MemoAuctionRepo;
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.*;
 
 import java.util.List;
 
@@ -16,7 +13,7 @@ import java.util.List;
 
 public class GetAuctionItemsByGenreController {
 
-    private MemoAuctionRepo _iAuctionRepo;
+    private IAuctionRepo _iAuctionRepo;
 
     public GetAuctionItemsByGenreController (MemoAuctionRepo iAuctionRepo, User buyer){
 
