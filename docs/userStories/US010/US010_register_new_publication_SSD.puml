@@ -1,5 +1,5 @@
 @startuml
-title US010 - "As a User, I want to register a new publication in the system" - SSD
+title US010 - "As a User, I want to register %n()a new publication in the system" %n()SSD
 
 '==== basic style ====
 skinparam monochrome false
@@ -18,16 +18,13 @@ actor User
 participant ":MiteLovers" as System
 
 ' --- System dialog ---
-User -> System: I want to register a new publication
+User -> System: I want to register %n()a new publication
 activate System
-System --> User: Show registration form
+System --> User: Fill in the %n()publication's %n()information
 deactivate System
-User -> System: Submit publication data\n(type, identifier, date, title, ...)
-'System -> System: Validate mandatory fields + format
-'System -> System: Check duplicates (ISBN/ISSN or title+date+authors)
-'System -> System: Register in the System
+User -> System: publicationType, %n()identifier, %n()publicationYear, %n()title, author, %n()publisher, edition, %n()genre
 activate System
-System --> User: Done!
+System --> User: You have %n()successfully %n()registered a %n()new publication.
 deactivate System
 
 deactivate System
