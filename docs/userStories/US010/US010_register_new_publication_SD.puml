@@ -16,41 +16,47 @@ autonumber
 
 ' --- Actor and participants ---
 actor User
-participant "UI1:UIPublicationRegister" as UI
-participant "Ctl1:CtlPublicationRegister" as Ctl
-participant "_pr:PublicationRepo" as PR
+participant ":RegisterPublicationUI" as UI
+participant ":RegisterNew%n()PublicationController" as Ctl
+participant ":MemoPublicationRepo" as PR
+participant ":PublicationFactory" as PF
 
 ' --- UI interaction ---
-User -> UI: I want to register a new publication
+User -> UI: I want to register %n()a new publication
 activate UI
-UI --> User: Fill the registration form...
+UI --> User: Fill in the publication's %n()information
 deactivate UI
 
-User -> UI: Publication data\n(type, identifier, date, title, ...)
+User -> UI: publicationType, %n()identifier, %n()publicationYear, %n()title, author, %n()publisher, edition, %n()genre
 activate UI
-UI -> UI: Validate mandatory fields
 
 ' --- Use case execution ---
-UI -> Ctl: registerPublication(type, identifier, date, title, ...)
+UI -> Ctl: registerPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
 activate Ctl
-Ctl -> PR: registerPublication(type, identifier, date, title, ...)
+Ctl -> PR: addPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
 activate PR
 
-' --- Validation Duplicates
-PR -> PR: Check if Publication already exists
+' --- Creation  ---
+PR -> PF: createPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
+activate PF
+create "newPublication:Publication"
+PF -->> "newPublication:Publication": <<create>>
+PF --> PR: newPublication
+deactivate PF
 
-' --- Create
-create "myPublication:Publication"
-PR -> "myPublication:Publication": create(type, identifier, date, title, ...)
-activate "myPublication:Publication"
-"myPublication:Publication" --> PR: myPublication
-deactivate "myPublication:Publication"
+' --- Duplication check ---
+PR -> PR : contains(%n()newPublication)
 
-PR --> Ctl: myPublication
+note right PR: assuming happy path %n()where the above returns %n()**false**
+
+
+' --- Storage ---
+PR -> PR: add(newPublication)
+PR --> Ctl: newPublication
 deactivate PR
-Ctl --> UI: myPublication
+Ctl --> UI: newPublication
 deactivate Ctl
 
-UI --> User: done!
+UI --> User: You have %n()successfully %n()registered a %n()new publication.
 deactivate UI
 @enduml
