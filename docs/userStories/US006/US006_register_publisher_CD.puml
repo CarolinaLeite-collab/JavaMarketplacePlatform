@@ -19,13 +19,18 @@ class RegisterPublishingCompanyUI {
 }
 
 class RegisterPublishingCompanyController {
-- _publishingCompanyRepo: PublishingCompanyRepo
+- _iPublishingCompanyRepo: IPublishingCompanyRepo
 + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
 }
 
-class PublishingCompanyRepo {
+interface IPublishingCompanyRepo {
 + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
-- publishingCompanyExists(publishingCompanyName: String) : boolean
+}
+
+class MemoPublishingCompanyRepo {
+- _publishingCompanies: List<PublishingCompany>
+- _publishingCompanyFactory: PublishingCompanyFactory
++ registerPublishingCompany(name: String): PublishingCompany
 }
 
 class PublishingCompanyFactory {
@@ -38,8 +43,9 @@ class PublishingCompany {
 }
 
 RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
-RegisterPublishingCompanyController "1" ..> "1" PublishingCompanyRepo : calls
-PublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : uses
-PublishingCompanyFactory "1" --> "*" PublishingCompany : instantiates through
+RegisterPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : uses
+IPublishingCompanyRepo "1" ..|> "                           1" MemoPublishingCompanyRepo : calls
+MemoPublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : uses
+PublishingCompanyFactory "1" --> "*" PublishingCompany : creates
 
 @enduml
