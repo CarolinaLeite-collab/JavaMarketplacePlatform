@@ -1,7 +1,6 @@
 @startuml
 title "US023 - As a Buyer, I want to get the list of items on \ndirect sale of a given publication - CD"
 
-
 '==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
@@ -14,7 +13,7 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class UIGetDirectSaleItemsByPublication {
+class GetDirectSaleItemsByPublicationUI {
 
 }
 
@@ -22,12 +21,14 @@ class GetDirectSaleItemsByPublicationsController {
     + getDirectSaleItemsByPublication(publication : Publication) : List<Item>
 }
 
-class DirectSaleRepo {
-    + getDirectSaleItemsByPublication(publication : Publication) : List<Item>
+class MemoDirectSaleRepo {
+
+}
+
+interface IDirectSaleRepo {
 }
 
 class DirectSale {
-_item : Item
 + isByPublication(publication : Publication) : boolean
 + getItem() : Item
 }
@@ -40,11 +41,12 @@ class Publication {
 + equals(object : Object) : boolean
 }
 
-UIGetDirectSaleItemsByPublication "1" ..> "1" GetDirectSaleItemsByPublicationsController : uses
-GetDirectSaleItemsByPublicationsController "1" --> "_dsRepo 1" DirectSaleRepo : uses
-DirectSaleRepo "1" --> "_directSales *" DirectSale : manages
+GetDirectSaleItemsByPublicationUI "1" ..> "1" GetDirectSaleItemsByPublicationsController : invoke
+GetDirectSaleItemsByPublicationsController "1" ..> "1" IDirectSaleRepo : uses
+IDirectSaleRepo "1" <|.. "1" MemoDirectSaleRepo
+
+MemoDirectSaleRepo "1" --> "*" DirectSale : manages
 DirectSale "1" --> "1" Item : contains
 Item "1" --> "1" Publication : contains
-
 
 @enduml
