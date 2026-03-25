@@ -15,6 +15,7 @@ skinparam classAttributeIconSize 0
 
 ' ===== Classes =====
 class RegisterCityUI {
+}
 
 class RegisterCityController {
   + getAllCountries(): List<Country>
@@ -23,14 +24,11 @@ class RegisterCityController {
 
 interface ICityRepo {
   + registerCity(cityName : String, country : Country): City
-  + existsCityInACountry(cityName : String, country : Country): boolean
-  + getAll() : List<City>
 }
 
 class MemoCityRepo {
   + registerCity(cityName : String, country : Country): City
   + existsCityInACountry(cityName : String, country : Country): boolean
-  + getAll() : List<City>
 }
 
 class CityFactory {
@@ -40,12 +38,7 @@ class CityFactory {
 class City {
   -_name : String
   -_country : Country
-  + getName(): String
-  + getCountry() : Country
-  + equals() : boolean
-  + toString() : String
 }
-
 
 ' ===== CountryRepo =====
 interface ICountryRepo{
@@ -53,9 +46,7 @@ interface ICountryRepo{
 }
 
 class MemoCountryRepo {
-+ getAllCountries() :List<Country>
 }
-
 
 ' ===== Interactions =====
 RegisterCityUI "1" ..> "1" RegisterCityController : invokes

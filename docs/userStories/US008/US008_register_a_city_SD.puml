@@ -48,7 +48,7 @@ activate CTL
 CTL -> CityR: registerCity(cityName, country)
         activate CityR
 
-    opt existsCityInACountry(cityName, country) == false
+    opt existsCityInACountry(\n   cityName, country) == false
 
         CityR -> FCT: createCity(cityName, country)
         activate FCT
