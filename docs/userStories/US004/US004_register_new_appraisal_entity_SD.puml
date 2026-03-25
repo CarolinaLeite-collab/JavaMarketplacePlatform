@@ -1,5 +1,5 @@
 @startuml
-title US004 - "Register a new Appraisal Entity, including the genres and publication types it can appraise" - SSD
+title US004 - "Register a new Appraisal Entity, including the genres and publication types it can appraise" - SD
 hidefootbox
 
 '==== basic style ====
@@ -19,9 +19,9 @@ autonumber
 actor Administrator
 participant "UI1:RegisterNewAppraisalEntityUI" as UI
 participant "Ctl1:RegisterNewAppraisalEntityController" as ctl
-participant "_ptr:PublicationTypeRepo" as ptr
-participant "_gr:GenreRepo" as grRepo
-participant "_aer:AppraisalEntityRepo" as aeRepo
+participant "_ptr:IPublicationTypeRepo" as ptr
+participant "_gr:IGenreRepo" as grRepo
+participant "_aer:MemoAppraisalEntityRepo" as aeRepo
 participant "aef:AppraisalEntityFactory" as aeFactory
 
 Administrator -> UI: I want to register an Appraisal Entity
@@ -62,13 +62,13 @@ activate ctl
 ctl -> aeRepo: registerNewAppraisalEntity(name, publicationTypes, genres)
 activate aeRepo
 create "_listae:List <AppraisalEntity>"
-aeRepo -> "_listae:List <AppraisalEntity>": create()
+aeRepo -->> "_listae:List <AppraisalEntity>": <<Create>>
 
 opt appraisalEntityExists(name, publicationTypes, genres) == false
         aeRepo -> aeFactory: createAppraisalEntity(name, publicationTypes, genres)
         create "_AppraisalEntity:AppraisalEntity"
         activate aeFactory
-        aeFactory -> "_AppraisalEntity:AppraisalEntity": create(name, publicationTypes, genres)
+        aeFactory -->> "_AppraisalEntity:AppraisalEntity": <<Create>>
         aeFactory -> aeRepo: _AppraisalEntity
         deactivate aeFactory
         aeRepo -> "_listae:List <AppraisalEntity>":add(_AppraisalEntity)

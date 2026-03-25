@@ -19,7 +19,7 @@ class RegisterNewAppraisalEntityUI {
 }
 
 class RegisterNewAppraisalEntityController {
-- _appraisalEntityRepo : AppraisalEntityRepo
+- _appraisalEntityRepo : MemoAppraisalEntityRepo
 - _genreRepo : GenreRepo
 - _publicationTypeRepo : PublicationTypeRepo
 + registerNewAppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>) : AppraisalEntity
@@ -27,22 +27,24 @@ class RegisterNewAppraisalEntityController {
 + getGenres() : List<Genre>
 }
 
-class AppraisalEntityRepo {
+interface IAppraisalEntityRepo {
++ registerNewAppraisalEntity(name : Name, publicationTypes: List<PublicationType>, genres : List<Genre>) : AppraisalEntity
+}
+
+class MemoAppraisalEntityRepo {
 -_appraisalEntity : List<AppraisalEntity>
 - appraisalEntityExists(name:Name) : boolean
-+ registerNewAppraisalEntity(name : Name, publicationTypes: List<PublicationType>, genres : List<Genre>) : AppraisalEntity
 }
 
 class AppraisalEntityFactory {
 + createAppraisalEntity(name : Name, publicationTypes: List<PublicationType>, genres : List<Genre>) : AppraisalEntity
 }
-
-class GenreRepo {
+interface IGenreRepo {
 - _genre : List<Genre>
 + getAll() : List<Genre>
 }
 
-class PublicationTypeRepo {
+interface IPublicationTypeRepo {
 -_publicationType : List<PublicationType>
 + getAll() : List<PublicationType>
 }
@@ -55,10 +57,11 @@ class AppraisalEntity{
 }
 
 RegisterNewAppraisalEntityUI "1" ..> "1" RegisterNewAppraisalEntityController : uses
-RegisterNewAppraisalEntityController "1" ..> "1" GenreRepo : accesses
-RegisterNewAppraisalEntityController "1" ..> "1" PublicationTypeRepo : accesses
-RegisterNewAppraisalEntityController "1" ..> "1" AppraisalEntityRepo : uses
-AppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : uses
+RegisterNewAppraisalEntityController "1" ..> "1" IGenreRepo : accesses
+RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : accesses
+RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : uses
+IAppraisalEntityRepo "1" <|.. "1" MemoAppraisalEntityRepo
+MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : uses
 AppraisalEntityFactory "1" --> "*" AppraisalEntity : creates
 
 @enduml
