@@ -1,6 +1,8 @@
 @startuml
 title US016 – "As a User, I want to put for sale a publication in my library in an auction" %n() SD
 hide footbox
+autonumber
+autoactivate off
 
 skinparam monochrome false
 skinparam shadowing false
@@ -12,73 +14,89 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
-autonumber
-
+' ==== Actor and participants ====
 actor "User" as User
 participant "UI:PublicationSaleAuctionUI" as UI
 participant "Ctl:PublicationSaleAuctionController" as Controller
-participant "_lr:LibraryRepo" as LibraryRepo
-participant "userLibrary: Library" as userLibrary
-participant "_ar:AuctionRepo" as AuctionRepo
-participant "_af:AuctionFactory" as AuctionFactory
-participant "selectedItem:Item" as selectedItem
-participant "newAuction: Auction" as newAuction
+participant ":ILibraryRepo" as ILibraryRepo
+participant ":MemoLibraryRepo" as MemoLibrary
+participant ":IAuctionRepo" as IAuctionRepo
+participant ":MemoAuctionRepo" as MemoAuction
+participant ":AuctionFactory" as AuctionFactory
+participant "item:Item" as selectedItem
+participant "auction:Auction" as newAuction
 
+'==== Initial UI interaction ====
 User -> UI : I want to put an item from my library\nfor sale in an auction
 activate UI
 
+'==== Get the list of items in the user's library ====
 UI -> Controller : getLibraryItemsList(user)
 activate Controller
 
-Controller -> LibraryRepo : findLibraryByUser(user)
-activate LibraryRepo
-LibraryRepo --> Controller : userLibrary
-deactivate LibraryRepo
+Controller -> ILibraryRepo : getItemsInLibraryByUser \n(userID)
+activate ILibraryRepo
 
-Controller -> userLibrary : getItemsInLibrary()
-activate userLibrary
-userLibrary --> Controller : itemsList
-deactivate userLibrary
+ILibraryRepo -> MemoLibrary : getItemsInLibraryByUser \n(userID)
+activate MemoLibrary
+
+MemoLibrary --> ILibraryRepo : ListOfItemsInUserLibrary
+deactivate MemoLibrary
+
+ILibraryRepo --> Controller : ListOfItemsInUserLibrary
+deactivate ILibraryRepo
 
 Controller --> UI : itemsList
 deactivate Controller
 
+'==== User selects the item and provides necessary details ====
 UI --> User : Select the item to sell
 deactivate UI
+
 User -> UI : selectedItem
 activate UI
 
 UI --> User : Provide auction details
 deactivate UI
+
 User -> UI : startPrice, startDate, endDate
 activate UI
 
+'==== Put item up for auction ====
 UI -> Controller : putItemOnAuction(selectedItem,\nstartPrice, startDate, endDate)
 activate Controller
 
+Controller -> IAuctionRepo : addAuction(selectedItem, \nstartPrice, startDate, endDate)
+activate IAuctionRepo
 
-Controller -> AuctionRepo : createAuction(selectedItem, startPrice, startDate, endDate)
-activate AuctionRepo
+IAuctionRepo -> MemoAuction : addAuction(selectedItem, \nstartPrice, startDate, endDate)
+activate MemoAuction
 
-AuctionRepo -> AuctionFactory : createAuction(selectedItem, startPrice, startDate, endDate)
+MemoAuction -> AuctionFactory : createAuction(selectedItem, \nstartPrice, startDate, endDate)
 activate AuctionFactory
 create newAuction
-AuctionFactory --> newAuction : create()
-AuctionFactory --> AuctionRepo : newAuction
+
+AuctionFactory -->> newAuction : <<create>>
+AuctionFactory --> MemoAuction : auction
 deactivate AuctionFactory
 
-AuctionRepo --> Controller : newAuction
-deactivate AuctionRepo
+MemoAuction --> IAuctionRepo : auction
+deactivate MemoAuction
 
-Controller -> selectedItem : setAuction(newAuction)
+IAuctionRepo --> Controller : auction
+deactivate IAuctionRepo
+
+Controller -> selectedItem : setAuction(auction)
 activate selectedItem
+
 selectedItem --> Controller : ok
 deactivate selectedItem
 
-Controller --> UI : newAuction
+Controller --> UI : ok
 deactivate Controller
 
-UI --> User : Item successfully put on auction
+'==== Return message ====
+UI --> User : Item successfully put up for auction
 deactivate UI
 
 @enduml
