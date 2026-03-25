@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 
@@ -6,7 +8,7 @@ import java.util.Objects;
  * Phone country/area prefix normalized to leading '+' and 1–3 digits
  * * @param rawPrefix user input representing a country or region dial code
  */
-public class PhonePrefix {
+public class PhonePrefix implements ValueObject {
 
     private final String _value;
 

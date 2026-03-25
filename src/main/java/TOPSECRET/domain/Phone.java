@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.PhonePrefix;
+
 /**
  * Phone number composed of a {@link PhonePrefix} and a national number.
  * The national number is normalized to digits only (4–12 digits).
