@@ -15,20 +15,23 @@ import java.util.Set;
  * {@link Email} (see {@link #equals(Object)} and {@link #hashCode()}).</p>
  */
 
-public class User implements DomainEntity<Email> {
+public class User implements DomainEntity<UserID> {
 
     private final Name _name;
     private final Address _address;
     private final Email _email;
+    private final UserID _userId;
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
     //package-private - only UserFactory creates
     User(Name name, Address address, Email email, Phone phone) {
 
+
         _name = Objects.requireNonNull(name, "Name is required");
         _address = address;
         _email = Objects.requireNonNull(email, "Email is required");
+        _userId = new UserID(_email);
         _phone = phone;
         _roles.add(Role.USER); // default role
     }
@@ -75,8 +78,8 @@ public class User implements DomainEntity<Email> {
     }
 
     @Override
-    public Email identity() {
-        return _email;
+    public UserID identity() {
+        return _userId;
     }
 
     @Override

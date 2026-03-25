@@ -10,14 +10,12 @@ import static org.mockito.Mockito.when;
 class UserTest {
     private Name _nameDouble;
     private Address _addressDouble;
-    private Email _emailDouble;
     private Phone _phoneDouble;
 
     @BeforeEach
     void setUp() {
         _nameDouble = mock(Name.class);
         _addressDouble = mock(Address.class);
-        _emailDouble = mock(Email.class);
         _phoneDouble = mock(Phone.class);
     }
 
@@ -25,10 +23,11 @@ class UserTest {
     void constructorWithValidArgumentsCreatesUser() {
 
         // Arrange
-        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
+        Email emailDouble = mock(Email.class);
+        when(emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
 
         // Act & SUT
-        User user = new User(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+        User user = new User(_nameDouble, _addressDouble, emailDouble, _phoneDouble);
 
         // Assert
         assertEquals(_nameDouble, user.getName());
@@ -40,15 +39,21 @@ class UserTest {
     @Test
     void constructorShouldThrowExceptionWhenNameIsNull() {
 
+        // Arrange
+        Email emailDouble = mock(Email.class);
+
         // Act & Assert & SUT
-        assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, _emailDouble, _phoneDouble));
+        assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, emailDouble, _phoneDouble));
     }
 
     @Test
     void constructorShouldAllowNullAddress() {
 
+        // Arrange
+        Email emailDouble = mock(Email.class);
+
        // Act & Assert & SUT
-        assertDoesNotThrow (() -> new User(_nameDouble, null, _emailDouble, _phoneDouble));
+        assertDoesNotThrow (() -> new User(_nameDouble, null, emailDouble, _phoneDouble));
     }
 
     @Test
@@ -61,18 +66,22 @@ class UserTest {
     @Test
     void constructorShouldAllowNullPhoneNumber() {
 
+        // Arrange
+        Email emailDouble = mock(Email.class);
+
         // Act & Assert & SUT
-        assertDoesNotThrow (() -> new User(_nameDouble, _addressDouble, _emailDouble, null));
+        assertDoesNotThrow (() -> new User(_nameDouble, _addressDouble, emailDouble, null));
     }
 
     @Test
     void constructorShouldBuildUserWithNameAndEmail() {
 
         // Arrange
-        when(_emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
+        Email emailDouble = mock(Email.class);
+        when(emailDouble.toString()).thenReturn("1252008@isep.ipp.pt");
 
         // Act & SUT
-        User user = new User(_nameDouble, null, _emailDouble, null);
+        User user = new User(_nameDouble, null, emailDouble, null);
 
         // Assert
         assertEquals(_nameDouble, user.getName());
@@ -85,10 +94,11 @@ class UserTest {
     void toStringShouldReturnName() {
 
         // Arrange
+        Email emailDouble = mock(Email.class);
         when(_nameDouble.toString()).thenReturn("Tiago");
-        User user = new User(_nameDouble, _emailDouble);
+        User user = new User(_nameDouble, emailDouble); // SUT
 
-        // Act & SUT
+        // Act
         String userName = user.toString();
 
         // Assert
@@ -102,13 +112,14 @@ class UserTest {
         Name nameDouble = mock(Name.class);
         Name nameDouble2 = mock(Name.class);
         Name nameDouble3 = mock(Name.class);
+        Email emailDouble = mock(Email.class);
         Email emailDouble2 = mock(Email.class);
 
         String u4 = "user";
 
         // SUT
-        User u1 = new User(nameDouble, _emailDouble);
-        User u2 = new User(nameDouble2, _emailDouble);
+        User u1 = new User(nameDouble, emailDouble);
+        User u2 = new User(nameDouble2, emailDouble);
         User u3 = new User(nameDouble3, emailDouble2);
 
         // Assert & Act
@@ -125,9 +136,9 @@ class UserTest {
 
         // Arrange
         Name nameDouble2 = mock(Name.class);
-        Email emailDouble2 = mock(Email.class);
-        User user1 = new User(_nameDouble, emailDouble2);
-        User user2 = new User(nameDouble2, emailDouble2);
+        Email emailDouble = mock(Email.class);
+        User user1 = new User(_nameDouble, emailDouble);
+        User user2 = new User(nameDouble2, emailDouble);
 
         // Act & SUT
         int hash1 = user1.hashCode();
@@ -143,10 +154,11 @@ class UserTest {
 
         // Arrange
         Name nameDouble2 = mock(Name.class);
+        Email emailDouble = mock(Email.class);
         Email emailDouble2 = mock(Email.class);
 
         // SUT
-        User user1 = new User(_nameDouble, _emailDouble);
+        User user1 = new User(_nameDouble, emailDouble);
         User user2 = new User(nameDouble2, emailDouble2);
 
         // Act
@@ -162,7 +174,8 @@ class UserTest {
     void constructorShouldAssignDefaultUserRole() {
 
         // Arrange & SUT
-        User user = new User(_nameDouble, _emailDouble);
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble);
 
         // Act
         boolean hasUserRole = user.hasRole(Role.USER);
@@ -177,7 +190,8 @@ class UserTest {
     void addRoleShouldAddAdminRoleWithoutRemovingDefaultUserRole() {
 
         // Arrange & SUT
-        User user = new User(_nameDouble, _emailDouble);
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble);
 
         // Act
         user.addRole(Role.ADMIN);
@@ -192,7 +206,8 @@ class UserTest {
     void hasRoleShouldReturnFalseWhenUserDoesNotHaveAdminRole() {
 
         // Arrange & SUT
-        User user = new User(_nameDouble, _emailDouble);
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble);
 
         // Act
         boolean result = user.hasRole(Role.ADMIN);
@@ -205,9 +220,102 @@ class UserTest {
     void addRoleShouldThrowWhenRoleIsNull() {
 
         // Arrange & SUT
-        User user = new User(_nameDouble, _emailDouble);
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble);
 
         // Act & Assert
         assertThrows(NullPointerException.class, () -> user.addRole(null));
+    }
+
+    @Test
+    void hasEmailShouldReturnTrueWhenEmailMatches() {
+
+        // Arrange
+        // Arrange
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble); // SUT
+
+        // Act
+        boolean result = user.hasEmail(emailDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void hasEmailShouldReturnFalseWhenEmailDoesNotMatch() {
+
+        // Arrange
+        Email emailDouble = mock(Email.class);
+        Email otherEmailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble); // SUT
+
+        // Act
+        boolean result = user.hasEmail(otherEmailDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void identityShouldReturnUserIDBasedOnEmail() {
+
+        // Arrange
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble); // SUT
+
+        // Act
+        UserID identity = user.identity();
+
+        // Assert
+        assertNotNull(identity);
+    }
+
+    @Test
+    void sameAsShouldReturnTrueWhenSameEmail() {
+
+        // Arrange
+        Name otherNameDouble = mock(Name.class);
+        Email emailDouble = mock(Email.class);
+        User user1 = new User(_nameDouble, emailDouble); // SUT
+        User user2 = new User(otherNameDouble, emailDouble);
+
+        // Act
+        boolean result = user1.sameAs(user2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentEmail() {
+
+        // Arrange
+        Name otherNameDouble = mock(Name.class);
+        Email emailDouble = mock(Email.class);
+        Email otherEmailDouble = mock(Email.class);
+        User user1 = new User(_nameDouble, emailDouble); // SUT
+        User user2 = new User(otherNameDouble, otherEmailDouble);
+
+        // Act
+        boolean result = user1.sameAs(user2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenObjectIsNotUser() {
+
+        // Arrange
+        Email emailDouble = mock(Email.class);
+        User user = new User(_nameDouble, emailDouble); // SUT
+        String notAUser = "not a user";
+
+        // Act
+        boolean result = user.sameAs(notAUser);
+
+        // Assert
+        assertFalse(result);
     }
 }
