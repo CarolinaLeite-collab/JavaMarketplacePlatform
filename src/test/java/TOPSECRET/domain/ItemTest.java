@@ -255,4 +255,83 @@ class ItemTest {
 
         assertNotEquals(item, "not-an-item");
     }
+
+    // -------------
+    // Is by Author
+    // -------------
+
+    @Test
+    void isByAuthorReturnsTrueWhenPublicationMatches() {
+        Author author = new Author("Maria");
+        Publication pub = mock(Publication.class);
+        when(pub.isByAuthor(author)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByAuthor(author));
+    }
+
+    @Test
+    void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
+        Author author = new Author("Maria");
+        Publication pub = mock(Publication.class);
+        when(pub.isByAuthor(author)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByAuthor(author));
+    }
+
+    // --------------------
+    // Is By Genre
+    // --------------------
+
+    @Test
+    void isByGenreReturnsTrueWhenPublicationMatches() {
+        Genre genre = mock(Genre.class);
+        Publication pub = mock(Publication.class);
+        when(pub.isByGenre(genre)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByGenre(genre));
+    }
+
+    @Test
+    void isByGenreReturnsFalseWhenPublicationDoesNotMatch() {
+        Genre genre = mock(Genre.class);
+        Publication pub = mock(Publication.class);
+        when(pub.isByGenre(genre)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByGenre(genre));
+    }
+
+    // ------------------------------
+    // Is by PublishingCompany
+    // ------------------------------
+
+    @Test
+    void isByPublishingCompanyReturnsTrueWhenPublicationMatches() {
+        PublishingCompany pc = new PublishingCompany("Penguin");
+        Publication pub = mock(Publication.class);
+        when(pub.isByPublishingCompany(pc)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByPublishingCompany(pc));
+    }
+
+    @Test
+    void isByPublishingCompanyReturnsFalseWhenPublicationDoesNotMatch() {
+        PublishingCompany pc = new PublishingCompany("Penguin");
+        Publication pub = mock(Publication.class);
+        when(pub.isByPublishingCompany(pc)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByPublishingCompany(pc));
+    }
+
 }
