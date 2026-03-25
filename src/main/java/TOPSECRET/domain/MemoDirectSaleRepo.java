@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
+
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;

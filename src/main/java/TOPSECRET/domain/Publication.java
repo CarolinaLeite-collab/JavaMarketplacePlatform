@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;

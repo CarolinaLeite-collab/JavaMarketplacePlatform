@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
