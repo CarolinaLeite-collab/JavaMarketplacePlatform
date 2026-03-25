@@ -15,39 +15,25 @@ import java.util.Objects;
  * </p>
  */
 
-public class AuctionRepo {
+public class MemoAuctionRepo implements IAuctionRepo {
 
     private final List<Auction> itemsOnAuction;
     private final AuctionFactory auctionFactory;
 
-    public AuctionRepo() {
+    public MemoAuctionRepo() {
         this(new AuctionFactory());
     }
 
 
-    AuctionRepo(AuctionFactory auctionFactory) {
+    MemoAuctionRepo(AuctionFactory auctionFactory) {
         this.itemsOnAuction = new ArrayList<>();
         this.auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
     }
 
-    public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
         try {
-            Auction auction = auctionFactory.createAuction(item, startingPrice, auctionStartDate, auctionEndDate);
-            itemsOnAuction.add(auction);
-            return auction;
-        } catch (InstantiationException ex) {
-            if (ex.getCause() instanceof IllegalStateException) {
-                throw (IllegalStateException) ex.getCause();
-            }
-            throw new IllegalArgumentException("Unable to create auction: " + ex.getMessage(), ex);
-        }
-    }
-
-    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        try {
-            Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+            Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
             itemsOnAuction.add(auction);
             return auction;
         } catch (InstantiationException ex) {
@@ -59,7 +45,6 @@ public class AuctionRepo {
     }
 
     public List<Item> getAuctionItemsByGenre(Genre genre) {
-
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
