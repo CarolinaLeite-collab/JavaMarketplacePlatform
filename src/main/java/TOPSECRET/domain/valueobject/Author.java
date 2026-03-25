@@ -1,11 +1,13 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Author is the person who originates, creates, and writes a literary work.
  * The same name can mean different authors.
  */
 
-public class Author {
+public class Author implements ValueObject {
     private String _name;
 
     Author (String name) {
