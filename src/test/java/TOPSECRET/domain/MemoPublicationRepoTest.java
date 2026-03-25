@@ -12,9 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PublicationRepoTest {
+class MemoPublicationRepoTest {
 
-    private PublicationRepo _publicationRepo;
+    private MemoPublicationRepo _publicationRepo;
     private PublicationFactory _publicationFactoryDouble;
 
     // Mocks for factory arguments
@@ -30,7 +30,7 @@ class PublicationRepoTest {
     @BeforeEach
     void setUp() {
         _publicationFactoryDouble = mock(PublicationFactory.class);
-        _publicationRepo = new PublicationRepo(_publicationFactoryDouble); //SUT
+        _publicationRepo = new MemoPublicationRepo(_publicationFactoryDouble); //SUT
 
         _typeDouble = mock(PublicationType.class);
         _identifierDouble = mock(Identifier.class);
@@ -136,7 +136,7 @@ class PublicationRepoTest {
     void getPublicationThrowsWhenNull() {
         //Arrange
         PublicationFactory _publicationFactoryDouble = mock(PublicationFactory.class);
-        PublicationRepo repo = new PublicationRepo(_publicationFactoryDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         //Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
