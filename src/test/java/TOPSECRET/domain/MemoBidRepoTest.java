@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class BidRepoTest {
-    private BidRepo bidRepo;
+class MemoBidRepoTest {
+    private MemoBidRepo bidRepo;
     private BidFactory bidFactoryDouble;
 
     @Test
     void shouldSuccessfullyCreateBid(){
         //arrange
         bidFactoryDouble = mock(BidFactory.class);
-        bidRepo = new BidRepo(bidFactoryDouble);
+        bidRepo = new MemoBidRepo(bidFactoryDouble);
 
         User bidderDouble = mock(User.class);
         Price offerPriceDouble = mock(Price.class);
@@ -38,7 +38,7 @@ class BidRepoTest {
     void getHighestBidFail_EmptyBidList() {
         //arrange
         bidFactoryDouble = mock(BidFactory.class);
-        bidRepo = new BidRepo(bidFactoryDouble);
+        bidRepo = new MemoBidRepo(bidFactoryDouble);
 
         //act + assert
         Assertions.assertThrows(IllegalStateException.class, () -> bidRepo.getHighestBid());
@@ -48,7 +48,7 @@ class BidRepoTest {
     void getHighestBid_SingleBid() {
         //arrange
         bidFactoryDouble = mock(BidFactory.class);
-        bidRepo = new BidRepo(bidFactoryDouble);
+        bidRepo = new MemoBidRepo(bidFactoryDouble);
 
         Price priceDouble = mock(Price.class);
         when(priceDouble.getValue()).thenReturn(100.0);
@@ -80,7 +80,7 @@ class BidRepoTest {
         when(bidDouble2.getOfferPrice()).thenReturn(priceDouble1);
 
         // SUT
-        BidRepo bidRepo = new BidRepo(bidFactoryDouble);
+        MemoBidRepo bidRepo = new MemoBidRepo(bidFactoryDouble);
 
         // Act
         bidRepo.addBid(bidDouble1);
@@ -96,7 +96,7 @@ class BidRepoTest {
     void getHighestBid_MultipleBids_lastHighest() {
         //arrange
         bidFactoryDouble = mock(BidFactory.class);
-        bidRepo = new BidRepo(bidFactoryDouble);
+        bidRepo = new MemoBidRepo(bidFactoryDouble);
 
         Price priceDouble1 = mock(Price.class);
         when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);
