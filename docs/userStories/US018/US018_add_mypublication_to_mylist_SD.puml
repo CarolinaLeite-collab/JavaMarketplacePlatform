@@ -19,8 +19,8 @@ autoactivate off
 
 actor User
 participant "UI1:AddPublicationToListUI" as UI
-participant "Ctl1:AddPublicationToListController" as Ctl
-participant "_lr:IListOfPublicationsRepo" as ListRepo
+participant "Ctl1:AddPublication\nToListController" as Ctl
+participant "_lr:IListOfPublications\nRepo" as ListRepo
 participant "_lr:ILibraryRepo" as LibraryRepo
 participant "myLibrary:Library" as myLibrary
 participant "_lop:ListOfPublications" as ListOfPublications
