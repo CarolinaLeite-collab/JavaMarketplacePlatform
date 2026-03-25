@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PublishingCompanyRepoTest {
+class MemoPublishingCompanyRepoTest {
 
     private PublishingCompanyFactory _pcfDouble;
 
@@ -22,7 +22,7 @@ class PublishingCompanyRepoTest {
     void shouldCreatePublishingCompanyRepo() {
 
         //Act
-        PublishingCompanyRepo repo = new PublishingCompanyRepo(_pcfDouble);
+        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
 
         //Assert
         assertNotNull(repo);
@@ -38,7 +38,7 @@ class PublishingCompanyRepoTest {
         String publishingCompanyName = "TASCHEN";
 
         //SUT
-        PublishingCompanyRepo _repo = new PublishingCompanyRepo(_pcfDouble);
+        MemoPublishingCompanyRepo _repo = new MemoPublishingCompanyRepo(_pcfDouble);
 
         //Act
         PublishingCompany _pubCompanyResult = _repo.registerPublishingCompany(publishingCompanyName);
@@ -60,7 +60,7 @@ class PublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany("TASCHEN")).thenReturn(pc1, pc2);
 
         //SUT
-        PublishingCompanyRepo repo = new PublishingCompanyRepo(_pcfDouble);
+        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(publishingCompanyName);

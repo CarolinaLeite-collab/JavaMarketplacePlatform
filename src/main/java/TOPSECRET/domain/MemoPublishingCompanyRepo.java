@@ -10,17 +10,18 @@ import java.util.List;
  * and ensures that duplicate entities are not added to the repository.
  */
 
-public class PublishingCompanyRepo {
+public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     private final List<PublishingCompany> _publishingCompany = new ArrayList<>();
     private final PublishingCompanyFactory _publishingCompanyFactory;
 
-    public PublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
+    public MemoPublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
 
         _publishingCompanyFactory = publishingCompanyFactory;
 
     }
 
+    @Override
     public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
 
         if (publishingCompanyExists(publishingCompanyName)) {
