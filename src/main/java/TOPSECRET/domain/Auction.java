@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
+
 import java.time.ZonedDateTime;
 
 /**

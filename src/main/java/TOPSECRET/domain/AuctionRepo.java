@@ -1,4 +1,6 @@
 package TOPSECRET.domain;
+import TOPSECRET.domain.valueobject.Author;
+
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;

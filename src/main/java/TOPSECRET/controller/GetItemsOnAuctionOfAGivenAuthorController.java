@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.AuctionRepo;
 import TOPSECRET.domain.User;
