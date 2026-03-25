@@ -10,7 +10,7 @@ import java.util.List;
  * Controller orchestrating the registration of new {@link AppraisalEntity} instances as part
  * of US004 requirements.
  * <p>
- * Coordinates between {@link GenreRepo}, {@link IPublicationTypeRepo}, and {@link AppraisalEntityRepo}
+ * Coordinates between {@link GenreRepo}, {@link IPublicationTypeRepo}, and {@link IAppraisalEntityRepo}
  * to provide data for UI and create appraisal entities with their specialized genres
  * and publication types.
  *
@@ -18,11 +18,15 @@ import java.util.List;
  */
 
 public class RegisterNewAppraisalEntityController {
-    private AppraisalEntityRepo _appraisalEntityRepo;
+    private IAppraisalEntityRepo _appraisalEntityRepo;
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
+<<<<<<< Updated upstream
     public RegisterNewAppraisalEntityController(AppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo genreRepo){
+=======
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, GenreRepo genreRepo){
+>>>>>>> Stashed changes
         _appraisalEntityRepo = appraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
         _iGenreRepo = genreRepo;

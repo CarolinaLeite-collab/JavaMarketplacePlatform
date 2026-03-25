@@ -21,7 +21,7 @@ class RegisterNewAppraisalEntityControllerTest {
     private IPublicationTypeRepo _iTypeRepo;
     private List<PublicationType> _publicationTypes;
     private PublicationType _publicationTypeDouble;
-    private AppraisalEntityRepo _entityRepoDouble;
+    private IAppraisalEntityRepo _entityRepoDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException{
@@ -43,7 +43,7 @@ class RegisterNewAppraisalEntityControllerTest {
 
         _appraisalEntityDouble = mock(AppraisalEntity.class);
 
-        _entityRepoDouble = mock (AppraisalEntityRepo.class);
+        _entityRepoDouble = mock (IAppraisalEntityRepo.class);
         when(_entityRepoDouble.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_appraisalEntityDouble);
 
     }

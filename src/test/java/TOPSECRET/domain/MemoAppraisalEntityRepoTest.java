@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class AppraisalEntityRepoTest {
+class MemoAppraisalEntityRepoTest {
 
     private AppraisalEntity _entityDouble;
     private AppraisalEntityFactory _factoryDouble;
@@ -52,7 +52,7 @@ class AppraisalEntityRepoTest {
         when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entityDouble);
 
         // SUT
-        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_factoryDouble);
 
         // act
         AppraisalEntity entity = repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
@@ -78,7 +78,7 @@ class AppraisalEntityRepoTest {
         when(_factoryDouble.createAppraisalEntity(_otherNameDouble, _publicationTypes, _genres)).thenReturn(_otherEntityDouble);
 
         // SUT
-        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_factoryDouble);
 
         // act
         repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
@@ -97,7 +97,7 @@ class AppraisalEntityRepoTest {
         when(_factoryDouble.createAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_entityDouble);
 
         //SUT
-        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_factoryDouble);
 
         // act
         repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
@@ -122,7 +122,7 @@ class AppraisalEntityRepoTest {
         when(_factoryDouble.createAppraisalEntity(_nameDouble, typesCopy, genresCopy)).thenReturn(_entityDouble1);
 
         // SUT
-        AppraisalEntityRepo repo = new AppraisalEntityRepo(_factoryDouble);
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_factoryDouble);
 
         // act
         AppraisalEntity entity = repo.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);

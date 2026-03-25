@@ -14,11 +14,11 @@ import java.util.List;
  * @see AppraisalEntity
  */
 
-public class AppraisalEntityRepo {
+public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
     private final List<AppraisalEntity> _appraisalEntities;
     private AppraisalEntityFactory _factoryAppraisalEntity;
 
-    public AppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
+    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
         _appraisalEntities = new ArrayList<>();
         _factoryAppraisalEntity = factoryAppraisalEntity;
     }
@@ -32,6 +32,7 @@ public class AppraisalEntityRepo {
         return false;
     }
 
+    @Override
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
 
         if (appraisalEntityExists(name)) {
