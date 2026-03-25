@@ -22,9 +22,11 @@ class GetAuctionItemsByGenreController {
      +getAuctionItemsByGenre(genre: Genre): List<Item>
 }
 
-class AuctionRepo {
-
+interface IAuctionRepo {
     +getAuctionItemsByGenre(genre: Genre): List<Item>
+}
+
+class MemoAuctionRepo {
 }
 
 class Auction {
@@ -32,8 +34,9 @@ class Auction {
 }
 
 getAuctionItemsUI "1"..>"1" GetAuctionItemsByGenreController:uses
-GetAuctionItemsByGenreController "1"..> "1"AuctionRepo : uses
-AuctionRepo "1" --> "*"Auction
+GetAuctionItemsByGenreController "1"..> "1" IAuctionRepo : uses
+IAuctionRepo <|.. MemoAuctionRepo
+MemoAuctionRepo "1" --> "*"Auction
 
 
 @enduml
