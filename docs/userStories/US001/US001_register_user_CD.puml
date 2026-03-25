@@ -24,7 +24,7 @@ Interface IUserRepo {
 
 class MemoUserRepo{
 - _users: List<User>
-  + registerNewUser(name: String, email: String): User
+
   - userExists(email: Email): boolean
 }
 
@@ -50,7 +50,7 @@ class Email {
 
 RegisterNewUserUI "1" ..> "1" RegisterNewUserController : invokes
 RegisterNewUserController "1" ..> "1" IUserRepo : uses
-MemoUserRepo "1" ..|> "1" IUserRepo
+MemoUserRepo  ..|>  IUserRepo
 MemoUserRepo "1" --> "1" UserFactory : uses
 UserFactory "1" --> "*" User : instantiates
 User "1" --> "1" Name : has
