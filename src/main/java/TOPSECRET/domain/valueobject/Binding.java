@@ -1,10 +1,12 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Binding enum represents types of book/magazine bindings.
  */
 
-public enum Binding {
+public enum Binding implements ValueObject {
 
     //Enum values can't have spaces; displayName provides a human-readable text
     PUR("PUR binding"),
