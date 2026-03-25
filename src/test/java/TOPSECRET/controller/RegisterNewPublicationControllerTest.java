@@ -16,7 +16,7 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationCallsRepoWithCorrectArguments() {
         //arrange
-        PublicationRepo _publicationRepo = mock(PublicationRepo.class);
+        IPublicationRepo _publicationRepo = mock(IPublicationRepo.class);
         PublicationType _typeDouble = mock(PublicationType.class);
         Identifier _identifierDouble = mock(Identifier.class);
         Year _yearDouble = mock(Year.class);
@@ -44,7 +44,7 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationThrowsWhenRepoThrows() {
         //arrange
-        PublicationRepo repoDouble = mock(PublicationRepo.class);
+        IPublicationRepo repoDouble = mock(IPublicationRepo.class);
         when(repoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
