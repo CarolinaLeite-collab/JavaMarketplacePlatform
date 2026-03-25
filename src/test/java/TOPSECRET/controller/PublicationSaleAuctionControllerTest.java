@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 
 class PublicationSaleAuctionControllerTest {
 
-    private LibraryRepo _libraryRepoDouble;
+    private ILibraryRepo _libraryRepoDouble;
     private IAuctionRepo _iAuctionRepoDouble;
     private Library _userLibraryDouble;
     private Library _libraryDouble2;
@@ -27,7 +27,7 @@ class PublicationSaleAuctionControllerTest {
 
     @BeforeEach
     void setUp() {
-        _libraryRepoDouble = mock(LibraryRepo.class);
+        _libraryRepoDouble = mock(ILibraryRepo.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
         _userDouble = mock(User.class);
         _userLibraryDouble = mock(Library.class);

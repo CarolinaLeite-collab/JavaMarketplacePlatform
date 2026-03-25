@@ -15,17 +15,18 @@ import java.util.List;
  * </p>
  */
 
-public class LibraryRepo {
+public class MemoLibraryRepo implements ILibraryRepo {
 
     private List<Library> _libraries;
     private LibraryFactory _libraryFactory;
 
 
-    public LibraryRepo(LibraryFactory libraryFactory) {
+    public MemoLibraryRepo(LibraryFactory libraryFactory) {
         _libraryFactory = libraryFactory;
         _libraries = new ArrayList<>();
     }
 
+    @Override
     public Library addLibrary(User user){
         if (libraryExists(user)) {
 
@@ -52,6 +53,7 @@ public class LibraryRepo {
         return false;
     }
 
+    @Override
     public Library findLibraryByUser(User user){
 
         for (Library lib : _libraries){
@@ -63,6 +65,7 @@ public class LibraryRepo {
         throw new IllegalStateException("Library not found for user: " + user.toString());
     }
 
+    @Override
     public List<Item> getItemsInLibraryByUser(User user) {
 
         Library userLibrary = findLibraryByUser(user);

@@ -6,17 +6,17 @@ import java.util.List;
 /**
  * Controller responsible for handling the addition of publications to a user's library.
  * <p>
- * This controller interacts with the {@link PublicationRepo} and {@link LibraryRepo}
+ * This controller interacts with the {@link PublicationRepo} and {@link ILibraryRepo}
  * to retrieve available publications and to add selected publications to a user's library.
  * </p>
  */
 
 public class AddPublicationOnLibraryController {
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
     private final Library _library;
     private final ItemRepo _itemRepo;
 
-    public AddPublicationOnLibraryController(LibraryRepo libraryRepo, Library library, ItemRepo itemRepo) {
+    public AddPublicationOnLibraryController(ILibraryRepo libraryRepo, Library library, ItemRepo itemRepo) {
         _libraryRepo = libraryRepo;
         _library = library;
         _itemRepo = itemRepo;

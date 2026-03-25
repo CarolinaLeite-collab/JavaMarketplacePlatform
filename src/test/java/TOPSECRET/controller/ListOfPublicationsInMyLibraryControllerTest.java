@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 class ListOfPublicationsInMyLibraryControllerTest {
     private User _userDouble;
-    private LibraryRepo _libraryRepoDouble;
+    private ILibraryRepo _libraryRepoDouble;
     private Library _myLibraryDouble;
     private Item _itemDouble;
 
@@ -23,7 +23,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
 
         _itemDouble = mock(Item.class);
 
-        _libraryRepoDouble = mock(LibraryRepo.class);
+        _libraryRepoDouble = mock(ILibraryRepo.class);
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
     }
 

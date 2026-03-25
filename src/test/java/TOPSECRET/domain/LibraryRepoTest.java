@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link LibraryRepo}.
+ * Unit tests for {@link MemoLibraryRepo}.
  *
  * <p>The following Mockito doubles are used:
  * <ul>
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
  * </ul>
  */
 
-class LibraryRepoTest {
+class MemoLibraryRepoTest {
 
     private User _userDouble;
     private LibraryFactory _libraryFactoryDouble;
@@ -35,7 +35,7 @@ class LibraryRepoTest {
     void addLibraryShouldReturnLibrary() {
 
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
@@ -51,7 +51,7 @@ class LibraryRepoTest {
     void addLibraryShouldThrowAnExceptionWhenLibraryAlreadyExists() {
 
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
@@ -67,7 +67,7 @@ class LibraryRepoTest {
     void findLibraryByUserShouldReturnLibraryWhenExists() {
 
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
@@ -84,7 +84,7 @@ class LibraryRepoTest {
     @Test
     void addLibraryShouldSucceedWhenOtherUserAlreadyHasLibrary() {
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         User otherUserDouble = mock(User.class);
         Library libraryDouble = mock(Library.class);
 
@@ -108,7 +108,7 @@ class LibraryRepoTest {
     void findLibraryByUserShouldThrowExceptionWhenLibraryDoesNotExist() {
 
         // Arrange
-        LibraryRepo libraryRepo = new LibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
 
         // Act & Assert
         assertThrows(IllegalStateException.class,

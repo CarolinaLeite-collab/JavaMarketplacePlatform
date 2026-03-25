@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Controller responsible for handling the addition of new items to a list.
  * <p>
- * This controller interacts with the {@link ListOfPublicationsRepo} and {@link LibraryRepo}
+ * This controller interacts with the {@link ListOfPublicationsRepo} and {@link ILibraryRepo}
  * to retrieve available publications and to add selected publications to a user's list.
  * </p>
  */
@@ -15,9 +15,9 @@ import java.util.List;
 public class AddPublicationToListController {
 
     private final ListOfPublicationsRepo _listRepo;
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
 
-    public AddPublicationToListController(ListOfPublicationsRepo listRepo, LibraryRepo libraryRepo) {
+    public AddPublicationToListController(ListOfPublicationsRepo listRepo, ILibraryRepo libraryRepo) {
 
         _listRepo = listRepo;
         _libraryRepo = libraryRepo;

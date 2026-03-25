@@ -15,11 +15,11 @@ import java.util.List;
 
 public class PublicationSaleAuctionController {
 
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
     private final IAuctionRepo _iAuctionRepo;
     private final Library _library;
 
-    public PublicationSaleAuctionController(LibraryRepo libraryRepo, IAuctionRepo iAuctionRepo, Library library) {
+    public PublicationSaleAuctionController(ILibraryRepo libraryRepo, IAuctionRepo iAuctionRepo, Library library) {
         if (libraryRepo == null || iAuctionRepo == null || library == null) {
             throw new NullPointerException("Repositories and factories are required");
         }

@@ -13,7 +13,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnLibraryOfUser() {
         //arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
         User _userDouble = mock(User.class);
@@ -34,7 +34,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnAllItemsFromLibrary() {
         //arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
 
@@ -59,7 +59,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnListOfAvailableItems() {
         //arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
@@ -92,7 +92,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoAvailableItemsExist() {
         // arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
@@ -123,7 +123,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldAddItemToLibrary() {
         //arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);
@@ -148,7 +148,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnFalseWhenItemNotAddedToLibrary() {
         // arrange
-        LibraryRepo _libraryRepoDouble = mock(LibraryRepo.class);
+        ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
         ItemRepo _itemRepoDouble = mock(ItemRepo.class);

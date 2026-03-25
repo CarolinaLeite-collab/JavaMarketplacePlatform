@@ -8,16 +8,16 @@ import java.util.List;
  * Controller responsible for retrieving the list of publications
  * contained in a user's library.
  *
- * <p>This controller interacts with the {@link LibraryRepo} to obtain
+ * <p>This controller interacts with the {@link ILibraryRepo} to obtain
  * the {@link Library} associated with a given {@link User}. It then
  * returns the list of {@link PublicationDetails} representing the
  * publications stored in that library.</p>
  */
 
 public class ListOfPublicationsInMyLibraryController {
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
 
-    public ListOfPublicationsInMyLibraryController(LibraryRepo libraryRepo){
+    public ListOfPublicationsInMyLibraryController(ILibraryRepo libraryRepo){
         _libraryRepo = libraryRepo;
     }
 

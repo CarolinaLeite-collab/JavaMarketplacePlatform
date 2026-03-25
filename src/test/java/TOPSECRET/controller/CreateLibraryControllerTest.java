@@ -11,13 +11,13 @@ class CreateLibraryControllerTest {
 
 
     private User _userDouble;
-    private LibraryRepo _repoDouble;
+    private ILibraryRepo _repoDouble;
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
-        _repoDouble = mock(LibraryRepo.class);
+        _repoDouble = mock(ILibraryRepo.class);
     }
 
     @Test

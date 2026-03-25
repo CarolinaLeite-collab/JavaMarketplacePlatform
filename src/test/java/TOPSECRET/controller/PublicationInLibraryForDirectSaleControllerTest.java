@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 class PublicationInLibraryForDirectSaleControllerTest {
 
     private PublicationInLibraryForDirectSaleController _controller;
-    private LibraryRepo _libraryRepoDouble;
+    private ILibraryRepo _libraryRepoDouble;
     private IDirectSaleRepo _directSaleRepoDouble;
     private User _userDouble;
     private Library _libraryDouble;
@@ -24,7 +24,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
     @BeforeEach
     void setUp() {
-        _libraryRepoDouble = mock(LibraryRepo.class);
+        _libraryRepoDouble = mock(ILibraryRepo.class);
         _directSaleRepoDouble = mock(IDirectSaleRepo.class);
         _userDouble = mock(User.class);
         _libraryDouble = mock(Library.class);

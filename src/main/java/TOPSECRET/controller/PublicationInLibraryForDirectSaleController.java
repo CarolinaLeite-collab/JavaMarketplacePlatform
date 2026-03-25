@@ -10,10 +10,10 @@ import java.util.List;
  */
 public class PublicationInLibraryForDirectSaleController {
 
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public PublicationInLibraryForDirectSaleController(LibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, User _userID) {
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, User _userID) {
         _libraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
     }
