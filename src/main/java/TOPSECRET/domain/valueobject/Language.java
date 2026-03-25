@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 import java.util.Locale;
@@ -7,7 +9,7 @@ import java.util.Locale;
  * Represents a language with support for internationalization.
  * Immutable class following best practices for value objects.
  */
-public class Language {
+public class Language implements ValueObject {
     private final String _code;        // ISO 639-1 code (e.g., "en", "pt")
     private final String _name;        // Language name in English
     private final String _nativeName;  // Language name in its own language
