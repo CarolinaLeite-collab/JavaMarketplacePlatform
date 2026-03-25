@@ -15,8 +15,11 @@ class GetPublicListsByGenreController {
   +getPublicListsByGenre(genre: Genre): List<ListOfPublications>
 }
 
-class ListOfPublicationsRepo {
+interface IListOfPublicationsRepo {
   +findPublicListsByGenre(genre: Genre): List<ListOfPublications>
+}
+
+class MemoListOfPublicationsRepo {
 }
 
 class ListOfPublications {
@@ -28,8 +31,9 @@ class ListOfPublications {
 
 
 GetPublicListsByGenreUI "1"..> "1" GetPublicListsByGenreController : invokes
-GetPublicListsByGenreController "1" ..> "1" ListOfPublicationsRepo : calls
-ListOfPublicationsRepo "1"--> "*"ListOfPublications : stores
+GetPublicListsByGenreController "1" ..> "1" IListOfPublicationsRepo : uses
+MemoListOfPublicationsRepo "1" ..|> "1" IListOfPublicationsRepo
+MemoListOfPublicationsRepo "1"--> "*"ListOfPublications : stores
 
 
 @enduml

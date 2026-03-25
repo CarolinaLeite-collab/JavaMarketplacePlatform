@@ -18,9 +18,9 @@ autoactivate off
 
 
 actor User as U
-participant ":UI" as UI
+participant ":GetPublicListsByGenreUI" as UI
 participant "Ctl:GetPublicListsByGenreController" as C
-participant "lopr:ListOfPublicationsRepo" as R
+participant "lopr:MemoListOfPublicationsRepo" as R
 participant "lop:ListOfPublications" as lop
 
 
@@ -39,7 +39,7 @@ C -> R: findPublicListsByGenre(Genre)
 activate R
 
 create " publicLists : List <ListOfPublications>" as List
-R -> List: create()
+R -->> List: <<Create>>
 
 
 loop for each _lop in _lopr
