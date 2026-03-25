@@ -18,16 +18,16 @@ skinparam classAttributeIconSize 0
 
 class getAuctionItemsByPublisherUI{}
 
-class GetAuctionItemsByPublisherController {
+class GetAuctionItemsByPublishingCompanyController {
 -_auctionRepo : AuctionRepo
 -_buyer : User
 -_publisher : Publisher
-+getAuctionItemsByPublisher(publisher : Publisher) : List<Item>
++getAuctionItemsByPublishingCompany(publisher : Publisher) : List<Item>
 }
 
 class AuctionRepo {
 -_auctionList : List<Auction>
-+getAuctionItemsByPublisher(publisher : Publisher) : List<Item>
++getAuctionItemsByPublishingCompany(publisher : Publisher) : List<Item>
 }
 
 class Auction {
@@ -35,8 +35,8 @@ class Auction {
 +isByPublisher(publisher : Publisher) : boolean
 }
 
-getAuctionItemsByPublisherUI "1"..>"1" GetAuctionItemsByPublisherController:uses
-GetAuctionItemsByPublisherController "1"..> "1"AuctionRepo : uses
+getAuctionItemsByPublisherUI "1"..>"1" GetAuctionItemsByPublishingCompanyController:uses
+GetAuctionItemsByPublishingCompanyController "1"..> "1"AuctionRepo : uses
 AuctionRepo "1" --> "*"Auction: uses
 
 
