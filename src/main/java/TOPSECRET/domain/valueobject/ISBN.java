@@ -1,4 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.Identifier;
 
 /**
  * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
@@ -10,11 +13,10 @@ package TOPSECRET.domain;
  * Implements the {@link Identifier} interface.
  */
 
-public class ISBN implements Identifier {
+public class ISBN implements Identifier, ValueObject {
 
-    private String _isbn;
+    private final String _isbn;
 
-    // contrutor
     public ISBN(String isbn) {
 
         String normalized = normalize(isbn);
@@ -38,12 +40,15 @@ public class ISBN implements Identifier {
         return toIsbn13(_isbn).equals(toIsbn13(other._isbn));
     }
 
-    //(expects normalized length -> 10 chars, last can be X)
+    @Override
+    public int hashCode() {
+        return toIsbn13(_isbn).hashCode();
+    }
+
     public static boolean isValidIsbn10(String s) {
         if (s == null || s.length() != 10) return false;
         int sum = 0;
 
-        // d1..d9 with weights 10..2
         for (int i = 0; i < 9; i++) {
             char c = s.charAt(i);
             if (!Character.isDigit(c)) return false;
@@ -51,37 +56,33 @@ public class ISBN implements Identifier {
             int weight = 10 - i;
             sum += weight * d;
         }
-        // d10 with weight 1
+
         char last = s.charAt(9);
         int d10;
         if (last == 'X') d10 = 10;
         else if (Character.isDigit(last)) d10 = last - '0';
         else return false;
 
-        sum += d10; // weight 1
+        sum += d10;
 
         return sum % 11 == 0;
     }
 
-    //(expects normalized length -> 13 chars, all digits)
     public static boolean isValidIsbn13(String s) {
-        // Must be exactly 13 characters, all digits
+
         if (s == null || s.length() != 13) return false;
 
         int sum = 0;
 
-        // First 12 digits determine the check digit
         for (int i = 0; i < 12; i++) {
             char c = s.charAt(i);
             if (!Character.isDigit(c)) return false;
 
             int digit = c - '0';
 
-            // weights: 1,3,1,3,...
             sum += (i % 2 == 0) ? digit : 3 * digit;
         }
 
-        // Last digit = check digit
         char last = s.charAt(12);
         if (!Character.isDigit(last)) return false;
         int actualCheck = last - '0';
@@ -109,13 +110,10 @@ public class ISBN implements Identifier {
             throw new IllegalArgumentException("Invalid ISBN");
         }
 
-        // Drop ISBN-10 check digit
         String core = isbn.substring(0, 9);
 
-        // Add 978 prefix
         String isbn12 = "978" + core;
 
-        // Compute ISBN-13 check digit
         int sum = 0;
         for (int i = 0; i < 12; i++) {
             int d = isbn12.charAt(i) - '0';

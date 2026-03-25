@@ -1,14 +1,13 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.ISBN;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
 import java.util.stream.Stream;
-
-import static TOPSECRET.domain.ISBN.isValidIsbn10;
-import static TOPSECRET.domain.ISBN.isValidIsbn13;
+import static TOPSECRET.domain.valueobject.ISBN.isValidIsbn10;
+import static TOPSECRET.domain.valueobject.ISBN.isValidIsbn13;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -21,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 public class ISBNTest {
-    //Constructor test
-    //invalid Isbn10
+
     @Test
     void returnExceptionforInvalidIsbn10() {
+        //assert
         assertThrows(IllegalArgumentException.class, () -> new ISBN("123456789"));
     }
 
@@ -160,8 +159,6 @@ public class ISBNTest {
         assertFalse(result);
     }
 
-    //test toIsbn13 method
-
     @Test
     void returnsSameIfAlreadyIsbn13() {
         // arrange
@@ -278,8 +275,24 @@ public class ISBNTest {
         // assert
         assertFalse(result);
     }
+
     @Test
     void normalize_throwsExceptionForNullIsbnString(){
+        //assert
         assertThrows(IllegalArgumentException.class, () -> new ISBN(null));
+    }
+
+    @Test
+    void hashCodeSameForEquivalentIsbn10AndIsbn13() {
+        // Arrange
+        ISBN isbn10 = new ISBN("0306406152");
+        ISBN isbn13 = new ISBN("9780306406157");
+
+        // Act
+        int first = isbn10.hashCode();
+        int second = isbn13.hashCode();
+
+        // Assert
+        assertEquals(first, second);
     }
 }
