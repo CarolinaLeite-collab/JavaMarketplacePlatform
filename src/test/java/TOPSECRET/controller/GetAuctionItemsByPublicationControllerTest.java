@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
  *
  * <p>The System Under Test (SUT) is isolated using Mockito doubles:
  * <ul>
- *   <li>{@link AuctionRepo} — mocked collaborator (repository dependency)</li>
+ *   <li>{@link MemoAuctionRepo} — mocked collaborator (repository dependency)</li>
  *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
  *   <li>{@link Publication} — mocked dummy (structural input, no behaviour required)</li>
  *   <li>{@link Item} — mocked dummy (used only as return value)</li>
@@ -25,14 +25,14 @@ import static org.mockito.Mockito.when;
 class GetAuctionItemsByPublicationControllerTest {
 
     private User _buyerDouble;
-    private AuctionRepo _auctionRepoDouble;
+    private MemoAuctionRepo _iAuctionRepoDouble;
     private Publication _publicationDouble;
 
     @BeforeEach
     void setUp() {
 
         _buyerDouble = mock(User.class);
-        _auctionRepoDouble = mock(AuctionRepo.class);
+        _iAuctionRepoDouble = mock(MemoAuctionRepo.class);
         _publicationDouble = mock(Publication.class);
     }
 
@@ -40,7 +40,7 @@ class GetAuctionItemsByPublicationControllerTest {
     void testAuctionItemsByPublicationController(){
 
         // SUT
-        new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerDouble);
+        new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerDouble);
     }
 
     @Test
@@ -50,11 +50,11 @@ class GetAuctionItemsByPublicationControllerTest {
         Item item1Double = mock(Item.class);
         Item item2Double = mock(Item.class);
 
-        when(_auctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+        when(_iAuctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
                 .thenReturn(List.of(item1Double, item2Double));
 
         // SUT
-        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_auctionRepoDouble, _buyerDouble);
+        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_iAuctionRepoDouble, _buyerDouble);
 
         // Act
         List<Item> result = controller.getAuctionItemsByPublication(_publicationDouble);
@@ -71,11 +71,11 @@ class GetAuctionItemsByPublicationControllerTest {
     void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
 
         // Arrange
-        when(_auctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+        when(_iAuctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
                 .thenReturn(List.of());
 
         // SUT
-        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_auctionRepoDouble, _buyerDouble);
+        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_iAuctionRepoDouble, _buyerDouble);
 
         // Act
         List<Item> result = controller.getAuctionItemsByPublication(_publicationDouble);

@@ -7,16 +7,16 @@ import java.util.List;
 /**
  * Controller responsible for retrieving auction items filtered by publication.
  *
- * <p>Acts as a thin delegation layer between the UI and {@link AuctionRepo},
+ * <p>Acts as a thin delegation layer between the UI and {@link MemoAuctionRepo},
  * following the Controller pattern (GRASP).</p>
  */
 
 public class GetAuctionItemsByPublicationController {
-    private final AuctionRepo _ar;
+    private final MemoAuctionRepo _ar;
 
-    public GetAuctionItemsByPublicationController(AuctionRepo auctionRepo, User buyer){
+    public GetAuctionItemsByPublicationController(MemoAuctionRepo iAuctionRepo, User buyer){
 
-        _ar = auctionRepo;
+        _ar = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByPublication(Publication publication) {
