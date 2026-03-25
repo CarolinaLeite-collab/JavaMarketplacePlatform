@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
+import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.ddd.ValueObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
