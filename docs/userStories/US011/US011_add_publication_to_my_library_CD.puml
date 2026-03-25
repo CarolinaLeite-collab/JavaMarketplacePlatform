@@ -39,11 +39,9 @@ interface ILibraryRepo {
 class Item {}
 
 class MemLibraryRepo {
-     + getMyLibrary(user : User) : Library
 }
 
 class MemItemRepo {
-    + getDifferentOf(existentItems : List<Item>) : List<Item>
 }
 
 
