@@ -1,6 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.ddd.ValueObject;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,7 +12,7 @@ import java.util.Objects;
  * </p>
  */
 
-public class Appraisal {
+public class Appraisal implements ValueObject {
     private final Price _valueEstimate;
     private final LocalDateTime _appraisalDate;
     private final String _objectDescription;
