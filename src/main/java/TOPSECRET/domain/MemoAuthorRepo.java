@@ -12,7 +12,7 @@ import java.util.List;
  * and retrieve all authors in the repository.
  * </p>
  */
-/**
+
 public class MemoAuthorRepo implements IAuthorRepo {
 
     private List<Author> _authors;
@@ -52,4 +52,3 @@ public class MemoAuthorRepo implements IAuthorRepo {
         return new ArrayList<>(_authors);
     }
 }
- */

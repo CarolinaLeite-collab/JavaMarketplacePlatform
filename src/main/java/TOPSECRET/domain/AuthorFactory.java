@@ -9,10 +9,8 @@ import TOPSECRET.domain.valueobject.Author;
  * into an {@link InstantiationException}.
  */
 
-/**
 public class AuthorFactory {
     public Author createAuthor(String authorName){
         return new Author(authorName);
     }
 }
-*/

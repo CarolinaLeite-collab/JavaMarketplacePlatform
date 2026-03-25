@@ -8,9 +8,10 @@ import TOPSECRET.ddd.ValueObject;
  */
 
 public class Author implements ValueObject {
+
     private String _name;
 
-    Author (String name) {
+    public Author (String name) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Author name cannot be null or empty");
 
