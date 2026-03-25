@@ -44,7 +44,7 @@ activate AuctionRepo
 
 
 create "listOfAuction\nItemsByGenre: List<Item>" as List
-AuctionRepo -> List : create()
+AuctionRepo -->> List : <<Create>>
 loop for each Auction in AuctionRepo
      AuctionRepo -> auction: isByGenre(genre)
     opt isByGenre== true
