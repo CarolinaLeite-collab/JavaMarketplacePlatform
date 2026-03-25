@@ -1,6 +1,9 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.ddd.DomainEntity;
+import TOPSECRET.domain.valueobject.Email;
+import TOPSECRET.domain.valueobject.UserID;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

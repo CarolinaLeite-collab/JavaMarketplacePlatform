@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
 
+import TOPSECRET.domain.valueobject.Email;
+
 /**
  * Factory responsible for creating {@link User} instances.
  * <p>
