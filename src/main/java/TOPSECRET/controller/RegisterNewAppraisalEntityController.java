@@ -10,7 +10,7 @@ import java.util.List;
  * Controller orchestrating the registration of new {@link AppraisalEntity} instances as part
  * of US004 requirements.
  * <p>
- * Coordinates between {@link GenreRepo}, {@link IPublicationTypeRepo}, and {@link IAppraisalEntityRepo}
+ * Coordinates between {@link IGenreRepo}, {@link IPublicationTypeRepo}, and {@link IAppraisalEntityRepo}
  * to provide data for UI and create appraisal entities with their specialized genres
  * and publication types.
  *
@@ -18,18 +18,15 @@ import java.util.List;
  */
 
 public class RegisterNewAppraisalEntityController {
-    private IAppraisalEntityRepo _appraisalEntityRepo;
+    private IAppraisalEntityRepo _iAppraisalEntityRepo;
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-<<<<<<< Updated upstream
-    public RegisterNewAppraisalEntityController(AppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo genreRepo){
-=======
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, GenreRepo genreRepo){
->>>>>>> Stashed changes
-        _appraisalEntityRepo = appraisalEntityRepo;
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo){
+
+        _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
-        _iGenreRepo = genreRepo;
+        _iGenreRepo = iGenreRepo;
     }
 
     public List getPublicationTypes(){
@@ -43,8 +40,9 @@ public class RegisterNewAppraisalEntityController {
     }
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){
-        AppraisalEntity appraisalEntity = _appraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
+        AppraisalEntity appraisalEntity = _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
         return appraisalEntity;
     }
 
 }
+
