@@ -6,22 +6,22 @@ import TOPSECRET.domain.*;
  * Controller responsible for handling the addition of new genres.
  * <p>
  * This controller is stateless and acts as an intermediary between the user interface
- * and the domain layer, delegating the storage of genres to {@link GenreRepo}.
+ * and the domain layer, delegating the storage of genres to {@link IGenreRepo}.
  * </p>
  */
 
 public class AddGenreController {
-    private final GenreRepo _genreRepo;
+    private final IGenreRepo _iGenreRepo;
 
-    public AddGenreController(GenreRepo genreRepo, User admin) {
+    public AddGenreController(IGenreRepo iGenreRepo, User admin) {
         if(!admin.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not allowed to add genres");
         }
-        _genreRepo = genreRepo;
+        _iGenreRepo = iGenreRepo;
     }
 
     public Genre addGenre(String genreName){
-        Genre genre = _genreRepo.addGenre(genreName);
+        Genre genre = _iGenreRepo.addGenre(genreName);
 
         return genre;
     }

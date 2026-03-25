@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.*;
-
+import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 class RegisterNewAppraisalEntityControllerTest {
     private AppraisalEntity _appraisalEntityDouble;
     private Name _nameDouble;
-    private GenreRepo _genreRepoDouble;
+    private IGenreRepo _iGenreRepoDouble;
     private List<Genre> _genres;
     private Genre _genreDouble;
     private IPublicationTypeRepo _iTypeRepo;
@@ -31,8 +31,8 @@ class RegisterNewAppraisalEntityControllerTest {
         _genres = new ArrayList<>();
         _genres.add(_genreDouble);
 
-        _genreRepoDouble = mock(GenreRepo.class);
-        when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(_genres);
+        _iGenreRepoDouble = mock(IGenreRepo.class);
+        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(_genres);
 
         _publicationTypeDouble = mock(PublicationType.class);
         _publicationTypes = new ArrayList<>();
@@ -52,7 +52,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _genreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
 
         assertNotNull(controller);
     }
@@ -61,7 +61,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _genreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
 
         // act
         List types = controller.getPublicationTypes();
@@ -75,21 +75,21 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetGenresFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _genreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
 
         // act
         List genres = controller.getGenres();
 
         // assert
         assertEquals(_genres, genres);
-        verify(_genreRepoDouble).getListOfOfficialGenres();
+        verify(_iGenreRepoDouble).getListOfOfficialGenres();
     }
 
     @Test
     void shouldSuccessfullyCallAppraisalEntityCreationMethod() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _genreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
 
         // act
         AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);

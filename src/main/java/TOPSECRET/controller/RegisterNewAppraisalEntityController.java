@@ -20,12 +20,12 @@ import java.util.List;
 public class RegisterNewAppraisalEntityController {
     private AppraisalEntityRepo _appraisalEntityRepo;
     private IPublicationTypeRepo _iPubTypeRepo;
-    private GenreRepo _genreRepo;
+    private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(AppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, GenreRepo genreRepo){
+    public RegisterNewAppraisalEntityController(AppraisalEntityRepo appraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo genreRepo){
         _appraisalEntityRepo = appraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
-        _genreRepo = genreRepo;
+        _iGenreRepo = genreRepo;
     }
 
     public List getPublicationTypes(){
@@ -35,7 +35,7 @@ public class RegisterNewAppraisalEntityController {
 
     public List getGenres(){
 
-        return List.copyOf(_genreRepo.getListOfOfficialGenres());
+        return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
     }
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){

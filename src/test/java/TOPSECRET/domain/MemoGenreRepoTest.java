@@ -7,7 +7,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class GenreRepoTest {
+class MemoGenreRepoTest {
 
     private GenreFactory _genreFactoryDouble;
 
@@ -20,7 +20,7 @@ class GenreRepoTest {
     void constructorOfGenreRepoShouldCreateGenreRepo() {
 
         //SUT
-        new GenreRepo(_genreFactoryDouble);
+        new MemoGenreRepo(_genreFactoryDouble);
 
     }
 
@@ -35,7 +35,7 @@ class GenreRepoTest {
         when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
 
         // SUT
-        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
         Genre addedGenre = repo.addGenre(genreName);
@@ -61,7 +61,7 @@ class GenreRepoTest {
         when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genreDouble2);
 
         // SUT
-        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
         Genre addedGenre = repo.addGenre(genreName);
@@ -86,7 +86,7 @@ class GenreRepoTest {
         when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
 
         // SUT
-        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
         repo.addGenre(genreName);
@@ -113,7 +113,7 @@ class GenreRepoTest {
         when(genreDouble2.getGenre()).thenReturn(genre2Name);
 
         // SUT
-        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
         repo.addGenre(genreName);
@@ -132,7 +132,7 @@ class GenreRepoTest {
     void getListOfNoGenresShouldReturnIsEmpty() {
 
         // SUT
-        GenreRepo repo = new GenreRepo(_genreFactoryDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
         List<Genre> listOfOfficialGenres = repo.getListOfOfficialGenres();

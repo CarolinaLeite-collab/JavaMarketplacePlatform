@@ -1,6 +1,7 @@
 
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Binding;
 import TOPSECRET.domain.valueobject.Dimension;
 import TOPSECRET.domain.valueobject.ISSN;
 import org.junit.jupiter.api.Test;

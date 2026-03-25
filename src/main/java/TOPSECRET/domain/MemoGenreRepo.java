@@ -10,15 +10,16 @@ import java.util.List;
  * </p>
  */
 
-public class GenreRepo {
+public class MemoGenreRepo implements IGenreRepo {
     private final List<Genre> _genresList;
     private final GenreFactory _genreFactory;
 
-    public GenreRepo(GenreFactory genreFactory) {
+    public MemoGenreRepo(GenreFactory genreFactory) {
         _genresList = new ArrayList<>();
         _genreFactory = genreFactory;
     }
 
+    @Override
     public Genre addGenre(String genreName) throws IllegalArgumentException {
 
         if (genreExists(genreName)) {
@@ -36,6 +37,7 @@ public class GenreRepo {
         return _genresList.contains(existingGenre);
     }
 
+    @Override
     // Gets the list of official genres, and uses copyOf for encapsulation
     public List<Genre> getListOfOfficialGenres() {
 
