@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.SKU;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
