@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.Phone;
 
 import java.util.HashSet;
@@ -19,13 +19,13 @@ import java.util.Set;
 
 public class User {
 
-    private final ValueObject.Name _name;
+    private final Name _name;
     private final Address _address;
     private final Email _email;
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
-    public User(ValueObject.Name name, Address address, Email email, Phone phone) {
+    public User(Name name, Address address, Email email, Phone phone) {
 
         _name = Objects.requireNonNull(name, "Name is required");
         _address = address;
@@ -34,7 +34,7 @@ public class User {
         _roles.add(Role.USER); // default role
     }
 
-    public User(ValueObject.Name name, Email email) {
+    public User(Name name, Email email) {
         this(name, null, email, null);
     }
 
@@ -50,7 +50,7 @@ public class User {
         return Set.copyOf(_roles); // immutable view
     }
 
-    public ValueObject.Name getName() {
+    public Name getName() {
         return _name;
     }
 

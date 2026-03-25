@@ -1,14 +1,13 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.ValueObject;
-
+import TOPSECRET.domain.valueobject.Name;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Repository responsible for managing {@link AppraisalEntity} persistence.
  * <p>
- * Provides operations to check existence by {@link ValueObject.Name} and create new appraisal entities
+ * Provides operations to check existence by {@link Name} and create new appraisal entities
  * with associated {@link PublicationType}s and {@link Genre}s. Ensures uniqueness by name
  * before creation, throwing {@link IllegalArgumentException} if a duplicate is detected.
  *
@@ -24,7 +23,7 @@ public class AppraisalEntityRepo {
         _factoryAppraisalEntity = factoryAppraisalEntity;
     }
 
-    private boolean appraisalEntityExists(ValueObject.Name name) {
+    private boolean appraisalEntityExists(Name name) {
         for (AppraisalEntity appraisalEntity : _appraisalEntities) {
             if (appraisalEntity.getName().equals(name)) {
                 return true;
@@ -33,7 +32,7 @@ public class AppraisalEntityRepo {
         return false;
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(ValueObject.Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
 
         if (appraisalEntityExists(name)) {
             throw new IllegalArgumentException("This appraisal entity already exists");

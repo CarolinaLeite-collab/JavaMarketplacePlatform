@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.*;
 
 class RegisterNewAppraisalEntityControllerTest {
     private AppraisalEntity _appraisalEntityDouble;
-    private ValueObject.Name _nameDouble;
+    private Name _nameDouble;
     private GenreRepo _genreRepoDouble;
     private List<Genre> _genres;
     private Genre _genreDouble;
@@ -24,7 +25,7 @@ class RegisterNewAppraisalEntityControllerTest {
 
     @BeforeEach
     void setUp() throws InstantiationException{
-        _nameDouble = mock(ValueObject.Name.class);
+        _nameDouble = mock(Name.class);
 
         _genreDouble = mock(Genre.class);
         _genres = new ArrayList<>();

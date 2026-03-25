@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
-import TOPSECRET.ddd.ValueObject;
+
+import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +19,7 @@ class AppraisalEntityRepoTest {
     private Genre _genreDouble;
     private List<PublicationType> _publicationTypes;
     private PublicationType _publicationTypeDouble;
-    private ValueObject.Name _nameDouble;
+    private Name _nameDouble;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +34,7 @@ class AppraisalEntityRepoTest {
         _publicationTypes = new ArrayList<>();
         _publicationTypes.add(_publicationTypeDouble);
 
-        _nameDouble = mock(ValueObject.Name.class);
+        _nameDouble = mock(Name.class);
 
         _entityDouble = mock(AppraisalEntity.class);
         when(_entityDouble.getGenres()).thenReturn(_genres);
@@ -66,7 +67,7 @@ class AppraisalEntityRepoTest {
     void shouldReturnFalseWhenNameIsDifferent() {
 
         //arrange
-        ValueObject.Name _otherNameDouble = mock(ValueObject.Name.class);
+        Name _otherNameDouble = mock(Name.class);
         when(_otherNameDouble.get_Name()).thenReturn("DifferentName");
 
         AppraisalEntity _otherEntityDouble = mock(AppraisalEntity.class);

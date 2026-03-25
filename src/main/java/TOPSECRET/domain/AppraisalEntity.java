@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.ValueObject;
-
+import TOPSECRET.domain.valueobject.Name;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -9,23 +8,23 @@ import java.util.List;
  * the condition, authenticity, or value of a Publication before listing or sale, as defined
  * in the MiteLovers domain model.
  * <p>
- * Contains the appraisal entity's {@link ValueObject.Name}, the list of {@link PublicationType}s it can
+ * Contains the appraisal entity's {@link Name}, the list of {@link PublicationType}s it can
  * appraise, and the list of {@link Genre}s it specializes in.
  *
  */
 
 public class AppraisalEntity {
-    private final ValueObject.Name _name;
+    private final Name _name;
     private final List<PublicationType> _publicationTypes;
     private final List<Genre> _genres;
 
-    AppraisalEntity(ValueObject.Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
+    AppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
         _name = name;
         _publicationTypes = new ArrayList<>(publicationTypes);
         _genres = new ArrayList<>(genres);
     }
 
-    public ValueObject.Name getName() {
+    public Name getName() {
         return _name;
     }
 

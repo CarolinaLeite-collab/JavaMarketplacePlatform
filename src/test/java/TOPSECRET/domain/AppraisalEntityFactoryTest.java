@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -16,7 +16,7 @@ public class AppraisalEntityFactoryTest {
     void shouldCreateAppraisalEntity(){
 
         //Arrange
-        ValueObject.Name _nameDouble = mock(ValueObject.Name.class);
+        Name _nameDouble = mock(Name.class);
         when(_nameDouble.get_Name()).thenReturn("Helpingz TM");
 
         PublicationType _publicationTypeDouble = mock(PublicationType.class);
