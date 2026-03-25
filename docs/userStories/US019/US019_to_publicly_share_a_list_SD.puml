@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 hide footbox
-title US019 - to publicly share a List of mine.
+title US019 - "As a User, I want to publicly share a list of mine" - SD
 
 
 '==== basic style ====
@@ -17,26 +17,34 @@ skinparam ActivationBackgroundColor black
 
 
 actor User
-participant "UI1:ShareListPubliclyUI"
-participant "Ctl:ShareListPubliclyController"
-participant "_lr:ListOfPublicationsRepo"
-participant "selectedList:ListOfPublications"
+participant "UI : ShareListPubliclyUI" as UI
+participant "CTL : ShareListPubliclyController" as CTL
+participant "_lr : IListOfPublicationsRepo" as LPR
+participant "selectedList : ListOfPublications" as SLP
 
 
-User -> "UI1:ShareListPubliclyUI" : I want to publicly share one List of mine.
-"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : findListsByUser()
-"Ctl:ShareListPubliclyController" -> "_lr:ListOfPublicationsRepo" : findListsByUser()
-"_lr:ListOfPublicationsRepo" -> "_lr:ListOfPublicationsRepo" : copy
-"_lr:ListOfPublicationsRepo" --> "Ctl:ShareListPubliclyController" : listOfLists
-"Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : listOfLists
-"UI1:ShareListPubliclyUI" --> User : What List do you want to share?
-User -> "UI1:ShareListPubliclyUI" : Selected List
-"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : shareListPublicly(selectedList)
-"Ctl:ShareListPubliclyController" -> "selectedList:ListOfPublications" : switchVisibility()
-"Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : true
-"UI1:ShareListPubliclyUI" --> User : List is now public
-
-
+User -> UI : I want to publicly share one List of mine.
+activate UI
+UI -> CTL : findListsByUser()
+activate CTL
+CTL -> LPR : findListsByUser()
+activate LPR
+LPR -> LPR : copy
+LPR --> CTL : listOfLists
+deactivate LPR
+CTL --> UI : listOfLists
+deactivate CTL
+UI --> User : What List do you want to share?
+deactivate UI
+User -> UI : Selected List
+activate UI
+UI -> CTL : shareListPublicly(selectedList)
+activate CTL
+CTL -> SLP : switchVisibility()
+CTL --> UI : true
+deactivate CTL
+UI --> User : List is now public
+deactivate UI
 
 
 @enduml
