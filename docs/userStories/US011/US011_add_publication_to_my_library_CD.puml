@@ -45,11 +45,11 @@ class MemItemRepo {
 }
 
 
-AddPublicationOnLibraryUI "1" .. "1" AddPublicationOnLibraryController : request >
-AddPublicationOnLibraryController "1" .. "1" IItemRepo : queries >
-AddPublicationOnLibraryController "1" .. "1" Library : addItemTo >
-AddPublicationOnLibraryController "1" .. "1" ILibraryRepo : queries >
-Library "1" -- "*" Item : stores >
+AddPublicationOnLibraryUI "1" ..> "1" AddPublicationOnLibraryController : request
+AddPublicationOnLibraryController "1" ..> "1" IItemRepo : queries
+AddPublicationOnLibraryController "1" ..> "1" Library : addItemTo
+AddPublicationOnLibraryController "1" ..> "1" ILibraryRepo : queries
+Library "1" --> "*" Item : stores
 IItemRepo <|.. MemItemRepo
 ILibraryRepo <|.. MemLibraryRepo
 @enduml
