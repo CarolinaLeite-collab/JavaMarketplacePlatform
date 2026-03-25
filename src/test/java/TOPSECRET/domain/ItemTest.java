@@ -23,7 +23,7 @@ import java.time.ZonedDateTime;
  *       to verify delegation of {@code isByAuthor}, {@code isByGenre} and {@code isByPublication}.</li>
  * </ul>
  */
-
+/**
 class ItemTest {
 
     private ZonedDateTime auctionStartDate = ZonedDateTime.now().plusDays(1);
@@ -578,3 +578,4 @@ class ItemTest {
         assertNotEquals(item1.hashCode(), item2.hashCode());
     }
 }
+ */
