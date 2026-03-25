@@ -1,6 +1,7 @@
 
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Description;
 import TOPSECRET.domain.valueobject.ISBN;
 import TOPSECRET.domain.valueobject.NumberOfPages;
 import org.junit.jupiter.api.Test;
