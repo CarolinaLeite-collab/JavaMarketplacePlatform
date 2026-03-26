@@ -88,7 +88,7 @@ public class User implements DomainEntity<UserID> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof User other)) return false;
-        return _email.equals(other._email);
+        return _userId.equals(other._userId);
     }
 
     @Override
