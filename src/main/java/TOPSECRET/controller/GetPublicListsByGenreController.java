@@ -25,6 +25,6 @@ public class GetPublicListsByGenreController {
         if (genre == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _repo.findPublicListsByGenre(genre);
+        return _iListOfPubRepo.findPublicListsByGenre(genre);
     }
 }
