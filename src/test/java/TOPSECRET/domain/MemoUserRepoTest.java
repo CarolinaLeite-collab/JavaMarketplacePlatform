@@ -14,21 +14,21 @@ import static org.mockito.Mockito.when;
 class MemoUserRepoTest {
 
     private UserFactory _userFactoryDouble;
-    private User _userDouble1;
-    private User _userDouble2;
+    private User _user1Double;
+    private User _user2Double;
 
 
     @BeforeEach
     void setUp() {
         _userFactoryDouble = mock(UserFactory.class);
-        _userDouble1 = mock(User.class);
-        _userDouble2 = mock(User.class);
+        _user1Double = mock(User.class);
+        _user2Double = mock(User.class);
 
 
         when(_userFactoryDouble.createUser(any(Name.class), any(Email.class)))
-                .thenReturn(_userDouble1, _userDouble2);
+                .thenReturn(_user1Double, _user2Double);
 
-        when(_userDouble1.hasEmail(any(Email.class))).thenReturn(true);
+        when(_user1Double.hasEmail(any(Email.class))).thenReturn(true);
 
     }
 
@@ -41,7 +41,7 @@ class MemoUserRepoTest {
         User result = repo.registerNewUser("Tiago", "tiago@example.com");
 
         //Assert
-        assertEquals(_userDouble1, result);
+        assertEquals(_user1Double, result);
     }
 
     @Test
@@ -73,7 +73,7 @@ class MemoUserRepoTest {
     void shouldBeAbleToRegisterMultipleUsers() {
 
         //Arrange
-        when(_userDouble1.hasEmail(new Email("ana@example.com"))).thenReturn(false);
+        when(_user1Double.hasEmail(new Email("ana@example.com"))).thenReturn(false);
         MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
 
         //Act

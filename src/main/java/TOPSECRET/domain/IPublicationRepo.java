@@ -16,7 +16,8 @@ public interface IPublicationRepo {
                    PublishingCompany publisher,
                    Edition edition,
                    Genre genre);
-    List<Publication> getDifferentOf(List<Publication> existentPublications);
-    Publication getPublication(Publication publication);
 
+    List<Publication> getDifferentOf(List<Publication> existentPublications);
+
+    Publication getPublication(Publication publication);
 }

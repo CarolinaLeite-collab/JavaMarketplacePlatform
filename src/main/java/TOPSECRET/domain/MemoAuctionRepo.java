@@ -19,8 +19,8 @@ import java.util.Objects;
 
 public class MemoAuctionRepo implements IAuctionRepo {
 
-    private final List<Auction> itemsOnAuction;
-    private final AuctionFactory auctionFactory;
+    private final List<Auction> _itemsOnAuction;
+    private final AuctionFactory _auctionFactory;
 
     public MemoAuctionRepo() {
         this(new AuctionFactory());
@@ -28,29 +28,22 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
 
     MemoAuctionRepo(AuctionFactory auctionFactory) {
-        this.itemsOnAuction = new ArrayList<>();
-        this.auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
+        _itemsOnAuction = new ArrayList<>();
+        _auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
     }
 
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-        try {
-            Auction auction = auctionFactory.createAuction(item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
-            itemsOnAuction.add(auction);
+            Auction auction = _auctionFactory.createAuction(item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
+            _itemsOnAuction.add(auction);
             return auction;
-        } catch (InstantiationException ex) {
-            if (ex.getCause() instanceof IllegalStateException) {
-                throw (IllegalStateException) ex.getCause();
-            }
-            throw new IllegalArgumentException("Unable to create auction: " + ex.getMessage(), ex);
-        }
     }
 
     public List<Item> getAuctionItemsByGenre(Genre genre) {
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
-        for (Auction auction : itemsOnAuction) {
+        for (Auction auction : _itemsOnAuction) {
 
 
             if (auction.isByGenre(genre)) {
@@ -65,7 +58,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
     public List<Item> getAuctionItemsByAuthor(Author author) {
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
-        for (Auction auction : itemsOnAuction) {
+        for (Auction auction : _itemsOnAuction) {
             if (auction.isByAuthor(author)) {
                 listOfAuctionItemsByAuthor.add(auction.getItem());
             }
@@ -77,7 +70,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
 
-        for (Auction auction : itemsOnAuction) {
+        for (Auction auction : _itemsOnAuction) {
             if(auction.isByPublication(publication)) {
                 listOfAuctionItemsByPublication.add(auction.getItem());
             }
@@ -92,7 +85,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 
-        for (Auction auction : itemsOnAuction) {
+        for (Auction auction : _itemsOnAuction) {
             if (auction.isByPublishingCompany(publisher)){
                 listOfAuctionItemsByPublisher.add(auction.getItem());
             }

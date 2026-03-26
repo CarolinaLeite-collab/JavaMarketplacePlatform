@@ -41,10 +41,6 @@ class MemoAuctionRepoTest {
         return auctionDouble;
     }
 
-    // ------------------------------------------------------------
-    // GENRE FILTERING
-    // ------------------------------------------------------------
-
     @Test
     void getAuctionItemsByGenreReturnsEmptyListWhenNoAuctions() {
         Genre genreDouble = mock(Genre.class);
@@ -101,10 +97,6 @@ class MemoAuctionRepoTest {
         assertTrue(result.isEmpty());
         verify(auctionDouble).isByGenre(null);
     }
-
-    // ------------------------------------------------------------
-    // AUTHOR FILTERING
-    // ------------------------------------------------------------
 
     @Test
     void getAuctionItemsByAuthorReturnsMatchingItems() throws Exception {
@@ -164,10 +156,6 @@ class MemoAuctionRepoTest {
         assertEquals(1, second.size());
     }
 
-    // ------------------------------------------------------------
-    // PUBLICATION FILTERING
-    // ------------------------------------------------------------
-
     @Test
     void getAuctionItemsByPublicationReturnsMatchingItems() throws Exception {
         Publication pubDouble = mock(Publication.class);
@@ -202,10 +190,6 @@ class MemoAuctionRepoTest {
         assertTrue(result.contains(itemDouble2));
         assertFalse(result.contains(itemDouble3));
     }
-
-    // ------------------------------------------------------------
-    // PUBLISHING COMPANY FILTERING
-    // ------------------------------------------------------------
 
     @Test
     void getAuctionItemsByPublishingCompanyReturnsMatchingItems() throws Exception {
@@ -245,10 +229,6 @@ class MemoAuctionRepoTest {
         verify(auctionDouble).isByPublishingCompany(null);
     }
 
-    // ------------------------------------------------------------
-    // CREATE AUCTION (4-ARG)
-    // ------------------------------------------------------------
-
     @Test
     void createAuctionStoresAuction() throws Exception {
         Item itemDouble = mock(Item.class);
@@ -271,26 +251,6 @@ class MemoAuctionRepoTest {
     }
 
     @Test
-    void createAuctionWrapsInstantiationException() throws Exception {
-        Item itemDouble = mock(Item.class);
-        Price startingPriceDouble = mock(Price.class);
-
-        when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
-                .thenThrow(new InstantiationException("boom"));
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate)
-        );
-
-        assertTrue(ex.getMessage().contains("Unable to create auction"));
-    }
-
-    // ------------------------------------------------------------
-    // CREATE AUCTION (5-ARG)
-    // ------------------------------------------------------------
-
-    @Test
     void createAuctionWithOutrightStoresAuction() throws Exception {
         Item itemDouble = mock(Item.class);
 
@@ -302,20 +262,5 @@ class MemoAuctionRepoTest {
         Auction created = repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         assertSame(auctionDouble, created);
-    }
-
-    @Test
-    void createAuctionWithOutrightWrapsInstantiationException() throws Exception {
-        Item itemDouble = mock(Item.class);
-
-        when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
-                .thenThrow(new InstantiationException("fail"));
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate)
-        );
-
-        assertTrue(ex.getMessage().contains("Unable to create auction"));
     }
 }

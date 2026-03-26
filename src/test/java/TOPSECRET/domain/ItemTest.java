@@ -43,8 +43,8 @@ class ItemTest {
     void itemIsCreatedWithPublicationAndCondition() {
         Item item = new Item(publicationDouble, Condition.GOOD);
 
-        assertSame(publicationDouble, item.getPublication());
-        assertEquals(Condition.GOOD, item.getCondition());
+        assertSame(publicationDouble, item.get_publication());
+        assertEquals(Condition.GOOD, item.get_condition());
     }
 
     // ------------------------------------------------------------
@@ -84,7 +84,7 @@ class ItemTest {
         when(directSaleDouble.getItem()).thenReturn(item);
         item.setDirectSale(directSaleDouble);
 
-        assertEquals(Condition.POOR, item.getCondition());
+        assertEquals(Condition.POOR, item.get_condition());
     }
 
     @Test
@@ -152,7 +152,7 @@ class ItemTest {
         when(auctionDouble.getItem()).thenReturn(item);
         item.setAuction(auctionDouble);
 
-        assertEquals(Condition.LIKE_NEW, item.getCondition());
+        assertEquals(Condition.LIKE_NEW, item.get_condition());
     }
 
     @Test

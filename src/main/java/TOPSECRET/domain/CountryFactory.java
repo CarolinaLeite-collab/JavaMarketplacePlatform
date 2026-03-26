@@ -9,7 +9,7 @@ package TOPSECRET.domain;
 
 public class CountryFactory {
 
-    public Country createCountry(String countryName) throws InstantiationException {
+    public Country createCountry(String countryName) {
             return new Country(countryName);
     }
 

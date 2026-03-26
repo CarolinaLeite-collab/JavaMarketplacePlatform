@@ -33,7 +33,7 @@ public class MemoItemRepo implements IItemRepo{
         if (publication == null) return false;
 
         for (Item item : _items) {
-            if (item.getPublication().equals(publication)) {
+            if (item.get_publication().equals(publication)) {
                 return true;
             }
         }

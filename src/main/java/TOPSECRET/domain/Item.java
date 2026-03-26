@@ -22,22 +22,22 @@ import java.util.Objects;
 
 public class Item {
 
-    private final Publication publication;
-    private final Condition condition;
+    private final Publication _publication;
+    private final Condition _condition;
     private DirectSale directSale;
     private Auction auction;
 
     Item(Publication publication, Condition condition) {
-        this.publication = publication;
-        this.condition = condition;
+        _publication = publication;
+        _condition = condition;
     }
 
-    public Publication getPublication() {
-        return publication;
+    public Publication get_publication() {
+        return _publication;
     }
 
-    public Condition getCondition() {
-        return condition;
+    public Condition get_condition() {
+        return _condition;
     }
 
     public void setDirectSale(DirectSale directSale) {
@@ -71,24 +71,24 @@ public class Item {
 
     public boolean isByAuthor(Author author) {
 
-        return publication.isByAuthor(author);
+        return _publication.isByAuthor(author);
 
     }
 
     public boolean isByGenre(Genre genre) {
 
-        return publication.isByGenre(genre);
+        return _publication.isByGenre(genre);
 
     }
 
     public boolean isByPublishingCompany( PublishingCompany publisher) {
 
-        return publication.isByPublishingCompany(publisher);
+        return _publication.isByPublishingCompany(publisher);
     }
 
     public boolean isByPublication(Publication publication) {
 
-        return publication.equals(this.publication);
+        return publication.equals(this._publication);
     }
 
     @Override
@@ -96,12 +96,12 @@ public class Item {
         if (this == obj) return true;
         if (!(obj instanceof Item other)) return false;
 
-        return Objects.equals(publication, other.publication)
-                && condition == other.condition;
+        return Objects.equals(_publication, other._publication)
+                && _condition == other._condition;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(publication, condition);
+        return Objects.hash(_publication, _condition);
     }
 }

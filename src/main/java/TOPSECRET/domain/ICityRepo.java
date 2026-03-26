@@ -9,5 +9,4 @@ public interface ICityRepo {
     boolean existsCityInACountry(String cityName, Country country);
 
     List<City> getAllCities();
-
 }

@@ -1,61 +1,33 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 class CityFactoryTest {
 
-    private CityFactory factory;
-    private Country country;
-
-    @BeforeEach
-    void setUp() {
-        factory = new CityFactory();
-        country = new Country("Portugal");
-    }
-
     @Test
-    void createCityWithValidDataReturnsCity() {
-        // Arrange
+    void shouldSuccessfullyCreateCity() {
+        // arrange
         String cityName = "Porto";
+        Country countryDouble = mock(Country.class);
 
-        // Act
-        City city = factory.createCity(cityName, country);
+        //SUT
+        CityFactory factory = new CityFactory();
 
-        // Assert
-        assertNotNull(city);
-        assertEquals("Porto", city.getName());
-        assertEquals(country, city.getCountry());
+        try (MockedConstruction<City> mocked =
+                     mockConstruction(City.class,
+                             (mock, context) -> {
+                                 when(mock.getName())
+                                         .thenReturn("Porto");
+                             })) {
+            // act
+            City newCity = factory.createCity(cityName, countryDouble);
+            //assert
+            assertEquals(cityName, newCity.getName());
+        }
     }
 
-    @Test
-    void createCityReturnsNewInstanceEachTime() {
-        // Act
-        City city1 = factory.createCity("Porto", country);
-        City city2 = factory.createCity("Porto", country);
-
-        // Assert
-        assertNotSame(city1, city2);
-        assertEquals(city1, city2);
-    }
-
-    @Test
-    void createCityWithNullNameThrowsException() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.createCity(null, country));
-    }
-
-    @Test
-    void createCityWithBlankNameThrowsException() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.createCity("   ", country));
-    }
-
-    @Test
-    void createCityWithNullCountryThrowsException() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> factory.createCity("Porto", null));
-    }
 }

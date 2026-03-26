@@ -14,20 +14,20 @@ import static org.mockito.Mockito.*;
 class MemoDirectSaleRepoTest {
 
     private DirectSaleFactory _factoryDouble;
-    private DirectSale _dsDouble1;
-    private DirectSale _dsDouble2;
-    private Item _itemDouble1;
-    private Item _itemDouble2;
+    private DirectSale _ds1Double;
+    private DirectSale _ds2Double;
+    private Item _item1Double;
+    private Item _item2Double;
     private Publication _publicationDouble;
     private Period _periodDouble;
 
     @BeforeEach
     void setUp() {
         _factoryDouble = mock(DirectSaleFactory.class);
-        _dsDouble1 = mock(DirectSale.class);
-        _dsDouble2 = mock(DirectSale.class);
-        _itemDouble1 = mock(Item.class);
-        _itemDouble2 = mock(Item.class);
+        _ds1Double = mock(DirectSale.class);
+        _ds2Double = mock(DirectSale.class);
+        _item1Double = mock(Item.class);
+        _item2Double = mock(Item.class);
         _publicationDouble = mock(Publication.class);
         _periodDouble = mock(Period.class);
 
@@ -48,17 +48,17 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         Price priceDouble = mock(Price.class);
-        when(_factoryDouble.createDirectSale(_itemDouble1, priceDouble, _periodDouble)).thenReturn(_dsDouble1);
+        when(_factoryDouble.createDirectSale(_item1Double, priceDouble, _periodDouble)).thenReturn(_ds1Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act
-        DirectSale created = dsr.addDirectSale(_itemDouble1, priceDouble, _periodDouble);
+        DirectSale created = dsr.addDirectSale(_item1Double, priceDouble, _periodDouble);
 
         // Assert
-        assertSame(_dsDouble1, created);
-        verify(_factoryDouble, times(1)).createDirectSale(_itemDouble1, priceDouble, _periodDouble);
+        assertSame(_ds1Double, created);
+        verify(_factoryDouble, times(1)).createDirectSale(_item1Double, priceDouble, _periodDouble);
 
     }
 
@@ -67,14 +67,14 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         Price priceDouble = mock(Price.class);
-        when(_factoryDouble.createDirectSale(eq(_itemDouble1), eq(priceDouble), isNull()))
+        when(_factoryDouble.createDirectSale(eq(_item1Double), eq(priceDouble), isNull()))
                 .thenThrow(new IllegalStateException("boom"));
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act & Assert
-        assertThrows(IllegalStateException.class, () -> dsr.addDirectSale(_itemDouble1, priceDouble, null));
+        assertThrows(IllegalStateException.class, () -> dsr.addDirectSale(_item1Double, priceDouble, null));
     }
 
     @Test
@@ -83,22 +83,22 @@ class MemoDirectSaleRepoTest {
         //Arrange
         Price priceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
-        when(_factoryDouble.createDirectSale(_itemDouble1, priceDouble, _periodDouble))
-                .thenReturn(_dsDouble1);
-        when(_factoryDouble.createDirectSale(_itemDouble2, priceDouble, _periodDouble))
-                .thenReturn(_dsDouble2);
+        when(_factoryDouble.createDirectSale(_item1Double, priceDouble, _periodDouble))
+                .thenReturn(_ds1Double);
+        when(_factoryDouble.createDirectSale(_item2Double, priceDouble, _periodDouble))
+                .thenReturn(_ds2Double);
 
-        when(_dsDouble1.isByAuthor(authorDouble)).thenReturn(true);
-        when(_dsDouble2.isByAuthor(authorDouble)).thenReturn(true);
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.isByAuthor(authorDouble)).thenReturn(true);
+        when(_ds2Double.isByAuthor(authorDouble)).thenReturn(true);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act
-        dsr.addDirectSale(_itemDouble1, priceDouble, _periodDouble);
-        dsr.addDirectSale(_itemDouble2, priceDouble, _periodDouble);
+        dsr.addDirectSale(_item1Double, priceDouble, _periodDouble);
+        dsr.addDirectSale(_item2Double, priceDouble, _periodDouble);
 
         List<Item> result = dsr.getDirectSaleItemsByAuthor(authorDouble);
 
@@ -114,22 +114,22 @@ class MemoDirectSaleRepoTest {
         Price startingPriceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
 
-        when(_factoryDouble.createDirectSale(_itemDouble1, startingPriceDouble, _periodDouble))
-                .thenReturn(_dsDouble1);
-        when(_factoryDouble.createDirectSale(_itemDouble2, startingPriceDouble, _periodDouble))
-                .thenReturn(_dsDouble2);
+        when(_factoryDouble.createDirectSale(_item1Double, startingPriceDouble, _periodDouble))
+                .thenReturn(_ds1Double);
+        when(_factoryDouble.createDirectSale(_item2Double, startingPriceDouble, _periodDouble))
+                .thenReturn(_ds2Double);
 
-        when(_dsDouble1.isByAuthor(authorDouble)).thenReturn(false);
-        when(_dsDouble2.isByAuthor(authorDouble)).thenReturn(false);
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.isByAuthor(authorDouble)).thenReturn(false);
+        when(_ds2Double.isByAuthor(authorDouble)).thenReturn(false);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         //Act
-        dsr.addDirectSale(_itemDouble1, startingPriceDouble, _periodDouble);
-        dsr.addDirectSale(_itemDouble2, startingPriceDouble, _periodDouble);
+        dsr.addDirectSale(_item1Double, startingPriceDouble, _periodDouble);
+        dsr.addDirectSale(_item2Double, startingPriceDouble, _periodDouble);
 
         List<Item> results = dsr.getDirectSaleItemsByAuthor(authorDouble);
 
@@ -147,33 +147,33 @@ class MemoDirectSaleRepoTest {
         Price startingPriceDouble = mock(Price.class);
         Author authorDouble = mock(Author.class);
 
-        when(_factoryDouble.createDirectSale(_itemDouble1, startingPriceDouble, _periodDouble))
-                .thenReturn(_dsDouble1);
-        when(_factoryDouble.createDirectSale(_itemDouble2, startingPriceDouble, _periodDouble))
-                .thenReturn(_dsDouble2);
+        when(_factoryDouble.createDirectSale(_item1Double, startingPriceDouble, _periodDouble))
+                .thenReturn(_ds1Double);
+        when(_factoryDouble.createDirectSale(_item2Double, startingPriceDouble, _periodDouble))
+                .thenReturn(_ds2Double);
         when(_factoryDouble.createDirectSale(itemDouble3, startingPriceDouble, _periodDouble))
                 .thenReturn(dsDouble3);
 
-        when(_dsDouble1.isByAuthor(authorDouble)).thenReturn(true);
-        when(_dsDouble2.isByAuthor(authorDouble)).thenReturn(true);
+        when(_ds1Double.isByAuthor(authorDouble)).thenReturn(true);
+        when(_ds2Double.isByAuthor(authorDouble)).thenReturn(true);
         when(dsDouble3.isByAuthor(authorDouble)).thenReturn(false);
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
         when(dsDouble3.getItem()).thenReturn(itemDouble3);
 
         //SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         //Act
-        dsr.addDirectSale(_itemDouble1, startingPriceDouble, _periodDouble);
-        dsr.addDirectSale(_itemDouble2, startingPriceDouble, _periodDouble);
+        dsr.addDirectSale(_item1Double, startingPriceDouble, _periodDouble);
+        dsr.addDirectSale(_item2Double, startingPriceDouble, _periodDouble);
         dsr.addDirectSale(itemDouble3, startingPriceDouble, _periodDouble);
 
         List<Item> results = dsr.getDirectSaleItemsByAuthor(authorDouble);
 
         //Assert
-        assertTrue(results.contains(_itemDouble1));
-        assertTrue(results.contains(_itemDouble2));
+        assertTrue(results.contains(_item1Double));
+        assertTrue(results.contains(_item2Double));
         assertFalse(results.contains(itemDouble3));
         assertEquals(2, results.size());
 
@@ -183,13 +183,13 @@ class MemoDirectSaleRepoTest {
     void getDirectSaleItemsByPublicationFiltersCorrectly(){
 
         // Arrange
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
-        when(_dsDouble1.isByPublication(_publicationDouble)).thenReturn(true);
-        when(_dsDouble2.isByPublication(_publicationDouble)).thenReturn(false);
+        when(_ds1Double.isByPublication(_publicationDouble)).thenReturn(true);
+        when(_ds2Double.isByPublication(_publicationDouble)).thenReturn(false);
 
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
@@ -203,7 +203,7 @@ class MemoDirectSaleRepoTest {
 
         // Assert
         assertEquals(1, items.size());
-        assertSame(_itemDouble1, items.get(0));
+        assertSame(_item1Double, items.get(0));
     }
 
     @Test
@@ -211,13 +211,13 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         PublishingCompany pcDouble = mock(PublishingCompany.class);
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
-        when(_dsDouble1.isByPublisher(pcDouble)).thenReturn(true);
-        when(_dsDouble2.isByPublisher(pcDouble)).thenReturn(true);
+        when(_ds1Double.isByPublisher(pcDouble)).thenReturn(true);
+        when(_ds2Double.isByPublisher(pcDouble)).thenReturn(true);
 
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
@@ -230,8 +230,8 @@ class MemoDirectSaleRepoTest {
 
         // Assert
         assertEquals(2, items.size());
-        assertSame(_itemDouble1, items.get(0));
-        assertSame(_itemDouble2, items.get(1));
+        assertSame(_item1Double, items.get(0));
+        assertSame(_item2Double, items.get(1));
     }
 
     @Test
@@ -239,8 +239,8 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        when(_dsDouble1.isByGenre(genreDouble)).thenReturn(false);
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1);
+        when(_ds1Double.isByGenre(genreDouble)).thenReturn(false);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
@@ -259,13 +259,13 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         Genre genreDouble = mock(Genre.class);
-        when(_dsDouble1.isByGenre(genreDouble)).thenReturn(true);
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
+        when(_ds1Double.isByGenre(genreDouble)).thenReturn(true);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
 
-        when(_dsDouble2.isByGenre(genreDouble)).thenReturn(true);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds2Double.isByGenre(genreDouble)).thenReturn(true);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
@@ -278,8 +278,8 @@ class MemoDirectSaleRepoTest {
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(_itemDouble1));
-        assertTrue(result.contains(_itemDouble2));
+        assertTrue(result.contains(_item1Double));
+        assertTrue(result.contains(_item2Double));
 
     }
 
@@ -289,26 +289,26 @@ class MemoDirectSaleRepoTest {
     void getDirectSaleItemsByPublicationShouldReturnItemsOfThatPublication() {
 
         // Arrange
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
-        when(_dsDouble1.isByPublication(_publicationDouble)).thenReturn(true);
-        when(_dsDouble2.isByPublication(_publicationDouble)).thenReturn(true);
+        when(_ds1Double.isByPublication(_publicationDouble)).thenReturn(true);
+        when(_ds2Double.isByPublication(_publicationDouble)).thenReturn(true);
 
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act
-        dsr.addDirectSale(_itemDouble1, mock(Price.class), null);
-        dsr.addDirectSale(_itemDouble2, mock(Price.class), null);
+        dsr.addDirectSale(_item1Double, mock(Price.class), null);
+        dsr.addDirectSale(_item2Double, mock(Price.class), null);
 
         List<Item> resultsList = dsr.getDirectSaleItemsByPublication(_publicationDouble);
 
         //Assert
         assertEquals(2, resultsList.size());
-        assertTrue(resultsList.containsAll(List.of(_itemDouble1, _itemDouble2)));
+        assertTrue(resultsList.containsAll(List.of(_item1Double, _item2Double)));
 
     }
 
@@ -316,20 +316,20 @@ class MemoDirectSaleRepoTest {
     void getDirectSaleItemsByPublicationShouldReturnEmptyAndUnmodifiableListWhenNoDirectSalesMatch() {
 
         // Arrange
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
-        when(_dsDouble1.isByPublication(_publicationDouble)).thenReturn(false);
-        when(_dsDouble2.isByPublication(_publicationDouble)).thenReturn(false);
+        when(_ds1Double.isByPublication(_publicationDouble)).thenReturn(false);
+        when(_ds2Double.isByPublication(_publicationDouble)).thenReturn(false);
 
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
-        when(_dsDouble2.getItem()).thenReturn(_itemDouble2);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
+        when(_ds2Double.getItem()).thenReturn(_item2Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act
-        dsr.addDirectSale(_itemDouble1, mock(Price.class), null);
-        dsr.addDirectSale(_itemDouble2, mock(Price.class), null);
+        dsr.addDirectSale(_item1Double, mock(Price.class), null);
+        dsr.addDirectSale(_item2Double, mock(Price.class), null);
 
         List<Item> resultsList = dsr.getDirectSaleItemsByPublication(_publicationDouble);
 
@@ -344,27 +344,27 @@ class MemoDirectSaleRepoTest {
     void getDirectSaleItemsByPublicationShouldReturnOnlyItemsOfGivenPublication() {
 
         // Arrange
-        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_dsDouble1, _dsDouble2);
+        when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
-        when(_dsDouble1.isByPublication(_publicationDouble)).thenReturn(true);
-        when(_dsDouble2.isByPublication(_publicationDouble)).thenReturn(false);
+        when(_ds1Double.isByPublication(_publicationDouble)).thenReturn(true);
+        when(_ds2Double.isByPublication(_publicationDouble)).thenReturn(false);
 
-        when(_dsDouble1.getItem()).thenReturn(_itemDouble1);
+        when(_ds1Double.getItem()).thenReturn(_item1Double);
 
         // SUT
         MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
 
         // Act
-        dsr.addDirectSale(_itemDouble1, mock(Price.class), null);
-        dsr.addDirectSale(_itemDouble2, mock(Price.class), null);
+        dsr.addDirectSale(_item1Double, mock(Price.class), null);
+        dsr.addDirectSale(_item2Double, mock(Price.class), null);
 
         List<Item> resultsList = dsr.getDirectSaleItemsByPublication(_publicationDouble);
 
         // Assert
         assertEquals(1, resultsList.size());
-        assertTrue(resultsList.contains(_itemDouble1));
-        assertFalse(resultsList.contains(_itemDouble2));
-        assertSame(_itemDouble1, resultsList.get(0));
+        assertTrue(resultsList.contains(_item1Double));
+        assertFalse(resultsList.contains(_item2Double));
+        assertSame(_item1Double, resultsList.get(0));
     }
 
 }

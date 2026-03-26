@@ -12,22 +12,22 @@ import static org.mockito.Mockito.when;
 class MemoPublicationTypeRepoTest {
 
     private PublicationTypeFactory _ptfDouble;
-    private PublicationType _pubTypeDouble1;
-    private PublicationType _pubTypeDouble2;
+    private PublicationType _publicationType1Double;
+    private PublicationType _publicationType2Double;
 
     @BeforeEach
     void setUp() throws InstantiationException {
 
         _ptfDouble = mock(PublicationTypeFactory.class);
-        _pubTypeDouble1 = mock(PublicationType.class);
-        _pubTypeDouble2 = mock(PublicationType.class);
+        _publicationType1Double = mock(PublicationType.class);
+        _publicationType2Double = mock(PublicationType.class);
 
         // Stub fallback for any input - guarantees true isolation
         when(_ptfDouble.createPublicationType(anyString())).thenReturn(mock(PublicationType.class));
 
         // Specific Stubs for BOOK and MAGAZINE inputs (in this order they take priority over anyString())
-        when(_ptfDouble.createPublicationType("BOOK")).thenReturn(_pubTypeDouble1);
-        when(_ptfDouble.createPublicationType("MAGAZINE")).thenReturn(_pubTypeDouble2);
+        when(_ptfDouble.createPublicationType("BOOK")).thenReturn(_publicationType1Double);
+        when(_ptfDouble.createPublicationType("MAGAZINE")).thenReturn(_publicationType2Double);
 
     }
 
@@ -52,7 +52,7 @@ class MemoPublicationTypeRepoTest {
         PublicationType pubTypeResult = repo.addPublicationType(pubTypeName);
 
         // Assert
-        assertEquals(_pubTypeDouble1, pubTypeResult);
+        assertEquals(_publicationType1Double, pubTypeResult);
     }
 
     @Test
@@ -74,7 +74,7 @@ class MemoPublicationTypeRepoTest {
     void shouldNotAllowDuplicatePublicationTypes() {
         //Arrange
         String pubTypeName = "MAGAZINE";
-        when(_pubTypeDouble2.isSamePublicationType(pubTypeName)).thenReturn(true);
+        when(_publicationType2Double.isSamePublicationType(pubTypeName)).thenReturn(true);
 
         // SUT
         MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);
@@ -109,7 +109,7 @@ class MemoPublicationTypeRepoTest {
     void shouldThrowCorrectMessageOnDuplicatePublicationTypes() {
         // Arrange
         String pubTypeName = "BOOK";
-        when(_pubTypeDouble1.isSamePublicationType(pubTypeName)).thenReturn(true);
+        when(_publicationType1Double.isSamePublicationType(pubTypeName)).thenReturn(true);
 
         //SUT
         MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(_ptfDouble);

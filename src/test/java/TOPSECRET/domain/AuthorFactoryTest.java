@@ -12,16 +12,19 @@ import static org.mockito.Mockito.when;
 class AuthorFactoryTest {
     @Test
     void shouldCreateAuthor() {
-        // arrange
+        //arrange
         String authorName = "João";
+
+        //SUT
+        AuthorFactory factory = new AuthorFactory();
+
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class,
                              (mock, context) -> {
                                  when(mock.getName())
                                          .thenReturn("João");
                              })) {
-            AuthorFactory factory = new AuthorFactory();
-            // act
+            //act
             Author author = factory.createAuthor(authorName);
             //assert
             assertEquals(authorName, author.getName());
@@ -30,6 +33,7 @@ class AuthorFactoryTest {
 
     @Test
     void shouldThrowErrorWhenAuthorNameNull() {
+        //SUT
         AuthorFactory factory = new AuthorFactory();
 
         assertThrows(IllegalArgumentException.class,

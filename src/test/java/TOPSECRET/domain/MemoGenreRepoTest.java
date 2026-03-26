@@ -56,11 +56,11 @@ class MemoGenreRepoTest {
         String genreName = "New Genre";
         String genre2Name = "Another Genre";
 
-        Genre genreDouble1 = mock(Genre.class);
-        Genre genreDouble2 = mock(Genre.class);
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
 
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble1);
-        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genreDouble2);
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genre1Double);
+        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genre2Double);
 
         // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
@@ -70,8 +70,8 @@ class MemoGenreRepoTest {
         Genre addedGenre2 = repo.addGenre(genre2Name);
 
         // Assert
-        assertEquals(genreDouble1, addedGenre);
-        assertEquals(genreDouble2, addedGenre2);
+        assertEquals(genre1Double, addedGenre);
+        assertEquals(genre2Double, addedGenre2);
         assertEquals(2, repo.getListOfOfficialGenres().size());
         assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
         assertEquals(addedGenre2, repo.getListOfOfficialGenres().get(1));
@@ -105,14 +105,14 @@ class MemoGenreRepoTest {
         String genreName = "New Genre";
         String genre2Name = "Another Genre";
 
-        Genre genreDouble1 = mock(Genre.class);
-        Genre genreDouble2 = mock(Genre.class);
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
 
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble1);
-        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genreDouble2);
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genre1Double);
+        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genre2Double);
 
-        when(genreDouble1.getGenre()).thenReturn(genreName);
-        when(genreDouble2.getGenre()).thenReturn(genre2Name);
+        when(genre1Double.getGenre()).thenReturn(genreName);
+        when(genre2Double.getGenre()).thenReturn(genre2Name);
 
         // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);

@@ -11,38 +11,44 @@ class BidFactoryTest {
     @Test
     void shouldSuccessfullyCreateBid() throws IllegalArgumentException {
         // arrange
-        User user = mock(User.class);
-        Price price = mock(Price.class);
+        User userDouble = mock(User.class);
+        Price priceDouble = mock(Price.class);
+
+        //SUT
+        BidFactory bidFactory = new BidFactory();
+
         try (MockedConstruction<Bid> mocked =
                      mockConstruction(Bid.class,
                              (mock, context) -> {
-                                 when(mock.getOfferPrice()).thenReturn(price);
+                                 when(mock.getOfferPrice()).thenReturn(priceDouble);
                              })) {
-            BidFactory bidFactory = new BidFactory();
             // act
-            Bid newBid = bidFactory.createBid(user, price);
+            Bid newBid = bidFactory.createBid(userDouble, priceDouble);
             //assert
-            assertEquals(price, newBid.getOfferPrice());
+            assertEquals(priceDouble, newBid.getOfferPrice());
         }
     }
 
     @Test
     void shouldThrowExceptionWhenCreatingBidWithInvalidPrice() throws IllegalArgumentException {
         // arrange
-        User user = mock(User.class);
-        Price price = mock(Price.class);
+        User userDouble = mock(User.class);
+        Price priceDouble = mock(Price.class);
+
+        //SUT
+        BidFactory bidFactory = new BidFactory();
+
         double value = 0;
-        when(price.getValue()).thenReturn(value);
+        when(priceDouble.getValue()).thenReturn(value);
         try (MockedConstruction<Bid> mocked =
                      mockConstruction(Bid.class,
                              (mock, context) -> {
-                                 when(mock.getOfferPrice()).thenReturn(price);
+                                 when(mock.getOfferPrice()).thenReturn(priceDouble);
                              })) {
-            BidFactory bidFactory = new BidFactory();
             // act
-            Bid newBid = bidFactory.createBid(user, price);
+            Bid newBid = bidFactory.createBid(userDouble, priceDouble);
             //assert
-            assertEquals(price, newBid.getOfferPrice());
+            assertEquals(priceDouble, newBid.getOfferPrice());
         }
     }
 }

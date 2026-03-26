@@ -16,22 +16,22 @@ import static org.mockito.Mockito.when;
 class AppraisalEntityTest {
 
     private Name _nameDouble;
-    private PublicationType _publicationType1;
-    private PublicationType _publicationType2;
+    private PublicationType _publicationType1Double;
+    private PublicationType _publicationType2Double;
     private Genre _genreDouble1;
     private Genre _genreDouble2;
 
     @BeforeEach
     void setup() {
         _nameDouble = mock(Name.class);
-        _publicationType1 = mock(PublicationType.class);
-        _publicationType2 = mock(PublicationType.class);
+        _publicationType1Double = mock(PublicationType.class);
+        _publicationType2Double = mock(PublicationType.class);
         _genreDouble1 = mock(Genre.class);
         _genreDouble2 = mock(Genre.class);
 
         when(_nameDouble.toString()).thenReturn("Name");
-        when(_publicationType1.getPublicationType()).thenReturn("Book");
-        when(_publicationType2.getPublicationType()).thenReturn("Magazine");
+        when(_publicationType1Double.getPublicationType()).thenReturn("Book");
+        when(_publicationType2Double.getPublicationType()).thenReturn("Magazine");
         when(_genreDouble1.getGenre()).thenReturn("Science Fiction");
         when(_genreDouble2.getGenre()).thenReturn("Fantasy");
     }
@@ -39,7 +39,7 @@ class AppraisalEntityTest {
     @Test
     void should_create_AppraisalEntity_successfully() {
         // Arrange
-        List<PublicationType> publicationTypes = Arrays.asList(_publicationType1, _publicationType2);
+        List<PublicationType> publicationTypes = Arrays.asList(_publicationType1Double, _publicationType2Double);
         List<Genre> genres = Arrays.asList(_genreDouble1, _genreDouble2);
 
         // SUT
@@ -53,8 +53,8 @@ class AppraisalEntityTest {
     void should_return_AppraisalEntity_data_successfully() {
         // Arrange
         List<PublicationType> _publicationTypes = new ArrayList<>();
-        _publicationTypes.add(_publicationType1);
-        _publicationTypes.add(_publicationType2);
+        _publicationTypes.add(_publicationType1Double);
+        _publicationTypes.add(_publicationType2Double);
 
         List<Genre> _genres = new ArrayList<>();
         _genres.add(_genreDouble1);

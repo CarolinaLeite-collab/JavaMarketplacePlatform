@@ -36,10 +36,12 @@ class MemoLibraryRepoTest {
     void addLibraryShouldReturnLibrary() {
 
         // Arrange
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
+
+        // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
 
         // Act
         Library mylibrary = libraryRepo.addLibrary(_userDouble);
@@ -52,10 +54,12 @@ class MemoLibraryRepoTest {
     void addLibraryShouldThrowAnExceptionWhenLibraryAlreadyExists() {
 
         // Arrange
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
+
+        // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
 
         // Act
         libraryRepo.addLibrary(_userDouble);
@@ -68,10 +72,12 @@ class MemoLibraryRepoTest {
     void findLibraryByUserShouldReturnLibraryWhenExists() {
 
         // Arrange
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(true);
         when(_libraryFactoryDouble.createLibrary(_userDouble)).thenReturn(libraryDouble);
+
+        // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
 
         libraryRepo.addLibrary(_userDouble);
 
@@ -85,13 +91,15 @@ class MemoLibraryRepoTest {
     @Test
     void addLibraryShouldSucceedWhenOtherUserAlreadyHasLibrary() {
         // Arrange
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
         User otherUserDouble = mock(User.class);
         Library libraryDouble = mock(Library.class);
 
         when(libraryDouble.belongsTo(otherUserDouble)).thenReturn(true);
         when(libraryDouble.belongsTo(_userDouble)).thenReturn(false);
         when(_libraryFactoryDouble.createLibrary(otherUserDouble)).thenReturn(libraryDouble);
+
+        // SUT
+        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
 
         libraryRepo.addLibrary(otherUserDouble); // state setup
 

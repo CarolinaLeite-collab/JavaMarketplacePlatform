@@ -16,7 +16,6 @@ class LibraryTest {
     private User _userDouble;
     private Item _itemDouble;
 
-    // Creating doubles for User and Publication classes
     @BeforeEach
     void setUp() {
 
@@ -195,17 +194,17 @@ class LibraryTest {
         //Arrange
         Item _itemDouble2 = mock(Item.class);
 
-        when(_itemDouble.getPublication()).thenReturn(mock(Publication.class));
-        when(_itemDouble.getPublication().getTitle()).thenReturn(mock(Title.class));
-        when(_itemDouble.getPublication().getAuthor()).thenReturn(mock(Author.class));
-        when(_itemDouble.getPublication().getPublicationType()).thenReturn(mock(PublicationType.class));
-        when(_itemDouble.getPublication().getIdentifier()).thenReturn(mock(Identifier.class));
+        when(_itemDouble.get_publication()).thenReturn(mock(Publication.class));
+        when(_itemDouble.get_publication().getTitle()).thenReturn(mock(Title.class));
+        when(_itemDouble.get_publication().getAuthor()).thenReturn(mock(Author.class));
+        when(_itemDouble.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
+        when(_itemDouble.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
-        when(_itemDouble2.getPublication()).thenReturn(mock(Publication.class));
-        when(_itemDouble2.getPublication().getTitle()).thenReturn(mock(Title.class));
-        when(_itemDouble2.getPublication().getAuthor()).thenReturn(mock(Author.class));
-        when(_itemDouble2.getPublication().getPublicationType()).thenReturn(mock(PublicationType.class));
-        when(_itemDouble2.getPublication().getIdentifier()).thenReturn(mock(Identifier.class));
+        when(_itemDouble2.get_publication()).thenReturn(mock(Publication.class));
+        when(_itemDouble2.get_publication().getTitle()).thenReturn(mock(Title.class));
+        when(_itemDouble2.get_publication().getAuthor()).thenReturn(mock(Author.class));
+        when(_itemDouble2.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
+        when(_itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
         //SUT
         Library library = new Library(_userDouble);

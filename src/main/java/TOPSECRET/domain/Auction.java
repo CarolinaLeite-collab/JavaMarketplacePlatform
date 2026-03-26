@@ -49,19 +49,19 @@ public class Auction {
 
 
         if (isOutrightPriceValid(outrightPrice)) {
-            this._outrightPrice = outrightPrice;
+            _outrightPrice = outrightPrice;
         } else {
             throw new IllegalArgumentException("Invalid outright price");
         }
 
         if (isAuctionStartDateValid(auctionStartDate)) {
-            this._auctionStartDate = auctionStartDate;
+            _auctionStartDate = auctionStartDate;
         } else {
             throw new IllegalArgumentException("Invalid start date");
         }
 
         if (isAuctionEndDateValid(auctionEndDate)) {
-            this._auctionEndDate = auctionEndDate;
+            _auctionEndDate = auctionEndDate;
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
@@ -78,13 +78,13 @@ public class Auction {
         _bids = new MemoBidRepo(new BidFactory());
 
         if (isAuctionStartDateValid(auctionStartDate)) {
-            this._auctionStartDate = auctionStartDate;
+            _auctionStartDate = auctionStartDate;
         } else {
             throw new IllegalArgumentException("Invalid start date");
         }
 
         if (isAuctionEndDateValid(auctionEndDate)) {
-            this._auctionEndDate = auctionEndDate;
+            _auctionEndDate = auctionEndDate;
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
@@ -129,7 +129,7 @@ public class Auction {
     // checks if outrightPrice > startingPrice
     private boolean isOutrightPriceValid(Price outrightPrice) {
         boolean result = false;
-        if (outrightPrice.getValue() > this._startingPrice.getValue()) {
+        if (outrightPrice.getValue() > _startingPrice.getValue()) {
             result = true;
         }
         return result;

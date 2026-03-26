@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.valueobject.Currency;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,14 +12,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MemoBidRepoTest {
-    private MemoBidRepo _memoBidRepo;
     private BidFactory _bidFactoryDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        _bidFactoryDouble = mock(BidFactory.class);
+
+    }
 
     @Test
     void shouldSuccessfullyCreateBid(){
         //arrange
         _bidFactoryDouble = mock(BidFactory.class);
-        _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
+
+        //SUT
+        MemoBidRepo _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
 
         User bidderDouble = mock(User.class);
         Price offerPriceDouble = mock(Price.class);
@@ -38,7 +47,9 @@ class MemoBidRepoTest {
     void getHighestBidFail_EmptyBidList() {
         //arrange
         _bidFactoryDouble = mock(BidFactory.class);
-        _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
+
+        //SUT
+        MemoBidRepo _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
 
         //act + assert
         Assertions.assertThrows(IllegalStateException.class, () -> _memoBidRepo.getHighestBid());
@@ -48,7 +59,9 @@ class MemoBidRepoTest {
     void getHighestBid_SingleBid() {
         //arrange
         _bidFactoryDouble = mock(BidFactory.class);
-        _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
+
+        //SUT
+        MemoBidRepo _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
 
         Price priceDouble = mock(Price.class);
         when(priceDouble.getValue()).thenReturn(100.0);
@@ -96,7 +109,9 @@ class MemoBidRepoTest {
     void getHighestBid_MultipleBids_lastHighest() {
         //arrange
         _bidFactoryDouble = mock(BidFactory.class);
-        _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
+
+        //SUT
+        MemoBidRepo _memoBidRepo = new MemoBidRepo(_bidFactoryDouble);
 
         Price priceDouble1 = mock(Price.class);
         when(priceDouble1.getCurrency()).thenReturn(Currency.EUR);

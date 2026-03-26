@@ -13,5 +13,4 @@ public interface IItemRepo {
     List<Item> getAll();
 
     List<Item> getDifferentOf(List<Item> existentItems);
-
 }

@@ -20,7 +20,7 @@ public class MemoGenreRepo implements IGenreRepo {
     }
 
     @Override
-    public Genre addGenre(String genreName) throws IllegalArgumentException {
+    public Genre addGenre(String genreName) {
 
         if (genreExists(genreName)) {
             throw new IllegalArgumentException("This genre already exists");

@@ -18,7 +18,7 @@ public class PublishingCompany {
     }
 
     public String getName() {
-        return this._name;
+        return _name;
     }
 
     // Avoid publisher duplication

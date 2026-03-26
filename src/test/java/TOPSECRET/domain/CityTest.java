@@ -38,7 +38,7 @@ class CityTest {
         // Arrange
         String name = "Porto";
 
-        // Act
+        // SUT
         City city = new City(name, _countryDouble);
 
         // Assert

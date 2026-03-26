@@ -39,7 +39,7 @@ class NameTest {
 
     @ParameterizedTest
     @MethodSource("validNames")
-    void constuctorValidInputsCreatesNormalizedName (String input, String expected) {
+    void constructorValidInputsCreatesNormalizedName(String input, String expected) {
         assertValidName(input, expected);
     }
 

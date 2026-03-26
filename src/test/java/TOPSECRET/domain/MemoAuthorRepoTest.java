@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Author;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,16 +10,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class MemoAuthorRepoTest {
-    private AuthorFactory factory;
-    private MemoAuthorRepo repo;
+
+    private AuthorFactory authorFactoryDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        authorFactoryDouble = mock(AuthorFactory.class);
+
+    }
 
     @Test
     void createAuthorShouldStoreAuthorWithTrimmedName() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         Author author = repo.createAuthor(" Ana   ");
@@ -34,11 +40,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void createAuthorShouldThrowWhenNameIsNull() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(null));
@@ -49,11 +53,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void createAuthorShouldThrowWhenNameIsBlank() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(" "));
@@ -61,11 +63,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void createAuthorShouldThrowWhenNameIsEmpty() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(""));
@@ -73,11 +73,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void createAuthorShouldThrowWhenAuthorAlreadyExistsIgnoringCase() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         repo.createAuthor("Ana");
@@ -91,11 +89,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void findAllShouldReturnDefensiveCopy() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         repo.createAuthor("A");
@@ -111,11 +107,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void existsByNameShouldReturnFalseOnEmptyRepo() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo  repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act + assert
         assertFalse(repo.existsByName("Ana"));
@@ -123,11 +117,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void existsByNameShouldReturnFalseWhenNoMatchExists() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         repo.createAuthor("Ana");
@@ -138,11 +130,9 @@ class MemoAuthorRepoTest {
 
     @Test
     void existsByNameShouldReturnTrueWhenMatchExistsIgnoringCase() {
-        //arrange
-        factory = mock(AuthorFactory.class);
 
         //SUT
-        repo = new MemoAuthorRepo(factory);
+        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
         repo.createAuthor("Ana");

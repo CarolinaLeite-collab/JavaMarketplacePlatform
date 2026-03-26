@@ -18,5 +18,4 @@ public interface IAuctionRepo {
     public List<Item> getAuctionItemsByPublication(Publication publication);
 
     public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher);
-
 }

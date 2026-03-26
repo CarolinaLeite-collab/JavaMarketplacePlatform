@@ -12,20 +12,22 @@ class ItemFactoryTest {
     @Test
     void shouldSuccessfullyCreateItem() {
         //Arrange
-        Publication publication = mock(Publication.class);
+        Publication publicationDouble = mock(Publication.class);
         Condition condition = Condition.LIKE_NEW;
+
+        //SUT
+        ItemFactory factory = new ItemFactory();
+
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class,
                              (mock, context) -> {
-                                 when(mock.getCondition())
+                                 when(mock.get_condition())
                                          .thenReturn(condition);
                              })) {
-            //SUT
-            ItemFactory factory = new ItemFactory();
             //Act
-            Item newItem = factory.createItem(publication, condition);
+            Item newItem = factory.createItem(publicationDouble, condition);
             //Assert
-            assertEquals(condition, newItem.getCondition());
+            assertEquals(condition, newItem.get_condition());
         }
     }
 }

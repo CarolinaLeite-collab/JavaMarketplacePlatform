@@ -27,7 +27,7 @@ public class Language implements ValueObject {
         _code = code.toLowerCase().trim();
         _name = name.trim();
         _nativeName = (nativeName != null) ? nativeName.trim() : name.trim();
-        _locale = new Locale(this._code);
+        _locale = new Locale(_code);
     }
 
     // Factory method - recommended approach

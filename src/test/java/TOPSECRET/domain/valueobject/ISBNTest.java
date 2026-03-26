@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ISBNTest {
 
     @Test
-    void returnExceptionforInvalidIsbn10() {
+    void returnExceptionForInvalidIsbn10() {
         //assert
         assertThrows(IllegalArgumentException.class, () -> new ISBN("123456789"));
     }
