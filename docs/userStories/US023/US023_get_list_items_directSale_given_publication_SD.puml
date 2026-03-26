@@ -20,14 +20,14 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant ":UIGetDirectSaleItemsByPublications" as UI
-participant ":GetDirectSaleItemsByPublicationsController" as Ctl
-participant "_dsRepo:DirectSaleRepo" as dsr
+participant ":GetDirectSaleItems\nByPublicationsUI" as UI
+participant ":GetDirectSaleItems\nByPublicationsController" as Ctl
+participant "_dsRepo:MemoDirectSaleRepo" as dsr
 participant "_ds:DirectSale" as ds
 participant ":Item" as item
 participant ":Publication" as pub
 
-Buyer -> UI: I want to get a list of items on direct sale of a publication
+Buyer -> UI: I want to get a list of items on \ndirect sale of a publication
 activate UI
 UI --> Buyer: Which publication?
 deactivate UI
@@ -35,13 +35,13 @@ deactivate UI
 'publication object
 Buyer -> UI: publication
 activate UI
-UI -> Ctl: getDirectSaleItemsByPublication(publication)
+UI -> Ctl: getDirectSaleItems\nByPublication(publication)
 activate Ctl
-Ctl -> dsr: getDirectSaleItemsByPublication(publication)
+Ctl -> dsr: getDirectSaleItems\nByPublication(publication)
 activate dsr
-create "listOfDirectSaleItemsByPublication: List<Item>" as list
+create "listOfDirectSaleItems\nByPublication: List<Item>" as list
 
-dsr -> list: create()
+dsr -->> list: <<Create>>
 loop for each _ds in _dsRepo
         dsr -> ds: isByPublication(publication)
         activate ds
@@ -62,12 +62,12 @@ loop for each _ds in _dsRepo
 
 end
 
-create "copyOfListOfDirectSaleItemsByPublication: List<Item>" as copy
+create "copyOfListOfDirectSale\nItemsByPublication: List<Item>" as copy
 dsr -> copy: List.copyof(listOfDirectSaleItemsByPublication)
-dsr --> Ctl: copyOfListOfDirectSaleItemsByPublication
+dsr --> Ctl: List.copyOfListOf\nDirectSaleItemsByPublication
 deactivate dsr
-Ctl --> UI: copyOfListOfDirectSaleItemsByPublication
+Ctl --> UI: List.copyOfListOf\nDirectSaleItemsByPublication
 deactivate Ctl
-UI --> Buyer: Here is a list of items on direct sale of publication
+UI --> Buyer: Here is a list of items on \ndirect sale of publication
 deactivate UI
 @enduml

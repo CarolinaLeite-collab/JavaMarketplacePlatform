@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Enum representing supported currencies and their corresponding symbols.
@@ -7,7 +9,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public enum Currency {
+public enum Currency implements ValueObject {
     AUD("$"),
     CAD("$"),
     CHF("Fr"),

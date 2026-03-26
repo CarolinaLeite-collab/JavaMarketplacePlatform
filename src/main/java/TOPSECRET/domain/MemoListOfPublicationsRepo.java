@@ -11,19 +11,20 @@ import java.util.List;
  * </p>
  */
 
-public class ListOfPublicationsRepo {
+public class MemoListOfPublicationsRepo implements IListOfPublicationsRepo {
     private final List<ListOfPublications> _listsOfListOfPublications;
     private final ListOfPublicationsFactory _factory;
 
-    public ListOfPublicationsRepo() {
+    public MemoListOfPublicationsRepo() {
         this(new ListOfPublicationsFactory());
     }
 
-    public ListOfPublicationsRepo(ListOfPublicationsFactory factory) {
+    public MemoListOfPublicationsRepo(ListOfPublicationsFactory factory) {
         _listsOfListOfPublications = new ArrayList<>();
         _factory = factory;
     }
 
+    @Override
     public ListOfPublications addListOfPublications(User user, String name, Genre genre) {
         ListOfPublications newList = _factory.createListOfPublications(user, name, genre);
         if (_listsOfListOfPublications.contains(newList)) {
@@ -33,10 +34,12 @@ public class ListOfPublicationsRepo {
         return newList;
     }
 
+    @Override
     public List<ListOfPublications> getListOfListOfPublications() {
         return List.copyOf(_listsOfListOfPublications);
     }
 
+    @Override
     public List<ListOfPublications> findPublicListsByGenre(Genre genre) {
 
         List<ListOfPublications> result = new ArrayList<>();
@@ -48,6 +51,7 @@ public class ListOfPublicationsRepo {
         return List.copyOf(result);
     }
 
+    @Override
     public List<ListOfPublications> findListsByUser(User user) {
 
         List<ListOfPublications> result = new ArrayList<>();
@@ -59,6 +63,7 @@ public class ListOfPublicationsRepo {
         return List.copyOf(result);
     }
 
+    @Override
     public ListOfPublications findByOwnerNameAndGenre(User user, String name, Genre genre) {
 
         String normalizedName = name.trim();

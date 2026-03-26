@@ -25,12 +25,12 @@ autoactivate off
 actor Buyer
 participant ": GetAuctionItemsByUI" as UI
 participant "ctl:GetAuctionItemsByGenreController" as Ctl
-participant "ar: AuctionRepo" as AuctionRepo
+participant "ar: MemoAuctionRepo" as AuctionRepo
 participant "auction:Auction" as auction
 
 Buyer -> UI: Display list on auction\n items by genre
 activate UI
-UI --> Buyer: Which Genre?
+UI --> Buyer: Which genre?
 deactivate UI
 
 Buyer -> UI: genre
@@ -43,8 +43,8 @@ Ctl -> AuctionRepo: getAuctionItemsByGenre(genre)
 activate AuctionRepo
 
 
-create "listOfAuctionItemsByGenre: List<Item>" as List
-AuctionRepo -> List : create()
+create "listOfAuction\nItemsByGenre: List<Item>" as List
+AuctionRepo -->> List : <<Create>>
 loop for each Auction in AuctionRepo
      AuctionRepo -> auction: isByGenre(genre)
     opt isByGenre== true
@@ -53,7 +53,7 @@ loop for each Auction in AuctionRepo
     end
 end
 
-create "copyOfListOfAuctionItemsByGenre: List<Item>" as Copy
+create "copyOfListOfAuction\nItemsByGenre: List<Item>" as Copy
 AuctionRepo -> Copy:List.copyOf(listOfAuctionItemsByGenre)
 
 AuctionRepo --> Ctl : copyOfListOfAuctionItemsByGenre

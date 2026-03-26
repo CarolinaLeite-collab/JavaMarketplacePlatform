@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Represents a textual description with a maximum allowed length.
@@ -8,7 +10,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public class Description {
+public class Description implements ValueObject {
 
     public static final int MAX_LENGTH = 500;
 

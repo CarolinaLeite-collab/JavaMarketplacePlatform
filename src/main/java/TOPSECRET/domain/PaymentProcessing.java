@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
+
 /**
  * Handles the processing of a payment between a buyer and a seller for a given price.
  * <p>

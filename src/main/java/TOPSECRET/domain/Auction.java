@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
+
 import java.time.ZonedDateTime;
 
 /**
@@ -34,7 +36,7 @@ public class Auction {
     private ZonedDateTime _auctionStartDate;
     private ZonedDateTime _auctionEndDate;
     private User _buyer;
-    private BidRepo _bids;
+    private MemoBidRepo _bids;
     private BidFactory _bidFactory;
 
 
@@ -42,7 +44,7 @@ public class Auction {
     Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
-        _bids = new BidRepo( new BidFactory());
+        _bids = new MemoBidRepo( new BidFactory());
 
 
         if (isOutrightPriceValid(outrightPrice)) {
@@ -72,7 +74,7 @@ public class Auction {
         _item = item;
         _startingPrice = startingPrice;
         _outrightPrice = null;
-        _bids = new BidRepo(new BidFactory());
+        _bids = new MemoBidRepo(new BidFactory());
 
         if (isAuctionStartDateValid(auctionStartDate)) {
             this._auctionStartDate = auctionStartDate;
@@ -94,7 +96,7 @@ public class Auction {
         return _item;
     }
 
-    public BidRepo getBids() {
+    public MemoBidRepo getBids() {
         return _bids;
     }
 

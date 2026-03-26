@@ -21,28 +21,28 @@ autoactivate off
 actor User
 participant "UI1:AddPublicationUI"
 participant "Ctl1:AddPublicationOnLibrary"
-participant "_ir:ItemRepo"
+participant "_ir:IItemRepo"
 participant "myLibrary:Library"
-participant "_lr:LibraryRepo"
+participant "_lr:ILibraryRepo"
 
-User -> "UI1:AddPublicationUI" : I want to add na Item to my library
+User -> "UI1:AddPublicationUI" : I want to add an Item to my library
 activate "UI1:AddPublicationUI"
 "UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailableItems(user)
 activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "_lr:LibraryRepo" : getMyLibrary(user)
-activate "_lr:LibraryRepo"
-"_lr:LibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
-deactivate "_lr:LibraryRepo"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : getAllItens()
+"Ctl1:AddPublicationOnLibrary" -> "_lr:ILibraryRepo" : getMyLibrary(user)
+activate "_lr:ILibraryRepo"
+"_lr:ILibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
+deactivate "_lr:ILibraryRepo"
+"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : getAllItems()
 activate "myLibrary:Library"
 "myLibrary:Library" -> "myLibrary:Library" : copyList
-"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : List<Itens>
+"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : List<Items>
 deactivate "myLibrary:Library"
-"Ctl1:AddPublicationOnLibrary" -> "_ir:ItemRepo" : getDifferentOf(existentItems)
-activate "_ir:ItemRepo"
-"_ir:ItemRepo" -> "_ir:ItemRepo" : copyList
-"_ir:ItemRepo" --> "Ctl1:AddPublicationOnLibrary" : List<Items>
-deactivate "_ir:ItemRepo"
+"Ctl1:AddPublicationOnLibrary" -> "_ir:IItemRepo" : getDifferentOf(existentItems)
+activate "_ir:IItemRepo"
+"_ir:IItemRepo" -> "_ir:IItemRepo" : copyList
+"_ir:IItemRepo" --> "Ctl1:AddPublicationOnLibrary" : List<Items>
+deactivate "_ir:IItemRepo"
 "Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : List<Items>
 deactivate "Ctl1:AddPublicationOnLibrary"
 "UI1:AddPublicationUI" --> User : Select what available items you want to add

@@ -1,6 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-public class NumberOfPages {
+import TOPSECRET.ddd.ValueObject;
+
+public class NumberOfPages implements ValueObject {
     private final int _numberOfPages;
 
     public NumberOfPages(int numberOfPages) {

@@ -15,26 +15,27 @@ import java.util.List;
  * </p>
  */
 
-public class PublicationRepo {
+public class MemoPublicationRepo implements IPublicationRepo {
 
     private List<Publication> _publications;
     private final PublicationFactory _publicationFactory;
 
-    public PublicationRepo(PublicationFactory publicationFactory) {
+    public MemoPublicationRepo(PublicationFactory publicationFactory) {
         _publications = new ArrayList<>();
         _publicationFactory = publicationFactory;
     }
 
+    @Override
     public Publication addPublication(PublicationType type,
                            Identifier identifier,
-                           Year year,
+                           Year publicationYear,
                            Title title,
                            Author author,
                            PublishingCompany publisher,
                            Edition edition,
                            Genre genre) {
 
-        Publication newPublication = _publicationFactory.createPublication(type, identifier, year, title, author, publisher, edition, genre);
+        Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, edition, genre);
 
         if (_publications.contains(newPublication)) {  // Replaces the "publicationAlreadyExists" method
             throw new IllegalArgumentException("Publication already exists in the repository");
@@ -44,6 +45,7 @@ public class PublicationRepo {
     }
 
     //check publications that are still out of the library
+    @Override
     public List<Publication> getDifferentOf(List<Publication> existentPublications) {
         List<Publication> result = new ArrayList<>();
         for (Publication publication : _publications){
@@ -54,6 +56,7 @@ public class PublicationRepo {
         return List.copyOf(result);
     }
 
+    @Override
     public Publication getPublication(Publication publication) {
         return _publications.stream()
                 .filter(p -> p.equals(publication))

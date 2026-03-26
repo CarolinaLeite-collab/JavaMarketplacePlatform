@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -156,7 +157,7 @@ class AuctionTest {
         Auction auction = new Auction(_itemDouble, _startingPriceDouble, start, end);
 
         // Act
-        BidRepo bidRepo = auction.getBids();
+        MemoBidRepo bidRepo = auction.getBids();
 
         // Assert
         assertNotNull(bidRepo);
@@ -234,7 +235,7 @@ class AuctionTest {
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
         setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
 
-        BidRepo bids = mock(BidRepo.class);
+        MemoBidRepo bids = mock(MemoBidRepo.class);
         setPrivateField(auction, "_bids", bids);
 
         Bid bid = mock(Bid.class);
@@ -262,7 +263,7 @@ class AuctionTest {
         when(highestBid.getBidder()).thenReturn(bidder);
         when(highestBid.getOfferPrice()).thenReturn(highestPrice);
 
-        BidRepo bids = mock(BidRepo.class);
+        MemoBidRepo bids = mock(MemoBidRepo.class);
         when(bids.getHighestBid()).thenReturn(highestBid);
         setPrivateField(auction, "_bids", bids);
 

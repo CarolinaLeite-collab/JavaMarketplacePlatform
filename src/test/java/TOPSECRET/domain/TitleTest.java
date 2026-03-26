@@ -66,105 +66,169 @@ class TitleTest {
     @Test
     void invalidNullTitle() {
 
-        //Title can be anything, but has to exist/cannot be null
-
         //arrange
         String nullTitle = null;
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act and assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Title(nullTitle)
-        );
+        //act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Title(nullTitle));
+
+        //assert
+        assertEquals(expectedMessage, exception.getMessage());
 
     }
 
     @Test
     void invalidEmptyTitle() {
 
-        //Title can be anything, but has to exist/cannot be empty
-
         //arrange
         String emptyTitle = "";
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act and assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Title(emptyTitle)
-        );
+        //act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Title(emptyTitle));
 
+        //assert
+        assertEquals(expectedMessage, exception.getMessage());
 
     }
 
     @Test
     void invalidBlankTitle() {
 
-        //Title can be anything, but has to exist/cannot be blank
-
         //arrange
         String blankTitle = " ";
         String expectedMessage = "Title cannot be null, empty, or blank";
 
-        //act and assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new Title(blankTitle)
-        );
+        //act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class, () -> new Title(blankTitle));
+
+        //assert
+        assertEquals(expectedMessage, exception.getMessage());
 
     }
 
     @Test
     void titleWithSameName() {
+
+        //arrange
         Title title = new Title("My Title");
         Title title1 = new Title("My Title");
 
-        assertEquals(title, title1);
+        //act
+        boolean result = title.equals(title1);
+
+        //assert
+        assertTrue(result);
+
     }
 
     @Test
     void titleWithSameNameHaveSameHashCode() {
+
+        //arrange
         Title title = new Title("My Title");
         Title title1 = new Title("MY TITLE");
 
-        assertEquals(title.hashCode(), title1.hashCode());
+        //act
+        boolean result = title.equals(title1);
+
+        //assert
+        assertTrue(result);
+
     }
 
     @Test
     void titleEqualsItself() {
+
+        //arrange
         Title title = new Title("My Title");
 
-        assertEquals(title, title);
+        //act
+        boolean result = title.equals(title);
+
+        //act & assert
+        assertTrue(result);
+
     }
 
     @Test
     void titleNotEqualsToNull() {
+
+        //arrange
         Title title = new Title("My Title");
 
-        assertNotEquals(null, title);
+        //act
+        boolean result = title.equals(null);
+
+        //act & assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void equalsReturnsFalseWhenObjectIsNotTitle() {
+
+        //arrange
+        Title title = new Title("Book");
+
+        //act
+        boolean result = title.equals("Not a Title");
+
+        //assert
+        assertFalse(result);
+
     }
 
     @Test
     void titleNotEqualsToDifferentType() {
+
+        //arrange
         Title title = new Title("My Title");
 
+        //act
+        boolean result = title.equals("Not a Title");
+
+        //assert
         assertNotEquals("My Title", title);
+
     }
 
     @Test
     void titleWithDifferentNameAreNotEqual() {
+
+        //arrange
         Title title = new Title("My Title");
         Title title1 = new Title("My First Title");
 
-        assertNotEquals(title, title1);
-        assertNotEquals(title.hashCode(), title1.hashCode());
+        //act
+        boolean result = title.equals(title1);
+        boolean result1 = title.hashCode() == title1.hashCode();
+
+        //assert
+        assertFalse(result);
+        assertFalse(result1);
+
     }
 
     @Test
     void titleEqualsIgnoresCase() {
+
+        //arrange
         Title title = new Title("My Title");
         Title title1 = new Title("My TITLE");
 
-        assertEquals(title, title1);
-        assertEquals(title.hashCode(), title1.hashCode());
+        //act
+        boolean result = title.equals(title1);
+        boolean result1 = title.hashCode() == title1.hashCode();
+
+        //assert
+        assertTrue(result);
+        assertTrue(result1);
+
     }
 
 }

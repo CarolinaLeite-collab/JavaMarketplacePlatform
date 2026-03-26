@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,17 +14,18 @@ import java.util.Objects;
  * </p>
  */
 
-public class BidRepo {
+public class MemoBidRepo implements IBidRepo {
 
     private List<Bid> _bids;
     private BidFactory _bidFactory;
 
     //public constructor
-    public BidRepo(BidFactory bidFactory) {
+    public MemoBidRepo(BidFactory bidFactory) {
         _bids = new ArrayList<>();
         _bidFactory = bidFactory;
     }
 
+    @Override
     public Bid createBid(User bidder, Price offerPrice) {
         Bid bid = _bidFactory.createBid(bidder, offerPrice);
 
@@ -36,6 +39,7 @@ public class BidRepo {
     }
 
     //method to get Highest Bid
+    @Override
     public Bid getHighestBid() {
 
         if (_bids.isEmpty()) {

@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Email;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -45,10 +46,10 @@ class UserFactoryTest {
         try (MockedConstruction<User> mockedConstruction = mockConstruction(User.class)) {
 
             //Act
-            User userTypeB_Result = userFactory.createUserTypeB(nameDouble, addressDouble, emailDouble, phoneDouble);
+            User userResult = userFactory.createUser(nameDouble, addressDouble, emailDouble, phoneDouble);
 
             //Assert
-            assertNotNull(userTypeB_Result);
+            assertNotNull(userResult);
             assertEquals(1, mockedConstruction.constructed().size());
         }
     }

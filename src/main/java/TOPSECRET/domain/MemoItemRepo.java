@@ -19,15 +19,16 @@ import java.util.List;
  * </p>
  */
 
-public class ItemRepo {
+public class MemoItemRepo implements IItemRepo{
 
     private final List<Item> _items = new ArrayList<>();
     private ItemFactory _itemFactory;
 
-    public ItemRepo() {
-        _itemFactory = new ItemFactory();
+    public MemoItemRepo(ItemFactory itemFactory) {
+        _itemFactory = itemFactory;
     }
 
+    @Override
     public boolean exists(Publication publication) {
         if (publication == null) return false;
 
@@ -39,6 +40,7 @@ public class ItemRepo {
         return false;
     }
 
+    @Override
     public Item createItem(Publication publication, Condition condition) {
         if (exists(publication)) {
             throw new IllegalArgumentException("Item for this publication already exists!");
@@ -49,10 +51,12 @@ public class ItemRepo {
         return item;
     }
 
+    @Override
     public List<Item> getAll() {
         return Collections.unmodifiableList(_items);
     }
 
+    @Override
     public List<Item> getDifferentOf(List<Item> existentItems) {
         List<Item> result = new ArrayList<>();
         for (Item item : _items) {
@@ -63,4 +67,3 @@ public class ItemRepo {
         return List.copyOf(result);
     }
 }
-

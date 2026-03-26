@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Represents a user's rating using a star-based system from one to five stars.
@@ -7,7 +9,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public enum UserRating {
+public enum UserRating implements ValueObject {
     ONE_STAR("★"),
     TWO_STARS("★★"),
     THREE_STARS("★★★"),

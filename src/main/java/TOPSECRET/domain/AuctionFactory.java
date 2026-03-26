@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
+
 import java.time.ZonedDateTime;
 
 /**
@@ -23,7 +25,7 @@ public class AuctionFactory {
      * @throws InstantiationException when auction creation fails
      */
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
-                          ZonedDateTime auctionEndDate) throws InstantiationException {
+                                 ZonedDateTime auctionEndDate) throws InstantiationException {
 
         try {
             return new Auction(item, startingPrice, auctionStartDate, auctionEndDate);

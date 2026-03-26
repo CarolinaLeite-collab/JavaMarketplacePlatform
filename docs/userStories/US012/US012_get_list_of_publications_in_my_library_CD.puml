@@ -19,17 +19,21 @@ class GetListOfPublicationsUI {
 }
 
 class ListOfPublicationsInMyLibraryController {
-    +getListOfPublicationDetails(user: User) : List<PublicationDetails>
+    +getListOfPublicationDetails(userID: UserID) : List<PublicationDetails>
 }
 
-class LibraryRepo {
-      +addLibrary(user: User) : Library
-      +findLibraryByUser(user: User) : Library
+interface ILibraryRepo{
+ +addLibrary(userID: UserID) : Library
+ +findLibraryByUser(userID: UserID) : Library
+}
+
+class MemoLibraryRepo {
+
 }
 
 class Library {
-  -_owner : String
-  +getUserID() : String
+  -_owner : UserID
+  +getUserID() : UserID
   +getPublicationDetails() : List<PublicationDetails>
 }
 
@@ -42,8 +46,9 @@ class PublicationDetails{
 }
 
 GetListOfPublicationsUI "1"..> "1"ListOfPublicationsInMyLibraryController :uses
-ListOfPublicationsInMyLibraryController "1"..> "1"LibraryRepo : uses
-LibraryRepo "1" --> "*" Library : manages
+ListOfPublicationsInMyLibraryController "1"..> "1"ILibraryRepo : uses
+MemoLibraryRepo ..|> ILibraryRepo
+MemoLibraryRepo "1" --> "*" Library : manages
 Library "1" ..> "*" PublicationDetails : uses
 
 

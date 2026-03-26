@@ -11,15 +11,16 @@ import java.util.List;
  * based on their name.
  */
 
-public class CountryRepo {
+public class MemoCountryRepo implements ICountryRepo {
     private final List<Country> _countries;
     private final CountryFactory _countryFactory;
 
-    public CountryRepo(CountryFactory countryFactory){
+    public MemoCountryRepo(CountryFactory countryFactory){
         _countries = new ArrayList<>();
         _countryFactory =  countryFactory;
     }
 
+    @Override
     public Country registerCountry(String countryName) throws InstantiationException {
         Country newCountry = _countryFactory.createCountry(countryName);
 
@@ -32,19 +33,12 @@ public class CountryRepo {
         }
     }
 
-    private boolean existsCountry(Country country) {
-        for (Country country1 : _countries) {
-            if (country1.equals(country)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    @Override
     public List<Country> getAllCountries() {
         return List.copyOf(_countries);
     }
 
+    @Override
     public Country findByName(String name) {
         if (name == null) {
             return null;
@@ -55,5 +49,14 @@ public class CountryRepo {
                 return c;
         }
         return null;
+    }
+
+    private boolean existsCountry(Country country) {
+        for (Country country1 : _countries) {
+            if (country1.equals(country)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

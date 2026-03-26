@@ -1,23 +1,24 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.IListOfPublicationsRepo;
 
 import java.util.List;
 
 /**
  * Controller responsible for handling the addition of new items to a list.
  * <p>
- * This controller interacts with the {@link ListOfPublicationsRepo} and {@link LibraryRepo}
+ * This controller interacts with the {@link IListOfPublicationsRepo} and {@link LibraryRepo}
  * to retrieve available publications and to add selected publications to a user's list.
  * </p>
  */
 
 public class AddPublicationToListController {
 
-    private final ListOfPublicationsRepo _listRepo;
+    private final IListOfPublicationsRepo _listRepo;
     private final LibraryRepo _libraryRepo;
 
-    public AddPublicationToListController(ListOfPublicationsRepo listRepo, LibraryRepo libraryRepo) {
+    public AddPublicationToListController(IListOfPublicationsRepo listRepo, LibraryRepo libraryRepo) {
 
         _listRepo = listRepo;
         _libraryRepo = libraryRepo;

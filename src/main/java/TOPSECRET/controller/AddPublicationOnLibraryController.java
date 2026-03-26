@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Controller responsible for handling the addition of publications to a user's library.
  * <p>
- * This controller interacts with the {@link PublicationRepo} and {@link LibraryRepo}
+ * This controller interacts with the {@link IItemRepo} and {@link LibraryRepo}
  * to retrieve available publications and to add selected publications to a user's library.
  * </p>
  */
@@ -14,12 +14,12 @@ import java.util.List;
 public class AddPublicationOnLibraryController {
     private final LibraryRepo _libraryRepo;
     private final Library _library;
-    private final ItemRepo _itemRepo;
+    private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(LibraryRepo libraryRepo, Library library, ItemRepo itemRepo) {
+    public AddPublicationOnLibraryController(LibraryRepo libraryRepo, Library library, IItemRepo itemRepo) {
         _libraryRepo = libraryRepo;
         _library = library;
-        _itemRepo = itemRepo;
+        _iItemRepo = itemRepo;
     }
 
     public Library getMyLibrary(User user) {
@@ -33,7 +33,7 @@ public class AddPublicationOnLibraryController {
     public List<Item> getListOfAvailableItems(User user) {
         Library myLibrary = getMyLibrary(user);
         List<Item> existentItems = myLibrary.getItemsInLibrary();
-        return _itemRepo.getDifferentOf(existentItems);
+        return _iItemRepo.getDifferentOf(existentItems);
     }
 
     public boolean addItemToLibrary(Item selectedItem, User user) {

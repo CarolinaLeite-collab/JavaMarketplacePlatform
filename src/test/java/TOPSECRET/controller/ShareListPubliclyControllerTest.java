@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.IListOfPublicationsRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,23 +13,23 @@ import static org.mockito.Mockito.*;
 class ShareListPubliclyControllerTest {
 
     private ListOfPublications _listOfPublications;
-    private ListOfPublicationsRepo _listOfPublicationsRepo;
+    private IListOfPublicationsRepo _iListOfPublicationsRepo;
     private User _user;
 
     @BeforeEach
     void setUp() {
         _listOfPublications = mock(ListOfPublications.class);
-        _listOfPublicationsRepo = mock(ListOfPublicationsRepo.class);
+        _iListOfPublicationsRepo = mock(IListOfPublicationsRepo.class);
         _user = mock(User.class);
     }
 
     @Test
     void returnListFromRepo() {
         //arrange
-        when(_listOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
+        when(_iListOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         List<ListOfPublications> result = _controller.getListOfLists(_user);
@@ -40,7 +41,7 @@ class ShareListPubliclyControllerTest {
     @Test
     void shouldReturnFalseWhenSelectedListIsNull() {
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         boolean result = _controller.shareListPublicly(null);
@@ -55,7 +56,7 @@ class ShareListPubliclyControllerTest {
         doNothing().when(_listOfPublications).makePublic();
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         boolean result = _controller.shareListPublicly(_listOfPublications);

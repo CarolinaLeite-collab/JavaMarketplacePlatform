@@ -1,4 +1,7 @@
 package TOPSECRET.domain;
+
+import TOPSECRET.domain.valueobject.Price;
+
 /**
  * Factory responsible for creating {@link Bid} instances.
  * <p>
