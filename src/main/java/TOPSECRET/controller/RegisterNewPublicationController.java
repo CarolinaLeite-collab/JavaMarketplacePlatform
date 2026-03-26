@@ -17,10 +17,10 @@ import java.util.Objects;
 
 public class RegisterNewPublicationController {
 
-    private IPublicationRepo _publicationRepo;
+    private IPublicationRepo _iPublicationRepo;
 
-    public RegisterNewPublicationController(IPublicationRepo publicationRepo) {
-        this._publicationRepo = Objects.requireNonNull(publicationRepo, "publicationRepo");
+    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo) {
+        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo");
     }
 
     public Publication registerPublication(PublicationType publicationType,

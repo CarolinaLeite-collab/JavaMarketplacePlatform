@@ -21,7 +21,7 @@ public class RegisterCountryController {
             throw new SecurityException("User is not authorized to register countries");
         }
 
-        this._countryRepo = CountryRepo;
+        _countryRepo = CountryRepo;
     }
 
     public Country registerCountry(String countryName) throws InstantiationException {
