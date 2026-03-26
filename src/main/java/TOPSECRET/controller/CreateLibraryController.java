@@ -17,17 +17,17 @@ import TOPSECRET.domain.User;
 
 public class CreateLibraryController {
 
-    private final ILibraryRepo _libraryRepo;
+    private final ILibraryRepo _iLibraryRepo;
 
     public CreateLibraryController(ILibraryRepo lr, User user){
 
-        _libraryRepo =lr;
+        _iLibraryRepo =lr;
 
     }
 
     public Library createLibrary(User user){
 
-        Library library= _libraryRepo.addLibrary(user);
+        Library library= _iLibraryRepo.addLibrary(user);
 
         return library;
 

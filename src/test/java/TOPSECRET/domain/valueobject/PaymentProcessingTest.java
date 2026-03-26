@@ -1,7 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.PaymentProcessing;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

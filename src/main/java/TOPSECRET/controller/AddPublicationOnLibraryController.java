@@ -13,18 +13,18 @@ import java.util.List;
  */
 
 public class AddPublicationOnLibraryController {
-    private final ILibraryRepo _libraryRepo;
+    private final ILibraryRepo _iLibraryRepo;
     private final Library _library;
     private final IItemRepo _iItemRepo;
 
     public AddPublicationOnLibraryController(ILibraryRepo libraryRepo, Library library, IItemRepo itemRepo) {
-        _libraryRepo = libraryRepo;
+        _iLibraryRepo = libraryRepo;
         _library = library;
         _iItemRepo = itemRepo;
     }
 
     public Library getMyLibrary(User user) {
-        return _libraryRepo.findLibraryByUser(user);
+        return _iLibraryRepo.findLibraryByUser(user);
     }
 
     public List<Item> getAllItems() {

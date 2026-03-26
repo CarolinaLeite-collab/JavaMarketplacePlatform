@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.MemoAuctionRepo;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.Author;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +16,13 @@ import static org.mockito.Mockito.*;
 class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
     private User _buyerDouble;
-    private MemoAuctionRepo _iAuctionRepoDouble;
+    private IAuctionRepo _iAuctionRepoDouble;
     private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
         _buyerDouble = mock(User.class);
-        _iAuctionRepoDouble = mock(MemoAuctionRepo.class);
+        _iAuctionRepoDouble = mock(IAuctionRepo.class);
         _authorDouble = mock(Author.class);
     }
 

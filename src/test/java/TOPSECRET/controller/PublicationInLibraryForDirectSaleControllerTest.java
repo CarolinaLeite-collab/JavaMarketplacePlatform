@@ -14,40 +14,40 @@ import static org.mockito.Mockito.*;
 class PublicationInLibraryForDirectSaleControllerTest {
 
     private PublicationInLibraryForDirectSaleController _controller;
-    private ILibraryRepo _libraryRepoDouble;
-    private IDirectSaleRepo _directSaleRepoDouble;
+    private ILibraryRepo _iLibraryRepoDouble;
+    private IDirectSaleRepo _iDirectSaleRepoDouble;
     private User _userDouble;
     private Library _libraryDouble;
     private Item _itemDouble;
     private Price _priceDouble;
     private Period _timeLimitDouble;
-    private User _userID;
+    private User _userIDDouble;
 
     @BeforeEach
     void setUp() {
-        _libraryRepoDouble = mock(ILibraryRepo.class);
-        _directSaleRepoDouble = mock(IDirectSaleRepo.class);
+        _iLibraryRepoDouble = mock(ILibraryRepo.class);
+        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
         _userDouble = mock(User.class);
         _libraryDouble = mock(Library.class);
         _itemDouble = mock(Item.class);
         _priceDouble = mock(Price.class);
         _timeLimitDouble = Period.ofDays(30);
-        _userID = mock(User.class);
+        _userIDDouble = mock(User.class);
 
-        _controller = new PublicationInLibraryForDirectSaleController(_libraryRepoDouble, _directSaleRepoDouble, _userID); //SUT
+        _controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIDDouble); //SUT
     }
 
     @Test
     void testConstructorPublicationInLibraryForDirectSaleController() {
         //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(_libraryRepoDouble, _directSaleRepoDouble, _userID));
+                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIDDouble));
     }
 
     @Test
     void testGetItemsInLibraryForUserWithoutLibraryByUser() {
         //Arrange
-        when(_libraryRepoDouble.getItemsInLibraryByUser(_userDouble))
+        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble))
                 .thenThrow(new IllegalStateException("Library not found for user"));
 
         //Act + Assert
@@ -58,7 +58,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void testGetItemsInLibraryForUserWithEmptyLibraryByUser() {
         //Arrange
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of());
 
         //Act
@@ -72,7 +72,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void testGetItemsInLibraryForUserWithItemsInLibraryByUser() {
         //Arrange
-        when(_libraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
+        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
 
         //Act
         List<Item> result = _controller.getItemsInLibraryByUser(_userDouble);
@@ -85,7 +85,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void testGetItemsInLibraryByUserListIsImmutable() {
         //Arrange
-        when(_libraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
+        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
 
         //Act
         List<Item> result = _controller.getItemsInLibraryByUser(_userDouble);
@@ -98,7 +98,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     void testAddItemForDirectSaleSuccess() {
         //Arrange
         DirectSale _directSaleDouble = mock(DirectSale.class);
-        when(_directSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
+        when(_iDirectSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
                 .thenReturn(_directSaleDouble);
         //Act
         DirectSale result = _controller.addItemForDirectSale(_itemDouble, _priceDouble, _timeLimitDouble);
@@ -106,14 +106,14 @@ class PublicationInLibraryForDirectSaleControllerTest {
         //Assert
         assertNotNull(result);
         assertEquals(_directSaleDouble, result);
-        verify(_directSaleRepoDouble).addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble);
+        verify(_iDirectSaleRepoDouble).addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble);
         verify(_itemDouble).setDirectSale(_directSaleDouble);
     }
 
     @Test
     void testAddItemForDirectSaleWhenItemAlreadyInDirectSale() {
         //Arrange
-        when(_directSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
+        when(_iDirectSaleRepoDouble.addDirectSale(_itemDouble, _priceDouble, _timeLimitDouble))
                 .thenReturn(mock(DirectSale.class));
 
 

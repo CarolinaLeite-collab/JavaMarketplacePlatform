@@ -15,16 +15,16 @@ import java.util.List;
  */
 
 public class GetAuctionItemsByPublicationController {
-    private final IAuctionRepo _ar;
+    private final IAuctionRepo _iAuctionRepo;
 
     public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, User buyer){
 
-        _ar = iAuctionRepo;
+        _iAuctionRepo = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByPublication(Publication publication) {
 
-        List<Item> auctionItemsByPublication = _ar.getAuctionItemsByPublication(publication);
+        List<Item> auctionItemsByPublication = _iAuctionRepo.getAuctionItemsByPublication(publication);
 
         return auctionItemsByPublication;
 

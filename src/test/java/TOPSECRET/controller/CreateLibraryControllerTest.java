@@ -14,20 +14,20 @@ class CreateLibraryControllerTest {
 
 
     private User _userDouble;
-    private ILibraryRepo _repoDouble;
+    private ILibraryRepo _iLibraryRepoDouble;
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
-        _repoDouble = mock(ILibraryRepo.class);
+        _iLibraryRepoDouble = mock(ILibraryRepo.class);
     }
 
     @Test
     void testCreateLibraryController(){
 
         // SUT
-        new CreateLibraryController(_repoDouble, _userDouble);
+        new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
     }
 
 
@@ -36,17 +36,17 @@ class CreateLibraryControllerTest {
 
         // Arrange
         Library libraryDouble = mock(Library.class);
-        when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
+        when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
 
         // SUT
-        CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
+        CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
 
         // Act
         Library myLibrary = createLibraryController.createLibrary(_userDouble);
 
         // Assert
         assertEquals(libraryDouble, myLibrary);
-        verify(_repoDouble).addLibrary(_userDouble);
+        verify(_iLibraryRepoDouble).addLibrary(_userDouble);
 
     }
 
@@ -54,10 +54,10 @@ class CreateLibraryControllerTest {
     void createLibraryShouldThrowWhenLibraryAlreadyExist(){
 
         // Arrange
-       when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
+       when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
 
        // SUT
-       CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
+       CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
 
 
         // Act & Assert

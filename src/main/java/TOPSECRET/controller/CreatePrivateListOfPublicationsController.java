@@ -14,7 +14,7 @@ import java.util.List;
 
 public class CreatePrivateListOfPublicationsController {
 
-    private final IListOfPublicationsRepo _listOfPublicationsRepo;
+    private final IListOfPublicationsRepo _iListOfPublicationsRepo;
     private final IGenreRepo _iGenreRepo;
 
     public CreatePrivateListOfPublicationsController(
@@ -22,7 +22,7 @@ public class CreatePrivateListOfPublicationsController {
             IGenreRepo genreRepo,
             User user) {
 
-        _listOfPublicationsRepo = listOfPublicationsRepo;
+        _iListOfPublicationsRepo = listOfPublicationsRepo;
         _iGenreRepo = genreRepo;
     }
 
@@ -31,6 +31,6 @@ public class CreatePrivateListOfPublicationsController {
     }
 
     public ListOfPublications createListOfPublications(User user, String name, Genre genre) {
-        return _listOfPublicationsRepo.addListOfPublications(user, name, genre);
+        return _iListOfPublicationsRepo.addListOfPublications(user, name, genre);
     }
 }

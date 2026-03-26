@@ -1,7 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.Appraisal;
-import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;

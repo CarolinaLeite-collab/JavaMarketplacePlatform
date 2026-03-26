@@ -17,17 +17,17 @@ import java.util.List;
 
 public class GetListOfOfficialGenresController {
 
-    private IGenreRepo _igr;
+    private IGenreRepo _iGenreRepo;
 
     public GetListOfOfficialGenresController(IGenreRepo igr, User user) {
 
-        _igr = igr;
+        _iGenreRepo = igr;
 
     }
 
     public List<Genre> getListOfOfficialGenres(){
 
-        List<Genre> listOfOfficialGenres = _igr.getListOfOfficialGenres();
+        List<Genre> listOfOfficialGenres = _iGenreRepo.getListOfOfficialGenres();
 
         return listOfOfficialGenres;
 

@@ -13,15 +13,15 @@ import TOPSECRET.domain.valueobject.Author;
 
 public class CreateAuthorController {
 
-    private IAuthorRepo _authorRepo;
+    private IAuthorRepo _iAuthorRepo;
 
     public CreateAuthorController(IAuthorRepo ar) {
-        _authorRepo = ar;
+        _iAuthorRepo = ar;
     }
 
     public Author createAuthor (String authorName){
 
-        return _authorRepo.createAuthor(authorName.trim());
+        return _iAuthorRepo.createAuthor(authorName.trim());
 
     }
 

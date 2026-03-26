@@ -13,27 +13,27 @@ import static org.mockito.Mockito.*;
 
 class ShareListPubliclyControllerTest {
 
-    private ListOfPublications _listOfPublications;
-    private IListOfPublicationsRepo _iListOfPublicationsRepo;
-    private User _user;
+    private ListOfPublications _listOfPublicationsDouble;
+    private IListOfPublicationsRepo _iListOfPublicationsRepoDouble;
+    private User _userDouble;
 
     @BeforeEach
     void setUp() {
-        _listOfPublications = mock(ListOfPublications.class);
-        _iListOfPublicationsRepo = mock(IListOfPublicationsRepo.class);
-        _user = mock(User.class);
+        _listOfPublicationsDouble = mock(ListOfPublications.class);
+        _iListOfPublicationsRepoDouble = mock(IListOfPublicationsRepo.class);
+        _userDouble = mock(User.class);
     }
 
     @Test
     void returnListFromRepo() {
         //arrange
-        when(_iListOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
+        when(_iListOfPublicationsRepoDouble.findListsByUser(_userDouble)).thenReturn(List.of(_listOfPublicationsDouble));
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
 
         //act
-        List<ListOfPublications> result = _controller.getListOfLists(_user);
+        List<ListOfPublications> result = _controller.getListOfLists(_userDouble);
 
         //assert
         assertEquals(1, result.size());
@@ -42,7 +42,7 @@ class ShareListPubliclyControllerTest {
     @Test
     void shouldReturnFalseWhenSelectedListIsNull() {
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
 
         //act
         boolean result = _controller.shareListPublicly(null);
@@ -54,16 +54,16 @@ class ShareListPubliclyControllerTest {
     @Test
     void makesListPublicWhenInitiallyPrivate() {
         //arrange
-        doNothing().when(_listOfPublications).makePublic();
+        doNothing().when(_listOfPublicationsDouble).makePublic();
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
 
         //act
-        boolean result = _controller.shareListPublicly(_listOfPublications);
+        boolean result = _controller.shareListPublicly(_listOfPublicationsDouble);
 
         //assert
         assertTrue(result);
-        verify(_listOfPublications).makePublic();
+        verify(_listOfPublicationsDouble).makePublic();
     }
 }

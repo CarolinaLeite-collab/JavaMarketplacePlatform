@@ -16,13 +16,13 @@ import java.util.List;
 
 public class GetPublicationTypeListController {
 
-    private final IPublicationTypeRepo _iPubTypeRepo;
+    private final IPublicationTypeRepo _iPublicationTypeRepo;
 
     public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo, User user) {
-        _iPubTypeRepo = iPublicationTypeRepo;
+        _iPublicationTypeRepo = iPublicationTypeRepo;
     }
 
     public List<PublicationType> getListOfPublicationTypes() {
-        return _iPubTypeRepo.getAll();
+        return _iPublicationTypeRepo.getAll();
     }
 }

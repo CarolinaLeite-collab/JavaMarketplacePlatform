@@ -16,19 +16,19 @@ import static org.mockito.Mockito.when;
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     private Item _itemDouble;
     private PublishingCompany _publisherCompanyDouble;
-    private IDirectSaleRepo _directSaleRepoDouble;
+    private IDirectSaleRepo _iDirectSaleRepoDouble;
 
     @BeforeEach
     void setUp() {
         _publisherCompanyDouble = mock(PublishingCompany.class);
         _itemDouble = mock(Item.class);
-        _directSaleRepoDouble = mock(IDirectSaleRepo.class);
+        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
     }
 
     @Test
     void constructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
         //Act /SUT
-        new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepoDouble);
+        new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble);
     }
     @Test
     void constructorThrowsNullPointerExceptionWhenDirectSaleRepoIsNull() {
@@ -39,7 +39,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     @Test
     void getDirectSaleItemByPublisherThrowsIllegalArgumentExceptionWhenPublisherIsNull() {
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepoDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble);
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> ctr.getDirectSaleItemByPublisher(null));
     }
@@ -48,9 +48,9 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherDelegatesToRepository() {
         //Arrange
         List<Item> expected = List.of(_itemDouble);
-        when(_directSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepoDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble);
         //Act
         List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
         //Assert
@@ -61,9 +61,9 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherReturnsEmptyListWhenRepositoryReturnsEmpty() {
         //Arrange
         List<Item> expected = List.of();
-        when(_directSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_directSaleRepoDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble);
         //Act
         List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
         //Assert

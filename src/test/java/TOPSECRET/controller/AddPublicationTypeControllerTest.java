@@ -15,16 +15,16 @@ import static org.mockito.Mockito.when;
 
 class AddPublicationTypeControllerTest {
 
-    private IPublicationTypeRepo _iPubTypeRepoDouble;
+    private IPublicationTypeRepo _iPublicationTypeRepoDouble;
     private PublicationType _pubTypeDouble;
     private User _adminDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException {
-        _iPubTypeRepoDouble = mock(IPublicationTypeRepo.class);
+        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
 
         _pubTypeDouble = mock(PublicationType.class);
-        when(_iPubTypeRepoDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
+        when(_iPublicationTypeRepoDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
 
         _adminDouble = mock(User.class);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
@@ -35,7 +35,7 @@ class AddPublicationTypeControllerTest {
     void constructorAddPublicationTypeControllerShouldCreateController() {
 
         //SUT
-        new  AddPublicationTypeController(_iPubTypeRepoDouble, _adminDouble);
+        new  AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
     }
 
@@ -48,7 +48,7 @@ class AddPublicationTypeControllerTest {
         String publicationTypeName = "book";
 
         //act + assert
-        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_iPubTypeRepoDouble, adminDouble)); //SUT
+        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_iPublicationTypeRepoDouble, adminDouble)); //SUT
     }
 
     @Test
@@ -57,7 +57,7 @@ class AddPublicationTypeControllerTest {
         String publicationTypeName = "book";
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPubTypeRepoDouble, _adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
         //act
 
@@ -72,11 +72,11 @@ class AddPublicationTypeControllerTest {
 
         //arrange
         String publicationTypeName = "book";
-        when(_iPubTypeRepoDouble.addPublicationType("book"))
+        when(_iPublicationTypeRepoDouble.addPublicationType("book"))
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPubTypeRepoDouble, _adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));

@@ -15,16 +15,16 @@ import java.util.List;
  */
 
 public class GetPublicListsByGenreController {
-    private final IListOfPublicationsRepo _iListOfPubRepo;
+    private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
     public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo) {
-        _iListOfPubRepo = iListOfPubRepo;
+        _iListOfPublicationsRepo = iListOfPubRepo;
     }
 
     public List<ListOfPublications> getPublicListsByGenre(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _iListOfPubRepo.findPublicListsByGenre(genre);
+        return _iListOfPublicationsRepo.findPublicListsByGenre(genre);
     }
 }

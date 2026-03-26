@@ -1,6 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.Weight;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

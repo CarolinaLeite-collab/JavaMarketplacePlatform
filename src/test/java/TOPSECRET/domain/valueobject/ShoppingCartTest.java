@@ -1,8 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.valueobject.Currency;
-import TOPSECRET.domain.valueobject.Price;
-import TOPSECRET.domain.valueobject.ShoppingCart;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

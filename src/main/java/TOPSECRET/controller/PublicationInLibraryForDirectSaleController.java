@@ -11,17 +11,17 @@ import java.util.List;
  */
 public class PublicationInLibraryForDirectSaleController {
 
-    private final ILibraryRepo _libraryRepo;
+    private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
 
     public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, User _userID) {
-        _libraryRepo = libraryRepo;
+        _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
     }
 
     public List<Item> getItemsInLibraryByUser(User user) {
 
-        return _libraryRepo.getItemsInLibraryByUser(user);
+        return _iLibraryRepo.getItemsInLibraryByUser(user);
 
     }
 

@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 
 class ListOfPublicationsInMyLibraryControllerTest {
     private User _userDouble;
-    private ILibraryRepo _libraryRepoDouble;
+    private ILibraryRepo _iLibraryRepoDouble;
     private Library _myLibraryDouble;
     private Item _itemDouble;
 
@@ -25,14 +25,14 @@ class ListOfPublicationsInMyLibraryControllerTest {
 
         _itemDouble = mock(Item.class);
 
-        _libraryRepoDouble = mock(ILibraryRepo.class);
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        _iLibraryRepoDouble = mock(ILibraryRepo.class);
+        when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
     }
 
     @Test
     void testListOfPublicationsInMyLibraryController(){
         // act & SUT
-        new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
+        new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble);
     }
 
     @Test
@@ -40,7 +40,7 @@ class ListOfPublicationsInMyLibraryControllerTest {
         // Arrange
         when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of());
         // SUT
-        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
+        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble);
         // Act
         List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);
         // Assert
@@ -52,11 +52,11 @@ class ListOfPublicationsInMyLibraryControllerTest {
         // Arrange
         PublicationDetails publicationDetailsDouble = mock(PublicationDetails.class);
 
-        when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
+        when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
         when(_myLibraryDouble.getPublicationDetails()).thenReturn(List.of(publicationDetailsDouble));
 
         // SUT
-        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_libraryRepoDouble);
+        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble);
 
         //Act
         List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);

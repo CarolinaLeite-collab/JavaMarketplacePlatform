@@ -15,19 +15,19 @@ import TOPSECRET.domain.User;
 
 public class AddPublicationTypeController {
 
-    private final IPublicationTypeRepo _iPubTypeRepo;
+    private final IPublicationTypeRepo _iPublicationTypeRepo;
 
     public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, User admin) {
         if(!admin.hasRole(Role.ADMIN)){
             throw new SecurityException("User is not allowed to add publication type");
         }
 
-        _iPubTypeRepo = iPublicationTypeRepo;
+        _iPublicationTypeRepo = iPublicationTypeRepo;
 
     }
 
     public PublicationType addPublicationType(String publicationTypeName) {
-        return _iPubTypeRepo.addPublicationType(publicationTypeName);
+        return _iPublicationTypeRepo.addPublicationType(publicationTypeName);
 
     }
 }

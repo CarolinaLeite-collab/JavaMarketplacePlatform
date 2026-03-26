@@ -16,14 +16,14 @@ import static org.mockito.Mockito.*;
 class GetDirectSaleItemsByAuthorControllerTest {
 
     private User _userDouble;
-    private IDirectSaleRepo _dsrDouble;
+    private IDirectSaleRepo _iDirectSaleRepoDouble;
     private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
 
         _userDouble = mock(User.class);
-        _dsrDouble = mock(IDirectSaleRepo.class);
+        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
         _authorDouble = mock(Author.class);
 
     }
@@ -32,7 +32,7 @@ class GetDirectSaleItemsByAuthorControllerTest {
     void testAConstructor(){
 
         //act / SUT
-        new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+        new GetDirectSaleItemsByAuthorController(_iDirectSaleRepoDouble, _userDouble);
 
     }
 
@@ -40,10 +40,10 @@ class GetDirectSaleItemsByAuthorControllerTest {
     void getDirectSaleItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems(){
 
         //arrange
-        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of());
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of());
 
         //SUT
-        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_iDirectSaleRepoDouble, _userDouble);
 
         //act
         List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
@@ -60,10 +60,10 @@ class GetDirectSaleItemsByAuthorControllerTest {
         Item _itemDouble1 = mock(Item.class);
         Item _itemDouble2 = mock(Item.class);
 
-        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
 
         //SUT
-        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_iDirectSaleRepoDouble, _userDouble);
 
         //act
         List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
@@ -80,10 +80,10 @@ class GetDirectSaleItemsByAuthorControllerTest {
         Item _itemDouble1 = mock(Item.class);
         Item _itemDouble2 = mock(Item.class);
 
-        when(_dsrDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByAuthor(_authorDouble)).thenReturn(List.of(_itemDouble1, _itemDouble2));
 
         //SUT
-        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_iDirectSaleRepoDouble, _userDouble);
 
         //act
         List<Item> listOfDirectSaleItemsByAuthor = ctl.getDirectSaleItemsByAuthor(_authorDouble);
@@ -97,13 +97,13 @@ class GetDirectSaleItemsByAuthorControllerTest {
     void getDirectSaleItemsByAuthorShouldCallRepoWithCorrectAuthor() {
 
         //arrange / SUT
-        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_dsrDouble, _userDouble);
+        GetDirectSaleItemsByAuthorController ctl = new GetDirectSaleItemsByAuthorController(_iDirectSaleRepoDouble, _userDouble);
 
         //act
         ctl.getDirectSaleItemsByAuthor(_authorDouble);
 
         //assert
-        verify(_dsrDouble, times(1)).getDirectSaleItemsByAuthor(_authorDouble);
+        verify(_iDirectSaleRepoDouble, times(1)).getDirectSaleItemsByAuthor(_authorDouble);
     }
 
 }

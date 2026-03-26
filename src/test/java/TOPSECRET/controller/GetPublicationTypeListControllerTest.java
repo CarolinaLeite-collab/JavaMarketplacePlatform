@@ -26,11 +26,11 @@ class GetPublicationTypeListControllerTest {
     @Test
     void shouldReturnAllPublicationTypes() {
         // Arrange
-        IPublicationTypeRepo _iPubTypeRepoDouble = mock(IPublicationTypeRepo.class);
+        IPublicationTypeRepo _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
         PublicationType publicationType = mock(PublicationType.class);
-        when(_iPubTypeRepoDouble.getAll()).thenReturn(List.of(publicationType));
+        when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of(publicationType));
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPubTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
         // Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         // Assert
@@ -40,10 +40,10 @@ class GetPublicationTypeListControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoPublicationTypesExist() {
         //Arrange
-        IPublicationTypeRepo _iPubTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        when(_iPubTypeRepoDouble.getAll()).thenReturn(List.of());
+        IPublicationTypeRepo _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
+        when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of());
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPubTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
         //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         //Assert
@@ -54,10 +54,10 @@ class GetPublicationTypeListControllerTest {
     void returnedListShouldNotBeModifiable() {
         //Arrange
         PublicationType publicationTypeDouble = mock(PublicationType.class);
-        IPublicationTypeRepo _iPubTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        when(_iPubTypeRepoDouble.getAll()).thenReturn(List.of(publicationTypeDouble));
+        IPublicationTypeRepo _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
+        when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of(publicationTypeDouble));
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPubTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
         //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         //Assert

@@ -18,10 +18,10 @@ class RegisterNewAppraisalEntityControllerTest {
     private IGenreRepo _iGenreRepoDouble;
     private List<Genre> _genres;
     private Genre _genreDouble;
-    private IPublicationTypeRepo _iTypeRepo;
+    private IPublicationTypeRepo _iPublicationTypeRepoDouble;
     private List<PublicationType> _publicationTypes;
     private PublicationType _publicationTypeDouble;
-    private IAppraisalEntityRepo _entityRepoDouble;
+    private IAppraisalEntityRepo _iAppraisalEntityRepoDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException{
@@ -38,13 +38,13 @@ class RegisterNewAppraisalEntityControllerTest {
         _publicationTypes = new ArrayList<>();
         _publicationTypes.add(_publicationTypeDouble);
 
-        _iTypeRepo = mock(IPublicationTypeRepo.class);
-        when(_iTypeRepo.getAll()).thenReturn(_publicationTypes);
+        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
+        when(_iPublicationTypeRepoDouble.getAll()).thenReturn(_publicationTypes);
 
         _appraisalEntityDouble = mock(AppraisalEntity.class);
 
-        _entityRepoDouble = mock (IAppraisalEntityRepo.class);
-        when(_entityRepoDouble.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_appraisalEntityDouble);
+        _iAppraisalEntityRepoDouble = mock (IAppraisalEntityRepo.class);
+        when(_iAppraisalEntityRepoDouble.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres)).thenReturn(_appraisalEntityDouble);
 
     }
 
@@ -52,7 +52,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         assertNotNull(controller);
     }
@@ -61,21 +61,21 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
         List types = controller.getPublicationTypes();
 
         // assert
         assertEquals(_publicationTypes, types);
-        verify(_iTypeRepo).getAll();
+        verify(_iPublicationTypeRepoDouble).getAll();
     }
 
     @Test
     void shouldGetGenresFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
         List genres = controller.getGenres();
@@ -89,13 +89,13 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldSuccessfullyCallAppraisalEntityCreationMethod() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_entityRepoDouble, _iTypeRepo, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
         AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
 
         // assert
         assertEquals(_appraisalEntityDouble, result);
-        verify(_entityRepoDouble).registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+        verify(_iAppraisalEntityRepoDouble).registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
     }
 }

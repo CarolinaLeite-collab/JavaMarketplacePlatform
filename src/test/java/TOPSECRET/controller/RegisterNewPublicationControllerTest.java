@@ -46,12 +46,12 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationThrowsWhenRepoThrows() {
         //arrange
-        IPublicationRepo iRepoDouble = mock(IPublicationRepo.class);
-        when(iRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+        IPublicationRepo iPublicationRepoDouble = mock(IPublicationRepo.class);
+        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(iRepoDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepoDouble);
 
         //act and assert
         assertThrows(IllegalArgumentException.class, () ->

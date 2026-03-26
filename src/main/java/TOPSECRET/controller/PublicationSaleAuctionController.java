@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PublicationSaleAuctionController {
 
-    private final ILibraryRepo _libraryRepo;
+    private final ILibraryRepo _iLibraryRepo;
     private final IAuctionRepo _iAuctionRepo;
     private final Library _library;
 
@@ -25,7 +25,7 @@ public class PublicationSaleAuctionController {
         if (libraryRepo == null || iAuctionRepo == null || library == null) {
             throw new NullPointerException("Repositories and factories are required");
         }
-        _libraryRepo = libraryRepo;
+        _iLibraryRepo = libraryRepo;
         _iAuctionRepo = iAuctionRepo;
         _library = library;
 
@@ -36,7 +36,7 @@ public class PublicationSaleAuctionController {
         if (user == null) {
             throw new IllegalArgumentException("User required");
         }
-        Library userLibrary = _libraryRepo.findLibraryByUser(user);
+        Library userLibrary = _iLibraryRepo.findLibraryByUser(user);
         List<Item> items = userLibrary.getItemsInLibrary();
         return List.copyOf(items); //This is an immutable list
    }

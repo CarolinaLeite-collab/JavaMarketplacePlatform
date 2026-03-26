@@ -14,21 +14,21 @@ import java.util.List;
 
 public class AddPublicationToListController {
 
-    private final IListOfPublicationsRepo _listRepo;
-    private final ILibraryRepo _libraryRepo;
+    private final IListOfPublicationsRepo _iListOfPublicationsRepo;
+    private final ILibraryRepo _iLibraryRepo;
 
     public AddPublicationToListController(IListOfPublicationsRepo listRepo, ILibraryRepo libraryRepo) {
 
-        _listRepo = listRepo;
-        _libraryRepo = libraryRepo;
+        _iListOfPublicationsRepo = listRepo;
+        _iLibraryRepo = libraryRepo;
     }
 
     public List<ListOfPublications> getMyLists(User user) {
-        return _listRepo.findListsByUser(user);
+        return _iListOfPublicationsRepo.findListsByUser(user);
     }
 
     public List<Item> getItemsInMyLibrary(User user) {
-        Library lib = _libraryRepo.findLibraryByUser(user); // throws if not found
+        Library lib = _iLibraryRepo.findLibraryByUser(user); // throws if not found
         return lib.getItemsInLibrary();
     }
 
@@ -36,9 +36,9 @@ public class AddPublicationToListController {
 
         if (listName == null || listName.isBlank()) throw new IllegalArgumentException("List name is mandatory");
 
-        ListOfPublications myList = _listRepo.findByOwnerNameAndGenre(user, listName, genre);
+        ListOfPublications myList = _iListOfPublicationsRepo.findByOwnerNameAndGenre(user, listName, genre);
 
-        Library lib = _libraryRepo.findLibraryByUser(user);
+        Library lib = _iLibraryRepo.findLibraryByUser(user);
 
         Item returnedItem = findItemInListOfPublications(lib.getItemsInLibrary(), item);
 
