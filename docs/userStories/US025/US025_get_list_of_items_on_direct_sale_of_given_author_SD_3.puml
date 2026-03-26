@@ -20,7 +20,7 @@ autoactivate off
 actor Buyer
 participant ":GetDirectSaleItemsByAuthorUI" as UI
 participant ":GetDirectSaleItemsByAuthorController" as CTL
-participant "dsr:DirectSaleRepo" as DSR
+participant "dsr:MemoDirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DS
 participant "item:Item" as IT
 participant "publication:Publication" as PUB
@@ -40,7 +40,7 @@ CTL -> DSR: getDirectSaleItemsByAuthor(authorName)
 activate DSR
 
 create "listOfDirectSaleItemsByAuthor: List<Item>" as List
-DSR -> List: create()
+DSR -->> List: create()
 
 loop for each directSale in dsr
     DSR -> DS: isByAuthor(authorName)
