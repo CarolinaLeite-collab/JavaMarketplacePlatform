@@ -1,5 +1,5 @@
 ---
-name: Default Issue
+name: Default Main Issue
 about: Default Template Issue
 title: "Refactor <ClassName> to DDD-compliant Aggregate"
 labels: refactor, create, add
