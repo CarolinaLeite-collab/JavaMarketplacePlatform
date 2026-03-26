@@ -20,8 +20,8 @@ class RegisterNewAppraisalEntityUI {
 
 class RegisterNewAppraisalEntityController {
 - _appraisalEntityRepo : MemoAppraisalEntityRepo
-- _genreRepo : GenreRepo
-- _publicationTypeRepo : PublicationTypeRepo
+- _genreRepo : IGenreRepo
+- _publicationTypeRepo : IPublicationTypeRepo
 + registerNewAppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>) : AppraisalEntity
 + getPublicationTypes() : List<PublicationType>
 + getGenres() : List<Genre>
