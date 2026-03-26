@@ -1,8 +1,5 @@
 package TOPSECRET.domain;
-import TOPSECRET.domain.valueobject.Binding;
-import TOPSECRET.domain.valueobject.Dimension;
-import TOPSECRET.domain.valueobject.ISSN;
-import TOPSECRET.domain.valueobject.Language;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.LocalDate;
 

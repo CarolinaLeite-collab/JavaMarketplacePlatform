@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 
@@ -10,7 +12,7 @@ import java.util.Objects;
  * </p>
  */
 
-public class Weight {
+public class Weight implements ValueObject {
 
     public enum WeightUnit {
         GRAMS("g"),
