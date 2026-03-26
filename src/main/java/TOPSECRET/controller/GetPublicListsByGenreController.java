@@ -15,10 +15,10 @@ import java.util.List;
  */
 
 public class GetPublicListsByGenreController {
-    private final IListOfPublicationsRepo _repo;
+    private final IListOfPublicationsRepo _iListOfPubRepo;
 
-    public GetPublicListsByGenreController(IListOfPublicationsRepo repo) {
-        _repo = repo;
+    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo) {
+        _iListOfPubRepo = _iListOfPubRepo;
     }
 
     public List<ListOfPublications> getPublicListsByGenre(Genre genre) {

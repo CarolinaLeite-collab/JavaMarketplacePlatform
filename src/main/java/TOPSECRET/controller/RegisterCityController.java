@@ -14,11 +14,11 @@ import java.util.List;
 
 public class RegisterCityController {
     private final ICityRepo _iCityRepo;
-    private final ICountryRepo _countryRepo;
+    private final ICountryRepo _iCountryRepo;
 
     public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, User admin) {
         _iCityRepo = iCityRepo;
-        _countryRepo = iCountryRepo;
+        _iCountryRepo = iCountryRepo;
     }
 
     public List<Country> getAllCountries() {

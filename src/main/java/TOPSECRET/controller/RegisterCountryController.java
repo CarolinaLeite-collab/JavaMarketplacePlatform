@@ -26,6 +26,6 @@ public class RegisterCountryController {
 
     public Country registerCountry(String countryName) throws InstantiationException {
 
-        return _countryRepo.registerCountry(countryName);
+        return _iCountryRepo.registerCountry(countryName);
     }
 }
