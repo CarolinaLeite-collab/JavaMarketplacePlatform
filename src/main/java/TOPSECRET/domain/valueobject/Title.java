@@ -29,7 +29,7 @@ public class Title implements ValueObject {
     }
 
     public String getTitle() {
-        return this._title;
+        return _title;
     }
 
     public String getLowercaseTitle() {
