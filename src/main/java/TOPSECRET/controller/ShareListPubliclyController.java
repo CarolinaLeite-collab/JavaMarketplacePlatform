@@ -21,7 +21,7 @@ public class ShareListPubliclyController {
     }
 
     public List<ListOfPublications> getListOfLists(User user) {
-        return _listOfPublicationsRepo.findListsByUser(user);
+        return _iListOfPublicationsRepo.findListsByUser(user);
     }
 
     public boolean shareListPublicly(ListOfPublications selectedList) {
