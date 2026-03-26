@@ -20,45 +20,53 @@ autoactivate off
 actor Buyer
 participant ":GetAuctionItemsByPublicationUI" as UI
 participant ":GetAuctionItemsByPublicationController" as CTL
-participant "_ar:AuctionRepo" as AR
-participant "auction:Auction" as DS
+participant "_mar:MemoAuctionRepo" as mAR
+participant "auction:Auction" as AU
+participant "item:Item" as IT
 
 
 
 ' --- Dialog ---
 Buyer -> UI: I want the list of items on auction of a given publication
 activate UI
-UI --> Buyer: Whichpublication?
+UI --> Buyer: Which publication?
 deactivate UI
-Buyer -> UI: publication
+Buyer -> UI: publicationID
 activate UI
-UI -> CTL: getAuctionItemsByPublication(publication)
+UI -> CTL: getAuctionItemsByPublication(publicationID)
 activate CTL
-CTL -> AR: getAuctionItemsByPublication(publication)
-activate AR
+CTL -> mAR: getAuctionItemsByPublication(publicationID)
+activate mAR
 
 create "listOfAuctionItemsByPublisher: List<Item>" as List
-AR -> List: create()
+mAR -> List: <<Create>>()
 
-loop for each auction in _ar
-    AR -> DS: isByPublication(publication)
-'    activate DS
-'    DS -> DSR: true
-'    deactivate DS
+loop for each auction in _mar
+    mAR -> AU: isByPublication(publicationID)
+    activate AU
+    AU -> IT: isByPublication(publicationID)
+    activate IT
+    IT --> AU: true
+    deactivate IT
+    AU --> mAR: true
+    deactivate AU
+
+
+
     opt isByPublication == true
-        AR -> List: add(auction.getItem())
+        mAR -> List: add(auction.getItem())
         activate List
-        List -> AR: true
+        List --> mAR: true
         deactivate List
     end
 end
 
 create "copyOfListOfAuctionItemsByPublication: List<Item>" as Copy
-AR -> Copy: List.copyof(ListOfAuctionItemsByPublication)
+mAR -> Copy: List.copyOf(ListOfAuctionItemsByPublication)
 
 
-AR --> CTL: copyOfListOfAuctionItemsByPublication
-deactivate AR
+mAR --> CTL: copyOfListOfAuctionItemsByPublication
+deactivate mAR
 CTL --> UI: copyOfListOfAuctionItemsByPublication
 deactivate CTL
 UI --> Buyer: Here's the list! done!
