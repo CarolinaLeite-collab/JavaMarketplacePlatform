@@ -17,7 +17,7 @@ public class ShareListPubliclyController {
     private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
     public ShareListPubliclyController(IListOfPublicationsRepo iListOfPublicationsRepo) {
-        _listOfPublicationsRepo = listOfPublicationsRepo;
+        _iListOfPublicationsRepo = iListOfPublicationsRepo;
     }
 
     public List<ListOfPublications> getListOfLists(User user) {
