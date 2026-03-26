@@ -42,7 +42,7 @@ Class ListOfPublications {
 }
 
 '==== connections ====
-MemoListOfPublicationsRepo "1" --> "*" ListOfPublications: instantiates through
+MemoListOfPublicationsRepo "1" --> "*" ListOfPublications: creates
 IListOfPublicationsRepo <|.. MemoListOfPublicationsRepo
 CreatePrivateListOfPublicationsController  "1" ..> "1" IListOfPublicationsRepo: calls
 CreatePrivateListOfPublicationsUI "1" ..> "1" CreatePrivateListOfPublicationsController: invokes
