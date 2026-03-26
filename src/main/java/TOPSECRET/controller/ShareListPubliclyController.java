@@ -16,7 +16,7 @@ import java.util.List;
 public class ShareListPubliclyController {
     private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
-    public ShareListPubliclyController(IListOfPublicationsRepo listOfPublicationsRepo) {
+    public ShareListPubliclyController(IListOfPublicationsRepo iListOfPublicationsRepo) {
         _listOfPublicationsRepo = listOfPublicationsRepo;
     }
 
