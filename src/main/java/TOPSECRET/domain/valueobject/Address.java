@@ -1,4 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+import TOPSECRET.domain.Country;
 
 /**
  * Represents a physical address with details such as street, door number, building type, city,
@@ -8,7 +11,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public class Address {
+public class Address implements ValueObject {
 
     public enum BuildingType {
         HOUSE,
