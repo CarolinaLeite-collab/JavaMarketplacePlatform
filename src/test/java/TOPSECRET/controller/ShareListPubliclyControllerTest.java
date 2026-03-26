@@ -13,13 +13,13 @@ import static org.mockito.Mockito.*;
 class ShareListPubliclyControllerTest {
 
     private ListOfPublications _listOfPublications;
-    private IListOfPublicationsRepo _listOfPublicationsRepo;
+    private IListOfPublicationsRepo _iListOfPublicationsRepo;
     private User _user;
 
     @BeforeEach
     void setUp() {
         _listOfPublications = mock(ListOfPublications.class);
-        _listOfPublicationsRepo = mock(IListOfPublicationsRepo.class);
+        _iListOfPublicationsRepo = mock(IListOfPublicationsRepo.class);
         _user = mock(User.class);
     }
 
