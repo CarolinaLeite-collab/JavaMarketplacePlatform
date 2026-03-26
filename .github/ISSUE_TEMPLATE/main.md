@@ -1,4 +1,10 @@
-Title: <Task> <ClassName> to DDD-compliant Aggregate
+---
+name: Default Issue
+about: Default Template Issue
+title: "Refactor <ClassName> to DDD-compliant Aggregate"
+labels: refactor, create, add
+---
+
 ### sub-issues:
 Define `<ClassName>` identity
 Refactor `<ClassName>` into an Aggregate Root
