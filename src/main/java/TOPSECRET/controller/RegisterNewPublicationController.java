@@ -32,7 +32,7 @@ public class RegisterNewPublicationController {
                                            Edition edition,
                                            Genre genre) {
 
-        return _publicationRepo.addPublication(
+        return _iPublicationRepo.addPublication(
                 publicationType,
                 identifier,
                 publicationYear,

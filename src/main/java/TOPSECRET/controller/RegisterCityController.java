@@ -22,7 +22,7 @@ public class RegisterCityController {
     }
 
     public List<Country> getAllCountries() {
-        return _countryRepo.getAllCountries();
+        return _iCountryRepo.getAllCountries();
     }
 
     public City registerCity(String cityName, Country country) {

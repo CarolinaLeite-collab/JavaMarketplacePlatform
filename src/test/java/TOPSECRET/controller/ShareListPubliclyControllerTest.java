@@ -26,10 +26,10 @@ class ShareListPubliclyControllerTest {
     @Test
     void returnListFromRepo() {
         //arrange
-        when(_listOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
+        when(_iListOfPublicationsRepo.findListsByUser(_user)).thenReturn(List.of(_listOfPublications));
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         List<ListOfPublications> result = _controller.getListOfLists(_user);
@@ -41,7 +41,7 @@ class ShareListPubliclyControllerTest {
     @Test
     void shouldReturnFalseWhenSelectedListIsNull() {
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         boolean result = _controller.shareListPublicly(null);
@@ -56,7 +56,7 @@ class ShareListPubliclyControllerTest {
         doNothing().when(_listOfPublications).makePublic();
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_listOfPublicationsRepo);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepo);
 
         //act
         boolean result = _controller.shareListPublicly(_listOfPublications);

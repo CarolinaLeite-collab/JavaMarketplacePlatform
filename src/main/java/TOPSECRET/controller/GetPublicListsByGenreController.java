@@ -18,7 +18,7 @@ public class GetPublicListsByGenreController {
     private final IListOfPublicationsRepo _iListOfPubRepo;
 
     public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo) {
-        _iListOfPubRepo = _iListOfPubRepo;
+        _iListOfPubRepo = iListOfPubRepo;
     }
 
     public List<ListOfPublications> getPublicListsByGenre(Genre genre) {
