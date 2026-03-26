@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * Controller responsible for retrieving auction items by a specific author.
  * <p>
- * This controller uses the {@link MemoAuctionRepo} to obtain a list of {@link Item}
+ * This controller uses the {@link IAuctionRepo} to obtain a list of {@link Item}
  * instances that are currently on auction and were created by a given {@link Author}.
  * </p>
  */
@@ -24,7 +24,7 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
     /**
      * Ensures the controller has the repository it needs and validates the buyer reference.
      */
-    public GetItemsOnAuctionOfAGivenAuthorController(MemoAuctionRepo iAuctionRepo, User buyer) {
+    public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, User buyer) {
         _iAuctionRepo = Objects.requireNonNull(iAuctionRepo, "auctionRepo");
         Objects.requireNonNull(buyer, "buyer"); // buyer kept for parity/validation
     }

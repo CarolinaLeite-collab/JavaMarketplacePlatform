@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Controller responsible for retrieving auction items filtered by genre.
  * <p>
- * This controller interacts with the {@link MemoAuctionRepo} to fetch a list of
+ * This controller interacts with the {@link IAuctionRepo} to fetch a list of
  * {@link Item} instances available in auctions that match a specific {@link Genre}.
  * </p>
  */
@@ -15,7 +15,7 @@ public class GetAuctionItemsByGenreController {
 
     private IAuctionRepo _iAuctionRepo;
 
-    public GetAuctionItemsByGenreController (MemoAuctionRepo iAuctionRepo, User buyer){
+    public GetAuctionItemsByGenreController (IAuctionRepo iAuctionRepo, User buyer){
 
         _iAuctionRepo = iAuctionRepo;
     }
