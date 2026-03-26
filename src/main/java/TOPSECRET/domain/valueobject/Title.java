@@ -33,7 +33,7 @@ public class Title implements ValueObject {
     }
 
     public String getLowercaseTitle() {
-        return this._title.toLowerCase();
+        return _title.toLowerCase();
     }
 
     @Override
