@@ -6,12 +6,12 @@ import java.util.List;
 
 public interface IItemRepo {
 
-    public boolean exists(Publication publication);
+    boolean exists(Publication publication);
 
-    public Item createItem(Publication publication, Condition condition);
+    Item createItem(Publication publication, Condition condition);
 
-    public List<Item> getAll();
+    List<Item> getAll();
 
-    public List<Item> getDifferentOf(List<Item> existentItems);
+    List<Item> getDifferentOf(List<Item> existentItems);
 
 }

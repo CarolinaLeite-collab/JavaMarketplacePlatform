@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 class MemoPublicationRepoTest {
 
-    private MemoPublicationRepo _publicationRepo;
+    private MemoPublicationRepo _memoPublicationRepo;
     private PublicationFactory _publicationFactoryDouble;
 
     // Mocks for factory arguments
@@ -30,7 +30,7 @@ class MemoPublicationRepoTest {
     @BeforeEach
     void setUp() {
         _publicationFactoryDouble = mock(PublicationFactory.class);
-        _publicationRepo = new MemoPublicationRepo(_publicationFactoryDouble); //SUT
+        _memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble); //SUT
 
         _typeDouble = mock(PublicationType.class);
         _identifierDouble = mock(Identifier.class);
