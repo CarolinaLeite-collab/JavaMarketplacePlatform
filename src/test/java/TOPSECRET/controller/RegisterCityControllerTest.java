@@ -13,7 +13,7 @@ import static org.mockito.Mockito.*;
 class RegisterCityControllerTest {
 
     private ICityRepo _iCityRepoDouble;
-    private ICountryRepo _countryRepoDouble;
+    private ICountryRepo _iCountryRepoDouble;
     private Country _countryDouble;
     private City _cityDouble;
     private User _adminDouble;
@@ -21,7 +21,7 @@ class RegisterCityControllerTest {
     @BeforeEach
     void setUp() {
         _iCityRepoDouble = mock(ICityRepo.class);
-        _countryRepoDouble = mock(ICountryRepo.class);
+        _iCountryRepoDouble = mock(ICountryRepo.class);
         _countryDouble = mock(Country.class);
         _cityDouble = mock(City.class);
         _adminDouble = mock(User.class);
@@ -30,23 +30,23 @@ class RegisterCityControllerTest {
     @Test
     void shouldConstructController() {
         //SUT
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _countryRepoDouble, _adminDouble);
+        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
     }
 
     @Test
     void constructorWithRepositoriesDoesNotThrow() {
         //Act & Assert
-        assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _countryRepoDouble, _adminDouble));
+        assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble));
     }
 
     @Test
     void getCountriesReturnsAllCountriesFromRepository() {
         // Arrange
         List<Country> countries = List.of(_countryDouble);
-        when(_countryRepoDouble.getAllCountries()).thenReturn(countries);
+        when(_iCountryRepoDouble.getAllCountries()).thenReturn(countries);
 
         //SUT
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _countryRepoDouble, _adminDouble);
+        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
 
         // Act
         List<Country> result = controller.getAllCountries();
@@ -54,7 +54,7 @@ class RegisterCityControllerTest {
         // Assert
         assertEquals(1, result.size());
         assertSame(_countryDouble, result.get(0));
-        verify(_countryRepoDouble, times(1)).getAllCountries();
+        verify(_iCountryRepoDouble, times(1)).getAllCountries();
     }
 
     @Test
@@ -63,7 +63,7 @@ class RegisterCityControllerTest {
         when(_iCityRepoDouble.registerCity("Porto", _countryDouble)).thenReturn(_cityDouble);
 
         //SUT
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _countryRepoDouble, _adminDouble);
+        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
 
         // Act
         City result = controller.registerCity("Porto", _countryDouble);
@@ -80,7 +80,7 @@ class RegisterCityControllerTest {
                 .thenThrow(new IllegalStateException("City already exists for this country"));
 
         //SUT
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _countryRepoDouble, _adminDouble);
+        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
 
         // Act & Assert
         assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", _countryDouble));

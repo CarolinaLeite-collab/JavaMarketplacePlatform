@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 
 class CreatePrivateListOfPublicationsControllerTest {
 
-    private IListOfPublicationsRepo _repoDouble;
+    private IListOfPublicationsRepo _interfaceDouble;
     private GenreRepo _genreRepoDouble;
     private User _userDouble;
     private Genre _actionDouble;
@@ -31,7 +31,7 @@ class CreatePrivateListOfPublicationsControllerTest {
     @BeforeEach
     void setUp() {
 
-        _repoDouble = mock(IListOfPublicationsRepo.class);
+        _interfaceDouble = mock(IListOfPublicationsRepo.class);
         _genreRepoDouble = mock(GenreRepo.class);
         _userDouble = mock(User.class);
         _actionDouble = mock(Genre.class);

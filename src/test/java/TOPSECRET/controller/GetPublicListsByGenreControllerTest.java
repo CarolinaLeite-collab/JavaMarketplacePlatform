@@ -12,13 +12,13 @@ import static org.mockito.Mockito.*;
 
 class GetPublicListsByGenreControllerTest {
 
-    private IListOfPublicationsRepo _repoDouble;
+    private IListOfPublicationsRepo _iRepoDouble;
     private Genre _genreDouble;
 
     @BeforeEach
     void setUp() {
 
-        _repoDouble = mock(IListOfPublicationsRepo.class);
+        _interfaceDouble = mock(IListOfPublicationsRepo.class);
         _genreDouble = mock(Genre.class);
     }
 

@@ -9,12 +9,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class RegisterCountryControllerTest {
-    private ICountryRepo _countryRepoDouble;
+    private ICountryRepo _iCountryRepoDouble;
     private User _adminDouble;
 
     @BeforeEach
     void setUp(){
-        _countryRepoDouble = mock(ICountryRepo.class);
+        _iCountryRepoDouble = mock(ICountryRepo.class);
         _adminDouble = mock(User.class);
     }
 

@@ -12,7 +12,7 @@ import static org.mockito.Mockito.*;
 
 class AddPublicationToListControllerTest {
 
-    private IListOfPublicationsRepo _listRepoDouble;
+    private IListOfPublicationsRepo _iListRepoDouble;
     private LibraryRepo _libraryRepoDouble;
     private User _userDouble;
     private Genre _genreDouble;
@@ -22,7 +22,7 @@ class AddPublicationToListControllerTest {
 
     @BeforeEach
     void setUp() {
-        _listRepoDouble = mock(IListOfPublicationsRepo.class);
+        _iListRepoDouble = mock(IListOfPublicationsRepo.class);
         _libraryRepoDouble = mock(LibraryRepo.class);
         _userDouble = mock(User.class);
         _genreDouble = mock(Genre.class);
