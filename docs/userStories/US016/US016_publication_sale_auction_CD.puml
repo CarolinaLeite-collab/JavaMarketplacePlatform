@@ -77,8 +77,8 @@ PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : uses
 PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : uses
 
 ' Interfaces → Repos
-ILibraryRepo "1" ..|> "1" MemoLibraryRepo : calls
-IAuctionRepo "1" ..|> "1" MemoAuctionRepo : calls
+ILibraryRepo "1" <|.. "1" MemoLibraryRepo : relies on
+IAuctionRepo "1" <|.. "1" MemoAuctionRepo : relies on
 
 ' Repos delegate creation to factories
 MemoAuctionRepo "1" --> "1" AuctionFactory : uses

@@ -19,8 +19,6 @@ actor "User" as User
 participant "UI:PublicationSaleAuctionUI" as UI
 participant "Ctl:PublicationSaleAuctionController" as Controller
 participant ":ILibraryRepo" as ILibraryRepo
-participant ":MemoLibraryRepo" as MemoLibrary
-participant ":IAuctionRepo" as IAuctionRepo
 participant ":MemoAuctionRepo" as MemoAuction
 participant ":AuctionFactory" as AuctionFactory
 participant "item:Item" as selectedItem
@@ -36,12 +34,6 @@ activate Controller
 
 Controller -> ILibraryRepo : getItemsInLibraryByUser \n(userID)
 activate ILibraryRepo
-
-ILibraryRepo -> MemoLibrary : getItemsInLibraryByUser \n(userID)
-activate MemoLibrary
-
-MemoLibrary --> ILibraryRepo : ListOfItemsInUserLibrary
-deactivate MemoLibrary
 
 ILibraryRepo --> Controller : ListOfItemsInUserLibrary
 deactivate ILibraryRepo
@@ -66,10 +58,7 @@ activate UI
 UI -> Controller : putItemOnAuction(selectedItem,\nstartPrice, startDate, endDate)
 activate Controller
 
-Controller -> IAuctionRepo : addAuction(selectedItem, \nstartPrice, startDate, endDate)
-activate IAuctionRepo
-
-IAuctionRepo -> MemoAuction : addAuction(selectedItem, \nstartPrice, startDate, endDate)
+Controller -> MemoAuction : addAuction(selectedItem, \nstartPrice, startDate, endDate)
 activate MemoAuction
 
 MemoAuction -> AuctionFactory : createAuction(selectedItem, \nstartPrice, startDate, endDate)
@@ -80,11 +69,8 @@ AuctionFactory -->> newAuction : <<create>>
 AuctionFactory --> MemoAuction : auction
 deactivate AuctionFactory
 
-MemoAuction --> IAuctionRepo : auction
+MemoAuction --> Controller : auction
 deactivate MemoAuction
-
-IAuctionRepo --> Controller : auction
-deactivate IAuctionRepo
 
 Controller -> selectedItem : setAuction(auction)
 activate selectedItem
