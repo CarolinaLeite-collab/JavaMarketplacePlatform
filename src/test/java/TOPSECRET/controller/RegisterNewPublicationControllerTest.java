@@ -26,11 +26,11 @@ class RegisterNewPublicationControllerTest {
         Edition _editionDouble = mock(Edition.class);
         Genre _genreDouble = mock(Genre.class);
         Publication expected = mock(Publication.class);
-        when(_publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(expected);
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(_publicationRepo);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo);
 
         //act
         Publication result = controller.registerPublication(
@@ -45,11 +45,11 @@ class RegisterNewPublicationControllerTest {
     void registerPublicationThrowsWhenRepoThrows() {
         //arrange
         IPublicationRepo iRepoDouble = mock(IPublicationRepo.class);
-        when(repoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(iRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(repoDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iRepoDouble);
 
         //act and assert
         assertThrows(IllegalArgumentException.class, () ->

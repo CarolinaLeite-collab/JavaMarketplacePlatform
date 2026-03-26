@@ -18,7 +18,7 @@ class GetPublicListsByGenreControllerTest {
     @BeforeEach
     void setUp() {
 
-        _interfaceDouble = mock(IListOfPublicationsRepo.class);
+        _iRepoDouble = mock(IListOfPublicationsRepo.class);
         _genreDouble = mock(Genre.class);
     }
 
@@ -30,9 +30,9 @@ class GetPublicListsByGenreControllerTest {
         User userDouble = mock(User.class);
         when(listA.getName()).thenReturn("List A");
         when(listA.getUser()).thenReturn(userDouble);
-        when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
+        when( _iRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iRepoDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);
@@ -40,7 +40,7 @@ class GetPublicListsByGenreControllerTest {
         // Assert
         assertEquals("List A", result.get(0).getName());
         assertEquals(userDouble, result.get(0).getUser());
-        verify(_repoDouble).findPublicListsByGenre(_genreDouble);
+        verify(_iRepoDouble).findPublicListsByGenre(_genreDouble);
 
     }
 
@@ -49,7 +49,7 @@ class GetPublicListsByGenreControllerTest {
 
         // Arrange
         //SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController( _iRepoDouble);
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
@@ -63,9 +63,9 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnEmptyListWhenNoPublicListsOfGenreExists() {
 
         // Arrange
-        when(_repoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
+        when( _iRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_repoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController( _iRepoDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);

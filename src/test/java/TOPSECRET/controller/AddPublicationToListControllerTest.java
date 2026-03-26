@@ -36,10 +36,10 @@ class AddPublicationToListControllerTest {
     void getMyListsShouldReturnsListsFromRepo() {
         //arrange
         List<ListOfPublications> expected = List.of(_publicationsListDouble);
-        when(_listRepoDouble.findListsByUser(_userDouble)).thenReturn(expected);
+        when(_iListRepoDouble.findListsByUser(_userDouble)).thenReturn(expected);
 
         //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //act
         List<ListOfPublications> result = _controllerSUT.getMyLists(_userDouble);
@@ -57,7 +57,7 @@ class AddPublicationToListControllerTest {
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
 
         //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //act
         List<Item> result = _controllerSUT.getItemsInMyLibrary(_userDouble);
@@ -73,7 +73,7 @@ class AddPublicationToListControllerTest {
                 .thenThrow(new IllegalStateException("Library not found"));
 
         //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //assert
         assertThrows(IllegalStateException.class,
@@ -85,13 +85,13 @@ class AddPublicationToListControllerTest {
         //arrange
         Item otherItem = mock(Item.class);
 
-        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
+        when(_iListRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
                 .thenReturn(_publicationsListDouble);
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(otherItem));
 
         //SUT
-        AddPublicationToListController controller = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController controller = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //act
         controller.addItemToList(_userDouble, "My List", _genreDouble, _itemDouble);
@@ -106,7 +106,7 @@ class AddPublicationToListControllerTest {
     @Test
     void addItemToListShouldAddItemWhenValid() {
         //arrange
-        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
+        when(_iListRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
                 .thenReturn(_publicationsListDouble);
 
         when(_libraryRepoDouble.findLibraryByUser(_userDouble))
@@ -116,7 +116,7 @@ class AddPublicationToListControllerTest {
                 .thenReturn(List.of(_itemDouble));
 
         //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //assert
         assertDoesNotThrow(() ->
@@ -131,7 +131,7 @@ class AddPublicationToListControllerTest {
     @Test
     void addItemToList_throwsWhenListNameIsBlank() {
         //arrange / SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //assert
         assertThrows(IllegalArgumentException.class,
@@ -144,7 +144,7 @@ class AddPublicationToListControllerTest {
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
         //arrange
-        when(_listRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
+        when(_iListRepoDouble.findByOwnerNameAndGenre(_userDouble, "My List", _genreDouble))
                 .thenReturn(_publicationsListDouble);
 
         when(_libraryRepoDouble.findLibraryByUser(_userDouble))
@@ -159,7 +159,7 @@ class AddPublicationToListControllerTest {
                 .addItem(_itemDouble);
 
         //SUT
-        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_listRepoDouble, _libraryRepoDouble);
+        AddPublicationToListController _controllerSUT = new AddPublicationToListController(_iListRepoDouble, _libraryRepoDouble);
 
         //assert
         IllegalStateException ex = assertThrows(
