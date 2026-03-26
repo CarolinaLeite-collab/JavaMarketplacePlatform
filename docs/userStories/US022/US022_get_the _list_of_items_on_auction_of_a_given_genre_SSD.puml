@@ -25,7 +25,7 @@ skinparam object {
 skinparam shadowing<<highlight>> false
 
 
-title US022 "As a Buyer, I want to get the list of items on auction of a given genre"
+title US022 "As a Buyer, I want to get the list of items on auction of a given genre - SSD"
 
 actor User
 participant ": Mitelovers"

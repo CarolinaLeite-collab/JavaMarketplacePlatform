@@ -1,8 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Currency;
-import TOPSECRET.domain.Price;
 
 import java.util.ArrayList;
 import java.util.Collections;

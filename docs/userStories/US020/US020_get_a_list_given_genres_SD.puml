@@ -18,10 +18,10 @@ autoactivate off
 
 
 actor User as U
-participant ":GetPublicListsByGenreUI" as UI
+participant "UI:GetPublicListsByGenreControllerUI" as UI
 participant "Ctl:GetPublicListsByGenreController" as C
-participant "lopr:MemoListOfPublicationsRepo" as R
-participant "lop:ListOfPublications" as lop
+participant ":IListOfPublicationsRepo" as R
+participant ":ListOfPublications" as lop
 
 
 U -> UI: I want to get a list (name and user) of the \npublicly published lists of a given genre
@@ -32,14 +32,14 @@ deactivate UI
 U -> UI: Genre
 activate UI
 
-UI -> C: getPublicListsByGenre(Genre)
+UI -> C: getPublicListsByGenre\n(Genre)
 activate C
 
-C -> R: findPublicListsByGenre(Genre)
+C -> R: findPublicListsByGenre\n(Genre)
 activate R
 
 create " publicLists : List <ListOfPublications>" as List
-R -->> List: <<Create>>
+R -> List: <<create>>
 
 
 loop for each _lop in _lopr
@@ -59,7 +59,7 @@ deactivate lop
 
 
 
-create "copyOfPublicLists: List<ListOfPublications>" as Copy
+create "copyOfPublicLists: List<ListOfPublications> <<Create>>" as Copy
 R -> Copy: List.copyOf(publicList)
 R --> C: copyOfPublicLists
 deactivate R

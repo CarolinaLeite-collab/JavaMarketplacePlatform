@@ -1,8 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Address;
-import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.Phone;
+import TOPSECRET.ddd.DomainEntity;
+import TOPSECRET.domain.valueobject.*;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,24 +17,28 @@ import java.util.Set;
  * {@link Email} (see {@link #equals(Object)} and {@link #hashCode()}).</p>
  */
 
-public class User {
+public class User implements DomainEntity<UserID> {
 
     private final Name _name;
     private final Address _address;
     private final Email _email;
+    private final UserID _userId;
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
-    public User(Name name, Address address, Email email, Phone phone) {
+    //package-private - only UserFactory creates
+    User(Name name, Address address, Email email, Phone phone) {
+
 
         _name = Objects.requireNonNull(name, "Name is required");
         _address = address;
         _email = Objects.requireNonNull(email, "Email is required");
+        _userId = new UserID(_email);
         _phone = phone;
         _roles.add(Role.USER); // default role
     }
 
-    public User(Name name, Email email) {
+    User(Name name, Email email) {
         this(name, null, email, null);
     }
 
@@ -45,6 +48,10 @@ public class User {
 
     public boolean hasRole(Role role) {
         return _roles.contains(role);
+    }
+
+    public boolean hasEmail(Email email) {
+        return _email.equals(email);
     }
 
     public Set<Role> getRoles() {
@@ -70,6 +77,17 @@ public class User {
     @Override
     public String toString() {
         return _name.toString();
+    }
+
+    @Override
+    public UserID identity() {
+        return _userId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (!(object instanceof User other)) return false;
+        return _userId.equals(other._userId);
     }
 
     @Override

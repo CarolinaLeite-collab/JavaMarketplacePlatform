@@ -1,11 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IPublishingCompanyRepo;
-import TOPSECRET.domain.PublishingCompany;
 import TOPSECRET.domain.MemoPublishingCompanyRepo;
+import TOPSECRET.domain.PublishingCompany;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class RegisterPublishingCompanyControllerTest {

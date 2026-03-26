@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.UUID;
 
@@ -9,7 +11,7 @@ import java.util.UUID;
  * </p>
  */
 
-public class SKU {
+public class SKU implements ValueObject {
 
     // SKU gerado automaticamente pela aplicação:
     // 10 caracteres alfanuméricos (A–F, 0–9)

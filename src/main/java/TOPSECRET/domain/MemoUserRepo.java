@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;
@@ -8,42 +9,41 @@ import java.util.List;
 /**
  * Repository responsible for managing {@link User} entities.
  */
-public class UserRepo {
+public class MemoUserRepo implements IUserRepo{
 
     private final List<User> _users = new ArrayList<>();
     private final UserFactory _userFactory;
 
-    public UserRepo(UserFactory userFactory) {
+    public MemoUserRepo(UserFactory userFactory) {
         _userFactory = userFactory;
     }
 
+    @Override
     public User registerNewUser(String name, String email) {
+        Email newEmail = new Email(email);
 
-        if (userExists(email)) {
+        if (userExists(newEmail)) {
             throw new IllegalStateException("User already exists");
         }
 
-        Name newUserName = new Name(name);
-        Email newUserEmail = new Email(email);
-
-        User newUser = _userFactory.createUser(newUserName, newUserEmail);
+        Name newName = new Name(name);
+        User newUser = _userFactory.createUser(newName, newEmail);
         _users.add(newUser);
-
         return newUser;
     }
 
-    private boolean userExists(String email) {
-        String emailFormat = email.trim().toLowerCase();
+    @Override
+    public List<User> getAll() {
+        return List.copyOf(_users);
+    }
 
+    private boolean userExists(Email email) {
         for (User user : _users) {
-            if (emailFormat.equals(user.getEmail())) {
+            if (user.hasEmail(email)) {
                 return true;
             }
         }
         return false;
     }
 
-    public List<User> getAll() {
-        return List.copyOf(_users);
-    }
 }

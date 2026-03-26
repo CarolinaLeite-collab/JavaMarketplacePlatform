@@ -1,12 +1,12 @@
 package TOPSECRET.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link Item}.

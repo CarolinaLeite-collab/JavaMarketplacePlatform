@@ -17,13 +17,18 @@ skinparam classAttributeIconSize 0
 class ShareListPubliclyUI
 
 class ShareListPubliclyController {
+    - _listOfPublicationsRepo : IListOfPublicationsRepo
     + findListsByUser(user : User) : List<ListOfPublications>
     + shareListPublicly(list : ListOfPublications) : boolean
 }
 
-class ListOfPublicationsRepo {
+interface IListOfPublicationsRepo {
+    + findListsByUser(user : User) : List<ListOfPublications>
+}
+
+class MemoListOfPublicationsRepo {
     - _listsOfListOfPublications : List<ListOfPublications>
-    + addListOfPublications() : boolean
+    + findListsByUser(user : User) : List<ListOfPublications>
 }
 
 class ListOfPublications {
@@ -36,7 +41,8 @@ class ListOfPublications {
 }
 
 "ShareListPubliclyUI" "1" --> "1" "ShareListPubliclyController" : request
-"ShareListPubliclyController" "1" --> "1" "ListOfPublicationsRepo" : uses
-"ListOfPublicationsRepo" "1" --> "1" "ListOfPublications" : stores
+"ShareListPubliclyController" "1" --> "1" "IListOfPublicationsRepo" : uses
+"IListOfPublicationsRepo" "1" --> "1" "ListOfPublications" : stores
+IListOfPublicationsRepo <|.. MemoListOfPublicationsRepo
 
 @enduml

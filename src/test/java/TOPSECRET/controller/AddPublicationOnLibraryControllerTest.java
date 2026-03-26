@@ -15,7 +15,7 @@ class AddPublicationOnLibraryControllerTest {
         //arrange
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
 
         when(_libraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
@@ -36,7 +36,7 @@ class AddPublicationOnLibraryControllerTest {
         //arrange
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
 
         Item _itemDouble1 = mock(Item.class);
         Item _itemDouble2 = mock(Item.class);
@@ -62,7 +62,7 @@ class AddPublicationOnLibraryControllerTest {
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
 
         Item _itemDouble1 = mock(Item.class);
@@ -95,7 +95,7 @@ class AddPublicationOnLibraryControllerTest {
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
 
         Item _itemDouble1 = mock(Item.class);
@@ -126,7 +126,7 @@ class AddPublicationOnLibraryControllerTest {
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
         Item _idemDouble = mock(Item.class);
 
@@ -151,7 +151,7 @@ class AddPublicationOnLibraryControllerTest {
         ILibraryRepo _libraryRepoDouble = mock(MemoLibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
-        ItemRepo _itemRepoDouble = mock(ItemRepo.class);
+        IItemRepo _itemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
         Item _itemDouble = mock(Item.class);
 

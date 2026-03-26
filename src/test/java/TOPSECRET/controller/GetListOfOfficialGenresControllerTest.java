@@ -1,12 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.IGenreRepo;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GetListOfOfficialGenresControllerTest {
 

@@ -14,21 +14,18 @@ import java.time.Year;
 
 public class PublicationFactory {
 
-    public Publication createPublication(
-
-            PublicationType type,
+    public Publication createPublication(PublicationType publicationType,
             Identifier identifier,
-            Year year,
+            Year publicationYear,
             Title title,
             Author author,
             PublishingCompany publisher,
             Edition edition,
-            Genre genre
-    ) {
+            Genre genre) {
         return Publication.builder()
-                .type(type)
+                .type(publicationType)
                 .identifier(identifier)
-                .year(year)
+                .year(publicationYear)
                 .title(title)
                 .author(author)
                 .publisher(publisher)

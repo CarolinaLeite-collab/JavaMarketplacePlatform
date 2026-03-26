@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Price;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -18,9 +20,9 @@ import java.util.Objects;
 
 public class Bid {
 
-    private final User _bidder; // Final: bidder cannot change
-    private final Price _offerPrice; // Final: offer price is immutable
-    private final Instant _bidDate; //Final: historical timestamp
+    private final User _bidder;
+    private final Price _offerPrice;
+    private final Instant _bidDate;
 
     Bid(User bidder, Price offerPrice) {
         this(bidder, offerPrice, Clock.systemDefaultZone());
@@ -39,8 +41,6 @@ public class Bid {
         _bidDate = Instant.now(clock);
     }
 
-    //Getters
-
     public User getBidder() {
         return _bidder;
     }
@@ -53,7 +53,6 @@ public class Bid {
         return _bidDate;
     }
 
-    //Validation Methods
     private void validateBidder(User bidder) {
         if (bidder == null) {
             throw new IllegalArgumentException("Bidder cannot be null");
@@ -64,7 +63,6 @@ public class Bid {
         if (offerPrice == null) {
             throw new IllegalArgumentException("Offer Price cannot be null");
         }
-        // Note: If Price class already validates that the value is positive
     }
 
     @Override

@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
 import java.util.List;

@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import java.util.*;
-
 /** A genre is a category used to classify publications based
  * on shared characteristics like style, form, or content.
  * Cannot be null, empty, or whitespace‑only.

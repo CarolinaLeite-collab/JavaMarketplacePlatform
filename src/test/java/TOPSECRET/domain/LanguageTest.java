@@ -3,10 +3,10 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.valueobject.Language;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Locale;
 import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link Language}.

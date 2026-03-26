@@ -15,31 +15,38 @@ skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
 '==== classes ====
-class UIPublicationRegister {}
+class RegisterPublicationUI {}
 
 class RegisterNewPublicationController {
-  + registerPublication(Publication) : Publication
+  + registerPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
 }
 
-class PublicationRepo{
-  - _publications: List<Publication>
-  + add(Publication) : Publication
-  - publicationAlreadyExists(Publication): boolean
+interface IPublicationRepo {
+  + addPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
+}
+
+class MemoPublicationRepo{
+- _publications: List<Publication>
+  - add(publication: Publication) : Publication
+  - contains(publication: Publication): boolean
+}
+
+class PublicationFactory{
++ createPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
 }
 
 class Publication{
   - _publicationType: PublicationType
-  - _publicationDate: LocalDate
+  - _identifier: Identifier
+  - _publicationYear: Year
   - _title: Title
   - _author: Author
   - _publisher: Publisher
   - _edition: Edition
   - _genre: Genre
-  + equals(Object): boolean
-  (...)
 }
 
-interface Identifier {
+/' interface Identifier {
   + getIdentifier(): String
  }
 class ISBN {
@@ -58,32 +65,35 @@ class NoIdentifier {
   + NoIdentifier()
   + getIdentifier(): String
   }
-
+'/
 '==== relations ====
-UIPublicationRegister "1" ..> "1" RegisterNewPublicationController : uses
-' --- controller / repo ---
-RegisterNewPublicationController "1" ..> "1" PublicationRepo : uses
-PublicationRepo "1" --> "*" Publication : manages
-
-' --- publication structure ---
-Publication --> "1" Identifier : has
+RegisterPublicationUI "1" ..> "1" RegisterNewPublicationController : uses
+RegisterNewPublicationController "1" --> "1" IPublicationRepo: uses
+IPublicationRepo "1" <|.. "1" MemoPublicationRepo
+MemoPublicationRepo "1" --> "*" PublicationFactory : uses
+PublicationFactory "1" --> "*" Publication : creates
+'Publication --> "1" Identifier : has
 
 
 ' --- identifier hierarchy ---
-Identifier <|.. ISBN
+/'Identifier <|.. ISBN
 Identifier <|.. ISSN
-Identifier <|.. NoIdentifier
+Identifier <|.. NoIdentifier'/
 
+note right of MemoPublicationRepo
+  these methods are
+  implementation details
+  of MemoPublicationRepo
+end note
 
 note right of Publication
   abstract editorial work,
-  independent of any specific copy
+  independent of any specific copy;
   previously named PublicationInfo
 end note
 
-note left of Publication #LightPink
-{constraint:
-identifier is ISBN, ISSN or NoIdentifier}
+note left of Publication
+identifier is either %n()ISBN, ISSN or %n()NoIdentifier
 end note
 
 @enduml

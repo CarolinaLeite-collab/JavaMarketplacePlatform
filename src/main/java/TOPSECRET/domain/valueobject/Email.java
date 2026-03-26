@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -10,7 +12,7 @@ import java.util.regex.Pattern;
  * for safe use in collections.
  */
 
-public final class Email {
+public final class Email implements ValueObject {
 
     // Establishing a regex to guarantee emails in the format: local@domain with subdomains
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9-.]+(\\.[A-Za-z0-9-]+)+$");

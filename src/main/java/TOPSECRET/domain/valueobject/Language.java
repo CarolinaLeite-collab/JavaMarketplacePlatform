@@ -2,8 +2,8 @@ package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
 
-import java.util.Objects;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Represents a language with support for internationalization.

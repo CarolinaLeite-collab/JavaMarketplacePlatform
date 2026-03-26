@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Address;
+import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.Phone;
 
@@ -18,7 +19,7 @@ public class UserFactory {
         return new User(name, email);
     }
 
-    public User createUserTypeB(Name name, Address address, Email email, Phone phone) {
+    public User createUser(Name name, Address address, Email email, Phone phone) {
         return new User (name, address, email, phone);
     }
 }

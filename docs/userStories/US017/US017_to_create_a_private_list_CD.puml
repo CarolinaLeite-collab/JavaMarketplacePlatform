@@ -16,18 +16,22 @@ skinparam ArrowColor #57595BAA
 skinparam classAttributeIconSize 0
 
 '==== entities ====
-Class ListOfPublicationsRepo {
-- _listsOfPublications : List<ListOfPublications>
-- _genreRepo : GenreRepo
-+createListOfPublications (user : User, name : String, genre : Genre) : ListOfPublications
--existsListOfPublications (listOfPublications : ListOfPublications) : boolean
+interface IListOfPublicationsRepo {
++ addListOfPublications(user : User, name : String, genre : Genre) : ListOfPublications
++ findListsByUser(user : User) : List<ListOfPublications>
 }
 
-Class RegisterPrivateListOfPublicationController {
--_listOfListOfPublicationsRepo : ListOfPublicationsRepo
--_genreRepo : GenreRepo
-+ getOfficialGenres() : List<Genre>
-+ createListOfPublications (user : User, name : String, genre : Genre) : ListOfPublications
+class MemoListOfPublicationsRepo {
+- _listsOfPublications : List<ListOfPublications>
+- _genreRepo : GenreRepo
++ addListOfPublications(user : User, name : String, genre : Genre) : ListOfPublications
+}
+
+class CreatePrivateListOfPublicationsController {
+	-_listOfListOfPublicationsRepo : IListOfPublicationsRepo
+	-_genreRepo : GenreRepo
+	+ getOfficialGenres() : List<Genre>
+	+ createListOfPublications(user : User, name : String, genre : Genre) : ListOfPublications
 }
 
 Class ListOfPublications {
@@ -38,8 +42,9 @@ Class ListOfPublications {
 }
 
 '==== connections ====
-ListOfPublicationsRepo "1" --> "*" ListOfPublications: instantiates through
-RegisterPrivateListOfPublicationController  "1" ..> "1" ListOfPublicationsRepo: calls
-RegisterPrivateListOfPublicationUI "1" ..> "1" RegisterPrivateListOfPublicationController: invokes
+MemoListOfPublicationsRepo "1" --> "*" ListOfPublications: creates
+IListOfPublicationsRepo <|.. MemoListOfPublicationsRepo
+CreatePrivateListOfPublicationsController  "1" ..> "1" IListOfPublicationsRepo: calls
+CreatePrivateListOfPublicationsUI "1" ..> "1" CreatePrivateListOfPublicationsController: invokes
 
 @enduml

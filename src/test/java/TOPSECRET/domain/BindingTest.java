@@ -3,7 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.valueobject.Binding;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class BindingTest {
 

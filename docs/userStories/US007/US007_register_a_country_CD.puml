@@ -12,7 +12,6 @@ skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #57595BAA
 skinparam classAttributeIconSize 0
 
 '==== entities ====
@@ -22,9 +21,11 @@ Class Country {
 Class CountryFactory {
 + createFactory(countryName : String)
 }
-Class CountryRepo {
-- _countries : List<Country>
+interface ICountryRepo{
 + registerCountry(countryName : String) : Country
+}
+Class MemoCountryRepo {
+- _countries : List<Country>
 - existsCountry(country : Country) : boolean
 }
 Class RegisterCountryController {
@@ -34,8 +35,9 @@ Class RegisterCountryUI {}
 
 '==== connections ====
 CountryFactory "1" --> "*" Country: instantiates through
-CountryRepo "1" --> "1" CountryFactory: calls
-RegisterCountryController  "1" ..> "1" CountryRepo: calls
+MemoCountryRepo "1" --> "1" CountryFactory: calls
+RegisterCountryController  "1" ..> "1" ICountryRepo: uses
+MemoCountryRepo "1" ..|> "1" ICountryRepo
 RegisterCountryUI "1" ..> "1" RegisterCountryController: invokes
 
 @enduml

@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Year;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,7 +18,7 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationCallsRepoWithCorrectArguments() {
         //arrange
-        PublicationRepo _publicationRepo = mock(PublicationRepo.class);
+        IPublicationRepo _iPublicationRepo = mock(IPublicationRepo.class);
         PublicationType _typeDouble = mock(PublicationType.class);
         Identifier _identifierDouble = mock(Identifier.class);
         Year _yearDouble = mock(Year.class);
@@ -27,11 +28,11 @@ class RegisterNewPublicationControllerTest {
         Edition _editionDouble = mock(Edition.class);
         Genre _genreDouble = mock(Genre.class);
         Publication expected = mock(Publication.class);
-        when(_publicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(expected);
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(_publicationRepo);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo);
 
         //act
         Publication result = controller.registerPublication(
@@ -45,12 +46,12 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationThrowsWhenRepoThrows() {
         //arrange
-        PublicationRepo repoDouble = mock(PublicationRepo.class);
-        when(repoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+        IPublicationRepo iRepoDouble = mock(IPublicationRepo.class);
+        when(iRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(repoDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iRepoDouble);
 
         //act and assert
         assertThrows(IllegalArgumentException.class, () ->

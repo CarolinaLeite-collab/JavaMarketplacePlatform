@@ -1,10 +1,11 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.valueobject.Price;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Period;
 
 /**
  * Repository for managing {@link DirectSale} instances.

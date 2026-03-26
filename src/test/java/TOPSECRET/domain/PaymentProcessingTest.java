@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.PaymentProcessing;
+import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class PaymentProcessingTest {

@@ -21,7 +21,7 @@ autoactivate off
 actor Administrator as ADM
 participant ":RegisterCountryUI" as UI
 participant ":RegisterCountryController" as CTL
-participant ":CountryRepo" as CR
+participant ":MemoCountryRepo" as CR
 participant ":CountryFactory" as FACTORY
 
 
@@ -43,7 +43,7 @@ activate CR
 
 CR -> FACTORY: createFactory (countryName)
 create "c1:Country"
-FACTORY -> "c1:Country": createFactory (countryName)
+FACTORY -->> "c1:Country": <<Create>>
 FACTORY --> CR :c1
 
 opt existsCountry (country) == false

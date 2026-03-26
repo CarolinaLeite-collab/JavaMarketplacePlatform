@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link ListOfPublicationsRepo}.
+ * Unit tests for {@link MemoListOfPublicationsRepo}.
  *
  * <p>The following Mockito doubles are used:
  * <ul>
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
  * </ul>
  */
 
-class ListOfPublicationsRepoTest {
+class MemoListOfPublicationsRepoTest {
 
     private ListOfPublicationsFactory _factoryDouble;
 
@@ -42,7 +42,7 @@ class ListOfPublicationsRepoTest {
 
     @Test
     void shouldCreateEmptyListOfPublication() {
-        new ListOfPublicationsRepo();
+        new MemoListOfPublicationsRepo();
     }
 
     @Test
@@ -57,7 +57,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         ListOfPublications list = repo.addListOfPublications(_user1Double, "My List", _actionDouble);
@@ -82,7 +82,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "My List", _actionDouble);
@@ -102,7 +102,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         repo.addListOfPublications(_user1Double, "My List", _actionDouble);
 
@@ -146,7 +146,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "List C", _poetryDouble)).thenReturn(_listPubDouble3);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "List A", _actionDouble);
@@ -178,7 +178,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "List A", _actionDouble);
@@ -202,7 +202,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "List A", _actionDouble);
@@ -230,7 +230,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user2Double, "U2 List", _actionDouble)).thenReturn(_listPubDouble2);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "U1 List", _actionDouble);
@@ -258,7 +258,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "My List", _actionDouble);
@@ -281,7 +281,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "My List", _actionDouble);
@@ -304,7 +304,7 @@ class ListOfPublicationsRepoTest {
         when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user1Double, "My List", _actionDouble);
@@ -319,7 +319,7 @@ class ListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreReturnsNullWhenListDoesNotExist() {
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "Unknown", _actionDouble);
@@ -341,7 +341,7 @@ class ListOfPublicationsRepoTest {
                 .thenReturn(list);
 
         // SUT
-        ListOfPublicationsRepo repo = new ListOfPublicationsRepo(_factoryDouble);
+        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
 
         // Act
         repo.addListOfPublications(_user2Double, "Other List", _actionDouble);

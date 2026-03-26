@@ -3,7 +3,9 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -12,7 +14,7 @@ import static org.mockito.Mockito.*;
  *
  * <p>The following Mockito doubles are used:
  * <ul>
- *   <li>{@link ListOfPublicationsRepo} — mocked collaborator (persistence dependency)</li>
+ *   <li>{@link IListOfPublicationsRepo} — mocked collaborator (persistence dependency)</li>
  *   <li>{@link IGenreRepo} — mocked collaborator (persistence dependency)</li>
  *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
  *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
@@ -21,7 +23,7 @@ import static org.mockito.Mockito.*;
 
 class CreatePrivateListOfPublicationsControllerTest {
 
-    private ListOfPublicationsRepo _repoDouble;
+    private IListOfPublicationsRepo _repoDouble;
     private IGenreRepo _iGenreRepoDouble;
     private User _userDouble;
     private Genre _actionDouble;
@@ -30,7 +32,7 @@ class CreatePrivateListOfPublicationsControllerTest {
     @BeforeEach
     void setUp() {
 
-        _repoDouble = mock(ListOfPublicationsRepo.class);
+        _repoDouble = mock(IListOfPublicationsRepo.class);
         _iGenreRepoDouble = mock(IGenreRepo.class);
         _userDouble = mock(User.class);
         _actionDouble = mock(Genre.class);

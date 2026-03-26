@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Price;
 import TOPSECRET.domain.User;
 
 /**

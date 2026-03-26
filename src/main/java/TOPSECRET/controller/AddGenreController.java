@@ -1,6 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.IGenreRepo;
+import TOPSECRET.domain.Role;
+import TOPSECRET.domain.User;
 
 /**
  * Controller responsible for handling the addition of new genres.

@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.PhonePrefix;
 
 /**
  * Phone number composed of a {@link PhonePrefix} and a national number.

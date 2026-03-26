@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.valueobject.Price;
 
-import java.util.List;
 import java.time.Period;
+import java.util.List;
 
 public interface IDirectSaleRepo {
 

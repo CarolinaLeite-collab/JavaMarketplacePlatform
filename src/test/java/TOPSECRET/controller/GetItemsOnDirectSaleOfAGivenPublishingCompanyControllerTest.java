@@ -1,12 +1,17 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.PublishingCompany;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     private Item _itemDouble;
