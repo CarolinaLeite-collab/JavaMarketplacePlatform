@@ -2,7 +2,7 @@
 'https://plantuml.com/class-diagram
 
 '==== Title ====
-title MiteLovers – DDD - Granularity 1
+title MiteLovers – DDD - Granularity 2
 top to bottom direction
 
 '==== basic style ====
@@ -40,7 +40,7 @@ class Country <<Aggregate Root>> {}
 class Listing <<Aggregate Root>> {}
 class DirectSale <<Aggregate Root>> {}
 class Auction <<Aggregate Root>> {}
-'class Bid <<Entity>> {}
+class Bid <<Entity>> {}
 class Edition <<Aggregate Root>> {}
 class PublishingCompany <<Aggregate Root>> {}
 class Publication <<Aggregate Root>> {}
@@ -68,7 +68,7 @@ ListOfItems "*" --- "1" Genre
 '--- User ---'
 User "*" --- "1" City
 User "1" --- "1" Library
-'User "1" --- "*" Bid
+User "1" --- "*" Bid
 User "1" --- "*" Listing
 
 '--- Publication ---'
@@ -83,7 +83,7 @@ AppraisalEntity "*" ----- "1..*" Genre
 '--- Listing ---'
 Listing "1" --- "0..1" Auction
 Listing "1" --- "0..1" DirectSale
-'Auction "1" --- "*" Bid
+Auction "1" --- "*" Bid
 
 '--- City ---'
 City "*" --- "1" Country
