@@ -17,10 +17,10 @@ public class AddPublicationToListController {
     private final IListOfPublicationsRepo _iListOfPublicationsRepo;
     private final ILibraryRepo _iLibraryRepo;
 
-    public AddPublicationToListController(IListOfPublicationsRepo listRepo, ILibraryRepo libraryRepo) {
+    public AddPublicationToListController(IListOfPublicationsRepo iListRepo, ILibraryRepo iLibraryRepo, User user) {
 
-        _iListOfPublicationsRepo = listRepo;
-        _iLibraryRepo = libraryRepo;
+        _iListOfPublicationsRepo = iListRepo;
+        _iLibraryRepo = iLibraryRepo;
     }
 
     public List<ListOfPublications> getMyLists(User user) {
@@ -28,7 +28,7 @@ public class AddPublicationToListController {
     }
 
     public List<Item> getItemsInMyLibrary(User user) {
-        Library lib = _iLibraryRepo.findLibraryByUser(user); // throws if not found
+        Library lib = _iLibraryRepo.findLibraryByUser(user);
         return lib.getItemsInLibrary();
     }
 

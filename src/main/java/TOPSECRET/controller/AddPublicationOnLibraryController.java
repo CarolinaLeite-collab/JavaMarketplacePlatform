@@ -17,10 +17,10 @@ public class AddPublicationOnLibraryController {
     private final Library _library;
     private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(ILibraryRepo libraryRepo, Library library, IItemRepo itemRepo) {
-        _iLibraryRepo = libraryRepo;
+    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo) {
+        _iLibraryRepo = ilibraryRepo;
         _library = library;
-        _iItemRepo = itemRepo;
+        _iItemRepo = iItemRepo;
     }
 
     public Library getMyLibrary(User user) {
