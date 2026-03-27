@@ -43,12 +43,6 @@ public class Publication {
         this._genre = b._genre;
     }
 
-    // ---------------------------------------------------------------------------------------
-    // Entry point to create a new publication
-    // We can´t use " new Publication(...) " because the constructor is private
-    // So we do " Publication.builder() "
-    // Builder is a temporary object that stores the necessary fields to create a Publication
-    // ---------------------------------------------------------------------------------------
 
     public static Builder builder() {
         return new Builder();
@@ -65,7 +59,7 @@ public class Publication {
         private Edition _edition;
         private Genre _genre;
 
-        // --- Build setters ---
+
         public Builder type(PublicationType t) { this._publicationType = t; return this; }
         public Builder identifier(Identifier i) { this._identifier = i; return this; }
         public Builder year(Year y) { this._publicationYear = y; return this; }
@@ -75,14 +69,12 @@ public class Publication {
         public Builder edition(Edition e) { this._edition = e; return this; }
         public Builder genre(Genre g) { this._genre = g; return this; }
 
-        // --- Build ---
         public Publication build() {
             validateCommonFields();
             validateTypeSpecificFields();
             return new Publication(this);
         }
 
-        // --- Validation helper methods ---
         private void validateCommonFields() {
             require(_publicationType, "publicationType");
             require(_identifier, "identifier");
@@ -113,10 +105,6 @@ public class Publication {
         }
     }
 
-    // ---------------------------------------
-    // 2: Check if Publication already exists
-    // ---------------------------------------
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -134,7 +122,7 @@ public class Publication {
     }
 
     private boolean _equalsBook(Publication other) {
-        return (other._publicationYear.getValue() > 1970)      //Não percebo porque estamos a verificar o other e não o this WTF!
+        return (other._publicationYear.getValue() > 1970)
                 ? Objects.equals(_identifier, other._identifier)
                 : Objects.equals(_title, other._title)
                 && Objects.equals(_publicationYear, other._publicationYear);
@@ -153,9 +141,6 @@ public class Publication {
     }
 
 
-    // ---------------------
-    //  3: Matching methods
-    // ---------------------
 
 
     public boolean isByAuthor(Author author) {
@@ -170,9 +155,8 @@ public class Publication {
 
         return Objects.equals(_publisher, publisher); }
 
-    // -----------
-    // 4: Getters
-    // -----------
+
+
 
     public PublicationType getPublicationType() { return _publicationType; }
 
