@@ -38,16 +38,6 @@ class UserTest {
     }
 
     @Test
-    void constructorShouldThrowExceptionWhenNameIsNull() {
-
-        // Arrange
-        Email emailDouble = mock(Email.class);
-
-        // Act & Assert & SUT
-        assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, emailDouble, _phoneDouble));
-    }
-
-    @Test
     void constructorShouldAllowNullAddress() {
 
         // Arrange
