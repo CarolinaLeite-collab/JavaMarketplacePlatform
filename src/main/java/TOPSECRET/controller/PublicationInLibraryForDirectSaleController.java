@@ -11,40 +11,23 @@ import java.util.List;
  */
 public class PublicationInLibraryForDirectSaleController {
 
-    private final LibraryRepo _libraryRepo;
-    private final DirectSaleRepo _directSaleRepo;
+    private final ILibraryRepo _iLibraryRepo;
+    private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public PublicationInLibraryForDirectSaleController(
-            LibraryRepo libraryRepo,
-            DirectSaleRepo directSaleRepo
-    ) {
-        _libraryRepo = libraryRepo;
-        _directSaleRepo = directSaleRepo;
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, User _userID) {
+        _iLibraryRepo = libraryRepo;
+        _iDirectSaleRepo = directSaleRepo;
     }
 
-    public List<Item> getItemsInLibrary(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User required");
-        }
+    public List<Item> getItemsInLibraryByUser(User user) {
 
-        Library userLibrary = _libraryRepo.findLibraryByUser(user);
-        return userLibrary.getItemsInLibrary();
+        return _iLibraryRepo.getItemsInLibraryByUser(user);
+
     }
 
-    public DirectSale addItemForDirectSale(
-            Item item,
-            Price price,
-            Period timeLimit
-    ) {
-        if (item == null) {
-            throw new IllegalArgumentException("Item required");
-        }
+    public DirectSale addItemForDirectSale(Item item, Price price, Period timeLimit) {
 
-        if (price == null) {
-            throw new IllegalArgumentException("Price required");
-        }
-
-        DirectSale directSale = _directSaleRepo.addDirectSale(item, price, timeLimit);
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(item, price, timeLimit);
         item.setDirectSale(directSale);
 
         return directSale;

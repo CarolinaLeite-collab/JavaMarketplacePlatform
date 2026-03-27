@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.IUserRepo;
+import TOPSECRET.domain.User;
 
 /**
  * Controller responsible for handling the registration of a {@link User}.

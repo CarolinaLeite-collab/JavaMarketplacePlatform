@@ -1,6 +1,6 @@
 @startuml
 
-title CD (Class Diagram) - to get list of all publication types (US014)
+title US014 - "As a User, I want to get the list of official publication types" - CD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -13,18 +13,19 @@ class UIPublicationTypeList {
 }
 
 class GetPublicationTypeListController {
-    - publicationTypeRepo : PublicationTypeRepo
+    - publicationTypeRepo : MemoPublicationTypeRepo
     + getListOfPublicationTypes() : List<PublicationType>
 }
 
-class PublicationTypeRepo {
+interface IPublicationTypeRepo {
++ getAll() : List<PublicationType>
+}
+
+class MemoPublicationTypeRepo {
     - publicationTypes : List<PublicationType>
-    + existsPublicationType(typeName : String) : boolean
-    + createPublicationType(typeName : String) : PublicationType
-    + getAll() : List<PublicationType>
 }
 
 UIPublicationTypeList "1" ..> "1" GetPublicationTypeListController : invokes
-GetPublicationTypeListController "1" ..> "1" PublicationTypeRepo : use
-
+GetPublicationTypeListController "1" ..> "1" IPublicationTypeRepo : use
+IPublicationTypeRepo "1" <|.. "1" MemoPublicationTypeRepo
 @enduml

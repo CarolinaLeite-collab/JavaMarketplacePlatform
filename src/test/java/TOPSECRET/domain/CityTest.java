@@ -1,22 +1,14 @@
 package TOPSECRET.domain;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-/**
- * Unit tests for {@link City}.
- *
- * <p>{@link Country} is mocked as a dummy — City only holds a reference to it,
- * never interrogates its behaviour.</p>
- *
- * <p>No other Mockito doubles are used — {@link City} is a pure Value Object.</p>
- */
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CityTest {
 
@@ -37,7 +29,7 @@ class CityTest {
         // Arrange
         String name = "Porto";
 
-        // Act
+        // SUT
         City city = new City(name, _countryDouble);
 
         // Assert

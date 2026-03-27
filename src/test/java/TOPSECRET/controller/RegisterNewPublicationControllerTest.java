@@ -1,12 +1,14 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,11 +28,13 @@ class RegisterNewPublicationControllerTest {
         Edition _editionDouble = mock(Edition.class);
         Genre _genreDouble = mock(Genre.class);
         Publication expected = mock(Publication.class);
+        User _userDouble = mock(User.class);
+
         when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(expected);
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo, _userDouble);
 
         //act
         Publication result = controller.registerPublication(
@@ -44,12 +48,14 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationThrowsWhenRepoThrows() {
         //arrange
-        IPublicationRepo iRepoDouble = mock(IPublicationRepo.class);
-        when(iRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+        User _userDouble = mock(User.class);
+
+        IPublicationRepo iPublicationRepoDouble = mock(IPublicationRepo.class);
+        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(iRepoDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepoDouble, _userDouble);
 
         //act and assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -68,9 +74,12 @@ class RegisterNewPublicationControllerTest {
 
     @Test
     void constructorThrowsWhenRepoIsNull() {
+        //Arrange
+        User _userDouble = mock(User.class);
+
         //assert
         assertThrows(NullPointerException.class, () ->
-                new RegisterNewPublicationController(null)
+                new RegisterNewPublicationController(null, _userDouble)
         );
     }
 

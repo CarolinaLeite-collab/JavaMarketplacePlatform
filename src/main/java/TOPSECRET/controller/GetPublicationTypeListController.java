@@ -1,27 +1,28 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.domain.PublicationTypeRepo;
+import TOPSECRET.domain.User;
 
 import java.util.List;
 
 /**
  * Controller responsible for retrieving the list of all publication types.
  * <p>
- * This controller interacts with the {@link PublicationTypeRepo} to fetch
+ * This controller interacts with the {@link IPublicationTypeRepo} to fetch
  * all existing {@link PublicationType} instances in the system.
  * </p>
  */
 
 public class GetPublicationTypeListController {
 
-    private final PublicationTypeRepo publicationTypeRepo;
+    private final IPublicationTypeRepo _iPublicationTypeRepo;
 
-    public GetPublicationTypeListController(PublicationTypeRepo publicationTypeRepo) {
-        this.publicationTypeRepo = publicationTypeRepo;
+    public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo, User user) {
+        _iPublicationTypeRepo = iPublicationTypeRepo;
     }
 
     public List<PublicationType> getListOfPublicationTypes() {
-        return publicationTypeRepo.getAll();
+        return _iPublicationTypeRepo.getAll();
     }
 }

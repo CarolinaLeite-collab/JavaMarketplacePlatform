@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 class LibraryFactoryTest {
 
@@ -11,14 +12,23 @@ class LibraryFactoryTest {
     void createLibrary_shouldReturnLibraryWithCorrectUser() {
         // Arrange
         User userDouble = mock(User.class);
+
+        //SUT
         LibraryFactory factory = new LibraryFactory();
 
-        // Act
-        Library myLibrary = factory.createLibrary(userDouble);
+        try (MockedConstruction<Library> mocked =
+                     mockConstruction(Library.class,
+                             (mock, context) -> {
+                                 when(mock.getUser())
+                                         .thenReturn(userDouble);
+                             })) {
+            //Act
+            Library newLibrary = factory.createLibrary(userDouble);
 
-        // Assert
-        assertNotNull(myLibrary);
-        assertEquals(userDouble, myLibrary.getUser());
+            //Assert
+            assertEquals(userDouble, newLibrary.getUser());
+        }
+
     }
 
 }

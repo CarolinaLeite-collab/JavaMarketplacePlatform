@@ -1,27 +1,30 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.User;
 
 import java.util.List;
 
 /**
  * Controller responsible for retrieving auction items filtered by publication.
  *
- * <p>Acts as a thin delegation layer between the UI and {@link AuctionRepo},
+ * <p>Acts as a thin delegation layer between the UI and {@link IAuctionRepo},
  * following the Controller pattern (GRASP).</p>
  */
 
 public class GetAuctionItemsByPublicationController {
-    private final AuctionRepo _ar;
+    private final IAuctionRepo _iAuctionRepo;
 
-    public GetAuctionItemsByPublicationController(AuctionRepo auctionRepo, User buyer){
+    public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, User buyer){
 
-        _ar = auctionRepo;
+        _iAuctionRepo = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByPublication(Publication publication) {
 
-        List<Item> auctionItemsByPublication = _ar.getAuctionItemsByPublication(publication);
+        List<Item> auctionItemsByPublication = _iAuctionRepo.getAuctionItemsByPublication(publication);
 
         return auctionItemsByPublication;
 

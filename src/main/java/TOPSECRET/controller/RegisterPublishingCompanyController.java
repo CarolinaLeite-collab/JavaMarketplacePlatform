@@ -1,26 +1,26 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.IPublishingCompanyRepo;
 import TOPSECRET.domain.PublishingCompany;
-import TOPSECRET.domain.PublishingCompanyRepo;
 
 /**
  * Controller responsible for handling the registration of a {@link PublishingCompany}.
- * Delegates the operation to {@link PublishingCompanyRepo}.
+ * Delegates the operation to {@link IPublishingCompanyRepo}.
  */
 
 public class RegisterPublishingCompanyController {
 
-    private final PublishingCompanyRepo _publishingCompanyRepo;
+    private final IPublishingCompanyRepo _iPublishingCompanyRepo;
 
-    public RegisterPublishingCompanyController(PublishingCompanyRepo publishingCompanyRepo) {
+    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo) {
 
-        _publishingCompanyRepo = publishingCompanyRepo;
+        _iPublishingCompanyRepo = iPublishingCompanyRepo;
 
     }
 
     public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
 
-        PublishingCompany publishingCompany = _publishingCompanyRepo.registerPublishingCompany(publishingCompanyName);
+        PublishingCompany publishingCompany = _iPublishingCompanyRepo.registerPublishingCompany(publishingCompanyName);
 
         return publishingCompany;
 

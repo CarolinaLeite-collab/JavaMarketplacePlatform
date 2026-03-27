@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Email;
+import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;
 import java.util.List;

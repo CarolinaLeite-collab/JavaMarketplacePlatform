@@ -4,6 +4,7 @@ import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -13,13 +14,14 @@ class MemoItemRepoTest {
     @Test
     void existsReturnsFalseWhenRepoIsEmpty() {
         // Arrange
-        Publication pub = mock(Publication.class);
-        ItemFactory factory = mock(ItemFactory.class);
+        Publication pubicationDouble = mock(Publication.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
         // Act
-        boolean result = repo.exists(pub);
+        boolean result = repo.exists(pubicationDouble);
 
         // Assert
         assertFalse(result);
@@ -28,18 +30,19 @@ class MemoItemRepoTest {
     @Test
     void existsReturnsTrueWhenItemWithPublicationExists() {
         // Arrange
-        Publication pub = mock(Publication.class);
-        Condition condition = mock(Condition.class);
-        Item item = mock(Item.class);
-        when(item.getPublication()).thenReturn(pub);
-        ItemFactory factory = mock(ItemFactory.class);
-        when(factory.createItem(pub, condition)).thenReturn(item);
+        Publication publicationDouble = mock(Publication.class);
+        Condition conditionDouble = mock(Condition.class);
+        Item itemDouble = mock(Item.class);
+        when(itemDouble.get_publication()).thenReturn(publicationDouble);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
+
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
-        repo.createItem(pub, condition);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+        repo.createItem(publicationDouble, conditionDouble);
 
         // Act
-        boolean result = repo.exists(pub);
+        boolean result = repo.exists(publicationDouble);
 
         // Assert
         assertTrue(result);
@@ -48,9 +51,9 @@ class MemoItemRepoTest {
     @Test
     void existsReturnsFalseForNullPublication() {
         // Arrange
-        ItemFactory factory = mock(ItemFactory.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);;
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);;
 
         // Act
         boolean result = repo.exists(null);
@@ -62,40 +65,41 @@ class MemoItemRepoTest {
     @Test
     void createItemCreatesAndStoresNewItem() {
         // Arrange
-        Publication pub = mock(Publication.class);
-        Condition condition = mock(Condition.class);
-        Item item = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
+        Condition conditionDouble = mock(Condition.class);
+        Item itemDouble = mock(Item.class);
 
-        ItemFactory factory = mock(ItemFactory.class);
-        when(factory.createItem(pub, condition)).thenReturn(item);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
 
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
         //SUT
         // Act
-        Item result = repo.createItem(pub, condition);
+        Item result = repo.createItem(publicationDouble, conditionDouble);
 
         // Assert
-        assertEquals(item, result);
+        assertEquals(itemDouble, result);
     }
 
     @Test
     void createItemThrowsWhenPublicationAlreadyExists() {
         // Arrange
-        Publication pub = mock(Publication.class);
-        Condition condition = mock(Condition.class);
-        Item item = mock(Item.class);
-        when(item.getPublication()).thenReturn(pub);
-        ItemFactory factory = mock(ItemFactory.class);
-        when(factory.createItem(pub, condition)).thenReturn(item);
+        Publication publicationDouble = mock(Publication.class);
+        Condition conditionDouble = mock(Condition.class);
+        Item itemDouble = mock(Item.class);
+        when(itemDouble.get_publication()).thenReturn(publicationDouble);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
+
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
-        repo.createItem(pub, condition);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+        repo.createItem(publicationDouble, conditionDouble);
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> repo.createItem(pub, condition)
+                () -> repo.createItem(publicationDouble, conditionDouble)
         );
 
         assertEquals("Item for this publication already exists!", ex.getMessage());
@@ -104,13 +108,13 @@ class MemoItemRepoTest {
     @Test
     void getAllReturnsUnmodifiableList() {
         // Arrange
-        Publication pub = mock(Publication.class);
-        Condition condition = mock(Condition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Condition conditionDouble = mock(Condition.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
 
-        ItemFactory factory = mock(ItemFactory.class);
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
-        repo.createItem(pub, condition);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+        repo.createItem(publicationDouble, conditionDouble);
 
         // Act
         List<Item> list = repo.getAll();
@@ -125,27 +129,28 @@ class MemoItemRepoTest {
     @Test
     void getAllReflectsNewItems() {
         // Arrange
-        Publication pub1 = mock(Publication.class);
-        Publication pub2 = mock(Publication.class);
-        Condition condition = mock(Condition.class);
-        Item item1 = mock(Item.class);
-        when(item1.getPublication()).thenReturn(pub1);
+        Publication publication1Double = mock(Publication.class);
+        Publication publication2Double = mock(Publication.class);
+        Condition conditionDouble = mock(Condition.class);
+        Item item1Double = mock(Item.class);
+        when(item1Double.get_publication()).thenReturn(publication1Double);
 
-        Item item2 = mock(Item.class);
-        when(item2.getPublication()).thenReturn(pub2);
+        Item item2Double = mock(Item.class);
+        when(item2Double.get_publication()).thenReturn(publication2Double);
 
-        ItemFactory factory = mock(ItemFactory.class);
-        when(factory.createItem(pub1, condition)).thenReturn(item1);
-        when(factory.createItem(pub2, condition)).thenReturn(item2);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        when(factoryDouble.createItem(publication1Double, conditionDouble)).thenReturn(item1Double);
+        when(factoryDouble.createItem(publication2Double, conditionDouble)).thenReturn(item2Double);
+
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
         // Act + Assert
-        repo.createItem(pub1, condition);
+        repo.createItem(publication1Double, conditionDouble);
         List<Item> list1 = repo.getAll();
         assertEquals(1, list1.size());
 
-        repo.createItem(pub2, condition);
+        repo.createItem(publication2Double, conditionDouble);
         List<Item> list2 = repo.getAll();
         assertEquals(2, list2.size());
     }
@@ -153,14 +158,14 @@ class MemoItemRepoTest {
     @Test
     void shouldReturnEmptyListWhenAllItemsExist() {
         // Arrange
-        ItemFactory factory = mock(ItemFactory.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        Item _item1Double = mock(Item.class);
+        Item _item2Double = mock(Item.class);
+
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
-        Item _itemDouble1 = mock(Item.class);
-        Item _itemDouble2 = mock(Item.class);
-
-        List<Item> existentItems = List.of(_itemDouble1, _itemDouble2);
+        List<Item> existentItems = List.of(_item1Double, _item2Double);
 
         // Act
         List<Item> result = repo.getDifferentOf(existentItems);
@@ -176,9 +181,9 @@ class MemoItemRepoTest {
     @Test
     void shouldHandleEmptyInputList() {
         // Arrange
-        ItemFactory factory = mock(ItemFactory.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
         //SUT
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
         List<Item> existentItems = List.of();
 
@@ -195,33 +200,33 @@ class MemoItemRepoTest {
     @Test
     void shouldReturnListWhenOnlySomeItemsExist() {
         //Arrange
-        Publication pub1 = mock(Publication.class);
-        Publication pub2 = mock(Publication.class);
+        Publication publication1Double = mock(Publication.class);
+        Publication publication2Double = mock(Publication.class);
 
-        Condition cond = mock(Condition.class);
+        Condition conditionDouble = mock(Condition.class);
 
-        Item item1 = mock(Item.class);
-        when(item1.getPublication()).thenReturn(pub1);
+        Item item1Double = mock(Item.class);
+        when(item1Double.get_publication()).thenReturn(publication1Double);
 
-        Item item2 = mock(Item.class);
-        when(item2.getPublication()).thenReturn(pub2);
+        Item item2Double = mock(Item.class);
+        when(item2Double.get_publication()).thenReturn(publication2Double);
 
-        ItemFactory factory = mock(ItemFactory.class);
-        when(factory.createItem(pub1, cond)).thenReturn(item1);
-        when(factory.createItem(pub2, cond)).thenReturn(item2);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        when(factoryDouble.createItem(publication1Double, conditionDouble)).thenReturn(item1Double);
+        when(factoryDouble.createItem(publication2Double, conditionDouble)).thenReturn(item2Double);
 
-        MemoItemRepo repo = new MemoItemRepo(factory);
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
 
         //SUT
-        repo.createItem(pub1, cond);
-        repo.createItem(pub2, cond);
+        repo.createItem(publication1Double, conditionDouble);
+        repo.createItem(publication2Double, conditionDouble);
 
         //Act
-        List<Item> existentItems = List.of(item1);
+        List<Item> existentItems = List.of(item1Double);
 
         List<Item> result = repo.getDifferentOf(existentItems);
 
         //Assert
-        assertEquals(List.of(item2), result);
+        assertEquals(List.of(item2Double), result);
     }
 }

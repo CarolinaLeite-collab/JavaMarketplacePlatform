@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.ListOfPublications;
 import TOPSECRET.domain.IListOfPublicationsRepo;
+import TOPSECRET.domain.ListOfPublications;
 import TOPSECRET.domain.User;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 public class ShareListPubliclyController {
     private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
-    public ShareListPubliclyController(IListOfPublicationsRepo iListOfPublicationsRepo) {
+    public ShareListPubliclyController(IListOfPublicationsRepo iListOfPublicationsRepo, User user) {
         _iListOfPublicationsRepo = iListOfPublicationsRepo;
     }
 
@@ -24,11 +24,4 @@ public class ShareListPubliclyController {
         return _iListOfPublicationsRepo.findListsByUser(user);
     }
 
-    public boolean shareListPublicly(ListOfPublications selectedList) {
-        if (selectedList == null) {
-            return false;
-        }
-        selectedList.makePublic();
-        return true;
-    }
 }

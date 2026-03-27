@@ -1,7 +1,5 @@
 package TOPSECRET.domain;
 
-import java.util.*;
-
 /** A genre is a category used to classify publications based
  * on shared characteristics like style, form, or content.
  * Cannot be null, empty, or whitespace‑only.
@@ -22,7 +20,6 @@ public class Genre {
         return _genre;
     }
 
-    // Avoid genre duplication
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,7 +33,6 @@ public class Genre {
         return _genre.toUpperCase().hashCode();
     }
 
-    // Converts the Genre object into a readable String
     @Override
     public String toString() {
         return _genre;

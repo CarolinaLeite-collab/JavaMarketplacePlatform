@@ -19,60 +19,76 @@ class PublicationSaleAuctionUI {
 }
 
 class PublicationSaleAuctionController {
-  - _libraryRepo: LibraryRepo
-  - _auctionRepo: AuctionRepo
+  - _iLibraryRepo: ILibraryRepo
+  - _iAuctionRepo: IAuctionRepo
   --
-  + getLibraryItemsList(user: User): List<Item>
+  + getItemsInLibraryByUser(userID: UserID): List<Item>
   + putItemOnAuction(item : Item, startPrice : Price, startDate : ZonedDateTime,
                             endDate : ZonedDateTime): Auction
 }
 
-class LibraryRepo {
+Interface ILibraryRepo {
   - _libraries: List<Library>
   + findLibraryByUser(user: User): Library
 }
 
-class Library {
-  - _items : List<Item>
-  + getItemsInLibrary(): List<Item>
-  + getItem(item : Item) : Item
+class MemoLibraryRepo {
+  - _libraries: List<Library>
 }
+
 
 class Item {
   - auction: Auction
   + setAuction(auction: Auction): void
 }
 
-class AuctionRepo {
+Interface IAuctionRepo {
   - itemsOnAuction: List<Auction>
-  + createAuction(item: Item, startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  + addAuction(item: Item, startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+}
+
+class MemoAuctionRepo {
+-_itemsOnAuction: List<Auction>
+-_auctionFactory: AuctionFactory
 }
 
 class Auction {
+- itemID: ItemID
+- startPrice: Price
+- outrightPrice: Price
+- auctionStartDate: ZonedDateTime
+- auctionEndDate: ZonedDateTime
 }
 
 class AuctionFactory {
   + createAuction(item: Item, startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
+class Library {
+-_items: List<Item>
+}
+
 '=== Relationships ===
 ' UI → Controller
-PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : uses
+PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : invokes
 
-' Controller → Repos
-PublicationSaleAuctionController "1" ..> "1" LibraryRepo : uses
-PublicationSaleAuctionController "1" ..> "1" Library : uses
-PublicationSaleAuctionController "1" ..> "1" AuctionRepo : uses
+' Controller → Interfaces
+PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : uses
+PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : uses
 
-' Repos → Domain objects
-LibraryRepo "1" --> "*" Library : manages
+' Interfaces → Repos
+ILibraryRepo "1" <|.. "1" MemoLibraryRepo : relies on
+IAuctionRepo "1" <|.. "1" MemoAuctionRepo : relies on
 
 ' Repos delegate creation to factories
-AuctionRepo "1" --> "1" AuctionFactory : delegates creation
-AuctionFactory "1" ..> Auction : <<create>>
+MemoAuctionRepo "1" --> "1" AuctionFactory : uses
+AuctionFactory "1" --> "*" Auction : creates
 
+MemoLibraryRepo "1" --> "*" Library : contains
 Library "1" --> "*" Item : stores
-Item --> Auction : sets
+
+' Tem sets Auction
+Item "1" --> "1" Auction : sets
 
 note as N1
  Only US016 SD methods/attributes shown

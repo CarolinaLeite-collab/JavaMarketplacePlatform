@@ -1,29 +1,19 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.IListOfPublicationsRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link CreatePrivateListOfPublicationsController}.
- *
- * <p>The following Mockito doubles are used:
- * <ul>
- *   <li>{@link IListOfPublicationsRepo} — mocked collaborator (persistence dependency)</li>
- *   <li>{@link GenreRepo} — mocked collaborator (persistence dependency)</li>
- *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
- *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
- * </ul>
- */
 
 class CreatePrivateListOfPublicationsControllerTest {
 
-    private IListOfPublicationsRepo _interfaceDouble;
-    private GenreRepo _genreRepoDouble;
+    private IListOfPublicationsRepo _iListOfPublicationsRepoDouble;
+    private IGenreRepo _iGenreRepoDouble;
     private User _userDouble;
     private Genre _actionDouble;
     private Genre _poetryDouble;
@@ -31,8 +21,8 @@ class CreatePrivateListOfPublicationsControllerTest {
     @BeforeEach
     void setUp() {
 
-        _interfaceDouble = mock(IListOfPublicationsRepo.class);
-        _genreRepoDouble = mock(GenreRepo.class);
+        _iListOfPublicationsRepoDouble = mock(IListOfPublicationsRepo.class);
+        _iGenreRepoDouble = mock(IGenreRepo.class);
         _userDouble = mock(User.class);
         _actionDouble = mock(Genre.class);
         _poetryDouble = mock(Genre.class);
@@ -43,7 +33,7 @@ class CreatePrivateListOfPublicationsControllerTest {
     void testCreatePrivateListOfPublicationsController(){
 
         // SUT & Act
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_interfaceDouble, _genreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
 
     }
 
@@ -51,10 +41,10 @@ class CreatePrivateListOfPublicationsControllerTest {
     void shouldCreateListSuccessfully() {
         // Arrange
         ListOfPublications listDouble = mock(ListOfPublications.class);
-        when(_interfaceDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
+        when(_iListOfPublicationsRepoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_interfaceDouble, _genreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
         ListOfPublications result = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
@@ -64,32 +54,32 @@ class CreatePrivateListOfPublicationsControllerTest {
                 () -> assertNotNull(result),
                 () -> assertEquals(listDouble, result)
         );
-        verify(_interfaceDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
+        verify(_iListOfPublicationsRepoDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_interfaceDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(null);
+        when(_iListOfPublicationsRepoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(null);
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_interfaceDouble, _genreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
         ListOfPublications duplicate = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
 
         // Assert
         assertNull(duplicate);
-        verify(_interfaceDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
+        verify(_iListOfPublicationsRepoDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
     }
 
     @Test
     void getListOfOfficialGenresReturnsUnmodifiableList() {
         // Arrange
-        when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_interfaceDouble, _genreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
         List<Genre> officialGenres = controller.getListOfOfficialGenres();
@@ -102,10 +92,10 @@ class CreatePrivateListOfPublicationsControllerTest {
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
-        when(_genreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_interfaceDouble, _genreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
         List<Genre> officialGenres = controller.getListOfOfficialGenres();

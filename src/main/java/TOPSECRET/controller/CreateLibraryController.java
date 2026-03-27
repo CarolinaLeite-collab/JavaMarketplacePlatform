@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.LibraryRepo;
 import TOPSECRET.domain.User;
 
 /**
@@ -10,23 +10,23 @@ import TOPSECRET.domain.User;
  * <p>
  * It receives requests and delegates the
  * creation and persistence of a {@link Library} instance to the
- * {@link LibraryRepo}.
+ * {@link ILibraryRepo}.
  * </p>
  */
 
 public class CreateLibraryController {
 
-    private final LibraryRepo _libraryRepo;
+    private final ILibraryRepo _iLibraryRepo;
 
-    public CreateLibraryController(LibraryRepo lr, User user){
+    public CreateLibraryController(ILibraryRepo lr, User admin){
 
-        _libraryRepo =lr;
+        _iLibraryRepo =lr;
 
     }
 
     public Library createLibrary(User user){
 
-        Library library= _libraryRepo.addLibrary(user);
+        Library library= _iLibraryRepo.addLibrary(user);
 
         return library;
 

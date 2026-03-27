@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;
@@ -37,14 +38,13 @@ public class MemoPublicationRepo implements IPublicationRepo {
 
         Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, edition, genre);
 
-        if (_publications.contains(newPublication)) {  // Replaces the "publicationAlreadyExists" method
+        if (_publications.contains(newPublication)) {
             throw new IllegalArgumentException("Publication already exists in the repository");
         }
         _publications.add(newPublication);
         return newPublication;
     }
 
-    //check publications that are still out of the library
     @Override
     public List<Publication> getDifferentOf(List<Publication> existentPublications) {
         List<Publication> result = new ArrayList<>();

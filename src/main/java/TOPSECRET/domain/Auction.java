@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -31,7 +32,7 @@ public class Auction {
 
     private Item _item;
     private Price _startingPrice;
-    private Price _outrightPrice; // optional (nullable)
+    private Price _outrightPrice;
     private Price _finalPrice;
     private ZonedDateTime _auctionStartDate;
     private ZonedDateTime _auctionEndDate;
@@ -40,7 +41,6 @@ public class Auction {
     private BidFactory _bidFactory;
 
 
-    // 1. Private constructor takes _outrightPrice as an argument
     Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
@@ -48,28 +48,26 @@ public class Auction {
 
 
         if (isOutrightPriceValid(outrightPrice)) {
-            this._outrightPrice = outrightPrice;
+            _outrightPrice = outrightPrice;
         } else {
             throw new IllegalArgumentException("Invalid outright price");
         }
 
         if (isAuctionStartDateValid(auctionStartDate)) {
-            this._auctionStartDate = auctionStartDate;
+            _auctionStartDate = auctionStartDate;
         } else {
             throw new IllegalArgumentException("Invalid start date");
         }
 
         if (isAuctionEndDateValid(auctionEndDate)) {
-            this._auctionEndDate = auctionEndDate;
+            _auctionEndDate = auctionEndDate;
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        // Keep Item/Auction association consistent with Item invariants.
         _item.setAuction(this);
     }
 
-    // 2. Public constructor without _outrightPrice as an argument
     Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
@@ -77,18 +75,17 @@ public class Auction {
         _bids = new MemoBidRepo(new BidFactory());
 
         if (isAuctionStartDateValid(auctionStartDate)) {
-            this._auctionStartDate = auctionStartDate;
+            _auctionStartDate = auctionStartDate;
         } else {
             throw new IllegalArgumentException("Invalid start date");
         }
 
         if (isAuctionEndDateValid(auctionEndDate)) {
-            this._auctionEndDate = auctionEndDate;
+            _auctionEndDate = auctionEndDate;
         } else {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        // Keep Item/Auction association consistent with Item invariants.
         _item.setAuction(this);
     }
 
@@ -111,9 +108,9 @@ public class Auction {
     }
 
     public void finalizeAuction() {
-        Bid highestBid = _bids.getHighestBid(); //get Highest Bid
-        _buyer = highestBid.getBidder(); //Get Final buyer
-        _finalPrice = highestBid.getOfferPrice();//Get Final Price
+        Bid highestBid = _bids.getHighestBid();
+        _buyer = highestBid.getBidder();
+        _finalPrice = highestBid.getOfferPrice();
     }
 
     private boolean isAuctionStartDateValid(ZonedDateTime auctionStartDate) {
@@ -125,10 +122,9 @@ public class Auction {
         return result;
     }
 
-    // checks if outrightPrice > startingPrice
     private boolean isOutrightPriceValid(Price outrightPrice) {
         boolean result = false;
-        if (outrightPrice.getValue() > this._startingPrice.getValue()) {
+        if (outrightPrice.getValue() > _startingPrice.getValue()) {
             result = true;
         }
         return result;

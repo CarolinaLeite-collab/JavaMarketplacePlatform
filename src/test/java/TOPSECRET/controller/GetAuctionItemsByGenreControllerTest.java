@@ -1,17 +1,22 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 class GetAuctionItemsByGenreControllerTest {
 
     private User _buyerUserDouble;
-    private AuctionRepo _auctionRepoDouble;
+    private IAuctionRepo _iAuctionRepoDouble;
     private Genre _genreDouble;
 
     @BeforeEach
@@ -19,14 +24,14 @@ class GetAuctionItemsByGenreControllerTest {
 
         _buyerUserDouble = mock(User.class);
         _genreDouble = mock (Genre.class);
-        _auctionRepoDouble = mock(AuctionRepo.class);
+        _iAuctionRepoDouble = mock(IAuctionRepo.class);
     }
 
     @Test
     void testAuctionItemsByGenreController(){
 
         // SUT
-        new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
+        new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
     }
 
     @Test
@@ -35,33 +40,33 @@ class GetAuctionItemsByGenreControllerTest {
         // Arrange
         Item _itemDouble = mock(Item.class);
         List<Item> itemsList = List.of(_itemDouble);
-        when(_auctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(itemsList);
+        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(itemsList);
 
         // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
 
         // Act
         List<Item> items = controller.getAuctionItemsByGenre(_genreDouble);
 
         // Assert
         assertEquals(itemsList, items);
-        verify(_auctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
     }
 
     @Test
     void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
 
         // Arrange
-        when(_auctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(List.of());
+        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(List.of());
 
         // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_auctionRepoDouble, _buyerUserDouble);
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
 
         // Act
         List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreDouble);
 
         // Assert
         assertTrue(listOfAuctionItemsByGenre.isEmpty());
-        verify(_auctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
     }
 }

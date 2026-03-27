@@ -1,0 +1,46 @@
+package TOPSECRET.domain;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Repository for managing stored genres of books and magazines.
+ * <p>
+ * Calls {@link GenreFactory} to generate new genres. Prevents the storage of duplicates based on genre name.
+ * </p>
+ */
+
+public class MemoGenreRepo implements IGenreRepo {
+    private final List<Genre> _genresList;
+    private final GenreFactory _genreFactory;
+
+    public MemoGenreRepo(GenreFactory genreFactory) {
+        _genresList = new ArrayList<>();
+        _genreFactory = genreFactory;
+    }
+
+    @Override
+    public Genre addGenre(String genreName) {
+
+        if (genreExists(genreName)) {
+            throw new IllegalArgumentException("This genre already exists");
+        }
+
+        Genre genre = _genreFactory.createGenre(genreName);
+        _genresList.add(genre);
+        return genre;
+    }
+
+    private boolean genreExists(String genreName) {
+        Genre existingGenre = _genreFactory.createGenre(genreName);
+        return _genresList.contains(existingGenre);
+    }
+
+    @Override
+    public List<Genre> getListOfOfficialGenres() {
+
+        return List.copyOf(_genresList);
+    }
+
+}
+

@@ -1,8 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-title US028 "As a Buyer, I want to get the list of items on auction of a given publisher" - SD
-
+title US028 "As a Buyer, I want to get the list of items\non auction of a given publisher" - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -18,26 +17,46 @@ skinparam classAttributeIconSize 0
 
 class getAuctionItemsByPublisherUI{}
 
-class GetAuctionItemsByPublisherController {
--_auctionRepo : AuctionRepo
--_buyer : User
--_publisher : Publisher
-+getAuctionItemsByPublisher(publisher : Publisher) : List<Item>
+class GetAuctionItemsByPublishingCompanyController {
+-_iAuctionRepo : IAuctionRepo
++getAuctionItemsByPublishingCompany(publisherID : PublisherID) : List<Item>
 }
 
-class AuctionRepo {
+Interface IAuctionRepo {
 -_auctionList : List<Auction>
-+getAuctionItemsByPublisher(publisher : Publisher) : List<Item>
++getAuctionItemsByPublishingCompany(publisher : Publisher) : List<Item>
+}
+
+class MemoAuctionRepo {
+-_auctionList : List<Auction>
 }
 
 class Auction {
--_item : Item
-+isByPublisher(publisher : Publisher) : boolean
++ isByPublisher(publisherID : PublisherID) : boolean
++ getItem(): Item
 }
 
-getAuctionItemsByPublisherUI "1"..>"1" GetAuctionItemsByPublisherController:uses
-GetAuctionItemsByPublisherController "1"..> "1"AuctionRepo : uses
-AuctionRepo "1" --> "*"Auction: uses
+class Item {
++ isByPublisher(publisherID : PublisherID) : boolean
+}
+
+class Publication {
++ isByPublisher(publisherID : PublisherID) : boolean
+}
+
+class Publisher {
+- publisherID : PublisherID
+}
+
+'--- Interactions ---'
+
+getAuctionItemsByPublisherUI "1"..>"1" GetAuctionItemsByPublishingCompanyController: invokes
+GetAuctionItemsByPublishingCompanyController "1"..> "1" IAuctionRepo : uses
+MemoAuctionRepo "1" ..|> "1" IAuctionRepo: relies on
+MemoAuctionRepo "1" --> "*" Auction : accesses
+Auction "1" --> "1" Item : contains
+Item "1" --> "1" Publication : has
+Publication "1" --> "1" Publisher : has
 
 
 @enduml

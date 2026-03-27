@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author;
-import TOPSECRET.domain.AuthorRepo;
+import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.Author;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,19 +12,20 @@ import static org.mockito.Mockito.when;
 
 class CreateAuthorControllerTest {
 
-    private AuthorRepo _authorRepoDouble;
+    private IAuthorRepo _iAuthorRepoDouble;
 
     @BeforeEach
     void setUp() {
 
-        _authorRepoDouble = mock(AuthorRepo.class);
+        _iAuthorRepoDouble = mock(IAuthorRepo.class);
 
     }
     @Test
     void testCreateAuthorControllerConstructor() {}
 
     // SUT & Act
-     CreateAuthorController controller = new CreateAuthorController(_authorRepoDouble);
+    User _userDouble = mock(User.class);
+    CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
 
     @Test
@@ -31,12 +33,13 @@ class CreateAuthorControllerTest {
         //arrange
         String name = "João";
         Author authorDouble = mock(Author.class);
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_authorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
-        when(_authorRepoDouble.createAuthor("João")).thenReturn(authorDouble);
+        when(_iAuthorRepoDouble.addAuthor("João")).thenReturn(authorDouble);
 
         Author author = controller.createAuthor(name);
 
@@ -50,12 +53,13 @@ class CreateAuthorControllerTest {
         //arrange
         String name = "João";
         Author authorDouble = mock(Author.class);
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_authorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
-        when(_authorRepoDouble.createAuthor(name)).thenReturn(authorDouble);
+        when(_iAuthorRepoDouble.addAuthor(name)).thenReturn(authorDouble);
         when(authorDouble.getName()).thenReturn(name);
 
         Author author = controller.createAuthor("João  ");
@@ -67,12 +71,13 @@ class CreateAuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         //Arrange
-        when(_authorRepoDouble.createAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_authorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //Act
+        when(_iAuthorRepoDouble.addAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> controller.createAuthor("Maria "));
 
         //Assert

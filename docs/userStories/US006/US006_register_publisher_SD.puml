@@ -20,7 +20,7 @@ autoactivate off
 actor "Admin" as Administrator
 participant ":RegisterPublishingCompanyUI" as UI
 participant ":RegisterPublishingCompanyController" as Ctl
-participant ":PublishingCompanyRepo" as Repo
+participant ":MemoPublishingCompanyRepo" as Repo
 participant ":PublishingCompanyFactory" as Factory
 
 ' --- SD (Happy Path only)---
@@ -38,7 +38,7 @@ opt publishingCompanyExists(publishingCompanyName) == false
         "Repo" -> "Factory" : createPublishingCompany(publishingCompanyName)
         activate "Factory"
         create "pc1:PublishingCompany"
-        "Factory" -> "pc1:PublishingCompany": create(publishingCompanyName)
+        "Factory" -->> "pc1:PublishingCompany": <<create>>
         "Factory" --> "Repo": pc1
         deactivate "Factory"
         "Repo" -> "Repo": add(pc1);

@@ -13,16 +13,13 @@ public class PublishingCompany {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
 
-        // Normalized (multiple spaces → single spaces, trim ends)
         _name = name.trim().replaceAll("\\s+", " ");;
     }
 
     public String getName() {
-        return this._name;
+        return _name;
     }
 
-    // Avoid publisher duplication
-    /** This code doesn't prevent someone from writing it differently. It prevents the system from treating them as different entities.*/
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

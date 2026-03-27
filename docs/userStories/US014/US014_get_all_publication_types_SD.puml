@@ -1,5 +1,5 @@
 @startuml
-title SD N2 (Sequence Diagram) - to get list of publication types (US014)
+title US014 - "As a User, I want to get the list of official publication types" - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -17,14 +17,20 @@ actor User
 
 participant "UI : UserPublicationTypeList" as UI
 participant "Ctrl : GetPublicationTypeListController" as CTRL
-participant "_Ptr : PublicationTypeRepo" as SVC
+participant "_Ptr : IPublicationTypeRepo" as PTR
 
 User -> UI : 1. I want to know all publication types
+Activate UI
 UI -> CTRL : 2. getListOfPublicationTypes()
-CTRL -> SVC : 3. getAll()
+Activate CTRL
+CTRL -> PTR : 3. getAll()
+Activate PTR
 
-SVC --> CTRL : 4. PublicationTypeList
+PTR --> CTRL : 4. PublicationTypeList
+Deactivate PTR
 CTRL --> UI : 5. PublicationTypeList
+Deactivate CTRL
 UI --> User : 6. Here's the list!
+Deactivate UI
 
 @enduml

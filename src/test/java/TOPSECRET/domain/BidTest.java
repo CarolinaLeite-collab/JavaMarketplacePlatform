@@ -2,11 +2,14 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class BidTest {
 

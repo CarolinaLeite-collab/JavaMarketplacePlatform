@@ -20,39 +20,45 @@ class GetItemsOnAuctionOfAGivenAuthorUI {
 }
 
 class GetItemsOnAuctionOfAGivenAuthorCtl {
-- ar : AuctionRepo
-+ getAuctionItemsByAuthor(authorName: Author) : List<Item>
+- ar : IAuctionRepo
++ getAuctionItemsByAuthor(authorID: AuthorID) : List<Item>
 }
 
-class AuctionRepo {
+interface IAuctionRepo{
++ getAuctionItemsByAuthor(authorID: AuthorID) : List<Item>
+}
+
+class MemoAuctionRepo {
 - _itemsOnAuction : List<Auction>
-+ getAuctionItemsByAuthor(authorName: Author) : List<Item>
 }
 
 class Auction {
-+ isByAuthor(authorName: Author) : boolean
++ isByAuthor(authorID: AuthorID) : boolean
 + getItem() : Item
 }
 
 class Item {
 
-+ isByAuthor(authorName: Author) : boolean
++ isByAuthor(authorID: AuthorID) : boolean
 
 }
 
 class Publication {
 
-+ isByAuthor(authorName: Author) : boolean
++ isByAuthor(authorID: AuthorID) : boolean
 
 }
 
 class Author {
 
+- authorID : AuthorID
+
 }
 
 GetItemsOnAuctionOfAGivenAuthorUI "1" ..> "1" GetItemsOnAuctionOfAGivenAuthorCtl : invokes
-GetItemsOnAuctionOfAGivenAuthorCtl "1" ..> "1" AuctionRepo : calls
-AuctionRepo "1" --> "*" Auction : accesses
+GetItemsOnAuctionOfAGivenAuthorCtl "1" ..> "1" IAuctionRepo : calls
+MemoAuctionRepo ..|> IAuctionRepo
+MemoAuctionRepo "1" --> "*" Auction : accesses
 Auction "1" --> "1" Item : contains
 Item "1" --> "1" Publication : contains
 Publication "1" --> "1" Author : contains

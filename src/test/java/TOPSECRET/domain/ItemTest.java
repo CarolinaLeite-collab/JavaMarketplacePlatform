@@ -1,14 +1,12 @@
 package TOPSECRET.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.time.Period;
-import java.time.Year;
-import java.time.ZonedDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link Item}.
@@ -24,555 +22,316 @@ import java.time.ZonedDateTime;
 
 class ItemTest {
 
-    private ZonedDateTime auctionStartDate = ZonedDateTime.now().plusDays(1);
-    private ZonedDateTime auctionEndDate = ZonedDateTime.now().plusDays(2);
-    private Publication _publicationDouble;
-    private Condition _conditionDouble;
-
+    private Publication publicationDouble;
+    private Condition conditionDouble;
+    private Auction auctionDouble;
+    private DirectSale directSaleDouble;
 
     @BeforeEach
     void setUp() {
-
-        _publicationDouble = mock(Publication.class);
-        _conditionDouble = mock(Condition.class);
-
+        publicationDouble = mock(Publication.class);
+        conditionDouble = Condition.GOOD; // enum, no need to mock
+        auctionDouble = mock(Auction.class);
+        directSaleDouble = mock(DirectSale.class);
     }
+
+    // ------------------------------------------------------------
+    // Creation
+    // ------------------------------------------------------------
 
     @Test
     void itemIsCreatedWithPublicationAndCondition() {
-        // Arrange
-        Publication publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
+        Item item = new Item(publicationDouble, Condition.GOOD);
 
-        // Act
-        Item item = new Item(publication, Condition.GOOD);
-
-        // Assert
-        assertEquals(Condition.GOOD, item.getCondition());
+        assertSame(publicationDouble, item.get_publication());
+        assertEquals(Condition.GOOD, item.get_condition());
     }
+
+    // ------------------------------------------------------------
+    // Direct Sale
+    // ------------------------------------------------------------
 
     @Test
     void canSetDirectSaleWhenNoAuctionExists() {
-        // Arrange
-        Publication publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(publication, Condition.LIKE_NEW);
+        Item item = new Item(publicationDouble, Condition.LIKE_NEW);
 
-        DirectSale directSale =
-                new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
+        when(directSaleDouble.getItem()).thenReturn(item);
 
-        // Act + Assert
-        assertDoesNotThrow(() -> item.setDirectSale(directSale));
-    }
-
-    @Test
-    void canSetAuctionWhenNoDirectSaleExists() {
-        // Arrange
-        Publication publication = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(publication, Condition.FAIR);
-
-        AuctionRepo repo = new AuctionRepo();
-        Auction auction = repo.createAuction(
-                item,
-                new Price(5.0, Currency.EUR),
-                auctionStartDate,
-                auctionEndDate
-        );
-
-        // Act + Assert
-        assertDoesNotThrow(() -> item.setAuction(auction));
+        assertDoesNotThrow(() -> item.setDirectSale(directSaleDouble));
     }
 
     @Test
     void cannotSetDirectSaleIfAuctionAlreadyExists() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
+        Item item = new Item(publicationDouble, Condition.GOOD);
 
-        AuctionRepo repo = new AuctionRepo();
-        Auction auction = repo.createAuction(
-                item,
-                new Price(5.0, Currency.EUR),
-                auctionStartDate,
-                auctionEndDate
-        );
-        item.setAuction(auction);
+        when(auctionDouble.getItem()).thenReturn(item);
+        item.setAuction(auctionDouble);
 
-        DirectSale directSale =
-                new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
+        when(directSaleDouble.getItem()).thenReturn(item);
 
-        // Act + Assert
-        IllegalStateException exception = assertThrows(
+        IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> item.setDirectSale(directSale)
+                () -> item.setDirectSale(directSaleDouble)
         );
-        assertEquals("Item is already in an auction.", exception.getMessage());
-    }
 
-    @Test
-    void cannotSetAuctionIfDirectSaleAlreadyExists() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.GOOD);
-
-        DirectSale ds =
-                new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
-        item.setDirectSale(ds);
-
-        AuctionRepo repo = new AuctionRepo();
-
-        // Act + Assert
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> repo.createAuction(
-                        item,
-                        new Price(5.0, Currency.EUR),
-                        auctionStartDate,
-                        auctionEndDate
-                )
-        );
-        assertTrue(exception.getMessage().contains("Item is already in a direct sale."));
+        assertEquals("Item is already in an auction.", ex.getMessage());
     }
 
     @Test
     void settingDirectSaleDoesNotOverwriteCondition() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.POOR);
+        Item item = new Item(publicationDouble, Condition.POOR);
 
-        DirectSale ds =
-                new DirectSale(item, new Price(10.0, Currency.EUR), Period.ofMonths(3));
+        when(directSaleDouble.getItem()).thenReturn(item);
+        item.setDirectSale(directSaleDouble);
 
-        // Act
-        item.setDirectSale(ds);
+        assertEquals(Condition.POOR, item.get_condition());
+    }
 
-        // Assert
-        assertEquals(Condition.POOR, item.getCondition());
+    @Test
+    void puttingPublicationOnDirectSaleWrongDirectSaleItem() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
+
+        Item wrongItem = mock(Item.class);
+        when(directSaleDouble.getItem()).thenReturn(wrongItem);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> item.setDirectSale(directSaleDouble));
+    }
+
+    @Test
+    void getDirectSaleReturnsAssignedDirectSale() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
+
+        when(directSaleDouble.getItem()).thenReturn(item);
+        item.setDirectSale(directSaleDouble);
+
+        assertSame(directSaleDouble, item.getDirectSale());
+    }
+
+    @Test
+    void getDirectSaleReturnsNullWhenNoneAssigned() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
+
+        assertNull(item.getDirectSale());
+    }
+
+    // ------------------------------------------------------------
+    // Auction
+    // ------------------------------------------------------------
+
+    @Test
+    void canSetAuctionWhenNoDirectSaleExists() {
+        Item item = new Item(publicationDouble, Condition.FAIR);
+
+        when(auctionDouble.getItem()).thenReturn(item);
+
+        assertDoesNotThrow(() -> item.setAuction(auctionDouble));
+    }
+
+    @Test
+    void cannotSetAuctionIfDirectSaleAlreadyExists() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
+
+        when(directSaleDouble.getItem()).thenReturn(item);
+        item.setDirectSale(directSaleDouble);
+
+        when(auctionDouble.getItem()).thenReturn(item);
+
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> item.setAuction(auctionDouble)
+        );
+
+        assertTrue(ex.getMessage().contains("Item is already in a direct sale."));
     }
 
     @Test
     void settingAuctionDoesNotOverwriteCondition() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780691181950"))
-                .year(Year.of(2019))
-                .title(new Title("How to Keep Your Cool"))
-                .author(new Author("Seneca"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-        Item item = new Item(pub, Condition.LIKE_NEW);
-
-        AuctionRepo repo = new AuctionRepo();
-        Auction auction = repo.createAuction(
-                item,
-                new Price(5.0, Currency.EUR),
-                auctionStartDate,
-                auctionEndDate
-        );
-
-        // Act
-        item.setAuction(auction);
-
-        // Assert
-        assertEquals(Condition.LIKE_NEW, item.getCondition());
-    }
-
-    @Test
-    void puttingPublicationOnAuctionWrongAuctionItem(){
-        // Arrange
-        Publication testPub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780141036144"))
-                .year(Year.of(2012))
-                .title(new Title("1984"))
-                .author(new Author("George Orwell"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Item item = new Item(testPub, Condition.GOOD);
-        Auction wrongAuctionItem = new Auction(new Item(testPub, Condition.POOR), new Price(10, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().plusDays(8));
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> item.setAuction(wrongAuctionItem),
-                "This Auction does not belong to this Item.");
-
-    }
-
-    @Test
-    void puttingPublicationOnDirectSaleWrongDirectSaleItem(){
-        // Arrange
-        Publication testPub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780141036144"))
-                .year(Year.of(2012))
-                .title(new Title("1984"))
-                .author(new Author("George Orwell"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Item item = new Item(testPub, Condition.GOOD);
-        DirectSale wrongDirectSaleItem = new DirectSale(new Item(testPub, Condition.POOR), new Price(10.0, Currency.EUR), Period.ofMonths(3));
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> item.setDirectSale(wrongDirectSaleItem),
-                "This DirectSale does not belong to this Item.");
-
-    }
-
-    @Test
-    void testGetDirectSale_WhenDirectSaleIsSet() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780141036144"))
-                .year(Year.of(2012))
-                .title(new Title("1984"))
-                .author(new Author("George Orwell"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Item item = new Item(pub, Condition.GOOD);
-        DirectSale sale = new DirectSale(item, new Price(10, Currency.EUR), Period.ofDays(30));
-
-        // Act
-        item.setDirectSale(sale);
-
-        // Assert
-        assertEquals(sale, item.getDirectSale(),
-                "Getter must return the DirectSale previously assigned");
-    }
-
-    @Test
-    void testGetDirectSale_WhenNoDirectSaleWasAssigned() {
-        // Arrange
-        Publication pub = Publication.builder()
-                .type(new PublicationType("BOOK"))
-                .identifier(new ISBN("9780141036144"))
-                .year(Year.of(2012))
-                .title(new Title("1984"))
-                .author(new Author("George Orwell"))
-                .publisher(new PublishingCompany("Penguin"))
-                .build();
-
-        Item item = new Item(pub, Condition.GOOD);
-
-        // Act + Assert
-        assertNull(item.getDirectSale(),
-                "Getter must return null when no DirectSale is assigned");
-    }
-
-    // Isolated test of isByAuthor method
-    @Test
-    void isByAuthorShouldReturnTrueWhenAuthorMatches() {
-
-        //Arrange
-        Author _author = mock(Author.class);
-        when(_publicationDouble.isByAuthor(_author)).thenReturn(true);
-
-        // SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByAuthor(_author);
-
-        //Assert
-        assertTrue(result);
-
-    }
-
-    @Test
-    void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
-
-        //Arrange
-        Author _author2 = mock(Author.class);
-        when(_publicationDouble.isByAuthor(_author2)).thenReturn(false);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByAuthor(_author2);
-
-        //Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void isByAuthorShouldDelegateToPublication() {
-        //Arrange
-        Author _author = mock(Author.class);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        item.isByAuthor(_author);
-
-        //Assert
-        verify(_publicationDouble, times(1)).isByAuthor(_author);
-    }
-
-    // Isolated test of isByGenre method
-
-    @Test
-    void isByGenreShouldReturnTrueWhenGenreMatches() {
-
-        //Arrange
-        Genre _genre = mock(Genre.class);
-        when(_publicationDouble.isByGenre(_genre)).thenReturn(true);
-
-        // SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByGenre(_genre);
-
-        //Assert
-        assertTrue(result);
-
-    }
-
-    @Test
-    void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
-
-        //Arrange
-        Genre _genre2 = mock(Genre.class);
-        when(_publicationDouble.isByGenre(_genre2)).thenReturn(false);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByGenre(_genre2);
-
-        //Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void isByGenreShouldDelegateToPublication() {
-        //Arrange
-        Genre _genre = mock(Genre.class);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        item.isByGenre(_genre);
-
-        //Assert
-        verify(_publicationDouble, times(1)).isByGenre(_genre);
-    }
-
-    // Isolated test of isByPublication method
-
-    @Test
-    void isByPublicationShouldReturnTrueWhenPublicationMatches() {
-
-        // SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        // Act
-        boolean result = item.isByPublication(_publicationDouble);
-
-        // Assert
-        assertTrue(result);
-
-
-    }
-
-    @Test
-    void isByPublicationShouldReturnFalseWhenPublicationIsDifferent() {
-
-        // Arrange
-        Publication _publicationDouble2 = mock(Publication.class);
-
-        // SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        // Act
-        boolean result = item.isByPublication(_publicationDouble2);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    // Isolated test of isByPublishingCompany method
-    @Test
-    void isByPublishingCompanyShouldReturnTrueWhenPublishingCompanyMatches() {
-
-        //Arrange
-        PublishingCompany _publisher = mock(PublishingCompany.class);
-        when(_publicationDouble.isByPublishingCompany(_publisher)).thenReturn(true);
-
-        // SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByPublishingCompany(_publisher);
-
-        //Assert
-        assertTrue(result);
-
-    }
-
-    @Test
-    void isByPublishingCompanyShouldReturnFalseWhenPublishingCompanyIsDifferent() {
-
-        //Arrange
-        PublishingCompany _publisher2 = mock(PublishingCompany.class);
-        when(_publicationDouble.isByPublishingCompany(_publisher2)).thenReturn(false);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        boolean result = item.isByPublishingCompany(_publisher2);
-
-        //Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void isByPublishingCompanyShouldDelegateToPublication() {
-        //Arrange
-        PublishingCompany _publisher = mock(PublishingCompany.class);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
-
-        //Act
-        item.isByPublishingCompany(_publisher);
-
-        //Assert
-        verify(_publicationDouble, times(1)).isByPublishingCompany(_publisher);
-    }
-
-    @Test
-    void getAuctionShouldReturnAnAuction() {
-        //arrange
-        Auction auctionDouble = mock(Auction.class);
-
-        //SUT
-        Item item = new Item(_publicationDouble, _conditionDouble);
+        Item item = new Item(publicationDouble, Condition.LIKE_NEW);
 
         when(auctionDouble.getItem()).thenReturn(item);
-
-        //act
         item.setAuction(auctionDouble);
-        Auction result = item.getAuction();
 
-        //assert
-        assertEquals(auctionDouble, result);
+        assertEquals(Condition.LIKE_NEW, item.get_condition());
     }
 
     @Test
-    void equalItemsShouldReturnTrueWhenObjectsAreEqual() {
-        //arrange / SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
-        Item item2 = new Item(_publicationDouble, _conditionDouble);
+    void puttingPublicationOnAuctionWrongAuctionItem() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
 
-        //assert
-        assertTrue(item1.equals(item2));
+        Item wrongItem = mock(Item.class);
+        when(auctionDouble.getItem()).thenReturn(wrongItem);
 
+        assertThrows(IllegalArgumentException.class,
+                () -> item.setAuction(auctionDouble));
     }
 
     @Test
-    void notEqualItemsShouldReturnFalseWhenObjectsAreNotEqual() {
-        //arrange
-        Publication _publicationDouble2 = mock(Publication.class);
+    void getAuctionReturnsAssignedAuction() {
+        Item item = new Item(publicationDouble, Condition.GOOD);
 
-        //SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
-        Item item2 = new Item(_publicationDouble2, _conditionDouble);
+        when(auctionDouble.getItem()).thenReturn(item);
+        item.setAuction(auctionDouble);
 
-        //assert
-        assertFalse(item1.equals(item2));
+        assertSame(auctionDouble, item.getAuction());
+    }
+
+    // ------------------------------------------------------------
+    // Delegation to Publication
+    // ------------------------------------------------------------
+
+    @Test
+    void isByAuthorDelegatesToPublication() {
+        Author author_double = mock(Author.class);
+        Item item = new Item(publicationDouble, conditionDouble);
+
+        item.isByAuthor(author_double);
+
+        verify(publicationDouble).isByAuthor(author_double);
     }
 
     @Test
-    void equalItemsShouldReturnTrueWhenObjectIsSame() {
-        //arrange / SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
+    void isByGenreDelegatesToPublication() {
+        Genre genre_double = mock(Genre.class);
+        Item item = new Item(publicationDouble, conditionDouble);
 
-        //assert
-        assertTrue(item1.equals(item1));
+        item.isByGenre(genre_double);
 
+        verify(publicationDouble).isByGenre(genre_double);
     }
 
     @Test
-    void NotEqualObjectsShouldReturnFalseWhenObjectsAreNotSameType() {
-        //arrange / SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
-        String item = "item";
+    void isByPublicationDelegatesCorrectly() {
+        Item item = new Item(publicationDouble, conditionDouble);
 
-        //assert
-        assertFalse(item1.equals(item));
+        assertTrue(item.isByPublication(publicationDouble));
+        assertFalse(item.isByPublication(mock(Publication.class)));
     }
 
     @Test
-    void hashCodeShouldBeSameWhenObjectsAreEqual() {
-        //arrange / SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
-        Item item2 = new Item(_publicationDouble, _conditionDouble);
+    void isByPublishingCompanyDelegatesToPublication() {
+        PublishingCompany publisher_double = mock(PublishingCompany.class);
+        Item item = new Item(publicationDouble, conditionDouble);
 
-        //assert
+        item.isByPublishingCompany(publisher_double);
+
+        verify(publicationDouble).isByPublishingCompany(publisher_double);
+    }
+
+    // ------------------------------------------------------------
+    // Equality & HashCode
+    // ------------------------------------------------------------
+
+    @Test
+    void equalItemsReturnTrueWhenPublicationsMatch() {
+        Item item1 = new Item(publicationDouble, conditionDouble);
+        Item item2 = new Item(publicationDouble, conditionDouble);
+
+        assertEquals(item1, item2);
         assertEquals(item1.hashCode(), item2.hashCode());
     }
 
     @Test
-    void hashCodeShouldBeDifferentWhenObjectsAreNotEqual() {
-        //arrange
-        Publication _publicationDouble2 = mock(Publication.class);
+    void notEqualWhenPublicationsDiffer() {
+        Publication publication_double2 = mock(Publication.class);
 
-        //SUT
-        Item item1 = new Item(_publicationDouble, _conditionDouble);
-        Item item2 = new Item(_publicationDouble2, _conditionDouble);
+        Item item1 = new Item(publicationDouble, conditionDouble);
+        Item item2 = new Item(publication_double2, conditionDouble);
 
-        //assert
+        assertNotEquals(item1, item2);
         assertNotEquals(item1.hashCode(), item2.hashCode());
     }
+
+    @Test
+    void equalsReturnsTrueForSameObject() {
+        Item item = new Item(publicationDouble, conditionDouble);
+
+        assertEquals(item, item);
+    }
+
+    @Test
+    void equalsReturnsFalseForDifferentType() {
+        Item item = new Item(publicationDouble, conditionDouble);
+
+        assertNotEquals(item, "not-an-item");
+    }
+
+    // -------------
+    // Is by Author
+    // -------------
+
+    @Test
+    void isByAuthorReturnsTrueWhenPublicationMatches() {
+        Author author = new Author("Maria");
+        Publication pub = mock(Publication.class);
+        when(pub.isByAuthor(author)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByAuthor(author));
+    }
+
+    @Test
+    void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
+        Author author = new Author("Maria");
+        Publication pub = mock(Publication.class);
+        when(pub.isByAuthor(author)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByAuthor(author));
+    }
+
+    // --------------------
+    // Is By Genre
+    // --------------------
+
+    @Test
+    void isByGenreReturnsTrueWhenPublicationMatches() {
+        Genre genre = mock(Genre.class);
+        Publication pub = mock(Publication.class);
+        when(pub.isByGenre(genre)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByGenre(genre));
+    }
+
+    @Test
+    void isByGenreReturnsFalseWhenPublicationDoesNotMatch() {
+        Genre genre = mock(Genre.class);
+        Publication pub = mock(Publication.class);
+        when(pub.isByGenre(genre)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByGenre(genre));
+    }
+
+    // ------------------------------
+    // Is by PublishingCompany
+    // ------------------------------
+
+    @Test
+    void isByPublishingCompanyReturnsTrueWhenPublicationMatches() {
+        PublishingCompany pc = new PublishingCompany("Penguin");
+        Publication pub = mock(Publication.class);
+        when(pub.isByPublishingCompany(pc)).thenReturn(true);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertTrue(item.isByPublishingCompany(pc));
+    }
+
+    @Test
+    void isByPublishingCompanyReturnsFalseWhenPublicationDoesNotMatch() {
+        PublishingCompany pc = new PublishingCompany("Penguin");
+        Publication pub = mock(Publication.class);
+        when(pub.isByPublishingCompany(pc)).thenReturn(false);
+
+        Item item = new Item(pub, conditionDouble);
+
+        assertFalse(item.isByPublishingCompany(pc));
+    }
+
 }

@@ -11,16 +11,16 @@ class ListOfPublicationsFactoryTest {
     @Test
     void shouldSuccessfullyCreatePrivateList() {
     // arrange
-    User _userDouble = mock(User.class);
-    Genre _genreDouble = mock(Genre.class);
+    User userDouble = mock(User.class);
+    Genre genreDouble = mock(Genre.class);
 
     try (MockedConstruction<ListOfPublications> mocked =
                  mockConstruction(ListOfPublications.class,
                          (mock, context) -> {
                              when(mock.isPrivate()).thenReturn(true);
-                             when(mock.getUser()).thenReturn(_userDouble);
+                             when(mock.getUser()).thenReturn(userDouble);
                              when(mock.getName()).thenReturn("My List");
-                             when(mock.getGenre()).thenReturn(_genreDouble);
+                             when(mock.getGenre()).thenReturn(genreDouble);
                          })) {
 
         // SUT
@@ -28,13 +28,13 @@ class ListOfPublicationsFactoryTest {
 
         // act
         ListOfPublications newList =
-                factory.createListOfPublications(_userDouble, "My List", _genreDouble);
+                factory.createListOfPublications(userDouble, "My List", genreDouble);
 
         // assert
         assertNotNull(newList);
-        assertEquals(_userDouble, newList.getUser());
+        assertEquals(userDouble, newList.getUser());
         assertEquals("My List", newList.getName());
-        assertEquals(_genreDouble, newList.getGenre());
+        assertEquals(genreDouble, newList.getGenre());
         assertTrue(newList.isPrivate());
 
         assertEquals(1, mocked.constructed().size());
@@ -44,8 +44,11 @@ class ListOfPublicationsFactoryTest {
     @Test
     void shouldSuccessfullyCreatePublicList() {
         // arrange
-        User _userDouble = mock(User.class);
-        Genre _genreDouble = mock(Genre.class);
+        User userDouble = mock(User.class);
+        Genre genreDouble = mock(Genre.class);
+
+        // SUT
+        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
 
         try (MockedConstruction<ListOfPublications> mocked =
                      mockConstruction(ListOfPublications.class,
@@ -53,12 +56,9 @@ class ListOfPublicationsFactoryTest {
                                  doNothing().when(mock).makePublic();
                              })) {
 
-            // SUT
-            ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
-
             // act
             ListOfPublications newList =
-                    factory.createPublicListOfPublications(_userDouble, "My List", _genreDouble);
+                    factory.createPublicListOfPublications(userDouble, "My List", genreDouble);
 
             // assert
             verify(newList).makePublic();

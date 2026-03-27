@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;
@@ -19,7 +20,7 @@ public class RegisterNewPublicationController {
 
     private IPublicationRepo _iPublicationRepo;
 
-    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo) {
+    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, User user) {
         _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo");
     }
 

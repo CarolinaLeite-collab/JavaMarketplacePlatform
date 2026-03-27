@@ -1,37 +1,41 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType;
-import TOPSECRET.domain.PublicationTypeRepo;
 import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 class AddPublicationTypeControllerTest {
 
-    private PublicationTypeRepo _ptrDouble;
+    private IPublicationTypeRepo _iPublicationTypeRepoDouble;
     private PublicationType _pubTypeDouble;
+    private User _adminDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException {
-        _ptrDouble = mock(PublicationTypeRepo.class);
+        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
+
         _pubTypeDouble = mock(PublicationType.class);
-        when(_ptrDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
+        when(_iPublicationTypeRepoDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
+
+        _adminDouble = mock(User.class);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
     }
 
     @Test
     void constructorAddPublicationTypeControllerShouldCreateController() {
 
-        User adminDouble = mock(User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-
         //SUT
-        new  AddPublicationTypeController(_ptrDouble, adminDouble);
+        new  AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
     }
 
@@ -44,19 +48,16 @@ class AddPublicationTypeControllerTest {
         String publicationTypeName = "book";
 
         //act + assert
-        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_ptrDouble, adminDouble)); //SUT
+        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_iPublicationTypeRepoDouble, adminDouble)); //SUT
     }
 
     @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
-        User adminDouble = mock(User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-
         String publicationTypeName = "book";
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
         //act
 
@@ -70,16 +71,12 @@ class AddPublicationTypeControllerTest {
     void addPublicationTypeThrowsWhenTypeAlreadyExists() {
 
         //arrange
-
-        User adminDouble = mock(User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-
         String publicationTypeName = "book";
-        when(_ptrDouble.addPublicationType("book"))
+        when(_iPublicationTypeRepoDouble.addPublicationType("book"))
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_ptrDouble, adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));

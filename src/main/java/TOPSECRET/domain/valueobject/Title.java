@@ -1,6 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
+
 import java.util.Objects;
 
 public class Title implements ValueObject {

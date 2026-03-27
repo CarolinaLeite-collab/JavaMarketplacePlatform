@@ -1,8 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.ddd.DomainEntity;
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.*;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -27,13 +26,12 @@ public class User implements DomainEntity<UserID> {
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
-    //package-private - only UserFactory creates
     User(Name name, Address address, Email email, Phone phone) {
 
 
-        _name = Objects.requireNonNull(name, "Name is required");
+        _name = name;
         _address = address;
-        _email = Objects.requireNonNull(email, "Email is required");
+        _email = email;
         _userId = new UserID(_email);
         _phone = phone;
         _roles.add(Role.USER); // default role

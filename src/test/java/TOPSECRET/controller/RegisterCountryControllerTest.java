@@ -1,9 +1,12 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.Country;
+import TOPSECRET.domain.ICountryRepo;
+import TOPSECRET.domain.Role;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -53,3 +56,4 @@ class RegisterCountryControllerTest {
         assertEquals("User is not authorized to register countries", exception.getMessage());
     }
 }
+

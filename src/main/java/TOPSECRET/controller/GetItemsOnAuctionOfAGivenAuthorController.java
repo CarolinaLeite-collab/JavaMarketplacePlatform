@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author;
+import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.AuctionRepo;
 import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.Author;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,27 +11,21 @@ import java.util.Objects;
 /**
  * Controller responsible for retrieving auction items by a specific author.
  * <p>
- * This controller uses the {@link AuctionRepo} to obtain a list of {@link Item}
+ * This controller uses the {@link IAuctionRepo} to obtain a list of {@link Item}
  * instances that are currently on auction and were created by a given {@link Author}.
  * </p>
  */
 
 public class GetItemsOnAuctionOfAGivenAuthorController {
 
-    private final AuctionRepo _auctionRepo;
+    private final IAuctionRepo _iAuctionRepo;
 
-    /**
-     * Ensures the controller has the repository it needs and validates the buyer reference.
-     */
-    public GetItemsOnAuctionOfAGivenAuthorController(AuctionRepo auctionRepo, User buyer) {
-        _auctionRepo = Objects.requireNonNull(auctionRepo, "auctionRepo");
+    public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, User buyer) {
+        _iAuctionRepo = Objects.requireNonNull(iAuctionRepo, "auctionRepo");
         Objects.requireNonNull(buyer, "buyer"); // buyer kept for parity/validation
     }
 
-    /**
-     * Retrieves all active auction listings by a normalized author name.
-     */
     public List<Item> getAuctionItemsByAuthor(Author author) {
-        return _auctionRepo.getAuctionItemsByAuthor(author);
+        return _iAuctionRepo.getAuctionItemsByAuthor(author);
     }
 }

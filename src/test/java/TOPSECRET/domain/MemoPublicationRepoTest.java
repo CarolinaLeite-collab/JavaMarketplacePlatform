@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 class MemoPublicationRepoTest {
 
-    private MemoPublicationRepo _memoPublicationRepo;
     private PublicationFactory _publicationFactoryDouble;
 
     // Mocks for factory arguments
@@ -30,8 +30,6 @@ class MemoPublicationRepoTest {
     @BeforeEach
     void setUp() {
         _publicationFactoryDouble = mock(PublicationFactory.class);
-        _memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble); //SUT
-
         _typeDouble = mock(PublicationType.class);
         _identifierDouble = mock(Identifier.class);
         _yearDouble = mock(Year.class);
@@ -50,8 +48,11 @@ class MemoPublicationRepoTest {
         when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(created);
 
+        //SUT
+        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
+
         //Act
-        Publication result = _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        Publication result = memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
         //Assert
         assertSame(created, result);
@@ -65,12 +66,15 @@ class MemoPublicationRepoTest {
         when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
                 .thenReturn(_publicationDouble);
 
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        //SUT
+        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
         //Act + Assert
         // second call returns same instance → duplicate
         assertThrows(IllegalArgumentException.class, () ->
-                _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble)
+                memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble)
         );
     }
 
@@ -84,12 +88,14 @@ class MemoPublicationRepoTest {
                 .thenReturn(_publicationDouble)
                 .thenReturn(_publicationDouble2);
 
+        //SUT
+        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
 
         //Act
-        Publication result = _memoPublicationRepo.getPublication(_publicationDouble2);
+        Publication result = memoPublicationRepo.getPublication(_publicationDouble2);
 
         //Assert
         assertSame(_publicationDouble2, result);
@@ -100,9 +106,12 @@ class MemoPublicationRepoTest {
         //Arrange
         Publication _publicationDouble = mock(Publication.class);
 
+        //SUT
+        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
+
         //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                _memoPublicationRepo.getPublication(_publicationDouble)
+                memoPublicationRepo.getPublication(_publicationDouble)
         );
     }
 
@@ -117,6 +126,9 @@ class MemoPublicationRepoTest {
                 .thenReturn(_publicationDouble1)
                 .thenReturn(_publicationDouble2)
                 .thenReturn(_publicationDouble3);
+
+        //SUT
+        MemoPublicationRepo _memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
         _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
@@ -136,11 +148,13 @@ class MemoPublicationRepoTest {
     void getPublicationThrowsWhenNull() {
         //Arrange
         PublicationFactory _publicationFactoryDouble = mock(PublicationFactory.class);
-        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        //SUT
+        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         //Act
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                repo.getPublication(null)
+                memoPublicationRepo.getPublication(null)
         );
 
         //Assert

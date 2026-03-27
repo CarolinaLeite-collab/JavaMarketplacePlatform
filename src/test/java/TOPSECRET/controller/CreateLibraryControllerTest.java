@@ -1,30 +1,35 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.ILibraryRepo;
+import TOPSECRET.domain.Library;
+import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class CreateLibraryControllerTest {
 
 
     private User _userDouble;
-    private LibraryRepo _repoDouble;
+    private User _adminDouble;
+    private ILibraryRepo _iLibraryRepoDouble;
 
     @BeforeEach
     void setUp() {
 
+        _adminDouble = mock(User.class);
         _userDouble = mock(User.class);
-        _repoDouble = mock(LibraryRepo.class);
+        _iLibraryRepoDouble = mock(ILibraryRepo.class);
     }
 
     @Test
     void testCreateLibraryController(){
 
         // SUT
-        new CreateLibraryController(_repoDouble, _userDouble);
+        new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
     }
 
 
@@ -33,17 +38,17 @@ class CreateLibraryControllerTest {
 
         // Arrange
         Library libraryDouble = mock(Library.class);
-        when(_repoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
+        when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
 
         // SUT
-        CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
+        CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
 
         // Act
         Library myLibrary = createLibraryController.createLibrary(_userDouble);
 
         // Assert
         assertEquals(libraryDouble, myLibrary);
-        verify(_repoDouble).addLibrary(_userDouble);
+        verify(_iLibraryRepoDouble).addLibrary(_userDouble);
 
     }
 
@@ -51,10 +56,10 @@ class CreateLibraryControllerTest {
     void createLibraryShouldThrowWhenLibraryAlreadyExist(){
 
         // Arrange
-       when(_repoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
+       when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
 
        // SUT
-       CreateLibraryController createLibraryController = new CreateLibraryController(_repoDouble, _userDouble);
+       CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
 
 
         // Act & Assert

@@ -14,48 +14,17 @@ import java.time.ZonedDateTime;
  */
 public class AuctionFactory {
 
-    /**
-     * Creates a new auction without an outright price.
-     *
-     * @param item             item to auction
-     * @param startingPrice    minimum acceptable bid price
-     * @param auctionStartDate start date/time of the auction
-     * @param auctionEndDate   end date/time of the auction
-     * @return created {@link Auction}
-     * @throws InstantiationException when auction creation fails
-     */
     public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
-                                 ZonedDateTime auctionEndDate) throws InstantiationException {
+                                 ZonedDateTime auctionEndDate) {
 
-        try {
             return new Auction(item, startingPrice, auctionStartDate, auctionEndDate);
-        } catch (Exception ex) {
-            InstantiationException wrapped = new InstantiationException(ex.getMessage());
-            wrapped.initCause(ex);
-            throw wrapped;
-        }
+
     }
 
-    /**
-     * Creates a new auction with an optional outright price.
-     *
-     * @param item             item to auction
-     * @param startingPrice    minimum acceptable bid price
-     * @param outrightPrice    buy-now price (must be greater than starting price)
-     * @param auctionStartDate start date/time of the auction
-     * @param auctionEndDate   end date/time of the auction
-     * @return created {@link Auction}
-     * @throws InstantiationException when auction creation fails
-     */
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
-                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) throws InstantiationException {
+                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-        try {
             return new Auction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
-        } catch (Exception ex) {
-            InstantiationException wrapped = new InstantiationException(ex.getMessage());
-            wrapped.initCause(ex);
-            throw wrapped;
-        }
+
     }
 }

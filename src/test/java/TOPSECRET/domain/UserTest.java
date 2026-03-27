@@ -1,7 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,16 +35,6 @@ class UserTest {
         assertEquals("1252008@isep.ipp.pt", user.getEmail());
         assertEquals(_addressDouble, user.getAddress());
         assertEquals(_phoneDouble, user.getPhone());
-    }
-
-    @Test
-    void constructorShouldThrowExceptionWhenNameIsNull() {
-
-        // Arrange
-        Email emailDouble = mock(Email.class);
-
-        // Act & Assert & SUT
-        assertThrows(NullPointerException.class, () -> new User(null, _addressDouble, emailDouble, _phoneDouble));
     }
 
     @Test

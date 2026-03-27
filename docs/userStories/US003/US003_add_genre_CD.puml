@@ -23,9 +23,12 @@ class AddGenreController {
     + addGenre(genreName : String) : Genre
 }
 
-class GenreRepo {
-    - genreExists(genreName : String) : boolean
+interface IGenreRepo {
     + addGenre(genreName : String) : Genre
+}
+
+class MemoGenreRepo {
+    - genreExists(genreName : String) : boolean
 }
 
 class GenreFactory {
@@ -39,9 +42,10 @@ class Genre {
 
 '==== Relationships ====
 AddGenreUI "1" ..> "1" AddGenreController : uses
-AddGenreController "1" --> "_genreRepo 1" GenreRepo : uses
-GenreRepo "1" --> "_genreFactory 1" GenreFactory : uses
-GenreRepo "1" -----> "_genresList *" Genre : manages
+AddGenreController "1" --> "1" IGenreRepo : uses
+MemoGenreRepo "1" ..|> "1" IGenreRepo
+MemoGenreRepo "1" --> "_genreFactory 1" GenreFactory : uses
+MemoGenreRepo "1" -----> "_genresList *" Genre : manages
 GenreFactory "1" --> "*" Genre : creates
 
 note right of AddGenreController

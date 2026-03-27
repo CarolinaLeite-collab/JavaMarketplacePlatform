@@ -1,29 +1,31 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.PublishingCompany;
+import TOPSECRET.domain.User;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Controller responsible for retrieving auction items by a specific publishingCompany.
  * <p>
- * This controller uses the {@link AuctionRepo} to obtain a list of {@link Item}
+ * This controller uses the {@link IAuctionRepo} to obtain a list of {@link Item}
  * instances that are currently on auction and were created by a given {@link PublishingCompany}.
  * </p>
  */
 
 public class GetAuctionItemsByPublishingCompanyController {
 
-    private AuctionRepo _auctionRepo;
+    private IAuctionRepo _iAuctionRepo;
 
-    public GetAuctionItemsByPublishingCompanyController( AuctionRepo auctionRepo, User buyer) {
+    public GetAuctionItemsByPublishingCompanyController(IAuctionRepo iAuctionRepo, User buyer) {
 
-        _auctionRepo = auctionRepo;
+        _iAuctionRepo = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
 
-        return _auctionRepo.getAuctionItemsByPublishingCompany(publisher);
+        return _iAuctionRepo.getAuctionItemsByPublishingCompany(publisher);
     }
 }

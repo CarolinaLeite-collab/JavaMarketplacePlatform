@@ -1,29 +1,28 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author;
-import TOPSECRET.domain.AuthorRepo;
+import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.Author;
 
 /**
  * Controller responsible for creating new authors in the system.
  * <p>
  * This controller delegates the creation of {@link Author} instances to the
- * {@link AuthorRepo}, ensuring that author names are valid and not empty.
+ * {@link IAuthorRepo}, ensuring that author names are valid and not empty.
  * </p>
  */
 
 public class CreateAuthorController {
 
-    private AuthorRepo _authorRepo;
+    private IAuthorRepo _iAuthorRepo;
 
-    public CreateAuthorController(AuthorRepo ar) {
-        _authorRepo = ar;
+    public CreateAuthorController(IAuthorRepo ar, User user) {
+        _iAuthorRepo = ar;
     }
 
     public Author createAuthor (String authorName){
 
-        return _authorRepo.createAuthor(authorName.trim());
+        return _iAuthorRepo.addAuthor(authorName.trim());
 
     }
-
-
 }

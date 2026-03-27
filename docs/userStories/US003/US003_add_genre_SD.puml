@@ -20,8 +20,8 @@ autonumber
 actor Administrator
 participant ":AddGenreUI" as UI
 participant ":AddGenreController" as Ctl
-participant "_genreRepo:GenreRepo" as gr
-participant "_genreFactory:GenreFactory" as gf
+participant "memoGenreRepo:MemoGenreRepo" as gr
+participant "genreFactory:GenreFactory" as gf
 
 Administrator -> UI: I want to add a publication genre
 activate UI
@@ -35,16 +35,15 @@ activate Ctl
 Ctl -> gr: addGenre(genreName)
 activate gr
 
-gr -> gr : genreExists(genreName)
+opt genreExists(genreName) == false
         gr -> gf : createGenre(genreName)
         activate gf
         create "genreName:Genre"
-        gf -> "genreName:Genre": create(genreName)
+        gf -->> "genreName:Genre": <<Create>>
         gf --> gr : genreName
         deactivate gf
-        gr -> gr: add(genreName)
-
-
+        gr -> gr: addGenre(genreName)
+end
 
 
 gr --> Ctl: genreName

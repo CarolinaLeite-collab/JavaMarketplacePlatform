@@ -21,32 +21,36 @@ class GetAuctionItemsByPublicationUI {
 }
 
 class GetAuctionItemsByPublicationController {
-
-- _ar : AuctionRepo
-+ getAuctionItemsByPublication(publication : Publication) : List<Item>
+- _iar : IAuctionRepo
++ getAuctionItemsByPublication(publicationID : PublicationID) : List<Item>
 }
 
-class AuctionRepo {
-- _itemsOnAuction : List<Auction>
-+getAuctionItemsByPublication(publication : Publication) : List<Item>
+interface IAuctionRepo{
++ getAuctionItemsByPublication(publicationID: publicationID) : List<Item>
+}
 
+class MemoAuctionRepo {
+- _itemsOnAuction : List<Auction>
 }
 
 class Auction {
++isByPublication(publicationID : PublicationID) : boolean
++ getItem() : Item
+}
 
--_startingPrice : Price
--_outrightPrice : Price
--_finalPrice : Price
-- _auctionStartDate : ZonedDateTime
--_auctionEndDate : ZonedDateTime
--_buyer : User
--_bids : Bids
-+isByPublication(publication : Publication) : boolean
+class Item {
++ isByPublication(publicationID : PublicationID) : boolean
+}
 
+class Publication {
+- publicationID : PublicationID
 }
 
 GetAuctionItemsByPublicationUI "1" ..> "1" GetAuctionItemsByPublicationController : invokes
-GetAuctionItemsByPublicationController "1" ..> "1" AuctionRepo : calls
-AuctionRepo "1" --> "*" Auction : contains
+GetAuctionItemsByPublicationController "1" ..> "1" IAuctionRepo : calls
+MemoAuctionRepo ..|> IAuctionRepo
+MemoAuctionRepo "1" --> "*" Auction : contains
+Auction "1" --> "1" Item : contains
+Item "1" --> "1" Publication : contains
 
 @enduml

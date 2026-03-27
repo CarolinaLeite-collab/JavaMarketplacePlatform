@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 
 /**
@@ -15,13 +16,13 @@ public class PublicationDetails {
     private final Title _title;
     private final Author _author;
     private final PublicationType _publicationType;
-    private final Identifier identifier;
+    private final Identifier _identifier;
 
     public PublicationDetails(Item item) {
-        _title = item.getPublication().getTitle();
-        _author = item.getPublication().getAuthor();
-        _publicationType = item.getPublication().getPublicationType();
-        identifier = item.getPublication().getIdentifier();
+        _title = item.get_publication().getTitle();
+        _author = item.get_publication().getAuthor();
+        _publicationType = item.get_publication().getPublicationType();
+        _identifier = item.get_publication().getIdentifier();
 
     }
     public Title getTitle() {
@@ -36,7 +37,7 @@ public class PublicationDetails {
         return _publicationType;
     }
 
-    public Identifier getIdentifier() {
-        return identifier;
+    public Identifier get_identifier() {
+        return _identifier;
     }
 }

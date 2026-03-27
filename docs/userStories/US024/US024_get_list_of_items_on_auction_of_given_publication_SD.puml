@@ -15,24 +15,24 @@ autoactivate off
 actor Buyer
 participant ":GetAuctionItemsByPublicationUI" as UI
 participant ":GetAuctionItemsByPublicationController" as CTL
-participant "_ar:AuctionRepo" as AR
+participant "_mar:MemoAuctionRepo" as mAR
 
 Buyer -> UI: I want the list of items on auction of a given publication
 activate UI
 UI --> Buyer: Which publication?
 deactivate UI
-Buyer -> UI: publication
+Buyer -> UI: publicationID
 activate UI
 
 
-UI -> CTL: getAuctionItemsByPublication(publication)
+UI -> CTL: getAuctionItemsByPublication(publicationID)
 activate CTL
 
-CTL -> AR: getAuctionItemsByPublication(publication)
-activate AR
+CTL -> mAR: getAuctionItemsByPublication(publicationID)
+activate mAR
 
-AR --> CTL: copyOfListOfAuctionItemsByPublication
-deactivate AR
+mAR --> CTL: copyOfListOfAuctionItemsByPublication
+deactivate mAR
 
 CTL --> UI: copyOfListOfAuctionItemsByPublication
 deactivate CTL

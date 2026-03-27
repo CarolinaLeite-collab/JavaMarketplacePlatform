@@ -16,51 +16,48 @@ autonumber
 autoactivate off
 
 actor User
-participant ":PublicationInLibraryForDirectSaleUI" as UI
-participant ":PublicationInLibraryForDirectSaleController" as Ctl
-participant ":LibraryRepo" as LibraryRepo
-participant "userLibrary:Library" as userLibrary
-participant ":DirectSaleRepo" as DirectSaleRepo
+participant ":PublicationInLibrary\nForDirectSaleUI" as UI
+participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
+participant ":ILibraryRepo" as LibraryRepo
+'participant "userLibrary:Library" as userLibrary
+participant ":MemoDirectSaleRepo" as DirectSaleRepo
 participant ":DirectSaleFactory" as DirectSaleFactory
 participant "directSale:DirectSale" as directSale
 
-User -> UI: I want to put for direct sale a publication in my library
+User -> UI: I want to put for direct sale\nan item in my library!
 activate UI
 
-UI -> Ctl: getItemsInLibrary(user)
+UI -> Ctl: getItemsInLibraryByUser\n(userID)
 activate Ctl
-Ctl -> LibraryRepo: findLibraryByUser(user)
+
+Ctl -> LibraryRepo: getItemsInLibraryByUser\n(userID)
 activate LibraryRepo
-LibraryRepo --> Ctl: userLibrary
+LibraryRepo --> Ctl: ListOfUserLibraryItems
 deactivate LibraryRepo
 
-Ctl -> userLibrary: getItemsInLibrary()
-activate userLibrary
-userLibrary --> Ctl: itemsList
-deactivate userLibrary
-
-Ctl --> UI: itemsList
+Ctl --> UI: ListOfUserLibraryItems
 deactivate Ctl
-UI --> User: Which item would you like to sell?
+UI --> User: Which item\nwould you like to sell?
 deactivate UI
 
-User -> UI: item.
+User -> UI: itemID
 activate UI
 
-UI --> User: What is the price and time limit for this sale?
-User -> UI: price, time limit
+UI --> User: What is the price \nand time limit for this sale?
 deactivate UI
+User -> UI: price, time limit
+activate UI
 
-UI -> Ctl: addItemForDirectSale(item, price, timeLimit)
+UI -> Ctl: addItemForDirectSale\n(itemID, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleRepo: addDirectSale(item, price, timeLimit)
+Ctl -> DirectSaleRepo: addDirectSale\n(itemID, price, timeLimit)
 activate DirectSaleRepo
 
-DirectSaleRepo -> DirectSaleFactory: createDirectSale(item, price, timeLimit)
+DirectSaleRepo -> DirectSaleFactory: createDirectSale\n(itemID, price, timeLimit)
 activate DirectSaleFactory
 create directSale
-DirectSaleFactory -> directSale: create(item, price, timeLimit)
+DirectSaleFactory -->> directSale: <<create>>
 DirectSaleFactory --> DirectSaleRepo: directSale
 deactivate DirectSaleFactory
 
@@ -70,7 +67,7 @@ deactivate DirectSaleRepo
 
 Ctl --> UI: directSale
 deactivate Ctl
-UI --> User: Your item was successfully put up for sale!
+UI --> User: Your item was\nsuccessfully put up in a direct sale!
 deactivate UI
 
 @enduml

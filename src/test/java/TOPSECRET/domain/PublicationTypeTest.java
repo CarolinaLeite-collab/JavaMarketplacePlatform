@@ -2,20 +2,21 @@ package TOPSECRET.domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PublicationTypeTest {
 
-    private PublicationType _pt1;
-    private PublicationType _pt2;
-    private PublicationType _pt3;
+    private PublicationType _publicationType1;
+    private PublicationType _publicationType2;
+    private PublicationType _publicationType3;
 
     @BeforeEach
     void setUp() {
 
-        _pt1 = new PublicationType("BOOK");
-        _pt2 = new PublicationType("book");
-        _pt3 = new PublicationType("MAGAZINE");
+        _publicationType1 = new PublicationType("BOOK");
+        _publicationType2 = new PublicationType("book");
+        _publicationType3 = new PublicationType("MAGAZINE");
 
     }
 
@@ -31,7 +32,7 @@ class PublicationTypeTest {
     void givenValidTypeNameShouldSavesData() {
 
         //Act + Assert
-        assertEquals("BOOK", _pt1.getPublicationType());
+        assertEquals("BOOK", _publicationType1.getPublicationType());
 
     }
 
@@ -72,7 +73,7 @@ class PublicationTypeTest {
         String book = "book";
 
         //Act
-        boolean result = _pt1.isSamePublicationType(book);
+        boolean result = _publicationType1.isSamePublicationType(book);
 
         //Assert
         assertTrue(result);
@@ -86,7 +87,7 @@ class PublicationTypeTest {
         String book = "pokemon card";
 
         //Act
-        boolean result = _pt1.isSamePublicationType(book);
+        boolean result = _publicationType1.isSamePublicationType(book);
 
         //Assert
         assertFalse(result);
@@ -100,7 +101,7 @@ class PublicationTypeTest {
         String book = null;
 
         //Act
-        boolean result = _pt1.isSamePublicationType(book);
+        boolean result = _publicationType1.isSamePublicationType(book);
 
         //Assert
         assertFalse(result);
@@ -114,7 +115,7 @@ class PublicationTypeTest {
         String book = "   ";
 
         //Act
-        boolean result = _pt1.isSamePublicationType(book);
+        boolean result = _publicationType1.isSamePublicationType(book);
 
         //Assert
         assertFalse(result);
@@ -128,7 +129,7 @@ class PublicationTypeTest {
         String book = "";
 
         //Act
-        boolean result = _pt1.isSamePublicationType(book);
+        boolean result = _publicationType1.isSamePublicationType(book);
 
         //Assert
         assertFalse(result);
@@ -139,7 +140,7 @@ class PublicationTypeTest {
     void toStringReturnsTypeName() {
 
         //Act + Assert
-        assertEquals("BOOK", _pt2.toString());
+        assertEquals("BOOK", _publicationType2.toString());
 
     }
 
@@ -147,7 +148,7 @@ class PublicationTypeTest {
     void sameObjectShouldAssertEquals() {
 
         //Assert
-        assertEquals(_pt1, _pt1);
+        assertEquals(_publicationType1, _publicationType1);
 
     }
 
@@ -155,7 +156,7 @@ class PublicationTypeTest {
     void differentObjectsWithSameNameShouldReturnEquals() {
 
         //Assert
-        assertEquals(_pt1, _pt2);
+        assertEquals(_publicationType1, _publicationType2);
 
     }
 
@@ -163,14 +164,14 @@ class PublicationTypeTest {
     void differentObjectsWithDifferentNamesShouldAssertNotEquals() {
 
         //Assert
-        assertNotEquals(_pt1, _pt3);
+        assertNotEquals(_publicationType1, _publicationType3);
 
     }
 
     @Test
     void objectsWithNullObjectShouldReturnNotEquals() {
 
-        assertNotEquals(null, _pt1);
+        assertNotEquals(null, _publicationType1);
 
     }
 
@@ -181,7 +182,7 @@ class PublicationTypeTest {
         String otherType = "publicationType";
 
         //Assert
-        assertFalse(_pt1.equals(otherType));
+        assertFalse(_publicationType1.equals(otherType));
 
     }
 
@@ -190,7 +191,7 @@ class PublicationTypeTest {
     void sameNamesShouldHaveSameHashCode() {
 
         //Act + Assert
-        assertEquals(_pt1.hashCode(), _pt2.hashCode());
+        assertEquals(_publicationType1.hashCode(), _publicationType2.hashCode());
 
     }
 
@@ -198,7 +199,7 @@ class PublicationTypeTest {
     void differentNamesShouldHaveDifferentHashCode() {
 
         //Act + Assert
-        assertNotEquals(_pt1.hashCode(), _pt3.hashCode());
+        assertNotEquals(_publicationType1.hashCode(), _publicationType3.hashCode());
 
     }
 

@@ -1,8 +1,9 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.ListOfPublications;
 import TOPSECRET.domain.IListOfPublicationsRepo;
+import TOPSECRET.domain.ListOfPublications;
+import TOPSECRET.domain.User;
 
 import java.util.List;
 
@@ -15,16 +16,16 @@ import java.util.List;
  */
 
 public class GetPublicListsByGenreController {
-    private final IListOfPublicationsRepo _iListOfPubRepo;
+    private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
-    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo) {
-        _iListOfPubRepo = iListOfPubRepo;
+    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo, User user) {
+        _iListOfPublicationsRepo = iListOfPubRepo;
     }
 
     public List<ListOfPublications> getPublicListsByGenre(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _iListOfPubRepo.findPublicListsByGenre(genre);
+        return _iListOfPublicationsRepo.findPublicListsByGenre(genre);
     }
 }

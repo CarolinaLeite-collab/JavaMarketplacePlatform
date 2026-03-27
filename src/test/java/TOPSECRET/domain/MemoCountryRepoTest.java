@@ -10,27 +10,27 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MemoCountryRepoTest {
-    private CountryFactory _countryFactory;
+    private CountryFactory _countryFactoryDouble;
 
     @BeforeEach
     void setUp() {
-        _countryFactory = mock(CountryFactory.class);
+        _countryFactoryDouble = mock(CountryFactory.class);
     }
 
     @Test
     void shouldConstructRepoSuccessfully() {
         //Act
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         Country result = memoCountryRepo.registerCountry("Portugal");
         //Assert
@@ -41,12 +41,12 @@ class MemoCountryRepoTest {
     void shouldRegistersMultipleUniqueCountries() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
 
         Country germany = mock(Country.class);
-        when(_countryFactory.createCountry("Germany")).thenReturn(germany);
+        when(_countryFactoryDouble.createCountry("Germany")).thenReturn(germany);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country second = memoCountryRepo.registerCountry("Germany");
@@ -60,9 +60,9 @@ class MemoCountryRepoTest {
     void shouldReturnNullIfCountryIsDuplicate() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal, portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal, portugal);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country Duplicate = memoCountryRepo.registerCountry("Portugal");
@@ -78,11 +78,11 @@ class MemoCountryRepoTest {
         Country portugal = mock(Country.class);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
 
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
-        when(_countryFactory.createCountry("portugal")).thenReturn(portugal);
-        when(_countryFactory.createCountry(" Portugal ")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry(" Portugal ")).thenReturn(portugal);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country second = memoCountryRepo.registerCountry("portugal");
@@ -98,9 +98,9 @@ class MemoCountryRepoTest {
     void shouldReturnsUnmodifiedListOfCountries() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         memoCountryRepo.registerCountry("Portugal");
         List<Country> countries = memoCountryRepo.getAllCountries();
@@ -113,10 +113,10 @@ class MemoCountryRepoTest {
     void findByName_shouldReturnsNullWhenNameIsNull() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         memoCountryRepo.registerCountry("Portugal");
         //Assert
@@ -127,10 +127,10 @@ class MemoCountryRepoTest {
     void findByName_shouldFindCountryIgnoringCaseAndSpaces() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         memoCountryRepo.registerCountry("Portugal");
         //Assert
@@ -142,10 +142,10 @@ class MemoCountryRepoTest {
     void findByName_shouldReturnNullWhenCountryNotFound() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_countryFactory.createCountry("Portugal")).thenReturn(portugal);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
         when(portugal.isNamed("PORTUGAL")).thenReturn(true);
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
         //Act
         memoCountryRepo.registerCountry("Portugal");
         //Assert
