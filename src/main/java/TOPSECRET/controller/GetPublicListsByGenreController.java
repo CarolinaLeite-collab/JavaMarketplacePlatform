@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.User;
 import TOPSECRET.domain.IListOfPublicationsRepo;
 import TOPSECRET.domain.ListOfPublications;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class GetPublicListsByGenreController {
     private final IListOfPublicationsRepo _iListOfPublicationsRepo;
 
-    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo) {
+    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo, User user) {
         _iListOfPublicationsRepo = iListOfPubRepo;
     }
 

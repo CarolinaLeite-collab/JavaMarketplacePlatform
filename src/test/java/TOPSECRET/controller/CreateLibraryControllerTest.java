@@ -14,11 +14,13 @@ class CreateLibraryControllerTest {
 
 
     private User _userDouble;
+    private User _adminDouble;
     private ILibraryRepo _iLibraryRepoDouble;
 
     @BeforeEach
     void setUp() {
 
+        _adminDouble = mock(User.class);
         _userDouble = mock(User.class);
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
     }
@@ -27,7 +29,7 @@ class CreateLibraryControllerTest {
     void testCreateLibraryController(){
 
         // SUT
-        new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
+        new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
     }
 
 
@@ -39,7 +41,7 @@ class CreateLibraryControllerTest {
         when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenReturn(libraryDouble);
 
         // SUT
-        CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
+        CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
 
         // Act
         Library myLibrary = createLibraryController.createLibrary(_userDouble);
@@ -57,7 +59,7 @@ class CreateLibraryControllerTest {
        when(_iLibraryRepoDouble.addLibrary(_userDouble)).thenThrow(new IllegalStateException());
 
        // SUT
-       CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userDouble);
+       CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _adminDouble);
 
 
         // Act & Assert

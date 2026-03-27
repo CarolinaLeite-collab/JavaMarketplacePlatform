@@ -21,11 +21,11 @@ public class PublicationSaleAuctionController {
     private final IAuctionRepo _iAuctionRepo;
     private final Library _library;
 
-    public PublicationSaleAuctionController(ILibraryRepo libraryRepo, IAuctionRepo iAuctionRepo, Library library) {
-        if (libraryRepo == null || iAuctionRepo == null || library == null) {
+    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, User user) {
+        if (iLibraryRepo == null || iAuctionRepo == null || library == null) {
             throw new NullPointerException("Repositories and factories are required");
         }
-        _iLibraryRepo = libraryRepo;
+        _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;
         _library = library;
 

@@ -16,12 +16,14 @@ class GetPublicListsByGenreControllerTest {
 
     private IListOfPublicationsRepo _iListOfPublicationsRepoDouble;
     private Genre _genreDouble;
+    private User _userDouble;
 
     @BeforeEach
     void setUp() {
 
         _iListOfPublicationsRepoDouble = mock(IListOfPublicationsRepo.class);
         _genreDouble = mock(Genre.class);
+        _userDouble = mock(User.class);
     }
 
     @Test
@@ -29,19 +31,20 @@ class GetPublicListsByGenreControllerTest {
 
         // Arrange
         ListOfPublications listA = mock(ListOfPublications.class);
-        User userDouble = mock(User.class);
+
         when(listA.getName()).thenReturn("List A");
-        when(listA.getUser()).thenReturn(userDouble);
+        when(listA.getUser()).thenReturn(_userDouble);
         when( _iListOfPublicationsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
+
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble, _userDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);
 
         // Assert
         assertEquals("List A", result.get(0).getName());
-        assertEquals(userDouble, result.get(0).getUser());
+        assertEquals(_userDouble, result.get(0).getUser());
         verify(_iListOfPublicationsRepoDouble).findPublicListsByGenre(_genreDouble);
 
     }
@@ -51,7 +54,7 @@ class GetPublicListsByGenreControllerTest {
 
         // Arrange
         //SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble, _userDouble);
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
@@ -66,8 +69,9 @@ class GetPublicListsByGenreControllerTest {
 
         // Arrange
         when( _iListOfPublicationsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
+
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfPublicationsRepoDouble, _userDouble);
 
         // Act
         List<ListOfPublications> result = controller.getPublicListsByGenre(_genreDouble);

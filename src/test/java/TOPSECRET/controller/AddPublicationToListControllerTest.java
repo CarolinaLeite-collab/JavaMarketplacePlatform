@@ -30,7 +30,6 @@ class AddPublicationToListControllerTest {
         _publicationsListDouble = mock(ListOfPublications.class);
     }
 
-    // getMyLists
     @Test
     void getMyListsShouldReturnsListsFromRepo() {
         //arrange
@@ -46,8 +45,6 @@ class AddPublicationToListControllerTest {
         //assert
         assertSame(expected, result);
     }
-
-    // getItemsInMyLibrary
 
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
@@ -99,9 +96,6 @@ class AddPublicationToListControllerTest {
         verify(_publicationsListDouble).addItem(null);
     }
 
-
-    // addPublicationToList (BOOK + ISBN)
-
     @Test
     void addItemToListShouldAddItemWhenValid() {
         //arrange
@@ -123,10 +117,6 @@ class AddPublicationToListControllerTest {
         );
     }
 
-    // ---------------------
-    // Null argument tests
-    // ---------------------
-
     @Test
     void addItemToList_throwsWhenListNameIsBlank() {
         //arrange / SUT
@@ -137,9 +127,6 @@ class AddPublicationToListControllerTest {
                 () -> _controllerSUT.addItemToList(_userDouble, " ", _genreDouble, _itemDouble));
     }
 
-    // -----------------------
-    // Check for duplications
-    // -----------------------
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
         //arrange
@@ -152,7 +139,6 @@ class AddPublicationToListControllerTest {
         when(_libraryDouble.getItemsInLibrary())
                 .thenReturn(List.of(_itemDouble));
 
-        // Simulate the domain rule: list rejects duplicates
         doThrow(new IllegalStateException("Item already in list"))
                 .when(_publicationsListDouble)
                 .addItem(_itemDouble);

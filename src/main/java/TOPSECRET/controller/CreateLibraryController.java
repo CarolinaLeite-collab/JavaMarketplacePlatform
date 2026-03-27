@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.MemoLibraryRepo;
 import TOPSECRET.domain.User;
 
 /**
@@ -19,7 +18,7 @@ public class CreateLibraryController {
 
     private final ILibraryRepo _iLibraryRepo;
 
-    public CreateLibraryController(ILibraryRepo lr, User user){
+    public CreateLibraryController(ILibraryRepo lr, User admin){
 
         _iLibraryRepo =lr;
 
