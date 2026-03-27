@@ -8,7 +8,7 @@ import java.util.List;
  * Controller responsible for handling the creation of private lists of publications for a user.
  * <p>
  * This class delegates the actual creation logic to {@link IListOfPublicationsRepo}
- * and providing access to official genres from {@link MemoGenreRepo}.
+ * and providing access to official genres from {@link IGenreRepo}.
  * </p>
  */
 

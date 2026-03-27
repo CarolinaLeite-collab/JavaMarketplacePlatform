@@ -9,17 +9,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link CreatePrivateListOfPublicationsController}.
- *
- * <p>The following Mockito doubles are used:
- * <ul>
- *   <li>{@link IListOfPublicationsRepo} — mocked collaborator (persistence dependency)</li>
- *   <li>{@link IGenreRepo} — mocked collaborator (persistence dependency)</li>
- *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
- *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
- * </ul>
- */
 
 class CreatePrivateListOfPublicationsControllerTest {
 

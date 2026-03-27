@@ -11,7 +11,7 @@ import TOPSECRET.domain.User;
  * <p>
  * It receives requests and delegates the
  * creation and persistence of a {@link Library} instance to the
- * {@link MemoLibraryRepo}.
+ * {@link ILibraryRepo}.
  * </p>
  */
 
