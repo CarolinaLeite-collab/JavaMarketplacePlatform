@@ -31,18 +31,15 @@ public class MemoGenreRepo implements IGenreRepo {
         return genre;
     }
 
-    // Checks if a genre with the given name already exists in the repository.
     private boolean genreExists(String genreName) {
         Genre existingGenre = _genreFactory.createGenre(genreName);
         return _genresList.contains(existingGenre);
     }
 
     @Override
-    // Gets the list of official genres, and uses copyOf for encapsulation
     public List<Genre> getListOfOfficialGenres() {
 
         return List.copyOf(_genresList);
-
     }
 
 }

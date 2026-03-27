@@ -22,7 +22,7 @@ public class CreateAuthorController {
 
     public Author createAuthor (String authorName){
 
-        return _iAuthorRepo.createAuthor(authorName.trim());
+        return _iAuthorRepo.addAuthor(authorName.trim());
 
     }
 }

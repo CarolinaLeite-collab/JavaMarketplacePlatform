@@ -29,7 +29,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
     MemoAuctionRepo(AuctionFactory auctionFactory) {
         _itemsOnAuction = new ArrayList<>();
-        _auctionFactory = Objects.requireNonNull(auctionFactory, "auctionFactory must not be null");
+        _auctionFactory = auctionFactory;
     }
 
     public Auction createAuction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {

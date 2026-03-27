@@ -21,13 +21,13 @@ class MemoAuthorRepoTest {
     }
 
     @Test
-    void createAuthorShouldStoreAuthorWithTrimmedName() {
+    void addAuthorShouldStoreAuthorWithTrimmedName() {
 
         //SUT
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
-        Author author = repo.createAuthor(" Ana   ");
+        Author author = repo.addAuthor(" Ana   ");
         List<Author> all = repo.findAll();
 
         //assert
@@ -39,48 +39,35 @@ class MemoAuthorRepoTest {
     }
 
     @Test
-    void createAuthorShouldThrowWhenNameIsNull() {
-
-        //SUT
-        MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
-
-        //act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(null));
-
-        //assert
-        assertEquals("Author name is mandatory", ex.getMessage());
-    }
-
-    @Test
-    void createAuthorShouldThrowWhenNameIsBlank() {
+    void addAuthorShouldThrowWhenNameIsBlank() {
 
         //SUT
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act + assert
-        assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(" "));
+        assertThrows(IllegalArgumentException.class, () -> repo.addAuthor(" "));
     }
 
     @Test
-    void createAuthorShouldThrowWhenNameIsEmpty() {
+    void addAuthorShouldThrowWhenNameIsEmpty() {
 
         //SUT
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act + assert
-        assertThrows(IllegalArgumentException.class, () -> repo.createAuthor(""));
+        assertThrows(IllegalArgumentException.class, () -> repo.addAuthor(""));
     }
 
     @Test
-    void createAuthorShouldThrowWhenAuthorAlreadyExistsIgnoringCase() {
+    void addAuthorShouldThrowWhenAuthorAlreadyExistsIgnoringCase() {
 
         //SUT
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
-        repo.createAuthor("Ana");
+        repo.addAuthor("Ana");
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> repo.createAuthor("ana"));
+        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> repo.addAuthor("ana"));
 
         //assert
         assertEquals("Author already exists", ex.getMessage());
@@ -94,7 +81,7 @@ class MemoAuthorRepoTest {
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
-        repo.createAuthor("A");
+        repo.addAuthor("A");
         List<Author> copy = repo.findAll();
 
         //Modifying the returned list cannot affect the repository
@@ -122,7 +109,7 @@ class MemoAuthorRepoTest {
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
-        repo.createAuthor("Ana");
+        repo.addAuthor("Ana");
 
         //assert
         assertFalse(repo.existsByName("Bruno"));
@@ -135,7 +122,7 @@ class MemoAuthorRepoTest {
         MemoAuthorRepo repo = new MemoAuthorRepo(authorFactoryDouble);
 
         //act
-        repo.createAuthor("Ana");
+        repo.addAuthor("Ana");
 
         //assert
         assertTrue(repo.existsByName("aNa"));

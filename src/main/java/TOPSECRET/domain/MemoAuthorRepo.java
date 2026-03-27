@@ -23,12 +23,8 @@ public class MemoAuthorRepo implements IAuthorRepo {
         _authors = new ArrayList<>();
     }
 
-    // Repository creates and returns the Author
     @Override
-    public Author createAuthor(String authorName) {
-        if (authorName == null || authorName.isBlank()) {
-            throw new IllegalArgumentException("Author name is mandatory");
-        }
+    public Author addAuthor(String authorName) {
 
         String normalizedName = authorName.trim();
         if (existsByName(normalizedName)) {

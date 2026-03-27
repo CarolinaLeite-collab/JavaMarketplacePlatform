@@ -39,7 +39,7 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
-        when(_iAuthorRepoDouble.createAuthor("João")).thenReturn(authorDouble);
+        when(_iAuthorRepoDouble.addAuthor("João")).thenReturn(authorDouble);
 
         Author author = controller.createAuthor(name);
 
@@ -59,7 +59,7 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
-        when(_iAuthorRepoDouble.createAuthor(name)).thenReturn(authorDouble);
+        when(_iAuthorRepoDouble.addAuthor(name)).thenReturn(authorDouble);
         when(authorDouble.getName()).thenReturn(name);
 
         Author author = controller.createAuthor("João  ");
@@ -77,7 +77,7 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //Act
-        when(_iAuthorRepoDouble.createAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
+        when(_iAuthorRepoDouble.addAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> controller.createAuthor("Maria "));
 
         //Assert

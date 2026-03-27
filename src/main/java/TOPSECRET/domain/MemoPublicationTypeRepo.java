@@ -25,25 +25,20 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
     @Override
     public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
 
-        // Verifies if PublicationType already exists in the repo
         if (publicationTypeExists(publicationTypeName)) {
 
             throw new IllegalArgumentException("This publication type already exists!");
 
         }
 
-        // Uses factory to create a new instance of PublicationType
         PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
 
-        //Adds to repo
         _publicationTypes.add(newPublicationType);
 
-        // Returns instantiated object
         return newPublicationType;
 
     }
 
-    // Verifies if a Publication Type already exists in the repo
     private boolean publicationTypeExists (String publicationTypeName) {
 
         for (PublicationType publicationType : _publicationTypes) {
@@ -61,7 +56,6 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
     }
 
     @Override
-    // Devolve uma cópia da lista (não quebra encapsulamento)
     public List<PublicationType> getAll() {
         return List.copyOf(_publicationTypes);
     }
