@@ -30,7 +30,6 @@ public class Name implements ValueObject {
             throw new IllegalArgumentException("Name must have between 2 and 80 characters");
         }
 
-        // Letters (any language), spaces, hyphen and apostrophe.
         if (!normalized.matches("[\\p{L}]+([\\p{L}\\s'-]*[\\p{L}])?")) {
             throw new IllegalArgumentException("Name contains invalid characters");
         }
@@ -59,7 +58,7 @@ public class Name implements ValueObject {
         }
 
     private static String normalize(String raw) {
-        // Trim + collapse multiple spaces into one
+
         return raw.trim().replaceAll("\\s+", " ");
     }
 }

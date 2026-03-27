@@ -8,14 +8,14 @@ import java.util.List;
 
 public interface IAuctionRepo {
 
-    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
+    Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
                                  ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
 
-    public List<Item> getAuctionItemsByGenre(Genre genre);
+    List<Item> getAuctionItemsByGenre(Genre genre);
 
-    public List<Item> getAuctionItemsByAuthor(Author author);
+    List<Item> getAuctionItemsByAuthor(Author author);
 
-    public List<Item> getAuctionItemsByPublication(Publication publication);
+    List<Item> getAuctionItemsByPublication(Publication publication);
 
-    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher);
+    List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher);
 }

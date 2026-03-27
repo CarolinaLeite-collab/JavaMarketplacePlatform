@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface IAuthorRepo {
 
-    public Author createAuthor(String authorName);
+    Author createAuthor(String authorName);
 
-    public boolean existsByName(String name);
+    boolean existsByName(String name);
 
-    public List<Author> findAll();
+    List<Author> findAll();
 }
