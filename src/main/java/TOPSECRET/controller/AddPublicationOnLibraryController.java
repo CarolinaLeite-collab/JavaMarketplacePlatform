@@ -17,7 +17,7 @@ public class AddPublicationOnLibraryController {
     private final Library _library;
     private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo) {
+    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo, User user) {
         _iLibraryRepo = ilibraryRepo;
         _library = library;
         _iItemRepo = iItemRepo;

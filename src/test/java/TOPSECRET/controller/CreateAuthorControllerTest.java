@@ -4,6 +4,7 @@ import TOPSECRET.domain.IAuthorRepo;
 import TOPSECRET.domain.valueobject.Author;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import TOPSECRET.domain.User;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -23,7 +24,8 @@ class CreateAuthorControllerTest {
     void testCreateAuthorControllerConstructor() {}
 
     // SUT & Act
-     CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble);
+    User _userDouble = mock(User.class);
+    CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
 
     @Test
@@ -31,9 +33,10 @@ class CreateAuthorControllerTest {
         //arrange
         String name = "João";
         Author authorDouble = mock(Author.class);
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
         when(_iAuthorRepoDouble.createAuthor("João")).thenReturn(authorDouble);
@@ -50,9 +53,10 @@ class CreateAuthorControllerTest {
         //arrange
         String name = "João";
         Author authorDouble = mock(Author.class);
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //act
         when(_iAuthorRepoDouble.createAuthor(name)).thenReturn(authorDouble);
@@ -67,12 +71,13 @@ class CreateAuthorControllerTest {
     @Test
     void shouldThrowExceptionWhenAuthorAlreadyExists() {
         //Arrange
-        when(_iAuthorRepoDouble.createAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
+        User _userDouble = mock(User.class);
 
         //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userDouble);
 
         //Act
+        when(_iAuthorRepoDouble.createAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> controller.createAuthor("Maria "));
 
         //Assert

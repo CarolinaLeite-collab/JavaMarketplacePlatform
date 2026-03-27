@@ -13,7 +13,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnLibraryOfUser() {
         //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
         User _userDouble = mock(User.class);
@@ -21,7 +21,7 @@ class AddPublicationOnLibraryControllerTest {
         when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userDouble);
 
         //act
         Library result = controller.getMyLibrary(_userDouble);
@@ -34,9 +34,10 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnAllItemsFromLibrary() {
         //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
+        User _userDouble = mock(User.class);
 
         Item _itemDouble1 = mock(Item.class);
         Item _itemDouble2 = mock(Item.class);
@@ -46,7 +47,7 @@ class AddPublicationOnLibraryControllerTest {
         when(_libraryDouble.getItemsInLibrary()).thenReturn(items);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userDouble);
 
         //act
         List<Item> result = controller.getAllItems();
@@ -59,7 +60,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnListOfAvailableItems() {
         //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
@@ -76,7 +77,7 @@ class AddPublicationOnLibraryControllerTest {
         when(_iItemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userDouble);
 
         //act
         List<Item> result = controller.getListOfAvailableItems(_userDouble);
@@ -92,7 +93,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnEmptyListWhenNoAvailableItemsExist() {
         // arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
@@ -108,7 +109,7 @@ class AddPublicationOnLibraryControllerTest {
         when(_iItemRepoDouble.getDifferentOf(existingItems)).thenReturn(availableItems);
 
         // SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userDouble);
 
         // act
         List<Item> result = controller.getListOfAvailableItems(_userDouble);
@@ -123,7 +124,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldAddItemToLibrary() {
         //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _myLibraryDouble = mock(Library.class);
         Library _libraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
@@ -134,7 +135,8 @@ class AddPublicationOnLibraryControllerTest {
         when(_myLibraryDouble.addItemToLibrary(_idemDouble)).thenReturn(true);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble,
+                _userDouble);
 
         //act
         boolean result = controller.addItemToLibrary(_idemDouble, _userDouble);
@@ -148,7 +150,7 @@ class AddPublicationOnLibraryControllerTest {
     @Test
     void shouldReturnFalseWhenItemNotAddedToLibrary() {
         // arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(MemoLibraryRepo.class);
+        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
         Library _libraryDouble = mock(Library.class);
         Library _myLibraryDouble = mock(Library.class);
         IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
@@ -159,7 +161,7 @@ class AddPublicationOnLibraryControllerTest {
         when(_myLibraryDouble.addItemToLibrary(_itemDouble)).thenReturn(false);
 
         // SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble);
+        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userDouble);
 
         // act
         boolean result = controller.addItemToLibrary(_itemDouble, _userDouble);

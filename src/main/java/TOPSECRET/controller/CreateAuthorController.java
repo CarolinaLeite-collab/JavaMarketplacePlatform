@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.Author;
 
 /**
@@ -15,7 +16,7 @@ public class CreateAuthorController {
 
     private IAuthorRepo _iAuthorRepo;
 
-    public CreateAuthorController(IAuthorRepo ar) {
+    public CreateAuthorController(IAuthorRepo ar, User user) {
         _iAuthorRepo = ar;
     }
 
@@ -24,6 +25,4 @@ public class CreateAuthorController {
         return _iAuthorRepo.createAuthor(authorName.trim());
 
     }
-
-
 }
