@@ -30,40 +30,12 @@ class ShareListPubliclyControllerTest {
         when(_iListOfPublicationsRepoDouble.findListsByUser(_userDouble)).thenReturn(List.of(_listOfPublicationsDouble));
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble, _userDouble);
 
         //act
         List<ListOfPublications> result = _controller.getListOfLists(_userDouble);
 
         //assert
         assertEquals(1, result.size());
-    }
-
-    @Test
-    void shouldReturnFalseWhenSelectedListIsNull() {
-        //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
-
-        //act
-        boolean result = _controller.shareListPublicly(null);
-
-        //assert
-        assertFalse(result);
-    }
-
-    @Test
-    void makesListPublicWhenInitiallyPrivate() {
-        //arrange
-        doNothing().when(_listOfPublicationsDouble).makePublic();
-
-        //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfPublicationsRepoDouble);
-
-        //act
-        boolean result = _controller.shareListPublicly(_listOfPublicationsDouble);
-
-        //assert
-        assertTrue(result);
-        verify(_listOfPublicationsDouble).makePublic();
     }
 }

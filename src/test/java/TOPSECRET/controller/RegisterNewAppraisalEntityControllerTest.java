@@ -22,10 +22,12 @@ class RegisterNewAppraisalEntityControllerTest {
     private List<PublicationType> _publicationTypes;
     private PublicationType _publicationTypeDouble;
     private IAppraisalEntityRepo _iAppraisalEntityRepoDouble;
+    private User _userDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException{
         _nameDouble = mock(Name.class);
+        _userDouble = mock(User.class);
 
         _genreDouble = mock(Genre.class);
         _genres = new ArrayList<>();
@@ -52,7 +54,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
 
         assertNotNull(controller);
     }
@@ -61,7 +63,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // act
         List types = controller.getPublicationTypes();
@@ -75,7 +77,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetGenresFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // act
         List genres = controller.getGenres();
@@ -89,7 +91,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldSuccessfullyCallAppraisalEntityCreationMethod() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // act
         AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);

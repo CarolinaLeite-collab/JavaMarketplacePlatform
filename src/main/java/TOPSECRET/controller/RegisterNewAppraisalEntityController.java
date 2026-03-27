@@ -22,7 +22,7 @@ public class RegisterNewAppraisalEntityController {
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo){
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo, User user) {
 
         _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
