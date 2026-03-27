@@ -22,48 +22,27 @@ public class PublicationSaleAuctionController {
     private final Library _library;
 
     public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, User user) {
-        if (iLibraryRepo == null || iAuctionRepo == null || library == null) {
-            throw new NullPointerException("Repositories and factories are required");
-        }
+
         _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;
         _library = library;
 
     }
 
-    // US016 Controller Step 1: getLibraryItemList(user)
    public List<Item> getLibraryItemsList(User user) {
-        if (user == null) {
-            throw new IllegalArgumentException("User required");
-        }
+
         Library userLibrary = _iLibraryRepo.findLibraryByUser(user);
+
         List<Item> items = userLibrary.getItemsInLibrary();
-        return List.copyOf(items); //This is an immutable list
+        return List.copyOf(items);
    }
 
-
-//    }
-
-    // US016 Controller Step 2: putItemOnAuction
-    // returns true if publication successfully put on sale in auction
-    public Auction putItemOnAuction(Item item, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) throws IllegalArgumentException {
-        if (item == null || startPrice == null || startDate== null || endDate == null) {
-            return null;
-        }
-        if (endDate.isBefore(startDate)) {
-            return null;
-        }
+    public Auction putItemOnAuction(Item item, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         Item itemForAuction = _library.getItem(item);
 
-        try {
-            Auction newAuction = _iAuctionRepo.createAuction(itemForAuction, startPrice, outrightPrice, startDate, endDate);
-            itemForAuction.setAuction(newAuction);
-            return newAuction;
-        }
-        catch (IllegalArgumentException ex) {
-            return null;
-        }
+        Auction newAuction = _iAuctionRepo.createAuction(itemForAuction, startPrice, outrightPrice, startDate, endDate);
+        itemForAuction.setAuction(newAuction);
+        return newAuction;
     }
-
 }

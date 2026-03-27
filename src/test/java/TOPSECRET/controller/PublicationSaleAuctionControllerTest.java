@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.valueobject.Currency;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,25 +43,6 @@ class PublicationSaleAuctionControllerTest {
 
         // Arrange / Act / Assert
         assertDoesNotThrow(() -> new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _userLibraryDouble, _userDouble));
-    }
-
-    @Test
-    void testConstructorWithNullRepos() {
-        // Arrange / Act / Assert
-        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(null, _iAuctionRepoDouble, _userLibraryDouble, _userDouble));
-        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(_iLibraryRepoDouble, null, _userLibraryDouble, _userDouble));
-        assertThrows(NullPointerException.class, () -> new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, null, _userDouble));
-    }
-
-    @Test
-    void testGetLibraryPublicationListNullUser() {
-
-        // Arrange & SUT
-
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _userLibraryDouble, _userDouble);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> controller.getLibraryItemsList(null), "User required");
     }
 
     @Test
@@ -111,50 +91,6 @@ class PublicationSaleAuctionControllerTest {
 
         //Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(_itemDouble));
-    }
-
-    @Test
-    void testPutItemOnAuctionWithNullArguments() throws InstantiationException{
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _userLibraryDouble, _userDouble);
-
-        // Act / Assert
-        assertNull(controller.putItemOnAuction(null, new Price(2, Currency.EUR), new Price(10, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
-        assertNull(controller.putItemOnAuction(_itemDouble,null, new Price(2, Currency.EUR), ZonedDateTime.now(), ZonedDateTime.now().plusDays(1)));
-        assertNull(controller.putItemOnAuction(_itemDouble, new Price(2, Currency.EUR), new Price(10, Currency.EUR), null, ZonedDateTime.now()));
-        assertNull(controller.putItemOnAuction(_itemDouble, new Price(2, Currency.EUR), new Price(10, Currency.EUR), ZonedDateTime.now(), null));
-    }
-
-
-    @Test
-    void testPutPublicationOnAuctionWithInvalidDates() throws InstantiationException{
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _userLibraryDouble, _userDouble);
-
-        // Act & Assert
-        assertNull(controller.putItemOnAuction(_itemDouble, new Price(10, Currency.EUR), new Price(15, Currency.EUR), ZonedDateTime.now().plusDays(1), ZonedDateTime.now().minusDays(1)));
-    }
-    @Test
-    void shouldReturnNullWhenAuctionRepoThrowsIllegalArgumentException() throws InstantiationException {
-        //arrange
-        Price startPrice = mock(Price.class);
-        Price outrightPrice = mock(Price.class);
-
-        ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
-
-        when(_libraryDouble2.getItem(_itemDouble)).thenReturn(_itemDouble);
-        when(_iAuctionRepoDouble.createAuction(_itemDouble, startPrice, outrightPrice, startDate, endDate))
-                .thenThrow(new IllegalArgumentException("Invalid auction parameters"));
-
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _libraryDouble2, _userDouble);
-
-        //act
-        Auction result = controller.putItemOnAuction(_itemDouble, startPrice, outrightPrice, startDate, endDate);
-
-        //assert
-        assertNull(result);
     }
 
     @Test

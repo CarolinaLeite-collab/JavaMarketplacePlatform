@@ -20,7 +20,7 @@ import java.util.List;
 public class ListOfPublicationsInMyLibraryController {
     private final ILibraryRepo _iLibraryRepo;
 
-    public ListOfPublicationsInMyLibraryController(ILibraryRepo libraryRepo){
+    public ListOfPublicationsInMyLibraryController(ILibraryRepo libraryRepo, User user){
         _iLibraryRepo = libraryRepo;
     }
 
