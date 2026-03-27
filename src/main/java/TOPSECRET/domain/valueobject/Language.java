@@ -9,13 +9,13 @@ import java.util.Objects;
  * Represents a language with support for internationalization.
  * Immutable class following best practices for value objects.
  */
+
 public class Language implements ValueObject {
-    private final String _code;        // ISO 639-1 code (e.g., "en", "pt")
-    private final String _name;        // Language name in English
-    private final String _nativeName;  // Language name in its own language
+    private final String _code;
+    private final String _name;
+    private final String _nativeName;
     private final Locale _locale;
 
-    // Private constructor to enforce use of factory methods
     private Language(String code, String name, String nativeName) {
         if (code == null || code.trim().isEmpty()) {
             throw new IllegalArgumentException("Language code cannot be null or empty");
@@ -30,7 +30,6 @@ public class Language implements ValueObject {
         _locale = new Locale(_code);
     }
 
-    // Factory method - recommended approach
     public static Language of(String code, String name, String nativeName) {
         return new Language(code, name, nativeName);
     }
@@ -39,7 +38,6 @@ public class Language implements ValueObject {
         return new Language(code, name, name);
     }
 
-    // Common language constants
     public static final Language ENGLISH = Language.of("en", "English");
     public static final Language PORTUGUESE = Language.of("pt", "Portuguese", "Português");
     public static final Language SPANISH = Language.of("es", "Spanish", "Español");
@@ -49,7 +47,7 @@ public class Language implements ValueObject {
     public static final Language CHINESE = Language.of("zh", "Chinese", "中文");
     public static final Language JAPANESE = Language.of("ja", "Japanese", "日本語");
 
-    // Getters
+
     public String getCode() {
         return _code;
     }
@@ -66,12 +64,11 @@ public class Language implements ValueObject {
         return _locale;
     }
 
-    // Check if this language matches a given code
+
     public boolean hasCode(String code) {
         return this._code.equalsIgnoreCase(code);
     }
 
-    // Get display name based on target language
     public String getDisplayName(Language targetLanguage) {
         return _locale.getDisplayLanguage(targetLanguage.getLocale());
     }
@@ -95,11 +92,9 @@ public class Language implements ValueObject {
                 _code, _name, _nativeName);
     }
 
-    // Optional: Parse from string (useful for configuration)
     public static Language fromCode(String code) {
         String normalized = code.toLowerCase().trim();
 
-        // Check common languages first
         switch (normalized) {
             case "en": return ENGLISH;
             case "pt": return PORTUGUESE;

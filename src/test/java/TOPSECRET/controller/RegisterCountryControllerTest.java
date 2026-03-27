@@ -56,3 +56,4 @@ class RegisterCountryControllerTest {
         assertEquals("User is not authorized to register countries", exception.getMessage());
     }
 }
+

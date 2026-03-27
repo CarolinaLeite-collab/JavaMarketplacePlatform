@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ICountryRepo {
 
-    Country registerCountry(String countryName) throws InstantiationException;
+    Country registerCountry(String countryName);
 
     List<Country> getAllCountries();
 
