@@ -18,17 +18,16 @@ import TOPSECRET.domain.User;
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo, User admin) {
-
-        if (!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not authorized to register countries");
-        }
+    public RegisterCountryController(ICountryRepo iCountryRepo) {
 
         _iCountryRepo = iCountryRepo;
     }
 
-    public Country registerCountry(String countryName) {
+    public Country registerCountry(User user,String countryName) {
 
+        if (!user.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register countries");
+        }
         return _iCountryRepo.registerCountry(countryName);
     }
 }

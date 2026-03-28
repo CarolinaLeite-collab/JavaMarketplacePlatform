@@ -24,9 +24,8 @@ class RegisterCountryControllerTest {
     @Test
     void constructsControllerSuccessfully() {
         //Act
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _adminDouble);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble);
     }
 
     @Test
@@ -37,9 +36,9 @@ class RegisterCountryControllerTest {
 
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _adminDouble);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble);
         //Act
-        Country country = controller.registerCountry("Portugal");
+        Country country = controller.registerCountry(_adminDouble,"Portugal");
         // Assert
         assertNotNull(country);
     }
@@ -48,9 +47,9 @@ class RegisterCountryControllerTest {
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() {
         //Arrange
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble);
         //Act
-        SecurityException exception = assertThrows(SecurityException.class, () -> new RegisterCountryController(_iCountryRepoDouble, _adminDouble));
+        SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerCountry(_adminDouble, "Portugal"));
 
         //Assert
         assertEquals("User is not authorized to register countries", exception.getMessage());
