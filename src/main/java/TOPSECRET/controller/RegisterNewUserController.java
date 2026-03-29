@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IUserRepo;
+import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 
 /**
@@ -11,12 +12,14 @@ public class RegisterNewUserController {
 
     private final IUserRepo _iUserRepo;
 
-    public RegisterNewUserController(IUserRepo userRepo, User admin) {
+    public RegisterNewUserController(IUserRepo userRepo) {
         _iUserRepo = userRepo;
     }
 
-    public User registerNewUser(String name, String email) {
-
+    public User registerNewUser(User user, String name, String email) {
+        if (!user.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register users");
+        }
         return _iUserRepo.registerNewUser(name, email);
     }
 
