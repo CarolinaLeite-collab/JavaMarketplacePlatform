@@ -22,7 +22,7 @@ public class RegisterNewAppraisalEntityController {
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo, User user) {
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo) {
 
         _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
@@ -39,9 +39,12 @@ public class RegisterNewAppraisalEntityController {
         return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){
-        AppraisalEntity appraisalEntity = _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
-        return appraisalEntity;
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre, User user){
+
+        if (!user.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register appraisal entities");
+        }
+        return _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
     }
 
 }

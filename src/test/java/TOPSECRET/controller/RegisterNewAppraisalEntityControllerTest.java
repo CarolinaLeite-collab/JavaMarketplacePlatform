@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RegisterNewAppraisalEntityControllerTest {
@@ -54,7 +53,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         assertNotNull(controller);
     }
@@ -63,7 +62,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
         List types = controller.getPublicationTypes();
@@ -77,7 +76,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetGenresFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
         List genres = controller.getGenres();
@@ -88,16 +87,37 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
-    void shouldSuccessfullyCallAppraisalEntityCreationMethod() {
+    void shouldSuccessfullyCallAppraisalEntityCreationMethodIfUserIsAdmin() {
+
+        // arrange
+        User adminDouble = mock (User.class);
+        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_iAppraisalEntityRepoDouble.registerNewAppraisalEntity(
+                _nameDouble, _publicationTypes, _genres))
+                .thenReturn(_appraisalEntityDouble);
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _userDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
-        AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+        AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres, adminDouble);
 
         // assert
         assertEquals(_appraisalEntityDouble, result);
-        verify(_iAppraisalEntityRepoDouble).registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+    }
+    @Test
+    void shouldThrowExceptionWhenUserIsNotAdmin() {
+
+        // arrange
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        // SUT
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+
+        //Act
+        SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres, _userDouble));
+
+        //Assert
+        assertEquals("User is not authorized to register appraisal entities", exception.getMessage());
     }
 }
