@@ -19,7 +19,7 @@ class PublicationTest {
     private Title _titleDouble;
     private Author _authorDouble;
     private PublishingCompany _publishingCompanyDouble;
-    private Edition _editionDouble;
+    private EditionBook _editionBookDouble;
     private Genre _genreDouble;
 
     @BeforeEach
@@ -31,13 +31,13 @@ class PublicationTest {
         _titleDouble = mock(Title.class);
         _authorDouble = mock(Author.class);
         _publishingCompanyDouble = mock(PublishingCompany.class);
-        _editionDouble = mock(Edition.class);
+        _editionBookDouble = mock(EditionBook.class);
         _genreDouble = mock(Genre.class);
 
         when(_titleDouble.getTitle()).thenReturn("Title");
         when(_authorDouble.getName()).thenReturn("Author");
         when(_publishingCompanyDouble.getName()).thenReturn("Publishing Company");
-        when(_editionDouble.getEditionNumber()).thenReturn(Integer.valueOf("1"));
+        when(_editionBookDouble.getEditionNumber()).thenReturn(Integer.valueOf("1"));
         when(_genreDouble.getGenre()).thenReturn("Genre");
         when(_publicationTypeDouble.getPublicationType()).thenReturn("BOOK");
     }
@@ -60,7 +60,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .genre(_genreDouble)
                 .build();
 
@@ -72,7 +72,7 @@ class PublicationTest {
         assertSame(_titleDouble, p.getTitle());
         assertSame(_authorDouble, p.getAuthor());
         assertSame(_publishingCompanyDouble, p.getPublisher());
-        assertSame(_editionDouble, p.getEdition());
+        assertSame(_editionBookDouble, p.getEdition());
         assertSame(_genreDouble, p.getGenre());
     }
 
@@ -141,7 +141,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .genre(_genreDouble)
                 .build();
         //Act
@@ -164,7 +164,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .genre(_genreDouble)
                 .build();
 
@@ -182,7 +182,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .genre(_genreDouble)
                 .build();
 
@@ -747,7 +747,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble) // same instance passed to isByAuthor
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .build();
 
         // Act
@@ -774,7 +774,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .build();
 
         // Act
@@ -799,7 +799,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .genre(_genreDouble) // same instance passed to isByGenre
                 .build();
 
@@ -827,7 +827,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .build();
 
         // Act
@@ -853,7 +853,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble) // same instance passed to isByAuthor
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .build();
 
         // Act
@@ -880,7 +880,7 @@ class PublicationTest {
                 .title(_titleDouble)
                 .author(_authorDouble)
                 .publisher(_publishingCompanyDouble)
-                .edition(_editionDouble)
+                .edition(_editionBookDouble)
                 .build();
 
         // Act

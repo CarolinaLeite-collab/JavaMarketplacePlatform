@@ -13,7 +13,7 @@ import java.time.LocalDate;
  * </p>
  */
 
-public class Edition {
+public class EditionBook {
     private final ISSN _issn;
     private final ISBN _isbn;
     private final NumberOfPages _numberOfPages;
@@ -26,8 +26,8 @@ public class Edition {
     private final Language _language;
 
     // Constructor for Books
-    public Edition (ISBN isbn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                    Description description, Dimension dimension, Weight weight, Language language) {
+    public EditionBook(ISBN isbn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
+                       Description description, Dimension dimension, Weight weight, Language language) {
 
         _issn = null;
         _isbn = isbn;
@@ -37,7 +37,7 @@ public class Edition {
             throw new IllegalArgumentException("A Book with ISBN is required!");
 
         if (editionNumber == null || editionNumber <= 0)
-            throw new IllegalArgumentException("Edition number needs to be positive");
+            throw new IllegalArgumentException("EditionBook number needs to be positive");
 
         _numberOfPages = numberOfPages;
         _editionNumber = editionNumber;
@@ -50,8 +50,8 @@ public class Edition {
     }
 
     // Constructor for Magazine
-    public Edition (ISSN issn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                    Description description, Dimension dimension, Weight weight ,Language language) {
+    public EditionBook(ISSN issn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
+                       Description description, Dimension dimension, Weight weight , Language language) {
 
         _isbn = null;
         _issn = issn;
@@ -61,7 +61,7 @@ public class Edition {
             throw new IllegalArgumentException("A magazine ISSN is required!");
 
         if (editionNumber == null || editionNumber <= 0)
-            throw new IllegalArgumentException("Edition number needs to be positive");
+            throw new IllegalArgumentException("EditionBook number needs to be positive");
 
 
         _numberOfPages = numberOfPages;
@@ -75,14 +75,14 @@ public class Edition {
     }
 
     // Constructor for Books or Magazines without ISBN or ISSN
-    public Edition (NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                    Description description, Dimension dimension, Weight weight ,Language language) {
+    public EditionBook(NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
+                       Description description, Dimension dimension, Weight weight , Language language) {
 
         _isbn = null;
         _issn = null;
 
         if (editionNumber != null && editionNumber <= 0)
-            throw new IllegalArgumentException("Edition number needs to be positive");
+            throw new IllegalArgumentException("EditionBook number needs to be positive");
 
 
         _numberOfPages = numberOfPages;

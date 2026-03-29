@@ -19,7 +19,7 @@ public class PublicationFactory {
             Title title,
             Author author,
             PublishingCompany publisher,
-            Edition edition,
+            EditionBook editionBook,
             Genre genre) {
 
         return Publication.builder()
@@ -29,7 +29,7 @@ public class PublicationFactory {
                 .title(title)
                 .author(author)
                 .publisher(publisher)
-                .edition(edition)
+                .edition(editionBook)
                 .genre(genre)
                 .build();
     }

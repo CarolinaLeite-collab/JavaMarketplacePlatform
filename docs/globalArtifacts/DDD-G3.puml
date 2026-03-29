@@ -161,7 +161,7 @@ Package "DOMAIN" {
 
 '=== Correlations ==='
 
-'--- Edition ---'
+'--- EditionBook ---'
 Edition "*" --> "1" PublishingCompanyId : has
 Edition "*" -> "1" PublicationId : has
 Edition "1" --> "1" EditionId : has

@@ -21,7 +21,7 @@ class PublicationFactoryTest {
     private Title _titleDouble;
     private Author _authorDouble;
     private PublishingCompany _publishingCompanyDouble;
-    private Edition _editionDouble;
+    private EditionBook _editionBookDouble;
     private Genre _genreDouble;
 
     @BeforeEach
@@ -34,7 +34,7 @@ class PublicationFactoryTest {
         _titleDouble = mock(Title.class);
         _authorDouble = mock(Author.class);
         _publishingCompanyDouble = mock(PublishingCompany.class);
-        _editionDouble = mock(Edition.class);
+        _editionBookDouble = mock(EditionBook.class);
         _genreDouble = mock(Genre.class);
 
         when(_typeDouble.getPublicationType()).thenReturn("BOOK");
@@ -56,7 +56,7 @@ class PublicationFactoryTest {
                 _titleDouble,
                 _authorDouble,
                 _publishingCompanyDouble,
-                _editionDouble,
+                _editionBookDouble,
                 _genreDouble
         );
 
@@ -74,7 +74,7 @@ class PublicationFactoryTest {
                 _titleDouble,
                 _authorDouble,
                 _publishingCompanyDouble,
-                _editionDouble,
+                _editionBookDouble,
                 _genreDouble
         );
 
@@ -85,7 +85,7 @@ class PublicationFactoryTest {
         assertSame(_titleDouble, p.getTitle());
         assertSame(_authorDouble, p.getAuthor());
         assertSame(_publishingCompanyDouble, p.getPublisher());
-        assertSame(_editionDouble, p.getEdition());
+        assertSame(_editionBookDouble, p.getEdition());
         assertSame(_genreDouble, p.getGenre());
     }
 
@@ -101,7 +101,7 @@ class PublicationFactoryTest {
                 _titleDouble,
                 _authorDouble,
                 _publishingCompanyDouble,
-                _editionDouble,
+                _editionBookDouble,
                 _genreDouble
         );
 

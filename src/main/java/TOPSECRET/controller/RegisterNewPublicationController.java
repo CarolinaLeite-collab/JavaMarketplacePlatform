@@ -30,7 +30,7 @@ public class RegisterNewPublicationController {
                                            Title title,
                                            Author author,
                                            PublishingCompany publisher,
-                                           Edition edition,
+                                           EditionBook editionBook,
                                            Genre genre) {
 
         return _iPublicationRepo.addPublication(
@@ -40,7 +40,7 @@ public class RegisterNewPublicationController {
                 title,
                 author,
                 publisher,
-                edition,
+                editionBook,
                 genre
         );
     }

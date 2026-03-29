@@ -33,10 +33,10 @@ public class MemoPublicationRepo implements IPublicationRepo {
                            Title title,
                            Author author,
                            PublishingCompany publisher,
-                           Edition edition,
+                           EditionBook editionBook,
                            Genre genre) {
 
-        Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, edition, genre);
+        Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, editionBook, genre);
 
         if (_publications.contains(newPublication)) {
             throw new IllegalArgumentException("Publication already exists in the repository");

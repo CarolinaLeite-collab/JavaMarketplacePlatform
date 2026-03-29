@@ -52,7 +52,7 @@ package AppraisalEntity {}
 
 '=== Correlations ==='
 
-'--- Edition ---'
+'--- EditionBook ---'
 Edition "*" --- "1" PublishingCompany
 Edition "*" --- "1" Publication
 Edition "1" --- "*" Item

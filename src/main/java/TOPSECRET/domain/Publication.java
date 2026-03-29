@@ -29,7 +29,7 @@ public class Publication {
     private final Title _title;
     private final Author _author;
     private final PublishingCompany _publisher;
-    private final Edition _edition;
+    private final EditionBook _editionBook;
     private final Genre _genre;
 
     private Publication(Builder b) {
@@ -39,7 +39,7 @@ public class Publication {
         this._title = b._title;
         this._author = b._author;
         this._publisher = b._publisher;
-        this._edition = b._edition;
+        this._editionBook = b._editionBook;
         this._genre = b._genre;
     }
 
@@ -56,7 +56,7 @@ public class Publication {
         private Title _title;
         private Author _author;
         private PublishingCompany _publisher;
-        private Edition _edition;
+        private EditionBook _editionBook;
         private Genre _genre;
 
 
@@ -66,7 +66,7 @@ public class Publication {
         public Builder title(Title t) { this._title = t; return this; }
         public Builder author(Author a) { this._author = a; return this; }
         public Builder publisher(PublishingCompany p) { this._publisher = p; return this; }
-        public Builder edition(Edition e) { this._edition = e; return this; }
+        public Builder edition(EditionBook e) { this._editionBook = e; return this; }
         public Builder genre(Genre g) { this._genre = g; return this; }
 
         public Publication build() {
@@ -170,7 +170,7 @@ public class Publication {
 
     public PublishingCompany getPublisher() { return _publisher; }
 
-    public Edition getEdition() { return _edition; }
+    public EditionBook getEdition() { return _editionBook; }
 
     public Genre getGenre() { return _genre; }
 }

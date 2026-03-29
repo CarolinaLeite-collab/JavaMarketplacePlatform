@@ -25,12 +25,12 @@ class RegisterNewPublicationControllerTest {
         Title _titleDouble = mock(Title.class);
         Author _authorDouble = mock(Author.class);
         PublishingCompany _publisherDouble = mock(PublishingCompany.class);
-        Edition _editionDouble = mock(Edition.class);
+        EditionBook _editionBookDouble = mock(EditionBook.class);
         Genre _genreDouble = mock(Genre.class);
         Publication expected = mock(Publication.class);
         User _userDouble = mock(User.class);
 
-        when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble))
                 .thenReturn(expected);
 
         //SUT
@@ -38,7 +38,7 @@ class RegisterNewPublicationControllerTest {
 
         //act
         Publication result = controller.registerPublication(
-                _typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble
+                _typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble
         );
 
         //assert
@@ -66,7 +66,7 @@ class RegisterNewPublicationControllerTest {
                         mock(Title.class),
                         mock(Author.class),
                         mock(PublishingCompany.class),
-                        mock(Edition.class),
+                        mock(EditionBook.class),
                         mock(Genre.class)
                 )
         );

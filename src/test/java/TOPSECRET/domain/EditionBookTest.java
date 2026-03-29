@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class EditionTest {
+class EditionBookTest {
 
     private final NumberOfPages _numberOfPagesDouble = mock(NumberOfPages.class);
     private final LocalDate _publicationDate = LocalDate.of(2001, 4, 23);
@@ -27,19 +27,19 @@ class EditionTest {
         ISBN isbnDouble = mock(ISBN.class);
 
         // Act
-        Edition edition = new Edition(isbnDouble, _numberOfPagesDouble, 1, _publicationDate,
+        EditionBook editionBook = new EditionBook(isbnDouble, _numberOfPagesDouble, 1, _publicationDate,
                 _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
 
         // Assert
-        assertNotNull(edition.getIsbn());
-        assertNull(edition.getIssn());
+        assertNotNull(editionBook.getIsbn());
+        assertNull(editionBook.getIssn());
     }
 
     @Test
     void constructorShouldThrowWhenIsbnIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition((ISBN) null, _numberOfPagesDouble, 1, _publicationDate,
+                () -> new EditionBook((ISBN) null, _numberOfPagesDouble, 1, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
 
     }
@@ -51,7 +51,7 @@ class EditionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(isbnDouble, _numberOfPagesDouble, null, _publicationDate,
+                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, null, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -62,7 +62,7 @@ class EditionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(isbnDouble, _numberOfPagesDouble, 0, _publicationDate,
+                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, 0, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -73,7 +73,7 @@ class EditionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(isbnDouble, _numberOfPagesDouble, -1, _publicationDate,
+                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, -1, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -83,19 +83,19 @@ class EditionTest {
         ISSN issnDouble = mock(ISSN.class);
 
         // Act
-        Edition edition = new Edition(issnDouble, _numberOfPagesDouble, 1, _publicationDate,
+        EditionBook editionBook = new EditionBook(issnDouble, _numberOfPagesDouble, 1, _publicationDate,
                 _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
 
         // Assert
-        assertNotNull(edition.getIssn());
-        assertNull(edition.getIsbn());
+        assertNotNull(editionBook.getIssn());
+        assertNull(editionBook.getIsbn());
     }
 
     @Test
     void constructorShouldThrowWhenIssnIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition((ISSN) null, _numberOfPagesDouble, 1, _publicationDate,
+                () -> new EditionBook((ISSN) null, _numberOfPagesDouble, 1, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -106,7 +106,7 @@ class EditionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(issnDouble, _numberOfPagesDouble, 0, _publicationDate,
+                () -> new EditionBook(issnDouble, _numberOfPagesDouble, 0, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -117,39 +117,39 @@ class EditionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(issnDouble, _numberOfPagesDouble, -1, _publicationDate,
+                () -> new EditionBook(issnDouble, _numberOfPagesDouble, -1, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
     @Test
     void constructorShouldBuildEditionWithoutIdentifier() {
         // Act
-        Edition edition = new Edition(_numberOfPagesDouble, null, _publicationDate,
+        EditionBook editionBook = new EditionBook(_numberOfPagesDouble, null, _publicationDate,
                 _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
 
         // Assert
-        assertNull(edition.getIsbn());
-        assertNull(edition.getIssn());
-        assertNull(edition.getEditionNumber());
+        assertNull(editionBook.getIsbn());
+        assertNull(editionBook.getIssn());
+        assertNull(editionBook.getEditionNumber());
     }
 
     @Test
     void constructorShouldBuildEditionWithoutIdentifierWithEditionNumber() {
         // Act
-        Edition edition = new Edition(_numberOfPagesDouble, 1, _publicationDate,
+        EditionBook editionBook = new EditionBook(_numberOfPagesDouble, 1, _publicationDate,
                 _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
 
         // Assert
-        assertNull(edition.getIsbn());
-        assertNull(edition.getIssn());
-        assertEquals(1, edition.getEditionNumber());
+        assertNull(editionBook.getIsbn());
+        assertNull(editionBook.getIssn());
+        assertEquals(1, editionBook.getEditionNumber());
     }
 
     @Test
     void constructorShouldThrowWhenEditionNumberIsNegativeWithoutIdentifier() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(_numberOfPagesDouble, -1, _publicationDate,
+                () -> new EditionBook(_numberOfPagesDouble, -1, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -157,7 +157,7 @@ class EditionTest {
     void constructorShouldThrowWhenEditionNumberIsZeroWithoutIdentifier() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Edition(_numberOfPagesDouble, 0, _publicationDate,
+                () -> new EditionBook(_numberOfPagesDouble, 0, _publicationDate,
                         _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
     }
 
@@ -167,18 +167,18 @@ class EditionTest {
         ISSN issnDouble = mock(ISSN.class);
 
         // Act
-        Edition edition = new Edition(issnDouble, _numberOfPagesDouble, 3, _publicationDate,
+        EditionBook editionBook = new EditionBook(issnDouble, _numberOfPagesDouble, 3, _publicationDate,
                 _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
 
         // Assert
-        assertEquals(3, edition.getEditionNumber());
-        assertEquals(_numberOfPagesDouble, edition.getNumberOfPages());
-        assertEquals(_publicationDate, edition.getPublicationDate());
-        assertEquals(_binding, edition.getBinding());
-        assertEquals(_descriptionDouble, edition.getDescription());
-        assertEquals(_dimensionDouble, edition.getDimension());
-        assertEquals(_weightDouble, edition.getWeight());
-        assertEquals(_languageDouble, edition.getLanguage());
+        assertEquals(3, editionBook.getEditionNumber());
+        assertEquals(_numberOfPagesDouble, editionBook.getNumberOfPages());
+        assertEquals(_publicationDate, editionBook.getPublicationDate());
+        assertEquals(_binding, editionBook.getBinding());
+        assertEquals(_descriptionDouble, editionBook.getDescription());
+        assertEquals(_dimensionDouble, editionBook.getDimension());
+        assertEquals(_weightDouble, editionBook.getWeight());
+        assertEquals(_languageDouble, editionBook.getLanguage());
     }
 }
 

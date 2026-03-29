@@ -24,7 +24,7 @@ class MemoPublicationRepoTest {
     private Title _titleDouble;
     private Author _authorDouble;
     private PublishingCompany _publisherDouble;
-    private Edition _editionDouble;
+    private EditionBook _editionBookDouble;
     private Genre _genreDouble;
 
     @BeforeEach
@@ -36,7 +36,7 @@ class MemoPublicationRepoTest {
         _titleDouble = mock(Title.class);
         _authorDouble = mock(Author.class);
         _publisherDouble = mock(PublishingCompany.class);
-        _editionDouble = mock(Edition.class);
+        _editionBookDouble = mock(EditionBook.class);
         _genreDouble = mock(Genre.class);
     }
 
@@ -45,14 +45,14 @@ class MemoPublicationRepoTest {
         //Arrange
         Publication created = mock(Publication.class);
 
-        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble))
                 .thenReturn(created);
 
         //SUT
         MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         //Act
-        Publication result = memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        Publication result = memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
 
         //Assert
         assertSame(created, result);
@@ -63,18 +63,18 @@ class MemoPublicationRepoTest {
         //Arrange
         Publication _publicationDouble = mock(Publication.class);
 
-        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble))
                 .thenReturn(_publicationDouble);
 
         //SUT
         MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
-        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
 
         //Act + Assert
         // second call returns same instance → duplicate
         assertThrows(IllegalArgumentException.class, () ->
-                memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble)
+                memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble)
         );
     }
 
@@ -84,15 +84,15 @@ class MemoPublicationRepoTest {
         Publication _publicationDouble = mock(Publication.class);
         Publication _publicationDouble2 = mock(Publication.class);
 
-        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble))
+        when(_publicationFactoryDouble.createPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble))
                 .thenReturn(_publicationDouble)
                 .thenReturn(_publicationDouble2);
 
         //SUT
         MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
-        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
-        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
+        memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
 
         //Act
         Publication result = memoPublicationRepo.getPublication(_publicationDouble2);
@@ -130,9 +130,9 @@ class MemoPublicationRepoTest {
         //SUT
         MemoPublicationRepo _memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
-        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionDouble, _genreDouble);
+        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
+        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
+        _memoPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble);
 
         List<Publication> existing = List.of(_publicationDouble1, _publicationDouble3);
 
