@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.ddd.DomainEntity;
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.*;
 
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import java.util.Set;
  * {@link Email} (see {@link #equals(Object)} and {@link #hashCode()}).</p>
  */
 
-public class User implements DomainEntity<UserID> {
+public class User implements AggregateRoot<UserID> {
 
     private final Name _name;
     private final Address _address;
