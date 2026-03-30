@@ -18,6 +18,10 @@ public class RegisterCityController {
     private final ICountryRepo _iCountryRepo;
 
     public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, User admin) {
+
+        if (!admin.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register countries");
+        }
         _iCityRepo = iCityRepo;
         _iCountryRepo = iCountryRepo;
     }
@@ -29,5 +33,4 @@ public class RegisterCityController {
     public City registerCity(String cityName, Country country) {
         return _iCityRepo.registerCity(cityName, country);
     }
-
 }

@@ -16,6 +16,7 @@ class RegisterCityControllerTest {
     private Country _countryDouble;
     private City _cityDouble;
     private User _adminDouble;
+    private User _nonAdminDouble;
 
     @BeforeEach
     void setUp() {
@@ -24,6 +25,10 @@ class RegisterCityControllerTest {
         _countryDouble = mock(Country.class);
         _cityDouble = mock(City.class);
         _adminDouble = mock(User.class);
+        _nonAdminDouble = mock(User.class);
+
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_nonAdminDouble.hasRole(Role.ADMIN)).thenReturn(false);
     }
 
     @Test
@@ -83,5 +88,15 @@ class RegisterCityControllerTest {
 
         // Act & Assert
         assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", _countryDouble));
+    }
+
+    @Test
+    void shouldAllowAdminToCreateController() {
+                assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble));
+    }
+
+    @Test
+    void shouldRejectNonAdminUser() {
+                assertThrows(SecurityException.class, () -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _nonAdminDouble));
     }
 }
