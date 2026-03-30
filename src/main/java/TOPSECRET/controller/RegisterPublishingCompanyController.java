@@ -2,6 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IPublishingCompanyRepo;
 import TOPSECRET.domain.PublishingCompany;
+import TOPSECRET.domain.Role;
+import TOPSECRET.domain.User;
 
 /**
  * Controller responsible for handling the registration of a {@link PublishingCompany}.
@@ -18,11 +20,15 @@ public class RegisterPublishingCompanyController {
 
     }
 
-    public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
+    public PublishingCompany registerPublishingCompany(User user, String publishingCompanyName) {
 
-        PublishingCompany publishingCompany = _iPublishingCompanyRepo.registerPublishingCompany(publishingCompanyName);
+        if (!user.hasRole(Role.ADMIN)) {
 
-        return publishingCompany;
+            throw new SecurityException("User is not authorized to register publishing companies");
+
+        }
+
+        return _iPublishingCompanyRepo.registerPublishingCompany(publishingCompanyName);
 
     }
 
