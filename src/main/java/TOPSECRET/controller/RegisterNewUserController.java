@@ -37,7 +37,6 @@ public class RegisterNewUserController {
 
         Name newName = new Name(name);
         User newUser = _userFactory.createUser(newName, newEmail);
-        _iUserRepo.save(newUser);
-        return newUser;
+        return _iUserRepo.save(newUser);
     }
 }

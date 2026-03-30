@@ -40,6 +40,7 @@ class RegisterNewUserControllerTest {
     void registerNewUserShouldCreateAndReturnUser() {
         when(_iUserRepoDouble.containsOfIdentity(any(UserID.class))).thenReturn(false);
         when(_userFactoryDouble.createUser(any(Name.class), any(Email.class))).thenReturn(_userDouble);
+        doReturn(_userDouble).when(_iUserRepoDouble).save(any(User.class));
 
         RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
 
