@@ -1,10 +1,9 @@
 package TOPSECRET.domain;
 
 import java.util.List;
+import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.valueobject.UserID;
 
-public interface IUserRepo {
-    boolean save(User user);
-    boolean containsOfIdentity(UserID userId);
-    List<User> getAll();
+public interface IUserRepo extends IRepository<UserID, User> {
+
 }
