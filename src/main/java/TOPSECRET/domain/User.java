@@ -28,13 +28,12 @@ public class User implements DomainEntity<UserID> {
 
     User(Name name, Address address, Email email, Phone phone) {
 
-
-        _name = name;
+        _name = Objects.requireNonNull(name, "Name is required");
         _address = address;
-        _email = email;
+        _email = Objects.requireNonNull(email, "Email is required");
         _userId = new UserID(_email);
         _phone = phone;
-        _roles.add(Role.USER); // default role
+        _roles.add(Role.USER);
     }
 
     User(Name name, Email email) {

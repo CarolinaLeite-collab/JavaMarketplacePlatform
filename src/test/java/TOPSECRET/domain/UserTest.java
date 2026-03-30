@@ -309,4 +309,14 @@ class UserTest {
         // Assert
         assertFalse(result);
     }
+
+    @Test
+    void shouldThrowWhenNameIsNull() {
+        assertThrows(NullPointerException.class, () -> new UserFactory().createUser(null, new Email("a@b.com")));
+    }
+
+    @Test
+    void shouldThrowWhenEmailIsNull() {
+        assertThrows(NullPointerException.class, () -> new UserFactory().createUser(new Name("Tiago"), null));
+    }
 }
