@@ -5,40 +5,39 @@ import TOPSECRET.domain.valueobject.UserID;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository responsible for managing {@link User} entities.
  */
-// MemoUserRepo.java
 public class MemoUserRepo implements IUserRepo {
 
     private final List<User> _users = new ArrayList<>();
 
     @Override
-    public boolean save(User user) {
+    public User save(User user) {
         if (containsOfIdentity(user.identity())) {
-            return false;
+            throw new IllegalStateException("User already exists");
         }
         _users.add(user);
-        return true;
+        return user;
+    }
+
+    @Override
+    public Iterable<User> findAll() {
+        return List.copyOf(_users);
+    }
+
+    @Override
+    public Optional<User> ofIdentity(UserID userId) {
+        return _users.stream()
+                .filter(u -> u.identity().equals(userId))
+                .findFirst();
     }
 
     @Override
     public boolean containsOfIdentity(UserID userId) {
-        return userExists(userId);
-    }
-
-    @Override
-    public List<User> getAll() {
-        return List.copyOf(_users);
-    }
-
-    private boolean userExists(UserID userId) {
-        for (User user : _users) {
-            if (user.identity().equals(userId)) {
-                return true;
-            }
-        }
-        return false;
+        return _users.stream()
+                .anyMatch(u -> u.identity().equals(userId));
     }
 }

@@ -6,12 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+// MemoUserRepoTest.java
 class MemoUserRepoTest {
 
     private User _user1Double;
@@ -31,12 +32,12 @@ class MemoUserRepoTest {
     }
 
     @Test
-    void saveShouldReturnTrueForNewUser() {
+    void saveShouldReturnUserForNewUser() {
         MemoUserRepo repo = new MemoUserRepo();
 
-        boolean result = repo.save(_user1Double);
+        User result = repo.save(_user1Double);
 
-        assertTrue(result);
+        assertSame(_user1Double, result);
     }
 
     @Test
@@ -45,19 +46,25 @@ class MemoUserRepoTest {
 
         repo.save(_user1Double);
 
-        assertEquals(1, repo.getAll().size());
+        assertEquals(1, ((List<User>) repo.findAll()).size());
     }
 
     @Test
-    void saveShouldReturnFalseForDuplicateUser() {
+    void saveShouldThrowForDuplicateUser() {
         MemoUserRepo repo = new MemoUserRepo();
         repo.save(_user1Double);
 
-        // same identity → duplicate
-        when(_user1Double.identity()).thenReturn(_userId1Double);
-        boolean result = repo.save(_user1Double);
+        assertThrows(IllegalStateException.class, () -> repo.save(_user1Double));
+    }
 
-        assertFalse(result);
+    @Test
+    void saveShouldNotAddDuplicateUser() {
+        MemoUserRepo repo = new MemoUserRepo();
+        repo.save(_user1Double);
+
+        assertThrows(IllegalStateException.class, () -> repo.save(_user1Double));
+
+        assertEquals(1, ((List<User>) repo.findAll()).size());
     }
 
     @Test
@@ -67,7 +74,7 @@ class MemoUserRepoTest {
         repo.save(_user1Double);
         repo.save(_user2Double);
 
-        assertEquals(2, repo.getAll().size());
+        assertEquals(2, ((List<User>) repo.findAll()).size());
     }
 
     @Test
@@ -75,37 +82,43 @@ class MemoUserRepoTest {
         MemoUserRepo repo = new MemoUserRepo();
         repo.save(_user1Double);
 
-        boolean result = repo.containsOfIdentity(_userId1Double);
-
-        assertTrue(result);
+        assertTrue(repo.containsOfIdentity(_userId1Double));
     }
 
     @Test
     void containsOfIdentityShouldReturnFalseIfUserDoesNotExist() {
         MemoUserRepo repo = new MemoUserRepo();
 
-        boolean result = repo.containsOfIdentity(_userId1Double);
-
-        assertFalse(result);
+        assertFalse(repo.containsOfIdentity(_userId1Double));
     }
 
     @Test
-    void getAllShouldReturnImmutableList() {
+    void findAllShouldReturnImmutableList() {
         MemoUserRepo repo = new MemoUserRepo();
         repo.save(_user1Double);
 
-        List<User> result = repo.getAll();
+        List<User> result = (List<User>) repo.findAll();
 
         assertThrows(UnsupportedOperationException.class, () -> result.add(_user2Double));
     }
 
     @Test
-    void saveShouldNotAddDuplicateUser() {
+    void ofIdentityShouldReturnUserIfExists() {
         MemoUserRepo repo = new MemoUserRepo();
         repo.save(_user1Double);
 
-        repo.save(_user1Double); // duplicado — save retorna false mas não lança exceção
+        Optional<User> result = repo.ofIdentity(_userId1Double);
 
-        assertEquals(1, repo.getAll().size());
+        assertTrue(result.isPresent());
+        assertSame(_user1Double, result.get());
+    }
+
+    @Test
+    void ofIdentityShouldReturnEmptyIfUserDoesNotExist() {
+        MemoUserRepo repo = new MemoUserRepo();
+
+        Optional<User> result = repo.ofIdentity(_userId1Double);
+
+        assertTrue(result.isEmpty());
     }
 }
