@@ -9,7 +9,7 @@ public class UserID implements DomainId {
     private final Email _email;
 
     public UserID(Email email) {
-        _email = Objects.requireNonNull(email);
+        _email = Objects.requireNonNull(email, "Email is required");
     }
 
     public Email getEmail() { return _email; }
@@ -25,4 +25,8 @@ public class UserID implements DomainId {
         return _email.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return _email.toString();
+    }
 }
