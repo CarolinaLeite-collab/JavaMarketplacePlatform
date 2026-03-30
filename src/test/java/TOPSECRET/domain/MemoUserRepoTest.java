@@ -1,104 +1,111 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
+
+import TOPSECRET.domain.valueobject.UserID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MemoUserRepoTest {
 
-    private UserFactory _userFactoryDouble;
     private User _user1Double;
     private User _user2Double;
-
+    private UserID _userId1Double;
+    private UserID _userId2Double;
 
     @BeforeEach
     void setUp() {
-        _userFactoryDouble = mock(UserFactory.class);
         _user1Double = mock(User.class);
         _user2Double = mock(User.class);
+        _userId1Double = mock(UserID.class);
+        _userId2Double = mock(UserID.class);
 
-
-        when(_userFactoryDouble.createUser(any(Name.class), any(Email.class)))
-                .thenReturn(_user1Double, _user2Double);
-
-        when(_user1Double.hasEmail(any(Email.class))).thenReturn(true);
-
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+        when(_user2Double.identity()).thenReturn(_userId2Double);
     }
 
     @Test
-    void registerNewUserShouldReturnUser() {
-        //Arrange
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
+    void saveShouldReturnTrueForNewUser() {
+        MemoUserRepo repo = new MemoUserRepo();
 
-        //Act
-        User result = repo.registerNewUser("Tiago", "tiago@example.com");
+        boolean result = repo.save(_user1Double);
 
-        //Assert
-        assertEquals(_user1Double, result);
+        assertTrue(result);
     }
 
     @Test
-    void shouldRegisterNewUserSuccessfullyAndListNotEmpty() {
-        //Arrange
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
+    void saveShouldAddUserToRepo() {
+        MemoUserRepo repo = new MemoUserRepo();
 
-        //Act
-        repo.registerNewUser("Tiago", "tiago@example.com");
+        repo.save(_user1Double);
 
-        //Assert
         assertEquals(1, repo.getAll().size());
     }
 
     @Test
-    void shouldNotAllowDuplicateUsers() {
+    void saveShouldReturnFalseForDuplicateUser() {
+        MemoUserRepo repo = new MemoUserRepo();
+        repo.save(_user1Double);
 
-        //Arrange
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
+        // same identity → duplicate
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+        boolean result = repo.save(_user1Double);
 
-        repo.registerNewUser("Tiago", "tiago@example.com");
-
-        //Act + Assert
-        assertThrows(IllegalStateException.class,
-                () -> repo.registerNewUser("Outro", "tiago@example.com"));
+        assertFalse(result);
     }
 
     @Test
-    void shouldBeAbleToRegisterMultipleUsers() {
+    void saveShouldAllowMultipleDistinctUsers() {
+        MemoUserRepo repo = new MemoUserRepo();
 
-        //Arrange
-        when(_user1Double.hasEmail(new Email("ana@example.com"))).thenReturn(false);
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
+        repo.save(_user1Double);
+        repo.save(_user2Double);
 
-        //Act
-        repo.registerNewUser("Tiago", "tiago@example.com");
-        repo.registerNewUser("Ana", "ana@example.com");
-
-        //Assert
         assertEquals(2, repo.getAll().size());
     }
 
     @Test
-    void shouldThrowCorrectMessageOnDuplicateUsers() {
-        //Arrange
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble); //SUT
+    void containsOfIdentityShouldReturnTrueIfUserExists() {
+        MemoUserRepo repo = new MemoUserRepo();
+        repo.save(_user1Double);
 
-        //Act
-        repo.registerNewUser("Tiago", "tiago@example.com");
+        boolean result = repo.containsOfIdentity(_userId1Double);
 
+        assertTrue(result);
+    }
 
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> repo.registerNewUser("Outro", "tiago@example.com")
-        );
+    @Test
+    void containsOfIdentityShouldReturnFalseIfUserDoesNotExist() {
+        MemoUserRepo repo = new MemoUserRepo();
 
-        //Assert
-        assertEquals("User already exists", exception.getMessage());
+        boolean result = repo.containsOfIdentity(_userId1Double);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void getAllShouldReturnImmutableList() {
+        MemoUserRepo repo = new MemoUserRepo();
+        repo.save(_user1Double);
+
+        List<User> result = repo.getAll();
+
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_user2Double));
+    }
+
+    @Test
+    void saveShouldNotAddDuplicateUser() {
+        MemoUserRepo repo = new MemoUserRepo();
+        repo.save(_user1Double);
+
+        repo.save(_user1Double); // duplicado — save retorna false mas não lança exceção
+
+        assertEquals(1, repo.getAll().size());
     }
 }

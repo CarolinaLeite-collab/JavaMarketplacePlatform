@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
+
+import TOPSECRET.domain.valueobject.UserID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,27 +9,23 @@ import java.util.List;
 /**
  * Repository responsible for managing {@link User} entities.
  */
-public class MemoUserRepo implements IUserRepo{
+// MemoUserRepo.java
+public class MemoUserRepo implements IUserRepo {
 
     private final List<User> _users = new ArrayList<>();
-    private final UserFactory _userFactory;
 
-    public MemoUserRepo(UserFactory userFactory) {
-        _userFactory = userFactory;
+    @Override
+    public boolean save(User user) {
+        if (containsOfIdentity(user.identity())) {
+            return false;
+        }
+        _users.add(user);
+        return true;
     }
 
     @Override
-    public User registerNewUser(String name, String email) {
-        Email newEmail = new Email(email);
-
-        if (userExists(newEmail)) {
-            throw new IllegalStateException("User already exists");
-        }
-
-        Name newName = new Name(name);
-        User newUser = _userFactory.createUser(newName, newEmail);
-        _users.add(newUser);
-        return newUser;
+    public boolean containsOfIdentity(UserID userId) {
+        return userExists(userId);
     }
 
     @Override
@@ -37,13 +33,12 @@ public class MemoUserRepo implements IUserRepo{
         return List.copyOf(_users);
     }
 
-    private boolean userExists(Email email) {
+    private boolean userExists(UserID userId) {
         for (User user : _users) {
-            if (user.hasEmail(email)) {
+            if (user.identity().equals(userId)) {
                 return true;
             }
         }
         return false;
     }
-
 }
