@@ -208,16 +208,6 @@ class ItemTest {
         assertFalse(item.isByPublication(mock(Publication.class)));
     }
 
-    @Test
-    void isByPublishingCompanyDelegatesToPublication() {
-        PublishingCompany publisher_double = mock(PublishingCompany.class);
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        item.isByPublishingCompany(publisher_double);
-
-        verify(publicationDouble).isByPublishingCompany(publisher_double);
-    }
-
     // ------------------------------------------------------------
     // Equality & HashCode
     // ------------------------------------------------------------
@@ -309,29 +299,20 @@ class ItemTest {
     }
 
     // ------------------------------
-    // Is by PublishingCompany
+    // Is by PublishingCompany - waiting for refactoring
     // ------------------------------
 
     @Test
-    void isByPublishingCompanyReturnsTrueWhenPublicationMatches() {
-        PublishingCompany pc = new PublishingCompany("Penguin");
-        Publication pub = mock(Publication.class);
-        when(pub.isByPublishingCompany(pc)).thenReturn(true);
+    void isByPublishingCompany_returnsAlwaysFalse() {
+        // Arrange
+        PublishingCompany _publisherDouble = mock(PublishingCompany.class);
+        Item item = new Item(publicationDouble, conditionDouble);
 
-        Item item = new Item(pub, conditionDouble);
+        // Act
+        boolean result = item.isByPublishingCompany(_publisherDouble); // SUT
 
-        assertTrue(item.isByPublishingCompany(pc));
-    }
-
-    @Test
-    void isByPublishingCompanyReturnsFalseWhenPublicationDoesNotMatch() {
-        PublishingCompany pc = new PublishingCompany("Penguin");
-        Publication pub = mock(Publication.class);
-        when(pub.isByPublishingCompany(pc)).thenReturn(false);
-
-        Item item = new Item(pub, conditionDouble);
-
-        assertFalse(item.isByPublishingCompany(pc));
+        // Assert
+        assertFalse(result);
     }
 
 }

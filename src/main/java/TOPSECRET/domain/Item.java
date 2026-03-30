@@ -81,9 +81,11 @@ public class Item {
 
     }
 
+    /** @deprecated filtering by publishing company moves to Edition — remove when Item references Edition */
+    @Deprecated
     public boolean isByPublishingCompany( PublishingCompany publisher) {
 
-        return _publication.isByPublishingCompany(publisher);
+        return false;
     }
 
     public boolean isByPublication(Publication publication) {

@@ -29,16 +29,9 @@ public class MemoPublicationRepo implements IPublicationRepo {
     }
 
     @Override
-    public Publication addPublication(PublicationType type,
-                           Identifier identifier,
-                           Year publicationYear,
-                           Title title,
-                           Author author,
-                           PublishingCompany publisher,
-                           EditionBook editionBook,
-                           Genre genre) {
+    public Publication addPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre) {
 
-        Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, editionBook, genre);
+        Publication newPublication = _publicationFactory.createPublication(title, author, releaseYear, publicationType, genre);
 
         if (_publications.contains(newPublication)) {
             throw new IllegalArgumentException("Publication already exists in the repository");

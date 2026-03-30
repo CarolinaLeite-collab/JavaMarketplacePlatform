@@ -199,13 +199,13 @@ class LibraryTest {
         when(_itemDouble.get_publication().getTitle()).thenReturn(mock(Title.class));
         when(_itemDouble.get_publication().getAuthor()).thenReturn(mock(Author.class));
         when(_itemDouble.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
-        when(_itemDouble.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
+//        when(_itemDouble.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
         when(_itemDouble2.get_publication()).thenReturn(mock(Publication.class));
         when(_itemDouble2.get_publication().getTitle()).thenReturn(mock(Title.class));
         when(_itemDouble2.get_publication().getAuthor()).thenReturn(mock(Author.class));
         when(_itemDouble2.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
-        when(_itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
+//        when(_itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
         //SUT
         Library library = new Library(_userDouble);

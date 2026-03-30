@@ -20,14 +20,14 @@ class PublicationDetailsTest {
         Author _authorDouble = mock(Author.class);
         Publication _publicationDouble = mock(Publication.class);
         PublicationType _publicationTypeDouble = mock(PublicationType.class);
-        Identifier _identifierDouble = mock(Identifier.class);
+//        Identifier _identifierDouble = mock(Identifier.class);
 
         when(_itemDouble.get_publication()).thenReturn(_publicationDouble);
 
         when(_itemDouble.get_publication().getTitle()).thenReturn(_titleDouble);
         when(_itemDouble.get_publication().getAuthor()).thenReturn(_authorDouble);
         when(_itemDouble.get_publication().getPublicationType()).thenReturn(_publicationTypeDouble);
-        when(_itemDouble.get_publication().getIdentifier()).thenReturn(_identifierDouble);
+//        when(_itemDouble.get_publication().getIdentifier()).thenReturn(_identifierDouble);
 
         // SUT
         PublicationDetails details = new PublicationDetails(_itemDouble);
@@ -37,7 +37,7 @@ class PublicationDetailsTest {
         assertEquals(_titleDouble, details.getTitle());
         assertEquals(_authorDouble, details.getAuthor());
         assertEquals(_publicationTypeDouble, details.getPublicationType());
-        assertEquals(_identifierDouble, details.get_identifier());
+//        assertEquals(_identifierDouble, details.get_identifier());
 
     }
 }

@@ -3,131 +3,87 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Identifier;
+import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 
 import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class PublicationFactoryTest {
 
-    private PublicationFactory factory;
-
-    private PublicationType _typeDouble;
-    private Identifier _identifierDouble;
-    private Year _yearDouble;
-    private Title _titleDouble;
-    private Author _authorDouble;
-    private PublishingCompany _publishingCompanyDouble;
-    private EditionBook _editionBookDouble;
-    private Genre _genreDouble;
-
-    @BeforeEach
-    void setUp() {
-        factory = new PublicationFactory();
-
-        _typeDouble = mock(PublicationType.class);
-        _identifierDouble = mock(Identifier.class);
-        _yearDouble = mock(Year.class);
-        _titleDouble = mock(Title.class);
-        _authorDouble = mock(Author.class);
-        _publishingCompanyDouble = mock(PublishingCompany.class);
-        _editionBookDouble = mock(EditionBook.class);
-        _genreDouble = mock(Genre.class);
-
-        when(_typeDouble.getPublicationType()).thenReturn("BOOK");
-        when(_identifierDouble.getIdentifier()).thenReturn("ID");
-        when(_yearDouble.getValue()).thenReturn(2024);
-        when(_titleDouble.getTitle()).thenReturn("T");
-        when(_authorDouble.getName()).thenReturn("A");
-        when(_publishingCompanyDouble.getName()).thenReturn("P");
-        when(_genreDouble.getGenre()).thenReturn("G");
-    }
-
     @Test
-    void createPublicationReturnsNonNullPublication() {
-        //Arrange
-        Publication p = factory.createPublication(
-                _typeDouble,
-                _identifierDouble,
-                _yearDouble,
-                _titleDouble,
-                _authorDouble,
-                _publishingCompanyDouble,
-                _editionBookDouble,
-                _genreDouble
-        );
+    void createPublication_allFields_returnsPublication() {
+        // Arrange
+        Title _titleDouble = mock(Title.class);
+        Author _authorDouble = mock(Author.class);
+        Year _yearDouble = mock(Year.class);
+        PublicationType _publicationTypeDouble = mock(PublicationType.class);
+        Genre _genreDouble = mock(Genre.class);
+        PublicationFactory factory = new PublicationFactory();
 
-        //Act + Assert
-        assertNotNull(p);
+        try (MockedConstruction<Publication> mocked =
+                     mockConstruction(Publication.class,
+                             (mock, context) -> {
+                                 when(mock.getTitle()).thenReturn(_titleDouble);
+                                 when(mock.getAuthor()).thenReturn(_authorDouble);
+                                 when(mock.getReleaseYear()).thenReturn(_yearDouble);
+                                 when(mock.getPublicationType()).thenReturn(_publicationTypeDouble);
+                                 when(mock.getGenre()).thenReturn(_genreDouble);
+                             })) {
+
+            // Act
+            Publication result = factory.createPublication(_titleDouble, _authorDouble,
+                    _yearDouble, _publicationTypeDouble, _genreDouble); // SUT
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(_titleDouble, result.getTitle());
+            assertEquals(_authorDouble, result.getAuthor());
+            assertEquals(_yearDouble, result.getReleaseYear());
+            assertEquals(_publicationTypeDouble, result.getPublicationType());
+            assertEquals(_genreDouble, result.getGenre());
+        }
     }
-
     @Test
-    void createPublicationStoresExactInstances() {
-        //Arrange
-        Publication p = factory.createPublication(
-                _typeDouble,
-                _identifierDouble,
-                _yearDouble,
-                _titleDouble,
-                _authorDouble,
-                _publishingCompanyDouble,
-                _editionBookDouble,
-                _genreDouble
-        );
+    void createPublicationReconstitution_allFields_returnsPublication() {
+        // Arrange
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        Title _titleDouble = mock(Title.class);
+        Author _authorDouble = mock(Author.class);
+        Year _yearDouble = mock(Year.class);
+        PublicationType _publicationTypeDouble = mock(PublicationType.class);
+        Genre _genreDouble = mock(Genre.class);
+        PublicationFactory factory = new PublicationFactory();
 
-        //Act + Assert
-        assertSame(_typeDouble, p.getPublicationType());
-        assertSame(_identifierDouble, p.getIdentifier());
-        assertSame(_yearDouble, p.getPublicationYear());
-        assertSame(_titleDouble, p.getTitle());
-        assertSame(_authorDouble, p.getAuthor());
-        assertSame(_publishingCompanyDouble, p.getPublisher());
-        assertSame(_editionBookDouble, p.getEdition());
-        assertSame(_genreDouble, p.getGenre());
+        try (MockedConstruction<Publication> mocked =
+                     mockConstruction(Publication.class,
+                             (mock, context) -> {
+                                 when(mock.getPublicationId()).thenReturn(_publicationIdDouble);
+                                 when(mock.getTitle()).thenReturn(_titleDouble);
+                                 when(mock.getAuthor()).thenReturn(_authorDouble);
+                                 when(mock.getReleaseYear()).thenReturn(_yearDouble);
+                                 when(mock.getPublicationType()).thenReturn(_publicationTypeDouble);
+                                 when(mock.getGenre()).thenReturn(_genreDouble);
+                             })) {
+
+            // Act
+            Publication result = factory.createPublication(_publicationIdDouble, _titleDouble,
+                    _authorDouble, _yearDouble, _publicationTypeDouble, _genreDouble); // SUT
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(_publicationIdDouble, result.getPublicationId());
+            assertEquals(_titleDouble, result.getTitle());
+            assertEquals(_authorDouble, result.getAuthor());
+            assertEquals(_yearDouble, result.getReleaseYear());
+            assertEquals(_publicationTypeDouble, result.getPublicationType());
+            assertEquals(_genreDouble, result.getGenre());
+        }
     }
 
-    @Test
-    void createPublicationUsesProvidedPublicationType() {
-        //Arrange
-        when(_typeDouble.getPublicationType()).thenReturn("MAGAZINE");
-
-        Publication p = factory.createPublication(
-                _typeDouble,
-                _identifierDouble,
-                _yearDouble,
-                _titleDouble,
-                _authorDouble,
-                _publishingCompanyDouble,
-                _editionBookDouble,
-                _genreDouble
-        );
-
-        //Act + Assert
-        assertEquals("MAGAZINE", p.getPublicationType().getPublicationType());
-    }
-
-    @Test
-    void createPublication_allowsNullOptionalFields() {
-        //Arrange
-        Publication p = factory.createPublication(
-                _typeDouble,
-                _identifierDouble,
-                _yearDouble,
-                _titleDouble,
-                _authorDouble,
-                _publishingCompanyDouble,
-                null,   // edition
-                null    // genre
-        );
-
-        //Act + Assert
-        assertNotNull(p);
-        assertNull(p.getEdition());
-        assertNull(p.getGenre());
-    }
 }

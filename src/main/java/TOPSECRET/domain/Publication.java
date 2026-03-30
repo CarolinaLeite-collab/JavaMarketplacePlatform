@@ -1,12 +1,13 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.edition.EditionBook;
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.Author;
-import TOPSECRET.domain.valueobject.Identifier;
+import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Represents catalog-level metadata for a publication.
@@ -23,127 +24,35 @@ import java.util.Objects;
  * </p>
  */
 
-public class Publication {
+public class Publication implements AggregateRoot<PublicationId> {
 
-    private final PublicationType _publicationType;
-    private final Identifier _identifier;
-    private final Year _publicationYear;
+    private final PublicationId _publicationId;
     private final Title _title;
     private final Author _author;
-    private final PublishingCompany _publisher;
-    private final EditionBook _editionBook;
+    private final Year _releaseYear;
+    private final PublicationType _publicationType;
     private final Genre _genre;
 
-    private Publication(Builder b) {
-        this._publicationType = b._publicationType;
-        this._identifier = b._identifier;
-        this._publicationYear = b._publicationYear;
-        this._title = b._title;
-        this._author = b._author;
-        this._publisher = b._publisher;
-        this._editionBook = b._editionBook;
-        this._genre = b._genre;
+    // Creation
+    protected Publication( Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre ){
+        _title = title;
+        _author = author;
+        _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
+        _publicationType = publicationType;
+        _genre = genre;
+        _publicationId = new PublicationId(UUID.randomUUID().toString());
     }
 
-
-    public static Builder builder() {
-        return new Builder();
+    // Reconstitution
+    protected Publication(PublicationId publicationId, Title title, Author author, Year releaseYear,
+                          PublicationType publicationType, Genre genre) {
+        _publicationId = Objects.requireNonNull(publicationId, "PublicationId is required");
+        _title = title;
+        _author = author;
+        _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
+        _publicationType = publicationType;
+        _genre = genre;
     }
-
-    public static class Builder {
-
-        private PublicationType _publicationType;
-        private Identifier _identifier;
-        private Year _publicationYear;
-        private Title _title;
-        private Author _author;
-        private PublishingCompany _publisher;
-        private EditionBook _editionBook;
-        private Genre _genre;
-
-
-        public Builder type(PublicationType t) { this._publicationType = t; return this; }
-        public Builder identifier(Identifier i) { this._identifier = i; return this; }
-        public Builder year(Year y) { this._publicationYear = y; return this; }
-        public Builder title(Title t) { this._title = t; return this; }
-        public Builder author(Author a) { this._author = a; return this; }
-        public Builder publisher(PublishingCompany p) { this._publisher = p; return this; }
-        public Builder edition(EditionBook e) { this._editionBook = e; return this; }
-        public Builder genre(Genre g) { this._genre = g; return this; }
-
-        public Publication build() {
-            validateCommonFields();
-            validateTypeSpecificFields();
-            return new Publication(this);
-        }
-
-        private void validateCommonFields() {
-            require(_publicationType, "publicationType");
-            require(_identifier, "identifier");
-            require(_publicationYear, "publicationYear");
-            require(_title, "title");
-        }
-        private void validateTypeSpecificFields() {
-            String typeName = normalizedType();
-
-            switch (typeName) {
-                case "BOOK" -> {
-                    require(_author, "author");
-                    require(_publisher, "publisher");
-                }
-                case "MAGAZINE" -> {
-                    require(_publisher, "publisher");
-                }
-            }
-        }
-
-        private String normalizedType() {    // THIS METHOD SHOULD BE PUBLICATIONTYPE'S RESPONSABILITY - CHECK LATER
-            return _publicationType.getPublicationType().trim().toUpperCase();
-        }
-
-        private static <T> void require(T value, String name) {
-            if (value == null)
-                throw new IllegalArgumentException("Missing mandatory field: " + name);
-        }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Publication other)) return false;
-
-        return switch (normalizedType()) {
-            case "BOOK" -> _equalsBook(other);
-            case "MAGAZINE" -> _equalsMagazine(other);
-            default -> _equalsDefault(other);
-        };
-    }
-
-    private String normalizedType() {
-        return _publicationType.getPublicationType().trim().toUpperCase();
-    }
-
-    private boolean _equalsBook(Publication other) {
-        return (other._publicationYear.getValue() > 1970)
-                ? Objects.equals(_identifier, other._identifier)
-                : Objects.equals(_title, other._title)
-                && Objects.equals(_publicationYear, other._publicationYear);
-    }
-
-    private boolean _equalsMagazine(Publication other) {
-        return (other._publicationYear.getValue() > 1976)
-                ? Objects.equals(_identifier, other._identifier)
-                : Objects.equals(_title, other._title)
-                && Objects.equals(_publicationYear, other._publicationYear);
-    }
-
-    private boolean _equalsDefault(Publication other) {
-        return Objects.equals(_title, other._title)
-                && Objects.equals(_publicationYear, other._publicationYear);
-    }
-
-
-
 
     public boolean isByAuthor(Author author) {
         return Objects.equals(_author, author);
@@ -153,26 +62,33 @@ public class Publication {
         return Objects.equals(_genre, genre);
     }
 
-    public boolean isByPublishingCompany(PublishingCompany publisher) {
-
-        return Objects.equals(_publisher, publisher); }
-
-
-
-
-    public PublicationType getPublicationType() { return _publicationType; }
-
-    public Identifier getIdentifier() { return _identifier; }
-
-    public Year getPublicationYear() { return _publicationYear; }
-
+    public PublicationId getPublicationId() { return _publicationId; }
     public Title getTitle() { return _title; }
-
     public Author getAuthor() { return _author; }
-
-    public PublishingCompany getPublisher() { return _publisher; }
-
-    public EditionBook getEdition() { return _editionBook; }
-
+    public Year getReleaseYear() { return _releaseYear; }
+    public PublicationType getPublicationType() { return _publicationType; }
     public Genre getGenre() { return _genre; }
+
+    @Override
+    public PublicationId identity() { return _publicationId; }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (!(object instanceof Publication other)) return false;
+        return _publicationId.equals(other._publicationId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Publication other)) return false;
+        return Objects.equals(_title, other._title)
+                && Objects.equals(_author, other._author)
+                && Objects.equals(_releaseYear, other._releaseYear);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(_title, _author, _releaseYear);
+    }
 }

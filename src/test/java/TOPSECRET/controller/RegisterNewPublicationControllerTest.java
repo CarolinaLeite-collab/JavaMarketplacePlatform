@@ -32,16 +32,14 @@ class RegisterNewPublicationControllerTest {
         Publication expected = mock(Publication.class);
         User _userDouble = mock(User.class);
 
-        when(_iPublicationRepo.addPublication(_typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble))
+        when(_iPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble))
                 .thenReturn(expected);
 
         //SUT
         RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo, _userDouble);
 
         //act
-        Publication result = controller.registerPublication(
-                _typeDouble, _identifierDouble, _yearDouble, _titleDouble, _authorDouble, _publisherDouble, _editionBookDouble, _genreDouble
-        );
+        Publication result = controller.registerPublication( _titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
 
         //assert
         assertSame(expected, result);
@@ -53,7 +51,7 @@ class RegisterNewPublicationControllerTest {
         User _userDouble = mock(User.class);
 
         IPublicationRepo iPublicationRepoDouble = mock(IPublicationRepo.class);
-        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any(), any(), any(), any(), any()))
+        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
@@ -62,13 +60,10 @@ class RegisterNewPublicationControllerTest {
         //act and assert
         assertThrows(IllegalArgumentException.class, () ->
                 controller.registerPublication(
-                        mock(PublicationType.class),
-                        mock(Identifier.class),
-                        mock(Year.class),
                         mock(Title.class),
                         mock(Author.class),
-                        mock(PublishingCompany.class),
-                        mock(EditionBook.class),
+                        mock(Year.class),
+                        mock(PublicationType.class),
                         mock(Genre.class)
                 )
         );
