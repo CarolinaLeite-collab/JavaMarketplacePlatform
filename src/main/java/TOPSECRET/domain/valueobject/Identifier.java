@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Represents a generic identifier for a publication or related entity.
@@ -7,7 +9,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public interface Identifier {
+public interface Identifier extends ValueObject {
 
     String getIdentifier();
 

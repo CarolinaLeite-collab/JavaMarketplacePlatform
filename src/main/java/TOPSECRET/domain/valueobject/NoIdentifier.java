@@ -1,4 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
 
 /**
  * Represents a placeholder identifier when no actual identifier is available.
@@ -7,7 +9,7 @@ package TOPSECRET.domain;
  * </p>
  */
 
-public class NoIdentifier implements Identifier {
+public class NoIdentifier implements Identifier, ValueObject {
     @Override
     public String getIdentifier() {
         return "";

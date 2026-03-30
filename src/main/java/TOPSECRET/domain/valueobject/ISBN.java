@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Identifier;
 
 /**
  * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
