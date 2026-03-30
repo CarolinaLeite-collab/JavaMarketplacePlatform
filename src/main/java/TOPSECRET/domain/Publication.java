@@ -10,18 +10,17 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Represents catalog-level metadata for a publication.
+ * Represents a publication in the MiteLovers domain.
  * <p>
- * Contains information such as {@link PublicationType}, {@link Identifier}, publication year,
- * title, author, publisher, edition, and genre.
- * <p>
- * Uses the Builder pattern to construct instances, enforcing mandatory fields depending on the publication type
- * (e.g., books require author and publisher, magazines require publisher).
+ * A {@code Publication} is an Aggregate Root that captures the immutable attributes
+ * of a publication: its {@link Title}, {@link Author}, release {@link Year},
+ * {@link PublicationType}, and {@link Genre}.
  * </p>
- * <p>
- * Equality of publications is determined based on identifier(ISBN or ISSN), title, and publication year,
- * with specific rules for books and magazines depending on the publication year.
- * </p>
+ *
+ * <p><b>Identity:</b> Each {@code Publication} is assigned a unique {@link PublicationId}
+ * generated at creation time. Two publications are considered equal if they share
+ * the same {@link Title}, {@link Author}, and release {@link Year}, regardless of
+ * their {@link PublicationId}.</p>
  */
 
 public class Publication implements AggregateRoot<PublicationId> {

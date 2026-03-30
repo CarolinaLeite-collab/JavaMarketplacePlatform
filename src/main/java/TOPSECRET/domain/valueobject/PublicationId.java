@@ -2,6 +2,20 @@ package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
 
+/**
+ * Represents the unique technical identifier of a {@link TOPSECRET.domain.Publication}.
+ * <p>
+ * A {@code PublicationId} wraps a {@link String} value generated from a UUID,
+ * ensuring stable identity across the system regardless of changes to the
+ * publication's business attributes.
+ * </p>
+ *
+ * <p><b>Validation:</b> The identifier cannot be null or blank.</p>
+ *
+ * <p><b>Equality:</b> Two {@code PublicationId} instances are equal if they
+ * wrap the same {@link String} value.</p>
+ */
+
 
 public class PublicationId implements DomainId {
 
