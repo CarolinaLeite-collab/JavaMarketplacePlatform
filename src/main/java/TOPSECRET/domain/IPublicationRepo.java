@@ -10,7 +10,14 @@ import java.util.List;
 
 public interface IPublicationRepo {
 
-    Publication addPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre);
+    Publication addPublication(PublicationType type,
+                   Identifier identifier,
+                   Year year,
+                   Title title,
+                   Author author,
+                   PublishingCompany publisher,
+                   EditionBook editionBook,
+                   Genre genre);
 
     List<Publication> getDifferentOf(List<Publication> existentPublications);
 

@@ -9,7 +9,7 @@ import TOPSECRET.ddd.ValueObject;
  * </p>
  */
 
-public interface Identifier extends ValueObject {
+public interface EditionId extends ValueObject {
 
     String getIdentifier();
 

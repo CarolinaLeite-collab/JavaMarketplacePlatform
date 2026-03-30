@@ -5,12 +5,12 @@ import TOPSECRET.ddd.ValueObject;
 /**
  * Represents an ISSN (International Standard Serial Number) for a publication.
  * <p>
- * Implements the {@link Identifier} interface and ensures that the ISSN follows the standard
+ * Implements the {@link EditionId} interface and ensures that the ISSN follows the standard
  * format (four digits, a hyphen, three digits, and a check digit which may be 'X').
  * </p>
  */
 
-public class ISSN implements Identifier, ValueObject {
+public class ISSN implements EditionId, ValueObject {
 
     private final String _issn;
 
