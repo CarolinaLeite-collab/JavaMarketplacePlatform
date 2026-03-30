@@ -1,5 +1,5 @@
 
-package TOPSECRET.domain;
+package TOPSECRET.domain.edition;
 
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.Test;

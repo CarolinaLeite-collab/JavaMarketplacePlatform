@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Title;
 
