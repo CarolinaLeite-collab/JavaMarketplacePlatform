@@ -12,7 +12,7 @@ import java.util.Objects;
  * if they belong to the same user and have the same name and genre.
  * </p>
  */
-public class ListOfPublications {
+public class ListOfItems {
     private User _user;
     private String _name;
     private Genre _genre;
@@ -20,7 +20,7 @@ public class ListOfPublications {
     private List<Item> _items;
 
 
-    ListOfPublications(User user, String name, Genre genre) {
+    ListOfItems(User user, String name, Genre genre) {
 
         if (name == null) {
             throw new IllegalArgumentException("List name cannot be null");
@@ -73,7 +73,7 @@ public class ListOfPublications {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ListOfPublications lop)) return false;
+        if (!(o instanceof ListOfItems lop)) return false;
         return Objects.equals(_user, lop.getUser())
                 && Objects.equals(_name, lop.getName())
                 && Objects.equals(_genre, lop.getGenre());
@@ -83,9 +83,5 @@ public class ListOfPublications {
     public int hashCode() {
         return Objects.hash(getUser(), getName(), getGenre());
     }
-
-    //    public void switchVisibility() {
-//        _isPrivate = !_isPrivate;
-//    }
 
 }
