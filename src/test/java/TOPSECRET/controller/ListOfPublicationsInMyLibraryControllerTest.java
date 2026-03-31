@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.PublicationDetails;
+import TOPSECRET.domain.ItemDetails;
 import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ListOfPublicationsInMyLibraryControllerTest {
+class ListOfItemsInMyLibraryControllerTest {
     private User _userDouble;
     private ILibraryRepo _iLibraryRepoDouble;
     private Library _myLibraryDouble;
@@ -30,9 +30,9 @@ class ListOfPublicationsInMyLibraryControllerTest {
     }
 
     @Test
-    void testListOfPublicationsInMyLibraryController(){
+    void testListOfItemsInMyLibraryController(){
         // act & SUT
-        new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
+        new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
     }
 
     @Test
@@ -40,9 +40,9 @@ class ListOfPublicationsInMyLibraryControllerTest {
         // Arrange
         when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of());
         // SUT
-        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
+        ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
         // Act
-        List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);
+        List<ItemDetails> result = controller.getListOfItemDetails(_userDouble);
         // Assert
         assertTrue(result.isEmpty());
     }
@@ -50,18 +50,18 @@ class ListOfPublicationsInMyLibraryControllerTest {
     @Test
     void shouldReturnListOfItemsInLibrary() {
         // Arrange
-        PublicationDetails publicationDetailsDouble = mock(PublicationDetails.class);
+        ItemDetails itemDetailsDouble = mock(ItemDetails.class);
 
         when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.getPublicationDetails()).thenReturn(List.of(publicationDetailsDouble));
+        when(_myLibraryDouble.getItemDetails()).thenReturn(List.of(itemDetailsDouble));
 
         // SUT
-        ListOfPublicationsInMyLibraryController controller = new ListOfPublicationsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
+        ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
 
         //Act
-        List<PublicationDetails> result = controller.getListOfPublicationDetails(_userDouble);
+        List<ItemDetails> result = controller.getListOfItemDetails(_userDouble);
 
         //Assert
-        assertEquals(List.of(publicationDetailsDouble), result);
+        assertEquals(List.of(itemDetailsDouble), result);
     }
 }

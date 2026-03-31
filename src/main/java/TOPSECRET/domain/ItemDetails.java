@@ -11,14 +11,14 @@ import TOPSECRET.domain.valueobject.Title;
  * </p>
  */
 
-public class PublicationDetails {
+public class ItemDetails {
 
     private final Title _title;
     private final Author _author;
     private final PublicationType _publicationType;
     private final Identifier _identifier;
 
-    public PublicationDetails(Item item) {
+    public ItemDetails(Item item) {
         _title = item.get_publication().getTitle();
         _author = item.get_publication().getAuthor();
         _publicationType = item.get_publication().getPublicationType();

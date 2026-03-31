@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class PublicationDetailsTest {
+class ItemDetailsTest {
 
    @Test
-    void publicationDetailsShouldExtractAllFieldsFromPublication() {
+    void ItemDetailsShouldExtractAllFieldsFromItem() {
         // Arrange
         Item _itemDouble = mock(Item.class);
         Title _titleDouble = mock(Title.class);
@@ -29,7 +29,7 @@ class PublicationDetailsTest {
         when(_itemDouble.get_publication().getIdentifier()).thenReturn(_identifierDouble);
 
         // SUT
-        PublicationDetails details = new PublicationDetails(_itemDouble);
+        ItemDetails details = new ItemDetails(_itemDouble);
 
         //Act + Assert
         assertNotNull(details);
