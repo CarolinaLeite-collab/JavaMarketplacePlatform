@@ -2,7 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.Author;
-import TOPSECRET.domain.valueobject.Identifier;
+import TOPSECRET.domain.valueobject.EditionId;
 import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
 

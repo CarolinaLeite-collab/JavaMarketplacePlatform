@@ -2,7 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.Author;
-import TOPSECRET.domain.valueobject.Identifier;
+import TOPSECRET.domain.valueobject.EditionId;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;
@@ -11,7 +11,7 @@ import java.util.List;
 public interface IPublicationRepo {
 
     Publication addPublication(PublicationType type,
-                   Identifier identifier,
+                   EditionId identifier,
                    Year year,
                    Title title,
                    Author author,
