@@ -3,7 +3,6 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.Author;
-import TOPSECRET.domain.valueobject.Identifier;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 
@@ -22,12 +21,9 @@ class RegisterNewPublicationControllerTest {
         //arrange
         IPublicationRepo _iPublicationRepo = mock(IPublicationRepo.class);
         PublicationType _typeDouble = mock(PublicationType.class);
-        Identifier _identifierDouble = mock(Identifier.class);
         Year _yearDouble = mock(Year.class);
         Title _titleDouble = mock(Title.class);
         Author _authorDouble = mock(Author.class);
-        PublishingCompany _publisherDouble = mock(PublishingCompany.class);
-        EditionBook _editionBookDouble = mock(EditionBook.class);
         Genre _genreDouble = mock(Genre.class);
         Publication expected = mock(Publication.class);
         User _userDouble = mock(User.class);
