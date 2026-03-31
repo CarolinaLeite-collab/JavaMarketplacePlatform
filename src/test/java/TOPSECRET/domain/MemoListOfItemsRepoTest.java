@@ -10,19 +10,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link MemoListOfPublicationsRepo}.
+ * Unit tests for {@link MemoListOfItemsRepo}.
  *
  * <p>The following Mockito doubles are used:
  * <ul>
- *   <li>{@link ListOfPublicationsFactory} — mocked collaborator (creation dependency)</li>
+ *   <li>{@link ListOfItemsFactory} — mocked collaborator (creation dependency)</li>
  *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
  *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
  * </ul>
  */
 
-class MemoListOfPublicationsRepoTest {
+class MemoListOfItemsRepoTest {
 
-    private ListOfPublicationsFactory _factoryDouble;
+    private ListOfItemsFactory _factoryDouble;
 
     private User _user1Double;
     private User _user2Double;
@@ -31,7 +31,7 @@ class MemoListOfPublicationsRepoTest {
 
     @BeforeEach
     void setUp() {
-        _factoryDouble = mock(ListOfPublicationsFactory.class);
+        _factoryDouble = mock(ListOfItemsFactory.class);
 
         _actionDouble = mock(Genre.class);
         _poetryDouble = mock(Genre.class);
@@ -41,26 +41,26 @@ class MemoListOfPublicationsRepoTest {
     }
 
     @Test
-    void shouldCreateEmptyListOfPublication() {
-        new MemoListOfPublicationsRepo();
+    void shouldCreateEmptyListOfItems() {
+        new MemoListOfItemsRepo();
     }
 
     @Test
-    void addListOfPublicationsSuccessfully() {
+    void addListOfItemsSuccessfully() {
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
         when(_createdDouble.getUser()).thenReturn(_user1Double);
         when(_createdDouble.getGenre()).thenReturn(_actionDouble);
         when(_createdDouble.getName()).thenReturn("My List");
         when(_createdDouble.isPrivate()).thenReturn(true);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications list = repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        ListOfItems list = repo.addListOfItems(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertAll(
@@ -69,7 +69,7 @@ class MemoListOfPublicationsRepoTest {
                 () -> assertEquals("My List", list.getName()),
                 () -> assertEquals(_actionDouble, list.getGenre()),
                 () -> assertTrue(list.isPrivate()),
-                () -> assertEquals(1, repo.getListOfListOfPublications().size())
+                () -> assertEquals(1, repo.getListOfListOfItems().size())
         );
     }
 
@@ -77,43 +77,43 @@ class MemoListOfPublicationsRepoTest {
     void cannotAddDuplicateList() {
 
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
-        ListOfPublications duplicate = repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        repo.addListOfItems(_user1Double, "My List", _actionDouble);
+        ListOfItems duplicate = repo.addListOfItems(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertNull(duplicate);
-        assertEquals(1, repo.getListOfListOfPublications().size());
+        assertEquals(1, repo.getListOfListOfItems().size());
     }
 
     @Test
     void getListReturnsCopy() {
 
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
-        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
+        repo.addListOfItems(_user1Double, "My List", _actionDouble);
 
         // Act
-        List<ListOfPublications> lists = repo.getListOfListOfPublications();
+        List<ListOfItems> lists = repo.getListOfListOfItems();
 
         // Assert
         assertAll(
                 () -> assertEquals(1, lists.size()),
                 () -> assertThrows(UnsupportedOperationException.class,
-                        () -> lists.add(new ListOfPublications(_user1Double, "Other List", _poetryDouble)))
+                        () -> lists.add(new ListOfItems(_user1Double, "Other List", _poetryDouble)))
         );
     }
 
@@ -121,39 +121,39 @@ class MemoListOfPublicationsRepoTest {
     void findPublicListsByGenreShouldReturnOnlyPublicListsOfThatGenre() {
 
         // Arrange
-        ListOfPublications _listPubDouble1 = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble1 = mock(ListOfItems.class);
         when(_listPubDouble1.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble1.getName()).thenReturn("List A");
         when(_listPubDouble1.getUser()).thenReturn(_user1Double);
         when(_listPubDouble1.isPrivate()).thenReturn(false);
 
 
-        ListOfPublications _listPubDouble2 = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble2 = mock(ListOfItems.class);
         when(_listPubDouble2.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble2.getName()).thenReturn("List B");
         when(_listPubDouble2.getUser()).thenReturn(_user2Double);
         when(_listPubDouble2.isPrivate()).thenReturn(true);
 
 
-        ListOfPublications _listPubDouble3 = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble3 = mock(ListOfItems.class);
         when(_listPubDouble3.getGenre()).thenReturn(_poetryDouble);
         when(_listPubDouble3.getName()).thenReturn("List C");
         when(_listPubDouble3.getUser()).thenReturn(_user1Double);
         when(_listPubDouble3.isPrivate()).thenReturn(false);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble1);
-        when(_factoryDouble.createListOfPublications(_user2Double, "List B", _actionDouble)).thenReturn(_listPubDouble2);
-        when(_factoryDouble.createListOfPublications(_user1Double, "List C", _poetryDouble)).thenReturn(_listPubDouble3);
+        when(_factoryDouble.createListOfItems(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble1);
+        when(_factoryDouble.createListOfItems(_user2Double, "List B", _actionDouble)).thenReturn(_listPubDouble2);
+        when(_factoryDouble.createListOfItems(_user1Double, "List C", _poetryDouble)).thenReturn(_listPubDouble3);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
-        repo.addListOfPublications(_user2Double, "List B", _actionDouble);
-        repo.addListOfPublications(_user1Double, "List C", _poetryDouble);
+        repo.addListOfItems(_user1Double, "List A", _actionDouble);
+        repo.addListOfItems(_user2Double, "List B", _actionDouble);
+        repo.addListOfItems(_user1Double, "List C", _poetryDouble);
 
-        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
+        List<ListOfItems> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
         assertAll(
@@ -169,20 +169,20 @@ class MemoListOfPublicationsRepoTest {
     void findPublicListsByGenreShouldReturnEmptyWhenNoPublicListsForThatGenre() {
 
         // Arrange
-        ListOfPublications _listPubDouble = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble = mock(ListOfItems.class);
         when(_listPubDouble.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble.getName()).thenReturn("List A");
         when(_listPubDouble.getUser()).thenReturn(_user1Double);
         when(_listPubDouble.isPrivate()).thenReturn(true);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
-        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
+        repo.addListOfItems(_user1Double, "List A", _actionDouble);
+        List<ListOfItems> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
         assertNotNull(result);
@@ -193,20 +193,20 @@ class MemoListOfPublicationsRepoTest {
     void findPublicListsByGenreShouldReturnImmutableCopy() {
 
         // Arrange
-        ListOfPublications _listPubDouble = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble = mock(ListOfItems.class);
         when(_listPubDouble.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble.getName()).thenReturn("List A");
         when(_listPubDouble.getUser()).thenReturn(_user1Double);
         when(_listPubDouble.isPrivate()).thenReturn(false);
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "List A", _actionDouble)).thenReturn(_listPubDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "List A", _actionDouble);
-        List<ListOfPublications> result = repo.findPublicListsByGenre(_actionDouble);
+        repo.addListOfItems(_user1Double, "List A", _actionDouble);
+        List<ListOfItems> result = repo.findPublicListsByGenre(_actionDouble);
 
         // Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(_listPubDouble));
@@ -216,27 +216,27 @@ class MemoListOfPublicationsRepoTest {
     void findListsByUserShouldReturnOnlyListsOfThatUser() {
 
         // Arrange
-        ListOfPublications _listPubDouble1 = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble1 = mock(ListOfItems.class);
         when(_listPubDouble1.getUser()).thenReturn(_user1Double);
         when(_listPubDouble1.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble1.getName()).thenReturn("U1 List");
 
-        ListOfPublications _listPubDouble2 = mock(ListOfPublications.class);
+        ListOfItems _listPubDouble2 = mock(ListOfItems.class);
         when(_listPubDouble2.getUser()).thenReturn(_user2Double);
         when(_listPubDouble2.getGenre()).thenReturn(_actionDouble);
         when(_listPubDouble2.getName()).thenReturn("U2 List");
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "U1 List", _actionDouble)).thenReturn(_listPubDouble1);
-        when(_factoryDouble.createListOfPublications(_user2Double, "U2 List", _actionDouble)).thenReturn(_listPubDouble2);
+        when(_factoryDouble.createListOfItems(_user1Double, "U1 List", _actionDouble)).thenReturn(_listPubDouble1);
+        when(_factoryDouble.createListOfItems(_user2Double, "U2 List", _actionDouble)).thenReturn(_listPubDouble2);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "U1 List", _actionDouble);
-        repo.addListOfPublications(_user2Double, "U2 List", _actionDouble);
+        repo.addListOfItems(_user1Double, "U1 List", _actionDouble);
+        repo.addListOfItems(_user2Double, "U2 List", _actionDouble);
 
-        List<ListOfPublications> result = repo.findListsByUser(_user1Double);
+        List<ListOfItems> result = repo.findListsByUser(_user1Double);
 
         // Assert
         assertAll(
@@ -250,19 +250,19 @@ class MemoListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreShouldReturnListWhenExists() {
 
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
         when(_createdDouble.getUser()).thenReturn(_user1Double);
         when(_createdDouble.getGenre()).thenReturn(_actionDouble);
         when(_createdDouble.getName()).thenReturn("My List");
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
-        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
+        repo.addListOfItems(_user1Double, "My List", _actionDouble);
+        ListOfItems found = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertNotNull(found);
@@ -273,19 +273,19 @@ class MemoListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreIgnoresCase() {
 
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
         when(_createdDouble.getUser()).thenReturn(_user1Double);
         when(_createdDouble.getGenre()).thenReturn(_actionDouble);
         when(_createdDouble.getName()).thenReturn("My List");
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
-        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "my list", _actionDouble);
+        repo.addListOfItems(_user1Double, "My List", _actionDouble);
+        ListOfItems found = repo.findByOwnerNameAndGenre(_user1Double, "my list", _actionDouble);
 
         // Assert
         assertNotNull(found);
@@ -296,19 +296,19 @@ class MemoListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreTrimsName() {
 
         // Arrange
-        ListOfPublications _createdDouble = mock(ListOfPublications.class);
+        ListOfItems _createdDouble = mock(ListOfItems.class);
         when(_createdDouble.getUser()).thenReturn(_user1Double);
         when(_createdDouble.getGenre()).thenReturn(_actionDouble);
         when(_createdDouble.getName()).thenReturn("My List");
 
-        when(_factoryDouble.createListOfPublications(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
+        when(_factoryDouble.createListOfItems(_user1Double, "My List", _actionDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user1Double, "My List", _actionDouble);
-        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "  My List  ", _actionDouble);
+        repo.addListOfItems(_user1Double, "My List", _actionDouble);
+        ListOfItems found = repo.findByOwnerNameAndGenre(_user1Double, "  My List  ", _actionDouble);
 
         // Assert
         assertNotNull(found);
@@ -319,10 +319,10 @@ class MemoListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreReturnsNullWhenListDoesNotExist() {
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        ListOfPublications found = repo.findByOwnerNameAndGenre(_user1Double, "Unknown", _actionDouble);
+        ListOfItems found = repo.findByOwnerNameAndGenre(_user1Double, "Unknown", _actionDouble);
 
         // Assert
         assertNull(found);
@@ -332,20 +332,20 @@ class MemoListOfPublicationsRepoTest {
     void findByOwnerNameAndGenreReturnsNullWhenListExistsButDoesNotMatch() {
 
         // Arrange
-        ListOfPublications list = mock(ListOfPublications.class);
+        ListOfItems list = mock(ListOfItems.class);
         when(list.getUser()).thenReturn(_user2Double);
         when(list.getName()).thenReturn("Other List");
         when(list.getGenre()).thenReturn(_actionDouble);
 
-        when(_factoryDouble.createListOfPublications(_user2Double, "Other List", _actionDouble))
+        when(_factoryDouble.createListOfItems(_user2Double, "Other List", _actionDouble))
                 .thenReturn(list);
 
         // SUT
-        MemoListOfPublicationsRepo repo = new MemoListOfPublicationsRepo(_factoryDouble);
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        repo.addListOfPublications(_user2Double, "Other List", _actionDouble);
-        ListOfPublications result = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
+        repo.addListOfItems(_user2Double, "Other List", _actionDouble);
+        ListOfItems result = repo.findByOwnerNameAndGenre(_user1Double, "My List", _actionDouble);
 
         // Assert
         assertNull(result);
