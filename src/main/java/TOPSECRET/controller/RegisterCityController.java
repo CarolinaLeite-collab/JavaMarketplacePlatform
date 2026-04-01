@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.valueobject.CountryId;
 
 import java.util.List;
 
@@ -20,17 +21,23 @@ public class RegisterCityController {
     public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, User admin) {
 
         if (!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not authorized to register countries");
+            throw new SecurityException("User is not authorized to register cities");
         }
         _iCityRepo = iCityRepo;
         _iCountryRepo = iCountryRepo;
     }
 
-    public List<Country> getAllCountries() {
+    public java.util.List<Country> getAllCountries() {
         return _iCountryRepo.getAllCountries();
     }
 
-    public City registerCity(String cityName, Country country) {
+    public City registerCity(String cityName, CountryId countryId) {
+        Country country = _iCountryRepo.ofIdentity(countryId)
+                .orElseThrow(() -> new IllegalArgumentException("Country not found"));
         return _iCityRepo.registerCity(cityName, country);
+    }
+
+    public City registerCity(String cityName, Country country) {
+        return registerCity(cityName, country.identity());
     }
 }

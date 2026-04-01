@@ -1,33 +1,52 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.Country;
+import TOPSECRET.domain.CountryFactory;
 import TOPSECRET.domain.ICountryRepo;
 import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.CountryId;
+import TOPSECRET.domain.valueobject.CountryName;
 
+import java.util.Optional;
 
 /**
  * Controller responsible for handling the country registration use case.
- * <p>
- * This controller acts as an intermediary between the user interface and the
- * Country repository, delegating the responsibility of creating and storing
- * countries to {@link ICountryRepo}.
- * </p>
  */
-
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
+    private final CountryFactory _countryFactory;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo) {
-
+    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory) {
         _iCountryRepo = iCountryRepo;
+        _countryFactory = countryFactory;
     }
 
-    public Country registerCountry(User user,String countryName) {
+    // Backwards compatible constructor used by legacy tests
+    public RegisterCountryController(ICountryRepo iCountryRepo) {
+        this(iCountryRepo, new CountryFactory());
+    }
 
+    public Optional<Country> registerCountry(User user, String isoCode, String countryName) {
         if (!user.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not authorized to register countries");
         }
-        return _iCountryRepo.registerCountry(countryName);
+
+        CountryId id = new CountryId(isoCode);
+        CountryName name = new CountryName(countryName);
+
+        // If a country with the same id already exists, return it
+        if (_iCountryRepo.containsOfIdentity(id)) {
+            return _iCountryRepo.ofIdentity(id);
+        }
+
+        Country country = _countryFactory.createCountry(id, name);
+        Country saved = _iCountryRepo.save(country);
+        return Optional.ofNullable(saved);
+    }
+
+    // Legacy compatibility: registerCountry(User, String)
+    public Country registerCountry(User user, String countryName) {
+        return registerCountry(user, null, countryName).orElse(null);
     }
 }

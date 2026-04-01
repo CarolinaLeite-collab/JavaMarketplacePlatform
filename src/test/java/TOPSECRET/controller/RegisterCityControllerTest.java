@@ -1,16 +1,18 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RegisterCityControllerTest {
-
     private ICityRepo _iCityRepoDouble;
     private ICountryRepo _iCountryRepoDouble;
     private Country _countryDouble;
@@ -64,22 +66,28 @@ class RegisterCityControllerTest {
     @Test
     void registerCityCallsRepoAndReturnsCreatedCity() {
         // Arrange
+        CountryId countryId = new CountryId("PT");
+        when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
         when(_iCityRepoDouble.registerCity("Porto", _countryDouble)).thenReturn(_cityDouble);
 
         //SUT
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
 
         // Act
-        City result = controller.registerCity("Porto", _countryDouble);
+        City result = controller.registerCity("Porto", countryId);
 
         // Assert
         assertSame(_cityDouble, result);
-        verify(_iCityRepoDouble, times(1)).registerCity("Porto", _countryDouble);
+        InOrder inOrder = inOrder(_iCountryRepoDouble, _iCityRepoDouble);
+        inOrder.verify(_iCountryRepoDouble).ofIdentity(countryId);
+        inOrder.verify(_iCityRepoDouble).registerCity("Porto", _countryDouble);
     }
 
     @Test
     void registerCityWhenRepoThrowsExceptionPropagatesException() {
         // Arrange
+        CountryId countryId = new CountryId("PT");
+        when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
         when(_iCityRepoDouble.registerCity("Porto", _countryDouble))
                 .thenThrow(new IllegalStateException("City already exists for this country"));
 
@@ -87,16 +95,16 @@ class RegisterCityControllerTest {
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble);
 
         // Act & Assert
-        assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", _countryDouble));
+        assertThrows(IllegalStateException.class, () -> controller.registerCity("Porto", countryId));
     }
 
     @Test
     void shouldAllowAdminToCreateController() {
-                assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble));
+        assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _adminDouble));
     }
 
     @Test
     void shouldRejectNonAdminUser() {
-                assertThrows(SecurityException.class, () -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _nonAdminDouble));
+        assertThrows(SecurityException.class, () -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _nonAdminDouble));
     }
 }
