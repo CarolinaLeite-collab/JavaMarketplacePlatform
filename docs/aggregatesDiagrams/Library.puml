@@ -1,0 +1,91 @@
+@startuml
+'https://plantuml.com/class-diagram
+title Library Aggregate DDD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+package "PERSISTENCE" {
+
+    package "MEM" {
+
+        class MemoLibraryRepo <<Repo>> {
+
+        - _libraries : List<Library>
+        - libraryExists(libraryID : LibraryID) : boolean
+        }
+
+    }
+}
+
+package "DOMAIN" {
+
+package "REPOSITORY" {
+
+    interface ILibraryRepo <<Interface>> {
+    + addLibrary(libraryID : LibraryID): Library
+    + findLibraryByUser(libraryID : LibraryID): Library
+    + getItemsInLibraryByUser(libraryID : LibraryID) : List<ItemID>
+    }
+
+}
+
+package "VALUE OBJECT" #b0c4d4 {
+
+    class LibraryID <<Value Object>> {
+    - _id: email
+    }
+    class ItemID <<Value Object>> {}
+    class PublicationDetailsID <<Value Object>> {}
+
+}
+
+package "LIBRARY" #b0c4d4 {
+
+    class Library <<Root>> <<Entity>> {
+      - _listItems : List<ItemID>
+      + belongsTo(libraryID : LibraryID)
+      + getLibraryID() : LibraryID
+      + getPublicationDetailsID() : List<PublicationDetailsID>
+      + getItemsIDInLibrary() : List<ItemID>
+      + addItemIDToLibrary(itemID : ItemID) : boolean
+      + getItemID(itemID : ItemID) : ItemID
+    }
+
+    class LibraryFactory <<Factory>> {
+    + createLibrary(libraryID : LibraryID) : Library
+    }
+
+}
+
+}
+
+
+
+
+MemoLibraryRepo ..|> ILibraryRepo
+MemoLibraryRepo "1" --> "1" LibraryFactory : invokes
+
+MemoLibraryRepo "1" --> "*" Library : persists
+
+Library "1" --> "1" LibraryID: has
+Library "1" o-- "*" ItemID: aggregates
+Library "1" ..> "*" PublicationDetailsID: returns
+
+LibraryFactory "1" ..> "*" Library: <<create>>
+
+'ILibraryRepo "1" ..> "*" Library: manages
+'ILibraryRepo "1" ..> "*" LibraryID: uses
+
+@enduml
