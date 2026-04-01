@@ -1,63 +1,84 @@
 package TOPSECRET.domain;
 
-import java.util.Locale;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.valueobject.CountryId;
+import TOPSECRET.domain.valueobject.CountryName;
 
 /**
- * Represents a country identified by its validated and normalized name.
- * <p>
- * The name cannot be null, empty, or contain invalid characters.
- * Comparison methods normalize input before matching.
- * </p>
+ * Aggregate root representing a Country in the domain.
  */
+public class Country implements AggregateRoot<CountryId> {
 
-public class Country {
-    private final String _countryName;
+    private final CountryId _countryId;
+    private final CountryName _name;
 
-    Country(String countryName) {
-            _countryName = sanitizedCountryName(countryName);
+    Country(CountryId id, CountryName name) {
+        this._countryId = id;
+        this._name = name;
     }
 
-    public boolean isNamed(String name) {
-        return _countryName.equals(sanitizedCountryName(name));
+    // Backwards-compatible constructor used by legacy tests
+    public Country(String countryName) {
+        CountryName name = new CountryName(countryName);
+        CountryId id = new CountryId(name.value().substring(0, Math.min(2, name.value().length())));
+        this._countryId = id;
+        this._name = name;
     }
 
-    public boolean isOneOf(String... names) {
-        for (String name : names) {
-            if (_countryName.equals(sanitizedCountryName(name))) {
-                return true;
-            }
+    public boolean isNamed(CountryName name) {
+        return _name.equals(name);
+    }
+
+    public boolean isOneOf(CountryName... names) {
+        for (CountryName n : names) {
+            if (_name.equals(n)) return true;
         }
         return false;
     }
 
-    public String getCountryName() {
-        return _countryName;
+    public CountryId identity() {
+        return _countryId;
     }
 
-    private String sanitizedCountryName(String countryName) {
-        if (countryName == null) {
-            throw new IllegalArgumentException("Country name cannot be null");
-        }
-        String result = countryName.trim();
-        if (result.isEmpty()) {
-            throw new IllegalArgumentException("Country name cannot be empty");
-        }
+    public boolean sameAs(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Country other)) return false;
+        // Domain equality by identity only
+        return _countryId.equals(other._countryId);
+    }
 
-        String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
-        if (!result.matches(pattern)) {
-            throw new IllegalArgumentException("Invalid country name: " + countryName);
-        }
+    public CountryName name() {
+        return _name;
+    }
 
-        result = result.replaceAll("\\s+", " ").toUpperCase(Locale.ROOT);
+    // Backwards compatible accessor for existing code/tests
+    public String getCountryName() {
+        return _name.toString();
+    }
 
-        return result;
+    // Legacy helpers accepting String inputs for compatibility with existing tests
+    public boolean isNamed(String name) {
+        if (name == null) return false;
+        return isNamed(new CountryName(name));
+    }
+
+    public boolean isOneOf(String... names) {
+        if (names == null) return false;
+        CountryName[] arr = new CountryName[names.length];
+        for (int i = 0; i < names.length; i++) arr[i] = new CountryName(names[i]);
+        return isOneOf(arr);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Country country)) return false;
-        return _countryName.equals(country._countryName);
+        return _name.equals(country._name);
+    }
+
+    @Override
+    public int hashCode() {
+        return _name.hashCode();
     }
 
 }
