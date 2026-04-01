@@ -1,0 +1,105 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+title Auction Aggregate
+
+skinparam monochrome false
+skinparam shadowing true
+skinparam defaultFontName Futura-Bold
+skinparam objectFontSize 14
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+'skinparam ArrowColor #57595BAA
+skinparam ArrowFontSize 14
+'skinparam PackageBorderColor #4B9DA9
+skinparam classAttributeFontSize 11
+skinparam classAttributeFontStyle plain
+skinparam classAttributeIconSize 0
+
+
+package DOMAIN {
+
+package AUCTION #b0c4d4 {
+
+class Auction <<Entity>> <<Root>> {
+-ZonedDateTime _auctionStartDate;
+-ZonedDateTime _auctionEndDate;
++placeBid (user : User, price : Price) : Bid
++getHighestBid() : Bid
++acceptBid(bid : Bid) : void
++finalizeAuction() : void
++getItem() : Item
++getBid() : Bid
++isByGenreID(genreID : GenreID) : boolean
++isByAuthorID(authorID : AuthorID) : boolean
++isByPublicationID(publicationID : PublicationID) : boolean
++isByPublishingCompanyID(publisherID : PublishingCompanyID) : boolean
+-isAuctionStartDateValid(date : ZoneDateTime) : boolean
+-isAuctionEndDateValid(date : ZoneDateTime) : boolean
+-isOutrightPriceValid(price : Price) : boolean
+}
+
+class Bid <<Entity>> {
+-Instant _bidDate
++getBidder()
++getOfferPrice()
++getBidDate()
+-validateBidder(UserID)
+-validateOfferPrice(UserID)
+}
+
+class BidFactory {
++ createBid(bidder : User, offerPrice : Price) : Bid
+}
+
+class AuctionFactory {
++ createAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
++ createAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+}
+
+}
+
+package REPOSITORY {
+
+interface IAuctionRepo {
+getAuctionItemsByGenre(genre : Genre) :  List<Item>
+getAuctionItemsByAuthor(author : Author) :  List<Item>
+getAuctionItemsByPublication(publication : Publication):  List<Item>
+getAuctionItemsByPublishingCompany(publisher : PublishingCompany ):  List<Item>
+}
+
+}
+
+package VALUEOBJECT {
+class AuctionID <<ValueObject>> #LightPink
+class Price <<ValueObject>>
+class ItemID <<ValueObject>>
+class UserID <<ValueObject>>
+}
+
+}
+
+package PERSISTENCE {
+
+package MEM {
+class MemoAuctionRepo <<Repo>>
+}
+}
+
+MemoAuctionRepo ..|> IAuctionRepo
+IAuctionRepo "1" --> "*" Auction : manages
+AuctionFactory "1" ..> "*" Auction : <<create>>
+Auction "1" ---> "*" Bid : aggregates
+BidFactory "1" ...> "*" Bid : <<create>>
+MemoAuctionRepo "1" --> "*" Auction : persists
+Auction "1" --> "1" AuctionID : has
+Auction ..> UserID : references
+Auction ...> ItemID : references
+Auction ...> Price : references
+
+Bid ...> Price : references
+Bid ...> UserID : references
+
+@enduml
