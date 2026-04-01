@@ -1,0 +1,99 @@
+@startuml
+title Item Aggregate DDD
+
+skinparam backgroundColor #F6F0D8
+skinparam shadowing true
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+
+skinparam package {
+  BackgroundColor #F6F0D8
+  BorderColor #4F4F4F
+  FontColor #222222
+}
+
+skinparam class {
+  BackgroundColor #F2F2F2
+  BorderColor #666666
+  FontColor #222222
+  ArrowColor #666666
+}
+
+skinparam interface {
+  BackgroundColor #F2F2F2
+  BorderColor #666666
+  FontColor #222222
+  ArrowColor #666666
+}
+
+package "PERSISTENCE" {
+  package "MEM" {
+    class MemoItemRepo <<Repo>> {
+    }
+  }
+}
+
+package "DOMAIN" {
+
+  package "REPOSITORY" {
+    interface IItemRepo <<Interface>> {
+      +getAll() : List<Item>
+      +getDifferentOf(existentItems : List<Item>) : List<Item>
+      +add(item : Item) : boolean
+      +exists(item : Item) : boolean
+    }
+  }
+
+  package "ITEM" #AFC4D6 {
+
+    class ItemFactory <<Factory>> {
+      +createItem(editionID : EditionID, condition : Condition, description : Description, userID : UserID, sku : SKU) : Item
+    }
+
+    class Item <<Root>> <<Entity>> {
+      <<Root>>
+      <<Entity>>
+
+      -_condition : Condition
+      -_description : Description
+      -_editionID : EditionID
+      -_userID : UserID
+      -_sku : SKU
+
+      +getEditionID() : EditionID
+      +getCondition() : Condition
+      +getDescription() : Description
+      +getUserID() : UserID
+      +getSKU() : SKU
+      +belongsToUser(userID : UserID) : boolean
+      +hasEdition(editionID : EditionID) : boolean
+      +hasSKU(sku : SKU) : boolean
+    }
+  }
+
+  package "VALUE OBJECT" #AFC4D6 {
+    class Condition <<ValueObject>>
+    class Description <<ValueObject>>
+    class EditionID <<ValueObject>>
+
+    class UserID <<ValueObject>> {
+    }
+
+    class SKU <<ValueObject>> {
+  }
+}
+
+MemoItemRepo ..|> IItemRepo
+MemoItemRepo "1" --> "1" ItemFactory : invokes
+MemoItemRepo "1" --> "*" Item : persists
+ItemFactory "1" ..> "*" Item : <<create>>
+
+Item "*" --> "1" Condition : has
+Item "1" --> "1" Description : has
+Item "1" --> "1" EditionID : references
+Item "*" --> "1" UserID : references
+Item "1" --> "1" SKU : has
+
+@enduml
