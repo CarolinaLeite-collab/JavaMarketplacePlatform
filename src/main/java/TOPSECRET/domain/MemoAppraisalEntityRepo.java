@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;

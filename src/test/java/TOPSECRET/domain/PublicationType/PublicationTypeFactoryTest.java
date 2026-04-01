@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.PublicationType;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

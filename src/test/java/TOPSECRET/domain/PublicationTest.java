@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
@@ -10,7 +11,6 @@ import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class PublicationTest {
 

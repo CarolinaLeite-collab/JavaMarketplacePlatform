@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.PublicationType;
 
 /**
  * Factory responsible for creating {@link PublicationType} instances.

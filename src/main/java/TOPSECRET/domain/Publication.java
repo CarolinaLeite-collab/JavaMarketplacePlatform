@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
