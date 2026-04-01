@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.CountryFactory;
+import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.ICountryRepo;
 import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;

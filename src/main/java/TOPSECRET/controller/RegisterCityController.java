@@ -1,9 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CountryId;
-
-import java.util.List;
 
 /**
  * Controller responsible for registering new cities in the system.
