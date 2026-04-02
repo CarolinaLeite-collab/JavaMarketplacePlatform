@@ -1,7 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 /**
  * Handles the processing of a payment between a buyer and a seller for a given price.

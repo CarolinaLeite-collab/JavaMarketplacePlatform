@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
 import TOPSECRET.domain.valueobject.*;
 

@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 import java.util.List;
 

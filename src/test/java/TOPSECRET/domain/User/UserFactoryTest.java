@@ -1,7 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

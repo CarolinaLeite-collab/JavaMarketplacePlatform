@@ -1,6 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.User;
 
 import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Role;
 import TOPSECRET.domain.valueobject.*;
 
 import java.util.HashSet;

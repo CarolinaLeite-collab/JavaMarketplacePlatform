@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
 
 import java.util.ArrayList;

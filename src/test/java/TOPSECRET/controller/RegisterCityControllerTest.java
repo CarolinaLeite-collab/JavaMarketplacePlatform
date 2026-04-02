@@ -1,6 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;

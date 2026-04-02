@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 import java.util.List;
 

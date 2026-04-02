@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
 import TOPSECRET.domain.PublicationDetails;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 import java.util.List;
 

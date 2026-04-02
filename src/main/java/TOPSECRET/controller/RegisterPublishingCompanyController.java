@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IPublishingCompanyRepo;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 /**
  * Controller responsible for handling the registration of a {@link PublishingCompany}.

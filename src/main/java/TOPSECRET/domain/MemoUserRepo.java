@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.valueobject.UserID;
 
 import java.util.ArrayList;

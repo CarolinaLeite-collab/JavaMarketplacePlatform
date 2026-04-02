@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.valueobject.UserID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

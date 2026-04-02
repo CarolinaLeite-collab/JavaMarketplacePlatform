@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IUserRepo;
 import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.UserFactory;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.UserID;

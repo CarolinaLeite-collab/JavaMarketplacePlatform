@@ -4,7 +4,7 @@ import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.ICountryRepo;
 import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.CountryName;
 
