@@ -1,5 +1,5 @@
 @startuml
-title Item Aggregate DDD
+title Item Aggregate
 
 skinparam backgroundColor #F6F0D8
 skinparam shadowing true
@@ -39,28 +39,20 @@ package "DOMAIN" {
 
   package "REPOSITORY" {
     interface IItemRepo <<Interface>> {
-      +getAll() : List<Item>
-      +getDifferentOf(existentItems : List<Item>) : List<Item>
-      +add(item : Item) : boolean
-      +exists(item : Item) : boolean
+      +getAll() : List<ItemID>
+      +getDifferentOf(existentItems : List<ItemID>) : List<ItemID>
+      +add(itemID : ItemID) : boolean
+      +exists(itemID : ItemID) : boolean
     }
   }
 
   package "ITEM" #AFC4D6 {
 
     class ItemFactory <<Factory>> {
-      +createItem(editionID : EditionID, condition : Condition, description : Description, userID : UserID, sku : SKU) : Item
+      +createItem(editionID : EditionID, condition : Condition, description : Description, userID : UserID, sku : ItemID) : Item
     }
 
     class Item <<Root>> <<Entity>> {
-      <<Root>>
-      <<Entity>>
-
-      -_condition : Condition
-      -_description : Description
-      -_editionID : EditionID
-      -_userID : UserID
-      -_sku : SKU
 
       +getEditionID() : EditionID
       +getCondition() : Condition
@@ -73,15 +65,18 @@ package "DOMAIN" {
     }
   }
 
-  package "VALUE OBJECT" #AFC4D6 {
+  package "VALUE OBJECT" {
     class Condition <<ValueObject>>
     class Description <<ValueObject>>
     class EditionID <<ValueObject>>
+    class ItemID <<ValueObject>> #LightPink {
+
+    - _ID : SKU
+    }
+    class SaleStatus <<ValueObject>>
 
     class UserID <<ValueObject>> {
     }
-
-    class SKU <<ValueObject>> {
   }
 }
 
@@ -94,6 +89,7 @@ Item "*" --> "1" Condition : has
 Item "1" --> "1" Description : has
 Item "1" --> "1" EditionID : references
 Item "*" --> "1" UserID : references
-Item "1" --> "1" SKU : has
+Item "1" --> "1" ItemID : has
+Item "1" --> "1" SaleStatus : has
 
 @enduml
