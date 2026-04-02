@@ -2,6 +2,20 @@ package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
 
+/**
+ * Represents the unique identifier of a {@link TOPSECRET.domain.PublishingCompany.PublishingCompany}.
+ * <p>
+ * A {@code PublishingCompanyId} wraps a {@link String} value derived from the publishing company name,
+ * normalised to uppercase and trimmed. This ensures that "Porto Editora ", " porto editora" and "PORTO EDITORA"
+ * all resolve to the same identifier.
+ * </p>
+ *
+ * <p><b>Validation:</b> The identifier cannot be null or blank.</p>
+ *
+ * <p><b>Equality:</b> Two {@code PublishingCompanyId} instances are equal if they
+ * wrap the same normalized {@link String} value.</p>
+ */
+
 public class PublishingCompanyId implements DomainId {
 
     private final String _id;
