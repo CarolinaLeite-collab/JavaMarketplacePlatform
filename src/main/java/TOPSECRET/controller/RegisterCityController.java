@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.City;
-import TOPSECRET.domain.CityFactory;
-import TOPSECRET.domain.ICityRepo;
+import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.City.CityFactory;
+import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;

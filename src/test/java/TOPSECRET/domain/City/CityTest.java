@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.City;
 
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CityId;

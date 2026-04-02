@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.valueobject.CityId;
 import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
