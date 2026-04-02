@@ -25,17 +25,17 @@ Package "DOMAIN" {
     together {
         Package "USER" <<Folder>> #b0c4d4 {
 
-            object User <<AggregateRoot>>
+            object User <<Aggregate Root>>
 
         }
         Package "CITY" <<Folder>> #b0c4d4 {
 
-            object City <<AggregateRoot>>
+            object City <<Aggregate Root>>
 
         }
         Package "COUNTRY" <<Folder>> #b0c4d4 {
 
-            object Country <<AggregateRoot>>
+            object Country <<Aggregate Root>>
 
         }
 
@@ -49,36 +49,7 @@ Package "DOMAIN" {
     }
 
     together {
-        Package "EDITION" <<Folder>> #b0c4d4 {
 
-            object Edition <<AggregateRoot>>
-
-        }
-
-        Package "PUBLISHINGCOMPANY" <<Folder>> #b0c4d4 {
-
-            object PublishingCompany <<Aggregate Root>>
-
-        }
-
-        '== Value Object (Id) ==
-        interface EditionId <<ValueObject>> #LightPink
-        object PublishingCompanyId <<ValueObject>> #LightPink
-
-        '=== Value Objects (other) ===
-
-        object ISBN <<ValueObject>> #FFE6EE
-        object ISSN <<ValueObject>> #FFE6EE
-        object NoIdentifier <<ValueObject>> #FFE6EE
-
-    }
-
-    together {
-        Package "PUBLICATION" <<Folder>> #b0c4d4 {
-
-            object Publication <<Aggregate Root>>
-
-        }
 
         Package "AUTHOR" <<Folder>> #b0c4d4 {
 
@@ -87,10 +58,23 @@ Package "DOMAIN" {
         }
 
         '== Value Objects (Ids) ==
-        object AuthorId <<ValueObject>> #LightPink
-        object PublicationId <<ValueObject>> #LightPink
+        object AuthorId <<Value Object>> #LightPink
+
 
     }
+
+    together {
+
+        Package "APPRAISALENTITY" <<Folder>> #b0c4d4 {
+
+            object AppraisalEntity <<Aggregate Root>>
+
+        }
+
+        object AppraisalEntityId <<Value Object>> #LightPink
+
+    }
+
 
     together{
         Package "PUBLICATIONTYPE" <<Folder>> #b0c4d4 {
@@ -105,84 +89,115 @@ Package "DOMAIN" {
 
         }
 
-        Package "APPRAISALENTITY" <<Folder>> #b0c4d4 {
+        '== Value Objects (Ids) ==
+        object GenreId <<Value Object>> #LightPink
+        object PublicationTypeId <<ValueObject>> #LightPink
 
-            object AppraisalEntity <<Aggregate Root>>
+    }
+
+        together {
+
+            Package "PUBLICATION" <<Folder>> #b0c4d4 {
+
+                object Publication <<Aggregate Root>>
+
+            }
+
+            Package "EDITION" <<Folder>> #b0c4d4 {
+
+                object Edition <<AggregateRoot>>
+
+            }
+
+            Package "PUBLISHINGCOMPANY" <<Folder>> #b0c4d4 {
+
+                object PublishingCompany <<Aggregate Root>>
+
+            }
+
+            '== Value Object (Id) ==
+            interface EditionId <<ValueObject>> #LightPink
+            object PublishingCompanyId <<ValueObject>> #LightPink
+
+            '=== Value Objects (other) ===
+
+            object ISBN <<ValueObject>> #FFE6EE
+            object ISSN <<ValueObject>> #FFE6EE
+            object NoIdentifier <<ValueObject>> #FFE6EE
+            object PublicationId <<ValueObject>> #LightPink
 
         }
 
-        '== Value Objects (Ids) ==
-        object AppraisalEntityId <<ValueObject>> #LightPink
-        object GenreId <<ValueObject>> #LightPink
-        object PublicationTypeId <<ValueObject>> #LightPink
-        object ItemId <<ValueObject>> #LightPink
-        object LibraryId <<ValueObject>> #LightPink
-
-
-    }
-
 '=== B4 ==
 
-    Package "LIBRARY" <<Folder>> #b0c4d4 {
 
-        object Library <<AggregateRoot>>
 
-    }
+    together {
 
-    Package "LISTOFITEMS" <<Folder>> #b0c4d4 {
+        Package "ITEM" <<Folder>> #b0c4d4 {
 
-        object ListOfItems <<AggregateRoot>>
+            object Item <<AggregateRoot>>
 
-    }
+        }
 
-    Package "ITEM" <<Folder>> #b0c4d4 {
+        Package "DIRECTSALE" <<Folder>> #b0c4d4 {
 
-        object Item <<AggregateRoot>>
+            object DirectSale <<Aggregate Root>>
 
-    }
+        }
 
-    Package "LISTING" <<Folder>> #b0c4d4 {
+        Package "AUCTION" <<Folder>> #b0c4d4 {
 
-        object Listing <<Aggregate Root>>
-
-    }
-
-    Package "DIRECTSALE" <<Folder>> #b0c4d4 {
-
-        object DirectSale <<Aggregate Root>>
+            object Auction <<Aggregate Root>>
+            object Bid <<Entity>>
+        }
 
     }
 
-    Package "AUCTION" <<Folder>> #b0c4d4 {
+    together {
 
-        object Auction <<Aggregate Root>>
-        object Bid <<Entity>>
+        Package "LIBRARY" <<Folder>> #b0c4d4 {
+
+            object Library <<AggregateRoot>>
+
+        }
+
+        Package "LISTOFITEMS" <<Folder>> #b0c4d4 {
+
+            object ListOfItems <<AggregateRoot>>
+
+        }
+
     }
+
+    object ItemId <<ValueObject>> #LightPink
+    object LibraryId <<ValueObject>> #LightPink
+    object DirectSaleId <<ValueObject>> #LightPink
+    object AuctionId <<ValueObject>> #LightPink
+    object ListOfItemsId <<ValueObject>> #LightPink
 
 }
 
 '=== Correlations ==='
 
-'--- EditionBook ---'
-Edition "*" --> "1" PublishingCompanyId : has
-Edition "*" -> "1" PublicationId : has
+'--- Edition ---'
+Edition "*" ..> "1" PublishingCompanyId : uses
+Edition "*" ..> "1" PublicationId : uses
 Edition "1" --> "1" EditionId : has
+
 ISBN ..|> EditionId
 ISSN ..|> EditionId
 NoIdentifier ..|> EditionId
 
 '--- User ---'
-'User "1" --- "1" Library
-'User "1" --- "*" Bid
-'User "1" --- "*" Listing
 User "1" --> "1" UserId : has
 User "1" --> "1" Address : has
 
 '--- Publication ---'
-Publication "*" --> "*" AuthorId : has
+Publication "1" ..> "*" AuthorId : uses
 Publication "*" --> "1" PublicationTypeId : has
-Publication "*" --> "1..*" GenreId : has
-Publication "1" --> "1" PublicationId : has
+Publication "*" ..> "1..*" GenreId : uses
+Publication "1" ..> "1" PublicationId : uses
 
 '--- PublicationType ---'
 PublicationType "1" --> "1" PublicationTypeId : has
@@ -197,13 +212,13 @@ Author "1" --> "1" AuthorId : has
 Genre "1" --> "1" GenreId : has
 
 '--- AppraisalEntity ---'
-AppraisalEntity "*" ---> "1..*" PublicationTypeId : has
-AppraisalEntity "*" ---> "1..*" GenreId : has
+AppraisalEntity "*" ..> "1..*" PublicationTypeId : uses
+AppraisalEntity "*" ..> "1..*" GenreId : uses
 AppraisalEntity "1" --> "1" AppraisalEntityId : has
 
 '--- City ---'
 City "1" ---> "1" CityId : has
-City "1" ---> "1" CountryId : has
+City "1" ..> "1" CountryId : uses
 
 '--- Country ---'
 Country "1" --> "1" CountryId
@@ -211,29 +226,27 @@ Country "1" --> "1" CountryId
 '--- Address ---'
 Address "*" --> "1" CityId : has
 
-
-
-'=== B4 responsibilities ==
-
 '--- Item ---'
-EditionId "1" ..> "*" Item: uses
-Item "1" -> "1" ItemId: has
+Item "1" ..> "*" EditionId: uses
+Item "1" --> "1" ItemId: has
+Item "1" ..> "1" UserId: uses
+
+'--- Library ---'
 Library "*" ..> "1" ItemId: uses
-Library "1" --> "1" LibraryId: has
-Item "*" --> "*" ListOfItems
+Library "1" ---> "1" LibraryId: has
 
-'--- ListOfItems ---'
-'ListOfItems "*" --- "1" User
-'ListOfItems "*" --- "1" Genre
-
-
-'--- Listing ---'
-'Listing "1" --- "0..1" Auction
-'Listing "1" --- "0..1" DirectSale
+'--- Auction ---'
 Auction "1" -> "*" Bid
 Auction "1" ..> "*" ItemId: uses
+Auction "1" ---> "1" AuctionId: has
 
+'--- DirectSale ---'
 DirectSale "1" .> "*" ItemId: uses
+DirectSale "1" ---> "1" DirectSaleId: has
+
+'--- ListOfItems ---'
+ListOfItems "1" ....> "*" ItemId: uses
+ListOfItems "1" ---> "1" ListOfItemsId: has
 
 
 @enduml
