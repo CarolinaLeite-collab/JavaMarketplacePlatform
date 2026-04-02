@@ -73,6 +73,10 @@ class AuctionID <<ValueObject>> #LightPink
 class Price <<ValueObject>>
 class ItemID <<ValueObject>>
 class UserID <<ValueObject>>
+class GenreID <<ValueObject>>
+class AuthorID <<ValueObject>>
+class PublicationID <<ValueObject>>
+class PublishingCompanyID <<ValueObject>>
 }
 
 }
@@ -87,15 +91,19 @@ class MemoAuctionRepo <<Repo>>
 MemoAuctionRepo ..|> IAuctionRepo
 IAuctionRepo "1" --> "*" Auction : manages
 AuctionFactory "1" ..> "*" Auction : <<create>>
-Auction "1" ---> "*" Bid : aggregates
+Auction "1" *---- "*" Bid : aggregates
 BidFactory "1" ...> "*" Bid : <<create>>
 MemoAuctionRepo "1" --> "*" Auction : persists
 Auction "1" --> "1" AuctionID : has
 Auction ..> UserID : references
-Auction ...> ItemID : references
-Auction ...> Price : references
+Auction o-- ItemID : has
+Auction ..> Price : references
+Auction .> GenreID : references
+Auction .> AuthorID : references
+Auction .> PublicationID : references
+Auction .> PublishingCompanyID : references
 
 Bid ...> Price : references
-Bid ...> UserID : references
+Bid ....> UserID : references
 
 @enduml
