@@ -1,9 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Address;
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.Phone;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -42,6 +39,7 @@ class UserFactoryTest {
         Email emailDouble = mock(Email.class);
         Address addressDouble = mock(Address.class);
         Phone phoneDouble = mock(Phone.class);
+        UserID userIDDouble = mock(UserID.class);
 
         // SUT
         UserFactory userFactory = new UserFactory();
@@ -49,7 +47,7 @@ class UserFactoryTest {
         try (MockedConstruction<User> mockedConstruction = mockConstruction(User.class)) {
 
             //Act
-            User userResult = userFactory.createUser(nameDouble, addressDouble, emailDouble, phoneDouble);
+            User userResult = userFactory.createUser(userIDDouble, nameDouble, addressDouble, emailDouble, phoneDouble);
 
             //Assert
             assertNotNull(userResult);

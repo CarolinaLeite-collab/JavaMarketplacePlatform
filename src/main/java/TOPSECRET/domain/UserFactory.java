@@ -1,9 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Address;
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.Phone;
+import TOPSECRET.domain.valueobject.*;
 
 /**
  * Factory responsible for creating {@link User} instances.
@@ -19,7 +16,7 @@ public class UserFactory {
         return new User(name, email);
     }
 
-    public User createUser(Name name, Address address, Email email, Phone phone) {
+    public User createUser(UserID userID, Name name, Address address, Email email, Phone phone) {
         return new User (name, address, email, phone);
     }
 }
