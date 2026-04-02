@@ -1,12 +1,17 @@
 @startuml
 title Item Aggregate
 
-skinparam backgroundColor #F6F0D8
-skinparam shadowing true
-skinparam roundcorner 8
-skinparam defaultFontName Arial
-skinparam defaultFontSize 13
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
+skinparam packageTitleBackgroundColor #F0F8FF
 
 skinparam package {
   BackgroundColor #F6F0D8

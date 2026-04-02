@@ -34,9 +34,9 @@ package "DOMAIN" {
 package "REPOSITORY" {
 
     interface ILibraryRepo <<Interface>> {
-    + addLibrary(userID : UserID): Library
-    + findLibraryByUser(libraryID : LibraryID): Library
-    + getItemsInLibraryByUser(libraryID : LibraryID) : List<ItemID>
+    addLibrary(userID : UserID): Library
+    findLibraryByUser(libraryID : LibraryID): Library
+    getItemsInLibraryByUser(libraryID : LibraryID) : List<ItemID>
     }
 
 }
