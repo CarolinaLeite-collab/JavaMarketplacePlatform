@@ -197,9 +197,9 @@ User "1" --> "1" Address : has
 
 '--- Publication ---'
 Publication "1" ..> "*" AuthorId : uses
-Publication "*" --> "1" PublicationTypeId : has
+Publication "*" ..> "1" PublicationTypeId : uses
 Publication "*" ..> "1..*" GenreId : uses
-Publication "1" ..> "1" PublicationId : uses
+Publication "1" --> "1" PublicationId : has
 
 '--- PublicationType ---'
 PublicationType "1" --> "1" PublicationTypeId : has
@@ -231,7 +231,7 @@ Address "*" ..> "1" CityId : uses
 '--- Item ---'
 Item "1" ..> "*" EditionId: uses
 Item "1" --> "1" ItemId: has
-Item "1" ..> "1" UserId: uses
+Item "1" ...> "1" UserId: uses
 
 '--- Library ---'
 Library "*" ..> "1" ItemId: uses
