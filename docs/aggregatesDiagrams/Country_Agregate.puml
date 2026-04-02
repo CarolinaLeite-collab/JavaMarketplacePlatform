@@ -44,7 +44,6 @@ Package "DOMAIN" {
         interface ICountryRepo <<Interface>> {
             +findByName(String) : Optional<Country>
             +registerCountry(String) : Country
-            +getAllCountries() : List<Country>
         }
     }
 
