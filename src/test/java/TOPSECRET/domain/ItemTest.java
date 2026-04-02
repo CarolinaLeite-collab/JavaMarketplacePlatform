@@ -253,24 +253,24 @@ class ItemTest {
 
     @Test
     void isByAuthorReturnsTrueWhenPublicationMatches() {
-        Author author = new Author("Maria");
-        Publication pub = mock(Publication.class);
-        when(pub.isByAuthor(author)).thenReturn(true);
+        Author authorDouble = mock(Author.class);
+        Publication pubDouble = mock(Publication.class);
+        when(pubDouble.isByAuthor(authorDouble)).thenReturn(true);
 
-        Item item = new Item(pub, conditionDouble);
+        Item item = new Item(pubDouble, conditionDouble);
 
-        assertTrue(item.isByAuthor(author));
+        assertTrue(item.isByAuthor(authorDouble));
     }
 
     @Test
     void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
-        Author author = new Author("Maria");
-        Publication pub = mock(Publication.class);
-        when(pub.isByAuthor(author)).thenReturn(false);
+        Author authorDouble = mock(Author.class);
+        Publication pubDouble = mock(Publication.class);
+        when(pubDouble.isByAuthor(authorDouble)).thenReturn(false);
 
-        Item item = new Item(pub, conditionDouble);
+        Item item = new Item(pubDouble, conditionDouble);
 
-        assertFalse(item.isByAuthor(author));
+        assertFalse(item.isByAuthor(authorDouble));
     }
 
     // --------------------
