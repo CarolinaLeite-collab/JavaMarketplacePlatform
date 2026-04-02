@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.genre.GenreFactory;
 import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
