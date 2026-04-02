@@ -1,5 +1,5 @@
 package TOPSECRET.controller;
-import TOPSECRET.domain.IUserRepo;
+import TOPSECRET.domain.repository.IUserRepo;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;

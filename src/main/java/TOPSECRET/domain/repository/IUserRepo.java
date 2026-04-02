@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.User.User;
