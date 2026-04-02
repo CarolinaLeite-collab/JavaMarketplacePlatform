@@ -20,9 +20,9 @@ top to bottom direction
 ' ===== Domain =====
 Package "DOMAIN" {
 
-    Package "PUBLICATION"  {
+    Package "PUBLICATION" #b0c4d4 {
 
-        class Publication <<Entity>> <<Root>> #lightgrey {
+        class Publication <<Root>> <<Entity>> {
             -_releaseYear : Year
             +isByAuthor(AuthorId) : boolean
             +isByGenre(GenreId) : boolean
@@ -41,24 +41,24 @@ Package "DOMAIN" {
 
         class PublicationId <<ValueObject>> #LightPink {
             -_id : String
-            +toString() : String
+
         }
 
-        class Title <<ValueObject>> #LightYellow {
+        class Title <<ValueObject>> {
         }
 
-        class AuthorId <<ValueObject>> #LightYellow {
+        class AuthorId <<ValueObject>> {
         }
 
-        class GenreId <<ValueObject>> #LightYellow {
+        class GenreId <<ValueObject>>{
         }
 
-        class PublicationTypeId <<ValueObject>> #LightYellow {
+        class PublicationTypeId <<ValueObject>>  {
         }
 
     }
 
-    Package "REPOSITORY" <<Folder>>  {
+    Package "REPOSITORY"   {
         interface IPublicationRepo <<Interface>>
     }
 
@@ -67,10 +67,19 @@ Package "DOMAIN" {
 
 }
 
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+}
+
 ' ===== Persistence =====
 Package "PERSISTENCE" {
-     package "Memo" #c0d8d8 {
-     class MemoPublicationRepo
+     package "mem"  {
+     class MemoPublicationRepo <<Repo>>
     }
 }
 
@@ -81,7 +90,7 @@ Publication ..> AuthorId : references
 Publication ..> GenreId : references
 Publication ..> PublicationTypeId : references
 
-
+IPublicationRepo -|> IRepository
 MemoPublicationRepo ..|> IPublicationRepo
 Publication "*" <-- "1" MemoPublicationRepo : persists
 PublicationFactory "1"<-- "1" MemoPublicationRepo : invokes
