@@ -1,10 +1,19 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.IRepository;
+import TOPSECRET.domain.valueobject.GenreId;
+
 import java.util.List;
 
-public interface IGenreRepo {
+/**
+ * Repository interface for managing {@link Genre} aggregate roots.
+ * <p>
+ * Extends {@link IRepository} with {@link GenreId} as the identity type
+ * and {@link Genre} as the aggregate root type.
+ * </p>
+ */
 
-    Genre addGenre(String genreName);
+public interface IGenreRepo extends IRepository<GenreId, Genre> {
 
-    List<Genre> getListOfOfficialGenres();
+    Genre addGenre(String name);
 }

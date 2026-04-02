@@ -1,46 +1,58 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.GenreId;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Repository for managing stored genres of books and magazines.
+ * In-memory implementation of {@link IGenreRepo}.
  * <p>
- * Calls {@link GenreFactory} to generate new genres. Prevents the storage of duplicates based on genre name.
+ * Stores {@link Genre} instances in a list. Prevents duplicate genres
+ * based on {@link Genre#equals(Object)}.
  * </p>
  */
 
 public class MemoGenreRepo implements IGenreRepo {
-    private final List<Genre> _genresList;
+    private final List<Genre> _genres = new ArrayList<>();
     private final GenreFactory _genreFactory;
 
     public MemoGenreRepo(GenreFactory genreFactory) {
-        _genresList = new ArrayList<>();
         _genreFactory = genreFactory;
     }
 
     @Override
-    public Genre addGenre(String genreName) {
-
-        if (genreExists(genreName)) {
-            throw new IllegalArgumentException("This genre already exists");
-        }
-
-        Genre genre = _genreFactory.createGenre(genreName);
-        _genresList.add(genre);
+    public Genre save(Genre genre) {
+        _genres.add(genre);
         return genre;
     }
 
-    private boolean genreExists(String genreName) {
-        Genre existingGenre = _genreFactory.createGenre(genreName);
-        return _genresList.contains(existingGenre);
+    @Override
+    public Genre addGenre(String name) {
+        GenreId genreId = new GenreId(name);
+        if (containsOfIdentity(genreId))
+            throw new IllegalArgumentException("Genre already exists in the repository");
+        Genre genre = _genreFactory.createGenre(genreId, name);
+        return save(genre);
     }
 
     @Override
-    public List<Genre> getListOfOfficialGenres() {
-
-        return List.copyOf(_genresList);
+    public Iterable<Genre> findAll() {
+        return List.copyOf(_genres);
     }
 
+    @Override
+    public Optional<Genre> ofIdentity(GenreId genreId) {
+        return _genres.stream()
+                .filter(g -> g.identity().equals(genreId))
+                .findFirst();
+    }
+
+    @Override
+    public boolean containsOfIdentity(GenreId genreId) {
+        return _genres.stream()
+                .anyMatch(g -> g.identity().equals(genreId));
+    }
 }
 
