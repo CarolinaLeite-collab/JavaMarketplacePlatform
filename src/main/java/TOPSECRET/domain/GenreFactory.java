@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.GenreId;
+
 /**
  * Factory responsible for creating {@link Genre} instances.
  * <p>
@@ -12,4 +14,7 @@ public class GenreFactory {
         return new Genre(genreName);
     }
 
+    public Genre createGenre(GenreId genreId, String name) {
+        return new Genre(genreId, name);
+    }
 }

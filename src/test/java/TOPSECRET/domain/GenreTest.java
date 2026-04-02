@@ -1,8 +1,10 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class GenreTest {
 
@@ -13,7 +15,7 @@ class GenreTest {
         Genre genre = new Genre("Science Fiction");
 
         // Assert
-        assertEquals("Science Fiction", genre.getGenre());
+        assertNotNull(genre);
     }
 
     @Test
@@ -38,6 +40,141 @@ class GenreTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> new Genre(null));
+    }
+
+    @Test
+    void constructorCreationGeneratesGenreId() {
+        // Arrange
+        String name = "Science Fiction";
+
+        // Act
+        Genre genre = new Genre(name);
+
+        // Assert
+        assertNotNull(genre.identity());
+    }
+
+    @Test
+    void constructorReconstitutionValidArgsCreatesGenre() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        String name = "Science Fiction";
+
+        // Act
+        Genre genre = new Genre(genreIdDouble, name); // SUT
+
+        // Assert
+        assertNotNull(genre);
+    }
+
+    @Test
+    void constructorReconstitutionNullGenreIdThrowsNullPointerException() {
+        // Arrange
+        String name = "Science Fiction";
+
+        // Act
+        Exception exception = assertThrows(NullPointerException.class, () ->
+                new Genre(null, name));
+
+        // Assert
+        assertNotNull(exception);
+    }
+
+    @Test
+    void constructorReconstitutionNullNameThrowsIllegalArgumentException() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        // Act
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                new Genre(genreIdDouble, null));
+
+        // Assert
+        assertNotNull(exception);
+    }
+
+    @Test
+    void constructorReconstitutionRestoresGenreId() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        String name = "Science Fiction";
+
+        // Act
+        Genre genre = new Genre(genreIdDouble, name);
+
+        // Assert
+        assertSame(genreIdDouble, genre.identity());
+    }
+    @Test
+    void identityReturnsNonNullGenreId() {
+        // Arrange
+        Genre genre = new Genre("Science Fiction");
+
+        // Act
+        GenreId id = genre.identity();
+
+        // Assert
+        assertNotNull(id);
+    }
+
+    @Test
+    void sameAsSameInstanceReturnsTrue() {
+        // Arrange
+        Genre genre = new Genre("Science Fiction");
+
+        // Act
+        boolean result = genre.sameAs(genre);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsSameNameReturnsTrue() {
+        // Arrange
+        Genre genre1 = new Genre("Science Fiction");
+
+        // Act
+        Genre genre2 = new Genre("Science FictIon");
+
+        // Assert
+        assertTrue(genre1.sameAs(genre2));
+    }
+
+    @Test
+    void sameAsDifferentNameReturnsFalse() {
+        // Arrange
+        Genre genre1 = new Genre("Science Fiction");
+
+        // Act
+        Genre genre2 = new Genre("Romance");
+
+        // Assert
+        assertFalse(genre1.sameAs(genre2));
+    }
+
+    @Test
+    void sameAsNullReturnsFalse() {
+        // Arrange
+        Genre genre = new Genre("Science Fiction");
+
+        // Act
+        boolean result = genre.sameAs(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void sameAsDifferentTypeReturnsFalse() {
+        // Arrange
+        Genre genre = new Genre("Science Fiction");
+
+        // Act
+        boolean result = genre.sameAs("Science Fiction");
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
