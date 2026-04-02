@@ -17,7 +17,7 @@ public class PublishingCompanyTest {
         PublishingCompany p = new PublishingCompany("Porto Editora");
 
         //Act + Assert
-        assertEquals("Porto Editora", p.getName());
+        assertEquals("PORTO EDITORA", p.getName());
     }
 
     @Test
@@ -26,7 +26,7 @@ public class PublishingCompanyTest {
         PublishingCompany p1 = new PublishingCompany(" Porto Editora  ");
 
         //Act + Assert
-        assertEquals("Porto Editora", p1.getName());
+        assertEquals("PORTO EDITORA", p1.getName());
     }
 
     @Test
@@ -106,6 +106,28 @@ public class PublishingCompanyTest {
 
         //Assert
         assertNotEquals(p11.hashCode(), p12.hashCode());
+    }
+
+    @Test
+    void isSamePublishingCompanyShouldReturnTrueIfSame() {
+
+        //Act
+        PublishingCompany p13 = new PublishingCompany("Porto Editora");
+
+        //Assert
+        assertTrue(p13.isSamePublishingCompany("PORTO EDITORA"));
+
+    }
+
+    @Test
+    void isSamePublishingCompanyShouldReturnFalseIfNotSame() {
+
+        //Act
+        PublishingCompany p14 = new PublishingCompany("Porto Editora");
+
+        //Assert
+        assertFalse(p14.isSamePublishingCompany("Pendant Publishing"));
+
     }
 
 }

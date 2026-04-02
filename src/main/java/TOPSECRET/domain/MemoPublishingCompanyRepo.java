@@ -42,7 +42,7 @@ public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
 
         for (PublishingCompany publishingCompany : _publishingCompany) {
 
-            if (publishingCompany.equals(new PublishingCompany(publishingCompanyName))) {
+            if (publishingCompany.isSamePublishingCompany(publishingCompanyName)) {
 
                 return true;
 
