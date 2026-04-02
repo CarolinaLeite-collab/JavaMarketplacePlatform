@@ -1,42 +1,48 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.City;
+import TOPSECRET.domain.CityFactory;
+import TOPSECRET.domain.ICityRepo;
+import TOPSECRET.domain.ICountryRepo;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;
-import TOPSECRET.domain.repository.ICountryRepo;
+import TOPSECRET.domain.valueobject.CityId;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.Role;
 
-/**
- * Controller responsible for registering new cities in the system.
- * <p>
- * This controller interacts with {@link ICityRepo} and {@link ICountryRepo} to
- * retrieve available countries and to register new {@link City} instances,
- * ensuring that city names are valid and unique within a given country.
- * </p>
- */
+import java.util.List;
 
 public class RegisterCityController {
+
     private final ICityRepo _iCityRepo;
     private final ICountryRepo _iCountryRepo;
+    private final CityFactory _cityFactory;
 
-    public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, User admin) {
-
+    public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, CityFactory cityFactory, User admin) {
         if (!admin.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not authorized to register cities");
         }
         _iCityRepo = iCityRepo;
         _iCountryRepo = iCountryRepo;
+        _cityFactory = cityFactory;
     }
 
-    public java.util.List<Country> getAllCountries() {
+    public List<Country> getAllCountries() {
         return _iCountryRepo.getAllCountries();
     }
 
     public City registerCity(String cityName, CountryId countryId) {
         Country country = _iCountryRepo.ofIdentity(countryId)
                 .orElseThrow(() -> new IllegalArgumentException("Country not found"));
-        return _iCityRepo.registerCity(cityName, country);
+
+        CityId cityId = new CityId(cityName, countryId);
+
+        if (_iCityRepo.containsOfIdentity(cityId)) {
+            throw new IllegalStateException("City already exists for this country");
+        }
+
+        City city = _cityFactory.createCity(cityName, country);
+        return _iCityRepo.save(city);
     }
 
     public City registerCity(String cityName, Country country) {
