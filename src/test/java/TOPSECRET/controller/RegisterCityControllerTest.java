@@ -4,6 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CountryId;
+import TOPSECRET.domain.valueobject.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;

@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Role;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
 
 /**

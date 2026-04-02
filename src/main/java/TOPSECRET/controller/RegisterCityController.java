@@ -4,6 +4,7 @@ import TOPSECRET.domain.*;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CountryId;
+import TOPSECRET.domain.valueobject.Role;
 
 /**
  * Controller responsible for registering new cities in the system.

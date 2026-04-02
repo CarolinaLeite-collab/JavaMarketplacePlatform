@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.valueobject;
 /**
  * Defines the roles that can be assigned to a user within the system.
  * <p>
