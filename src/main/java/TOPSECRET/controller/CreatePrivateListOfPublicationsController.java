@@ -19,15 +19,14 @@ public class CreatePrivateListOfPublicationsController {
 
     public CreatePrivateListOfPublicationsController(
             IListOfPublicationsRepo listOfPublicationsRepo,
-            IGenreRepo genreRepo,
-            User user) {
+            IGenreRepo genreRepo) {
 
         _iListOfPublicationsRepo = listOfPublicationsRepo;
         _iGenreRepo = genreRepo;
     }
 
-    public List<Genre> getListOfOfficialGenres() {
-        return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
+    public Iterable<Genre> getListOfOfficialGenres() {
+        return _iGenreRepo.findAll();
     }
 
     public ListOfPublications createListOfPublications(User user, String name, Genre genre) {

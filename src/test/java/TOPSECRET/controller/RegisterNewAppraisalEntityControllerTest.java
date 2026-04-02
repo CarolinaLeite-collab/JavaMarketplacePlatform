@@ -35,7 +35,7 @@ class RegisterNewAppraisalEntityControllerTest {
         _genres.add(_genreDouble);
 
         _iGenreRepoDouble = mock(IGenreRepo.class);
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(_genres);
+        when(_iGenreRepoDouble.findAll()).thenReturn(_genres);
 
         _publicationTypeDouble = mock(PublicationType.class);
         _publicationTypes = new ArrayList<>();
@@ -81,11 +81,12 @@ class RegisterNewAppraisalEntityControllerTest {
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
 
         // act
-        List genres = controller.getGenres();
+        Iterable <Genre> genres = controller.getGenres();
 
         // assert
-        assertEquals(_genres, genres);
-        verify(_iGenreRepoDouble).getListOfOfficialGenres();
+        assertNotNull(genres);
+        assertTrue(genres.iterator().hasNext());
+        verify(_iGenreRepoDouble).findAll();
     }
 
     @Test

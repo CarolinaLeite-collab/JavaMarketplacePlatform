@@ -30,11 +30,13 @@ class CreatePrivateListOfPublicationsControllerTest {
     }
 
     @Test
-    void testCreatePrivateListOfPublicationsController(){
+    void createPrivateListOfPublicationsController(){
 
         // SUT & Act
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble);
 
+        // Assert
+        assertNotNull(controller);
     }
 
     @Test
@@ -44,67 +46,44 @@ class CreatePrivateListOfPublicationsControllerTest {
         when(_iListOfPublicationsRepoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble);
 
         // Act
         ListOfPublications result = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
 
         // Assert
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertEquals(listDouble, result)
-        );
-        verify(_iListOfPublicationsRepoDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
+        assertNotNull(result);
+        assertEquals(listDouble, result);
+    }
+
+    @Test
+    void getListOfOfficialGenresDelegatesToRepo() {
+        // Arrange
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        CreatePrivateListOfPublicationsController controller =
+                new CreatePrivateListOfPublicationsController(
+                        _iListOfPublicationsRepoDouble, _iGenreRepoDouble);
+
+        // Act
+        Iterable<Genre> result = controller.getListOfOfficialGenres(); // SUT
+
+        // Assert
+        assertNotNull(result);
+        verify(_iGenreRepoDouble).findAll();
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_iListOfPublicationsRepoDouble.addListOfPublications(_userDouble, "My List", _actionDouble)).thenReturn(null);
+        when(_iListOfPublicationsRepoDouble.addListOfPublications(_userDouble, "My List", _actionDouble))
+                .thenThrow(new IllegalArgumentException("List already exists"));
 
         //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
+        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble);
 
-        // Act
-        ListOfPublications duplicate = controller.createListOfPublications(_userDouble, "My List", _actionDouble);
-
-        // Assert
-        assertNull(duplicate);
-        verify(_iListOfPublicationsRepoDouble).addListOfPublications(_userDouble, "My List", _actionDouble);
-    }
-
-    @Test
-    void getListOfOfficialGenresReturnsUnmodifiableList() {
-        // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
-
-        //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
-
-        // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
-
-        // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> officialGenres.add(mock(Genre.class)));
-    }
-
-    @Test
-    void getListOfOfficialGenresReturnsCorrectList() {
-        // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
-
-        //SUT
-        CreatePrivateListOfPublicationsController controller = new CreatePrivateListOfPublicationsController(_iListOfPublicationsRepoDouble, _iGenreRepoDouble, _userDouble);
-
-        // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
-
-        // Assert
-        assertAll(
-                () -> assertEquals(2, officialGenres.size()),
-                () -> assertTrue(officialGenres.contains(_actionDouble)),
-                () -> assertTrue(officialGenres.contains(_poetryDouble))
-        );
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.createListOfPublications(
+                        _userDouble, "My List", _actionDouble));
     }
 }

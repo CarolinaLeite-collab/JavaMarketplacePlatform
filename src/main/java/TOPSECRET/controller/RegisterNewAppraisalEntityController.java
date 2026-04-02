@@ -36,9 +36,9 @@ public class RegisterNewAppraisalEntityController {
         return List.copyOf(_iPubTypeRepo.getAll());
     }
 
-    public List getGenres(){
+    public Iterable <Genre> getGenres(){
 
-        return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
+        return _iGenreRepo.findAll();
     }
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre, User user){

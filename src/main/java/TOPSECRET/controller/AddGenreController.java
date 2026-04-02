@@ -16,14 +16,15 @@ import TOPSECRET.domain.User;
 public class AddGenreController {
     private final IGenreRepo _iGenreRepo;
 
-    public AddGenreController(IGenreRepo iGenreRepo, User admin) {
-        if(!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not allowed to add genres");
-        }
+    public AddGenreController(IGenreRepo iGenreRepo) {
+
         _iGenreRepo = iGenreRepo;
     }
 
-    public Genre addGenre(String genreName){
+    public Genre addGenre(User user, String genreName){
+        if(!user.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not allowed to add genres");
+        }
         Genre genre = _iGenreRepo.addGenre(genreName);
 
         return genre;
