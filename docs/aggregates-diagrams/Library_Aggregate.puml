@@ -23,7 +23,7 @@ package "PERSISTENCE" {
         class MemoLibraryRepo <<Repo>> {
 
 '        - _libraries : List<Library>
-        - libraryExists(libraryID : LibraryID) : boolean
+'        - libraryExists(libraryID : LibraryID) : boolean
         }
 
     }
@@ -31,51 +31,60 @@ package "PERSISTENCE" {
 
 package "DOMAIN" {
 
-package "REPOSITORY" {
+    package "REPOSITORY" {
 
-    interface ILibraryRepo <<Interface>> {
-    addLibrary(userID : UserID): Library
-    findLibraryByUser(libraryID : LibraryID): Library
-    getItemsInLibraryByUser(libraryID : LibraryID) : List<ItemID>
+        interface ILibraryRepo <<Interface>> {
+        addLibrary(userID : UserID): Library
+        findLibraryByUser(userID : UserID): Library
+        getItemsInLibraryByUser(userID : UserID) : List<ItemID>
+        }
+
+    }
+
+    package "VALUE OBJECT" {
+
+        class LibraryID <<Value Object>> #LightPink {
+        - _id : Email
+        }
+        class ItemID <<Value Object>> {}
+        class PublicationDetailsID <<Value Object>> {}
+        class UserID <<Value Object>>
+
+    }
+
+    package "LIBRARY" #b0c4d4 {
+
+        class Library <<Root>> <<Entity>> {
+    '      - _listItems : List<ItemID>
+          + belongsTo(libraryID : LibraryID)
+          + getLibraryID() : LibraryID
+          + getPublicationDetailsID() : List<PublicationDetailsID>
+          + getItemsIDInLibrary() : List<ItemID>
+          + addItemIDToLibrary(itemID : ItemID) : boolean
+          + getItemID(itemID : ItemID) : ItemID
+        }
+
+        class LibraryFactory <<Factory>> {
+        + createLibrary(libraryID : LibraryID) : Library
+        }
+
     }
 
 }
 
-package "VALUE OBJECT" {
+Package "DDD" {
 
-    class LibraryID <<Value Object>> #LightPink {
-    - _id : Email
-    }
-    class ItemID <<Value Object>> {}
-    class PublicationDetailsID <<Value Object>> {}
-    class UserID <<Value Object>>
-
-}
-
-package "LIBRARY" #b0c4d4 {
-
-    class Library <<Root>> <<Entity>> {
-'      - _listItems : List<ItemID>
-      + belongsTo(libraryID : LibraryID)
-      + getLibraryID() : LibraryID
-      + getPublicationDetailsID() : List<PublicationDetailsID>
-      + getItemsIDInLibrary() : List<ItemID>
-      + addItemIDToLibrary(itemID : ItemID) : boolean
-      + getItemID(itemID : ItemID) : ItemID
-    }
-
-    class LibraryFactory <<Factory>> {
-    + createLibrary(libraryID : LibraryID) : Library
+    interface IRepository<ID, T> <<Interface>> {
+    save(T) : T
+    findAll() : Iterable<T>
+    ofIdentity(ID) : Optional <T>
+    containsOfIdentity(ID) : boolean
     }
 
 }
-
-}
-
-
-
 
 MemoLibraryRepo ...|> ILibraryRepo
+ILibraryRepo --|>  IRepository
 MemoLibraryRepo "1" --> "1" LibraryFactory : invokes
 
 MemoLibraryRepo "1" --> "*" Library : persists
