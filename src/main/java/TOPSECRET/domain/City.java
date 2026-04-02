@@ -1,60 +1,58 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.valueobject.CityId;
+import TOPSECRET.domain.valueobject.CountryId;
 
 import java.util.Objects;
 
-/**
- * Represents a city within a specific country.
- * <p>
- * Ensures that the city name is not null or blank and that the country is specified.
- * </p>
- */
+public class City implements AggregateRoot<CityId> {
 
-public class City {
     private final String _name;
-    private final String _normalizedName;
     private final Country _country;
+    private final CityId _cityId;
 
-    // Creates a new city while normalizing the name and validating the country.
     City(String name, Country country) {
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("City name cannot be null or blank");
         }
-        if (country == null) {
-            throw new IllegalArgumentException("Country cannot be null");
-        }
-
-        String cleaned = name.trim().replaceAll("\\s+", " ");
-        _name = cleaned;
-        _normalizedName = cleaned.toLowerCase();
-        _country = country;
+        _country = Objects.requireNonNull(country, "Country cannot be null");
+        _name = name.trim().replaceAll("\\s+", " ");
+        _cityId = new CityId(_name, country.identity());
     }
 
     public String getName() {
         return _name;
     }
 
-    // Returns the country that owns this city.
     public Country getCountry() {
         return _country;
     }
 
-    // Equality is based on case-insensitive name comparison and exact country match.
+    @Override
+    public CityId identity() {
+        return _cityId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (!(object instanceof City other)) return false;
+        return _cityId.equals(other._cityId);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof City city)) return false;
-        return _name.equalsIgnoreCase(city._name) && _country.equals(city._country);
+        if (!(o instanceof City other)) return false;
+        return _cityId.equals(other._cityId);
     }
 
-    // Hash code follows the same logic as {@link #equals(Object)} to stay consistent.
     @Override
     public int hashCode() {
-        return Objects.hash(_normalizedName, _country);
+        return _cityId.hashCode();
     }
 
-    // String representation is "CityName, CountryName" to keep formatting stable for tests.
     @Override
     public String toString() {
         return _name + ", " + _country.getCountryName();
