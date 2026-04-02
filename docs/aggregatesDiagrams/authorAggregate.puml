@@ -1,0 +1,86 @@
+@startuml
+
+'==== Title ====
+title Author Aggregate
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+
+skinparam defaultFontName Futura
+skinparam objectFontSize 14
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #4B9DA9
+skinparam ArrowFontSize 14
+skinparam PackageBorderColor #4B9DA9
+skinparam classAttributeIconSize 0
+
+' ===== Domain =====
+Package "DOMAIN" {
+
+    Package "AUTHOR" <<Folder>> #c0d8d8 {
+        object Author <<Root>> <<Entity>> #fff0b8 {
+
+            __
+            +getName() : Name
+            +getLowerCaseName
+        }
+
+        object AuthorFactory <<Factory>> {
+            +createAuthor(authorName : String) : Author
+            +createAuthor(authorId : AuthorId, authorName : String) : Author
+        }
+    }
+
+    package "REPOSITORY" <<Folder>> #c0d8d8 {
+        object IAuthorRepo <<Interface>> {
+
+        }
+    }
+
+    Package "VALUEOBJECT" #c0d8d8 {
+        '== Value Objects (Ids) ==
+        object AuthorId <<ValueObject>> #LightPink {
+        -_id : String
+        __
+        equals() : boolean
+        toString() : String
+        }
+
+        ' ===== Value Objects =====
+        object Name <<ValueObject>> {
+
+        }
+
+    }
+
+}
+
+' ===== Interactions =====
+Author "1" --> "ID 1" AuthorId : has
+
+Author "1" *-- "1" Name : has
+
+' ===== Factory =====
+AuthorFactory ..> Author : <<create>>
+
+' ===== Repository =====
+package "PERSISTENCE" <<Folder>> {
+
+    package "Memo" #c0d8d8 {
+        object MemoAuthorRepo {
+            +addAuthor(authorName : String) : Author
+            +existsByName(name : String) : boolean
+            +findAll() : List<AuthorId>
+        }
+    }
+}
+
+IAuthorRepo <|. MemoAuthorRepo
+Author "*" <-- "1" MemoAuthorRepo : persists
+AuthorFactory "1"<----- "1" MemoAuthorRepo : invokes
+
+@enduml
