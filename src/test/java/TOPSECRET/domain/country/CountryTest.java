@@ -1,7 +1,4 @@
-package TOPSECRET.domain;
-
-import TOPSECRET.domain.country.Country;
-import TOPSECRET.domain.country.CountryFactory;
+package TOPSECRET.domain.country;
 
 import static org.junit.jupiter.api.Assertions.*;
 

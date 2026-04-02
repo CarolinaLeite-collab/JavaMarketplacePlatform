@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.country.CountryFactory;
-import TOPSECRET.domain.ICountryRepo;
+import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.BeforeEach;
