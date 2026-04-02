@@ -1,17 +1,16 @@
-package TOPSECRET.domain.valueobject;
+package TOPSECRET.domain.Author;
 
-import TOPSECRET.ddd.ValueObject;
 
 /**
  * Author is the person who originates, creates, and writes a literary work.
  * The same name can mean different authors.
  */
 
-public class Author implements ValueObject {
+public class Author {
 
     private String _name;
 
-    public Author (String name) {
+    Author (String name) {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Author name cannot be null or empty");
 

@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

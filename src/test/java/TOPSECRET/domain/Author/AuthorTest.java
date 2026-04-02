@@ -1,4 +1,4 @@
-package TOPSECRET.domain.valueobject;
+package TOPSECRET.domain.Author;
 
 import org.junit.jupiter.api.Test;
 
