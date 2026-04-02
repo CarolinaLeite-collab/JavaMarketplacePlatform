@@ -18,14 +18,14 @@ top to bottom direction
 Package "DOMAIN" {
 
     Package "GENRE" <<Folder>> #b0c4d4 {
-         class Genre <<Entity>> <<Root>> #lightgrey {
-                        -_genre : String
-                        +getGenre() : String
-                        +identity() : GenreId
-                        +sameAs(Object) : boolean
-                        +equals(Object) : boolean
-                        +hashCode() : int
-                        +toString() : String
+        class Genre <<Entity>> <<Root>>  {
+            -_genre : String
+            +getGenre() : String
+            +identity() : GenreId
+            +sameAs(Object) : boolean
+            +equals(Object) : boolean
+            +hashCode() : int
+            +toString() : String
         }
 
         class GenreFactory <<Factory>> {
@@ -35,8 +35,8 @@ Package "DOMAIN" {
     }
 
     Package "valueobject" <<Folder>> {
-       class GenreId <<ValueObject>> #LightPink {
-                   -_id : String
+        class GenreId <<ValueObject>> #LightPink {
+            -_id : String
         }
     }
 
@@ -46,30 +46,27 @@ Package "DOMAIN" {
         }
     }
 
-    Package "ddd" <<Folder>> {
-        interface IRepository<ID, T> <<Interface>> {
-            +save(T) : T
-            +findAll() : Iterable<T>
-            +ofIdentity(ID) : Optional<T>
-            +containsOfIdentity(ID) : boolean
-        }
-    }
-
     GENRE -[hidden]right- REPOSITORY
-    valueobject -[hidden]right- ddd
+    valueobject -[hidden]right- REPOSITORY
     GENRE -[hidden]down- valueobject
 
 }
 
-
-
-Package "PERSISTENCE" {
-    package "MEM"{
-            class MemoGenreRepo <<Repo>>{
-            }
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
     }
 }
 
+Package "PERSISTENCE" {
+    package "MEM" {
+        class MemoGenreRepo <<Repo>> {
+        }
+    }
+}
 
 GenreFactory "1" <-- "1" MemoGenreRepo : invokes
 Genre "1" --> "1" GenreId : has
