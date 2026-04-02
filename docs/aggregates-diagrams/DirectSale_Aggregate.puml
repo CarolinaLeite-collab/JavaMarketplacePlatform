@@ -23,9 +23,7 @@ Package "DOMAIN" {
 
     Package "DIRECTSALE" #b0c4d4 {
         class DirectSale <<Entity>> <<Root>> {
-            -_items : List<ItemId>
-            -_price : Price
-            -_timeLimit : Period
+
             +getItem() : ItemId
             +getPrice() : Price
             +getTimeLimit() : Period
@@ -75,7 +73,6 @@ class PublicationId <<ValueObject>>
 Package "PERSISTENCE" {
 Package "MEMO"{
 class MemoDirectSaleRepo{
-_directSales : List<DirectSale>
 }
 }
 }
