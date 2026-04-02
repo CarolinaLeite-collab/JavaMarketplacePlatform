@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.ItemDetails;
+import TOPSECRET.domain.PublicationDetails;
 import TOPSECRET.domain.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class ListOfItemsInMyLibraryControllerTest {
         // SUT
         ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
         // Act
-        List<ItemDetails> result = controller.getListOfItemDetails(_userDouble);
+        List<PublicationDetails> result = controller.getListOfItemDetails(_userDouble);
         // Assert
         assertTrue(result.isEmpty());
     }
@@ -50,18 +50,18 @@ class ListOfItemsInMyLibraryControllerTest {
     @Test
     void shouldReturnListOfItemsInLibrary() {
         // Arrange
-        ItemDetails itemDetailsDouble = mock(ItemDetails.class);
+        PublicationDetails pDetailsDouble = mock(PublicationDetails.class);
 
         when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.getItemDetails()).thenReturn(List.of(itemDetailsDouble));
+        when(_myLibraryDouble.getItemDetails()).thenReturn(List.of(pDetailsDouble));
 
         // SUT
         ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userDouble);
 
         //Act
-        List<ItemDetails> result = controller.getListOfItemDetails(_userDouble);
+        List<PublicationDetails> result = controller.getListOfItemDetails(_userDouble);
 
         //Assert
-        assertEquals(List.of(itemDetailsDouble), result);
+        assertEquals(List.of(pDetailsDouble), result);
     }
 }

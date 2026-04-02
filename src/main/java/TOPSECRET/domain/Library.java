@@ -36,13 +36,13 @@ public class Library {
         return _owner;
     }
 
-    public List<ItemDetails> getItemDetails() {
+    public List<PublicationDetails> getItemDetails() {
 
-        List <ItemDetails> listWithDetails = new ArrayList<>();
+        List <PublicationDetails> listWithDetails = new ArrayList<>();
 
         for (Item p : _items) {
 
-            ItemDetails pDetails = new ItemDetails(p);
+            PublicationDetails pDetails = new PublicationDetails(p);
 
             listWithDetails.add(pDetails);
         }
