@@ -52,7 +52,6 @@ Package "Domain" {
 Package "Persistence" {
     Package "MEM" {
         Class "MemoListOfItemsRepo" as MemoRepo <<Repo>> {
-            - _listOfItemsID : List<ListOfItemsID>
             + addListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
             + getListOfListOfItems() : List<ListOfItemsID>
             + findPublicListsByGenre(GenreID genreID) : List<ListOfItemsID>
@@ -66,7 +65,7 @@ Package "Persistence" {
 ' === Interactions === '
 
 ListOfItemsFactory ..> ListOfItemsRoot : creates
-ListOfItemsRoot "*" ...> "1..*" Item : references
+ListOfItemsRoot "*" o... "1..*" Item : aggregates
 ListOfItemsRoot "*" ...> "1" User : references
 ListOfItemsRoot "*" ...> "1" Genre : references
 ListOfItemsRoot "1" --> "1" ID : has
