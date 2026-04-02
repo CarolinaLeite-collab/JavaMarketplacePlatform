@@ -132,7 +132,7 @@ class PublicationTypeIdTest {
     @Test
     void toStringReturnsNormalisedName() {
         // Arrange
-        String name = "mAgAzInE";
+        String name = "  mAgAzInE ";
 
         // Act
         PublicationTypeId publicationTypeId = new PublicationTypeId(name);
