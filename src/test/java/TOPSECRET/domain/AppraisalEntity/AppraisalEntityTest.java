@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,4 +75,5 @@ class AppraisalEntityTest {
         assertEquals(_publicationTypes, _entityPublicationTypes);
         assertEquals(_genres, _entityGenres);
     }
+
 }

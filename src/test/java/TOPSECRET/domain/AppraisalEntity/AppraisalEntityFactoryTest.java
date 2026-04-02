@@ -1,13 +1,12 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -47,4 +46,5 @@ public class AppraisalEntityFactoryTest {
         }
 
     }
+
 }

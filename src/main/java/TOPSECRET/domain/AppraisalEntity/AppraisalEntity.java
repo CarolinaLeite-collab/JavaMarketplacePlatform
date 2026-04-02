@@ -1,6 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.AppraisalEntity;
 
+import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;
