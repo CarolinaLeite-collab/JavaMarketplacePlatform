@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.PublishingCompany.PublishingCompanyFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,10 +56,12 @@ class MemoPublishingCompanyRepoTest {
         // Arrange
         String publishingCompanyName = "TASCHEN";
 
-        PublishingCompany pc1 = new PublishingCompany(publishingCompanyName);
-        PublishingCompany pc2 = new PublishingCompany(publishingCompanyName);
+        PublishingCompany pc1 = mock(PublishingCompany.class);
+        PublishingCompany pc2 = mock(PublishingCompany.class);
 
         when(_pcfDouble.createPublishingCompany("TASCHEN")).thenReturn(pc1, pc2);
+        when(pc1.isSamePublishingCompany("TASCHEN")).thenReturn(true);
+        when(pc2.isSamePublishingCompany("TASCHEN")).thenReturn(true);
 
         //SUT
         MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);

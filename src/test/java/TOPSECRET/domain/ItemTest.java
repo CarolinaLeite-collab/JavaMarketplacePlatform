@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.BeforeEach;

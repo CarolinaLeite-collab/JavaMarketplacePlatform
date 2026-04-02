@@ -1,12 +1,12 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Repository class responsible for managing auctions within the system.

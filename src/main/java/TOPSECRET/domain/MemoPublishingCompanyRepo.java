@@ -1,5 +1,8 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.PublishingCompany.PublishingCompanyFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
