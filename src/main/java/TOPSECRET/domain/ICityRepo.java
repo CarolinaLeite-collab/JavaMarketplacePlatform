@@ -1,14 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.country.Country;
+import TOPSECRET.ddd.IRepository;
+import TOPSECRET.domain.valueobject.CityId;
 
-import java.util.List;
-
-public interface ICityRepo {
-
-    City registerCity(String cityName, Country country);
-
-    boolean existsCityInACountry(String cityName, Country country);
-
-    List<City> getAllCities();
+public interface ICityRepo extends IRepository<CityId, City> {
 }
