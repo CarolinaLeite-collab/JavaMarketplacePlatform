@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.genre.GenreFactory;

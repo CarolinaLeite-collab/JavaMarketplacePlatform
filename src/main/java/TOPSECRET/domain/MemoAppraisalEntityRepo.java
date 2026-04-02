@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.Role;
 import TOPSECRET.domain.User;
 

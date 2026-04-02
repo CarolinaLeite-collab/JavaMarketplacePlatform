@@ -1,10 +1,12 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.genre.GenreFactory;
 import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.persistence.mem.MemoGenreRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

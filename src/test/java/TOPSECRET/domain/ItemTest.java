@@ -2,6 +2,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

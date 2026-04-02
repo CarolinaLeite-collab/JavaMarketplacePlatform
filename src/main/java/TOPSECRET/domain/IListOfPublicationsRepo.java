@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.genre.Genre;
+
 import java.util.List;
 
 public interface IListOfPublicationsRepo {

@@ -1,9 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
-
-import java.util.List;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
 
 /**
  * Controller responsible for retrieving the list of official genres.

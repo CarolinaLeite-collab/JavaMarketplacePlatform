@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;

@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.User;

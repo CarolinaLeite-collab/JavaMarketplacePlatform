@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-
-import java.util.List;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
 
 /**
  * Controller responsible for handling the creation of private lists of publications for a user.
