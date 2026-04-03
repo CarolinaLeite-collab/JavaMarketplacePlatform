@@ -50,7 +50,6 @@ getDirectSaleItemsByPublisher(publishingCompany : PublishingCompanyId) : List<It
 
 }
 
-
 Package "VALUEOBJECT" {
 '== Value Objects (Ids) ==
 class DirectSaleId <<ValueObject>> #LightPink{
@@ -76,6 +75,17 @@ class MemoDirectSaleRepo{
 }
 }
 }
+
+Package "DDD" {
+
+    interface IRepository<ID, T> <<Interface>> {
+    save(T) : T
+    findAll() : Iterable<T>
+    ofIdentity(ID) : Optional <T>
+    containsOfIdentity(ID) : boolean
+    }
+
+}
 DirectSale "1" --> "ID 1" DirectSaleId : has
 
 MemoDirectSaleRepo "1" --> "*" DirectSaleFactory : invokes
@@ -95,7 +105,7 @@ DirectSaleFactory ..> DirectSale : <<create>>
 
 ' ===== Repository =====
 
-
+IDirectSaleRepo --|> IRepository
 IDirectSaleRepo <|.. MemoDirectSaleRepo
 
 @enduml
