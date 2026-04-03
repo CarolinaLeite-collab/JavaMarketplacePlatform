@@ -2,7 +2,7 @@
 'https://plantuml.com/class-diagram
 
 '==== Title ====
-title MiteLovers – DDD - Granularity 2
+title MiteLovers – DDD - Granularity 1
 top to bottom direction
 
 '==== basic style ====
@@ -53,41 +53,41 @@ class AppraisalEntity <<Aggregate Root>> {}
 '=== Correlations ==='
 
 '--- Edition ---'
-Edition "*" --- "1" PublishingCompany
-Edition "*" --- "1" Publication
-Edition "1" --- "*" Item
+Edition "*" --> "1" PublishingCompany
+Edition "*" --> "1" Publication
+Edition "1" --> "*" Item
 
 '--- Item ---'
-Item "*" --- "1" Library
-Item "1" -------- "0..1" DirectSale
-Item "1" -------- "0..1" Auction
-Item "*" --- "*" ListOfItems
+Library "1" --> "*" Item
+ListOfItems "1" --> "*" Item
 
 '--- ListOfItems ---'
-ListOfItems "*" --- "1" User
-ListOfItems "*" --- "1" Genre
+ListOfItems "*" --> "1" User
+ListOfItems "1" --> "1" Genre
 
 '--- User ---'
-User "*" --- "1" City
-User "1" --- "1" Library
-User "1" --- "*" Bid
-User "1" --- "*" Auction
-User "1" --- "*" DirectSale
+User "*" --> "1" City
+User "1" --> "1" Library
+User "1" --> "*" Bid
+User "1" --> "*" Auction
+User "1" --> "*" DirectSale
 
 '--- Publication ---'
-Publication "*" --- "*" Author
-Publication "*" --- "1" PublicationType
-Publication "*" --- "1..*" Genre
+Publication "1" --> "1" Author
+Publication "1" --> "1" PublicationType
+Publication "1" --> "1" Genre
 
 '--- AppraisalEntity ---'
-AppraisalEntity "*" --- "1..*" PublicationType
-AppraisalEntity "*" ----- "1..*" Genre
+AppraisalEntity "1" --> "1..*" PublicationType
+AppraisalEntity "1" ----> "1..*" Genre
 
 '--- Listing ---'
-Auction "1" --- "*" Bid
+Item "1" --> "0..1" Auction
+Item "1" --> "0..1" DirectSale
+Auction "1" --> "*" Bid
 
 '--- City ---'
-City "*" --- "1" Country
+City "*" --> "1" Country
 
 
 

@@ -196,7 +196,7 @@ User "1" --> "1" UserId : has
 User "1" --> "1" Address : has
 
 '--- Publication ---'
-Publication "1" ..> "*" AuthorId : uses
+Publication "1" ..> "1..*" AuthorId : uses
 Publication "*" ..> "1" PublicationTypeId : uses
 Publication "*" ..> "1..*" GenreId : uses
 Publication "1" --> "1" PublicationId : has
@@ -220,7 +220,7 @@ AppraisalEntity "1" --> "1" AppraisalEntityId : has
 
 '--- City ---'
 City "1" ---> "1" CityId : has
-City "1" ..> "1" CountryId : uses
+City "*" ..> "1" CountryId : uses
 
 '--- Country ---'
 Country "1" --> "1" CountryId
@@ -229,7 +229,7 @@ Country "1" --> "1" CountryId
 Address "*" ..> "1" CityId : uses
 
 '--- Item ---'
-Item "1" ..> "*" EditionId: uses
+Item "1" ..> "1" EditionId: uses
 Item "1" --> "1" ItemId: has
 Item "1" ...> "1" UserId: uses
 
