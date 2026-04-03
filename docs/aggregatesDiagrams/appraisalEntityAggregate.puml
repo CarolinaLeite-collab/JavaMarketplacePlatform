@@ -6,94 +6,99 @@ top to bottom direction
 
 '==== basic style ====
 skinparam monochrome false
-
 skinparam defaultFontName Futura
 skinparam objectFontSize 14
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #4B9DA9
+skinparam ArrowColor #3B4953
 skinparam ArrowFontSize 14
-skinparam PackageBorderColor #4B9DA9
+skinparam PackageBorderColor #black
 skinparam classAttributeIconSize 0
 
 ' ===== Domain =====
 Package "DOMAIN" {
 
     Package "APPRAISALENTITY" <<Folder>> #c0d8d8 {
-        object AppraisalEntity <<Root>> <<Entity>> #LightPink {
+        class AppraisalEntity <<Root>> <<Entity>>  {
             -_publicationTypeIds : List<PublicationTypeId>
             -_genreIds : List<GenreId>
-            __
+
             +getName() : Name
             +getGenres () : List<GenreId>
             +getPublicationTypes() : List<PublicationTypeId>
             }
 
-object AppraisalEntityFactory <<Factory>> {
-    +createAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
-    }
-}
+    class AppraisalEntityFactory <<Factory>> {
+        +createAppraisalEntity(name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        +createAppraisalEntity(id : AppraisalEntityID, name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
 
-package "REPOSITORY" <<Folder>> #c0d8d8 {
-    object IAppraisalEntityRepo <<Interface>> {
-        +registerNewAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
-    }
-}
-
-Package "VALUEOBJECT" #c0d8d8 {
-    '== Value Objects (Ids) ==
-    object AppraisalEntityId <<ValueObject>> #fff0b8{
-    -_id : String
-    __
-    equals() : boolean
-    toString() : String
-    }
-    object GenreId <<ValueObject>> {
-
-    }
-    object PublicationTypeId <<ValueObject>> {
-
-    }
-'    object ItemId <<<<ValueObject>> {
-'
-'    }
-    ' ===== Value Objects =====
-    object Name <<ValueObject>> {
-
+        }
     }
 
-}
+    package "REPOSITORY" <<Folder>> {
+        interface IAppraisalEntityRepo <<Interface>> {
+            +registerNewAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        }
+    }
 
-' ===== Interactions =====
-AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
+    Package "VALUEOBJECT" {
+        '== Value Objects (Ids) ==
+        class AppraisalEntityId <<ValueObject>> #LightPink {
+        -_id : String
 
-'IAppraisalEntityRepo "1" --> "*" AppraisalEntity : manages
+        equals() : boolean
+        toString() : String
+        }
+        class GenreId <<ValueObject>> {
 
-AppraisalEntity "1" --> "1..*" GenreId : references
-AppraisalEntity "1" --> "1..*" PublicationTypeId : references
-'AppraisalEntity ..> ItemId : references
+        }
+        class PublicationTypeId <<ValueObject>> {
 
-AppraisalEntity "1" *-- "1" Name : has
+        }
+        ' ===== Value Objects =====
+        class Name <<ValueObject>> {
 
-' ===== Factory =====
-AppraisalEntityFactory ..> AppraisalEntity : <<create>>
+        }
+
+    }
 
 }
 
 ' ===== Repository =====
 package "PERSISTENCE" <<Folder>> {
 
-    package "Memo" #c0d8d8 {
-        object MemoAppraisalEntityRepo {
-            -appraisalEntityExists(name : Name) : boolean
+    package "Memo" {
+        class MemoAppraisalEntityRepo {
+
         }
+
     }
+
 }
 
+Package "DDD" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+
+}
+
+' ===== Interactions =====
+AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
+AppraisalEntity "1" --> "1..*" GenreId : references
+AppraisalEntity "1" --> "1..*" PublicationTypeId : references
+AppraisalEntity "1" *-- "1" Name : has
+AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
+
+AppraisalEntityFactory ..> AppraisalEntity : <<create>>
+AppraisalEntityFactory "1"<- "1" MemoAppraisalEntityRepo : invokes
+
 IAppraisalEntityRepo <|. MemoAppraisalEntityRepo
-AppraisalEntity "*" <-- "1" MemoAppraisalEntityRepo : persists
-AppraisalEntityFactory "1"<----- "1" MemoAppraisalEntityRepo : invokes
+IAppraisalEntityRepo -|> IRepository
 
 @enduml
