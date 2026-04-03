@@ -23,7 +23,7 @@ package "PERSISTENCE" {
         class MemoLibraryRepo <<Repo>> {
 
 '        - _libraries : List<Library>
-'        - libraryExists(libraryID : LibraryID) : boolean
+'        - libraryExists(libraryID : LibraryId) : boolean
         }
 
     }
@@ -35,8 +35,8 @@ package "DOMAIN" {
 
         interface ILibraryRepo <<Interface>> {
         addLibrary(userID : UserID): Library
-        findLibraryByUser(userID : UserID): Library
-        getItemsInLibraryByUser(userID : UserID) : List<ItemID>
+        findLibraryByUserID(userID : UserID): Library
+        getItemsInLibraryByUserID(userID : UserID) : List<ItemID>
         }
 
     }
@@ -98,6 +98,6 @@ LibraryFactory "1" ..> "*" Library: <<create>>
 ILibraryRepo ...> UserID : <<use>>
 
 'ILibraryRepo "1" ..> "*" Library: manages
-'ILibraryRepo "1" ..> "*" LibraryID: uses
+'ILibraryRepo "1" ..> "*" LibraryId: uses
 
 @enduml

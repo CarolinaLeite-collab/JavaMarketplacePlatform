@@ -39,6 +39,11 @@ Package "Domain" {
     }
     Package Repository {
     Interface "IListOfItemsRepo" as IRepo <<Interface>> {
+    addListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
+    getListOfListOfItems() : List<ListOfItemsID>
+    findPublicListsByGenre(GenreID genreID) : List<ListOfItemsID>
+    findListsByUser(UserID userID) : List<ListOfItemsID>
+    findByOwnerNameAndGenre(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
     }
     }
     Package ValueObject {
@@ -52,12 +57,16 @@ Package "Domain" {
 Package "Persistence" {
     Package "MEM" {
         Class "MemoListOfItemsRepo" as MemoRepo <<Repo>> {
-            + addListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
-            + getListOfListOfItems() : List<ListOfItemsID>
-            + findPublicListsByGenre(GenreID genreID) : List<ListOfItemsID>
-            + findListsByUser(UserID userID) : List<ListOfItemsID>
-            + findByOwnerNameAndGenre(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
         }
+    }
+}
+
+package DDD {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
     }
 }
 
@@ -74,6 +83,8 @@ MemoRepo "1" ---> "1" ListOfItemsFactory :invokes
 MemoRepo "1" --> "*" ListOfItemsRoot :persistes
 
 IRepo "1" <|.. "1" MemoRepo
+
+IRepo --|> IRepository
 
 
 @enduml
