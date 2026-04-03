@@ -17,79 +17,89 @@ skinparam classAttributeIconSize 0
 
 package DOMAIN {
 
-package AUCTION #b0c4d4 {
+    package AUCTION #b0c4d4 {
 
-class Auction <<Entity>> <<Root>> {
--ZonedDateTime _auctionStartDate;
--ZonedDateTime _auctionEndDate;
-+placeBid (user : User, price : Price) : Bid
-+getHighestBid() : Bid
-+acceptBid(bid : Bid) : void
-+finalizeAuction() : void
-+getItem() : Item
-+getBid() : Bid
-+isByGenreID(genreID : GenreID) : boolean
-+isByAuthorID(authorID : AuthorID) : boolean
-+isByPublicationID(publicationID : PublicationID) : boolean
-+isByPublishingCompanyID(publisherID : PublishingCompanyID) : boolean
--isAuctionStartDateValid(date : ZoneDateTime) : boolean
--isAuctionEndDateValid(date : ZoneDateTime) : boolean
--isOutrightPriceValid(price : Price) : boolean
-}
+        class Auction <<Entity>> <<Root>> {
+            -ZonedDateTime _auctionStartDate;
+            -ZonedDateTime _auctionEndDate;
+            +placeBid (user : User, price : Price) : Bid
+            +getHighestBid() : Bid
+            +acceptBid(bid : Bid) : void
+            +finalizeAuction() : void
+            +getItem() : Item
+            +getBid() : Bid
+            +isByGenreID(genreID : GenreID) : boolean
+            +isByAuthorID(authorID : AuthorID) : boolean
+            +isByPublicationID(publicationID : PublicationID) : boolean
+            +isByPublishingCompanyID(publisherID : PublishingCompanyID) : boolean
+            -isAuctionStartDateValid(date : ZoneDateTime) : boolean
+            -isAuctionEndDateValid(date : ZoneDateTime) : boolean
+            -isOutrightPriceValid(price : Price) : boolean
+        }
 
-class Bid <<Entity>> {
--Instant _bidDate
-+getBidder()
-+getOfferPrice()
-+getBidDate()
--validateBidder(UserID)
--validateOfferPrice(UserID)
-}
+        class Bid <<Entity>> {
+            -Instant _bidDate
+            +getBidder()
+            +getOfferPrice()
+            +getBidDate()
+            -validateBidder(UserID)
+            -validateOfferPrice(UserID)
+        }
 
-class BidFactory {
-+ createBid(bidder : User, offerPrice : Price) : Bid
-}
+        class BidFactory {
+            + createBid(bidder : User, offerPrice : Price) : Bid
+        }
 
-class AuctionFactory {
-+ createAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-+ createAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-}
+        class AuctionFactory {
+            + createAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+        }
 
-}
+    }
 
-package REPOSITORY {
+    package REPOSITORY {
 
-interface IAuctionRepo {
-getAuctionItemsByGenre(genre : Genre) :  List<Item>
-getAuctionItemsByAuthor(author : Author) :  List<Item>
-getAuctionItemsByPublication(publication : Publication):  List<Item>
-getAuctionItemsByPublishingCompany(publisher : PublishingCompany ):  List<Item>
-}
+        interface IAuctionRepo {
+            createAndAddAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            createAndAddAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            getAuctionItemsByGenre(genre : Genre) :  List<Item>
+            getAuctionItemsByAuthor(author : Author) :  List<Item>
+            getAuctionItemsByPublication(publication : Publication):  List<Item>
+            getAuctionItemsByPublishingCompany(publisher : PublishingCompany ):  List<Item>
+        }
+    }
 
-}
-
-package VALUEOBJECT {
-class AuctionID <<ValueObject>> #LightPink
-class Price <<ValueObject>>
-class ItemID <<ValueObject>>
-class UserID <<ValueObject>>
-class GenreID <<ValueObject>>
-class AuthorID <<ValueObject>>
-class PublicationID <<ValueObject>>
-class PublishingCompanyID <<ValueObject>>
-}
-
+    package VALUEOBJECT {
+        class AuctionID <<ValueObject>> #LightPink
+        class Price <<ValueObject>>
+        class ItemID <<ValueObject>>
+        class UserID <<ValueObject>>
+        class GenreID <<ValueObject>>
+        class AuthorID <<ValueObject>>
+        class PublicationID <<ValueObject>>
+        class PublishingCompanyID <<ValueObject>>
+    }
 }
 
 package PERSISTENCE {
 
-package MEM {
-class MemoAuctionRepo <<Repo>>
+    package MEM {
+        class MemoAuctionRepo <<Repo>>
+    }
 }
+
+package DDD {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
 }
 
 MemoAuctionRepo ..|> IAuctionRepo
 IAuctionRepo "1" --> "*" Auction : manages
+IAuctionRepo --|> IRepository
 AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction "1" *---- "*" Bid : aggregates
 BidFactory "1" ...> "*" Bid : <<create>>
