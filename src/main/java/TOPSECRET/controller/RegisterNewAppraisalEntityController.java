@@ -6,6 +6,7 @@ import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.Role;
 
