@@ -22,37 +22,37 @@ package DOMAIN {
         class Auction <<Entity>> <<Root>> {
             -ZonedDateTime _auctionStartDate;
             -ZonedDateTime _auctionEndDate;
-            +placeBid (user : User, price : Price) : Bid
+            +placeBid (userId : UserId, price : Price) : Bid
             +getHighestBid() : Bid
-            +acceptBid(bid : Bid) : void
+            +acceptBid(Bid : Bid) : void
             +finalizeAuction() : void
             +getItem() : Item
             +getBid() : Bid
-            +isByGenreID(genreID : GenreID) : boolean
-            +isByAuthorID(authorID : AuthorID) : boolean
-            +isByPublicationID(publicationID : PublicationID) : boolean
-            +isByPublishingCompanyID(publisherID : PublishingCompanyID) : boolean
-            -isAuctionStartDateValid(date : ZoneDateTime) : boolean
-            -isAuctionEndDateValid(date : ZoneDateTime) : boolean
-            -isOutrightPriceValid(price : Price) : boolean
+            +isByGenreId(genreId : GenreId) : boolean
+            +isByAuthorId(authorId : AuthorId) : boolean
+            +isByPublicationId(publicationId : PublicationId) : boolean
+            +isByPublishingCompanyId(publisherId : PublishingCompanyId) : boolean
+            -isAuctionStartDateValId(date : ZoneDateTime) : boolean
+            -isAuctionEndDateValId(date : ZoneDateTime) : boolean
+            -isOutrightPriceValId(price : Price) : boolean
         }
 
         class Bid <<Entity>> {
-            -Instant _bidDate
+            -Instant _BidDate
             +getBidder()
             +getOfferPrice()
             +getBidDate()
-            -validateBidder(UserID)
-            -validateOfferPrice(UserID)
+            -valIdateBidder(UserId)
+            -valIdateOfferPrice(UserId)
         }
 
         class BidFactory {
-            + createBid(bidder : User, offerPrice : Price) : Bid
+            + createBid(Bidder : User, offerPrice : Price) : Bid
         }
 
         class AuctionFactory {
-            + createAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            + createAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
         }
 
     }
@@ -60,24 +60,24 @@ package DOMAIN {
     package REPOSITORY {
 
         interface IAuctionRepo {
-            createAndAddAuction(itemID : Item , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            createAndAddAuction(itemID : Item , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            getAuctionItemsByGenre(genre : Genre) :  List<Item>
-            getAuctionItemsByAuthor(author : Author) :  List<Item>
-            getAuctionItemsByPublication(publication : Publication):  List<Item>
-            getAuctionItemsByPublishingCompany(publisher : PublishingCompany ):  List<Item>
+            createAndAddAuction(itemId : ItemId , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            createAndAddAuction(itemId : ItemId , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            getAuctionItemsByGenre(genreId : GenreId) :  List<ItemId>
+            getAuctionItemsByAuthor(authorId : AuthorId) :  List<ItemId>
+            getAuctionItemsByPublication(publicationId : PublicationId):  List<ItemId>
+            getAuctionItemsByPublishingCompany(publisherId : PublishingCompanyId ):  List<ItemId>
         }
     }
 
     package VALUEOBJECT {
-        class AuctionID <<ValueObject>> #LightPink
+        class AuctionId <<ValueObject>> #LightPink
         class Price <<ValueObject>>
-        class ItemID <<ValueObject>>
-        class UserID <<ValueObject>>
-        class GenreID <<ValueObject>>
-        class AuthorID <<ValueObject>>
-        class PublicationID <<ValueObject>>
-        class PublishingCompanyID <<ValueObject>>
+        class ItemId <<ValueObject>>
+        class UserId <<ValueObject>>
+        class GenreId <<ValueObject>>
+        class AuthorId <<ValueObject>>
+        class PublicationId <<ValueObject>>
+        class PublishingCompanyId <<ValueObject>>
     }
 }
 
@@ -104,16 +104,15 @@ AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction "1" *---- "*" Bid : aggregates
 BidFactory "1" ...> "*" Bid : <<create>>
 MemoAuctionRepo "1" --> "*" Auction : persists
-Auction "1" --> "1" AuctionID : has
-Auction ..> UserID : references
-Auction o-- ItemID : has
-Auction ..> Price : references
-Auction .> GenreID : references
-Auction .> AuthorID : references
-Auction .> PublicationID : references
-Auction .> PublishingCompanyID : references
-
-Bid ...> Price : references
-Bid ....> UserID : references
+Auction "1" --> "1" AuctionId : has
+Auction "*" ..> "1" UserId : references
+Auction "*" o-- "1..*" ItemId : has
+Auction "*" ..> "1" Price : references
+Auction "*" .> "1..*" GenreId : references
+Auction "*" .> "*" AuthorId : references
+Auction "*" .> "1..*" PublicationId : references
+Auction "*" .> "1..*" PublishingCompanyId : references
+Bid "*" ...> "1" Price : references
+Bid "*" ....> "1" UserId : references
 
 @enduml
