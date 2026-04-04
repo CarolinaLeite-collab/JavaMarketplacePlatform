@@ -39,7 +39,7 @@ class UserFactoryTest {
         Email emailDouble = mock(Email.class);
         Address addressDouble = mock(Address.class);
         Phone phoneDouble = mock(Phone.class);
-        UserID userIDDouble = mock(UserID.class);
+        UserId userIDDouble = mock(UserId.class);
 
         // SUT
         UserFactory userFactory = new UserFactory();

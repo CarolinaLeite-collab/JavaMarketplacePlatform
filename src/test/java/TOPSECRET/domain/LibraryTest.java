@@ -191,7 +191,7 @@ class LibraryTest {
     }
 
     @Test
-    void getPublicationDetailsShouldReturnPublicationDetails() {
+    void getPublicationDetailsShouldReturnPublicationDetailsOfItem() {
 
         //Arrange
         Item _itemDouble2 = mock(Item.class);
@@ -215,13 +215,11 @@ class LibraryTest {
         library.addItemToLibrary(_itemDouble);
         library.addItemToLibrary(_itemDouble2);
 
-        List<PublicationDetails> result = library.getPublicationDetails();
+        List<PublicationDetails> result = library.getItemDetails();
 
         //assert
         assertEquals(2, result.size());
 
     }
-
-
 
 }

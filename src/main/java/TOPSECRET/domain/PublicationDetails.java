@@ -5,10 +5,10 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.valueobject.Title;
 
 /**
- * Represents a collection of data retrieved from {@link Publication}.
+ * Represents a collection of data retrieved from {@link Item}.
  * <p>
- * Includes the title, author, publication type, and identifier of the publication.
- * This class is used to display publication information without exposing full domain objects.
+ * Includes the title, author, publication type, and identifier of the publication within an item.
+ * This class is used to display item information without exposing full domain objects.
  * </p>
  */
 
@@ -17,15 +17,17 @@ public class PublicationDetails {
     private final Title _title;
     private final Author _author;
     private final PublicationType _publicationType;
-//    private final Identifier _identifier;
+    //private final Identifier _identifier;
 
     public PublicationDetails(Item item) {
-        _title = item.get_publication().getTitle();
-        _author = item.get_publication().getAuthor();
-        _publicationType = item.get_publication().getPublicationType();
-//        _identifier = item.get_publication().getIdentifier();
+        Publication publication = item.get_publication();
 
+        _title = publication.getTitle();
+        _author = publication.getAuthor();
+        _publicationType = publication.getPublicationType();
+        //_identifier = publication.getIdentifier();
     }
+
     public Title getTitle() {
         return _title;
     }
@@ -38,7 +40,7 @@ public class PublicationDetails {
         return _publicationType;
     }
 
-//    public Identifier get_identifier() {
+//    public Identifier getIdentifier() {
 //        return _identifier;
 //    }
 }

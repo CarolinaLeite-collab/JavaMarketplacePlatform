@@ -3,7 +3,7 @@ package TOPSECRET.domain;
 
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +31,14 @@ public class MemoUserRepo implements IUserRepo {
     }
 
     @Override
-    public Optional<User> ofIdentity(UserID userId) {
+    public Optional<User> ofIdentity(UserId userId) {
         return _users.stream()
                 .filter(u -> u.identity().equals(userId))
                 .findFirst();
     }
 
     @Override
-    public boolean containsOfIdentity(UserID userId) {
+    public boolean containsOfIdentity(UserId userId) {
         return _users.stream()
                 .anyMatch(u -> u.identity().equals(userId));
     }

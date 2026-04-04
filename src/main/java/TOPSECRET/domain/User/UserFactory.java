@@ -16,7 +16,7 @@ public class UserFactory {
         return new User(name, email);
     }
 
-    public User createUser(UserID userID, Name name, Address address, Email email, Phone phone) {
+    public User createUser(UserId userId, Name name, Address address, Email email, Phone phone) {
         return new User (name, address, email, phone);
     }
 }

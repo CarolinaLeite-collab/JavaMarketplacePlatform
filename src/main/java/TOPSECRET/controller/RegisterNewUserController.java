@@ -6,7 +6,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the registration of a {@link User}.
@@ -29,7 +29,7 @@ public class RegisterNewUserController {
         }
 
         Email newEmail = new Email(email);
-        UserID userId = new UserID(newEmail);
+        UserId userId = new UserId(newEmail);
 
         if (_iUserRepo.containsOfIdentity(userId)) {
             throw new IllegalStateException("User already exists");

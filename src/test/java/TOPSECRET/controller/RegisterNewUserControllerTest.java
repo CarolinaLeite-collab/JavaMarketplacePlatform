@@ -5,7 +5,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,7 +38,7 @@ class RegisterNewUserControllerTest {
 
     @Test
     void registerNewUserShouldCreateAndReturnUser() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserID.class))).thenReturn(false);
+        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(false);
         when(_userFactoryDouble.createUser(any(Name.class), any(Email.class))).thenReturn(_userDouble);
         doReturn(_userDouble).when(_iUserRepoDouble).save(any(User.class));
 
@@ -63,7 +63,7 @@ class RegisterNewUserControllerTest {
 
     @Test
     void registerNewUserShouldThrowWhenUserAlreadyExists() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserID.class))).thenReturn(true);
+        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(true);
 
         RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
 
@@ -73,7 +73,7 @@ class RegisterNewUserControllerTest {
 
     @Test
     void registerNewUserShouldThrowCorrectMessageWhenUserAlreadyExists() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserID.class))).thenReturn(true);
+        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(true);
 
         RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
 

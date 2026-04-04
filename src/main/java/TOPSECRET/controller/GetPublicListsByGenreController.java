@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.IListOfPublicationsRepo;
-import TOPSECRET.domain.ListOfPublications;
+import TOPSECRET.domain.IListOfItemsRepo;
+import TOPSECRET.domain.ListOfItems;
 import TOPSECRET.domain.User.User;
 
 import java.util.List;
@@ -10,22 +10,22 @@ import java.util.List;
 /**
  * Controller responsible for retrieving public lists of publications filtered by genre.
  * <p>
- * This controller interacts with the {@link IListOfPublicationsRepo} to obtain
- * {@link ListOfPublications} instances that are public and match a specific {@link Genre}.
+ * This controller interacts with the {@link IListOfItemsRepo} to obtain
+ * {@link ListOfItems} instances that are public and match a specific {@link Genre}.
  * </p>
  */
 
 public class GetPublicListsByGenreController {
-    private final IListOfPublicationsRepo _iListOfPublicationsRepo;
+    private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetPublicListsByGenreController(IListOfPublicationsRepo iListOfPubRepo, User user) {
-        _iListOfPublicationsRepo = iListOfPubRepo;
+    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, User user) {
+        _iListOfItemsRepo = iListOfPubRepo;
     }
 
-    public List<ListOfPublications> getPublicListsByGenre(Genre genre) {
+    public List<ListOfItems> getPublicListsByGenre(Genre genre) {
         if (genre == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _iListOfPublicationsRepo.findPublicListsByGenre(genre);
+        return _iListOfItemsRepo.findPublicListsByGenre(genre);
     }
 }

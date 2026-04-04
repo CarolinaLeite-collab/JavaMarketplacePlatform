@@ -2,7 +2,7 @@ package TOPSECRET.domain;
 
 
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.valueobject.UserID;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,15 +18,15 @@ class MemoUserRepoTest {
 
     private User _user1Double;
     private User _user2Double;
-    private UserID _userId1Double;
-    private UserID _userId2Double;
+    private UserId _userId1Double;
+    private UserId _userId2Double;
 
     @BeforeEach
     void setUp() {
         _user1Double = mock(User.class);
         _user2Double = mock(User.class);
-        _userId1Double = mock(UserID.class);
-        _userId2Double = mock(UserID.class);
+        _userId1Double = mock(UserId.class);
+        _userId2Double = mock(UserId.class);
 
         when(_user1Double.identity()).thenReturn(_userId1Double);
         when(_user2Double.identity()).thenReturn(_userId2Double);

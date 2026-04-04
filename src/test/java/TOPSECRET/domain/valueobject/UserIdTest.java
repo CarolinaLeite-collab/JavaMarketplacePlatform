@@ -4,47 +4,47 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserIDTest {
+class UserIdTest {
 
     @Test
     void constructorShouldThrowWhenEmailIsNull() {
 
         // Act & Assert
         assertThrows(NullPointerException.class,
-                () -> new UserID(null));
+                () -> new UserId(null));
     }
 
     @Test
-    void twoUserIDsWithSameEmailShouldBeEqual() {
+    void twoUserIdsWithSameEmailShouldBeEqual() {
 
         // Arrange
         Email email = new Email("pedro@mail.com");
 
-        UserID id1 = new UserID(email);
-        UserID id2 = new UserID(email);
+        UserId id1 = new UserId(email);
+        UserId id2 = new UserId(email);
 
         // Assert
         assertEquals(id1, id2);
     }
 
     @Test
-    void twoUserIDsWithDifferentEmailsShouldNotBeEqual() {
+    void twoUserIdsWithDifferentEmailsShouldNotBeEqual() {
 
         // Arrange
-        UserID id1 = new UserID(new Email("pedro@mail.com"));
-        UserID id2 = new UserID(new Email("ana@mail.com"));
+        UserId id1 = new UserId(new Email("pedro@mail.com"));
+        UserId id2 = new UserId(new Email("ana@mail.com"));
 
         // Assert
         assertNotEquals(id1, id2);
     }
 
     @Test
-    void equalUserIDsShouldHaveSameHashCode() {
+    void equalUserIdsShouldHaveSameHashCode() {
 
         // Arrange
         Email email = new Email("pedro@mail.com");
-        UserID id1 = new UserID(email);
-        UserID id2 = new UserID(email);
+        UserId id1 = new UserId(email);
+        UserId id2 = new UserId(email);
 
         //Act
         int hash1 = id1.hashCode();
@@ -59,7 +59,7 @@ class UserIDTest {
 
         // Arrange
         Email email = new Email("pedro@mail.com");
-        UserID id = new UserID(email);
+        UserId id = new UserId(email);
 
         // Act
         Email result = id.getEmail();
@@ -69,25 +69,25 @@ class UserIDTest {
     }
 
     @Test
-    void differentUserIDsShouldHaveDifferentHashCode() {
+    void differentUserIdsShouldHaveDifferentHashCode() {
 
         // Arrange
-        UserID id1 = new UserID(new Email("pedro@mail.com"));
-        UserID id2 = new UserID(new Email("ana@mail.com"));
+        UserId id1 = new UserId(new Email("pedro@mail.com"));
+        UserId id2 = new UserId(new Email("ana@mail.com"));
 
         // Assert
         assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
-    void equalsShouldReturnFalseWhenObjectIsNotUserID() {
+    void equalsShouldReturnFalseWhenObjectIsNotUserId() {
 
         // Arrange
-        UserID id = new UserID(new Email("pedro@mail.com"));
-        String notAUserID = "not a user id";
+        UserId id = new UserId(new Email("pedro@mail.com"));
+        String notAUserId = "not a user id";
 
         // Assert
-        assertNotEquals(id, notAUserID);
+        assertNotEquals(id, notAUserId);
     }
 
     @Test
@@ -95,7 +95,7 @@ class UserIDTest {
 
         // Arrange
         Email email = new Email("pedro@mail.com");
-        UserID id = new UserID(email);
+        UserId id = new UserId(email);
 
         // Act
         String result = id.toString();

@@ -250,14 +250,14 @@ class UserTest {
     }
 
     @Test
-    void identityShouldReturnUserIDBasedOnEmail() {
+    void identityShouldReturnUserIdBasedOnEmail() {
 
         // Arrange
         Email emailDouble = mock(Email.class);
         User user = new User(_nameDouble, emailDouble); // SUT
 
         // Act
-        UserID identity = user.identity();
+        UserId identity = user.identity();
 
         // Assert
         assertNotNull(identity);
