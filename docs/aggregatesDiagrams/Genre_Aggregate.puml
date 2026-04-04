@@ -29,8 +29,8 @@ Package "DOMAIN" {
         }
 
         class GenreFactory <<Factory>> {
-            +createGenre(String) : Genre
-            +createGenre(GenreId, String) : Genre
+            +createGenre(name : String) : Genre
+            +createGenre(genreID: GenreID , name : String) : Genre
         }
     }
 
@@ -42,7 +42,7 @@ Package "DOMAIN" {
 
     Package "REPOSITORY" <<Folder>> {
         interface IGenreRepo <<Interface>> {
-            +addGenre(String) : Genre
+            +addGenre(name : String) : Genre
         }
     }
 
