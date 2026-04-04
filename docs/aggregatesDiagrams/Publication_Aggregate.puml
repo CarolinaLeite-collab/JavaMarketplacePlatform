@@ -24,15 +24,15 @@ Package "DOMAIN" {
 
         class Publication <<Root>> <<Entity>> {
             -_releaseYear : Year
-            +isByAuthor(AuthorId) : boolean
-            +isByGenre(GenreId) : boolean
+            +isByAuthor( a : AuthorId) : boolean
+            +isByGenre(g : GenreId) : boolean
             +identity() : PublicationId
             +sameAs(Object) : boolean
         }
 
         class PublicationFactory <<Factory>> {
-            +createPublication(Title, AuthorId, Year, PublicationTypeId, GenreId) : Publication
-            +createPublication(PublicationId, Title, AuthorId, Year, PublicationTypeId, GenreId) : Publication
+            +createPublication(t : Title, a : AuthorId, y : Year, pubTypId : PublicationTypeId, gId: GenreId) : Publication
+            +createPublication(p : PublicationId, t :Title, a : AuthorId, y : Year, pubTypId : PublicationTypeId, g : GenreId) : Publication
         }
 
     }
