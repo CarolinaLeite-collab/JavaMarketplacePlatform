@@ -15,11 +15,15 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
 actor User
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
 User -> System : I want to add a publication to my library
+activate System
 System --> User : Select what available books you want to add:
+deactivate System
 User -> System : Selection
+activate System
 System --> User : Done
+deactivate System
 
 @enduml

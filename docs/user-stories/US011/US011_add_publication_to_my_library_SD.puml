@@ -19,46 +19,46 @@ autoactivate off
 
 
 actor User
-participant "UI1:AddPublicationUI"
-participant "Ctl1:AddPublicationOnLibrary"
-participant "_ir:IItemRepo"
-participant "myLibrary:Library"
-participant "_lr:ILibraryRepo"
+participant ":AddPublicationUI" as UI
+participant ":AddPublicationOnLibraryCtl" as CTL
+participant ":ILibraryRepo" as LIBREPO
+participant "myLibrary:Library" as LIB
+participant ":IItemRepo" as ITEMREPO
 
-User -> "UI1:AddPublicationUI" : I want to add an Item to my library
-activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : getListOfAvailableItems(user)
-activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "_lr:ILibraryRepo" : getMyLibrary(user)
-activate "_lr:ILibraryRepo"
-"_lr:ILibraryRepo" --> "Ctl1:AddPublicationOnLibrary" : myLibrary
-deactivate "_lr:ILibraryRepo"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : getAllItems()
-activate "myLibrary:Library"
-"myLibrary:Library" -> "myLibrary:Library" : copyList
-"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : List<Items>
-deactivate "myLibrary:Library"
-"Ctl1:AddPublicationOnLibrary" -> "_ir:IItemRepo" : getDifferentOf(existentItems)
-activate "_ir:IItemRepo"
-"_ir:IItemRepo" -> "_ir:IItemRepo" : copyList
-"_ir:IItemRepo" --> "Ctl1:AddPublicationOnLibrary" : List<Items>
-deactivate "_ir:IItemRepo"
-"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : List<Items>
-deactivate "Ctl1:AddPublicationOnLibrary"
-"UI1:AddPublicationUI" --> User : Select what available items you want to add
-deactivate "UI1:AddPublicationUI"
-User -> "UI1:AddPublicationUI" : Selection
-activate "UI1:AddPublicationUI"
-"UI1:AddPublicationUI" -> "Ctl1:AddPublicationOnLibrary" : addItemToLibrary(selectedItem, user)
-activate "Ctl1:AddPublicationOnLibrary"
-"Ctl1:AddPublicationOnLibrary" -> "myLibrary:Library" : addItemToLibrary(selectedItem, user)
-activate "myLibrary:Library"
-"myLibrary:Library" -> "myLibrary:Library" : addItemToLibrary(selectedItem)
-"myLibrary:Library" --> "Ctl1:AddPublicationOnLibrary" : true
-deactivate "myLibrary:Library"
-"Ctl1:AddPublicationOnLibrary" --> "UI1:AddPublicationUI" : true
-deactivate "Ctl1:AddPublicationOnLibrary"
-"UI1:AddPublicationUI" --> User : Done!
-deactivate "UI1:AddPublicationUI"
+User -> UI : I want to add an Item to my library
+activate UI
+UI -> CTL : getListOfAvailableItems(userId)
+activate CTL
+CTL -> LIBREPO : getMyLibrary(userId)
+activate LIBREPO
+LIBREPO --> CTL : myLibrary
+deactivate LIBREPO
+CTL -> LIB : getAllItems()
+activate LIB
+LIB -> LIB : copyList
+LIB --> CTL : List<Items>
+deactivate LIB
+CTL -> ITEMREPO : getDifferentOf(existentItems)
+activate ITEMREPO
+ITEMREPO -> ITEMREPO : copyList
+ITEMREPO --> CTL : List<Items>
+deactivate ITEMREPO
+CTL --> UI : List<Items>
+deactivate CTL
+UI --> User : Select what available items you want to add
+deactivate UI
+User -> UI : Selection
+activate UI
+UI -> CTL : addItemToLibrary(selectedItem, userId)
+activate CTL
+CTL -> LIB : addItemToLibrary(selectedItem, userId)
+activate LIB
+LIB -> LIB : addItemToLibrary(selectedItem)
+LIB --> CTL : true
+deactivate LIB
+CTL --> UI : true
+deactivate CTL
+UI --> User : Done!
+deactivate UI
 
 @enduml
