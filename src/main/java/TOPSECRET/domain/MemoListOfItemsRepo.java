@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.UserId;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
     }
 
     @Override
-    public ListOfItems addListOfItems(User user, String name, Genre genre) {
-        ListOfItems newList = _factory.createListOfItems(user, name, genre);
+    public ListOfItems addListOfItems(UserId userId, String name, Genre genre) {
+        ListOfItems newList = _factory.createListOfItems(userId, name, genre);
         if (_listsOfListOfItems.contains(newList)) {
             return null;
         }
@@ -53,11 +55,11 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
     }
 
     @Override
-    public List<ListOfItems> findListsByUser(User user) {
+    public List<ListOfItems> findListsByUserId(UserId userId) {
 
         List<ListOfItems> result = new ArrayList<>();
         for (ListOfItems lop : _listsOfListOfItems) {
-            if (lop.getUser().equals(user)) {
+            if (lop.getUserId().equals(userId)) {
                 result.add(lop);
             }
         }
@@ -65,12 +67,12 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
     }
 
     @Override
-    public ListOfItems findByOwnerNameAndGenre(User user, String name, Genre genre) {
+    public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, Genre genre) {
 
         String normalizedName = name.trim();
 
         for (ListOfItems lop : _listsOfListOfItems) {
-            if (lop.getUser().equals(user)
+            if (lop.getUserId().equals(userId)
                     && lop.getName().equalsIgnoreCase(normalizedName)
                     && lop.getGenre().equals(genre)) {
                 return lop;

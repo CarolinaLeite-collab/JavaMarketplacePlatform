@@ -1,16 +1,18 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.UserId;
+
 import java.util.List;
 
 public interface IListOfItemsRepo {
 
-    ListOfItems addListOfItems(User user, String name, Genre genre);
+    ListOfItems addListOfItems(UserId userId, String name, Genre genre);
 
     List<ListOfItems> getListOfListOfItems();
 
     List<ListOfItems> findPublicListsByGenre(Genre genre);
 
-    List<ListOfItems> findListsByUser(User user);
+    List<ListOfItems> findListsByUserId(UserId userId);
 
-    ListOfItems findByOwnerNameAndGenre(User user, String name, Genre genre);
+    ListOfItems findByOwnerNameAndGenre(UserId userId, String name, Genre genre);
 }

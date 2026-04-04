@@ -1,4 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.library;
+
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.PublicationDetails;
+import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.LibraryId;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,26 +20,33 @@ import java.util.List;
  *
  */
 
-public class Library {
+public class Library implements AggregateRoot<LibraryId> {
 
-    private User _owner;
+    private LibraryId _libraryId;
     private List<Item> _items = new ArrayList<>();
 
-    Library(User user){
+    Library(LibraryId libraryId){
 
-        if (user == null)
-            throw new IllegalArgumentException("User is required");
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId is required");
+        }
 
-        _owner = user;
+        _libraryId = libraryId;
 
     }
 
-    public boolean belongsTo(User user){
-        return _owner.equals(user);
+    @Override
+    public LibraryId identity() {
+
+        return _libraryId;
+
     }
 
-    public User getUser() {
-        return _owner;
+    @Override
+    public boolean sameAs(Object object) {
+
+        return equals(object);
+
     }
 
     public List<PublicationDetails> getItemDetails() {
@@ -74,5 +87,16 @@ public class Library {
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+
+        if (object == null) return false;
+        if (object == this) return true;
+        if (!(object instanceof Library)) return false;
+        Library library = (Library) object;
+        return this._libraryId.equals(library._libraryId);
+
     }
 }

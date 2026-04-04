@@ -1,7 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.DirectSale;
+import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Period;
 import java.util.List;
@@ -14,14 +18,14 @@ public class PublicationInLibraryForDirectSaleController {
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, User _userID) {
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, UserId _userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
     }
 
-    public List<Item> getItemsInLibraryByUser(User user) {
+    public List<Item> getItemsInLibraryByUser(UserId userId) {
 
-        return _iLibraryRepo.getItemsInLibraryByUser(user);
+        return _iLibraryRepo.getItemsInLibraryByUserId(userId);
 
     }
 

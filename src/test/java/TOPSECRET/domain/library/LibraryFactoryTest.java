@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.library;
 
+import TOPSECRET.domain.valueobject.LibraryId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -11,7 +12,7 @@ class LibraryFactoryTest {
     @Test
     void createLibrary_shouldReturnLibraryWithCorrectUser() {
         // Arrange
-        User userDouble = mock(User.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
 
         //SUT
         LibraryFactory factory = new LibraryFactory();
@@ -19,14 +20,14 @@ class LibraryFactoryTest {
         try (MockedConstruction<Library> mocked =
                      mockConstruction(Library.class,
                              (mock, context) -> {
-                                 when(mock.getUser())
-                                         .thenReturn(userDouble);
+                                 when(mock.identity())
+                                         .thenReturn(libraryIdDouble);
                              })) {
             //Act
-            Library newLibrary = factory.createLibrary(userDouble);
+            Library newLibrary = factory.createLibrary(libraryIdDouble);
 
             //Assert
-            assertEquals(userDouble, newLibrary.getUser());
+            assertEquals(libraryIdDouble, newLibrary.identity());
         }
 
     }

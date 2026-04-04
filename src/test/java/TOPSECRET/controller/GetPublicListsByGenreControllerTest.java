@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,14 +16,14 @@ class GetPublicListsByGenreControllerTest {
 
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private Genre _genreDouble;
-    private User _userDouble;
+    private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
         _genreDouble = mock(Genre.class);
-        _userDouble = mock(User.class);
+        _userIdDouble = mock(UserId.class);
     }
 
     @Test
@@ -33,18 +33,18 @@ class GetPublicListsByGenreControllerTest {
         ListOfItems listA = mock(ListOfItems.class);
 
         when(listA.getName()).thenReturn("List A");
-        when(listA.getUser()).thenReturn(_userDouble);
+        when(listA.getUserId()).thenReturn(_userIdDouble);
         when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
 
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
         // Act
         List<ListOfItems> result = controller.getPublicListsByGenre(_genreDouble);
 
         // Assert
         assertEquals("List A", result.get(0).getName());
-        assertEquals(_userDouble, result.get(0).getUser());
+        assertEquals(_userIdDouble, result.get(0).getUserId());
         verify(_iListOfItemsRepoDouble).findPublicListsByGenre(_genreDouble);
 
     }
@@ -54,7 +54,7 @@ class GetPublicListsByGenreControllerTest {
 
         // Arrange
         //SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
@@ -71,7 +71,7 @@ class GetPublicListsByGenreControllerTest {
         when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
 
         // SUT
-        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userDouble);
+        GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
         // Act
         List<ListOfItems> result = controller.getPublicListsByGenre(_genreDouble);

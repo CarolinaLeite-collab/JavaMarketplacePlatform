@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
 import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -16,12 +17,12 @@ import java.util.List;
 public class ShareListPubliclyController {
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo, User user) {
+    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo, UserId userId) {
         _iListOfItemsRepo = iListOfItemsRepo;
     }
 
-    public List<ListOfItems> getListOfLists(User user) {
-        return _iListOfItemsRepo.findListsByUser(user);
+    public List<ListOfItems> getListOfLists(UserId userId) {
+        return _iListOfItemsRepo.findListsByUserId(userId);
     }
 
 }

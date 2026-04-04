@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -11,14 +12,14 @@ class ListOfItemsFactoryTest {
     @Test
     void shouldSuccessfullyCreatePrivateList() {
     // arrange
-    User userDouble = mock(User.class);
+    UserId userIdDouble = mock(UserId.class);
     Genre genreDouble = mock(Genre.class);
 
     try (MockedConstruction<ListOfItems> mocked =
                  mockConstruction(ListOfItems.class,
                          (mock, context) -> {
                              when(mock.isPrivate()).thenReturn(true);
-                             when(mock.getUser()).thenReturn(userDouble);
+                             when(mock.getUserId()).thenReturn(userIdDouble);
                              when(mock.getName()).thenReturn("My List");
                              when(mock.getGenre()).thenReturn(genreDouble);
                          })) {
@@ -28,11 +29,11 @@ class ListOfItemsFactoryTest {
 
         // act
         ListOfItems newList =
-                factory.createListOfItems(userDouble, "My List", genreDouble);
+                factory.createListOfItems(userIdDouble, "My List", genreDouble);
 
         // assert
         assertNotNull(newList);
-        assertEquals(userDouble, newList.getUser());
+        assertEquals(userIdDouble, newList.getUserId());
         assertEquals("My List", newList.getName());
         assertEquals(genreDouble, newList.getGenre());
         assertTrue(newList.isPrivate());
@@ -44,7 +45,7 @@ class ListOfItemsFactoryTest {
     @Test
     void shouldSuccessfullyCreatePublicList() {
         // arrange
-        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Genre genreDouble = mock(Genre.class);
 
         // SUT
@@ -58,7 +59,7 @@ class ListOfItemsFactoryTest {
 
             // act
             ListOfItems newList =
-                    factory.createPublicListOfItems(userDouble, "My List", genreDouble);
+                    factory.createPublicListOfItems(userIdDouble, "My List", genreDouble);
 
             // assert
             verify(newList).makePublic();

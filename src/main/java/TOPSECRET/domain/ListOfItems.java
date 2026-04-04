@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.UserId;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,28 +15,29 @@ import java.util.Objects;
  * </p>
  */
 public class ListOfItems {
-    private User _user;
+
+    private UserId _userId;
     private String _name;
     private Genre _genre;
     private boolean _isPrivate;
     private List<Item> _items;
 
 
-    ListOfItems(User user, String name, Genre genre) {
+    ListOfItems(UserId userId, String name, Genre genre) {
 
         if (name == null) {
             throw new IllegalArgumentException("List name cannot be null");
         }
 
-        _user = user;
+        _userId = userId;
         _name = name;
         _genre = genre;
         _isPrivate = true;
         _items = new ArrayList<>();
     }
 
-    public User getUser() {
-        return _user;
+    public UserId getUserId() {
+        return _userId;
     }
 
     public String getName() {
@@ -74,14 +77,14 @@ public class ListOfItems {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ListOfItems lop)) return false;
-        return Objects.equals(_user, lop.getUser())
+        return Objects.equals(_userId, lop.getUserId())
                 && Objects.equals(_name, lop.getName())
                 && Objects.equals(_genre, lop.getGenre());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUser(), getName(), getGenre());
+        return Objects.hash(getUserId(), getName(), getGenre());
     }
 
 }

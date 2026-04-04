@@ -62,40 +62,40 @@ class LibraryIdTest {
     }
 
     @Test
-    void libraryIDisEqualWithItself(){
+    void libraryIdIsEqualWithItself(){
         //SUT
-        LibraryId libraryID = new LibraryId(_emailDouble);
+        LibraryId libraryId = new LibraryId(_emailDouble);
 
         //assert
-        assertEquals(libraryID, libraryID);
+        assertEquals(libraryId, libraryId);
 
     }
 
     @Test
-    void libraryIDisNotEqualWithNull(){
+    void libraryIdIsNotEqualWithNull(){
         //SUT
-        LibraryId libraryID = new LibraryId(_emailDouble);
+        LibraryId libraryId = new LibraryId(_emailDouble);
 
         //assert
-        assertNotEquals(null, libraryID);
+        assertNotEquals(null, libraryId);
 
     }
 
     @Test
-    void libraryIDisNotEqualWithDifferentObjectType(){
+    void libraryIdIsNotEqualWithDifferentObjectType(){
         //arrange
         String  differentType = "differentType";
 
         //SUT
-        LibraryId libraryID = new LibraryId(_emailDouble);
+        LibraryId libraryId = new LibraryId(_emailDouble);
 
         //assert
-        assertNotEquals(differentType, libraryID);
+        assertFalse(libraryId.equals(differentType));
 
     }
 
     @Test
-    void libraryIDisEqualWithAnotherLibraryIDWithSameEmail(){
+    void libraryIdIsEqualWithAnotherLibraryIdWithSameEmail(){
 
         //SUT
         LibraryId libraryID = new LibraryId(_emailDouble);
@@ -130,6 +130,22 @@ class LibraryIdTest {
         //assert
         assertNotEquals(libraryID.hashCode(), result.hashCode());
 
+    }
+
+    @Test
+    void testToString(){
+
+        // Arrange
+        when(_emailDouble.toString()).thenReturn("email@email.com");
+
+        // SUT
+        LibraryId libraryId = new LibraryId(_emailDouble);
+
+        // Act
+        String result = libraryId.toString();
+
+        // Assert
+        assertEquals("email@email.com", result);
     }
 
 }

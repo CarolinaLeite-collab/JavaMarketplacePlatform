@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,15 +9,15 @@ import static org.mockito.Mockito.mock;
 
 class ListOfItemsTest {
 
-    private User _user1Double;
-    private User _user2Double;
+    private UserId _userId1Double;
+    private UserId _userId2Double;
     private Genre _genre1Double;
     private Genre _genre2Double;
 
     @BeforeEach
     void setUp() {
-        _user1Double = mock(User.class);
-        _user2Double = mock(User.class);
+        _userId1Double = mock(UserId.class);
+        _userId2Double = mock(UserId.class);
         _genre1Double = mock(Genre.class);
         _genre2Double = mock(Genre.class);
     }
@@ -24,7 +25,7 @@ class ListOfItemsTest {
     @Test
     void constructsListSuccessfully() {
         // Arrange & Act
-        ListOfItems list = new ListOfItems(_user1Double,"My favorite books", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double,"My favorite books", _genre1Double);
 
         // Assert
         assertNotNull(list);
@@ -37,14 +38,14 @@ class ListOfItemsTest {
     void throwsExceptionWhenListNameIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(_user1Double, null, _genre1Double));
+                () -> new ListOfItems(_userId1Double, null, _genre1Double));
     }
 
     @Test
     void equalsShouldReturnTrueForSameArguments() {
         //Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertEquals(list1, list2);
@@ -53,8 +54,8 @@ class ListOfItemsTest {
     @Test
     void hashCodeShouldReturnTrueForSameArguments() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertEquals(list1.hashCode(), list2.hashCode());
@@ -63,8 +64,8 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForDifferentUser() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user2Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId2Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -73,8 +74,8 @@ class ListOfItemsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentUser() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user2Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId2Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -83,8 +84,8 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForDifferentName() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "Other List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "Other List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -93,8 +94,8 @@ class ListOfItemsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentName() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "Other List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "Other List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -103,8 +104,8 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForDifferentGenre() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre2Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "My List", _genre2Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -113,8 +114,8 @@ class ListOfItemsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentGenre() {
         // Arrange
-        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
-        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre2Double);
+        ListOfItems list1 = new ListOfItems(_userId1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_userId1Double, "My List", _genre2Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -123,7 +124,7 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForNull() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list, null);
@@ -132,7 +133,7 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "My List", _genre1Double);
         String notAList = "not a ListOfItems";
 
         // Act & Assert
@@ -142,7 +143,7 @@ class ListOfItemsTest {
     @Test
     void listShouldBePrivateByDefault() {
         // Arrange & Act
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
 
         // Assert
         assertTrue(list.isPrivate());
@@ -151,7 +152,7 @@ class ListOfItemsTest {
     @Test
     void makePublicShouldMakeListPublic() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
 
         // Act
         list.makePublic();
@@ -163,7 +164,7 @@ class ListOfItemsTest {
     @Test
     void makePublicShouldBeIdempotent() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
 
         // Act
         list.makePublic();
@@ -176,7 +177,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldAddSuccessfully() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista",_genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista",_genre1Double);
         Item _itemDouble = mock(Item.class);
 
         // Act
@@ -190,7 +191,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldThrowWhenNull() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> list.addItem(null));
@@ -199,7 +200,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldThrowWhenDuplicate() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
         Item _itemDouble = mock(Item.class);
 
         list.addItem(_itemDouble);
@@ -214,7 +215,7 @@ class ListOfItemsTest {
     @Test
     void getItemsShouldReturnImmutableCopy() {
         // Arrange
-        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_userId1Double, "Lista", _genre1Double);
         Item _itemDouble = mock(Item.class);
         list.addItem(_itemDouble);
 

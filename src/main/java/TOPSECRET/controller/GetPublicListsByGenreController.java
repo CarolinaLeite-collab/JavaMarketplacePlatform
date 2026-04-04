@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 public class GetPublicListsByGenreController {
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, User user) {
+    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, UserId userId) {
         _iListOfItemsRepo = iListOfPubRepo;
     }
 

@@ -1,9 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.ILibraryRepo;
-import TOPSECRET.domain.Library;
 import TOPSECRET.domain.PublicationDetails;
 import TOPSECRET.domain.User;
+import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -21,12 +22,12 @@ public class ListOfItemsInMyLibraryController {
 
     private final ILibraryRepo _iLibraryRepo;
 
-    public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo, User user){
+    public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo, UserId userId){
         _iLibraryRepo = libraryRepo;
     }
 
- public List<PublicationDetails> getListOfItemDetails (User user) {
-        Library library = _iLibraryRepo.findLibraryByUser(user);
+ public List<PublicationDetails> getListOfItemDetails (UserId userId) {
+        Library library = _iLibraryRepo.findLibraryByUserId(userId);
 
         return library.getItemDetails();
     }
