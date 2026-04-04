@@ -1,10 +1,10 @@
 @startuml
-'==== Title ====
+hide footbox
 title US017 - "As a User, I want to create a private list of my publications, give it a name and set a genre" - SD
 
-'==== basic style ====
+'==== basic style ===='
 skinparam monochrome false
-
+skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
@@ -13,65 +13,73 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ArrowColor #57595BAA
 
-hidefootbox
 autonumber
 autoactivate off
 
-' ==== Actor and participants ====
+'==== Actor and Participants ===='
 actor "User"
 
-participant ":CreatePrivateListOfPublicationsUI" as UI
-participant ":CreatePrivateListOfPublicationsController" as CTL
-participant ":IListOfPublicationsRepo" as LOPR
-participant ":GenreRepo" as GR
+participant ":CreatePrivateListOfItemsUI" as UI
+participant ":CreatePrivateListOfItemsController" as CTL
+participant ":IListOfItemsRepo" as IRepo
+participant ":ListOfItemsFactory" as Factory
+participant ":IGenreRepo" as IGenreRepo
 
-'==== UI interaction ====
+'==== UI interaction ===='
 "User" -> UI: I want to create a private list
 activate UI
 
 "User" <-- UI: What is the list's name?
 deactivate UI
-
 "User" -> UI: name
 activate UI
-UI -> CTL: getListOfOfficialGenres()
+
+UI -> CTL: getMapOfOfficialGenres()
 activate CTL
-CTL -> GR: getListOfOfficialGenres()
-activate GR
-CTL <-- GR: copyOfListOfOfficialGenres
-deactivate GR
-UI <-- CTL: copyOfListOfOfficialGenres
+CTL -> IGenreRepo: getMapOfOfficialGenres()
+activate IGenreRepo
+CTL <-- IGenreRepo: copyMapOfOfficialGenres
+deactivate IGenreRepo
+UI <-- CTL: copyMapOfOfficialGenres
 deactivate CTL
 
-"User" <-- UI: What is the list's genre?
+"User" <-- UI: What genre?
 deactivate UI
-"User" -> UI: genre
+"User" -> UI: genreId
 activate UI
 
-'==== Use case execution ====
-UI -> CTL: createListOfPublications\n(user, name, genre)
+'==== Use case execution ===='
+UI -> CTL: addListOfItems\n(userId, name, genreId)
 activate CTL
-CTL -> LOPR: createListOfPublications\n(user, name, genre)
-activate LOPR
+CTL -> IRepo: addListOfItems\n(userId, name, genreId)
+activate IRepo
 
-    opt existsListOfPublications (listOfPublications) == false
 
-        create "lop1:ListOfPublications" as lop1
-        LOPR -> lop1: <<create>>
-        note left of lop1
-                  The private attribute (_isPrivate = true)
-                  is set by default in the constructor
+    opt existsListOfItems (listOfItems) == false
+
+        IRepo -> Factory: createListOfItems\n(userId, name, genreId)
+        activate Factory
+
+        create "listOfItems:ListOfItems" as listOfItems
+        Factory -->> listOfItems: <<create>>
+        note right of listOfItems
+                  The private attribute
+                  (_isPrivate = true)
+                  is set by default
+                  in the constructor
               end note
-        LOPR -> LOPR: adds(lop1)
+        Factory --> IRepo: listOfItems
+        deactivate Factory
+        IRepo --> IRepo: save(listOfItems)
+
     end
 
 
-
-CTL <-- LOPR: lop1
-deactivate LOPR
-UI <-- CTL: lop1
+IRepo --> CTL: listOfItems
+deactivate IRepo
+UI <-- CTL: listOfItems
 deactivate CTL
-
 "User" <-- UI: Private list successfully created!
 deactivate UI
+
 @enduml
