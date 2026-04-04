@@ -183,8 +183,8 @@ Package "DOMAIN" {
 '=== Correlations ==='
 
 '--- Edition ---'
-Edition "*" ..> "1" PublishingCompanyId : uses
-Edition "*" ..> "1" PublicationId : uses
+Edition "*" ..> "1" PublishingCompanyId : references
+Edition "*" ..> "1" PublicationId : references
 Edition "1" --> "1" EditionId : has
 
 ISBN ..|> EditionId
@@ -196,9 +196,9 @@ User "1" --> "1" UserId : has
 User "1" --> "1" Address : has
 
 '--- Publication ---'
-Publication "1" ..> "1..*" AuthorId : uses
-Publication "*" ..> "1" PublicationTypeId : uses
-Publication "*" ..> "1..*" GenreId : uses
+Publication "1" ..> "1..*" AuthorId : references
+Publication "*" ..> "1" PublicationTypeId : references
+Publication "*" ..> "1..*" GenreId : references
 Publication "1" --> "1" PublicationId : has
 
 '--- PublicationType ---'
@@ -214,40 +214,40 @@ Author "1" --> "1" AuthorId : has
 Genre "1" --> "1" GenreId : has
 
 '--- AppraisalEntity ---'
-AppraisalEntity "*" ..> "1..*" PublicationTypeId : uses
-AppraisalEntity "*" ..> "1..*" GenreId : uses
+AppraisalEntity "*" ..> "1..*" PublicationTypeId : references
+AppraisalEntity "*" ..> "1..*" GenreId : references
 AppraisalEntity "1" --> "1" AppraisalEntityId : has
 
 '--- City ---'
 City "1" ---> "1" CityId : has
-City "*" ..> "1" CountryId : uses
+City "*" ..> "1" CountryId : references
 
 '--- Country ---'
-Country "1" --> "1" CountryId
+Country "1" --> "1" CountryId : has
 
 '--- Address ---'
-Address "*" ..> "1" CityId : uses
+Address "*" ..> "1" CityId : references
 
 '--- Item ---'
-Item "1" ..> "1" EditionId: uses
+Item "1" ..> "1" EditionId: references
 Item "1" --> "1" ItemId: has
-Item "1" ...> "1" UserId: uses
+Item "1" ...> "1" UserId: references
 
 '--- Library ---'
-Library "*" ..> "1" ItemId: uses
+Library "*" ..> "1" ItemId: references
 Library "1" ---> "1" LibraryId: has
 
 '--- Auction ---'
 Auction "1" -> "*" Bid
-Auction "1" ..> "*" ItemId: uses
+Auction "1" ..> "*" ItemId: references
 Auction "1" ---> "1" AuctionId: has
 
 '--- DirectSale ---'
-DirectSale "1" .> "*" ItemId: uses
+DirectSale "1" .> "*" ItemId: references
 DirectSale "1" ---> "1" DirectSaleId: has
 
 '--- ListOfItems ---'
-ListOfItems "1" ....> "*" ItemId: uses
+ListOfItems "1" ....> "*" ItemId: references
 ListOfItems "1" ---> "1" ListOfItemsId: has
 
 
