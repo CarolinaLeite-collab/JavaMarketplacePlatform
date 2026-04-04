@@ -75,8 +75,8 @@ package DDD {
 
 ListOfItemsFactory ..> ListOfItemsRoot : creates
 ListOfItemsRoot "*" o... "1..*" Item : aggregates
-ListOfItemsRoot "*" ...> "1" User : references
-ListOfItemsRoot "*" ...> "1" Genre : references
+ListOfItemsRoot "*" --> "1" User : references
+ListOfItemsRoot "*" --> "1" Genre : references
 ListOfItemsRoot "1" --> "1" ID : has
 
 MemoRepo "1" ---> "1" ListOfItemsFactory :invokes

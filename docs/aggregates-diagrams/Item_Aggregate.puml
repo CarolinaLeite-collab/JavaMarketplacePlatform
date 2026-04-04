@@ -76,7 +76,7 @@ package "DOMAIN" {
     class EditionID <<ValueObject>>
     class ItemID <<ValueObject>> #LightPink {
 
-    - _ID : SKU
+    - _id : SKU
     }
     class SaleStatus <<ValueObject>>
 
