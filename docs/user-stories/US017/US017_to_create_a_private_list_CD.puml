@@ -21,7 +21,7 @@ interface IListOfItemsRepo {
 }
 
 class MemoListOfItemsRepo {
-    - _listsOfItems: List<ListOfItemsId>
+    - _listsOfItems: List<ListOfItems>
 
     + addListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
 }
