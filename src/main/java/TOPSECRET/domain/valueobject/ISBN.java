@@ -12,7 +12,7 @@ import TOPSECRET.ddd.ValueObject;
  * Implements the {@link EditionId} interface.
  */
 
-public class ISBN implements EditionId, ValueObject {
+public class ISBN implements BookId, ValueObject {
 
     private final String _isbn;
 

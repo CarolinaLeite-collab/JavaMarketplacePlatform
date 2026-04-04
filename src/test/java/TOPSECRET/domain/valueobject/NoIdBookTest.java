@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class NoEditionIdTest {
+class NoIdBookTest {
 
     @Test
     void getIdentifierOfNoIdentifierShouldReturnEmptyString()
     {
-        EditionId noId = new NoEditionId();
+        EditionId noId = new NoIdBook();
         assertEquals("", noId.getIdentifier());
     }
 

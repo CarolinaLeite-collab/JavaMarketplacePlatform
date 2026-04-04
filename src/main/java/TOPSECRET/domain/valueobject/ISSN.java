@@ -10,7 +10,7 @@ import TOPSECRET.ddd.ValueObject;
  * </p>
  */
 
-public class ISSN implements EditionId, ValueObject {
+public class ISSN implements MagazineId, ValueObject {
 
     private final String _issn;
 
