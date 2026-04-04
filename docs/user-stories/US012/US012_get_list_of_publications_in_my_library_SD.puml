@@ -5,7 +5,6 @@
 hide stereotype
 
 skinparam monochrome false
-
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
@@ -13,7 +12,7 @@ skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #57595BAA
+skinparam ActivationBackgroundColor black
 hidefootbox
 
 'undefined objects
@@ -32,9 +31,9 @@ title US012 - "As a User, I want to get the list (title, author, type and ISBN/I
 ' --- Actor and participants ---'
 
 actor User
-participant "UI1: GetListOfPublicationsUI" as UI
-participant "Ctl1:ListOfPublicationsInMyLibraryController" as Ctl
-participant "_ilr:ILibraryRepo" as LibRepo
+participant ":ListOfPublicationsInMyLibraryUI" as UI
+participant ":ListOfPublicationsInMyLibraryController" as Ctl
+participant ":ILibraryRepo" as LibRepo
 participant "library:Library" as Lib
 
 
@@ -42,10 +41,10 @@ participant "library:Library" as Lib
 User -> UI: Display List of my Publications
 activate UI
 
-UI -> Ctl: getListOfPublicationDetails(user)
+UI -> Ctl: getListOfPublicationDetails(userId)
 activate Ctl
 
-Ctl -> LibRepo: findByUser(user)
+Ctl -> LibRepo: findByUser(userId)
 activate LibRepo
 LibRepo --> Ctl: library
 deactivate LibRepo
@@ -58,7 +57,7 @@ Lib -->> listOfPubs: <<Create>>
 
 
 
-loop for each item in library
+loop for each itemId in library
 
 create "pDetails:PublicationDetails" as list
     Lib -->> list: <<Create>>

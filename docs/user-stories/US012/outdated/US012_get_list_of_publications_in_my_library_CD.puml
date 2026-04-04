@@ -1,0 +1,55 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US012 – "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - CD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+class GetListOfPublicationsUI {
+}
+
+class ListOfPublicationsInMyLibraryController {
+    +getListOfPublicationDetails(userID: UserID) : List<PublicationDetails>
+}
+
+interface ILibraryRepo{
+ +addLibrary(userID: UserID) : Library
+ +findLibraryByUser(userID: UserID) : Library
+}
+
+class MemoLibraryRepo {
+
+}
+
+class Library {
+  -_owner : UserID
+  +getUserID() : UserID
+  +getPublicationDetails() : List<PublicationDetails>
+}
+
+class PublicationDetails{
+    -_title : Title
+    -_author : Author
+    -_publicationType : PublicationType
+    -_isbn : ISBN
+    -_issn : ISSN
+}
+
+GetListOfPublicationsUI "1"..> "1"ListOfPublicationsInMyLibraryController :uses
+ListOfPublicationsInMyLibraryController "1"..> "1"ILibraryRepo : uses
+MemoLibraryRepo ..|> ILibraryRepo
+MemoLibraryRepo "1" --> "*" Library : manages
+Library "1" ..> "*" PublicationDetails : uses
+
+
+@enduml
