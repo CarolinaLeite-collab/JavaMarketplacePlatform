@@ -6,7 +6,7 @@ import org.mockito.MockedConstruction;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class ListOfPublicationsFactoryTest {
+class ListOfItemsFactoryTest {
 
     @Test
     void shouldSuccessfullyCreatePrivateList() {
@@ -14,8 +14,8 @@ class ListOfPublicationsFactoryTest {
     User userDouble = mock(User.class);
     Genre genreDouble = mock(Genre.class);
 
-    try (MockedConstruction<ListOfPublications> mocked =
-                 mockConstruction(ListOfPublications.class,
+    try (MockedConstruction<ListOfItems> mocked =
+                 mockConstruction(ListOfItems.class,
                          (mock, context) -> {
                              when(mock.isPrivate()).thenReturn(true);
                              when(mock.getUser()).thenReturn(userDouble);
@@ -24,11 +24,11 @@ class ListOfPublicationsFactoryTest {
                          })) {
 
         // SUT
-        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        ListOfItemsFactory factory = new ListOfItemsFactory();
 
         // act
-        ListOfPublications newList =
-                factory.createListOfPublications(userDouble, "My List", genreDouble);
+        ListOfItems newList =
+                factory.createListOfItems(userDouble, "My List", genreDouble);
 
         // assert
         assertNotNull(newList);
@@ -48,17 +48,17 @@ class ListOfPublicationsFactoryTest {
         Genre genreDouble = mock(Genre.class);
 
         // SUT
-        ListOfPublicationsFactory factory = new ListOfPublicationsFactory();
+        ListOfItemsFactory factory = new ListOfItemsFactory();
 
-        try (MockedConstruction<ListOfPublications> mocked =
-                     mockConstruction(ListOfPublications.class,
+        try (MockedConstruction<ListOfItems> mocked =
+                     mockConstruction(ListOfItems.class,
                              (mock, context) -> {
                                  doNothing().when(mock).makePublic();
                              })) {
 
             // act
-            ListOfPublications newList =
-                    factory.createPublicListOfPublications(userDouble, "My List", genreDouble);
+            ListOfItems newList =
+                    factory.createPublicListOfItems(userDouble, "My List", genreDouble);
 
             // assert
             verify(newList).makePublic();

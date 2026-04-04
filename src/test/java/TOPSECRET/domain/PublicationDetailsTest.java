@@ -11,33 +11,35 @@ import static org.mockito.Mockito.when;
 
 class PublicationDetailsTest {
 
-   @Test
-    void publicationDetailsShouldExtractAllFieldsFromPublication() {
+    @Test
+    void PublicationDetailsShouldExtractAllFieldsFromPublicationInItem() {
         // Arrange
-        Item _itemDouble = mock(Item.class);
-        Title _titleDouble = mock(Title.class);
-        Author _authorDouble = mock(Author.class);
-        Publication _publicationDouble = mock(Publication.class);
-        PublicationType _publicationTypeDouble = mock(PublicationType.class);
-        Identifier _identifierDouble = mock(Identifier.class);
+        Item itemDouble = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
 
-        when(_itemDouble.get_publication()).thenReturn(_publicationDouble);
+        Title titleDouble = mock(Title.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        Identifier identifierDouble = mock(Identifier.class);
 
-        when(_itemDouble.get_publication().getTitle()).thenReturn(_titleDouble);
-        when(_itemDouble.get_publication().getAuthor()).thenReturn(_authorDouble);
-        when(_itemDouble.get_publication().getPublicationType()).thenReturn(_publicationTypeDouble);
-        when(_itemDouble.get_publication().getIdentifier()).thenReturn(_identifierDouble);
+        // stub the item to return the publication
+        when(itemDouble.get_publication()).thenReturn(publicationDouble);
 
-        // SUT
-        PublicationDetails details = new PublicationDetails(_itemDouble);
+        // stub the publication fields
+        when(publicationDouble.getTitle()).thenReturn(titleDouble);
+        when(publicationDouble.getAuthor()).thenReturn(authorDouble);
+        when(publicationDouble.getPublicationType()).thenReturn(publicationTypeDouble);
+        when(publicationDouble.getIdentifier()).thenReturn(identifierDouble);
 
-        //Act + Assert
+        // Act
+        PublicationDetails details = new PublicationDetails(itemDouble);
+
+        // Assert
         assertNotNull(details);
-        assertEquals(_titleDouble, details.getTitle());
-        assertEquals(_authorDouble, details.getAuthor());
-        assertEquals(_publicationTypeDouble, details.getPublicationType());
-        assertEquals(_identifierDouble, details.get_identifier());
-
+        assertEquals(titleDouble, details.getTitle());
+        assertEquals(authorDouble, details.getAuthor());
+        assertEquals(publicationTypeDouble, details.getPublicationType());
+        assertEquals(identifierDouble, details.getIdentifier());
     }
 }
 

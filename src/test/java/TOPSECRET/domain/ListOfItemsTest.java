@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
-class ListOfPublicationsTest {
+class ListOfItemsTest {
 
     private User _user1Double;
     private User _user2Double;
@@ -24,7 +24,7 @@ class ListOfPublicationsTest {
     @Test
     void constructsListSuccessfully() {
         // Arrange & Act
-        ListOfPublications list = new ListOfPublications(_user1Double,"My favorite books", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double,"My favorite books", _genre1Double);
 
         // Assert
         assertNotNull(list);
@@ -37,14 +37,14 @@ class ListOfPublicationsTest {
     void throwsExceptionWhenListNameIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfPublications(_user1Double, null, _genre1Double));
+                () -> new ListOfItems(_user1Double, null, _genre1Double));
     }
 
     @Test
     void equalsShouldReturnTrueForSameArguments() {
         //Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertEquals(list1, list2);
@@ -53,8 +53,8 @@ class ListOfPublicationsTest {
     @Test
     void hashCodeShouldReturnTrueForSameArguments() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertEquals(list1.hashCode(), list2.hashCode());
@@ -63,8 +63,8 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForDifferentUser() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user2Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user2Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -73,8 +73,8 @@ class ListOfPublicationsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentUser() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user2Double, "My List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user2Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -83,8 +83,8 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForDifferentName() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "Other List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "Other List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -93,8 +93,8 @@ class ListOfPublicationsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentName() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "Other List", _genre1Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "Other List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -103,8 +103,8 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForDifferentGenre() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre2Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre2Double);
 
         // Act & Assert
         assertNotEquals(list1, list2);
@@ -113,8 +113,8 @@ class ListOfPublicationsTest {
     @Test
     void hashCodeShouldReturnFalseForDifferentGenre() {
         // Arrange
-        ListOfPublications list1 = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        ListOfPublications list2 = new ListOfPublications(_user1Double, "My List", _genre2Double);
+        ListOfItems list1 = new ListOfItems(_user1Double, "My List", _genre1Double);
+        ListOfItems list2 = new ListOfItems(_user1Double, "My List", _genre2Double);
 
         // Act & Assert
         assertNotEquals(list1.hashCode(), list2.hashCode());
@@ -123,7 +123,7 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForNull() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "My List", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "My List", _genre1Double);
 
         // Act & Assert
         assertNotEquals(list, null);
@@ -132,8 +132,8 @@ class ListOfPublicationsTest {
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "My List", _genre1Double);
-        String notAList = "not a ListOfPublications";
+        ListOfItems list = new ListOfItems(_user1Double, "My List", _genre1Double);
+        String notAList = "not a ListOfItems";
 
         // Act & Assert
         assertNotEquals(list, notAList);
@@ -142,7 +142,7 @@ class ListOfPublicationsTest {
     @Test
     void listShouldBePrivateByDefault() {
         // Arrange & Act
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
 
         // Assert
         assertTrue(list.isPrivate());
@@ -151,7 +151,7 @@ class ListOfPublicationsTest {
     @Test
     void makePublicShouldMakeListPublic() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
 
         // Act
         list.makePublic();
@@ -163,7 +163,7 @@ class ListOfPublicationsTest {
     @Test
     void makePublicShouldBeIdempotent() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
 
         // Act
         list.makePublic();
@@ -176,7 +176,7 @@ class ListOfPublicationsTest {
     @Test
     void addItemShouldAddSuccessfully() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista",_genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista",_genre1Double);
         Item _itemDouble = mock(Item.class);
 
         // Act
@@ -190,7 +190,7 @@ class ListOfPublicationsTest {
     @Test
     void addItemShouldThrowWhenNull() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> list.addItem(null));
@@ -199,7 +199,7 @@ class ListOfPublicationsTest {
     @Test
     void addItemShouldThrowWhenDuplicate() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
         Item _itemDouble = mock(Item.class);
 
         list.addItem(_itemDouble);
@@ -214,26 +214,14 @@ class ListOfPublicationsTest {
     @Test
     void getItemsShouldReturnImmutableCopy() {
         // Arrange
-        ListOfPublications list = new ListOfPublications(_user1Double, "Lista", _genre1Double);
+        ListOfItems list = new ListOfItems(_user1Double, "Lista", _genre1Double);
         Item _itemDouble = mock(Item.class);
         list.addItem(_itemDouble);
 
         // Act
-        var publications = list.getItems();
+        var items = list.getItems();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> publications.add(_itemDouble));
+        assertThrows(UnsupportedOperationException.class, () -> items.add(_itemDouble));
     }
-
-    //    @Test
-//    void makeListPrivateWhenPublic() {
-//        // switchVisibility() – changes visibility from public back to private
-//        ListOfPublications list = new ListOfPublications(_user1, "Lista", _actionGenre);
-//
-//        list.switchVisibility();
-//        assertFalse(list.isPrivate());
-//
-//        list.switchVisibility();
-//        assertTrue(list.isPrivate());
-//    }
 }

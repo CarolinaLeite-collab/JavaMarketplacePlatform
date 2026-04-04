@@ -1,0 +1,111 @@
+@startuml
+title Item Aggregate
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+skinparam packageTitleBackgroundColor #F0F8FF
+
+skinparam package {
+  BackgroundColor #F6F0D8
+  BorderColor #4F4F4F
+  FontColor #222222
+}
+
+skinparam class {
+  BackgroundColor #F2F2F2
+  BorderColor #666666
+  FontColor #222222
+  ArrowColor #666666
+}
+
+skinparam interface {
+  BackgroundColor #F2F2F2
+  BorderColor #666666
+  FontColor #222222
+  ArrowColor #666666
+}
+
+package "PERSISTENCE" {
+  package "MEM" {
+    class MemoItemRepo <<Repo>> {
+    }
+  }
+}
+
+package "DOMAIN" {
+
+  package "REPOSITORY" {
+    interface IItemRepo <<Interface>> {
+'      +getAll() : List<ItemID>
+      +getDifferentOf(existentItems : List<ItemID>) : List<ItemID>
+      +add(itemID : ItemID) : boolean
+'      +exists(itemID : ItemID) : boolean
+    }
+  }
+
+  package "ITEM" #AFC4D6 {
+
+    class ItemFactory <<Factory>> {
+      +createItem(editionID : EditionID, condition : Condition, description : Description, userID : UserID, sku : ItemID) : Item
+    }
+
+    class Item <<Root>> <<Entity>> {
+
+      +getEditionID() : EditionID
+      +getCondition() : Condition
+      +getDescription() : Description
+      +getUserID() : UserID
+      +getSKU() : SKU
+      +belongsToUser(userID : UserID) : boolean
+      +hasEdition(editionID : EditionID) : boolean
+      +hasSKU(sku : SKU) : boolean
+    }
+  }
+
+  package "VALUE OBJECT" {
+    class Condition <<ValueObject>>
+    class Description <<ValueObject>>
+    class EditionID <<ValueObject>>
+    class ItemID <<ValueObject>> #LightPink {
+
+    - _id : SKU
+    }
+    class SaleStatus <<ValueObject>>
+
+    class UserID <<ValueObject>> {
+    }
+  }
+}
+
+package DDD {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+}
+
+MemoItemRepo ..|> IItemRepo
+MemoItemRepo "1" --> "1" ItemFactory : invokes
+MemoItemRepo "1" --> "*" Item : persists
+ItemFactory "1" ..> "*" Item : <<create>>
+
+Item "*" --> "1" Condition : has
+Item "1" --> "1" Description : has
+Item "1" --> "1" EditionID : references
+Item "*" --> "1" UserID : references
+Item "1" --> "1" ItemID : has
+Item "1" --> "1" SaleStatus : has
+
+IItemRepo --|> IRepository
+
+@enduml

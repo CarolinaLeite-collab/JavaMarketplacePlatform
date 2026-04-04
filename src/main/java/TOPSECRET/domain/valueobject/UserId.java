@@ -4,11 +4,11 @@ import TOPSECRET.ddd.DomainId;
 
 import java.util.Objects;
 
-public class UserID implements DomainId {
+public final class UserId implements DomainId {
 
     private final Email _email;
 
-    public UserID(Email email) {
+    public UserId(Email email) {
         _email = Objects.requireNonNull(email);
     }
 
@@ -16,7 +16,7 @@ public class UserID implements DomainId {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof UserID other)) return false;
+        if (!(o instanceof UserId other)) return false;
         return _email.equals(other._email);
     }
 

@@ -36,7 +36,7 @@ public class Library {
         return _owner;
     }
 
-    public List<PublicationDetails> getPublicationDetails() {
+    public List<PublicationDetails> getItemDetails() {
 
         List <PublicationDetails> listWithDetails = new ArrayList<>();
 

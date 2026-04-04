@@ -17,12 +17,12 @@ import java.util.Set;
  * {@link Email} (see {@link #equals(Object)} and {@link #hashCode()}).</p>
  */
 
-public class User implements DomainEntity<UserID> {
+public class User implements DomainEntity<UserId> {
 
     private final Name _name;
     private final Address _address;
     private final Email _email;
-    private final UserID _userId;
+    private final UserId _userId;
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
@@ -32,7 +32,7 @@ public class User implements DomainEntity<UserID> {
         _name = name;
         _address = address;
         _email = email;
-        _userId = new UserID(_email);
+        _userId = new UserId(_email);
         _phone = phone;
         _roles.add(Role.USER); // default role
     }
@@ -79,7 +79,7 @@ public class User implements DomainEntity<UserID> {
     }
 
     @Override
-    public UserID identity() {
+    public UserId identity() {
         return _userId;
     }
 
