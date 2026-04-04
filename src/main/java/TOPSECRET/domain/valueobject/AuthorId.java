@@ -1,11 +1,12 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import TOPSECRET.domain.Author.Author;
 
 import java.util.UUID;
 
 /**
- * Represents the unique identifier of an {@link AuthorId}.
+ * Represents the unique identifier of an {@link Author}.
  * <p>
  * The identifier is automatically generated from the entity's full name and
  * a random code. The format is:
@@ -15,7 +16,7 @@ import java.util.UUID;
  *
  * <p><b>Validation:</b> The full name cannot be null or blank.</p>
  *
- * <p><b>Equality:</b> Two {@code AuthorId} instances are equal if they
+ * <p><b>Equality:</b> Two {@code Author} instances are equal if they
  * wrap the same underlying string value.</p>
  */
 
@@ -27,7 +28,7 @@ public class AuthorId implements DomainId {
 
         if ( name == null || name.isBlank() ) {
 
-            throw new IllegalArgumentException("AppraisalEntityId cannot be null or blank");
+            throw new IllegalArgumentException("AuthorId cannot be null or blank");
 
         }
 

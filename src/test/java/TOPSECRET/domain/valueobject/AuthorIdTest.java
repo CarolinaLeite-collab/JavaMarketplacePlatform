@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthorIdTest {
 
     @Test
-    void shouldConstructAppraisalEntityId() {
+    void shouldConstructAuthorId() {
 
         // Act & SUT
         AuthorId id = new AuthorId("Lev Nikoláievitch Tolstói");
@@ -23,7 +23,7 @@ class AuthorIdTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> new AuthorId(fullName));
 
         // Assert
-        assertEquals("AppraisalEntityId cannot be null or blank", exception.getMessage());
+        assertEquals("AuthorId cannot be null or blank", exception.getMessage());
 
     }
 
@@ -37,7 +37,7 @@ class AuthorIdTest {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> new AuthorId(fullName));
 
         // Assert
-        assertEquals("AppraisalEntityId cannot be null or blank", exception.getMessage());
+        assertEquals("AuthorId cannot be null or blank", exception.getMessage());
 
     }
 
