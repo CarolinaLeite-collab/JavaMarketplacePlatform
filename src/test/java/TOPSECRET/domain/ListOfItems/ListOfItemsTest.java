@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.ListOfItems;
 
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.ItemId;

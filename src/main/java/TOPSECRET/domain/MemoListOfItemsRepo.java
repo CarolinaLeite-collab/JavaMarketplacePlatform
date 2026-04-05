@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.ListOfItems.ListOfItemsFactory;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 

@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IListOfItemsRepo;
-import TOPSECRET.domain.ListOfItems;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.UserId;
 
