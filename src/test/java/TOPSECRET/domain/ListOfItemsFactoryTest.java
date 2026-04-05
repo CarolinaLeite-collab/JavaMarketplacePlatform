@@ -1,8 +1,8 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -11,60 +11,56 @@ class ListOfItemsFactoryTest {
 
     @Test
     void shouldSuccessfullyCreatePrivateList() {
-    // arrange
-    UserId userIdDouble = mock(UserId.class);
-    Genre genreDouble = mock(Genre.class);
-
-    try (MockedConstruction<ListOfItems> mocked =
-                 mockConstruction(ListOfItems.class,
-                         (mock, context) -> {
-                             when(mock.isPrivate()).thenReturn(true);
-                             when(mock.getUserId()).thenReturn(userIdDouble);
-                             when(mock.getName()).thenReturn("My List");
-                             when(mock.getGenre()).thenReturn(genreDouble);
-                         })) {
+        // arrange
+        UserId _userIdDouble = mock(UserId.class);
+        GenreId _genreIdDouble = mock(GenreId.class);
 
         // SUT
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
-        // act
-        ListOfItems newList =
-                factory.createListOfItems(userIdDouble, "My List", genreDouble);
+        // Act
+        ListOfItems list = factory.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
 
-        // assert
-        assertNotNull(newList);
-        assertEquals(userIdDouble, newList.getUserId());
-        assertEquals("My List", newList.getName());
-        assertEquals(genreDouble, newList.getGenre());
-        assertTrue(newList.isPrivate());
-
-        assertEquals(1, mocked.constructed().size());
+        // Assert
+        assertNotNull(list);
+        assertEquals(_userIdDouble, list.getUserId());
+        assertEquals("My List", list.getName());
+        assertEquals(_genreIdDouble, list.getGenreId());
+        assertTrue(list.isPrivate());
     }
-}
 
     @Test
     void shouldSuccessfullyCreatePublicList() {
         // arrange
-        UserId userIdDouble = mock(UserId.class);
-        Genre genreDouble = mock(Genre.class);
+        UserId _userIdDouble = mock(UserId.class);
+        GenreId _genreIdDouble = mock(GenreId.class);
 
         // SUT
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
-        try (MockedConstruction<ListOfItems> mocked =
-                     mockConstruction(ListOfItems.class,
-                             (mock, context) -> {
-                                 doNothing().when(mock).makePublic();
-                             })) {
+        // Act
+        ListOfItems list = factory.createPublicListOfItems(_userIdDouble, "My List", _genreIdDouble);
 
-            // act
-            ListOfItems newList =
-                    factory.createPublicListOfItems(userIdDouble, "My List", genreDouble);
+        // Assert
+        assertNotNull(list);
+        assertEquals(_userIdDouble, list.getUserId());
+        assertEquals("My List", list.getName());
+        assertEquals(_genreIdDouble, list.getGenreId());
+        assertFalse(list.isPrivate());
+    }
 
-            // assert
-            verify(newList).makePublic();
-            assertNotNull(newList);
-            assertEquals(1, mocked.constructed().size());
-        }
+    @Test
+    void shouldGenerateNewListId() {
+        // Arrange
+        UserId _userIdDouble = mock(UserId.class);
+        GenreId _genreIdDouble = mock(GenreId.class);
+        ListOfItemsFactory factory = new ListOfItemsFactory();
+
+        // Act
+        ListOfItems list1 = factory.createListOfItems(_userIdDouble, "List A", _genreIdDouble);
+        ListOfItems list2 = factory.createListOfItems(_userIdDouble, "List B", _genreIdDouble);
+
+        // Assert
+        assertNotEquals(list1.identity(), list2.identity());
     }
 }

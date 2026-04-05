@@ -1,20 +1,28 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.valueobject.ListOfItemsId;
 
 /**
  * Factory responsible for creating {@link ListOfItems} instances.
- * @throws IllegalArgumentException if the list name is null, as enforced by {@link ListOfItems}'s constructor.
+ * @throws IllegalArgumentException if the userId, list name and/or genreId are null, as enforced by {@link ListOfItems}'s constructor.
  */
+
 public class ListOfItemsFactory {
 
-    public ListOfItems createListOfItems(UserId userId, String name, Genre genre) {
-        return new ListOfItems(userId, name, genre);
+    public ListOfItems createListOfItems(UserId userId, String name, GenreId genreId) {
+
+        ListOfItemsId listOfItemsId = ListOfItemsId.newId();
+
+        return new ListOfItems(listOfItemsId, userId, name, genreId);
     }
 
-    public ListOfItems createPublicListOfItems(UserId userId, String name, Genre genre) {
-        ListOfItems list = new ListOfItems(userId, name, genre);
+    public ListOfItems createPublicListOfItems(UserId userId, String name, GenreId genreId) {
+
+        ListOfItems list = createListOfItems(userId, name, genreId);
         list.makePublic();
         return list;
     }
 }
+
