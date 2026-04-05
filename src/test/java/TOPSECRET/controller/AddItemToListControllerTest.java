@@ -1,12 +1,13 @@
+
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.valueobject.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,26 +21,28 @@ class AddItemToListControllerTest {
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private ILibraryRepo _iLibraryRepoDouble;
     private UserId _userIdDouble;
-    private Genre _genreDouble;
+    private GenreId _genreIdDouble;
+    private ItemId _itemIdDouble;
     private Item _itemDouble;
     private Library _libraryDouble;
-    private ListOfItems _itemsListDouble;
+    private ListOfItems _listDouble;
 
     @BeforeEach
     void setUp() {
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
         _userIdDouble = mock(UserId.class);
-        _genreDouble = mock(Genre.class);
+        _genreIdDouble = mock(GenreId.class);
+        _itemIdDouble = mock(ItemId.class);
         _itemDouble = mock(Item.class);
         _libraryDouble = mock(Library.class);
-        _itemsListDouble = mock(ListOfItems.class);
+        _listDouble = mock(ListOfItems.class);
     }
 
     @Test
     void getMyListsShouldReturnsListsFromRepo() {
         //arrange
-        List<ListOfItems> expected = List.of(_itemsListDouble);
+        List<ListOfItems> expected = List.of(_listDouble);
         when(_iListOfItemsRepoDouble.findListsByUserId(_userIdDouble)).thenReturn(expected);
 
         //SUT
@@ -83,71 +86,24 @@ class AddItemToListControllerTest {
     }
 
     @Test
-    void addItemToListDoesNotFindItemInLibrary() {
-        //arrange
-        Item otherItem = mock(Item.class);
-
-        when(_iListOfItemsRepoDouble.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreDouble))
-                .thenReturn(_itemsListDouble);
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(otherItem));
-
-        //SUT
-        AddItemToListController controller = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        //act
-        controller.addItemToList(_userIdDouble, "My List", _genreDouble, _itemDouble);
-
-        // assert
-        verify(_itemsListDouble).addItem(null);
-    }
-
-    @Test
-    void addItemToListShouldAddItemWhenValid() {
-        //arrange
-        when(_iListOfItemsRepoDouble.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreDouble))
-                .thenReturn(_itemsListDouble);
-
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble))
-                .thenReturn(_libraryDouble);
-
-        when(_libraryDouble.getItemsInLibrary())
-                .thenReturn(List.of(_itemDouble));
-
-        //SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        //assert
-        assertDoesNotThrow(() ->
-                _controllerSUT.addItemToList(_userIdDouble, "My List", _genreDouble, _itemDouble)
-        );
-    }
-
-    @Test
     void addItemToList_throwsWhenListNameIsBlank() {
         //arrange / SUT
         AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
         //assert
         assertThrows(IllegalArgumentException.class,
-                () -> _controllerSUT.addItemToList(_userIdDouble, " ", _genreDouble, _itemDouble));
+                () -> _controllerSUT.addItemToList(_userIdDouble, " ", _genreIdDouble, _itemIdDouble));
     }
 
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
         //arrange
-        when(_iListOfItemsRepoDouble.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreDouble))
-                .thenReturn(_itemsListDouble);
-
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble))
-                .thenReturn(_libraryDouble);
-
-        when(_libraryDouble.getItemsInLibrary())
-                .thenReturn(List.of(_itemDouble));
+        when(_iListOfItemsRepoDouble.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble))
+                .thenReturn(_listDouble);
 
         doThrow(new IllegalStateException("Item already in list"))
-                .when(_itemsListDouble)
-                .addItem(_itemDouble);
+                .when(_listDouble)
+                .addItem(_itemIdDouble);
 
         //SUT
         AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
@@ -155,7 +111,7 @@ class AddItemToListControllerTest {
         //assert
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> _controllerSUT.addItemToList(_userIdDouble, "My List", _genreDouble, _itemDouble)
+                () -> _controllerSUT.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble)
         );
 
         assertEquals("Item already in list", ex.getMessage());

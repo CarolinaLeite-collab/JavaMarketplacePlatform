@@ -1,11 +1,13 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
@@ -24,7 +26,6 @@ public class AddItemToListController {
     private final ILibraryRepo _iLibraryRepo;
 
     public AddItemToListController(IListOfItemsRepo iListRepo, ILibraryRepo iLibraryRepo, UserId userId) {
-
         _iListOfItemsRepo = iListRepo;
         _iLibraryRepo = iLibraryRepo;
     }
@@ -38,26 +39,12 @@ public class AddItemToListController {
         return lib.getItemsInLibrary();
     }
 
-    public void addItemToList(UserId userId, String listName, Genre genre, Item item) {
+    public void addItemToList(UserId userId, String listName, GenreId genreId, ItemId itemId) {
 
         if (listName == null || listName.isBlank()) throw new IllegalArgumentException("List name is mandatory");
 
-        ListOfItems myList = _iListOfItemsRepo.findByOwnerNameAndGenre(userId, listName, genre);
+        ListOfItems myList = _iListOfItemsRepo.findByOwnerNameAndGenre(userId, listName, genreId);
 
-        Library lib = _iLibraryRepo.findLibraryByUserId(userId);
-
-        Item returnedItem = findItemInListOfItems(lib.getItemsInLibrary(), item);
-
-        myList.addItem(returnedItem);
-    }
-
-    private Item findItemInListOfItems(List<Item> items, Item item) {
-
-        for (Item i : items) {
-            if (i.equals(item)) {
-                return i;
-            }
-        }
-        return null;
+        myList.addItem(itemId);
     }
 }
