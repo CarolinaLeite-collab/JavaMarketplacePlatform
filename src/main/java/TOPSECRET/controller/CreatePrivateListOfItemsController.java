@@ -4,6 +4,7 @@ import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IGenreRepo;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public class CreatePrivateListOfItemsController {
         return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
     }
 
-    public ListOfItems createListOfItems(UserId userId, String name, Genre genre) {
-        return _iListOfItemsRepo.addListOfItems(userId, name, genre);
+    public ListOfItems createListOfItems(UserId userId, String name, GenreId genreId) {
+        return _iListOfItemsRepo.addListOfItems(userId, name, genreId);
     }
 }
