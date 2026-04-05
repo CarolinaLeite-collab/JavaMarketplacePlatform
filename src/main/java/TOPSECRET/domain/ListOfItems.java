@@ -1,5 +1,9 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
@@ -14,26 +18,42 @@ import java.util.Objects;
  * if they belong to the same user and have the same name and genre.
  * </p>
  */
-public class ListOfItems {
 
+public class ListOfItems implements AggregateRoot<ListOfItemsId> {
+
+    private final ListOfItemsId _listOfItemsId;
     private UserId _userId;
     private String _name;
-    private Genre _genre;
+    private GenreId _genreId;
     private boolean _isPrivate;
-    private List<Item> _items;
+    private List<ItemId> _itemIds;
 
+    ListOfItems(ListOfItemsId listOfItemsId, UserId userId, String name, GenreId genreId) {
 
-    ListOfItems(UserId userId, String name, Genre genre) {
-
+        if (listOfItemsId == null) {
+            throw new IllegalArgumentException("ListOfItemsID cannot be null");
+        }
+        if (userId == null) {
+            throw new IllegalArgumentException("UserID cannot be null");
+        }
         if (name == null) {
             throw new IllegalArgumentException("List name cannot be null");
         }
+        if (genreId == null) {
+            throw new IllegalArgumentException("GenreID cannot be null");
+        }
 
+        _listOfItemsId = listOfItemsId;
         _userId = userId;
         _name = name;
-        _genre = genre;
+        _genreId = genreId;
         _isPrivate = true;
-        _items = new ArrayList<>();
+        _itemIds = new ArrayList<>();
+    }
+
+    @Override
+    public ListOfItemsId identity() {
+        return _listOfItemsId;
     }
 
     public UserId getUserId() {
@@ -44,8 +64,8 @@ public class ListOfItems {
         return _name;
     }
 
-    public Genre getGenre() {
-        return _genre;
+    public GenreId getGenreId() {
+        return _genreId;
     }
 
     public boolean isPrivate() {
@@ -56,35 +76,33 @@ public class ListOfItems {
         _isPrivate = false;
     }
 
-    public List<Item> getItems() {
-        return List.copyOf(_items);
+    public List<ItemId> getItemIds() {
+        return List.copyOf(_itemIds);
     }
 
 
-    public void addItem(Item item) {
-        if (item == null) {
+    public void addItem(ItemId itemId) {
+        if (itemId == null) {
             throw new IllegalArgumentException("Item is mandatory");
         }
 
-        if (_items.contains(item)) {
+        if (_itemIds.contains(itemId)) {
             throw new IllegalStateException("Item already in list");
         }
 
-        _items.add(item);
+        _itemIds.add(itemId);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ListOfItems lop)) return false;
-        return Objects.equals(_userId, lop.getUserId())
-                && Objects.equals(_name, lop.getName())
-                && Objects.equals(_genre, lop.getGenre());
+    public boolean sameAs(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof ListOfItems other)) return false;
+        return Objects.equals(_listOfItemsId, other._listOfItemsId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getUserId(), getName(), getGenre());
+        return Objects.hash(_listOfItemsId);
     }
-
 }
+
