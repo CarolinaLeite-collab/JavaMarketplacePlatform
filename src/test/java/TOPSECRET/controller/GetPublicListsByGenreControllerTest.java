@@ -3,6 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,14 +16,14 @@ import static org.mockito.Mockito.*;
 class GetPublicListsByGenreControllerTest {
 
     private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private Genre _genreDouble;
+    private GenreId _genreIdDouble;
     private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _genreDouble = mock(Genre.class);
+        _genreIdDouble = mock(GenreId.class);
         _userIdDouble = mock(UserId.class);
     }
 
@@ -34,18 +35,18 @@ class GetPublicListsByGenreControllerTest {
 
         when(listA.getName()).thenReturn("List A");
         when(listA.getUserId()).thenReturn(_userIdDouble);
-        when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of(listA));
+        when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreIdDouble)).thenReturn(List.of(listA));
 
         // SUT
         GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreDouble);
+        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals("List A", result.get(0).getName());
         assertEquals(_userIdDouble, result.get(0).getUserId());
-        verify(_iListOfItemsRepoDouble).findPublicListsByGenre(_genreDouble);
+        verify(_iListOfItemsRepoDouble).findPublicListsByGenre(_genreIdDouble);
 
     }
 
@@ -68,13 +69,13 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnEmptyListWhenNoPublicListsOfGenreExists() {
 
         // Arrange
-        when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreDouble)).thenReturn(List.of());
+        when( _iListOfItemsRepoDouble.findPublicListsByGenre(_genreIdDouble)).thenReturn(List.of());
 
         // SUT
         GetPublicListsByGenreController controller = new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreDouble);
+        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
