@@ -123,7 +123,7 @@ class MemoListOfItemsRepoTest {
         assertAll(
                 () -> assertEquals(1, lists.size()),
                 () -> assertThrows(UnsupportedOperationException.class,
-                        () -> lists.add(new ListOfItems(_listIdDouble, _userId1Double, "Other List", _genreId2Double)))
+                        () -> lists.add(mock(ListOfItems.class)))
         );
     }
 
