@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.ListOfItems.ListOfItemsFactory;
 import TOPSECRET.domain.valueobject.GenreId;
