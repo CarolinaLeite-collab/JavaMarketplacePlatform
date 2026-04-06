@@ -124,6 +124,18 @@ class MemoListOfItemsRepoTest {
     }
 
     @Test
+    void saveShouldReturnSavedEntity() {
+        ListOfItems item = mock(ListOfItems.class);
+        when(item.identity()).thenReturn(mock(ListOfItemsId.class));
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+
+        ListOfItems result = repo.save(item);
+
+        assertSame(item, result);
+    }
+
+    @Test
     void ofIdentityShouldReturnCorrectItem() {
         // Arrange
         ListOfItems created = mock(ListOfItems.class);
@@ -220,6 +232,54 @@ class MemoListOfItemsRepoTest {
         ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
 
         assertEquals(item, result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldNotMatchWhenUserIdDiffers() {
+        ListOfItems item = mock(ListOfItems.class);
+        when(item.identity()).thenReturn(mock(ListOfItemsId.class));
+        when(item.getUserId()).thenReturn(_userId2Double); // wrong user
+        when(item.getName()).thenReturn("My List");
+        when(item.getGenreId()).thenReturn(_genreIdDouble);
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(item);
+
+        ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
+
+        assertNull(result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldNotMatchWhenNameDiffers() {
+        ListOfItems item = mock(ListOfItems.class);
+        when(item.identity()).thenReturn(mock(ListOfItemsId.class));
+        when(item.getUserId()).thenReturn(_userId1Double);
+        when(item.getName()).thenReturn("Other Name"); // wrong name
+        when(item.getGenreId()).thenReturn(_genreIdDouble);
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(item);
+
+        ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
+
+        assertNull(result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldNotMatchWhenGenreDiffers() {
+        ListOfItems item = mock(ListOfItems.class);
+        when(item.identity()).thenReturn(mock(ListOfItemsId.class));
+        when(item.getUserId()).thenReturn(_userId1Double);
+        when(item.getName()).thenReturn("My List");
+        when(item.getGenreId()).thenReturn(_genreId2Double); // wrong genre
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(item);
+
+        ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
+
+        assertNull(result);
     }
 
     @Test
