@@ -1,7 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Country;
+import TOPSECRET.domain.country.Country;
 
 /**
  * Represents a physical address with details such as street, door number, building type, city,

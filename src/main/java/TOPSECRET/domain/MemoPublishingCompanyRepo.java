@@ -1,5 +1,9 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.PublishingCompany.PublishingCompanyFactory;
+import TOPSECRET.domain.repository.IPublishingCompanyRepo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +46,7 @@ public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
 
         for (PublishingCompany publishingCompany : _publishingCompany) {
 
-            if (publishingCompany.equals(new PublishingCompany(publishingCompanyName))) {
+            if (publishingCompany.isSamePublishingCompany(publishingCompanyName)) {
 
                 return true;
 

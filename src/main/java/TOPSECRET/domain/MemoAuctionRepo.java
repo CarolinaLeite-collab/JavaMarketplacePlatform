@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;

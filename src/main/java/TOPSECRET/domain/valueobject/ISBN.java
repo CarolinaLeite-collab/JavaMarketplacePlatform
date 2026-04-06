@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
-import TOPSECRET.domain.Identifier;
 
 /**
  * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
@@ -10,10 +9,10 @@ import TOPSECRET.domain.Identifier;
  * and a 13-digit code for books published after 2007.
  * An ISBN-10 can be converted to an ISBN-13 by adding a "978" prefix and recalculating the check digit.
  * ISBN-10 and ISBN-13 can coexist for the same edition.
- * Implements the {@link Identifier} interface.
+ * Implements the {@link EditionId} interface.
  */
 
-public class ISBN implements Identifier, ValueObject {
+public class ISBN implements BookId, ValueObject {
 
     private final String _isbn;
 

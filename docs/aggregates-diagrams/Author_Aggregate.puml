@@ -1,0 +1,90 @@
+@startuml
+
+'==== Title ====
+title Author Aggregate
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam defaultFontName Futura
+skinparam objectFontSize 14
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #3B4953
+skinparam ArrowFontSize 14
+skinparam PackageBorderColor #black
+skinparam classAttributeIconSize 0
+
+' ===== Domain =====
+Package "DOMAIN" {
+
+    Package "AUTHOR" <<Folder>> #c0d8d8 {
+        class Author <<Root>> <<Entity>> {
+            +getName() : Name
+            +getLowerCaseName() : Name
+        }
+
+        class AuthorFactory <<Factory>> {
+            +createAuthor(authorName : String) : Author
+            +createAuthor(authorId : AuthorId, authorName : String) : Author
+        }
+    }
+
+    package "REPOSITORY" <<Folder>>  {
+        interface IAuthorRepo <<Interface>> {
+        +addAuthor(authorName : String) : Author
+
+        }
+    }
+
+    Package "VALUEOBJECT"  {
+        '== Value Objects (Ids) ==
+        class AuthorId <<ValueObject>> #LightPink {
+        -_id : String
+
+        equals() : boolean
+        toString() : String
+        }
+
+        ' ===== Value Objects =====
+        class Name <<ValueObject>> {
+
+        }
+
+    }
+
+}
+
+' ===== Repository =====
+package "PERSISTENCE" <<Folder>> {
+
+    package "Memo"  {
+        class MemoAuthorRepo {
+
+        }
+    }
+}
+
+Package "DDD" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+
+
+' ===== Interactions =====
+Author "1" --> "ID 1" AuthorId : has
+Author "*" <- "1" MemoAuthorRepo : persists
+Author "1" *-- "1" Name : has
+
+AuthorFactory ..> Author : <<create>>
+AuthorFactory "1"<-- "1" MemoAuthorRepo : invokes
+
+IAuthorRepo <|. MemoAuthorRepo
+IAuthorRepo -|> IRepository
+
+@enduml

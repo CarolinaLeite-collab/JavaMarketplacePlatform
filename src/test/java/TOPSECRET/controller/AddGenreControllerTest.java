@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
-import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,21 +29,20 @@ public class AddGenreControllerTest {
         when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        new AddGenreController(_iGenreRepoDouble, adminDouble);
+        new AddGenreController(_iGenreRepoDouble);
     }
 
     @Test
     void addGenreThrowsWhenUserIsNotAdmin() {
         //arrange
-        User _adminDouble = mock(User.class);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+        User _nonAdminDouble = mock(User.class);
+        when(_nonAdminDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
-        String genreName = "Action";
-        when(_genreDouble.getGenre()).thenReturn(genreName);
+        AddGenreController controller = new AddGenreController(_iGenreRepoDouble);
 
-        //act + assert
-        assertThrows(SecurityException.class,  () -> new AddGenreController(_iGenreRepoDouble, _adminDouble)); //SUT
-
+        // Act + Assert
+        assertThrows(SecurityException.class,
+                () -> controller.addGenre(_nonAdminDouble, "Action"));
     }
 
     @Test
@@ -56,10 +55,10 @@ public class AddGenreControllerTest {
         when(_iGenreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
 
         //SUT
-        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble, _adminDouble);
+        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble);
 
         //act
-        Genre genreAdded = _addGenreController.addGenre(genreName);
+        Genre genreAdded = _addGenreController.addGenre(_adminDouble, genreName);
 
         //assert
         assertNotNull(genreAdded);
@@ -78,14 +77,14 @@ public class AddGenreControllerTest {
                 .thenThrow(new IllegalArgumentException("This genre already exists"));     // second call: repo signals duplication
 
         //SUT
-        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble, _adminDouble);
+        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble);
 
         //act
-        Genre firstAddedGenre = _addGenreController.addGenre(genreName);
+        Genre firstAddedGenre = _addGenreController.addGenre(_adminDouble, genreName);
 
         //assert
         // Second attempt to add the same genre
-        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(genreName));
+        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(_adminDouble, genreName));
 
         assertNotNull(firstAddedGenre);
         assertEquals("This genre already exists", secondAttemptThrows.getMessage());

@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.Author.Author;
 
 import java.util.List;
 

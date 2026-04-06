@@ -1,7 +1,14 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.Role;
 
 import java.util.List;
 
@@ -22,7 +29,7 @@ public class RegisterNewAppraisalEntityController {
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo, User user) {
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo) {
 
         _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
@@ -34,14 +41,17 @@ public class RegisterNewAppraisalEntityController {
         return List.copyOf(_iPubTypeRepo.getAll());
     }
 
-    public List getGenres(){
+    public Iterable <Genre> getGenres(){
 
-        return List.copyOf(_iGenreRepo.getListOfOfficialGenres());
+        return _iGenreRepo.findAll();
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre){
-        AppraisalEntity appraisalEntity = _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
-        return appraisalEntity;
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre, User user){
+
+        if (!user.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register appraisal entities");
+        }
+        return _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
     }
 
 }

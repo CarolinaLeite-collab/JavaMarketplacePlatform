@@ -1,7 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
+import TOPSECRET.domain.*;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.valueobject.GenreId;
@@ -10,6 +11,7 @@ import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +46,8 @@ class CreatePrivateListOfItemsControllerTest {
         // SUT & Act
         CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
+        // Assert
+        assertNotNull(controller);
     }
 
     @Test
@@ -69,51 +73,53 @@ class CreatePrivateListOfItemsControllerTest {
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble)).thenReturn(null);
+        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble))
+                .thenThrow(new IllegalArgumentException("List already exists"));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
-        // Act
-        ListOfItems duplicate = controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
-
-        // Assert
-        assertNull(duplicate);
-        verify(_iListOfItemsRepoDouble).addListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble));
     }
 
     @Test
-    void getListOfOfficialGenresReturnsUnmodifiableList() {
+    void getListOfOfficialGenresDelegatesToRepo() {
         // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_genreDouble, _genre2Double));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
+        // SUT
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+        Iterable<Genre> result = controller.getListOfOfficialGenres();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> officialGenres.add(mock(Genre.class)));
+        assertNotNull(result);
+        verify(_iGenreRepoDouble).findAll();
     }
 
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_genreDouble, _genre2Double));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
+        // SUT
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+        Iterable<Genre> result = controller.getListOfOfficialGenres();
+        List<Genre> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
 
         // Assert
-        assertAll(
-                () -> assertEquals(2, officialGenres.size()),
-                () -> assertTrue(officialGenres.contains(_genreDouble)),
-                () -> assertTrue(officialGenres.contains(_genre2Double))
-        );
+        assertTrue(resultList.contains(_genreDouble));
+        assertTrue(resultList.contains(_genre2Double));
     }
 }

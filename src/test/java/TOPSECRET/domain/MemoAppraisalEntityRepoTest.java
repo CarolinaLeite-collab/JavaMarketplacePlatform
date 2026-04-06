@@ -1,5 +1,9 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

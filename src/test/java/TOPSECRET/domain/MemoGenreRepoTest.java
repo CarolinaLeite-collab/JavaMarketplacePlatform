@@ -1,11 +1,17 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.genre.GenreFactory;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.persistence.mem.MemoGenreRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,24 +34,18 @@ class MemoGenreRepoTest {
 
     @Test
     void addNewGenreToRepoShouldSucceed() {
-
         // Arrange
-        String genreName = "New Genre";
-
-        Genre genreDouble = mock(Genre.class);
-
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
-
-        // SUT
+        Genre _genreDouble = mock(Genre.class);
+        when(_genreDouble.identity()).thenReturn(new GenreId("Fiction"));
+        when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Fiction")))
+                .thenReturn(_genreDouble);
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        Genre addedGenre = repo.addGenre(genreName);
+        Genre result = repo.addGenre("Fiction"); // SUT
 
         // Assert
-        assertEquals(genreDouble, addedGenre);
-        assertEquals(1, repo.getListOfOfficialGenres().size());
-        assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
+        assertSame(_genreDouble, result);
 
     }
 
@@ -53,14 +53,16 @@ class MemoGenreRepoTest {
     void addMultipleNewGenresToRepoShouldSucceed() {
 
         // Arrange
-        String genreName = "New Genre";
-        String genre2Name = "Another Genre";
+        String genreName = "Fiction";
+        String genre2Name = "Romance";
 
         Genre genre1Double = mock(Genre.class);
         Genre genre2Double = mock(Genre.class);
+        when(genre1Double.identity()).thenReturn(new GenreId("Fiction"));
+        when(genre2Double.identity()).thenReturn(new GenreId("Romance"));
 
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genre1Double);
-        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genre2Double);
+        when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Fiction"))).thenReturn(genre1Double);
+        when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Romance"))).thenReturn(genre2Double);
 
         // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
@@ -72,76 +74,123 @@ class MemoGenreRepoTest {
         // Assert
         assertEquals(genre1Double, addedGenre);
         assertEquals(genre2Double, addedGenre2);
-        assertEquals(2, repo.getListOfOfficialGenres().size());
-        assertEquals(addedGenre, repo.getListOfOfficialGenres().get(0));
-        assertEquals(addedGenre2, repo.getListOfOfficialGenres().get(1));
     }
 
     @Test
     void addExistingGenreToRepoShouldFail() {
 
         // Arrange
-        String genreName = "Another Genre";
-
-        Genre genreDouble = mock(Genre.class);
-
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
-
-        // SUT
+        Genre _genreDouble = mock(Genre.class);
+        when(_genreDouble.identity()).thenReturn(new GenreId("Fiction"));
+        when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Fiction")))
+                .thenReturn(_genreDouble);
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+        repo.addGenre("Fiction");
 
-        // Act
-        repo.addGenre(genreName);
-        // Attempting to add genreName again
-        //Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addGenre(genreName));
-        assertEquals("This genre already exists", exception.getMessage());
-    }
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repo.addGenre("Fiction")); // SUT
+}
 
     @Test
-    void getListOfGenresShouldReturnListOfGenres() {
-
+    void saveValidGenreReturnsGenre() {
         // Arrange
-        String genreName = "New Genre";
-        String genre2Name = "Another Genre";
-
-        Genre genre1Double = mock(Genre.class);
-        Genre genre2Double = mock(Genre.class);
-
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genre1Double);
-        when(_genreFactoryDouble.createGenre(genre2Name)).thenReturn(genre2Double);
-
-        when(genre1Double.getGenre()).thenReturn(genreName);
-        when(genre2Double.getGenre()).thenReturn(genre2Name);
+        Genre _genreDouble = mock(Genre.class);
 
         // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        repo.addGenre(genreName);
-        repo.addGenre(genre2Name);
-
-        List<Genre> listOfOfficialGenres = repo.getListOfOfficialGenres();
+        Genre result = repo.save(_genreDouble);
 
         // Assert
-        assertNotNull(listOfOfficialGenres);
-        assertEquals(2, listOfOfficialGenres.size());
-        assertEquals(genreName, listOfOfficialGenres.get(0).getGenre());
-        assertEquals(genre2Name, listOfOfficialGenres.get(1).getGenre());
+        assertSame(_genreDouble, result);
     }
 
     @Test
-    void getListOfNoGenresShouldReturnIsEmpty() {
+    void findAllReturnsAllStoredGenres() {
+        // Arrange
+        Genre _genreDouble1 = mock(Genre.class);
+        Genre _genreDouble2 = mock(Genre.class);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+        repo.save(_genreDouble1);
+        repo.save(_genreDouble2);
 
-        // SUT
+        // Act
+        Iterable<Genre> result = repo.findAll(); // SUT
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.iterator().hasNext());
+    }
+
+    @Test
+    void findAllEmptyRepoReturnsEmptyIterable() {
+        // Arrange
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        List<Genre> listOfOfficialGenres = repo.getListOfOfficialGenres();
+        Iterable<Genre> result = repo.findAll(); // SUT
 
         // Assert
-        assertNotNull(listOfOfficialGenres);
-        assertTrue(listOfOfficialGenres.isEmpty());
+        assertFalse(result.iterator().hasNext());
+    }
+    @Test
+    void ofIdentityExistingGenreIdReturnsGenre() {
+        // Arrange
+        GenreId _genreIdDouble = mock(GenreId.class);
+        Genre _genreDouble = mock(Genre.class);
+        when(_genreDouble.identity()).thenReturn(_genreIdDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+        repo.save(_genreDouble);
 
+        // Act
+        Optional<Genre> result = repo.ofIdentity(_genreIdDouble); // SUT
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(_genreDouble, result.get());
+    }
+
+    @Test
+    void ofIdentityNonExistingGenreIdReturnsEmpty() {
+        // Arrange
+        GenreId _genreIdDouble = mock(GenreId.class);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+
+        // Act
+        Optional<Genre> result = repo.ofIdentity(_genreIdDouble); // SUT
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void containsOfIdentityExistingGenreIdReturnsTrue() {
+        // Arrange
+        GenreId _genreIdDouble = mock(GenreId.class);
+        Genre _genreDouble = mock(Genre.class);
+        when(_genreDouble.identity()).thenReturn(_genreIdDouble);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+        repo.save(_genreDouble);
+
+        // Act
+        boolean result = repo.containsOfIdentity(_genreIdDouble); // SUT
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void containsOfIdentityNonExistingGenreIdReturnsFalse() {
+        // Arrange
+        GenreId _genreIdDouble = mock(GenreId.class);
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+
+        // Act
+        boolean result = repo.containsOfIdentity(_genreIdDouble); // SUT
+
+        // Assert
+        assertFalse(result);
     }
 }
