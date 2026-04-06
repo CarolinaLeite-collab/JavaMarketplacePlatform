@@ -14,17 +14,17 @@ import java.time.ZonedDateTime;
  */
 public class AuctionFactory {
 
-    public Auction createAuction(Item item, Price startingPrice, ZonedDateTime auctionStartDate,
+    public Auction createAuction(Item item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate,
                                  ZonedDateTime auctionEndDate) {
 
-            return new Auction(item, startingPrice, auctionStartDate, auctionEndDate);
+            return new Auction(item, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
 
     }
 
-    public Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
+    public Auction createAuction(Item item, Price startingPrice, Price reservePrice ,Price outrightPrice,
                           ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-            return new Auction(item, startingPrice, outrightPrice, auctionStartDate, auctionEndDate);
+            return new Auction(item, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
 
     }
 }

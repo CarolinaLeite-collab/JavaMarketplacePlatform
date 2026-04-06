@@ -20,6 +20,7 @@ class AuctionFactoryTest {
         // Arrange
         Item item = mock(Item.class);
         Price startingPrice = mock(Price.class);
+        Price reservePrice = mock(Price.class);
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
         ZonedDateTime end = start.plusDays(1);
         List<List<Object>> capturedArguments = new ArrayList<>();
@@ -32,7 +33,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(item, startingPrice, start, end);
+            Auction created = factory.createAuction(item, startingPrice, reservePrice,start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
@@ -40,8 +41,9 @@ class AuctionFactoryTest {
             List<Object> params = capturedArguments.get(0);
             assertSame(item, params.get(0));
             assertSame(startingPrice, params.get(1));
-            assertSame(start, params.get(2));
-            assertSame(end, params.get(3));
+            assertSame(reservePrice, params.get(2));
+            assertSame(start, params.get(3));
+            assertSame(end, params.get(4));
         }
     }
 
@@ -50,6 +52,7 @@ class AuctionFactoryTest {
         // Arrange
         Item item = mock(Item.class);
         Price startingPrice = mock(Price.class);
+        Price reservePrice = mock(Price.class);
         Price outrightPrice = mock(Price.class);
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
         ZonedDateTime end = start.plusDays(1);
@@ -62,7 +65,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(item, startingPrice, outrightPrice, start, end);
+            Auction created = factory.createAuction(item, startingPrice, reservePrice,outrightPrice, start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
@@ -70,9 +73,10 @@ class AuctionFactoryTest {
             List<Object> params = capturedArguments.get(0);
             assertSame(item, params.get(0));
             assertSame(startingPrice, params.get(1));
-            assertSame(outrightPrice, params.get(2));
-            assertSame(start, params.get(3));
-            assertSame(end, params.get(4));
+            assertSame(reservePrice, params.get(2));
+            assertSame(outrightPrice, params.get(3));
+            assertSame(start, params.get(4));
+            assertSame(end, params.get(5));
         }
     }
 }
