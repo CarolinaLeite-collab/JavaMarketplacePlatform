@@ -1,8 +1,8 @@
 package TOPSECRET.domain.ListOfItems;
 
 import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.UserId;
 import TOPSECRET.domain.valueobject.ListOfItemsId;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Factory responsible for creating {@link ListOfItems} instances.

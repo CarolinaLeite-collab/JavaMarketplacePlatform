@@ -1,10 +1,11 @@
 package TOPSECRET.controller;
-import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.Role;
+
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
+import TOPSECRET.domain.repository.IUserRepo;
 import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

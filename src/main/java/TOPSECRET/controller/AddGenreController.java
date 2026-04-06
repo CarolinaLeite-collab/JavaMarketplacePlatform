@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.valueobject.UserId;
 
 /**

@@ -1,6 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+
 import java.util.Objects;
 
 public class CityId implements DomainId {
