@@ -5,6 +5,7 @@ import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +16,14 @@ import static org.mockito.Mockito.when;
 class RegisterCountryControllerTest {
     private ICountryRepo _iCountryRepoDouble;
     private User _adminDouble;
+    private UserId _adminIdDouble;
     private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp(){
         _iCountryRepoDouble = mock(ICountryRepo.class);
         _adminDouble = mock(User.class);
+        _adminIdDouble = mock(UserId.class);
         _countryFactory = new CountryFactory();
     }
 
@@ -28,7 +31,7 @@ class RegisterCountryControllerTest {
     void constructsControllerSuccessfully() {
         //Act
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
     }
 
     @Test
@@ -38,7 +41,7 @@ class RegisterCountryControllerTest {
         when(_iCountryRepoDouble.save(org.mockito.ArgumentMatchers.any())).thenReturn(portugal);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
         //Act
         java.util.Optional<Country> opt = controller.registerCountry(_adminDouble, "PT", "Portugal");
         // Assert
@@ -51,7 +54,7 @@ class RegisterCountryControllerTest {
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() {
         //Arrange
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
         //Act
         SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerCountry(_adminDouble, null, "Portugal"));
 

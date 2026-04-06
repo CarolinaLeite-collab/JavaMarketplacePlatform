@@ -4,6 +4,7 @@ import TOPSECRET.domain.repository.IPublishingCompanyRepo;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the registration of a {@link PublishingCompany}.
@@ -14,7 +15,7 @@ public class RegisterPublishingCompanyController {
 
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
 
-    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo) {
+    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo, UserId adminId) {
 
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
 

@@ -4,6 +4,7 @@ import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,12 +16,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class GetPublicationTypeListControllerTest {
-        private User _userDouble;
+        private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
-        _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
+        _userIdDouble = mock(UserId.class);
+//        when(_userIdDouble.hasRole(Role.USER)).thenReturn(true);
     }
 
     @Test
@@ -30,7 +31,7 @@ class GetPublicationTypeListControllerTest {
         PublicationType publicationType = mock(PublicationType.class);
         when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of(publicationType));
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userIdDouble);
         // Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         // Assert
@@ -43,7 +44,7 @@ class GetPublicationTypeListControllerTest {
         IPublicationTypeRepo _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
         when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of());
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userIdDouble);
         //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         //Assert
@@ -57,7 +58,7 @@ class GetPublicationTypeListControllerTest {
         IPublicationTypeRepo _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
         when(_iPublicationTypeRepoDouble.getAll()).thenReturn(List.of(publicationTypeDouble));
         //SUT
-        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userDouble);
+        GetPublicationTypeListController controller = new GetPublicationTypeListController(_iPublicationTypeRepoDouble, _userIdDouble);
         //Act
         List<PublicationType> result = controller.getListOfPublicationTypes();
         //Assert

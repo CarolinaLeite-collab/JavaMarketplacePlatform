@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IAuthorRepo;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for creating new authors in the system.
@@ -16,7 +16,7 @@ public class CreateAuthorController {
 
     private IAuthorRepo _iAuthorRepo;
 
-    public CreateAuthorController(IAuthorRepo ar, User user) {
+    public CreateAuthorController(IAuthorRepo ar, UserId adminId) {
         _iAuthorRepo = ar;
     }
 

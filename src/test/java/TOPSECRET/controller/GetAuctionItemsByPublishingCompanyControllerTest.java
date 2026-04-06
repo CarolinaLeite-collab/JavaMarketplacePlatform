@@ -4,6 +4,7 @@ import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +15,7 @@ import static org.mockito.Mockito.*;
 
 class GetAuctionItemsByPublishingCompanyControllerTest {
 
-    private User _buyerDouble;
+    private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
     private PublishingCompany _publisherDouble;
 
@@ -23,7 +24,7 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
 
     @BeforeEach
     void setUp() {
-        _buyerDouble = mock(User.class);
+        _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
         _publisherDouble = mock(PublishingCompany.class);
 
@@ -34,7 +35,7 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
     @Test
     void constructorWithValidDependenciesDoesNotThrow() {
         assertDoesNotThrow(() ->
-                new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerDouble));
+                new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble));
     }
 
     @Test
@@ -43,7 +44,7 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompany(_publisherDouble)).thenReturn(List.of());
 
         //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerDouble);
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
@@ -61,7 +62,7 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompany(_publisherDouble)).thenReturn(expectedItems);
 
         //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerDouble);
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
@@ -80,7 +81,7 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompany(otherPublisherDouble)).thenReturn(List.of());
 
         //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerDouble);
+        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> items = ctl.getAuctionItemsByPublishingCompany(otherPublisherDouble);

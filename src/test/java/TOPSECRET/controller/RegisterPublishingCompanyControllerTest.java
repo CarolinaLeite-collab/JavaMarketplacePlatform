@@ -4,6 +4,7 @@ import TOPSECRET.domain.repository.IPublishingCompanyRepo;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,12 +15,14 @@ class RegisterPublishingCompanyControllerTest {
 
     private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
     private User _adminDouble;
+    private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
         _adminDouble = mock(User.class);
+        _adminIdDouble = mock(UserId.class);
 
     }
 
@@ -27,7 +30,7 @@ class RegisterPublishingCompanyControllerTest {
     void constructorShouldInitializeController() {
 
         // Act & SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
     }
 
@@ -42,7 +45,7 @@ class RegisterPublishingCompanyControllerTest {
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
         //Act
         PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(_adminDouble, publishingCompanyName);
@@ -64,7 +67,7 @@ class RegisterPublishingCompanyControllerTest {
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(_adminDouble, publishingCompanyName));
@@ -82,7 +85,7 @@ class RegisterPublishingCompanyControllerTest {
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
         //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
         //Act
         SecurityException exception = assertThrows(
