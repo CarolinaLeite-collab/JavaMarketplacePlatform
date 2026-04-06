@@ -4,10 +4,11 @@ import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.ListOfItems.ListOfItemsFactory;
 import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Repository responsible for managing {@link ListOfItems} instances.
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class MemoListOfItemsRepo implements IListOfItemsRepo {
 
-    private final List<ListOfItems> _lists;
+    private final Map<ListOfItemsId, ListOfItems> _data;
     private final ListOfItemsFactory _factory;
 
     public MemoListOfItemsRepo() {
@@ -27,48 +28,66 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
     }
 
     public MemoListOfItemsRepo(ListOfItemsFactory factory) {
-        _lists = new ArrayList<>();
+        _data = new HashMap<>();
         _factory = factory;
     }
 
     @Override
     public ListOfItems addListOfItems(UserId userId, String name, GenreId genreId) {
         ListOfItems newList = _factory.createListOfItems(userId, name, genreId);
-        boolean exists = _lists.stream()
-                .anyMatch(existing -> existing.identity().equals(newList.identity()));
+        ListOfItemsId _id = newList.identity();
 
-        if (exists) return null;
-        _lists.add(newList);
+        if (_data.containsKey(_id))
+            return null;
+
+        _data.put(_id, newList);
         return newList;
     }
 
+    // ------------------------
+    // Generic Repo operations
+    // ------------------------
+
     @Override
-    public List<ListOfItems> getListOfListOfItems() {
-        return List.copyOf(_lists);
+    public ListOfItems save(ListOfItems entity) {
+
+        _data.put(entity.identity(), entity);
+        return entity;
     }
+
+    @Override
+    public Iterable<ListOfItems> findAll() {
+        return List.copyOf(_data.values());
+    }
+
+    @Override
+    public Optional<ListOfItems> ofIdentity(ListOfItemsId id) {
+        return Optional.ofNullable(_data.get(id));
+    }
+
+    @Override
+    public boolean containsOfIdentity(ListOfItemsId id) {
+        return _data.containsKey(id);
+    }
+
+    // ------------------------
+    // Domain-specific queries
+    // ------------------------
 
     @Override
     public List<ListOfItems> findPublicListsByGenre(GenreId genreId) {
 
-        List<ListOfItems> result = new ArrayList<>();
-        for (ListOfItems lop : _lists) {
-            if (!lop.isPrivate() && lop.getGenreId().equals(genreId)) {
-                result.add(lop);
-            }
-        }
-        return List.copyOf(result);
+        return _data.values().stream()
+                .filter(l -> !l.isPrivate() && l.getGenreId().equals(genreId))
+                .toList();
     }
 
     @Override
     public List<ListOfItems> findListsByUserId(UserId userId) {
 
-        List<ListOfItems> result = new ArrayList<>();
-        for (ListOfItems lop : _lists) {
-            if (lop.getUserId().equals(userId)) {
-                result.add(lop);
-            }
-        }
-        return List.copyOf(result);
+        return _data.values().stream()
+                .filter(l -> l.getUserId().equals(userId))
+                .toList();
     }
 
     @Override
@@ -76,13 +95,25 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
 
         String normalizedName = name.trim();
 
-        for (ListOfItems lop : _lists) {
-            if (lop.getUserId().equals(userId)
-                    && lop.getName().equalsIgnoreCase(normalizedName)
-                    && lop.getGenreId().equals(genreId)) {
-                return lop;
-            }
-        }
-        return null;
+        return _data.values().stream()
+                .filter(l -> l.getUserId().equals(userId))
+                .filter(l -> l.getName().equalsIgnoreCase(normalizedName))
+                .filter(l -> l.getGenreId().equals(genreId))
+                .findFirst()
+                .orElse(null);
     }
+
+    // -----------------------------------------------------------------
+    // Temporary solution for US requirements before DTO implementation
+    // -----------------------------------------------------------------
+
+    @Override
+    public Map<ListOfItemsId, String> getIdNameMap() {
+        return _data.values().stream()
+                .collect(Collectors.toUnmodifiableMap(
+                        ListOfItems::identity,
+                        ListOfItems::getName
+                ));
+    }
+
 }
