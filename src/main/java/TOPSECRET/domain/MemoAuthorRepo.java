@@ -1,6 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.Author.AuthorFactory;
 
 import java.util.ArrayList;
 import java.util.List;

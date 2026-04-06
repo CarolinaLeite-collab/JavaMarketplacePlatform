@@ -46,7 +46,7 @@ class Publication{
   - _genre: Genre
 }
 
-/' interface Identifier {
+/' interface EditionId {
   + getIdentifier(): String
  }
 class ISBN {
@@ -60,9 +60,9 @@ class ISSN {
   + getIdentifier(): String
   }
 
-class NoIdentifier {
+class NoEditionId {
   - _noIdentifier: String
-  + NoIdentifier()
+  + NoEditionId()
   + getIdentifier(): String
   }
 '/
@@ -72,13 +72,13 @@ RegisterNewPublicationController "1" --> "1" IPublicationRepo: uses
 IPublicationRepo "1" <|.. "1" MemoPublicationRepo
 MemoPublicationRepo "1" --> "*" PublicationFactory : uses
 PublicationFactory "1" --> "*" Publication : creates
-'Publication --> "1" Identifier : has
+'Publication --> "1" EditionId : has
 
 
 ' --- identifier hierarchy ---
-/'Identifier <|.. ISBN
-Identifier <|.. ISSN
-Identifier <|.. NoIdentifier'/
+/'EditionId <|.. ISBN
+EditionId <|.. ISSN
+EditionId <|.. NoEditionId'/
 
 note right of MemoPublicationRepo
   these methods are

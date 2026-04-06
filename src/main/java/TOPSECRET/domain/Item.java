@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Condition;
 
 import java.util.Objects;
@@ -81,9 +83,11 @@ public class Item {
 
     }
 
+    /** @deprecated filtering by publishing company moves to Edition — remove when Item references Edition */
+    @Deprecated
     public boolean isByPublishingCompany( PublishingCompany publisher) {
 
-        return _publication.isByPublishingCompany(publisher);
+        return false;
     }
 
     public boolean isByPublication(Publication publication) {

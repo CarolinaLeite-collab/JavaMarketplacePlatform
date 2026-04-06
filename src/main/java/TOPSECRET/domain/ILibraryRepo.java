@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
+
 import java.util.List;
 
 public interface ILibraryRepo {

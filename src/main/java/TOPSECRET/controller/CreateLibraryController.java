@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.ILibraryRepo;
 import TOPSECRET.domain.Library;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 
 /**
  * Controller responsible for handling the creation of the personal {@link Library} of a {@link User}.

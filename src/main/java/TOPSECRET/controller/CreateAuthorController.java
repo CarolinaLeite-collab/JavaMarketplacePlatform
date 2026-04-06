@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IAuthorRepo;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.Author.Author;
 
 /**
  * Controller responsible for creating new authors in the system.

@@ -1,5 +1,8 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.genre.Genre;
+
 /**
  * Factory responsible for creating {@link ListOfItems} instances.
  * @throws IllegalArgumentException if the list name is null, as enforced by {@link ListOfItems}'s constructor.

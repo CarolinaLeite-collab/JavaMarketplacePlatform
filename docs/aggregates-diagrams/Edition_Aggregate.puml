@@ -1,0 +1,120 @@
+@startuml
+
+'==== Title ====
+title Edition Aggregate
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+skinparam classAttributeFontSize 11
+skinparam classAttributeFontStyle plain
+
+' ===== Domain =====
+Package "DOMAIN" {
+
+    Package "EDITION" <<Folder>> #b0c4d4 {
+
+        interface Edition <<Root>> <<Entity>> {
+            -_publicationDate : LocalDate
+            +getIdentifier()
+            +getPublication()
+        }
+
+        class EditionBook <<Entity>> {
+            -_identifier : EditionId
+            -_editionNumber : Integer
+        }
+
+        class EditionMagazine <<Entity>> {
+            -_identifier : EditionId
+        }
+
+        class EditionOther <<Entity>> {
+        }
+
+        class EditionFactory <<Factory>> {
+            +createEdition() : Edition
+        }
+    }
+
+    Package "VALUEOBJECT" <<Folder>> {
+
+        class EditionId <<ValueObject>> #LightPink {
+            +getIdentifier()
+        }
+
+        class NumberOfPages <<ValueObject>>
+        class Binding <<ValueObject>>
+        class IssueNumber <<ValueObject>>
+        class Periodicity <<ValueObject>>
+        class Rarity <<ValueObject>>
+        class ISBN <<ValueObject>>
+        class ISSN <<ValueObject>>
+        class NoIdentifier <<ValueObject>>
+        class Language <<ValueObject>>
+        class PublicationId <<ValueObject>>
+        class PublishingCompanyId <<ValueObject>>
+    }
+
+    Package "REPOSITORY" <<Folder>> {
+        interface IEditionRepo <<Interface>>
+    }
+
+    EDITION -[hidden]right- REPOSITORY
+    EDITION -[hidden]down- VALUEOBJECT
+    VALUEOBJECT -[hidden]right- REPOSITORY
+
+}
+
+Package "DDD" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+}
+
+Package "PERSISTENCE" {
+    package "MEM" {
+        class MemoEditionRepo <<Repo>>
+    }
+}
+
+' ===== Relations =====
+Edition "1" --> "ID 1" EditionId : has
+Edition <|.. EditionBook
+Edition <|.. EditionMagazine
+Edition <|.. EditionOther
+Edition ..> PublicationId : references
+Edition ..> PublishingCompanyId : references
+Edition --> Language : has
+
+EditionBook --> NumberOfPages : has
+EditionBook --> Binding : has
+EditionMagazine --> IssueNumber : has
+EditionMagazine --> Periodicity : has
+EditionOther --> Rarity : has
+
+EditionId <|.. ISBN
+EditionId <|.. ISSN
+EditionId <|.. NoIdentifier
+
+IEditionRepo -|> IRepository
+MemoEditionRepo ..|> IEditionRepo
+
+EditionFactory ..> Edition : <<create>>
+
+Edition "*" <- "1" MemoEditionRepo : persists
+EditionFactory "1" <-- "1" MemoEditionRepo : invokes
+
+@enduml

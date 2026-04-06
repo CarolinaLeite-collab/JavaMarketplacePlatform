@@ -1,6 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;

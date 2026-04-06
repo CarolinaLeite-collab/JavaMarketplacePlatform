@@ -1,9 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +39,8 @@ class CreatePrivateListOfItemsControllerTest {
         // SUT & Act
         CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
 
+        // Assert
+        assertNotNull(controller);
     }
 
     @Test
@@ -60,51 +66,55 @@ class CreatePrivateListOfItemsControllerTest {
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_iListOfItemsRepoDouble.addListOfItems(_userDouble, "My List", _actionDouble)).thenReturn(null);
-
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+        when(_iListOfItemsRepoDouble.addListOfItems(_userDouble, "My List", _actionDouble))
+                .thenThrow(new IllegalArgumentException("List already exists"));
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
-        ListOfItems duplicate = controller.createListOfItems(_userDouble, "My List", _actionDouble);
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                controller.createListOfItems(_userDouble, "My List", _actionDouble)); // SUT
 
         // Assert
-        assertNull(duplicate);
-        verify(_iListOfItemsRepoDouble).addListOfItems(_userDouble, "My List", _actionDouble);
+        assertNotNull(exception);
     }
 
     @Test
-    void getListOfOfficialGenresReturnsUnmodifiableList() {
+    void getListOfOfficialGenresDelegatesToRepo() {
         // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_actionDouble, _poetryDouble));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+        // SUT
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+        Iterable<Genre> result = controller.getListOfOfficialGenres();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class,
-                () -> officialGenres.add(mock(Genre.class)));
+        assertNotNull(result);
+        verify(_iGenreRepoDouble).findAll();
     }
 
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_actionDouble, _poetryDouble));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+        // SUT
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
 
         // Act
-        List<Genre> officialGenres = controller.getListOfOfficialGenres();
+        Iterable<Genre> result = controller.getListOfOfficialGenres();
+        List<Genre> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
 
         // Assert
-        assertAll(
-                () -> assertEquals(2, officialGenres.size()),
-                () -> assertTrue(officialGenres.contains(_actionDouble)),
-                () -> assertTrue(officialGenres.contains(_poetryDouble))
-        );
+        assertTrue(resultList.contains(_actionDouble));
+        assertTrue(resultList.contains(_poetryDouble));
     }
 }

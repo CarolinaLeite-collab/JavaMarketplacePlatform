@@ -1,0 +1,104 @@
+@startuml
+
+'==== Title ====
+title AppraisalEntity Aggregate
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam defaultFontName Futura
+skinparam objectFontSize 14
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #3B4953
+skinparam ArrowFontSize 14
+skinparam PackageBorderColor #black
+skinparam classAttributeIconSize 0
+
+' ===== Domain =====
+Package "DOMAIN" {
+
+    Package "APPRAISALENTITY" <<Folder>> #c0d8d8 {
+        class AppraisalEntity <<Root>> <<Entity>>  {
+            -_publicationTypeIds : List<PublicationTypeId>
+            -_genreIds : List<GenreId>
+
+            +getName() : Name
+            +getGenres () : List<GenreId>
+            +getPublicationTypes() : List<PublicationTypeId>
+            }
+
+    class AppraisalEntityFactory <<Factory>> {
+        +createAppraisalEntity(name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        +createAppraisalEntity(id : AppraisalEntityID, name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+
+        }
+    }
+
+    package "REPOSITORY" <<Folder>> {
+        interface IAppraisalEntityRepo <<Interface>> {
+            +registerNewAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        }
+    }
+
+    Package "VALUEOBJECT" {
+        '== Value Objects (Ids) ==
+        class AppraisalEntityId <<ValueObject>> #LightPink {
+        -_id : String
+
+        equals() : boolean
+        toString() : String
+        }
+        class GenreId <<ValueObject>> {
+
+        }
+        class PublicationTypeId <<ValueObject>> {
+
+        }
+        ' ===== Value Objects =====
+        class Name <<ValueObject>> {
+
+        }
+
+    }
+
+}
+
+' ===== Repository =====
+package "PERSISTENCE" <<Folder>> {
+
+    package "Memo" {
+        class MemoAppraisalEntityRepo {
+
+        }
+
+    }
+
+}
+
+Package "DDD" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+    }
+
+}
+
+' ===== Interactions =====
+AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
+AppraisalEntity "1" --> "1..*" GenreId : references
+AppraisalEntity "1" --> "1..*" PublicationTypeId : references
+AppraisalEntity "1" *-- "1" Name : has
+AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
+
+AppraisalEntityFactory ..> AppraisalEntity : <<create>>
+AppraisalEntityFactory "1"<- "1" MemoAppraisalEntityRepo : invokes
+
+IAppraisalEntityRepo <|. MemoAppraisalEntityRepo
+IAppraisalEntityRepo -|> IRepository
+
+@enduml

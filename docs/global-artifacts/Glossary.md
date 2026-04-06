@@ -184,7 +184,7 @@ Catalog-level metadata describing a publication independently of any physical co
 - `language` is the language in which the publication is written.
 - `editor` is the person or entity responsible for the editorial content.
 - `publisher` is the publishing house (i.e. the label) that released the publication.
-- `edition` corresponds to a specific printing or release (e.g. 1st edition, 2nd edition).
+- `editionBook` corresponds to a specific printing or release (e.g. 1st editionBook, 2nd editionBook).
 - `numberOfPages` is the total number of pages of a `book` or `magazine`.
 - `dimensions3D` are the physical dimensions (height, width, and thickness) of a `book` or `magazine`.
 - `weight` is the physical weight of a `book` or `magazine`.

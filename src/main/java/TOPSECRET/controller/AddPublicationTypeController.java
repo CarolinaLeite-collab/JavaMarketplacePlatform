@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IPublicationTypeRepo;
-import TOPSECRET.domain.PublicationType;
-import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.repository.IPublicationTypeRepo;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.User.User;
 
 /**
  * Controller responsible for managing the creation of new publication types.

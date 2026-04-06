@@ -1,5 +1,7 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.User.User;
+
 /**
  * Factory responsible for creating {@link Library} instances.
  * <p>
