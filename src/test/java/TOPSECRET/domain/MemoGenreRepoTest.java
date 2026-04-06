@@ -39,10 +39,12 @@ class MemoGenreRepoTest {
         when(_genreDouble.identity()).thenReturn(new GenreId("Fiction"));
         when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Fiction")))
                 .thenReturn(_genreDouble);
+
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        Genre result = repo.addGenre("Fiction"); // SUT
+        Genre result = repo.addGenre("Fiction");
 
         // Assert
         assertSame(_genreDouble, result);
@@ -84,7 +86,10 @@ class MemoGenreRepoTest {
         when(_genreDouble.identity()).thenReturn(new GenreId("Fiction"));
         when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Fiction")))
                 .thenReturn(_genreDouble);
+
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+
         repo.addGenre("Fiction");
 
         // Act + Assert
@@ -112,12 +117,13 @@ class MemoGenreRepoTest {
         // Arrange
         Genre _genreDouble1 = mock(Genre.class);
         Genre _genreDouble2 = mock(Genre.class);
+
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
         repo.save(_genreDouble1);
         repo.save(_genreDouble2);
 
         // Act
-        Iterable<Genre> result = repo.findAll(); // SUT
+        Iterable<Genre> result = repo.findAll();
 
         // Assert
         assertNotNull(result);
@@ -126,11 +132,11 @@ class MemoGenreRepoTest {
 
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
-        // Arrange
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        Iterable<Genre> result = repo.findAll(); // SUT
+        Iterable<Genre> result = repo.findAll();
 
         // Assert
         assertFalse(result.iterator().hasNext());
@@ -141,6 +147,8 @@ class MemoGenreRepoTest {
         GenreId _genreIdDouble = mock(GenreId.class);
         Genre _genreDouble = mock(Genre.class);
         when(_genreDouble.identity()).thenReturn(_genreIdDouble);
+
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
         repo.save(_genreDouble);
 
@@ -156,6 +164,8 @@ class MemoGenreRepoTest {
     void ofIdentityNonExistingGenreIdReturnsEmpty() {
         // Arrange
         GenreId _genreIdDouble = mock(GenreId.class);
+
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
@@ -185,6 +195,8 @@ class MemoGenreRepoTest {
     void containsOfIdentityNonExistingGenreIdReturnsFalse() {
         // Arrange
         GenreId _genreIdDouble = mock(GenreId.class);
+
+        // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
