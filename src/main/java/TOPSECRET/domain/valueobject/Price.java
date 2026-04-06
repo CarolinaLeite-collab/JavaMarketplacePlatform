@@ -13,12 +13,10 @@ import java.util.Objects;
  */
 
 public class Price implements ValueObject {
+
     private final double _value;
     private final Currency _currency;
 
-    //Public constructor to allow instantiation from other classes
-    //Value validation: must be greater than 0, otherwise an exception is thrown
-    //Currency validation: the field cannot be null
     public Price(double value, Currency currency) {
         if (value <= 0) {
             throw new IllegalArgumentException("Invalid price value, must be greater than zero");
@@ -36,6 +34,13 @@ public class Price implements ValueObject {
 
     public Currency getCurrency() {
         return _currency;
+    }
+
+    public boolean isGreaterOrEqualThan(Price value) {
+        if (value == null) {
+            throw new IllegalArgumentException("Price must not be null");
+        }
+        return _value >= value._value;
     }
 
     // Overrides
