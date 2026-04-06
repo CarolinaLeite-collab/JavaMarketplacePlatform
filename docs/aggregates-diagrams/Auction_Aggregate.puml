@@ -32,9 +32,10 @@ package DOMAIN {
             +isByAuthorId(authorId : AuthorId) : boolean
             +isByPublicationId(publicationId : PublicationId) : boolean
             +isByPublishingCompanyId(publisherId : PublishingCompanyId) : boolean
-            -isAuctionStartDateValId(date : ZoneDateTime) : boolean
-            -isAuctionEndDateValId(date : ZoneDateTime) : boolean
-            -isOutrightPriceValId(price : Price) : boolean
+            -isAuctionStartDateValid(date : ZoneDateTime) : boolean
+            -isAuctionEndDateValid(date : ZoneDateTime) : boolean
+            -isOutrightPriceValid(price : Price) : boolean
+            -isReservePriceValid(reservePrice : Price) : boolean
         }
 
         class Bid <<Entity>> {
@@ -42,17 +43,17 @@ package DOMAIN {
             +getBidder()
             +getOfferPrice()
             +getBidDate()
-            -valIdateBidder(UserId)
-            -valIdateOfferPrice(UserId)
+            -validateBidder(UserId)
+            -validateOfferPrice(UserId)
         }
 
         class BidFactory {
-            + createBid(BidderId : UserId, offerPrice : Price) : Bid
+            + createBid(bidderId : UserId, offerPrice : Price) : Bid
         }
 
         class AuctionFactory {
-            + createAuction(itemId : ItemId , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            + createAuction(itemId : ItemId , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
         }
 
     }
@@ -60,17 +61,20 @@ package DOMAIN {
     package REPOSITORY {
 
         interface IAuctionRepo {
-            createAndAddAuction(itemId : ItemId , startingPrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            createAndAddAuction(itemId : ItemId , startingPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            getAuctionItemsByGenre(genreId : GenreId) :  List<ItemId>
-            getAuctionItemsByAuthor(authorId : AuthorId) :  List<ItemId>
-            getAuctionItemsByPublication(publicationId : PublicationId):  List<ItemId>
-            getAuctionItemsByPublishingCompany(publisherId : PublishingCompanyId ):  List<ItemId>
+            createAndAddAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            createAndAddAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            getAuctionItemsByGenreId(genreId : GenreId) :  List<ItemId>
+            getAuctionItemsByAuthorId(authorId : AuthorId) :  List<ItemId>
+            getAuctionItemsByPublicationId(publicationId : PublicationId):  List<ItemId>
+            getAuctionItemsByPublishingCompanyId(publisherId : PublishingCompanyId ):  List<ItemId>
         }
     }
 
     package VALUEOBJECT {
-        class AuctionId <<ValueObject>> #LightPink
+        class AuctionId <<ValueObject>> #LightPink {
+            _id : UUID
+            +createId() : AuctionId
+        }
         class Price <<ValueObject>>
         class ItemId <<ValueObject>>
         class UserId <<ValueObject>>
