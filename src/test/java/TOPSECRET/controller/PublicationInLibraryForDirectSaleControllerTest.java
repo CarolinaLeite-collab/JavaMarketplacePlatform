@@ -1,8 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.DirectSale;
+import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,53 +22,53 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private PublicationInLibraryForDirectSaleController _controller;
     private ILibraryRepo _iLibraryRepoDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
-    private User _userDouble;
+    private UserId _userIdDouble;
     private Library _libraryDouble;
     private Item _itemDouble;
     private Price _priceDouble;
     private Period _timeLimitDouble;
-    private User _userIDDouble;
+//    private User _userIdDouble;
 
     @BeforeEach
     void setUp() {
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
-        _userDouble = mock(User.class);
+        _userIdDouble = mock(UserId.class);
         _libraryDouble = mock(Library.class);
         _itemDouble = mock(Item.class);
         _priceDouble = mock(Price.class);
         _timeLimitDouble = Period.ofDays(30);
-        _userIDDouble = mock(User.class);
+        _userIdDouble = mock(UserId.class);
 
-        _controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIDDouble); //SUT
+        _controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIdDouble); //SUT
     }
 
     @Test
     void testConstructorPublicationInLibraryForDirectSaleController() {
         //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIDDouble));
+                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIdDouble));
     }
 
     @Test
     void testGetItemsInLibraryForUserWithoutLibraryByUser() {
         //Arrange
-        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble))
+        when(_iLibraryRepoDouble.getItemsInLibraryByUserId(_userIdDouble))
                 .thenThrow(new IllegalStateException("Library not found for user"));
 
         //Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                _controller.getItemsInLibraryByUser(_userDouble));
+                _controller.getItemsInLibraryByUser(_userIdDouble));
     }
 
     @Test
     void testGetItemsInLibraryForUserWithEmptyLibraryByUser() {
         //Arrange
-        when(_iLibraryRepoDouble.findLibraryByUser(_userDouble)).thenReturn(_libraryDouble);
+        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of());
 
         //Act
-        List<Item> result = _controller.getItemsInLibraryByUser(_userDouble);
+        List<Item> result = _controller.getItemsInLibraryByUser(_userIdDouble);
 
         //Assert
         assertNotNull(result);
@@ -73,10 +78,10 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void testGetItemsInLibraryForUserWithItemsInLibraryByUser() {
         //Arrange
-        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
+        when(_iLibraryRepoDouble.getItemsInLibraryByUserId(_userIdDouble)).thenReturn(List.of(_itemDouble));
 
         //Act
-        List<Item> result = _controller.getItemsInLibraryByUser(_userDouble);
+        List<Item> result = _controller.getItemsInLibraryByUser(_userIdDouble);
 
         //Assert
         assertEquals(1, result.size());
@@ -86,10 +91,10 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void testGetItemsInLibraryByUserListIsImmutable() {
         //Arrange
-        when(_iLibraryRepoDouble.getItemsInLibraryByUser(_userDouble)).thenReturn(List.of(_itemDouble));
+        when(_iLibraryRepoDouble.getItemsInLibraryByUserId(_userIdDouble)).thenReturn(List.of(_itemDouble));
 
         //Act
-        List<Item> result = _controller.getItemsInLibraryByUser(_userDouble);
+        List<Item> result = _controller.getItemsInLibraryByUser(_userIdDouble);
 
         //Assert
         assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Item.class)));

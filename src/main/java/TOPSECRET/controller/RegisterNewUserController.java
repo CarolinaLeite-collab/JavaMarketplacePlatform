@@ -18,7 +18,7 @@ public class RegisterNewUserController {
     private final IUserRepo _iUserRepo;
     private final UserFactory _userFactory;
 
-    public RegisterNewUserController(IUserRepo userRepo, UserFactory userFactory) {
+    public RegisterNewUserController(IUserRepo userRepo, UserFactory userFactory, UserId adminId) {
         _iUserRepo = userRepo;
         _userFactory = userFactory;
     }

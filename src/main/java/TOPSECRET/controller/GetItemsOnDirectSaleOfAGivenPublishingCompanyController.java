@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IDirectSaleRepo directSaleRepo, User user) {
+    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IDirectSaleRepo directSaleRepo, UserId buyerId) {
 
         _iDirectSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
     }

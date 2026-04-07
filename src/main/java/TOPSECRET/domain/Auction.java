@@ -34,18 +34,18 @@ import java.time.ZonedDateTime;
 
 public class Auction {
 
-    private Item _item;
-    private Price _startingPrice;
-    private Price _outrightPrice;
-    private Price _finalPrice;
-    private ZonedDateTime _auctionStartDate;
-    private ZonedDateTime _auctionEndDate;
+    private final Item _item;
+    private final Price _startingPrice;
+    private final Price _reservePrice;
+    private final Price _outrightPrice;
+    private final ZonedDateTime _auctionStartDate;
+    private final ZonedDateTime _auctionEndDate;
+    private final MemoBidRepo _bids;
     private User _buyer;
-    private MemoBidRepo _bids;
-    private BidFactory _bidFactory;
+    private Price _finalPrice;
 
 
-    Auction(Item item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(Item item, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _item = item;
         _startingPrice = startingPrice;
         _bids = new MemoBidRepo( new BidFactory());
@@ -57,6 +57,12 @@ public class Auction {
             throw new IllegalArgumentException("Invalid outright price");
         }
 
+        if (isReservePriceValid(reservePrice)) {
+            _reservePrice = reservePrice;
+        }  else {
+            throw new IllegalArgumentException("Invalid reserve price");
+        }
+
         if (isAuctionStartDateValid(auctionStartDate)) {
             _auctionStartDate = auctionStartDate;
         } else {
@@ -72,25 +78,8 @@ public class Auction {
         _item.setAuction(this);
     }
 
-    Auction(Item item, Price startingPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _item = item;
-        _startingPrice = startingPrice;
-        _outrightPrice = null;
-        _bids = new MemoBidRepo(new BidFactory());
-
-        if (isAuctionStartDateValid(auctionStartDate)) {
-            _auctionStartDate = auctionStartDate;
-        } else {
-            throw new IllegalArgumentException("Invalid start date");
-        }
-
-        if (isAuctionEndDateValid(auctionEndDate)) {
-            _auctionEndDate = auctionEndDate;
-        } else {
-            throw new IllegalArgumentException("Invalid end date");
-        }
-
-        _item.setAuction(this);
+    Auction(Item item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
     public Item getItem() {
@@ -101,11 +90,22 @@ public class Auction {
         return _bids;
     }
 
+    public Price getStartingPrice() {
+        return _startingPrice;
+    }
+
+    public Price getOutrightPrice() {
+        return _outrightPrice;
+    }
+
 
     public void acceptBid(Bid bid) {
         ZonedDateTime now = ZonedDateTime.now();
         if (now.isAfter(_auctionStartDate) && now.isBefore(_auctionEndDate) && bid.getOfferPrice().getValue() > _startingPrice.getValue()) {
             _bids.addBid(bid);
+            if (_outrightPrice != null && bid.getOfferPrice().getValue() >= _outrightPrice.getValue()) {
+                finalizeAuction();
+            }
         } else {
             throw new IllegalArgumentException("Invalid Bid");
         }
@@ -113,8 +113,14 @@ public class Auction {
 
     public void finalizeAuction() {
         Bid highestBid = _bids.getHighestBid();
-        _buyer = highestBid.getBidder();
-        _finalPrice = highestBid.getOfferPrice();
+
+        if (isReserveMet(highestBid.getOfferPrice())) {
+            _buyer = highestBid.getBidder();
+            _finalPrice = highestBid.getOfferPrice();
+        } else {
+            _buyer = null;
+            _finalPrice = null;
+        }
     }
 
     private boolean isAuctionStartDateValid(ZonedDateTime auctionStartDate) {
@@ -127,11 +133,20 @@ public class Auction {
     }
 
     private boolean isOutrightPriceValid(Price outrightPrice) {
+        if (outrightPrice == null) return true;
+        return outrightPrice.getValue() > _startingPrice.getValue();
+    }
+
+    private boolean isReservePriceValid(Price reservePrice) {
         boolean result = false;
-        if (outrightPrice.getValue() > _startingPrice.getValue()) {
+        if (reservePrice.getValue() >= _startingPrice.getValue()) {
             result = true;
         }
         return result;
+    }
+
+    private boolean isReserveMet (Price price) {
+        return price.isGreaterOrEqualThan(_reservePrice);
     }
 
     private boolean isAuctionEndDateValid(ZonedDateTime auctionEndDate) {

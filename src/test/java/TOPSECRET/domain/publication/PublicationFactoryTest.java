@@ -1,12 +1,15 @@
 package TOPSECRET.domain.publication;
 
 import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.PublicationId;
+import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.time.Year;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class PublicationFactoryTest {

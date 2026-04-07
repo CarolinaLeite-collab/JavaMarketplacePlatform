@@ -1,9 +1,10 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,11 +16,13 @@ public class AddGenreControllerTest {
 
     private IGenreRepo _iGenreRepoDouble;
     private Genre _genreDouble;
+    private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() {
         _iGenreRepoDouble = mock(IGenreRepo.class);
         _genreDouble = mock(Genre.class);
+        _adminIdDouble = mock(UserId.class);
     }
 
     @Test
@@ -29,7 +32,7 @@ public class AddGenreControllerTest {
         when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        new AddGenreController(_iGenreRepoDouble);
+        new AddGenreController(_iGenreRepoDouble, _adminIdDouble);
     }
 
     @Test
@@ -38,7 +41,7 @@ public class AddGenreControllerTest {
         User _nonAdminDouble = mock(User.class);
         when(_nonAdminDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
-        AddGenreController controller = new AddGenreController(_iGenreRepoDouble);
+        AddGenreController controller = new AddGenreController(_iGenreRepoDouble, _adminIdDouble);
 
         // Act + Assert
         assertThrows(SecurityException.class,
@@ -55,7 +58,7 @@ public class AddGenreControllerTest {
         when(_iGenreRepoDouble.addGenre(genreName)).thenReturn(_genreDouble);
 
         //SUT
-        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble);
+        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble, _adminIdDouble);
 
         //act
         Genre genreAdded = _addGenreController.addGenre(_adminDouble, genreName);
@@ -77,7 +80,7 @@ public class AddGenreControllerTest {
                 .thenThrow(new IllegalArgumentException("This genre already exists"));     // second call: repo signals duplication
 
         //SUT
-        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble);
+        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble, _adminIdDouble);
 
         //act
         Genre firstAddedGenre = _addGenreController.addGenre(_adminDouble, genreName);

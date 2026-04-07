@@ -31,20 +31,20 @@ Buyer -> UI: I want the list of items on auction of a given publication
 activate UI
 UI --> Buyer: Which publication?
 deactivate UI
-Buyer -> UI: publicationID
+Buyer -> UI: publicationId
 activate UI
-UI -> CTL: getAuctionItemsByPublication(publicationID)
+UI -> CTL: getAuctionItemsByPublicationId(publicationId)
 activate CTL
-CTL -> mAR: getAuctionItemsByPublication(publicationID)
+CTL -> mAR: getAuctionItemsByPublicationId(publicationId)
 activate mAR
 
-create "listOfAuctionItemsByPublisher: List<Item>" as List
+create "listOfAuctionItemsByPublicationId: List<ItemId>" as List
 mAR -> List: <<Create>>()
 
 loop for each auction in _mar
-    mAR -> AU: isByPublication(publicationID)
+    mAR -> AU: isByPublicationId(publicationId)
     activate AU
-    AU -> IT: isByPublication(publicationID)
+    AU -> IT: isByPublicationId(publicationId)
     activate IT
     IT --> AU: true
     deactivate IT
@@ -53,21 +53,21 @@ loop for each auction in _mar
 
 
 
-    opt isByPublication == true
-        mAR -> List: add(auction.getItem())
+    opt isByPublicationId == true
+        mAR -> List: add(auction.getItemId())
         activate List
         List --> mAR: true
         deactivate List
     end
 end
 
-create "copyOfListOfAuctionItemsByPublication: List<Item>" as Copy
-mAR -> Copy: List.copyOf(ListOfAuctionItemsByPublication)
+create "copyOfListOfAuctionItemsByPublicationId: List<ItemId>" as Copy
+mAR -> Copy: List.copyOf(ListOfAuctionItemsByPublicationId)
 
 
-mAR --> CTL: copyOfListOfAuctionItemsByPublication
+mAR --> CTL: copyOfListOfAuctionItemsByPublicationId
 deactivate mAR
-CTL --> UI: copyOfListOfAuctionItemsByPublication
+CTL --> UI: copyOfListOfAuctionItemsByPublicationId
 deactivate CTL
 UI --> Buyer: Here's the list! done!
 deactivate UI

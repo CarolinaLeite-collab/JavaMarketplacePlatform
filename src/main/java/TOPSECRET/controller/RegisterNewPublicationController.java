@@ -4,6 +4,8 @@ import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.publication.PublicationFactory;
 import TOPSECRET.domain.repository.IPublicationRepo;
 import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Year;
 import java.util.Objects;

@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
 public class GetAuctionItemsByPublicationController {
     private final IAuctionRepo _iAuctionRepo;
 
-    public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, User buyer){
+    public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, UserId buyerId){
 
         _iAuctionRepo = iAuctionRepo;
     }

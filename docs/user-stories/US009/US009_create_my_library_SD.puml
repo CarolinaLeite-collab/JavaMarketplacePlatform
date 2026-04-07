@@ -18,10 +18,10 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor User
-participant "UI1:CreateLibraryUI" as UI
-participant "Ctl1:CreateLibraryController" as CTL
-participant "_lr:MemoLibraryRepo" as LR
-participant "_lf:LibraryFactory" as LF
+participant ":CreateLibraryUI" as UI
+participant ":CreateLibraryController" as CTL
+participant ":MemoLibraryRepo" as LR
+participant ":LibraryFactory" as LF
 
 ' --- UI interaction ---
 User -> UI: I want to create my library
@@ -29,21 +29,23 @@ activate UI
 
 
 ' --- Use case execution ---
-UI -> CTL: createLibrary(user)
+UI -> CTL: createLibrary(userId)
 activate CTL
 
-CTL -> LR: addLibrary(user)
+CTL -> LR: addLibrary(userId)
 activate LR
 
-    opt libraryExists(user) == false
-        LR -> LF: createLibrary(user)
+LR -> LR: LibraryId.fromUserId(userId)
+
+    opt containsOfIdentity(libraryId) == false
+        LR -> LF: createLibrary(libraryId)
         activate LF
         create "myLibrary:Library"
-        LF --> "myLibrary:Library": <<create>>
-        LF --> LR: mylibrary
+        LF -->> "myLibrary:Library": <<create>>
+        LF --> LR: myLibrary
         deactivate LF
 
-        LR -> LR: add(mylibrary)
+        LR -> LR: save(myLibrary)
 
 
     end

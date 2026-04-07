@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IListOfItemsRepo;
-import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,25 +16,25 @@ class ShareListPubliclyControllerTest {
 
     private ListOfItems _listOfItemsDouble;
     private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private User _userDouble;
+    private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
         _listOfItemsDouble = mock(ListOfItems.class);
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _userDouble = mock(User.class);
+        _userIdDouble = mock(UserId.class);
     }
 
     @Test
     void returnListFromRepo() {
         //arrange
-        when(_iListOfItemsRepoDouble.findListsByUser(_userDouble)).thenReturn(List.of(_listOfItemsDouble));
+        when(_iListOfItemsRepoDouble.findListsByUserId(_userIdDouble)).thenReturn(List.of(_listOfItemsDouble));
 
         //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfItemsRepoDouble, _userDouble);
+        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
 
         //act
-        List<ListOfItems> result = _controller.getListOfLists(_userDouble);
+        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
 
         //assert
         assertEquals(1, result.size());

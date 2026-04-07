@@ -1,19 +1,25 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.ddd.IRepository;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ListOfItemsId;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
+import java.util.Map;
 
-public interface IListOfItemsRepo {
+public interface IListOfItemsRepo extends IRepository<ListOfItemsId, ListOfItems> {
 
-    ListOfItems addListOfItems(User user, String name, Genre genre);
+    ListOfItems addListOfItems(UserId userId, String name, GenreId genreId);
 
-    List<ListOfItems> getListOfListOfItems();
+    List<ListOfItems> findPublicListsByGenre(GenreId genreId);
 
-    List<ListOfItems> findPublicListsByGenre(Genre genre);
+    List<ListOfItems> findListsByUserId(UserId userId);
 
-    List<ListOfItems> findListsByUser(User user);
+    ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId);
 
-    ListOfItems findByOwnerNameAndGenre(User user, String name, Genre genre);
+    // Temporary
+    Map<ListOfItemsId, String> getIdNameMap();
 }
+

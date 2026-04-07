@@ -1,8 +1,13 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.Auction;
+import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -22,7 +27,7 @@ public class PublicationSaleAuctionController {
     private final IAuctionRepo _iAuctionRepo;
     private final Library _library;
 
-    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, User user) {
+    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, UserId userId) {
 
         _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;
@@ -30,9 +35,9 @@ public class PublicationSaleAuctionController {
 
     }
 
-   public List<Item> getLibraryItemsList(User user) {
+   public List<Item> getLibraryItemsList(UserId userId) {
 
-        Library userLibrary = _iLibraryRepo.findLibraryByUser(user);
+        Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
 
         List<Item> items = userLibrary.getItemsInLibrary();
         return List.copyOf(items);

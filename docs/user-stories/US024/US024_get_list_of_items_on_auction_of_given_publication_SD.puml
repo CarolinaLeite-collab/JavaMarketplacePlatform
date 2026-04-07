@@ -25,16 +25,16 @@ Buyer -> UI: publicationID
 activate UI
 
 
-UI -> CTL: getAuctionItemsByPublication(publicationID)
+UI -> CTL: getAuctionItemsByPublicationId(publicationID)
 activate CTL
 
-CTL -> mAR: getAuctionItemsByPublication(publicationID)
+CTL -> mAR: getAuctionItemsByPublicationId(publicationID)
 activate mAR
 
-mAR --> CTL: copyOfListOfAuctionItemsByPublication
+mAR --> CTL: copyOfListOfAuctionItemsByPublicationId
 deactivate mAR
 
-CTL --> UI: copyOfListOfAuctionItemsByPublication
+CTL --> UI: copyOfListOfAuctionItemsByPublicationId
 deactivate CTL
 
 UI --> Buyer: Here's the list! done!

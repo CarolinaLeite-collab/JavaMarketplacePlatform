@@ -1,9 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.IListOfItemsRepo;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,23 +15,26 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-
 class CreatePrivateListOfItemsControllerTest {
 
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private IGenreRepo _iGenreRepoDouble;
-    private User _userDouble;
-    private Genre _actionDouble;
-    private Genre _poetryDouble;
+    private UserId _userIdDouble;
+    private GenreId _genreIdDouble;
+    private GenreId _genreId2Double;
+    private Genre _genreDouble;
+    private Genre  _genre2Double;
 
     @BeforeEach
     void setUp() {
 
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
         _iGenreRepoDouble = mock(IGenreRepo.class);
-        _userDouble = mock(User.class);
-        _actionDouble = mock(Genre.class);
-        _poetryDouble = mock(Genre.class);
+        _userIdDouble = mock(UserId.class);
+        _genreIdDouble = mock(GenreId.class);
+        _genreId2Double = mock(GenreId.class);
+        _genreDouble = mock(Genre.class);
+        _genre2Double = mock(Genre.class);
 
     }
 
@@ -37,7 +42,7 @@ class CreatePrivateListOfItemsControllerTest {
     void testCreatePrivateListOfItemsController(){
 
         // SUT & Act
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Assert
         assertNotNull(controller);
@@ -47,48 +52,46 @@ class CreatePrivateListOfItemsControllerTest {
     void shouldCreateListSuccessfully() {
         // Arrange
         ListOfItems listDouble = mock(ListOfItems.class);
-        when(_iListOfItemsRepoDouble.addListOfItems(_userDouble, "My List", _actionDouble)).thenReturn(listDouble);
+        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble)).thenReturn(listDouble);
 
         //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
-        ListOfItems result = controller.createListOfItems(_userDouble, "My List", _actionDouble);
+        ListOfItems result = controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
 
         // Assert
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(listDouble, result)
         );
-        verify(_iListOfItemsRepoDouble).addListOfItems(_userDouble, "My List", _actionDouble);
+        verify(_iListOfItemsRepoDouble).addListOfItems(_userIdDouble, "My List", _genreIdDouble);
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_iListOfItemsRepoDouble.addListOfItems(_userDouble, "My List", _actionDouble))
+        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble))
                 .thenThrow(new IllegalArgumentException("List already exists"));
+
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                controller.createListOfItems(_userDouble, "My List", _actionDouble)); // SUT
-
-        // Assert
-        assertNotNull(exception);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble));
     }
 
     @Test
     void getListOfOfficialGenresDelegatesToRepo() {
         // Arrange
-        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
         // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
         Iterable<Genre> result = controller.getListOfOfficialGenres();
@@ -101,12 +104,12 @@ class CreatePrivateListOfItemsControllerTest {
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
-        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_actionDouble, _poetryDouble));
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
         // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userDouble);
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
         Iterable<Genre> result = controller.getListOfOfficialGenres();
@@ -114,7 +117,7 @@ class CreatePrivateListOfItemsControllerTest {
         result.forEach(resultList::add);
 
         // Assert
-        assertTrue(resultList.contains(_actionDouble));
-        assertTrue(resultList.contains(_poetryDouble));
+        assertTrue(resultList.contains(_genreDouble));
+        assertTrue(resultList.contains(_genre2Double));
     }
 }

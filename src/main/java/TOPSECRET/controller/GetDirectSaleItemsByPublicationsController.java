@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import java.util.List;
 public class GetDirectSaleItemsByPublicationsController {
     private IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetDirectSaleItemsByPublicationsController(IDirectSaleRepo dsr, User buyer){
+    public GetDirectSaleItemsByPublicationsController(IDirectSaleRepo dsr, UserId buyerId){
         _iDirectSaleRepo = dsr;
     }
 

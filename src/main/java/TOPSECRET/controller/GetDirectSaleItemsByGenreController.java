@@ -1,10 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class GetDirectSaleItemsByGenreController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetDirectSaleItemsByGenreController(IDirectSaleRepo directSaleRepo, User buyer) {
+    public GetDirectSaleItemsByGenreController(IDirectSaleRepo directSaleRepo, UserId buyerId) {
 
         _iDirectSaleRepo = directSaleRepo;
 
