@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.author.AuthorFactory;
 
