@@ -1,10 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
-import TOPSECRET.domain.User;
-
-import java.util.List;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for retrieving the list of official genres.
@@ -19,15 +17,15 @@ public class GetListOfOfficialGenresController {
 
     private IGenreRepo _iGenreRepo;
 
-    public GetListOfOfficialGenresController(IGenreRepo igr, User user) {
+    public GetListOfOfficialGenresController(IGenreRepo igr, UserId userId) {
 
         _iGenreRepo = igr;
 
     }
 
-    public List<Genre> getListOfOfficialGenres(){
+    public Iterable<Genre> getListOfOfficialGenres(){
 
-        List<Genre> listOfOfficialGenres = _iGenreRepo.getListOfOfficialGenres();
+        Iterable<Genre> listOfOfficialGenres = _iGenreRepo.findAll();
 
         return listOfOfficialGenres;
 

@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.PublishingCompany;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,31 +18,31 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     private Item _itemDouble;
     private PublishingCompany _publisherCompanyDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
-    private User _userDouble;
+    private UserId _buyerIdDouble;
 
     @BeforeEach
     void setUp() {
         _publisherCompanyDouble = mock(PublishingCompany.class);
         _itemDouble = mock(Item.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
-        _userDouble = mock(User.class);
+        _buyerIdDouble = mock(UserId.class);
     }
 
     @Test
     void constructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
         //Act /SUT
-        new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _userDouble);
+        new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
     }
     @Test
     void constructorThrowsNullPointerExceptionWhenDirectSaleRepoIsNull() {
         //Act & Assert
-        assertThrows(NullPointerException.class, () -> new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(null, _userDouble));
+        assertThrows(NullPointerException.class, () -> new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(null, _buyerIdDouble));
     }
 
     @Test
     void getDirectSaleItemByPublisherThrowsIllegalArgumentExceptionWhenPublisherIsNull() {
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _userDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> ctr.getDirectSaleItemByPublisher(null));
     }
@@ -53,7 +53,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
         List<Item> expected = List.of(_itemDouble);
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _userDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
         List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
         //Assert
@@ -66,7 +66,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
         List<Item> expected = List.of();
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
         //SUT
-        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _userDouble);
+        GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
         List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
         //Assert

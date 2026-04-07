@@ -1,52 +1,45 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.country.CountryFactory;
+import TOPSECRET.persistence.mem.MemoCountryRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MemoCountryRepoTest {
-    private CountryFactory _countryFactoryDouble;
+    private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp() {
-        _countryFactoryDouble = mock(CountryFactory.class);
+        _countryFactory = new CountryFactory();
     }
 
     @Test
     void shouldConstructRepoSuccessfully() {
         //Act
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
     }
 
     @Test
-    void shouldRegisterCountrySuccessfully() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
+    void shouldRegisterCountrySuccessfully() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         Country result = memoCountryRepo.registerCountry("Portugal");
         //Assert
-        assertEquals(portugal, result);
+        assertNotNull(result);
+        assertEquals("PORTUGAL", result.getCountryName());
     }
 
     @Test
-    void shouldRegistersMultipleUniqueCountries() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
-
-        Country germany = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Germany")).thenReturn(germany);
+    void shouldRegistersMultipleUniqueCountries() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country second = memoCountryRepo.registerCountry("Germany");
@@ -57,12 +50,9 @@ class MemoCountryRepoTest {
     }
 
     @Test
-    void shouldReturnNullIfCountryIsDuplicate() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal, portugal);
+    void shouldReturnNullIfCountryIsDuplicate() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country Duplicate = memoCountryRepo.registerCountry("Portugal");
@@ -73,16 +63,9 @@ class MemoCountryRepoTest {
     }
 
     @Test
-    void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
-
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
-        when(_countryFactoryDouble.createCountry("portugal")).thenReturn(portugal);
-        when(_countryFactoryDouble.createCountry(" Portugal ")).thenReturn(portugal);
+    void shouldReturnNullIfCountryNameDiffersOnlyByCaseOrSpaces() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         Country first = memoCountryRepo.registerCountry("Portugal");
         Country second = memoCountryRepo.registerCountry("portugal");
@@ -95,12 +78,9 @@ class MemoCountryRepoTest {
     }
 
     @Test
-    void shouldReturnsUnmodifiedListOfCountries() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
+    void shouldReturnsUnmodifiedListOfCountries() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         memoCountryRepo.registerCountry("Portugal");
         List<Country> countries = memoCountryRepo.getAllCountries();
@@ -110,45 +90,48 @@ class MemoCountryRepoTest {
     }
 
     @Test
-    void findByName_shouldReturnsNullWhenNameIsNull() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
-        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+    void findByName_shouldReturnsNullWhenNameIsNull() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         memoCountryRepo.registerCountry("Portugal");
-        //Assert
-        assertNull(memoCountryRepo.findByName(null));
+        //Assert - Optional expected
+        assertFalse(memoCountryRepo.findByName(null).isPresent());
     }
 
     @Test
-    void findByName_shouldFindCountryIgnoringCaseAndSpaces() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
-        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+    void findByName_shouldFindCountryIgnoringCaseAndSpaces() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
-        memoCountryRepo.registerCountry("Portugal");
-        //Assert
-        assertEquals(portugal, memoCountryRepo.findByName("portugal"));
-        assertEquals(portugal, memoCountryRepo.findByName(" Portugal "));
+        Country portugal = memoCountryRepo.registerCountry("Portugal");
+        //Assert - Optional expected
+        assertEquals(portugal, memoCountryRepo.findByName("portugal").orElse(null));
+        assertEquals(portugal, memoCountryRepo.findByName(" Portugal ").orElse(null));
     }
 
     @Test
-    void findByName_shouldReturnNullWhenCountryNotFound() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(portugal);
-        when(portugal.isNamed("PORTUGAL")).thenReturn(true);
+    void findByName_shouldReturnNullWhenCountryNotFound() {
         //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactory);
         //Act
         memoCountryRepo.registerCountry("Portugal");
-        //Assert
-        assertNull(memoCountryRepo.findByName("Germany"));
+        //Assert - Optional expected
+        assertFalse(memoCountryRepo.findByName("Germany").isPresent());
+    }
+
+    @Test
+    void ofIdentity_returnsOptionalWhenPresent() {
+        // Use real factory and value objects for this test
+        CountryFactory factory = new CountryFactory();
+        MemoCountryRepo repo = new MemoCountryRepo(factory);
+
+        Country country = factory.createCountry("PT", "Portugal");
+        repo.save(country);
+
+        java.util.Optional<Country> opt = repo.ofIdentity(new TOPSECRET.domain.valueobject.CountryId("PT"));
+        assertTrue(opt.isPresent());
+        assertEquals(country, opt.get());
+        assertTrue(repo.containsOfIdentity(new TOPSECRET.domain.valueobject.CountryId("PT")));
     }
 }

@@ -1,186 +1,141 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.valueobject.CityId;
+import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
-import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 class MemoCityRepoTest {
 
-    private CityFactory _cityFactoryDouble;
     private City _cityDouble;
-    private Country _countryDouble;
+    private City _cityDouble2;
+    private CityId _cityId1;
+    private CityId _cityId2;
 
     @BeforeEach
     void setUp() {
-
-        _cityFactoryDouble = mock(CityFactory.class);
         _cityDouble = mock(City.class);
-        _countryDouble = mock(Country.class);
+        _cityDouble2 = mock(City.class);
+
+        _cityId1 = new CityId("Porto", new CountryId("PT"));
+        _cityId2 = new CityId("Lisboa", new CountryId("PT"));
+
+        when(_cityDouble.identity()).thenReturn(_cityId1);
+        when(_cityDouble2.identity()).thenReturn(_cityId2);
     }
 
     @Test
     void shouldConstructRepoSuccessfully() {
-        // Act & SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
+        MemoCityRepo repo = new MemoCityRepo();
+
+        assertNotNull(repo);
     }
 
     @Test
-    void registerCityCallsFactoryAndStoresReturnedCity() {
-        // Arrange
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+    void saveShouldReturnCityForNewCity() {
+        MemoCityRepo repo = new MemoCityRepo();
 
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
+        City result = repo.save(_cityDouble);
 
-        // SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        // Act
-        City created = memoCityRepo.registerCity("Porto", _countryDouble);
-
-        // Assert
-        assertSame(_cityDouble, created);
-        assertTrue(memoCityRepo.getAllCities().contains(_cityDouble));
-
+        assertSame(_cityDouble, result);
     }
 
     @Test
-    void shouldFailToRegisterDuplicatedCity() {
-        // Arrange
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+    void saveShouldAddCityToRepo() {
+        MemoCityRepo repo = new MemoCityRepo();
 
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
+        repo.save(_cityDouble);
 
-        // SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        // Act
-        City first = memoCityRepo.registerCity("Porto", _countryDouble);
-        Executable act = () -> memoCityRepo.registerCity("Porto", _countryDouble);
-
-        // Assert
-        assertNotNull(first);
-        assertThrows(IllegalStateException.class, act);
-        assertEquals(1, memoCityRepo.getAllCities().size());
+        assertEquals(1, ((java.util.List<City>) repo.findAll()).size());
     }
 
     @Test
-    void existsCityInATrims() {
-        // Arrange
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+    void saveShouldThrowForDuplicateCity() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
 
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-
-        // SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        //Act
-        City first = memoCityRepo.registerCity("Porto", _countryDouble);
-        Executable act = () -> memoCityRepo.registerCity(" porto ", _countryDouble);
-
-        //Assert
-        assertThrows(IllegalStateException.class, act);
+        assertThrows(IllegalStateException.class, () -> repo.save(_cityDouble));
     }
 
     @Test
-    void existsCityInACountryReturnsFalseWhenNotFound() {
-        // Arrange
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+    void saveShouldNotAddDuplicateCity() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
 
-        // SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
+        assertThrows(IllegalStateException.class, () -> repo.save(_cityDouble));
 
-        // Act & Assert
-        assertFalse(memoCityRepo.existsCityInACountry("Braga", _countryDouble));
+        assertEquals(1, ((java.util.List<City>) repo.findAll()).size());
     }
 
     @Test
-    void existsCityInACountryReturnsFalseForDifferentCountry() {
-        // Arrange
-        Country _otherCountryDouble = mock(Country.class);
+    void saveShouldAllowMultipleDistinctCities() {
+        MemoCityRepo repo = new MemoCityRepo();
 
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+        repo.save(_cityDouble);
+        repo.save(_cityDouble2);
 
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-
-        // SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        // Act
-        memoCityRepo.registerCity("Porto", _countryDouble);
-
-        // Assert
-        assertFalse(memoCityRepo.existsCityInACountry("Porto", _otherCountryDouble));
+        assertEquals(2, ((java.util.List<City>) repo.findAll()).size());
     }
 
     @Test
-    void existsCityInACountryNullArgumentsReturnFalse() {
-        // Arrange
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
+    void containsOfIdentityShouldReturnTrueIfCityExists() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
 
-        //SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        // Act & Assert
-        assertFalse(memoCityRepo.existsCityInACountry(null, _countryDouble));
-        assertFalse(memoCityRepo.existsCityInACountry("Porto", null));
-        assertFalse(memoCityRepo.existsCityInACountry(null, null));
+        assertTrue(repo.containsOfIdentity(_cityId1));
     }
 
     @Test
-    void shouldGetAllCitiesCitiesList() {
-        // Arrange
-        City cityDouble = mock(City.class);
+    void containsOfIdentityShouldReturnFalseIfCityDoesNotExist() {
+        MemoCityRepo repo = new MemoCityRepo();
 
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        when(_cityDouble.getName()).thenReturn("Porto");
-        when(_cityDouble.getCountry()).thenReturn(_countryDouble);
-
-        when(_cityFactoryDouble.createCity("Lisbon", _countryDouble)).thenReturn(cityDouble);
-        when(cityDouble.getName()).thenReturn("Lisbon");
-        when(cityDouble.getCountry()).thenReturn(_countryDouble);
-
-        //SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
-
-        memoCityRepo.registerCity("Porto", _countryDouble);
-        memoCityRepo.registerCity("Lisbon", _countryDouble);
-
-        // Act
-        List<City> all = memoCityRepo.getAllCities();
-
-        // Assert
-        assertEquals(2, all.size());
-        assertTrue(all.contains(_cityDouble));
-        assertTrue(all.contains(cityDouble));
-        assertThrows(UnsupportedOperationException.class, () -> all.add(mock(City.class)));
+        assertFalse(repo.containsOfIdentity(_cityId1));
     }
 
     @Test
-    void getAllCitiesWhenEmptyReturnsEmptyList() {
-        // Arrange & SUT
-        MemoCityRepo memoCityRepo = new MemoCityRepo(_cityFactoryDouble);
+    void findAllShouldReturnImmutableList() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
 
-        // Act
-        List<City> all = memoCityRepo.getAllCities();
+        java.util.List<City> result = (java.util.List<City>) repo.findAll();
 
-        // Assert
-        assertNotNull(all);
-        assertTrue(all.isEmpty());
-        assertThrows(UnsupportedOperationException.class, () -> all.add(mock(City.class)));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_cityDouble2));
+    }
+
+    @Test
+    void findAllShouldReturnEmptyWhenNoCity() {
+        MemoCityRepo repo = new MemoCityRepo();
+
+        java.util.List<City> result = (java.util.List<City>) repo.findAll();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ofIdentityShouldReturnCityIfExists() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
+
+        Optional<City> result = repo.ofIdentity(_cityId1);
+
+        assertTrue(result.isPresent());
+        assertSame(_cityDouble, result.get());
+    }
+
+    @Test
+    void ofIdentityShouldReturnEmptyIfCityDoesNotExist() {
+        MemoCityRepo repo = new MemoCityRepo();
+
+        Optional<City> result = repo.ofIdentity(_cityId1);
+
+        assertTrue(result.isEmpty());
     }
 }

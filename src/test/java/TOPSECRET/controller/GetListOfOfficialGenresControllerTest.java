@@ -1,8 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
-import TOPSECRET.domain.IGenreRepo;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.valueobject.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,57 +14,58 @@ import static org.mockito.Mockito.when;
 
 class GetListOfOfficialGenresControllerTest {
 
-    private User _userDouble;
     private IGenreRepo _iGenreRepoDouble;
+    private UserId _userIdDouble;
+
+    @BeforeEach
+    void setUp() {
+        _iGenreRepoDouble = mock(IGenreRepo.class);
+        _userIdDouble = mock(UserId.class);
+    }
 
     @Test
     void testConstructorGetOfficialGenresController() {
-        //arrange
-        _userDouble = mock(User.class);
-        _iGenreRepoDouble = mock(IGenreRepo.class);
-        //act
+
         //SUT
-        new GetListOfOfficialGenresController(_iGenreRepoDouble, _userDouble);
+        GetListOfOfficialGenresController controller = new GetListOfOfficialGenresController(_iGenreRepoDouble, _userIdDouble);
+
+        // Assert
+        assertNotNull(controller);
     }
 
     @Test
-    void testGetListOfOfficialGenresShouldReturnListWithGenres() {
-        //arrange
-        _userDouble = mock(User.class);
-        _iGenreRepoDouble = mock(IGenreRepo.class);
-        //SUT
-        GetListOfOfficialGenresController controller = new GetListOfOfficialGenresController(_iGenreRepoDouble, _userDouble);
+    void getListOfOfficialGenresShouldReturnListWithGenres() {
 
-        Genre genre1 = mock(Genre.class);
-        when(genre1.getGenre()).thenReturn("fiction");
-        Genre genre2 = mock(Genre.class);
-        when(genre2.getGenre()).thenReturn("romance");
+        // Arrange
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(genre1Double, genre2Double));
+        // SUT
+        GetListOfOfficialGenresController controller =
+                new GetListOfOfficialGenresController(_iGenreRepoDouble, _userIdDouble);
 
-        when(_iGenreRepoDouble.getListOfOfficialGenres()).thenReturn(List.of(genre1,genre2));
+        // Act
+        Iterable<Genre> result = controller.getListOfOfficialGenres();
 
-        //act
-        List<Genre> listOfOfficialGenres = controller.getListOfOfficialGenres();
-
-        //assert
-        assertNotNull(listOfOfficialGenres);
-        assertFalse(listOfOfficialGenres.isEmpty());
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.iterator().hasNext());
 
     }
 
     @Test
-    void testGetListOfOfficialGenresShouldReturnEmptyListIfNoGenresWereAdded() {
-        //arrange
-        _userDouble = mock(User.class);
-        _iGenreRepoDouble = mock(IGenreRepo.class);
-        //SUT
-        GetListOfOfficialGenresController controller = new GetListOfOfficialGenresController(_iGenreRepoDouble, _userDouble);
+    void GetListOfOfficialGenresShouldReturnEmptyListIfNoGenresWereAdded() {
+        // Arrange
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of());
+        GetListOfOfficialGenresController controller =
+                new GetListOfOfficialGenresController(_iGenreRepoDouble, _userIdDouble);
 
-        //act
-        List<Genre> listOfOfficialGenres = controller.getListOfOfficialGenres();
+        // Act
+        Iterable<Genre> result = controller.getListOfOfficialGenres(); // SUT
 
-        //assert
-        assertNotNull(listOfOfficialGenres);
-        assertTrue(listOfOfficialGenres.isEmpty());
+        // Assert
+        assertNotNull(result);
+        assertFalse(result.iterator().hasNext());
 
     }
 }

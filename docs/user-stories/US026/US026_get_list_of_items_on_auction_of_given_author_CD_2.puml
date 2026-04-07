@@ -20,32 +20,33 @@ class GetItemsOnAuctionOfAGivenAuthorUI {
 }
 
 class GetItemsOnAuctionOfAGivenAuthorCtl {
-- ar : IAuctionRepo
-+ getAuctionItemsByAuthor(authorID: AuthorID) : List<Item>
+-_iAuctionRepo : IAuctionRepo
++ getAuctionItemsIdByAuthorId(authorID: AuthorID) : List<ItemId>
 }
 
 interface IAuctionRepo{
-+ getAuctionItemsByAuthor(authorID: AuthorID) : List<Item>
+
++ getAuctionItemsIdByAuthorId(authorID: AuthorID) : List<ItemId>
 }
 
 class MemoAuctionRepo {
-- _itemsOnAuction : List<Auction>
+- _itemsOnAuction : List<AuctionID>
 }
 
 class Auction {
-+ isByAuthor(authorID: AuthorID) : boolean
-+ getItem() : Item
++ isByAuthorId(authorID: AuthorID) : boolean
++ getItemId() : ItemId
 }
 
 class Item {
 
-+ isByAuthor(authorID: AuthorID) : boolean
++ isByAuthorId(authorID: AuthorID) : boolean
 
 }
 
 class Publication {
 
-+ isByAuthor(authorID: AuthorID) : boolean
++ isByAuthorId(authorID: AuthorID) : boolean
 
 }
 

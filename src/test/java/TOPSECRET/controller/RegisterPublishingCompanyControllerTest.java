@@ -1,8 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IPublishingCompanyRepo;
-import TOPSECRET.domain.MemoPublishingCompanyRepo;
-import TOPSECRET.domain.PublishingCompany;
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.repository.IPublishingCompanyRepo;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,19 +15,23 @@ import static org.mockito.Mockito.*;
 class RegisterPublishingCompanyControllerTest {
 
     private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
+    private User _adminDouble;
+    private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() {
 
-        _iPublishingCompanyRepoDouble = mock(MemoPublishingCompanyRepo.class);
+        _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
+        _adminDouble = mock(User.class);
+        _adminIdDouble = mock(UserId.class);
 
     }
 
     @Test
     void constructorShouldInitializeController() {
 
-        // Arrange & Act
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        // Act & SUT
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
     }
 
@@ -37,12 +43,13 @@ class RegisterPublishingCompanyControllerTest {
         PublishingCompany pcDouble = mock(PublishingCompany.class);
 
         when(_iPublishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
         //Act
-        PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(publishingCompanyName);
+        PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(_adminDouble, publishingCompanyName);
 
         //Assert
         assertEquals(pcDouble, publishingCompanyResult);
@@ -58,12 +65,35 @@ class RegisterPublishingCompanyControllerTest {
 
         when(_iPublishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenThrow(
                 new IllegalArgumentException("Publishing Company with name " + publishingCompanyName + " already exists."));
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
         //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble);
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
 
         //Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(publishingCompanyName));
+        assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(_adminDouble, publishingCompanyName));
+
+    }
+
+    @Test
+    void shouldNotRegisterPublishingCompanySuccessfullyIfUserNotAdmin() {
+
+        //Arrange
+        String publishingCompanyName = "Bertrand Editora";
+        PublishingCompany pcDouble = mock(PublishingCompany.class);
+
+        when(_iPublishingCompanyRepoDouble.registerPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        //SUT
+        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _adminIdDouble);
+
+        //Act
+        SecurityException exception = assertThrows(
+                SecurityException.class, () -> controller.registerPublishingCompany(_adminDouble, publishingCompanyName));
+
+        //Assert
+        assertEquals("User is not authorized to register publishing companies", exception.getMessage());
 
     }
 

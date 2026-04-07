@@ -3,19 +3,19 @@ package TOPSECRET.domain.library;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublicationDetails;
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.LibraryId;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a {@link User} library in the domain model.
+ * Represents a {@link UserId} library in the domain model.
  *
  * <p>
  * A {@code Library} is an entity that groups publications and is owned by
- * a {@link User}. A library is uniquely identified within the system
+ * a {@link UserId}. A library is uniquely identified within the system
  * and encapsulates the core data related to a user's library.
  *
  */

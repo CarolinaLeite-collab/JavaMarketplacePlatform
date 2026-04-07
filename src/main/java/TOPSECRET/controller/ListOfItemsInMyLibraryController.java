@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.PublicationDetails;
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.UserId;
@@ -13,7 +12,7 @@ import java.util.List;
  * contained in a user's library.
  *
  * <p>This controller interacts with the {@link ILibraryRepo} to obtain
- * the {@link Library} associated with a given {@link User}. It then
+ * the {@link Library} associated with a given {@link UserId}. It then
  * returns the list of {@link PublicationDetails} representing the
  * items stored in that library.</p>
  */

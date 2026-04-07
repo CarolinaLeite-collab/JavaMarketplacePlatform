@@ -2,13 +2,12 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
 /**
- * Controller responsible for sharing publicly a list of of a {@link User}.
+ * Controller responsible for sharing publicly a list of of a {@link UserId}.
  * <p>
  * This controller depends on {@link IListOfItemsRepo} to access persisted lists.
  * </p>

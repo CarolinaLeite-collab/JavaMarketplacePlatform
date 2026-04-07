@@ -1,6 +1,9 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Author;
+
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Title;
 
 import java.time.Year;
@@ -27,16 +30,9 @@ public class MemoPublicationRepo implements IPublicationRepo {
     }
 
     @Override
-    public Publication addPublication(PublicationType type,
-                           Identifier identifier,
-                           Year publicationYear,
-                           Title title,
-                           Author author,
-                           PublishingCompany publisher,
-                           Edition edition,
-                           Genre genre) {
+    public Publication addPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre) {
 
-        Publication newPublication = _publicationFactory.createPublication(type, identifier, publicationYear, title, author, publisher, edition, genre);
+        Publication newPublication = _publicationFactory.createPublication(title, author, releaseYear, publicationType, genre);
 
         if (_publications.contains(newPublication)) {
             throw new IllegalArgumentException("Publication already exists in the repository");

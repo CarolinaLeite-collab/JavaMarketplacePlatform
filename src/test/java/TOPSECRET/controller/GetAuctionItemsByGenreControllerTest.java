@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,14 +15,14 @@ import static org.mockito.Mockito.*;
 
 class GetAuctionItemsByGenreControllerTest {
 
-    private User _buyerUserDouble;
+    private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
     private Genre _genreDouble;
 
     @BeforeEach
     void setUp() {
 
-        _buyerUserDouble = mock(User.class);
+        _buyerIdDouble = mock(UserId.class);
         _genreDouble = mock (Genre.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
     }
@@ -31,7 +31,7 @@ class GetAuctionItemsByGenreControllerTest {
     void testAuctionItemsByGenreController(){
 
         // SUT
-        new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
+        new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
     }
 
     @Test
@@ -43,7 +43,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(itemsList);
 
         // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> items = controller.getAuctionItemsByGenre(_genreDouble);
@@ -60,7 +60,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(List.of());
 
         // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
+        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreDouble);

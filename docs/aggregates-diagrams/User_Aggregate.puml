@@ -1,0 +1,108 @@
+@startuml
+
+'==== Title ====
+title User Aggregate
+top to bottom direction
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+' ===== Persistence =====
+Package "PERSISTENCE" {
+    class MemoUserRepo <<Repo>> {
+        - _users : List<User>
+        + save(User) : User
+        + findAll() : Iterable<User>
+        + ofIdentity(UserID) : Optional<User>
+        + containsOfIdentity(UserID) : boolean
+    }
+}
+
+' ===== Domain =====
+Package "DOMAIN" {
+
+    Package "USER" <<Folder>> #b0c4d4 {
+
+        class User <<Entity>> <<Root>> #lightgrey {
+            + identity() : UserID
+            + sameAs(Object) : boolean
+            + hasEmail(Email) : boolean
+            + hasRole(Role) : boolean
+            + addRole(Role) : void
+            + getName() : Name
+            + getEmail() : String
+            + getAddress() : Address
+            + getPhone() : Phone
+            + getRoles() : Set<Role>
+        }
+
+        class UserFactory <<Factory>> {
+            + createUser(Name, Email) : User
+            + createUser(UserId, Name, Address, Email, Phone) : User
+        }
+
+    }
+Package "Value Objects" {
+    ' ===== DomainId =====
+    class UserID <<DomainId>> #LightPink {
+        + getEmail() : Email
+        + equals(Object) : boolean
+        + hashCode() : int
+        + toString() : String
+    }
+
+    ' ===== Value Objects =====
+    class Email <<ValueObject>> #LightYellow {
+        - _email : String
+        + getValue() : String
+        + toString() : String
+    }
+
+    class Name <<ValueObject>> #LightYellow {
+        - _name : String
+        + get_Name() : String
+        + toString() : String
+    }
+
+    class Address <<ValueObject>> #LightYellow {
+    }
+
+    class Phone <<ValueObject>> #LightYellow {
+    }
+
+    enum Role <<ValueObject>> #LightYellow {
+        ADMIN
+        USER
+    }
+}
+    Package "REPOSITORY" <<Folder>> #d4c4b0 {
+        interface IUserRepo <<Interface>>
+    }
+
+}
+
+' ===== Relations =====
+User "1" --> "ID 1" UserID : has
+UserID "1" --> "1" Email : identified by
+
+User *-- Name : has
+User *-- Email : has
+User *-- Role : has
+User o-- Address : has
+User o-- Phone : has
+
+IUserRepo "1" --> "*" User : manages
+MemoUserRepo ..|> IUserRepo
+
+UserFactory ..> User : <<create>>
+
+@enduml

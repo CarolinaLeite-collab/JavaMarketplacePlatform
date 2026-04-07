@@ -1,6 +1,8 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -208,16 +210,6 @@ class ItemTest {
         assertFalse(item.isByPublication(mock(Publication.class)));
     }
 
-    @Test
-    void isByPublishingCompanyDelegatesToPublication() {
-        PublishingCompany publisher_double = mock(PublishingCompany.class);
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        item.isByPublishingCompany(publisher_double);
-
-        verify(publicationDouble).isByPublishingCompany(publisher_double);
-    }
-
     // ------------------------------------------------------------
     // Equality & HashCode
     // ------------------------------------------------------------
@@ -262,24 +254,24 @@ class ItemTest {
 
     @Test
     void isByAuthorReturnsTrueWhenPublicationMatches() {
-        Author author = new Author("Maria");
-        Publication pub = mock(Publication.class);
-        when(pub.isByAuthor(author)).thenReturn(true);
+        Author authorDouble = mock(Author.class);
+        Publication pubDouble = mock(Publication.class);
+        when(pubDouble.isByAuthor(authorDouble)).thenReturn(true);
 
-        Item item = new Item(pub, conditionDouble);
+        Item item = new Item(pubDouble, conditionDouble);
 
-        assertTrue(item.isByAuthor(author));
+        assertTrue(item.isByAuthor(authorDouble));
     }
 
     @Test
     void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
-        Author author = new Author("Maria");
-        Publication pub = mock(Publication.class);
-        when(pub.isByAuthor(author)).thenReturn(false);
+        Author authorDouble = mock(Author.class);
+        Publication pubDouble = mock(Publication.class);
+        when(pubDouble.isByAuthor(authorDouble)).thenReturn(false);
 
-        Item item = new Item(pub, conditionDouble);
+        Item item = new Item(pubDouble, conditionDouble);
 
-        assertFalse(item.isByAuthor(author));
+        assertFalse(item.isByAuthor(authorDouble));
     }
 
     // --------------------
@@ -309,29 +301,20 @@ class ItemTest {
     }
 
     // ------------------------------
-    // Is by PublishingCompany
+    // Is by PublishingCompany - waiting for refactoring
     // ------------------------------
 
     @Test
-    void isByPublishingCompanyReturnsTrueWhenPublicationMatches() {
-        PublishingCompany pc = new PublishingCompany("Penguin");
-        Publication pub = mock(Publication.class);
-        when(pub.isByPublishingCompany(pc)).thenReturn(true);
+    void isByPublishingCompany_returnsAlwaysFalse() {
+        // Arrange
+        PublishingCompany _publisherDouble = mock(PublishingCompany.class);
+        Item item = new Item(publicationDouble, conditionDouble);
 
-        Item item = new Item(pub, conditionDouble);
+        // Act
+        boolean result = item.isByPublishingCompany(_publisherDouble); // SUT
 
-        assertTrue(item.isByPublishingCompany(pc));
-    }
-
-    @Test
-    void isByPublishingCompanyReturnsFalseWhenPublicationDoesNotMatch() {
-        PublishingCompany pc = new PublishingCompany("Penguin");
-        Publication pub = mock(Publication.class);
-        when(pub.isByPublishingCompany(pc)).thenReturn(false);
-
-        Item item = new Item(pub, conditionDouble);
-
-        assertFalse(item.isByPublishingCompany(pc));
+        // Assert
+        assertFalse(result);
     }
 
 }

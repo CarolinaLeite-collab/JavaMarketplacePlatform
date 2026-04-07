@@ -1,9 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Country;
-import TOPSECRET.domain.ICountryRepo;
-import TOPSECRET.domain.Role;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.country.CountryFactory;
+import TOPSECRET.domain.repository.ICountryRepo;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,43 +16,47 @@ import static org.mockito.Mockito.when;
 class RegisterCountryControllerTest {
     private ICountryRepo _iCountryRepoDouble;
     private User _adminDouble;
+    private UserId _adminIdDouble;
+    private CountryFactory _countryFactory;
 
     @BeforeEach
     void setUp(){
         _iCountryRepoDouble = mock(ICountryRepo.class);
         _adminDouble = mock(User.class);
+        _adminIdDouble = mock(UserId.class);
+        _countryFactory = new CountryFactory();
     }
 
     @Test
     void constructsControllerSuccessfully() {
         //Act
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _adminDouble);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() throws InstantiationException {
         //Arrange
         Country portugal = mock(Country.class);
-        when(_iCountryRepoDouble.registerCountry("Portugal")).thenReturn(portugal);
-
+        when(_iCountryRepoDouble.save(org.mockito.ArgumentMatchers.any())).thenReturn(portugal);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _adminDouble);
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
         //Act
-        Country country = controller.registerCountry("Portugal");
+        java.util.Optional<Country> opt = controller.registerCountry(_adminDouble, "PT", "Portugal");
         // Assert
-        assertNotNull(country);
+        assertTrue(opt.isPresent());
+        assertSame(portugal, opt.get());
+        org.mockito.Mockito.verify(_iCountryRepoDouble).save(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() {
         //Arrange
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
         //Act
-        SecurityException exception = assertThrows(SecurityException.class, () -> new RegisterCountryController(_iCountryRepoDouble, _adminDouble));
+        SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerCountry(_adminDouble, null, "Portugal"));
 
         //Assert
         assertEquals("User is not authorized to register countries", exception.getMessage());

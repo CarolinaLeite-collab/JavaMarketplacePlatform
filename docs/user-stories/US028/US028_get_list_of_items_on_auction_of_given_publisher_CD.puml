@@ -19,29 +19,29 @@ class getAuctionItemsByPublisherUI{}
 
 class GetAuctionItemsByPublishingCompanyController {
 -_iAuctionRepo : IAuctionRepo
-+getAuctionItemsByPublishingCompany(publisherID : PublisherID) : List<Item>
++getAuctionItemsIdByPublishingCompany(publisherID : PublisherID) : List<ItemId>
 }
 
 Interface IAuctionRepo {
--_auctionList : List<Auction>
-+getAuctionItemsByPublishingCompany(publisher : Publisher) : List<Item>
+-_auctionList : List<AuctionId>
++getAuctionItemsIdByPublishingCompanyId(publisherId : PublisherId) : List<ItemId>
 }
 
 class MemoAuctionRepo {
--_auctionList : List<Auction>
+-_auctionList : List<AuctionId>
 }
 
 class Auction {
-+ isByPublisher(publisherID : PublisherID) : boolean
-+ getItem(): Item
++ isByPublisherId(publisherID : PublisherID) : boolean
++ getItemId(): ItemId
 }
 
 class Item {
-+ isByPublisher(publisherID : PublisherID) : boolean
++ isByPublisherId(publisherID : PublisherID) : boolean
 }
 
 class Publication {
-+ isByPublisher(publisherID : PublisherID) : boolean
++ isByPublisherId(publisherID : PublisherID) : boolean
 }
 
 class Publisher {

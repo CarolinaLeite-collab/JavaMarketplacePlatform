@@ -1,49 +1,45 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
+
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.repository.IUserRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository responsible for managing {@link User} entities.
  */
-public class MemoUserRepo implements IUserRepo{
+public class MemoUserRepo implements IUserRepo {
 
     private final List<User> _users = new ArrayList<>();
-    private final UserFactory _userFactory;
-
-    public MemoUserRepo(UserFactory userFactory) {
-        _userFactory = userFactory;
-    }
 
     @Override
-    public User registerNewUser(String name, String email) {
-        Email newEmail = new Email(email);
-
-        if (userExists(newEmail)) {
+    public User save(User user) {
+        if (containsOfIdentity(user.identity())) {
             throw new IllegalStateException("User already exists");
         }
-
-        Name newName = new Name(name);
-        User newUser = _userFactory.createUser(newName, newEmail);
-        _users.add(newUser);
-        return newUser;
+        _users.add(user);
+        return user;
     }
 
     @Override
-    public List<User> getAll() {
+    public Iterable<User> findAll() {
         return List.copyOf(_users);
     }
 
-    private boolean userExists(Email email) {
-        for (User user : _users) {
-            if (user.hasEmail(email)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public Optional<User> ofIdentity(UserId userId) {
+        return _users.stream()
+                .filter(u -> u.identity().equals(userId))
+                .findFirst();
     }
 
+    @Override
+    public boolean containsOfIdentity(UserId userId) {
+        return _users.stream()
+                .anyMatch(u -> u.identity().equals(userId));
+    }
 }

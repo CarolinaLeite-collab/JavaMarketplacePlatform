@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.Publication;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,13 +14,13 @@ import static org.mockito.Mockito.*;
 
 public class GetDirectSaleItemsByPublicationsControllerTest {
 
-    private User _buyerDouble;
+    private UserId _buyerIdDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
     private Publication _publicationDouble;
 
     @BeforeEach
     void setUp(){
-            _buyerDouble = mock(User.class);
+            _buyerIdDouble = mock(UserId.class);
             _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
             _publicationDouble = mock(Publication.class);
     }
@@ -29,7 +29,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
     void testDirectSaleItemsByPublicationControllerConstructor(){
 
         //SUT
-        new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerDouble);
+        new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
     }
 
@@ -38,7 +38,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
         //Arrange
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of());
         //SUT
-        GetDirectSaleItemsByPublicationsController controller  = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerDouble);
+        GetDirectSaleItemsByPublicationsController controller  = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
         List<Item> resultList  = controller.getDirectSaleItemsByPublication(_publicationDouble);
         //Assert
@@ -54,7 +54,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
 
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublication(_publicationDouble)).thenReturn(List.of(itemDouble, itemDouble2));
         // SUT
-        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerDouble);
+        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
         List<Item> resultList = controller.getDirectSaleItemsByPublication(_publicationDouble);
         //Assert
@@ -68,7 +68,7 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
     @Test
     void getDirectSaleItemsByPublicationShouldCallDirectSaleRepo() {
         // SUT
-        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerDouble);
+        GetDirectSaleItemsByPublicationsController controller = new GetDirectSaleItemsByPublicationsController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
         List<Item> listOfDirectSaleItemsByPublication = controller.getDirectSaleItemsByPublication(_publicationDouble);
         //Assert

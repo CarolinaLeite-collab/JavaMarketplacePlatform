@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,9 +20,9 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
 
     private final IAuctionRepo _iAuctionRepo;
 
-    public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, User buyer) {
+    public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, UserId buyerId) {
         _iAuctionRepo = Objects.requireNonNull(iAuctionRepo, "auctionRepo");
-        Objects.requireNonNull(buyer, "buyer"); // buyer kept for parity/validation
+        Objects.requireNonNull(buyerId, "buyer"); // buyer kept for parity/validation
     }
 
     public List<Item> getAuctionItemsByAuthor(Author author) {

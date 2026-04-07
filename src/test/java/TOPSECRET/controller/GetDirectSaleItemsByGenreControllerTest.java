@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,14 +16,14 @@ import static org.mockito.Mockito.when;
 
 class GetDirectSaleItemsByGenreControllerTest {
 
-    private User _buyerDouble;
+    private UserId _buyerIdDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
     private Genre _genreDouble;
 
     @BeforeEach
     void setUp() {
 
-        _buyerDouble = mock(User.class);
+        _buyerIdDouble = mock(UserId.class);
         _genreDouble = mock (Genre.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
 
@@ -33,7 +33,7 @@ class GetDirectSaleItemsByGenreControllerTest {
     void testDirectSaleItemsByGenreController(){
 
         // SUT
-        new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerDouble);
+        new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
     }
 
@@ -46,7 +46,7 @@ class GetDirectSaleItemsByGenreControllerTest {
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(itemsList);
 
         // SUT
-        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerDouble);
+        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
         // act
         List<Item> items = controller.getDirectSaleItemsByGenre(_genreDouble);
@@ -63,7 +63,7 @@ class GetDirectSaleItemsByGenreControllerTest {
         when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(List.of());
 
         // SUT
-        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerDouble);
+        GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
         // act
         List<Item> listOfDirectSaleItemsByGenre = controller.getDirectSaleItemsByGenre(_genreDouble);

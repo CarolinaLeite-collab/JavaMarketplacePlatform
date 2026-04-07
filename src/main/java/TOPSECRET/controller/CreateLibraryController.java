@@ -1,12 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.UserId;
 
 /**
- * Controller responsible for handling the creation of the personal {@link Library} of a {@link User}.
+ * Controller responsible for handling the creation of the personal {@link Library} of a {@link UserId}.
  *
  * <p>
  * It receives requests and delegates the

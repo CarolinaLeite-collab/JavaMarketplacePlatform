@@ -6,8 +6,9 @@ import TOPSECRET.domain.Item;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
-import TOPSECRET.domain.valueobject.*;
-
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -28,6 +28,8 @@ package DOMAIN {
             +finalizeAuction() : void
             +getItem() : Item
             +getBid() : Bid
+            +getStartingPrice()
+            +getOutrightPrice()
             +isByGenreId(genreId : GenreId) : boolean
             +isByAuthorId(authorId : AuthorId) : boolean
             +isByPublicationId(publicationId : PublicationId) : boolean
@@ -36,6 +38,7 @@ package DOMAIN {
             -isAuctionEndDateValid(date : ZoneDateTime) : boolean
             -isOutrightPriceValid(price : Price) : boolean
             -isReservePriceValid(reservePrice : Price) : boolean
+            -isReserveMet (price : Price) : boolean
         }
 
         class Bid <<Entity>> {

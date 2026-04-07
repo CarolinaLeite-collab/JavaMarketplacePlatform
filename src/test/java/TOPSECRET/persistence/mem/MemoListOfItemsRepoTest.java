@@ -1,13 +1,10 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Genre;
 import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.ListOfItems.ListOfItemsFactory;
-import TOPSECRET.domain.User;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +22,8 @@ import static org.mockito.Mockito.when;
  * <p>The following Mockito doubles are used:
  * <ul>
  *   <li>{@link ListOfItemsFactory} — mocked collaborator (creation dependency)</li>
- *   <li>{@link User} — mocked dummy (structural input, no behaviour required)</li>
- *   <li>{@link Genre} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link UserId} — mocked dummy (structural input, no behaviour required)</li>
+ *   <li>{@link GenreId} — mocked dummy (structural input, no behaviour required)</li>
  * </ul>
  */
 

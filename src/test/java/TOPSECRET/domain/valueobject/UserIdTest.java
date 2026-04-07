@@ -89,5 +89,19 @@ class UserIdTest {
         // Assert
         assertNotEquals(id, notAUserId);
     }
+
+    @Test
+    void toStringShouldReturnEmailValue() {
+
+        // Arrange
+        Email email = new Email("pedro@mail.com");
+        UserId id = new UserId(email);
+
+        // Act
+        String result = id.toString();
+
+        // Assert
+        assertEquals("pedro@mail.com", result);
+    }
 }
 

@@ -1,8 +1,13 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.valueobject.Author;
+import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.IPublicationRepo;
+import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.PublicationFactory;
+import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Year;
 import java.util.Objects;
@@ -20,28 +25,12 @@ public class RegisterNewPublicationController {
 
     private IPublicationRepo _iPublicationRepo;
 
-    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, User user) {
+    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, UserId userId) {
         _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo");
     }
 
-    public Publication registerPublication(PublicationType publicationType,
-                                           Identifier identifier,
-                                           Year publicationYear,
-                                           Title title,
-                                           Author author,
-                                           PublishingCompany publisher,
-                                           Edition edition,
-                                           Genre genre) {
+    public Publication registerPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre) {
 
-        return _iPublicationRepo.addPublication(
-                publicationType,
-                identifier,
-                publicationYear,
-                title,
-                author,
-                publisher,
-                edition,
-                genre
-        );
+        return _iPublicationRepo.addPublication(title, author, releaseYear, publicationType, genre);
     }
 }
