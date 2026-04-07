@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.repository;
 
 import TOPSECRET.domain.author.Author;
 

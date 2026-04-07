@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;

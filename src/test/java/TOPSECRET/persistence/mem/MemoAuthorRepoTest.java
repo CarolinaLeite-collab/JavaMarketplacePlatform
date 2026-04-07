@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.author.AuthorFactory;
