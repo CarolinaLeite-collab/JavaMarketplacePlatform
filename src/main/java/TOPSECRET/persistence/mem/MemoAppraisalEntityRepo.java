@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.IAppraisalEntityRepo;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.PublicationType.PublicationType;
