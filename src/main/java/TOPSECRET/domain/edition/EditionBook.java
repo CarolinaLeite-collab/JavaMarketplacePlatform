@@ -2,109 +2,155 @@ package TOPSECRET.domain.edition;
 
 import TOPSECRET.domain.valueobject.*;
 
-import java.time.LocalDate;
+import java.time.Year;
 
 /**
- * Represents a specific edition of a publication, such as a book or magazine.
+ * Represents a book edition, a concrete implementation of {@link Edition}.
  * <p>
- * Contains information including ISBN or ISSN, number of pages, edition number, publication date,
- * binding, description, physical dimensions, weight, and language.
- * Validates that editions have positive page counts and edition numbers, and ensures that books have ISBN and magazines have ISSN when required.
+ * An {@code EditionBook} models a specific publication instance of type book,
+ * including its identity, publishing metadata, and optional physical characteristics.
  * </p>
  */
 
-public class EditionBook {
-    private final ISSN _issn;
-    private final ISBN _isbn;
-    private final NumberOfPages _numberOfPages;
-    private final Integer _editionNumber;
-    private final LocalDate _publicationDate;
-    private final Binding _binding;
-    private final Description _description;
+public class EditionBook implements Edition {
+
+    private final BookId _bookId;
+    private final PublicationId _publicationId;
+    private final PublishingCompanyId _publishingCompanyId;
+    private final Year _publishingYear;
+    private final Language _editionLanguage;
+    // opcionais
     private final Dimension _dimension;
     private final Weight _weight;
-    private final Language _language;
+    private final NumberOfPages _numberOfPages;
+    private final EditionNumber _editionNumber;
+    private final Binding _binding;
 
-    // Constructor for Books
-    public EditionBook(ISBN isbn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                       Description description, Dimension dimension, Weight weight, Language language) {
-
-        _issn = null;
-        _isbn = isbn;
-
-        // An edition cannot have both ISSN and ISBN
-        if (_isbn == null)
-            throw new IllegalArgumentException("A Book with ISBN is required!");
-
-        if (editionNumber == null || editionNumber <= 0)
-            throw new IllegalArgumentException("EditionBook number needs to be positive");
-
-        _numberOfPages = numberOfPages;
-        _editionNumber = editionNumber;
-        _publicationDate = publicationDate;
-        _binding = binding;
-        _description = description;
-        _dimension = dimension;
-        _weight = weight;
-        _language = language;
+    protected EditionBook(Builder builder) {
+        _bookId = builder._bookId;
+        _publicationId = builder._publicationId;
+        _publishingCompanyId = builder._publishingCompanyId;
+        _publishingYear = builder._publishingYear;
+        _editionLanguage = builder._editionLanguage;
+        _dimension = builder._dimension;
+        _weight = builder._weight;
+        _numberOfPages = builder._numberOfPages;
+        _editionNumber = builder._editionNumber;
+        _binding = builder._binding;
     }
 
-    // Constructor for Magazine
-    public EditionBook(ISSN issn, NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                       Description description, Dimension dimension, Weight weight , Language language) {
+    public static class Builder {
+        private final BookId _bookId;
+        private final PublicationId _publicationId;
+        private final PublishingCompanyId _publishingCompanyId;
+        private final Year _publishingYear;
+        private final Language _editionLanguage;
+        // opcionais
+        private Dimension _dimension;
+        private Weight _weight;
+        private NumberOfPages _numberOfPages;
+        private EditionNumber _editionNumber;
+        private Binding _binding;
 
-        _isbn = null;
-        _issn = issn;
+        public Builder(BookId bookId,
+                       PublicationId publicationId,
+                       PublishingCompanyId publishingCompanyId,
+                       Year publishingYear,
+                       Language editionLanguage) {
+            _bookId = bookId;
+            _publicationId = publicationId;
+            _publishingCompanyId = publishingCompanyId;
+            _publishingYear = publishingYear;
+            _editionLanguage = editionLanguage;
+        }
 
-        // An edition cannot have both ISSN and ISBN
-        if (_issn == null)
-            throw new IllegalArgumentException("A magazine ISSN is required!");
+        public EditionBook build() {
+            if (_bookId == null)
+                throw new IllegalArgumentException("BookId is required");
 
-        if (editionNumber == null || editionNumber <= 0)
-            throw new IllegalArgumentException("EditionBook number needs to be positive");
+            if (_publicationId == null)
+                throw new IllegalArgumentException("PublicationId is required");
 
+            if (_publishingCompanyId == null)
+                throw new IllegalArgumentException("PublishingCompanyId is required");
 
-        _numberOfPages = numberOfPages;
-        _editionNumber = editionNumber;
-        _publicationDate = publicationDate;
-        _binding = binding;
-        _description = description;
-        _dimension = dimension;
-        _weight = weight;
-        _language = language;
+            if (_publishingYear == null)
+                throw new IllegalArgumentException("PublishingYear is required");
+
+            if (_editionLanguage == null)
+                throw new IllegalArgumentException("Language is required");
+
+            return new EditionBook(this);
+        }
+
+        public Builder withDimension(Dimension dimension) {
+            _dimension = dimension;
+            return this;
+        }
+        public Builder withWeight(Weight weight){
+            _weight = weight;
+            return this;
+        }
+
+        public Builder withNumberOfPages(NumberOfPages numberOfPages) {
+            _numberOfPages = numberOfPages;
+            return this;
+        }
+
+        public Builder withEditionNumber(EditionNumber editionNumber) {
+            _editionNumber = editionNumber;
+            return this;
+        }
+
+        public Builder withBinding(Binding binding) {
+            _binding = binding;
+            return this;
+        }
     }
 
-    // Constructor for Books or Magazines without ISBN or ISSN
-    public EditionBook(NumberOfPages numberOfPages, Integer editionNumber, LocalDate publicationDate, Binding binding,
-                       Description description, Dimension dimension, Weight weight , Language language) {
-
-        _isbn = null;
-        _issn = null;
-
-        if (editionNumber != null && editionNumber <= 0)
-            throw new IllegalArgumentException("EditionBook number needs to be positive");
-
-
-        _numberOfPages = numberOfPages;
-        _editionNumber = editionNumber;
-        _publicationDate = publicationDate;
-        _binding = binding;
-        _description = description;
-        _dimension = dimension;
-        _weight = weight;
-        _language = language;
+    @Override
+    public EditionId getId() {
+        return _bookId;
     }
 
-    public ISSN getIssn() { return _issn; }
-    public ISBN getIsbn() { return _isbn; }
-    public NumberOfPages getNumberOfPages() { return _numberOfPages; }
-    public Integer getEditionNumber() { return _editionNumber; }
-    public LocalDate getPublicationDate() { return _publicationDate; }
-    public Binding getBinding() { return _binding; }
-    public Description getDescription() { return _description; }
-    public Dimension getDimension() { return _dimension; }
-    public Weight getWeight() { return _weight; }
-    public Language getLanguage() { return _language; }
+    @Override
+    public PublicationId getPublication() {
+        return _publicationId;
+    }
 
+    @Override
+    public PublishingCompanyId getPublishingCompany() {
+        return _publishingCompanyId;
+    }
+
+    @Override
+    public Year getPublishingYear() {
+        return _publishingYear;
+    }
+
+    @Override
+    public Language getEditionLanguage() {
+        return _editionLanguage;
+    }
+
+    public NumberOfPages getNumberOfPages() {
+        return _numberOfPages;
+    }
+
+    public EditionNumber getEditionNumber() {
+        return _editionNumber;
+    }
+
+    public Binding getBinding() {
+        return _binding;
+    }
+
+    public Dimension getDimension() {
+        return _dimension;
+    }
+
+    public Weight getWeight() {
+        return _weight;
+    }
 
 }
