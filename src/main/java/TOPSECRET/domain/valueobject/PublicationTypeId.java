@@ -22,9 +22,9 @@ public class PublicationTypeId implements DomainId {
 
     public PublicationTypeId(String publicationTypeName) {
         if (publicationTypeName == null || publicationTypeName.isBlank()) {
-            throw new IllegalArgumentException("PublicationTypeId cannot be null or blank");
+            throw new IllegalArgumentException("PublicationTypeId cannot be null, blank, or empty.");
         }
-        _id = publicationTypeName.trim().toUpperCase();
+        _id = publicationTypeName.trim().replaceAll("\\s+", " ").toUpperCase();
     }
 
     @Override
