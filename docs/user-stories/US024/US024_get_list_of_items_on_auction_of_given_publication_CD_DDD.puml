@@ -46,18 +46,19 @@ package "DDD" {
 package "DOMAIN" {
     package "REPOSITORY" {
         interface IAuctionRepo{
-            + getAuctionItemsByPublicationId(publicationId: PublicationId) : List<Item>
+            + getAuctionItemsByPublicationId(publicationId: PublicationId) : List<ItemId>
         }
     }
 
     package "VALUE OBJECT" {
         class PublicationId <<Value Object>>
+        class ItemId <<Value Object>>
     }
 
     package "AUCTION" #b0c4d4 {
         class Auction <<Root>> <<Entity>> {
             +isByPublicationId(publicationId : PublicationId) : boolean
-            + getItem() : Item
+            + getItemId() : List<ItemId>
         }
     }
 
@@ -66,21 +67,15 @@ package "DOMAIN" {
             + isByPublicationId(publicationId : PublicationId) : boolean
         }
     }
-
-    package "PUBLICATION" <<Entity>> {
-        class Publication {
-            - publicationId : PublicationId
-        }
-    }
 }
 
 GetAuctionItemsByPublicationUI "1" .> "1" GetAuctionItemsByPublicationController : invokes
 GetAuctionItemsByPublicationController "1" ..> "1" IAuctionRepo : uses
 MemoAuctionRepo ..|> IAuctionRepo
 MemoAuctionRepo "1" --> "*" Auction : persists
-Auction "1" --> "1..*" Item : contains
-Item "1" --> "1" Publication : contains
+Auction "1" --> "1..*" ItemId : has
+Item "1" --> "1" ItemId : has
+Item "1" --> "1" PublicationId : references
 IAuctionRepo ---|> IRepository
-Publication "1" -> "1" PublicationId : has
 
 @enduml
