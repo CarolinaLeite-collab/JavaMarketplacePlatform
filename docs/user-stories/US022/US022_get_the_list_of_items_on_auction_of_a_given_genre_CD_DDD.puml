@@ -68,7 +68,7 @@ GetAuctionItemsByGenreController "1"..> "1" IAuctionRepo : uses
 IAuctionRepo <|.. MemoAuctionRepo
 MemoAuctionRepo "1" --> "*"Auction : persists
 IAuctionRepo --|> IRepository
-Auction "1" -> "1" GenreId : has
+Auction "1" -> "1" GenreId : references
 
 
 @enduml
