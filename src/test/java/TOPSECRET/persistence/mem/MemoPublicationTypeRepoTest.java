@@ -1,8 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.publicationtype.PublicationTypeFactory;
-import TOPSECRET.persistence.mem.MemoPublicationTypeRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

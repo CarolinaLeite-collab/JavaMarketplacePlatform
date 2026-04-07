@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.PublishingCompany.PublishingCompanyFactory;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.publishingcompany.PublishingCompanyFactory;
 import TOPSECRET.domain.repository.IPublishingCompanyRepo;
 
 import java.util.ArrayList;

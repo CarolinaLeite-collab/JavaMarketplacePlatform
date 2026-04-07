@@ -1,4 +1,4 @@
-package TOPSECRET.domain.PublishingCompany;
+package TOPSECRET.domain.publishingcompany;
 
 import java.util.Objects;
 
