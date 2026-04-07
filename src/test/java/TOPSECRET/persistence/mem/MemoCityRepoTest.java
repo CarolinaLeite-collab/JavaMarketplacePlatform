@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.city.City;
 import TOPSECRET.domain.valueobject.CityId;
