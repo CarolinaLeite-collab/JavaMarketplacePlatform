@@ -1,4 +1,4 @@
-package TOPSECRET.domain.City;
+package TOPSECRET.domain.city;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.country.Country;

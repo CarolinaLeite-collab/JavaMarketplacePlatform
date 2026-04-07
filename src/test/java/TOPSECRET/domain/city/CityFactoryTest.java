@@ -1,4 +1,4 @@
-package TOPSECRET.domain.City;
+package TOPSECRET.domain.city;
 
 import TOPSECRET.domain.country.Country;
 import org.junit.jupiter.api.Test;

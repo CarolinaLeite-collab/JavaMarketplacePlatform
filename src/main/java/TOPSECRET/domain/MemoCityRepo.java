@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.city.City;
 import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.valueobject.CityId;
 
