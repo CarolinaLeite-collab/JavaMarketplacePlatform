@@ -212,14 +212,14 @@ class LibraryTest {
     @Test
     void getItemsInLibraryShouldReturnItemWhenItemFound() {
         // Arrange
-        Item _itemDouble2 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
 
         // SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
         library.addItemToLibrary(_itemDouble);
-        library.addItemToLibrary(_itemDouble2);
+        library.addItemToLibrary(itemDouble2);
 
         Item itemResult = library.getItem(_itemDouble);
 
@@ -232,17 +232,17 @@ class LibraryTest {
     void getItemsInLibraryShouldReturnNullWhenNoItemFound() {
 
         // Arrange
-        Item _itemDouble2 = mock(Item.class);
-        Item _itemDouble3 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
+        Item itemDouble3 = mock(Item.class);
 
         // SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
         library.addItemToLibrary(_itemDouble);
-        library.addItemToLibrary(_itemDouble2);
+        library.addItemToLibrary(itemDouble2);
 
-        Item itemResult = library.getItem(_itemDouble3);
+        Item itemResult = library.getItem(itemDouble3);
 
         // Assert
         assertNull(itemResult);
@@ -252,7 +252,7 @@ class LibraryTest {
     void getPublicationDetailsShouldReturnPublicationDetailsOfItem() {
 
         // Arrange
-        Item _itemDouble2 = mock(Item.class);
+        Item itemDouble2 = mock(Item.class);
 
         when(_itemDouble.get_publication()).thenReturn(mock(Publication.class));
         when(_itemDouble.get_publication().getTitle()).thenReturn(mock(Title.class));
@@ -260,18 +260,18 @@ class LibraryTest {
         when(_itemDouble.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
         when(_itemDouble.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
-        when(_itemDouble2.get_publication()).thenReturn(mock(Publication.class));
-        when(_itemDouble2.get_publication().getTitle()).thenReturn(mock(Title.class));
-        when(_itemDouble2.get_publication().getAuthor()).thenReturn(mock(Author.class));
-        when(_itemDouble2.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
-        when(_itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
+        when(itemDouble2.get_publication()).thenReturn(mock(Publication.class));
+        when(itemDouble2.get_publication().getTitle()).thenReturn(mock(Title.class));
+        when(itemDouble2.get_publication().getAuthor()).thenReturn(mock(Author.class));
+        when(itemDouble2.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
+        when(itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
 
         // SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
         library.addItemToLibrary(_itemDouble);
-        library.addItemToLibrary(_itemDouble2);
+        library.addItemToLibrary(itemDouble2);
 
         List<PublicationDetails> result = library.getItemDetails();
 
