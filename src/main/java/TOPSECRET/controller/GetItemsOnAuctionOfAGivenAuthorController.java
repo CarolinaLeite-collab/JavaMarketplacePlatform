@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.valueobject.AuthorId;
 
 import java.util.List;

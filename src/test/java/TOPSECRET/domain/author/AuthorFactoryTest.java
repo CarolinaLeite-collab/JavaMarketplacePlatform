@@ -1,4 +1,4 @@
-package TOPSECRET.domain.Author;
+package TOPSECRET.domain.author;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

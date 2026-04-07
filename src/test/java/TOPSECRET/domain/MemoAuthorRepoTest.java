@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.AuthorFactory;
+import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.author.AuthorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

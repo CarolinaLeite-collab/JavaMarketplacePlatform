@@ -1,4 +1,4 @@
-package TOPSECRET.domain.Author;
+package TOPSECRET.domain.author;
 
 /**
  * Factory responsible for creating {@link Author} instances.

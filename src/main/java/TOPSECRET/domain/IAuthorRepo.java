@@ -1,6 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.author.Author;
 
 import java.util.List;
 
