@@ -1,9 +1,7 @@
 package TOPSECRET.domain.library;
 
 import TOPSECRET.domain.*;
-import TOPSECRET.domain.valueobject.Author;
 import TOPSECRET.domain.valueobject.LibraryId;
-import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +9,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 
 class LibraryTest {
 
