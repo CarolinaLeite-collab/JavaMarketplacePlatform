@@ -3,6 +3,8 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,14 +88,14 @@ class DirectSaleTest {
     void isByAuthorShouldReturnTrueWhenAuthorMatches() {
 
         //Arrange
-        Author _authorDouble = mock(Author.class);
-        when(_itemDouble.isByAuthor(_authorDouble)).thenReturn(true);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        when(_itemDouble.isByAuthor(_authorIdDouble)).thenReturn(true);
 
         // SUT
         DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(_authorDouble);
+        boolean result = ds.isByAuthor(_authorIdDouble);
 
         //Assert
         assertTrue(result);
@@ -104,14 +106,14 @@ class DirectSaleTest {
     void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
 
         //Arrange
-        Author _author2 = mock(Author.class);
-        when(_itemDouble.isByAuthor(_author2)).thenReturn(false);
+        AuthorId _author2IdDouble = mock(AuthorId.class);
+        when(_itemDouble.isByAuthor(_author2IdDouble)).thenReturn(false);
 
         // SUT
         DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(_author2);
+        boolean result = ds.isByAuthor(_author2IdDouble);
 
         //Assert
         assertFalse(result);
@@ -122,16 +124,16 @@ class DirectSaleTest {
     void isByAuthorShouldDelegateToItem() {
 
         //Arrange
-        Author _author = mock(Author.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
 
         //SUT
         DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
 
         //Act
-        ds.isByAuthor(_author);
+        ds.isByAuthor(_authorIdDouble);
 
         //Assert
-        verify(_itemDouble, times(1)).isByAuthor(_author);
+        verify(_itemDouble, times(1)).isByAuthor(_authorIdDouble);
     }
 
     @Test
@@ -190,14 +192,14 @@ class DirectSaleTest {
     void isByGenreShouldReturnTrueWhenGenreMatches() {
 
         //Arrange
-        Genre genreDouble = mock(Genre.class);
-        when(_itemDouble.isByGenre(genreDouble)).thenReturn(true);
+        GenreId genreIdDouble = mock(GenreId.class);
+        when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(true);
 
         // SUT
         DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
 
         //Act
-        boolean result = directSale.isByGenre(genreDouble);
+        boolean result = directSale.isByGenre(genreIdDouble);
 
         //Assert
         assertTrue(result);
@@ -207,14 +209,14 @@ class DirectSaleTest {
     void isByGenreShouldReturnFalseWhenGenreDoesNotMatch() {
 
         // Arrange
-        Genre genreDouble = mock(Genre.class);
-        when(_itemDouble.isByGenre(genreDouble)).thenReturn(false);
+        GenreId genreIdDouble = mock(GenreId.class);
+        when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(false);
 
         // SUT
         DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
 
         //Act
-        boolean result = directSale.isByGenre(genreDouble);
+        boolean result = directSale.isByGenre(genreIdDouble);
 
         //Assert
         assertFalse(result);
@@ -224,16 +226,16 @@ class DirectSaleTest {
     void isByGenreShouldDelegateToItem() {
 
         //Arrange
-        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         //SUT
         DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
 
         //Act
-        directSale.isByGenre(genreDouble);
+        directSale.isByGenre(genreIdDouble);
 
         //Assert
-        verify(_itemDouble).isByGenre(genreDouble);
+        verify(_itemDouble).isByGenre(genreIdDouble);
     }
 
     // isByPublication isolated tests

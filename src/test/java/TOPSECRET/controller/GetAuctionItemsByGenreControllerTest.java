@@ -4,6 +4,7 @@ import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,13 +18,13 @@ class GetAuctionItemsByGenreControllerTest {
 
     private User _buyerUserDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private Genre _genreDouble;
+    private GenreId _genreIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _buyerUserDouble = mock(User.class);
-        _genreDouble = mock (Genre.class);
+        _genreIdDouble = mock (GenreId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
     }
 
@@ -40,33 +41,33 @@ class GetAuctionItemsByGenreControllerTest {
         // Arrange
         Item _itemDouble = mock(Item.class);
         List<Item> itemsList = List.of(_itemDouble);
-        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(itemsList);
+        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreIdDouble)).thenReturn(itemsList);
 
         // SUT
         GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
 
         // Act
-        List<Item> items = controller.getAuctionItemsByGenre(_genreDouble);
+        List<Item> items = controller.getAuctionItemsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals(itemsList, items);
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreIdDouble);
     }
 
     @Test
     void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
 
         // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreDouble)).thenReturn(List.of());
+        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreIdDouble)).thenReturn(List.of());
 
         // SUT
         GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerUserDouble);
 
         // Act
-        List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreDouble);
+        List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(listOfAuctionItemsByGenre.isEmpty());
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreIdDouble);
     }
 }

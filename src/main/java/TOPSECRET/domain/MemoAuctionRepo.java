@@ -1,8 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -40,14 +40,14 @@ public class MemoAuctionRepo implements IAuctionRepo {
             return auction;
     }
 
-    public List<Item> getAuctionItemsByGenre(Genre genre) {
+    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
         for (Auction auction : _itemsOnAuction) {
 
 
-            if (auction.isByGenre(genre)) {
+            if (auction.isByGenre(genreId)) {
                 listOfAuctionItemsByGenre.add(auction.getItem());
             }
         }
@@ -57,10 +57,10 @@ public class MemoAuctionRepo implements IAuctionRepo {
         return copyOfListOfAuctionItemsByGenre;
     }
 
-    public List<Item> getAuctionItemsByAuthor(Author author) {
+    public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
         for (Auction auction : _itemsOnAuction) {
-            if (auction.isByAuthor(author)) {
+            if (auction.isByAuthor(authorId)) {
                 listOfAuctionItemsByAuthor.add(auction.getItem());
             }
         }

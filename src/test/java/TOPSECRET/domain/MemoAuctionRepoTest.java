@@ -3,6 +3,8 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,9 +47,9 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByGenreReturnsEmptyListWhenNoAuctions() {
-        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        List<Item> result = repo.getAuctionItemsByGenre(genreDouble);
+        List<Item> result = repo.getAuctionItemsByGenre(genreIdDouble);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -55,7 +57,7 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByGenreReturnsMatchingItems() throws Exception {
-        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         Item itemDouble1 = mock(Item.class);
         Item itemDouble2 = mock(Item.class);
@@ -63,8 +65,8 @@ class MemoAuctionRepoTest {
         Auction auctionDouble1 = auctionWithItem(itemDouble1);
         Auction auctionDouble2 = auctionWithItem(itemDouble2);
 
-        when(auctionDouble1.isByGenre(genreDouble)).thenReturn(true);
-        when(auctionDouble2.isByGenre(genreDouble)).thenReturn(true);
+        when(auctionDouble1.isByGenre(genreIdDouble)).thenReturn(true);
+        when(auctionDouble2.isByGenre(genreIdDouble)).thenReturn(true);
 
         when(auctionFactoryDouble.createAuction(itemDouble1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(auctionDouble1);
@@ -75,7 +77,7 @@ class MemoAuctionRepoTest {
         repo.createAuction(itemDouble1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
         repo.createAuction(itemDouble2, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
-        List<Item> result = repo.getAuctionItemsByGenre(genreDouble);
+        List<Item> result = repo.getAuctionItemsByGenre(genreIdDouble);
 
         assertEquals(2, result.size());
         assertTrue(result.contains(itemDouble1));
@@ -102,18 +104,18 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByAuthorReturnsMatchingItems() throws Exception {
-        Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Item itemDouble = mock(Item.class);
 
         Auction auctionDouble = auctionWithItem(itemDouble);
-        when(auctionDouble.isByAuthor(authorDouble)).thenReturn(true);
+        when(auctionDouble.isByAuthor(authorIdDouble)).thenReturn(true);
 
         when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(auctionDouble);
 
         repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
-        List<Item> result = repo.getAuctionItemsByAuthor(authorDouble);
+        List<Item> result = repo.getAuctionItemsByAuthor(authorIdDouble);
 
         assertEquals(1, result.size());
         assertSame(itemDouble, result.get(0));
@@ -121,39 +123,39 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByAuthorReturnsEmptyListWhenNoMatch() throws Exception {
-        Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Item itemDouble = mock(Item.class);
 
         Auction auctionDouble = auctionWithItem(itemDouble);
-        when(auctionDouble.isByAuthor(authorDouble)).thenReturn(false);
+        when(auctionDouble.isByAuthor(authorIdDouble)).thenReturn(false);
 
         when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(auctionDouble);
 
         repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
-        List<Item> result = repo.getAuctionItemsByAuthor(authorDouble);
+        List<Item> result = repo.getAuctionItemsByAuthor(authorIdDouble);
 
         assertTrue(result.isEmpty());
     }
 
     @Test
     void getAuctionItemsByAuthorReturnsDefensiveCopy() throws Exception {
-        Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Item itemDouble = mock(Item.class);
 
         Auction auctionDouble = auctionWithItem(itemDouble);
-        when(auctionDouble.isByAuthor(authorDouble)).thenReturn(true);
+        when(auctionDouble.isByAuthor(authorIdDouble)).thenReturn(true);
 
         when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(auctionDouble);
 
         repo.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
-        List<Item> first = repo.getAuctionItemsByAuthor(authorDouble);
+        List<Item> first = repo.getAuctionItemsByAuthor(authorIdDouble);
         first.clear();
 
-        List<Item> second = repo.getAuctionItemsByAuthor(authorDouble);
+        List<Item> second = repo.getAuctionItemsByAuthor(authorIdDouble);
 
         assertEquals(1, second.size());
     }
@@ -235,10 +237,10 @@ class MemoAuctionRepoTest {
     void createAuctionStoresAuction() throws Exception {
         Item itemDouble = mock(Item.class);
 
-        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
         Auction auctionDouble = auctionWithItem(itemDouble);
-        when(auctionDouble.isByGenre(genreDouble)).thenReturn(true);
+        when(auctionDouble.isByGenre(genreIdDouble)).thenReturn(true);
 
         when(auctionFactoryDouble.createAuction(itemDouble, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(auctionDouble);
@@ -247,7 +249,7 @@ class MemoAuctionRepoTest {
 
         assertSame(auctionDouble, created);
 
-        List<Item> result = repo.getAuctionItemsByGenre(genreDouble);
+        List<Item> result = repo.getAuctionItemsByGenre(genreIdDouble);
         assertEquals(1, result.size());
         assertSame(itemDouble, result.get(0));
     }

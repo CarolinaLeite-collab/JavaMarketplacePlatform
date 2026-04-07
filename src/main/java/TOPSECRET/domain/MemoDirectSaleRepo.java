@@ -1,8 +1,8 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
@@ -42,11 +42,11 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<Item> getDirectSaleItemsByAuthor(Author authorName) {
+    public List<Item> getDirectSaleItemsByAuthor(AuthorId authorId) {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByAuthor(authorName)) {
+            if (directSale.isByAuthor(authorId)) {
                 list.add(directSale.getItem());
             }
         }
@@ -54,13 +54,13 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<Item> getDirectSaleItemsByGenre(Genre genreName) {
+    public List<Item> getDirectSaleItemsByGenre(GenreId genreId) {
 
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
 
-            if (directSale.isByGenre(genreName)) {
+            if (directSale.isByGenre(genreId)) {
 
                 list.add(directSale.getItem());
 
