@@ -3,6 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -34,9 +35,9 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public Auction createAuction(List<Item> item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    public Auction createAuction(AuctionId auctionId, List<Item> item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-            Auction auction = _auctionFactory.createAuction(item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
+            Auction auction = _auctionFactory.createAuction(auctionId, item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
             _itemsOnAuction.add(auction);
             return auction;
     }

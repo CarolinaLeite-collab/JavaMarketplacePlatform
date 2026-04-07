@@ -1,9 +1,11 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -34,8 +36,9 @@ import java.util.List;
  * </ul>
  */
 
-public class Auction {
+public class Auction implements AggregateRoot<AuctionId> {
 
+    private final AuctionId _auctionId;
     private final List<Item> _items;
     private final Price _startingPrice;
     private final Price _reservePrice;
@@ -47,11 +50,10 @@ public class Auction {
     private Price _finalPrice;
 
 
-    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _items = items;
+    Auction(AuctionId auctionId, List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
         _bids = new MemoBidRepo( new BidFactory());
-
+        _auctionId = auctionId;
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -79,6 +81,8 @@ public class Auction {
 
         if (items == null || items.isEmpty()) {
             throw new IllegalArgumentException("Items cannot be null or empty");
+        } else {
+            _items = items;
         }
 
         for (Item item : _items) {
@@ -86,8 +90,19 @@ public class Auction {
         }
     }
 
-    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    Auction(AuctionId auctionId, List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        this (auctionId, item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    }
+
+    @Override
+    public AuctionId identity() {
+        return _auctionId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (!(object instanceof Auction other)) return false;
+        return _auctionId.equals(other._auctionId);
     }
 
     public List <Item> getItems() {
@@ -153,7 +168,7 @@ public class Auction {
         return result;
     }
 
-    private boolean isReserveMet (Price price) {
+    private boolean isReserveMet(Price price) {
         return price.isGreaterOrEqualThan(_reservePrice);
     }
 

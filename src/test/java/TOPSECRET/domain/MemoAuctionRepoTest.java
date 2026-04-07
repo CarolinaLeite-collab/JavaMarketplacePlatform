@@ -3,14 +3,15 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +22,7 @@ class MemoAuctionRepoTest {
     private Auction _auctionDouble1;
     private Auction _auctionDouble2;
     private Auction _auctionDouble3;
+    private AuctionId _auctionId;
     private Item _itemDouble1;
     private Item _itemDouble2;
     private Item _itemDouble3;
@@ -50,6 +52,8 @@ class MemoAuctionRepoTest {
         _items3 = new ArrayList<>();
         _items3.add(_itemDouble3);
 
+        _auctionId = mock(AuctionId.class);
+
         _auctionDouble1 = mock(Auction.class);
         when(_auctionDouble1.getItems()).thenReturn(_items1);
         _auctionDouble2 = mock(Auction.class);
@@ -59,10 +63,7 @@ class MemoAuctionRepoTest {
 
         startingPriceDouble = mock(Price.class);
         outrightPriceDouble = mock(Price.class);
-
-        startDate = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-        endDate   = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("UTC"));
-    }
+        }
 
     @Test
     void getAuctionItemsByGenreReturnsEmptyListWhenNoAuctions() {
@@ -81,14 +82,14 @@ class MemoAuctionRepoTest {
         when(_auctionDouble1.isByGenre(genreDouble)).thenReturn(true);
         when(_auctionDouble2.isByGenre(genreDouble)).thenReturn(true);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        when(auctionFactoryDouble.createAuction(_items2, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items2, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble2);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
-        repo.createAuction(_items2, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items2, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByGenre(genreDouble);
 
@@ -99,10 +100,10 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByGenreReturnsEmptyListWhenGenreIsNull() throws Exception {
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByGenre(null);
 
@@ -117,10 +118,10 @@ class MemoAuctionRepoTest {
 
         when(_auctionDouble1.isByAuthor(authorDouble)).thenReturn(true);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByAuthor(authorDouble);
 
@@ -134,10 +135,10 @@ class MemoAuctionRepoTest {
 
         when(_auctionDouble1.isByAuthor(authorDouble)).thenReturn(false);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByAuthor(authorDouble);
 
@@ -150,10 +151,10 @@ class MemoAuctionRepoTest {
 
         when(_auctionDouble1.isByAuthor(authorDouble)).thenReturn(true);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> first = repo.getAuctionItemsByAuthor(authorDouble);
         first.clear();
@@ -171,16 +172,16 @@ class MemoAuctionRepoTest {
         when(_auctionDouble2.isByPublication(pubDouble)).thenReturn(true);
         when(_auctionDouble3.isByPublication(pubDouble)).thenReturn(false);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
-        when(auctionFactoryDouble.createAuction(_items2, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items2, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble2);
-        when(auctionFactoryDouble.createAuction(_items3, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items3, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble3);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
-        repo.createAuction(_items2, startingPriceDouble, outrightPriceDouble, startDate, endDate);
-        repo.createAuction(_items3, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items2, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items3, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByPublication(pubDouble);
 
@@ -197,10 +198,10 @@ class MemoAuctionRepoTest {
 
         when(_auctionDouble1.isByPublishingCompany(publisherDouble)).thenReturn(true);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByPublishingCompany(publisherDouble);
 
@@ -210,10 +211,10 @@ class MemoAuctionRepoTest {
 
     @Test
     void getAuctionItemsByPublishingCompanyReturnsEmptyListWhenPublisherIsNull() throws Exception {
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         List<Item> result = repo.getAuctionItemsByPublishingCompany(null);
 
@@ -227,10 +228,10 @@ class MemoAuctionRepoTest {
 
         when(_auctionDouble1.isByGenre(genreDouble)).thenReturn(true);
 
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        Auction created = repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        Auction created = repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         assertSame(_auctionDouble1, created);
 
@@ -241,10 +242,10 @@ class MemoAuctionRepoTest {
 
     @Test
     void createAuctionWithOutrightStoresAuction() throws Exception {
-        when(auctionFactoryDouble.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
+        when(auctionFactoryDouble.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate))
                 .thenReturn(_auctionDouble1);
 
-        Auction created = repo.createAuction(_items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
+        Auction created = repo.createAuction(_auctionId, _items1, startingPriceDouble, outrightPriceDouble, startDate, endDate);
 
         assertSame(_auctionDouble1, created);
     }

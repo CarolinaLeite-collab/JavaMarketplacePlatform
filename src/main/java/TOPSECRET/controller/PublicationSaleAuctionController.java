@@ -5,6 +5,7 @@ import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
@@ -43,7 +44,7 @@ public class PublicationSaleAuctionController {
         return List.copyOf(items);
    }
 
-    public Auction putItemOnAuction(List<Item> items, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(AuctionId auctionId, List<Item> items, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         List<Item> itemsForAuction = new ArrayList<>();
         for (Item item : items) {
@@ -53,7 +54,7 @@ public class PublicationSaleAuctionController {
             }
         }
 
-        Auction newAuction = _iAuctionRepo.createAuction(itemsForAuction, startPrice, outrightPrice, startDate, endDate);
+        Auction newAuction = _iAuctionRepo.createAuction(auctionId, itemsForAuction, startPrice, outrightPrice, startDate, endDate);
 
         for (Item item : items) {
             item.setAuction(newAuction);
