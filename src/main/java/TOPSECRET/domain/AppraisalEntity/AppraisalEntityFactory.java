@@ -1,7 +1,7 @@
 package TOPSECRET.domain.AppraisalEntity;
 
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.List;

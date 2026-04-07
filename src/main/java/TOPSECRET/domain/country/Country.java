@@ -13,16 +13,16 @@ public class Country implements AggregateRoot<CountryId> {
     private final CountryName _name;
 
     Country(CountryId id, CountryName name) {
-        this._countryId = id;
-        this._name = name;
+        _countryId = id;
+        _name = name;
     }
 
     // Backwards-compatible constructor used by legacy tests
     public Country(String countryName) {
         CountryName name = new CountryName(countryName);
         CountryId id = new CountryId(name.value().substring(0, Math.min(2, name.value().length())));
-        this._countryId = id;
-        this._name = name;
+        _countryId = id;
+        _name = name;
     }
 
     public boolean isNamed(CountryName name) {

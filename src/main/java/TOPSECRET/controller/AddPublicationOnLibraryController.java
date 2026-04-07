@@ -1,7 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.IItemRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -18,28 +21,28 @@ public class AddPublicationOnLibraryController {
     private final Library _library;
     private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo, User user) {
+    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = ilibraryRepo;
         _library = library;
         _iItemRepo = iItemRepo;
     }
 
-    public Library getMyLibrary(User user) {
-        return _iLibraryRepo.findLibraryByUser(user);
+    public Library getMyLibrary(UserId userId) {
+        return _iLibraryRepo.findLibraryByUserId(userId);
     }
 
     public List<Item> getAllItems() {
         return _library.getItemsInLibrary();
     }
 
-    public List<Item> getListOfAvailableItems(User user) {
-        Library myLibrary = getMyLibrary(user);
+    public List<Item> getListOfAvailableItems(UserId userId) {
+        Library myLibrary = getMyLibrary(userId);
         List<Item> existentItems = myLibrary.getItemsInLibrary();
         return _iItemRepo.getDifferentOf(existentItems);
     }
 
-    public boolean addItemToLibrary(Item selectedItem, User user) {
-        Library myLibrary = getMyLibrary(user);
+    public boolean addItemToLibrary(Item selectedItem, UserId userId) {
+        Library myLibrary = getMyLibrary(userId);
         return myLibrary.addItemToLibrary(selectedItem);
     }
 }

@@ -17,60 +17,70 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
+'==== Actor and Participants ===='
 actor User
-participant "UI1:AddPublicationToListUI" as UI
-participant "Ctl1:AddPublication\nToListController" as Ctl
-participant "_lr:IListOfPublications\nRepo" as ListRepo
-participant "_lr:ILibraryRepo" as LibraryRepo
-participant "myLibrary:Library" as myLibrary
-participant "_lop:ListOfPublications" as ListOfPublications
 
+participant ":AddItemToListUI" as UI
+participant ":AddItemToList\nController" as Ctl
+participant ":ILibraryRepo" as ILibraryRepo
+participant "library:Library" as library
+participant ":IListOfItemsRepo" as IListRepo
+participant "lop:ListOfItems" as ListOfItems
 
-User -> UI : I want to add one of my publications to one of my lists
+'==== Interactions ===='
+
+'==== User selects the item ===='
+User -> UI : I want to add one of my items\nto a list of mine
 activate UI
-UI -> Ctl : getMyLists(user)
+UI -> Ctl : getItemsInMyLibrary(userId)
 activate Ctl
-Ctl -> ListRepo : findListsByUser(user)
-activate ListRepo
-ListRepo --> Ctl : List<ListOfPublications>
-deactivate ListRepo
-Ctl --> UI : List<ListOfPublications>
+Ctl -> ILibraryRepo : findLibraryByUser(userId)
+activate ILibraryRepo
+ILibraryRepo -> Ctl : libraryId
+deactivate ILibraryRepo
+Ctl -> ILibraryRepo: getItemsInLibrary(libraryId)
+activate ILibraryRepo
+ILibraryRepo -> library : getItemsInLibrary()
+activate library
+library --> ILibraryRepo : Map<ItemId, ItemSummary>
+deactivate library
+ILibraryRepo --> Ctl : Map<ItemId, ItemSummary>
+deactivate ILibraryRepo
+Ctl --> UI : Map<ItemId, ItemSummary>
 deactivate Ctl
-UI --> User : Select what list you want to add them to
+UI --> User : Select which Item\nyou wish to add
 deactivate UI
-
-User -> UI : listOfItems
+User -> UI: itemId
 activate UI
-UI -> Ctl : getItemsInMyLibrary(user)
+
+'==== User selects the destination list ===='
+UI -> Ctl : getMyLists(userId)
 activate Ctl
-Ctl -> LibraryRepo : findLibraryByUser(user)
-activate LibraryRepo
-LibraryRepo -> Ctl : myLibrary
-deactivate LibraryRepo
-Ctl -> myLibrary : getItemsInLibrary()
-activate myLibrary
-myLibrary --> Ctl : List<Item>
-deactivate myLibrary
-Ctl --> UI : List<Item>
+Ctl -> IListRepo : findListsByUser(userId)
+activate IListRepo
+IListRepo --> Ctl : Map<ListOfItemsId, String>
+deactivate IListRepo
+Ctl --> UI : Map<ListOfItemsId, String>
 deactivate Ctl
-UI --> User : Select what available Item you want to add
+UI --> User : Select which list\nyou wish to add it to
 deactivate UI
-
-User -> UI: itemToAdd
+User -> UI : listOfItemsId
 activate UI
-UI -> Ctl : addItemToList(user, myList, genre, item)
+
+'==== Use Case execution ===='
+UI -> Ctl : addItemToList\n(itemId, listOfItemsId)
 activate Ctl
-Ctl  -> ListOfPublications : addItemToList(user, myList, genre, item)
-activate ListOfPublications
-ListOfPublications -> ListOfPublications : addItem(item)
-ListOfPublications --> Ctl: true
-deactivate ListOfPublications
-deactivate ListRepo
+Ctl  -> IListRepo : addItemToList\n(itemId, listOfItemsId)
+activate IListRepo
+IListRepo -> IListRepo: findListById(listOfItemsId)
+IListRepo -> ListOfItems : addItem(itemId)
+IListRepo -> IListRepo: save(listOfItems)
+IListRepo --> Ctl: true
+deactivate IListRepo
 Ctl --> UI : true
 deactivate Ctl
 UI --> User : Done!
 deactivate UI
-
 
 
 @enduml

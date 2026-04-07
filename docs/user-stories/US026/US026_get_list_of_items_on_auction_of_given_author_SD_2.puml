@@ -19,7 +19,7 @@ autoactivate off
 ' --- Actor and participants ---
 actor Buyer
 participant ":GetItemsOnAuction\nOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuction\nOfAGivenAuthorController" as CTL
+participant ":GetItemsOnAuction\nOfAGivenAuthorCtl" as CTL
 participant "mAR:MemoAuctionRepo" as DSR
 participant "auction:Auction" as DS
 participant "item:Item" as IT
@@ -34,20 +34,20 @@ UI --> Buyer: What is the author's name?
 deactivate UI
 Buyer -> UI: authorID
 activate UI
-UI -> CTL: getAuctionItems\nByAuthor(authorID)
+UI -> CTL: getAuctionItemsId\nByAuthorId(authorID)
 activate CTL
-CTL -> DSR: getAuctionItems\nByAuthor(authorID)
+CTL -> DSR: getAuctionItemsId\nByAuthorId(authorID)
 activate DSR
 
-create "listOfItemsOnAuctionByAuthor: List<Item>" as List
+create "listOfItemsIdOnAuctionByAuthorId: List<ItemId>" as List
 DSR -->> List: <<create>>
 
 loop for each auction in mAR
-    DSR -> DS: isByAuthor(authorID)
+    DSR -> DS: isByAuthorId(authorId)
     activate DS
-    DS -> IT: isByAuthor(authorID)
+    DS -> IT: isByAuthorId(authorId)
     activate IT
-    IT -> PUB: isByAuthor(authorID)
+    IT -> PUB: isByAuthorId(authorId)
     activate PUB
     PUB --> IT: true
     deactivate PUB
@@ -55,7 +55,7 @@ loop for each auction in mAR
     deactivate IT
     DS --> DSR: true
     deactivate DS
-    DSR -> List: add(auction.getItem())
+    DSR -> List: add(auction.getItemId())
     activate List
     List --> DSR: true
     deactivate List
@@ -63,14 +63,14 @@ end
 
 
 
-create "copyOfListOfItemsOnAuctionByAuthor: List<Item>" as Copy
-DSR -> Copy: List.copyOf(listOfItemsOnAuctionByAuthor)
+create "copyOfListOfItemsIdOnAuctionByAuthorId: List<ItemId>" as Copy
+DSR -> Copy: List.copyOf(listOfItemsIdOnAuctionByAuthorId)
 
 'participant "author:Author" as AUT
 
-DSR --> CTL: copyOf\nListOfItemsOnAuctionByAuthor
+DSR --> CTL: copyOf\nListOfItemsIdOnAuctionByAuthorId
 deactivate DSR
-CTL --> UI: copyOf\nListOfItemsOnAuctionByAuthor
+CTL --> UI: copyOf\nListOfItemsIdOnAuctionByAuthorId
 deactivate CTL
 UI --> Buyer: Here's the list!
 deactivate UI

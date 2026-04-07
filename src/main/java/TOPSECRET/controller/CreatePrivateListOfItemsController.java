@@ -1,11 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.IListOfItemsRepo;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
-
-import java.util.List;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the creation of private lists of items for a user.
@@ -23,7 +23,7 @@ public class CreatePrivateListOfItemsController {
     public CreatePrivateListOfItemsController(
             IListOfItemsRepo iListOfItemsRepo,
             IGenreRepo iGenreRepo,
-            User user) {
+            UserId userId) {
 
         _iListOfItemsRepo = iListOfItemsRepo;
         _iGenreRepo = iGenreRepo;
@@ -33,7 +33,7 @@ public class CreatePrivateListOfItemsController {
         return _iGenreRepo.findAll();
     }
 
-    public ListOfItems createListOfItems(User user, String name, Genre genre) {
-        return _iListOfItemsRepo.addListOfItems(user, name, genre);
+    public ListOfItems createListOfItems(UserId userId, String name, GenreId genreId) {
+        return _iListOfItemsRepo.addListOfItems(userId, name, genreId);
     }
 }

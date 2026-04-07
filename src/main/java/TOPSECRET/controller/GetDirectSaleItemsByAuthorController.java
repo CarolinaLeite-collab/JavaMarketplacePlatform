@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class GetDirectSaleItemsByAuthorController {
 
     private IDirectSaleRepo _iDirectSaleRepo;
 
-    public GetDirectSaleItemsByAuthorController(IDirectSaleRepo dsr, User buyer){
+    public GetDirectSaleItemsByAuthorController(IDirectSaleRepo dsr, UserId buyerId){
 
         _iDirectSaleRepo = dsr;
 

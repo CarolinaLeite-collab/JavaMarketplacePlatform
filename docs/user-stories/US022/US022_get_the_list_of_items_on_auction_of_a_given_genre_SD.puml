@@ -36,29 +36,29 @@ deactivate UI
 Buyer -> UI: genre
 activate UI
 
-UI -> Ctl: getAuctionItemsByGenre(genre)
+UI -> Ctl: getAuctionItemsByGenreId(genreId)
 activate Ctl
 
-Ctl -> AuctionRepo: getAuctionItemsByGenre(genre)
+Ctl -> AuctionRepo: getAuctionItemsByGenreId(genreId)
 activate AuctionRepo
 
 
-create "listOfAuction\nItemsByGenre: List<Item>" as List
+create "listOfAuction\nItemsByGenreId: List<ItemId>" as List
 AuctionRepo -->> List : <<Create>>
 loop for each Auction in AuctionRepo
-     AuctionRepo -> auction: isByGenre(genre)
-    opt isByGenre== true
-        AuctionRepo -> List: add(auction.getItem())
+     AuctionRepo -> auction: isByGenreId(genreId)
+    opt isByGenreId == true
+        AuctionRepo -> List: add(auction.getItemId())
         List --> AuctionRepo :true
     end
 end
 
-create "copyOfListOfAuction\nItemsByGenre: List<Item>" as Copy
-AuctionRepo -> Copy:List.copyOf(listOfAuctionItemsByGenre)
+create "copyOfListOfAuction\nItemsByGenreId: List<ItemId>" as Copy
+AuctionRepo -> Copy:List.copyOf(listOfAuctionItemsByGenreId)
 
-AuctionRepo --> Ctl : copyOfListOfAuctionItemsByGenre
+AuctionRepo --> Ctl : copyOfListOfAuctionItemsByGenreId
 deactivate AuctionRepo
-Ctl --> UI: copyOfListOfAuctionItemsByGenre
+Ctl --> UI: copyOfListOfAuctionItemsByGenreId
 deactivate Ctl
 UI --> Buyer: Here's your list!
 deactivate UI

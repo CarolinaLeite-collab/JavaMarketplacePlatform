@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.PublicationId;
 import TOPSECRET.domain.valueobject.Title;
@@ -10,7 +10,8 @@ import org.mockito.MockedConstruction;
 
 import java.time.Year;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 class PublicationFactoryTest {

@@ -1,6 +1,5 @@
 package TOPSECRET.domain.User;
 
-import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

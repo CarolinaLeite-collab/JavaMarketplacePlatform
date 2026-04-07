@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.IAppraisalEntityRepo;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
@@ -9,6 +9,7 @@ import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,11 +30,13 @@ class RegisterNewAppraisalEntityControllerTest {
     private PublicationType _publicationTypeDouble;
     private IAppraisalEntityRepo _iAppraisalEntityRepoDouble;
     private User _userDouble;
+    private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException{
         _nameDouble = mock(Name.class);
         _userDouble = mock(User.class);
+        _adminIdDouble = mock (UserId.class);
 
         _genreDouble = mock(Genre.class);
         _genres = new ArrayList<>();
@@ -60,7 +63,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         assertNotNull(controller);
     }
@@ -69,7 +72,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetPublicationTypesFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
         List types = controller.getPublicationTypes();
@@ -83,7 +86,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldGetGenresFromRepo() {
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
         Iterable <Genre> genres = controller.getGenres();
@@ -105,7 +108,7 @@ class RegisterNewAppraisalEntityControllerTest {
                 .thenReturn(_appraisalEntityDouble);
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
         AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres, adminDouble);
@@ -120,7 +123,7 @@ class RegisterNewAppraisalEntityControllerTest {
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble);
+        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         //Act
         SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerNewAppraisalEntity(_nameDouble, _publicationTypes, _genres, _userDouble));

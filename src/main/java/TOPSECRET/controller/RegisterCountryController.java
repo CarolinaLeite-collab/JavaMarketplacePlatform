@@ -1,12 +1,13 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.repository.ICountryRepo;
-import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.CountryName;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.Optional;
 
@@ -17,15 +18,15 @@ public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
     private final CountryFactory _countryFactory;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory) {
+    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory, UserId adminId) {
         _iCountryRepo = iCountryRepo;
         _countryFactory = countryFactory;
     }
 
     // Backwards compatible constructor used by legacy tests
-    public RegisterCountryController(ICountryRepo iCountryRepo) {
-        this(iCountryRepo, new CountryFactory());
-    }
+//    public RegisterCountryController(ICountryRepo iCountryRepo) {
+//        this(iCountryRepo, new CountryFactory());
+//    }
 
     public Optional<Country> registerCountry(User user, String isoCode, String countryName) {
         if (!user.hasRole(Role.ADMIN)) {

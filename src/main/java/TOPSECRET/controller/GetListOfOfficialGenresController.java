@@ -2,6 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for retrieving the list of official genres.
@@ -16,7 +17,7 @@ public class GetListOfOfficialGenresController {
 
     private IGenreRepo _iGenreRepo;
 
-    public GetListOfOfficialGenresController(IGenreRepo igr) {
+    public GetListOfOfficialGenresController(IGenreRepo igr, UserId userId) {
 
         _iGenreRepo = igr;
 

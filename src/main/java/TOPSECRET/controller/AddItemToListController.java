@@ -1,8 +1,13 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.IListOfItemsRepo;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -19,41 +24,26 @@ public class AddItemToListController {
     private final IListOfItemsRepo _iListOfItemsRepo;
     private final ILibraryRepo _iLibraryRepo;
 
-    public AddItemToListController(IListOfItemsRepo iListRepo, ILibraryRepo iLibraryRepo, User user) {
-
+    public AddItemToListController(IListOfItemsRepo iListRepo, ILibraryRepo iLibraryRepo, UserId userId) {
         _iListOfItemsRepo = iListRepo;
         _iLibraryRepo = iLibraryRepo;
     }
 
-    public List<ListOfItems> getMyLists(User user) {
-        return _iListOfItemsRepo.findListsByUser(user);
+    public List<ListOfItems> getMyLists(UserId userId) {
+        return _iListOfItemsRepo.findListsByUserId(userId);
     }
 
-    public List<Item> getItemsInMyLibrary(User user) {
-        Library lib = _iLibraryRepo.findLibraryByUser(user);
+    public List<Item> getItemsInMyLibrary(UserId userId) {
+        Library lib = _iLibraryRepo.findLibraryByUserId(userId);
         return lib.getItemsInLibrary();
     }
 
-    public void addItemToList(User user, String listName, Genre genre, Item item) {
+    public void addItemToList(UserId userId, String listName, GenreId genreId, ItemId itemId) {
 
         if (listName == null || listName.isBlank()) throw new IllegalArgumentException("List name is mandatory");
 
-        ListOfItems myList = _iListOfItemsRepo.findByOwnerNameAndGenre(user, listName, genre);
+        ListOfItems myList = _iListOfItemsRepo.findByOwnerNameAndGenre(userId, listName, genreId);
 
-        Library lib = _iLibraryRepo.findLibraryByUser(user);
-
-        Item returnedItem = findItemInListOfItems(lib.getItemsInLibrary(), item);
-
-        myList.addItem(returnedItem);
-    }
-
-    private Item findItemInListOfItems(List<Item> items, Item item) {
-
-        for (Item i : items) {
-            if (i.equals(item)) {
-                return i;
-            }
-        }
-        return null;
+        myList.addItem(itemId);
     }
 }

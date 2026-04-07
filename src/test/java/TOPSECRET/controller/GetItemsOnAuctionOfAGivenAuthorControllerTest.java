@@ -1,9 +1,9 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,13 +15,13 @@ import static org.mockito.Mockito.*;
 
 class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
-    private User _buyerDouble;
+    private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
     private Author _authorDouble;
 
     @BeforeEach
     void setUp() {
-        _buyerDouble = mock(User.class);
+        _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
         _authorDouble = mock(Author.class);
     }
@@ -30,7 +30,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
     void testAConstructor() {
 
         //SUT
-        new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerDouble);
+        new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
     }
 
@@ -40,7 +40,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of());
 
         //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerDouble);
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         //Act
         List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
@@ -59,7 +59,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2));
 
         //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerDouble);
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
@@ -79,7 +79,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2, _item3));
 
         //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerDouble);
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
         List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
@@ -92,7 +92,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
     void getAuctionItemsByAuthorShouldCallRepoWithCorrectAuthor() {
 
         //SUT / Arrange
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerDouble);
+        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         //Act
         List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);

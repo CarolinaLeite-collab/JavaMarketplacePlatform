@@ -1,9 +1,10 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
-import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -18,14 +19,14 @@ import java.util.List;
 public class GetPublicListsByGenreController {
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, User user) {
+    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, UserId userId) {
         _iListOfItemsRepo = iListOfPubRepo;
     }
 
-    public List<ListOfItems> getPublicListsByGenre(Genre genre) {
-        if (genre == null) {
+    public List<ListOfItems> getPublicListsByGenre(GenreId genreId) {
+        if (genreId == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _iListOfItemsRepo.findPublicListsByGenre(genre);
+        return _iListOfItemsRepo.findPublicListsByGenre(genreId);
     }
 }

@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.repository.IPublicationTypeRepo;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class GetPublicationTypeListController {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
 
-    public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo, User user) {
+    public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo, UserId userId) {
         _iPublicationTypeRepo = iPublicationTypeRepo;
     }
 

@@ -1,9 +1,10 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the addition of new genres.
@@ -16,7 +17,7 @@ import TOPSECRET.domain.User.User;
 public class AddGenreController {
     private final IGenreRepo _iGenreRepo;
 
-    public AddGenreController(IGenreRepo iGenreRepo) {
+    public AddGenreController(IGenreRepo iGenreRepo, UserId adminId) {
 
         _iGenreRepo = iGenreRepo;
     }

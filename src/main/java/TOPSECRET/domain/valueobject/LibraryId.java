@@ -1,7 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-//import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.library.Library;
 
 /**
  * Represents the unique identifier of a {@link Library}.

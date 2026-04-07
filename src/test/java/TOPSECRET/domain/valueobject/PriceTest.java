@@ -15,12 +15,13 @@ class PriceTest {
     {
         _currency = Currency.EUR;
         _currency2 = Currency.USD;
-
-        _price = new Price(100.0, _currency);
     }
 
     @Test
     void testCreationOfValidPrice() {
+        //arrange
+        _price = new Price(100.0, _currency);
+
         //act + assert
         assertEquals(100.0, _price.getValue());
         assertEquals(_currency, _price.getCurrency());
@@ -48,6 +49,46 @@ class PriceTest {
     }
 
     @Test
+    void shouldReturnTrueWhenValueIsGreater() {
+        //arrange
+        Price higher = new Price(100.0, _currency);
+        Price lower = new Price(50.0, _currency);
+
+        //assert + act
+        assertTrue(higher.isGreaterOrEqualThan(lower));
+    }
+
+    @Test
+    void shouldReturnTrueWhenValuesAreEqual() {
+        //arrange
+        Price p1 = new Price(100.0, _currency);
+        Price p2 = new Price(100.0, _currency);
+
+        //assert + act
+        assertTrue(p1.isGreaterOrEqualThan(p2));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenValueIsNull() {
+        //arrange
+        Price price = new Price(100.0, _currency);
+
+        //assert + act
+        assertThrows(IllegalArgumentException.class,
+                () -> price.isGreaterOrEqualThan(null));
+    }
+
+    @Test
+    void shouldReturnFalseWhenValueIsLower() {
+        //arrange
+        Price higher = new Price(100.0, _currency);
+        Price lower = new Price(50.0, _currency);
+
+        //assert + act
+        assertFalse(lower.isGreaterOrEqualThan(higher));
+    }
+
+    @Test
     void testPriceToStringShowsValueAndSymbol() {
         //arrange
         Price eurPrice = new Price(25.0, _currency);
@@ -61,6 +102,7 @@ class PriceTest {
     @Test
     void testEqualPricesAreEqual() {
         //arrange
+        _price = new Price(100.0, _currency);
         Price price1 = new Price(100.0, _currency);
 
         //act + assert

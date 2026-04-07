@@ -1,11 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
+import TOPSECRET.domain.repository.IUserRepo;
 import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 
 /**
@@ -18,7 +18,7 @@ public class RegisterNewUserController {
     private final IUserRepo _iUserRepo;
     private final UserFactory _userFactory;
 
-    public RegisterNewUserController(IUserRepo userRepo, UserFactory userFactory) {
+    public RegisterNewUserController(IUserRepo userRepo, UserFactory userFactory, UserId adminId) {
         _iUserRepo = userRepo;
         _userFactory = userFactory;
     }
