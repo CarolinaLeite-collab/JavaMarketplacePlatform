@@ -1,16 +1,14 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.ddd.IRepository;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
 import java.util.List;
 
-public interface IPublicationRepo {
+public interface IPublicationRepo extends IRepository<PublicationId, Publication> {
 
-    Publication addPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre);
+    Publication addPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId);
 
     List<Publication> getDifferentOf(List<Publication> existentPublications);
 

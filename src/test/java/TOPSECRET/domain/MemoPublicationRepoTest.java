@@ -1,10 +1,6 @@
 package TOPSECRET.domain;
 
-
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -19,82 +15,194 @@ import static org.mockito.Mockito.when;
 class MemoPublicationRepoTest {
 
     private PublicationFactory _publicationFactoryDouble;
-
-    // Mocks for factory arguments
-    private PublicationType _typeDouble;
+    private PublicationTypeId _typeIdDouble;
     private Year _yearDouble;
     private Title _titleDouble;
-    private Author _authorDouble;
-    private Genre _genreDouble;
+    private AuthorId _authorIdDouble;
+    private GenreId _genreIdDouble;
 
     @BeforeEach
     void setUp() {
         _publicationFactoryDouble = mock(PublicationFactory.class);
-        _typeDouble = mock(PublicationType.class);
+        _typeIdDouble = mock(PublicationTypeId.class);
         _titleDouble = mock(Title.class);
-        _authorDouble = mock(Author.class);
+        _authorIdDouble = mock(AuthorId.class);
         _yearDouble = mock(Year.class);
-        _genreDouble = mock(Genre.class);
+        _genreIdDouble = mock(GenreId.class);
+    }
+
+    @Test
+    void constructorValidFactoryCreatesMemoPublicationRepo() {
+        // SUT
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        // Assert
+        assertNotNull(repo);
     }
 
     @Test
     void addPublicationStoresPublicationReturnedByFactory() {
         //Arrange
-        Publication created = mock(Publication.class);
+        Publication publicationDouble = mock(Publication.class);
+        PublicationId publicationIdDouble = mock(PublicationId.class);
 
-        when(_publicationFactoryDouble.createPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble)).thenReturn(created);
+        when(publicationDouble.identity()).thenReturn(publicationIdDouble);
+        when(_publicationFactoryDouble.createPublication(_titleDouble, _authorIdDouble, _yearDouble, _typeIdDouble, _genreIdDouble)).thenReturn(publicationDouble);
 
         //SUT
         MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         //Act
-        Publication result = memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
+        Publication result = memoPublicationRepo.addPublication(_titleDouble, _authorIdDouble, _yearDouble, _typeIdDouble, _genreIdDouble);
 
         //Assert
-        assertSame(created, result);
+        assertSame(publicationDouble, result);
     }
 
     @Test
     void addPublicationThrowsWhenPublicationAlreadyExists() {
-        //Arrange
+        // Arrange
+        Title title = new Title("Ficção");
+        AuthorId authorId = new AuthorId("José Saramago");
+        Year year = Year.of(2000);
+
         Publication _publicationDouble = mock(Publication.class);
-
-        when(_publicationFactoryDouble.createPublication(_titleDouble,_authorDouble,_yearDouble,_typeDouble,_genreDouble))
+        when(_publicationDouble.identity())
+                .thenReturn(new PublicationId(title, authorId, year));
+        when(_publicationFactoryDouble.createPublication(
+                title, authorId, year,
+               _typeIdDouble, _genreIdDouble))
                 .thenReturn(_publicationDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.addPublication(title, authorId, year, _typeIdDouble, _genreIdDouble);
 
-        //SUT
-        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
-
-        memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-
-        //Act + Assert
-        // second call returns same instance → duplicate
+        // SUT + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble)
-        );
+                repo.addPublication(title, authorId, year, _typeIdDouble, _genreIdDouble));
+    }
+
+    @Test
+    void saveValidPublicationReturnsPublication() {
+        // Arrange
+        Publication _publicationDouble = mock(Publication.class);
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        // SUT
+        Publication result = repo.save(_publicationDouble);
+
+        // Assert
+        assertSame(_publicationDouble, result);
+    }
+
+    @Test
+    void ofIdentityExistingPublicationIdReturnsPublication() {
+        // Arrange
+        Publication _publicationDouble = mock(Publication.class);
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publicationDouble);
+
+        // SUT
+        var result = repo.ofIdentity(_publicationIdDouble);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(_publicationDouble, result.get());
+    }
+
+    @Test
+    void ofIdentityNonExistingPublicationIdReturnsEmpty() {
+        // Arrange
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        // SUT
+        var result = repo.ofIdentity(_publicationIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void containsOfIdentityExistingPublicationIdReturnsTrue() {
+        // Arrange
+        Publication _publicationDouble = mock(Publication.class);
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publicationDouble);
+
+        // SUT
+        boolean result = repo.containsOfIdentity(_publicationIdDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void containsOfIdentityNonExistingPublicationIdReturnsFalse() {
+        // Arrange
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        // SUT
+        boolean result = repo.containsOfIdentity(_publicationIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void findAllReturnsTwoStoredPublications() {
+        // Arrange
+        Publication _publication1Double = mock(Publication.class);
+        Publication _publication2Double = mock(Publication.class);
+        PublicationId _publicationId1Double = mock(PublicationId.class);
+        PublicationId _publicationId2Double = mock(PublicationId.class);
+        when(_publication1Double.identity()).thenReturn(_publicationId1Double);
+        when(_publication2Double.identity()).thenReturn(_publicationId2Double);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publication1Double);
+        repo.save(_publication2Double);
+
+        // SUT
+        Iterable<Publication> result = repo.findAll();
+
+        // Assert
+        List<Publication> list = new java.util.ArrayList<>();
+        result.forEach(list::add);
+        assertEquals(2, list.size());
+    }
+
+    @Test
+    void findAllEmptyRepoReturnsEmptyIterable() {
+        // Arrange
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        // SUT
+        Iterable<Publication> result = repo.findAll();
+
+        // Assert
+        assertFalse(result.iterator().hasNext());
     }
 
     @Test
     void getPublicationReturnsStoredPublication() {
-        //Arrange
+        // Arrange
         Publication _publicationDouble = mock(Publication.class);
-        Publication _publicationDouble2 = mock(Publication.class);
+        PublicationId _publicationIdDouble = mock(PublicationId.class);
+        when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publicationDouble);
 
-        when(_publicationFactoryDouble.createPublication(_titleDouble,_authorDouble,_yearDouble,_typeDouble,_genreDouble))
-                .thenReturn(_publicationDouble)
-                .thenReturn(_publicationDouble2);
+        // SUT
+        Publication result = repo.getPublication(_publicationDouble);
 
-        //SUT
-        MemoPublicationRepo memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
-
-        memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-        memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-
-        //Act
-        Publication result = memoPublicationRepo.getPublication(_publicationDouble2);
-
-        //Assert
-        assertSame(_publicationDouble2, result);
+        // Assert
+        assertSame(_publicationDouble, result);
     }
 
     @Test
@@ -113,31 +221,48 @@ class MemoPublicationRepoTest {
 
     @Test
     void getDifferentOfReturnsPublicationsNotInProvidedList() {
-        //Arrange
-        Publication _publicationDouble1 = mock(Publication.class);
-        Publication _publicationDouble2 = mock(Publication.class);
-        Publication _publicationDouble3 = mock(Publication.class);
+        // Arrange
+        Publication _publication1Double = mock(Publication.class);
+        Publication _publication2Double = mock(Publication.class);
+        Publication _publication3Double = mock(Publication.class);
+        PublicationId _publicationId1Double = mock(PublicationId.class);
+        PublicationId _publicationId2Double = mock(PublicationId.class);
+        PublicationId _publicationId3Double = mock(PublicationId.class);
+        when(_publication1Double.identity()).thenReturn(_publicationId1Double);
+        when(_publication2Double.identity()).thenReturn(_publicationId2Double);
+        when(_publication3Double.identity()).thenReturn(_publicationId3Double);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publication1Double);
+        repo.save(_publication2Double);
+        repo.save(_publication3Double);
+        List<Publication> existing = List.of(_publication1Double, _publication3Double);
 
-        when(_publicationFactoryDouble.createPublication(any(), any(), any(), any(), any()))
-                .thenReturn(_publicationDouble1)
-                .thenReturn(_publicationDouble2)
-                .thenReturn(_publicationDouble3);
+        // SUT
+        List<Publication> result = repo.getDifferentOf(existing);
 
-        //SUT
-        MemoPublicationRepo _memoPublicationRepo = new MemoPublicationRepo(_publicationFactoryDouble);
-
-        _memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-        _memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-        _memoPublicationRepo.addPublication(_titleDouble, _authorDouble, _yearDouble, _typeDouble, _genreDouble);
-
-        List<Publication> existing = List.of(_publicationDouble1, _publicationDouble3);
-
-        //Act
-        List<Publication> result = _memoPublicationRepo.getDifferentOf(existing);
-
-        //Assert
+        // Assert
         assertEquals(1, result.size());
-        assertSame(_publicationDouble2, result.get(0));
+        assertSame(_publication2Double, result.get(0));
+    }
+
+    @Test
+    void getDifferentOfEmptyListReturnsAllPublications() {
+        // Arrange
+        Publication _publication1Double = mock(Publication.class);
+        Publication _publication2Double = mock(Publication.class);
+        PublicationId _publicationId1Double = mock(PublicationId.class);
+        PublicationId _publicationId2Double = mock(PublicationId.class);
+        when(_publication1Double.identity()).thenReturn(_publicationId1Double);
+        when(_publication2Double.identity()).thenReturn(_publicationId2Double);
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+        repo.save(_publication1Double);
+        repo.save(_publication2Double);
+
+        // SUT
+        List<Publication> result = repo.getDifferentOf(List.of());
+
+        // Assert
+        assertEquals(2, result.size());
     }
 
     @Test
@@ -156,4 +281,5 @@ class MemoPublicationRepoTest {
         //Assert
         assertEquals("Publication not found", ex.getMessage());
     }
+
 }

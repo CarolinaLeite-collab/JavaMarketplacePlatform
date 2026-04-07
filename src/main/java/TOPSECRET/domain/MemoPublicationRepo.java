@@ -4,47 +4,64 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
- * Repository for managing {@link Publication} instances.
- * <p>
- * Provides methods to add new publications, check for duplicates, retrieve a specific publication,
- * and obtain publications that are not present in a given list.
- * Ensures that publications are not null and prevents adding duplicates.
- * </p>
+ * In-memory implementation of {@link IPublicationRepo}.
+ *  * <p>
+ *  * Stores {@link Publication} instances in a {@link HashMap} keyed by {@link PublicationId}.
+ *  * Prevents duplicate publications based on {@link PublicationId} equality.
+ *  * </p>
  */
 
 public class MemoPublicationRepo implements IPublicationRepo {
 
-    private List<Publication> _publications;
+    private Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
     private final PublicationFactory _publicationFactory;
 
     public MemoPublicationRepo(PublicationFactory publicationFactory) {
-        _publications = new ArrayList<>();
         _publicationFactory = publicationFactory;
     }
 
     @Override
-    public Publication addPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre) {
+    public Publication save(Publication publication){
+        DATA.put(publication.identity(), publication);
+        return publication;
+    }
 
-        Publication newPublication = _publicationFactory.createPublication(title, author, releaseYear, publicationType, genre);
-
-        if (_publications.contains(newPublication)) {
+    @Override
+    public Publication addPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
+        PublicationId publicationId = new PublicationId(title, authorId, releaseYear);
+        if (containsOfIdentity(publicationId)){
             throw new IllegalArgumentException("Publication already exists in the repository");
         }
-        _publications.add(newPublication);
-        return newPublication;
+        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, publicationTypeId, genreId);
+
+        return save(newPublication);
+    }
+
+    @Override
+    public Optional<Publication> ofIdentity(PublicationId publicationId) {
+        return Optional.ofNullable(DATA.get(publicationId));
+    }
+
+    @Override
+    public boolean containsOfIdentity(PublicationId publicationId) {
+        return DATA.containsKey(publicationId);
+    }
+
+    @Override
+    public Iterable<Publication> findAll() {
+        return List.copyOf(DATA.values());
     }
 
     @Override
     public List<Publication> getDifferentOf(List<Publication> existentPublications) {
         List<Publication> result = new ArrayList<>();
-        for (Publication publication : _publications){
+        for (Publication publication : DATA.values()){
             if (!existentPublications.contains(publication)){
                 result.add(publication);
             }
@@ -54,7 +71,7 @@ public class MemoPublicationRepo implements IPublicationRepo {
 
     @Override
     public Publication getPublication(Publication publication) {
-        return _publications.stream()
+        return DATA.values().stream()
                 .filter(p -> p.equals(publication))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
