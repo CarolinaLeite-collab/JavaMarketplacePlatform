@@ -2,95 +2,107 @@ package TOPSECRET.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
+import java.time.Year;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class PublicationIdTest {
 
     @Test
-    void constructorValidIdCreatesPublicationId() {
+    void createsPublicationId() {
         // Arrange
-        String id = "123e4567-e89b-12d3-a456-426614174000";
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
 
-        // Act
-        PublicationId publicationId = new PublicationId(id); // SUT
+        // SUT
+        PublicationId publicationId = new PublicationId(_titleDouble, _authorIdDouble, releaseYear);
 
         // Assert
         assertNotNull(publicationId);
     }
 
     @Test
-    void constructorNullIdThrowsIllegalArgumentException() {
+    void constructorNullReleaseYearThrowsException() {
         // Arrange
-        String id = null;
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
 
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new PublicationId(id)); // SUT
-
-        // Assert
-        assertNotNull(exception);
+        // SUT + Assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationId(_titleDouble, _authorIdDouble, null));
     }
 
     @Test
-    void constructorBlankIdThrowsIllegalArgumentException() {
+    void equalsSameTitleAuthorYearReturnsTrue() {
         // Arrange
-        String id = "   ";
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
 
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new PublicationId(id)); // SUT
+        // SUT
+        PublicationId id1 = new PublicationId(_titleDouble, _authorIdDouble, releaseYear);
+        PublicationId id2 = new PublicationId(_titleDouble, _authorIdDouble, releaseYear);
 
         // Assert
-        assertNotNull(exception);
+        assertEquals(id1, id2);
     }
 
     @Test
-    void constructorEmptyIdThrowsIllegalArgumentException() {
+    void equalsDifferentTitleReturnsFalse() {
         // Arrange
-        String id = "";
+        Title _title1Double = mock(Title.class);
+        Title _title2Double = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
 
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new PublicationId(id)); // SUT
+        // SUT
+        PublicationId id1 = new PublicationId(_title1Double, _authorIdDouble, releaseYear);
+        PublicationId id2 = new PublicationId(_title2Double, _authorIdDouble, releaseYear);
 
         // Assert
-        assertNotNull(exception);
+        assertNotEquals(id1, id2);
     }
 
     @Test
-    void equalsSameIdReturnsTrue() {
+    void equalsDifferentAuthorIdReturnsFalse() {
         // Arrange
-        String id = "123e4567-e89b-12d3-a456-426614174000";
-        PublicationId publicationId1 = new PublicationId(id);
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorId1Double = mock(AuthorId.class);
+        AuthorId _authorId2Double = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
 
-        // Act
-        PublicationId publicationId2 = new PublicationId(id); // SUT
+        // SUT
+        PublicationId id1 = new PublicationId(_titleDouble, _authorId1Double, releaseYear);
+        PublicationId id2 = new PublicationId(_titleDouble, _authorId2Double, releaseYear);
 
         // Assert
-        assertEquals(publicationId1, publicationId2);
+        assertNotEquals(id1, id2);
     }
 
     @Test
-    void equalsDifferentIdReturnsFalse() {
+    void equalsDifferentYearReturnsFalse() {
         // Arrange
-        PublicationId publicationId1 = new PublicationId("id-one");
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
 
-        // Act
-        PublicationId publicationId2 = new PublicationId("id-two"); // SUT
+        // SUT
+        PublicationId id1 = new PublicationId(_titleDouble, _authorIdDouble, Year.of(2020));
+        PublicationId id2 = new PublicationId(_titleDouble, _authorIdDouble, Year.of(2021));
 
         // Assert
-        assertNotEquals(publicationId1, publicationId2);
+        assertNotEquals(id1, id2);
     }
 
     @Test
     void equalsSameInstanceReturnsTrue() {
         // Arrange
-        PublicationId publicationId = new PublicationId("id-one");
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        PublicationId id = new PublicationId(_titleDouble, _authorIdDouble, Year.of(2020));
 
-        // Act
-        boolean result = publicationId.equals(publicationId); // SUT
+        // SUT
+        boolean result = id.equals(id);
 
         // Assert
         assertTrue(result);
@@ -99,38 +111,30 @@ class PublicationIdTest {
     @Test
     void equalsNullReturnsFalse() {
         // Arrange
-        PublicationId publicationId = new PublicationId("id-one");
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        PublicationId id = new PublicationId(_titleDouble, _authorIdDouble, Year.of(2020));
 
-        // Act
-        boolean result = publicationId.equals(null); // SUT
+        // SUT
+        boolean result = id.equals(null);
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void hashCodeSameIdReturnsSameHash() {
+    void hashCodeSameArgumentsReturnsSameHash() {
         // Arrange
-        String id = "123e4567-e89b-12d3-a456-426614174000";
-        PublicationId publicationId1 = new PublicationId(id);
+        Title _titleDouble = mock(Title.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
 
-        // Act
-        PublicationId publicationId2 = new PublicationId(id); // SUT
+        // SUT
+        PublicationId id1 = new PublicationId(_titleDouble, _authorIdDouble, releaseYear);
+        PublicationId id2 = new PublicationId(_titleDouble, _authorIdDouble, releaseYear);
 
         // Assert
-        assertEquals(publicationId1.hashCode(), publicationId2.hashCode());
-    }
-
-    @Test
-    void toStringReturnsId() {
-        // Arrange
-        String id = "123e4567-e89b-12d3-a456-426614174000";
-
-        // Act
-        PublicationId publicationId = new PublicationId(id); // SUT
-
-        // Assert
-        assertEquals(id, publicationId.toString());
+        assertEquals(id1.hashCode(), id2.hashCode());
     }
 
 }

@@ -1,47 +1,51 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import java.time.Year;
+import java.util.Objects;
 
 /**
  * Represents the unique technical identifier of a {@link TOPSECRET.domain.Publication}.
  * <p>
- * A {@code PublicationId} wraps a {@link String} value generated from a UUID,
- * ensuring stable identity across the system regardless of changes to the
- * publication's business attributes.
- * </p>
- *
- * <p><b>Validation:</b> The identifier cannot be null or blank.</p>
- *
- * <p><b>Equality:</b> Two {@code PublicationId} instances are equal if they
- * wrap the same {@link String} value.</p>
- */
+ * A {@code PublicationId} is composed of a {@link Title}, an {@link AuthorId},
+ *  * and a release {@link Year}. Two publications are considered the same if they
+ *  * share the same title, author, and release year.
+ *  * </p>
+ *  *
+ *  * <p><b>Equality:</b> Two {@code PublicationId} instances are equal if all
+ *  * three components are equal.</p>
+ *  */
 
 
 public class PublicationId implements DomainId {
 
-    private final String _id;
+    private final Title _title;
+    private final AuthorId _authorId;
+    private final Year _releaseYear;
 
-    public PublicationId(String id) {
-        if (id == null || id.isBlank())
-            throw new IllegalArgumentException("PublicationId cannot be null or blank");
-        _id = id;
+    public PublicationId(Title title, AuthorId authorId, Year releaseYear) {
+       _title = title;
+       _authorId = authorId;
+       _releaseYear =  Objects.requireNonNull(releaseYear, "Release year is required");
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PublicationId other)) return false;
-        return _id.equals(other._id);
+        return Objects.equals(_title, other._title)
+                && Objects.equals(_authorId, other._authorId)
+                && Objects.equals(_releaseYear, other._releaseYear);
     }
 
     @Override
     public int hashCode() {
-        return _id.hashCode();
+        return Objects.hash(_title, _authorId, _releaseYear);
     }
 
     @Override
     public String toString() {
-        return _id;
+        return _title + " - " + _authorId + " (" + _releaseYear + ")";
     }
 }
 
