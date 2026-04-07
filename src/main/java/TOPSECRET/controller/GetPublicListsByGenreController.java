@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 
 import java.util.List;
 

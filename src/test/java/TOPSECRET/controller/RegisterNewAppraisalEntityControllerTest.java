@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.*;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;

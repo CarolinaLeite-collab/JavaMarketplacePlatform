@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.IUserRepo;
 import TOPSECRET.domain.valueobject.UserId;
 

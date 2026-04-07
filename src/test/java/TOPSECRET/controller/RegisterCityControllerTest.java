@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.country.Country;

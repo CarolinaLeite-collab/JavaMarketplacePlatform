@@ -2,7 +2,7 @@ package TOPSECRET.domain.AppraisalEntity;
 
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.Name;
 
 import java.util.ArrayList;

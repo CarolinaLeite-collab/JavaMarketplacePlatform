@@ -1,4 +1,4 @@
-package TOPSECRET.domain.User;
+package TOPSECRET.domain.user;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.Role;

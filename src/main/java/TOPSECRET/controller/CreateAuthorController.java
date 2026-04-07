@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.IAuthorRepo;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.Author.Author;
 
 /**

@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IListOfItemsRepo;
 import TOPSECRET.domain.ListOfItems;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 
 
 

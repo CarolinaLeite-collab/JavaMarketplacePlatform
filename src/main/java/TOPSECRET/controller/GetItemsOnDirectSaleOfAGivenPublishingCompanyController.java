@@ -3,7 +3,7 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.user.User;
 
 import java.util.List;
 import java.util.Objects;
