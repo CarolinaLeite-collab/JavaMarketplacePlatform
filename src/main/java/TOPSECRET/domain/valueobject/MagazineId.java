@@ -13,10 +13,6 @@ import TOPSECRET.ddd.ValueObject;
  * {@link #getIdentifier()}, as defined in {@link EditionId}.
  */
 
-public interface MagazineId extends EditionId, ValueObject {
-
-}
- */
 
 public interface MagazineId extends EditionId, ValueObject {
 
