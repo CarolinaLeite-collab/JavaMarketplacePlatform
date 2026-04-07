@@ -1,10 +1,6 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.PublicationId;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -19,33 +15,33 @@ class PublicationFactoryTest {
     void createPublication_allFields_returnsPublication() {
         // Arrange
         Title _titleDouble = mock(Title.class);
-        Author _authorDouble = mock(Author.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
         Year _yearDouble = mock(Year.class);
-        PublicationType _publicationTypeDouble = mock(PublicationType.class);
-        Genre _genreDouble = mock(Genre.class);
+        PublicationTypeId _publicationTypeIdDouble = mock(PublicationTypeId.class);
+        GenreId _genreIdDouble = mock(GenreId.class);
         PublicationFactory factory = new PublicationFactory();
 
         try (MockedConstruction<Publication> mocked =
                      mockConstruction(Publication.class,
                              (mock, context) -> {
                                  when(mock.getTitle()).thenReturn(_titleDouble);
-                                 when(mock.getAuthor()).thenReturn(_authorDouble);
+                                 when(mock.getAuthorId()).thenReturn(_authorIdDouble);
                                  when(mock.getReleaseYear()).thenReturn(_yearDouble);
-                                 when(mock.getPublicationType()).thenReturn(_publicationTypeDouble);
-                                 when(mock.getGenre()).thenReturn(_genreDouble);
+                                 when(mock.getPublicationTypeId()).thenReturn(_publicationTypeIdDouble);
+                                 when(mock.getGenreId()).thenReturn(_genreIdDouble);
                              })) {
 
             // Act
-            Publication result = factory.createPublication(_titleDouble, _authorDouble,
-                    _yearDouble, _publicationTypeDouble, _genreDouble); // SUT
+            Publication result = factory.createPublication(_titleDouble, _authorIdDouble,
+                    _yearDouble, _publicationTypeIdDouble, _genreIdDouble); // SUT
 
             // Assert
             assertNotNull(result);
             assertEquals(_titleDouble, result.getTitle());
-            assertEquals(_authorDouble, result.getAuthor());
+            assertEquals(_authorIdDouble, result.getAuthorId());
             assertEquals(_yearDouble, result.getReleaseYear());
-            assertEquals(_publicationTypeDouble, result.getPublicationType());
-            assertEquals(_genreDouble, result.getGenre());
+            assertEquals(_publicationTypeIdDouble, result.getPublicationTypeId());
+            assertEquals(_genreIdDouble, result.getGenreId());
         }
     }
     @Test
@@ -53,10 +49,10 @@ class PublicationFactoryTest {
         // Arrange
         PublicationId _publicationIdDouble = mock(PublicationId.class);
         Title _titleDouble = mock(Title.class);
-        Author _authorDouble = mock(Author.class);
+        AuthorId _authorIdDouble = mock(AuthorId.class);
         Year _yearDouble = mock(Year.class);
-        PublicationType _publicationTypeDouble = mock(PublicationType.class);
-        Genre _genreDouble = mock(Genre.class);
+        PublicationTypeId _publicationTypeIdDouble = mock(PublicationTypeId.class);
+        GenreId _genreIdDouble = mock(GenreId.class);
         PublicationFactory factory = new PublicationFactory();
 
         try (MockedConstruction<Publication> mocked =
@@ -64,24 +60,24 @@ class PublicationFactoryTest {
                              (mock, context) -> {
                                  when(mock.getPublicationId()).thenReturn(_publicationIdDouble);
                                  when(mock.getTitle()).thenReturn(_titleDouble);
-                                 when(mock.getAuthor()).thenReturn(_authorDouble);
+                                 when(mock.getAuthorId()).thenReturn(_authorIdDouble);
                                  when(mock.getReleaseYear()).thenReturn(_yearDouble);
-                                 when(mock.getPublicationType()).thenReturn(_publicationTypeDouble);
-                                 when(mock.getGenre()).thenReturn(_genreDouble);
+                                 when(mock.getPublicationTypeId()).thenReturn(_publicationTypeIdDouble);
+                                 when(mock.getGenreId()).thenReturn(_genreIdDouble);
                              })) {
 
             // Act
             Publication result = factory.createPublication(_publicationIdDouble, _titleDouble,
-                    _authorDouble, _yearDouble, _publicationTypeDouble, _genreDouble); // SUT
+                    _authorIdDouble, _yearDouble, _publicationTypeIdDouble, _genreIdDouble); // SUT
 
             // Assert
             assertNotNull(result);
             assertEquals(_publicationIdDouble, result.getPublicationId());
             assertEquals(_titleDouble, result.getTitle());
-            assertEquals(_authorDouble, result.getAuthor());
+            assertEquals(_authorIdDouble, result.getAuthorId());
             assertEquals(_yearDouble, result.getReleaseYear());
-            assertEquals(_publicationTypeDouble, result.getPublicationType());
-            assertEquals(_genreDouble, result.getGenre());
+            assertEquals(_publicationTypeIdDouble, result.getPublicationTypeId());
+            assertEquals(_genreIdDouble, result.getGenreId());
         }
     }
 

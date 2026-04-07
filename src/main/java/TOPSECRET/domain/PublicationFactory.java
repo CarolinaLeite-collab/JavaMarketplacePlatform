@@ -3,8 +3,7 @@ package TOPSECRET.domain;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.PublicationId;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
 
@@ -16,13 +15,13 @@ import java.time.Year;
 
 public class PublicationFactory {
 
-    public Publication createPublication(Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre ) {
+    public Publication createPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId ) {
 
-        return new Publication( title, author, releaseYear, publicationType, genre );
+        return new Publication( title, authorId, releaseYear, publicationTypeId, genreId );
     }
 
-    public Publication createPublication(PublicationId publicationId, Title title, Author author, Year releaseYear, PublicationType publicationType, Genre genre) {
+    public Publication createPublication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
 
-        return new Publication( publicationId, title, author, releaseYear, publicationType, genre );
+        return new Publication( publicationId, title, authorId, releaseYear, publicationTypeId, genreId );
     }
 }
