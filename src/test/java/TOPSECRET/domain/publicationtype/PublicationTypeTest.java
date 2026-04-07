@@ -1,4 +1,4 @@
-package TOPSECRET.domain.PublicationType;
+package TOPSECRET.domain.publicationtype;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

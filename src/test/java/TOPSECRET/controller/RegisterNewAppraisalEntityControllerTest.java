@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;

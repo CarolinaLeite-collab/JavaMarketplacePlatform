@@ -1,6 +1,6 @@
 package TOPSECRET.domain.appraisalEntity;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;

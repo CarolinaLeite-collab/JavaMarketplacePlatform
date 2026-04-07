@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;

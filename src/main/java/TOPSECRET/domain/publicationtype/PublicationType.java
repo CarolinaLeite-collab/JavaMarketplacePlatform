@@ -1,4 +1,4 @@
-package TOPSECRET.domain.PublicationType;
+package TOPSECRET.domain.publicationtype;
 
 import java.util.Objects;
 

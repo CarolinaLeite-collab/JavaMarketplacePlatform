@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
+import TOPSECRET.domain.publicationtype.PublicationType;
+import TOPSECRET.domain.publicationtype.PublicationTypeFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
