@@ -27,8 +27,8 @@ public class RegisterCityController {
         _cityFactory = cityFactory;
     }
 
-    public List<Country> getAllCountries() {
-        return _iCountryRepo.getAllCountries();
+    public Iterable<Country> getAllCountries() {
+        return _iCountryRepo.findAll();
     }
 
     public City registerCity(String cityName, CountryId countryId) {
