@@ -1,8 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
 import TOPSECRET.domain.valueobject.Title;

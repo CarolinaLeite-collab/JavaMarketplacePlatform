@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.publication;
 
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;

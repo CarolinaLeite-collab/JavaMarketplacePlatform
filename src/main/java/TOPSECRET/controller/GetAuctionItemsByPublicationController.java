@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.User.User;
 
 import java.util.List;

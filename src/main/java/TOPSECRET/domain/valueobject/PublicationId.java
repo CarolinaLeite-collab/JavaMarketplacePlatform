@@ -1,11 +1,13 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import TOPSECRET.domain.publication.Publication;
+
 import java.time.Year;
 import java.util.Objects;
 
 /**
- * Represents the unique technical identifier of a {@link TOPSECRET.domain.Publication}.
+ * Represents the unique technical identifier of a {@link Publication}.
  * <p>
  * A {@code PublicationId} is composed of a {@link Title}, an {@link AuthorId},
  *  * and a release {@link Year}. Two publications are considered the same if they

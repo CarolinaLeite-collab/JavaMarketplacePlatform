@@ -1,9 +1,9 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.publication.PublicationFactory;
+import TOPSECRET.domain.repository.IPublicationRepo;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;

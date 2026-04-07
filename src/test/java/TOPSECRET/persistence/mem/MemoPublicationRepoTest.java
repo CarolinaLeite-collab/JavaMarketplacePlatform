@@ -1,5 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.publication.PublicationFactory;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

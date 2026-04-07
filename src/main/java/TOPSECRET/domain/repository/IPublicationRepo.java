@@ -1,6 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;

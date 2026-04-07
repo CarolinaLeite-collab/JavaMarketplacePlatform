@@ -1,8 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.publication;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
