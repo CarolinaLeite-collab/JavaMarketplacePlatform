@@ -56,7 +56,7 @@ public class Item {
         if (this.directSale != null) {
             throw new IllegalStateException("Item is already in a direct sale.");
         }
-        if (auction.getItem() != this) {
+        if (!auction.getItems().contains(this)) {
             throw new IllegalArgumentException("This Auction does not belong to this Item.");
         }
         this.auction = auction;

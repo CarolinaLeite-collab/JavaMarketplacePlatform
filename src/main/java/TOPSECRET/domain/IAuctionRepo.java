@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface IAuctionRepo {
 
-    Auction createAuction(Item item, Price startingPrice, Price outrightPrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
+    Auction createAuction(List<Item> item, Price startingPrice, Price outrightPrice,
+                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
 
     List<Item> getAuctionItemsByGenre(Genre genre);
 

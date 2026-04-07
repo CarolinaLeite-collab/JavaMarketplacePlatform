@@ -7,9 +7,10 @@ import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 /**
- * Represents a time-bounded selling mechanism where a {@link Item} is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where one or more {@link Item}s is sold via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.
@@ -19,6 +20,8 @@ import java.time.ZonedDateTime;
  * <h2>Seller-defined parameters</h2>
  * <ul>
  *   <li><b>startingPrice</b>: minimum price required for the first valid bid.</li>
+ *   <li><b>reservePrice</b>: minimum acceptable price for the item to be sold; bids below this
+ *       price do not result in a sale.</li>
  *   <li><b>outrightPrice</b> (optional): a "buy now" price that allows immediate purchase without waiting
  *       for the auction to end.</li>
  *   <li><b>auctionStartDate</b>: date/time when the auction becomes active.</li>
@@ -33,7 +36,7 @@ import java.time.ZonedDateTime;
 
 public class Auction {
 
-    private final Item _item;
+    private final List<Item> _items;
     private final Price _startingPrice;
     private final Price _reservePrice;
     private final Price _outrightPrice;
@@ -44,8 +47,8 @@ public class Auction {
     private Price _finalPrice;
 
 
-    Auction(Item item, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _item = item;
+    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        _items = items;
         _startingPrice = startingPrice;
         _bids = new MemoBidRepo( new BidFactory());
 
@@ -74,15 +77,21 @@ public class Auction {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        _item.setAuction(this);
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("Items cannot be null or empty");
+        }
+
+        for (Item item : _items) {
+            item.setAuction(this);
+        }
     }
 
-    Auction(Item item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
-    public Item getItem() {
-        return _item;
+    public List <Item> getItems() {
+        return _items;
     }
 
     public MemoBidRepo getBids() {
@@ -157,24 +166,38 @@ public class Auction {
     }
 
     public boolean isByGenre( Genre genre) {
-        return _item.isByGenre(genre);
+        for(Item item : _items) {
+            if(item.isByGenre(genre)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isByAuthor(Author author) {
-
-        return _item.isByAuthor(author);
-
+        for(Item item : _items) {
+            if(item.isByAuthor(author)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isByPublication(Publication publication) {
-
-        return _item.isByPublication(publication);
-
+        for(Item item : _items) {
+            if(item.isByPublication(publication)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isByPublishingCompany(PublishingCompany publisher) {
-
-        return _item.isByPublishingCompany(publisher);
-
+        for(Item item : _items) {
+            if(item.isByPublishingCompany(publisher)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
