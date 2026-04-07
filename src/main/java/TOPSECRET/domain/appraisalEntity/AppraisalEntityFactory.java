@@ -1,4 +1,4 @@
-package TOPSECRET.domain.AppraisalEntity;
+package TOPSECRET.domain.appraisalEntity;
 
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.PublicationType.PublicationType;
