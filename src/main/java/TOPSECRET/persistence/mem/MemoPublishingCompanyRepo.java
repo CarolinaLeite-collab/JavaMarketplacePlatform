@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publishingcompany.PublishingCompanyFactory;
