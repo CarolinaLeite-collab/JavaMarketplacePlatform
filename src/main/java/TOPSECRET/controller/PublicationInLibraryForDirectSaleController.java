@@ -1,14 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.DirectSale;
-import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
+import TOPSECRET.domain.directsale.DirectSale;
+import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,22 +19,37 @@ public class PublicationInLibraryForDirectSaleController {
 
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
+    private Library _library;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, UserId _userId) {
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
+        _library = libraryRepo.findLibraryByUserId(userId);
     }
 
     public List<Item> getItemsInLibraryByUser(UserId userId) {
 
-        return _iLibraryRepo.getItemsInLibraryByUserId(userId);
+        Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
+
+        List<Item> items = userLibrary.getItemsInLibrary();
+        return List.copyOf(items);
 
     }
 
-    public DirectSale addItemForDirectSale(Item item, Price price, Period timeLimit) {
+    public DirectSale addItemForDirectSale(List<Item> items, Price price, Period timeLimit) {
 
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(item, price, timeLimit);
-        item.setDirectSale(directSale);
+        List<Item> itemsForSale = new ArrayList<>();
+        for (Item item : items) {
+            Item itemFromLibrary = _library.getItem(item);
+            if (itemFromLibrary != null) {
+                itemsForSale.add(itemFromLibrary);
+            }
+        }
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(items, price, timeLimit);
+
+        for (Item item : items){
+            item.setDirectSale(directSale);
+        }
 
         return directSale;
     }

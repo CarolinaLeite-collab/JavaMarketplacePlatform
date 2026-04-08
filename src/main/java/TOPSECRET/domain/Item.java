@@ -4,6 +4,8 @@ import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.directsale.DirectSale;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.GenreId;
 
@@ -48,7 +50,7 @@ public class Item {
         if (this.auction != null) {
             throw new IllegalStateException("Item is already in an auction.");
         }
-        if (directSale.getItem() != this) {
+        if (!directSale.getItems().contains(this)) {
             throw new IllegalArgumentException("This DirectSale does not belong to this Item.");
         }
         this.directSale = directSale;

@@ -1,20 +1,26 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class DirectSaleTest {
 
+    private List<Item> _items;
+    private DirectSaleId _dsId;
     private Item _itemDouble;
     private Price _priceDouble;
     private Period _period;
@@ -22,7 +28,9 @@ class DirectSaleTest {
     @BeforeEach
     void setUp() {
 
+        _items = new ArrayList<>();
         _itemDouble = mock(Item.class);
+        _items.add(_itemDouble);
         _priceDouble = mock(Price.class);
         _period = Period.ofMonths(3);
     }
@@ -31,10 +39,10 @@ class DirectSaleTest {
     void constructorShouldBuildDirectSaleWithTimeLimit() {
 
         // Act
-        DirectSale directSale = new DirectSale(_itemDouble, _priceDouble, _period); // SUT
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period); // SUT
 
         // Assert
-        assertEquals(_itemDouble, directSale.getItem());
+        assertEquals(_items, directSale.getItems());
         assertEquals(_priceDouble, directSale.getPrice());
         assertEquals(_period, directSale.getTimeLimit());
     }
@@ -43,10 +51,10 @@ class DirectSaleTest {
     void constructorShouldBuildDirectSaleWithoutTimeLimit() {
 
         // Act
-        DirectSale directSale = new DirectSale(_itemDouble, _priceDouble, null); // SUT
+        DirectSale directSale = new DirectSale(_items, _priceDouble, null); // SUT
 
         // Assert
-        assertEquals(_itemDouble, directSale.getItem());
+        assertEquals(_items, directSale.getItems());
         assertEquals(_priceDouble, directSale.getPrice());
         assertNull(directSale.getTimeLimit());
     }
@@ -55,7 +63,7 @@ class DirectSaleTest {
     void constructorShouldThrowExceptionWhenPriceIsNull() {
         // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(_itemDouble, null, _period)); // SUT
+                () -> new DirectSale(_items, null, _period)); // SUT
 
         assertEquals("Price is required for a direct sale", ex.getMessage());
     }
@@ -77,7 +85,7 @@ class DirectSaleTest {
 
         // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(_itemDouble, _priceDouble, negativeLimit)); // SUT
+                () -> new DirectSale(_items, _priceDouble, negativeLimit)); // SUT
 
         assertEquals("Time limit cannot be negative", ex.getMessage());
     }
@@ -91,7 +99,7 @@ class DirectSaleTest {
         when(_itemDouble.isByAuthor(_authorIdDouble)).thenReturn(true);
 
         // SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
+        DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
         boolean result = ds.isByAuthor(_authorIdDouble);
@@ -105,14 +113,14 @@ class DirectSaleTest {
     void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
 
         //Arrange
-        AuthorId _author2IdDouble = mock(AuthorId.class);
-        when(_itemDouble.isByAuthor(_author2IdDouble)).thenReturn(false);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        when(_itemDouble.isByAuthor(authorIdDouble)).thenReturn(false);
 
         // SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
+        DirectSale ds = new DirectSale(_items, _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(_author2IdDouble);
+        boolean result = ds.isByAuthor(authorIdDouble);
 
         //Assert
         assertFalse(result);
@@ -123,30 +131,30 @@ class DirectSaleTest {
     void isByAuthorShouldDelegateToItem() {
 
         //Arrange
-        AuthorId _authorIdDouble = mock(AuthorId.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
 
         //SUT
-        DirectSale ds = new DirectSale(_itemDouble,  _priceDouble, _period);
+        DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
-        ds.isByAuthor(_authorIdDouble);
+        ds.isByAuthor(authorIdDouble);
 
         //Assert
-        verify(_itemDouble, times(1)).isByAuthor(_authorIdDouble);
+        verify(_itemDouble, times(1)).isByAuthor(authorIdDouble);
     }
 
     @Test
-    void isByPublisherShouldReturnTrueWhenPublisherMatches()  {
+    void isByPublisherShouldReturnTrueWhenPublishingCompanyMatches()  {
 
         // Arrange
         PublishingCompany publisherDouble = mock(PublishingCompany.class);
         when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(true);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        boolean result = directSale.isByPublisher(publisherDouble);
+        boolean result = directSale.isByPublishingCompany(publisherDouble);
 
         // Assert
         assertTrue(result);
@@ -154,17 +162,17 @@ class DirectSaleTest {
     }
 
     @Test
-    void isByPublisherShouldReturnFalseWhenPublisherDoesNotMatch() {
+    void isByPublisherShouldReturnFalseWhenPublishingCompanyDoesNotMatch() {
 
         // Arrange
         PublishingCompany publisherDouble = mock(PublishingCompany.class);
         when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(false);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        boolean result = directSale.isByPublisher(publisherDouble);
+        boolean result = directSale.isByPublishingCompany(publisherDouble);
 
         // Assert
         assertFalse(result);
@@ -172,16 +180,16 @@ class DirectSaleTest {
     }
 
     @Test
-    void isByPublisherShouldDelegateToItem() {
+    void isByPublishingCompanyShouldDelegateToItem() {
 
         // Arrange
         PublishingCompany publisherDouble = mock(PublishingCompany.class);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        directSale.isByPublisher(publisherDouble);
+        directSale.isByPublishingCompany(publisherDouble);
 
         // Assert
         verify(_itemDouble).isByPublishingCompany(publisherDouble);
@@ -195,7 +203,7 @@ class DirectSaleTest {
         when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(true);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
         boolean result = directSale.isByGenre(genreIdDouble);
@@ -212,7 +220,7 @@ class DirectSaleTest {
         when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(false);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
         boolean result = directSale.isByGenre(genreIdDouble);
@@ -228,7 +236,7 @@ class DirectSaleTest {
         GenreId genreIdDouble = mock(GenreId.class);
 
         //SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
         directSale.isByGenre(genreIdDouble);
@@ -247,7 +255,7 @@ class DirectSaleTest {
         when(_itemDouble.isByPublication(publicationDouble)).thenReturn(true);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         // Act
         boolean result = directSale.isByPublication(publicationDouble);
@@ -265,7 +273,7 @@ class DirectSaleTest {
         when(_itemDouble.isByPublication(publicationDouble)).thenReturn(false);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         // Act
         boolean result = directSale.isByPublication(publicationDouble);
@@ -282,7 +290,7 @@ class DirectSaleTest {
         Publication publicationDouble = mock(Publication.class);
 
         // SUT
-        DirectSale directSale = new DirectSale(_itemDouble,_priceDouble, _period);
+        DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         // Act
         directSale.isByPublication(publicationDouble);
