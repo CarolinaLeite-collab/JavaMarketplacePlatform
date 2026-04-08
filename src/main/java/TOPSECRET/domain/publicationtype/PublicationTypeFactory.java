@@ -1,5 +1,7 @@
 package TOPSECRET.domain.publicationtype;
 
+import TOPSECRET.domain.valueobject.PublicationTypeId;
+
 /**
  * Factory responsible for creating {@link PublicationType} instances.
  * <p>
@@ -12,6 +14,12 @@ public class PublicationTypeFactory {
     public PublicationType createPublicationType(String publicationTypeName) {
 
             return new PublicationType(publicationTypeName);
+
+    }
+
+    public PublicationType createPublicationType(PublicationTypeId publicationTypeId) {
+
+        return new PublicationType(publicationTypeId);
 
     }
 
