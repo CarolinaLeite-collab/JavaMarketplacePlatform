@@ -27,7 +27,6 @@ Package "DOMAIN" {
         }
 
         class CountryFactory <<Factory>> {
-            +createCountry(String, String) : Country
             +createCountry(CountryId, CountryName) : Country
         }
     }
@@ -43,7 +42,6 @@ Package "DOMAIN" {
     Package "REPOSITORY" <<Folder>> {
         interface ICountryRepo <<Interface>> {
             +findByName(String) : Optional<Country>
-            +registerCountry(String) : Country
         }
     }
 
@@ -65,6 +63,7 @@ Package "ddd" {
 Package "PERSISTENCE" {
     package "MEM" {
         class MemoCountryRepo <<Repo>> {
+        -DATA : Map<CountryId, Country>
         }
     }
 }
