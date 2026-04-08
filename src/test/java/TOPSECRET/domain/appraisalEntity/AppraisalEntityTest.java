@@ -3,6 +3,7 @@ package TOPSECRET.domain.appraisalEntity;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,9 @@ class AppraisalEntityTest {
     private PublicationType _publicationType2Double;
     private Genre _genreDouble1;
     private Genre _genreDouble2;
+    private PublicationTypeId _publicationTypeId1Double;
+    private PublicationTypeId _publicationTypeId2Double;
+
 
     @BeforeEach
     void setup() {
@@ -30,10 +34,12 @@ class AppraisalEntityTest {
         _publicationType2Double = mock(PublicationType.class);
         _genreDouble1 = mock(Genre.class);
         _genreDouble2 = mock(Genre.class);
+        _publicationTypeId1Double = mock(PublicationTypeId.class);
+        _publicationTypeId2Double = mock(PublicationTypeId.class);
 
         when(_nameDouble.toString()).thenReturn("Name");
-        when(_publicationType1Double.getPublicationType()).thenReturn("Book");
-        when(_publicationType2Double.getPublicationType()).thenReturn("Magazine");
+        when(_publicationType1Double.identity()).thenReturn(_publicationTypeId1Double);
+        when(_publicationType2Double.identity()).thenReturn(_publicationTypeId2Double);
         when(_genreDouble1.getGenre()).thenReturn("Science Fiction");
         when(_genreDouble2.getGenre()).thenReturn("Fantasy");
     }

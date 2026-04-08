@@ -3,6 +3,7 @@ package TOPSECRET.domain.appraisalEntity;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -22,7 +23,9 @@ public class AppraisalEntityFactoryTest {
         when(_nameDouble.get_Name()).thenReturn("Helpingz TM");
 
         PublicationType _publicationTypeDouble = mock(PublicationType.class);
-        when(_publicationTypeDouble.getPublicationType()).thenReturn("Book");
+        PublicationTypeId _publicationTypeIdDouble = mock(PublicationTypeId.class);
+        when(_publicationTypeIdDouble.toString()).thenReturn("Book");
+        when(_publicationTypeDouble.identity()).thenReturn(_publicationTypeIdDouble);
 
         List<PublicationType> _publicationTypes = new ArrayList<>();
         _publicationTypes.add(_publicationTypeDouble);
