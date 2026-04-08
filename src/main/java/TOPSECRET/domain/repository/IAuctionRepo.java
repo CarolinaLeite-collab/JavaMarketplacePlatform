@@ -1,5 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.repository;
 
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;

@@ -1,8 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;

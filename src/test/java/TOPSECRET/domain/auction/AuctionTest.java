@@ -1,5 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
+import TOPSECRET.domain.Bid;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.MemoBidRepo;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.publication.Publication;

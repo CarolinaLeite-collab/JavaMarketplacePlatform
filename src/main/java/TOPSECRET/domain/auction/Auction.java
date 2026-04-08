@@ -1,10 +1,12 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.Bid;
+import TOPSECRET.domain.BidFactory;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.MemoBidRepo;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;

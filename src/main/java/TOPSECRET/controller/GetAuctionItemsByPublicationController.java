@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;

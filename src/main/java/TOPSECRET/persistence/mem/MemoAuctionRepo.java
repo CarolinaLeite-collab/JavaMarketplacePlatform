@@ -1,6 +1,9 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.auction.AuctionFactory;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;

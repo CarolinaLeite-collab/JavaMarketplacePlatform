@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
+import TOPSECRET.domain.Item;
 import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
@@ -8,7 +9,6 @@ import org.mockito.MockedConstruction;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
