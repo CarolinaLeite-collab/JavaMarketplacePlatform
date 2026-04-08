@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.IAuthorRepo;
+import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.valueobject.UserId;
 
 /**

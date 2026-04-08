@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.Condition;
+import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -200,22 +201,22 @@ class ItemTest {
 
     @Test
     void isByAuthorDelegatesToPublication() {
-        Author author_double = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Item item = new Item(publicationDouble, conditionDouble);
 
-        item.isByAuthor(author_double);
+        item.isByAuthor(authorIdDouble);
 
-        verify(publicationDouble).isByAuthor(author_double);
+        verify(publicationDouble).isByAuthor(authorIdDouble);
     }
 
     @Test
     void isByGenreDelegatesToPublication() {
-        Genre genre_double = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         Item item = new Item(publicationDouble, conditionDouble);
 
-        item.isByGenre(genre_double);
+        item.isByGenre(genreIdDouble);
 
-        verify(publicationDouble).isByGenre(genre_double);
+        verify(publicationDouble).isByGenre(genreIdDouble);
     }
 
     @Test
@@ -270,24 +271,24 @@ class ItemTest {
 
     @Test
     void isByAuthorReturnsTrueWhenPublicationMatches() {
-        Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorDouble)).thenReturn(true);
+        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(true);
 
         Item item = new Item(pubDouble, conditionDouble);
 
-        assertTrue(item.isByAuthor(authorDouble));
+        assertTrue(item.isByAuthor(authorIdDouble));
     }
 
     @Test
     void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
-        Author authorDouble = mock(Author.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
         Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorDouble)).thenReturn(false);
+        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(false);
 
         Item item = new Item(pubDouble, conditionDouble);
 
-        assertFalse(item.isByAuthor(authorDouble));
+        assertFalse(item.isByAuthor(authorIdDouble));
     }
 
     // --------------------
@@ -296,24 +297,24 @@ class ItemTest {
 
     @Test
     void isByGenreReturnsTrueWhenPublicationMatches() {
-        Genre genre = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genre)).thenReturn(true);
+        when(pub.isByGenre(genreIdDouble)).thenReturn(true);
 
         Item item = new Item(pub, conditionDouble);
 
-        assertTrue(item.isByGenre(genre));
+        assertTrue(item.isByGenre(genreIdDouble));
     }
 
     @Test
     void isByGenreReturnsFalseWhenPublicationDoesNotMatch() {
-        Genre genre = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
         Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genre)).thenReturn(false);
+        when(pub.isByGenre(genreIdDouble)).thenReturn(false);
 
         Item item = new Item(pub, conditionDouble);
 
-        assertFalse(item.isByGenre(genre));
+        assertFalse(item.isByGenre(genreIdDouble));
     }
 
     // ------------------------------

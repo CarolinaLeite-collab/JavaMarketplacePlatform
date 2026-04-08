@@ -3,7 +3,7 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.DomainId;
 
 /**
- * Represents the unique identifier of a {@link TOPSECRET.domain.PublishingCompany.PublishingCompany}.
+ * Represents the unique identifier of a {@link TOPSECRET.domain.publishingcompany.PublishingCompany}.
  * <p>
  * A {@code PublishingCompanyId} wraps a {@link String} value derived from the publishing company name,
  * normalised to uppercase and trimmed. This ensures that "Porto Editora ", " porto editora" and "PORTO EDITORA"

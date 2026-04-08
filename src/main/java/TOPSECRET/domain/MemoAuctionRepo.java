@@ -1,9 +1,11 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -43,12 +45,12 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByGenre(Genre genre) {
+    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
         for (Auction auction : _itemsOnAuction) {
-            if (auction.isByGenre(genre)) {
+            if (auction.isByGenre(genreId)) {
                 listOfAuctionItemsByGenre.addAll(auction.getItems());
             }
         }
@@ -58,15 +60,21 @@ public class MemoAuctionRepo implements IAuctionRepo {
         return copyOfListOfAuctionItemsByGenre;
     }
 
+
     @Override
-    public List<Item> getAuctionItemsByAuthor(Author author) {
+    public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
+
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
+
         for (Auction auction : _itemsOnAuction) {
-            if (auction.isByAuthor(author)) {
+
+            if (auction.isByAuthor(authorId)) {
                 listOfAuctionItemsByAuthor.addAll(auction.getItems());
             }
         }
+
         return new ArrayList<>(listOfAuctionItemsByAuthor);
+
     }
 
     @Override
@@ -75,9 +83,11 @@ public class MemoAuctionRepo implements IAuctionRepo {
         List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
 
         for (Auction auction : _itemsOnAuction) {
+
             if(auction.isByPublication(publication)) {
                 listOfAuctionItemsByPublication.addAll(auction.getItems());
             }
+
         }
         List<Item> copyOfListOfAuctionItemsByPublication =
                 new ArrayList<>(listOfAuctionItemsByPublication);

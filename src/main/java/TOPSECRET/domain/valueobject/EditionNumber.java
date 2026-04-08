@@ -1,0 +1,16 @@
+package TOPSECRET.domain.valueobject;
+
+import TOPSECRET.ddd.ValueObject;
+
+public class EditionNumber implements ValueObject {
+    private final int value;
+
+    public EditionNumber(int value) {
+        if (value <= 0) throw new IllegalArgumentException("Edition number must be positive");
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+}

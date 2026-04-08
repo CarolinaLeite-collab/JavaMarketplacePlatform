@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +18,13 @@ class GetDirectSaleItemsByGenreControllerTest {
 
     private UserId _buyerIdDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
-    private Genre _genreDouble;
+    private GenreId _genreIdDouble;
 
     @BeforeEach
     void setUp() {
 
+        _genreIdDouble = mock (GenreId.class);
         _buyerIdDouble = mock(UserId.class);
-        _genreDouble = mock (Genre.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
 
     }
@@ -43,13 +43,13 @@ class GetDirectSaleItemsByGenreControllerTest {
         // arrange
         Item _itemDouble = mock(Item.class);
         List<Item> itemsList = List.of(_itemDouble);
-        when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(itemsList);
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreIdDouble)).thenReturn(itemsList);
 
         // SUT
         GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
         // act
-        List<Item> items = controller.getDirectSaleItemsByGenre(_genreDouble);
+        List<Item> items = controller.getDirectSaleItemsByGenre(_genreIdDouble);
 
         // assert
         assertEquals(itemsList, items);
@@ -60,13 +60,13 @@ class GetDirectSaleItemsByGenreControllerTest {
     void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
 
         // arrange
-        when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreDouble)).thenReturn(List.of());
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByGenre(_genreIdDouble)).thenReturn(List.of());
 
         // SUT
         GetDirectSaleItemsByGenreController controller = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble, _buyerIdDouble);
 
         // act
-        List<Item> listOfDirectSaleItemsByGenre = controller.getDirectSaleItemsByGenre(_genreDouble);
+        List<Item> listOfDirectSaleItemsByGenre = controller.getDirectSaleItemsByGenre(_genreIdDouble);
 
         //assert
         assertTrue(listOfDirectSaleItemsByGenre.isEmpty());

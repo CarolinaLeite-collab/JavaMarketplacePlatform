@@ -1,11 +1,14 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -180,18 +183,18 @@ public class Auction implements AggregateRoot<AuctionId> {
         return result;
     }
 
-    public boolean isByGenre( Genre genre) {
-        for(Item item : _items) {
-            if(item.isByGenre(genre)) {
+    public boolean isByGenre(GenreId genreId) {
+        for (Item item : _items) {
+            if (item.isByGenre(genreId)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isByAuthor(Author author) {
-        for(Item item : _items) {
-            if(item.isByAuthor(author)) {
+    public boolean isByAuthor(AuthorId authorId){
+        for (Item item : _items) {
+            if (item.isByAuthor(authorId)) {
                 return true;
             }
         }

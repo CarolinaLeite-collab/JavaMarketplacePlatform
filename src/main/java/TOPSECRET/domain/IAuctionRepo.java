@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -14,9 +15,9 @@ public interface IAuctionRepo {
     Auction createAuction(AuctionId auctionId, List<Item> item, Price startingPrice, Price outrightPrice,
                           ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
 
-    List<Item> getAuctionItemsByGenre(Genre genre);
+    List<Item> getAuctionItemsByGenre(GenreId genreId);
 
-    List<Item> getAuctionItemsByAuthor(Author author);
+    List<Item> getAuctionItemsByAuthor(AuthorId authorId);
 
     List<Item> getAuctionItemsByPublication(Publication publication);
 

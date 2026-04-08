@@ -1,186 +1,155 @@
-
-package TOPSECRET.domain.edition;
-
+import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.valueobject.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class EditionBookTest {
 
-    private final NumberOfPages _numberOfPagesDouble = mock(NumberOfPages.class);
-    private final LocalDate _publicationDate = LocalDate.of(2001, 4, 23);
-    private final Binding _binding = Binding.SADDLE_STITCH;
-    private final Description _descriptionDouble = mock(Description.class);
-    private final Dimension _dimensionDouble = mock(Dimension.class);
-    private final Weight _weightDouble = mock(Weight.class);
-    private final Language _languageDouble = mock(Language.class);
+    private BookId _bookId;
+    private PublicationId _publicationId;
+    private PublishingCompanyId _companyId;
+    private Year _publishingYear;
+    private Language _language;
 
+    private Dimension _dimension;
+    private Weight _weight;
+    private NumberOfPages _pages;
+    private EditionNumber _editionNumber;
+    private Binding _binding;
 
-    @Test
-    void constructorShouldBuildEditionWithIsbn() {
+    @BeforeEach
+    void setUp() {
+        _bookId = mock(BookId.class);
+        _publicationId = mock(PublicationId.class);
+        _companyId = mock(PublishingCompanyId.class);
+        _publishingYear = Year.of(2020);
+        _language = mock(Language.class);
 
-        // Arrange
-        ISBN isbnDouble = mock(ISBN.class);
-
-        // Act
-        EditionBook editionBook = new EditionBook(isbnDouble, _numberOfPagesDouble, 1, _publicationDate,
-                _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
-
-        // Assert
-        assertNotNull(editionBook.getIsbn());
-        assertNull(editionBook.getIssn());
+        _dimension = mock(Dimension.class);
+        _weight = mock(Weight.class);
+        _pages = mock(NumberOfPages.class);
+        _editionNumber = mock(EditionNumber.class);
+        _binding = mock(Binding.class);
     }
 
     @Test
-    void constructorShouldThrowWhenIsbnIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook((ISBN) null, _numberOfPagesDouble, 1, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
+    void shouldBuildEditionBookSuccessfully() {
+        //Act
+        //SUT
+        EditionBook book = new EditionBook.Builder(
+                _bookId,
+                _publicationId,
+                _companyId,
+                _publishingYear,
+                _language
+        ).build();
 
+        //Assert
+        assertNotNull(book);
+        assertSame(_bookId, book.getId());
+        assertSame(_publicationId, book.getPublication());
+        assertSame(_companyId, book.getPublishingCompany());
+        assertSame(_publishingYear, book.getPublishingYear());
+        assertSame(_language, book.getEditionLanguage());
     }
 
     @Test
-    void constructorShouldThrowWhenEditionNumberIsNullWithIsbn() {
-        // Arrange
-        ISBN isbnDouble = mock(ISBN.class);
+    void shouldBuildEditionBookWithOptionalFields() {
+        //Act
+        //SUT
+        EditionBook book = new EditionBook.Builder(
+                _bookId,
+                _publicationId,
+                _companyId,
+                _publishingYear,
+                _language
+        )
+                .withDimension(_dimension)
+                .withWeight(_weight)
+                .withNumberOfPages(_pages)
+                .withEditionNumber(_editionNumber)
+                .withBinding(_binding)
+                .build();
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, null, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
+        //Assert
+        assertSame(_dimension, book.getDimension());
+        assertSame(_weight, book.getWeight());
+        assertSame(_pages, book.getNumberOfPages());
+        assertSame(_editionNumber, book.getEditionNumber());
+        assertSame(_binding, book.getBinding());
     }
 
     @Test
-    void constructorShouldThrowWhenEditionNumberIsZeroWithIsbn() {
-        // Arrange
-        ISBN isbnDouble = mock(ISBN.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, 0, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
+    void shouldThrowWhenBookIdIsNull() {
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionBook.Builder(
+                        null,
+                        _publicationId,
+                        _companyId,
+                        _publishingYear,
+                        _language
+                ).build()
+        );
     }
 
     @Test
-    void constructorShouldThrowWhenEditionNumberIsNegativeWithIsbn() {
-        // Arrange
-        ISBN isbnDouble = mock(ISBN.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(isbnDouble, _numberOfPagesDouble, -1, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
+    void shouldThrowWhenPublicationIdIsNull() {
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionBook.Builder(
+                        _bookId,
+                        null,
+                        _companyId,
+                        _publishingYear,
+                        _language
+                ).build()
+        );
     }
 
     @Test
-    void constructorShouldBuildEditionWithIssn() {
-        // Arrange
-        ISSN issnDouble = mock(ISSN.class);
-
-        // Act
-        EditionBook editionBook = new EditionBook(issnDouble, _numberOfPagesDouble, 1, _publicationDate,
-                _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
-
-        // Assert
-        assertNotNull(editionBook.getIssn());
-        assertNull(editionBook.getIsbn());
+    void shouldThrowWhenPublishingCompanyIsNull() {
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionBook.Builder(
+                        _bookId,
+                        _publicationId,
+                        null,
+                        _publishingYear,
+                        _language
+                ).build()
+        );
     }
 
     @Test
-    void constructorShouldThrowWhenIssnIsNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook((ISSN) null, _numberOfPagesDouble, 1, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
+    void shouldThrowWhenPublishingYearIsNull() {
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionBook.Builder(
+                        _bookId,
+                        _publicationId,
+                        _companyId,
+                        null,
+                        _language
+                ).build()
+        );
     }
 
     @Test
-    void constructorShouldThrowWhenEditionNumberIsZeroWithIssn() {
-        // Arrange
-        ISSN issnDouble = mock(ISSN.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(issnDouble, _numberOfPagesDouble, 0, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
-    }
-
-    @Test
-    void constructorShouldThrowWhenEditionNumberIsNegativeWithIssn() {
-        // Arrange
-        ISSN issnDouble = mock(ISSN.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(issnDouble, _numberOfPagesDouble, -1, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
-    }
-
-    @Test
-    void constructorShouldBuildEditionWithoutIdentifier() {
-        // Act
-        EditionBook editionBook = new EditionBook(_numberOfPagesDouble, null, _publicationDate,
-                _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
-
-        // Assert
-        assertNull(editionBook.getIsbn());
-        assertNull(editionBook.getIssn());
-        assertNull(editionBook.getEditionNumber());
-    }
-
-    @Test
-    void constructorShouldBuildEditionWithoutIdentifierWithEditionNumber() {
-        // Act
-        EditionBook editionBook = new EditionBook(_numberOfPagesDouble, 1, _publicationDate,
-                _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
-
-        // Assert
-        assertNull(editionBook.getIsbn());
-        assertNull(editionBook.getIssn());
-        assertEquals(1, editionBook.getEditionNumber());
-    }
-
-    @Test
-    void constructorShouldThrowWhenEditionNumberIsNegativeWithoutIdentifier() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(_numberOfPagesDouble, -1, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
-    }
-
-    @Test
-    void constructorShouldThrowWhenEditionNumberIsZeroWithoutIdentifier() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new EditionBook(_numberOfPagesDouble, 0, _publicationDate,
-                        _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble)); // SUT
-    }
-
-    @Test
-    void gettersShouldReturnCorrectValues() {
-        // Arrange
-        ISSN issnDouble = mock(ISSN.class);
-
-        // Act
-        EditionBook editionBook = new EditionBook(issnDouble, _numberOfPagesDouble, 3, _publicationDate,
-                _binding, _descriptionDouble, _dimensionDouble, _weightDouble, _languageDouble); // SUT
-
-        // Assert
-        assertEquals(3, editionBook.getEditionNumber());
-        assertEquals(_numberOfPagesDouble, editionBook.getNumberOfPages());
-        assertEquals(_publicationDate, editionBook.getPublicationDate());
-        assertEquals(_binding, editionBook.getBinding());
-        assertEquals(_descriptionDouble, editionBook.getDescription());
-        assertEquals(_dimensionDouble, editionBook.getDimension());
-        assertEquals(_weightDouble, editionBook.getWeight());
-        assertEquals(_languageDouble, editionBook.getLanguage());
+    void shouldThrowWhenLanguageIsNull() {
+        //Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new EditionBook.Builder(
+                        _bookId,
+                        _publicationId,
+                        _companyId,
+                        _publishingYear,
+                        null
+                ).build()
+        );
     }
 }
-
-
-

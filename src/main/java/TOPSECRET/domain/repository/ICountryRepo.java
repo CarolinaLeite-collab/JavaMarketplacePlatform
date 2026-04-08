@@ -6,23 +6,17 @@ import TOPSECRET.domain.valueobject.CountryId;
 
 import java.util.Optional;
 
+/**
+ * Repository interface for {@link Country} aggregates.
+ * <p>
+ * Extends {@link IRepository} with a domain-specific query by name.
+ * </p>
+ */
+
 public interface ICountryRepo extends IRepository<CountryId, Country> {
 
-    // IRepository provides: save, findAll, ofIdentity, containsOfIdentity
+    Country addCountry(String isoCode, String countryName);
 
-    // Domain-specific helper
     Optional<Country> findByName(String name);
 
-    // Legacy compatibility methods
-    default Country registerCountry(String countryName) {
-        Country country = new Country(countryName);
-        if (containsOfIdentity(country.identity())) return null;
-        return save(country);
-    }
-
-    default java.util.List<Country> getAllCountries() {
-        java.util.List<Country> list = new java.util.ArrayList<>();
-        for (Country c : findAll()) list.add(c);
-        return java.util.List.copyOf(list);
-    }
 }

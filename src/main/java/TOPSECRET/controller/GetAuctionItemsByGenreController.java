@@ -1,8 +1,9 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class GetAuctionItemsByGenreController {
         _iAuctionRepo = iAuctionRepo;
     }
 
-    public List<Item> getAuctionItemsByGenre(Genre genre) {
+    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
 
-        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenre(genre);
+        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenre(genreId);
 
         return auctionItemsByGenre;
    }
