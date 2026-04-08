@@ -37,11 +37,15 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public Auction createAuction(AuctionId auctionId, List<Item> item, Price startingPrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-
-            Auction auction = _auctionFactory.createAuction(auctionId, item, startingPrice, outrightPrice,  auctionStartDate, auctionEndDate);
+    public Auction addAuction(AuctionId auctionId, List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+            Auction auction = _auctionFactory.createAuction(auctionId, itemsOnAuction, startingPrice, reservePrice, outrightPrice,  auctionStartDate, auctionEndDate);
             _itemsOnAuction.add(auction);
             return auction;
+    }
+
+    @Override
+    public Auction addAuction(AuctionId auctionId, List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        return addAuction(auctionId, itemsOnAuction, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
     }
 
     @Override
@@ -60,21 +64,17 @@ public class MemoAuctionRepo implements IAuctionRepo {
         return copyOfListOfAuctionItemsByGenre;
     }
 
-
     @Override
     public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
 
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
 
         for (Auction auction : _itemsOnAuction) {
-
             if (auction.isByAuthor(authorId)) {
                 listOfAuctionItemsByAuthor.addAll(auction.getItems());
             }
         }
-
         return new ArrayList<>(listOfAuctionItemsByAuthor);
-
     }
 
     @Override
@@ -83,11 +83,9 @@ public class MemoAuctionRepo implements IAuctionRepo {
         List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
 
         for (Auction auction : _itemsOnAuction) {
-
             if(auction.isByPublication(publication)) {
                 listOfAuctionItemsByPublication.addAll(auction.getItems());
             }
-
         }
         List<Item> copyOfListOfAuctionItemsByPublication =
                 new ArrayList<>(listOfAuctionItemsByPublication);

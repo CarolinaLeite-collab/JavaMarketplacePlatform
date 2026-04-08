@@ -45,7 +45,7 @@ public class PublicationSaleAuctionController {
         return List.copyOf(items);
    }
 
-    public Auction putItemOnAuction(AuctionId auctionId, List<Item> items, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(AuctionId auctionId, List<Item> items, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         List<Item> itemsForAuction = new ArrayList<>();
         for (Item item : items) {
@@ -55,7 +55,7 @@ public class PublicationSaleAuctionController {
             }
         }
 
-        Auction newAuction = _iAuctionRepo.createAuction(auctionId, itemsForAuction, startPrice, outrightPrice, startDate, endDate);
+        Auction newAuction = _iAuctionRepo.addAuction(auctionId, itemsForAuction, startPrice, reservePrice, outrightPrice, startDate, endDate);
 
         for (Item item : items) {
             item.setAuction(newAuction);

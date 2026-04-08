@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -129,25 +128,26 @@ class PublicationSaleAuctionControllerTest {
         //Arrange
         Price startPrice = mock(Price.class);
         Price outrightPrice = mock(Price.class);
+        Price reservePrice = mock(Price.class);
 
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
 
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
-        when(_iAuctionRepoDouble.createAuction(_auctionId ,_items, startPrice, outrightPrice, startDate, endDate)).thenReturn(_auctionDouble);
+        when(_iAuctionRepoDouble.addAuction(_auctionId ,_items, startPrice, reservePrice, outrightPrice, startDate, endDate)).thenReturn(_auctionDouble);
         when(_libraryDouble2.getItem(_itemDouble)).thenReturn(_itemDouble);
 
         // SUT
         PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _libraryDouble2, _userIdDouble);
 
         // Act
-        Auction result = controller.putItemOnAuction(_auctionId ,_items, startPrice, outrightPrice, startDate, endDate);
+        Auction result = controller.putItemOnAuction(_auctionId ,_items, startPrice, reservePrice, outrightPrice, startDate, endDate);
 
         // Assert
         assertNotNull(result);
         assertSame(_auctionDouble, result);;
         verify(_itemDouble).setAuction(_auctionDouble);
         verify(_libraryDouble2).getItem(_itemDouble);
-        verify(_iAuctionRepoDouble).createAuction(_auctionId ,_items, startPrice, outrightPrice, startDate, endDate);
+        verify(_iAuctionRepoDouble).addAuction(_auctionId ,_items, startPrice, reservePrice, outrightPrice, startDate, endDate);
     }
 }
