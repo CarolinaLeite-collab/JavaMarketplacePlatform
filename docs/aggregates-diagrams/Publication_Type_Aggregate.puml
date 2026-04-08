@@ -42,8 +42,6 @@ package "DOMAIN" {
 
         class PublicationTypeId <<Value Object>> #LightPink {
         - _id : String
-        +equals(object : Object) : boolean
-        +toString() : String
         }
 
     }
@@ -51,8 +49,6 @@ package "DOMAIN" {
     package "PUBLICATIONTYPE" #b0c4d4 {
 
         class PublicationType <<Root>> <<Entity>> {
-          + identity() : PublicationTypeId
-          + isSamePublicationType(publicationTypeId : PublicationTypeId) : boolean
         }
 
         class PublicationTypeFactory <<Factory>> {
