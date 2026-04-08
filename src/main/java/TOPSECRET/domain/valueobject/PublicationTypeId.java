@@ -10,7 +10,7 @@ import TOPSECRET.ddd.DomainId;
  * all resolve to the same identifier.
  * </p>
  *
- * <p><b>Validation:</b> The identifier cannot be null or blank.</p>
+ * <p><b>Validation:</b> The identifier cannot be null, blank, or empty.</p>
  *
  * <p><b>Equality:</b> Two {@code PublicationTypeId} instances are equal if they
  * wrap the same normalized {@link String} value.</p>
