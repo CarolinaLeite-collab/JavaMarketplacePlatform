@@ -29,13 +29,13 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
     @Override
     public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
 
-        if (publicationTypeExists(publicationTypeName)) {
+        PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
+
+        if (publicationTypeExists(newPublicationType)) {
 
             throw new IllegalArgumentException("This publication type already exists!");
 
         }
-
-        PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
 
         _publicationTypes.add(newPublicationType);
 
@@ -43,11 +43,11 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
 
     }
 
-    private boolean publicationTypeExists (String publicationTypeName) {
+    private boolean publicationTypeExists(PublicationType publicationTypeToCheck) {
 
         for (PublicationType publicationType : _publicationTypes) {
 
-            if (publicationType.isSamePublicationType(publicationTypeName)) {
+            if (publicationType.sameAs(publicationTypeToCheck)) {
 
                 return true;
 
