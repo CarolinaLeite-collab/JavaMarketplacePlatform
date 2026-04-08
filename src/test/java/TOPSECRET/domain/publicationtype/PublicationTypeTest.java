@@ -1,177 +1,142 @@
 package TOPSECRET.domain.publicationtype;
 
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class PublicationTypeTest {
 
-    private PublicationType _publicationType1;
-    private PublicationType _publicationType2;
-    private PublicationType _publicationType3;
-
-    @BeforeEach
-    void setUp() {
-
-        _publicationType1 = new PublicationType("BOOK");
-        _publicationType2 = new PublicationType("book");
-        _publicationType3 = new PublicationType("MAGAZINE");
-
-    }
-
     @Test
-    void constructorShouldBuildPublicationType() {
+    void constructorShouldBuildPublicationTypeFromString() {
 
         //Arrange and Act
-        new PublicationType("Pokemon Card");
+        new PublicationType("Book");
 
     }
 
     @Test
-    void givenValidTypeNameShouldSavesData() {
+    void constructorShouldBuildPublicationTypeFromId() {
+
+        //Arrange
+        PublicationTypeId idDouble = mock(PublicationTypeId.class);
+
+        //Act
+        new PublicationType(idDouble);
+
+    }
+
+    @Test
+    void constructorWithNullPublicationTypeIdShouldThrowException() {
 
         //Act + Assert
-        assertEquals("BOOK", _publicationType1.getPublicationType());
-
+        assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
     }
 
     @Test
-    void givenNullTypeNameShouldThrowIllegalArgumentException() {
+    void constructorWithNullPublicationTypeIdExpectedMessage() {
+
         //Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> new PublicationType(null));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
 
         //Assert
-        assertEquals("Publication type name is required!", exception.getMessage());
+        assertEquals("PublicationTypeId is required.", exception.getMessage());
+
     }
 
     @Test
-    void givenBlankTypeNameShouldThrowIllegalArgumentException() {
-        //Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> new PublicationType("   "));
-
-        //Assert
-        assertEquals("Publication type name is required!", exception.getMessage());
-    }
-
-    @Test
-    void givenEmptyTypeNameShouldThrowIllegalArgumentException() {
-        //Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> new PublicationType(""));
-
-        //Assert
-        assertEquals("Publication type name is required!", exception.getMessage());
-    }
-
-    @Test
-    void isSamePublicationTypeShouldReturnTrueIfSame() {
+    void identityShouldReturnUnderlyingId() {
 
         //Arrange
-        String book = "book";
+        PublicationTypeId idDouble = mock(PublicationTypeId.class);
+        PublicationType publicationType = new PublicationType(idDouble);
 
-        //Act
-        boolean result = _publicationType1.isSamePublicationType(book);
+        // Act
+        PublicationTypeId pubTypeId = publicationType.identity();
 
         //Assert
-        assertTrue(result);
+        assertSame(idDouble, pubTypeId);
 
     }
 
     @Test
-    void isSamePublicationTypeShouldReturnFalseIfNotSame() {
+    void sameAsShouldReturnTrueForEqualPublicationType() {
 
         //Arrange
-        String book = "pokemon card";
+        PublicationType pubType1 = new PublicationType("Magazine");
+        PublicationType pubType2 = new PublicationType("MAGAZINE");
 
-        //Act
-        boolean result = _publicationType1.isSamePublicationType(book);
+        //Act + Assert
+        assertTrue(pubType1.sameAs(pubType2));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseForDifferentPublicationType() {
+
+        //Arrange
+        PublicationType pubType1 = new PublicationType("Pokemon Card");
+        PublicationType pubType2 = new PublicationType("MAGAZINE");
+
+        //Act + Assert
+        assertFalse(pubType1.sameAs(pubType2));
+    }
+
+    @Test
+    void samePublicationTypesAreEqual() {
+
+        //Arrange
+        PublicationType pubType1 = new PublicationType("Book");
+        PublicationType pubType2 = new PublicationType("book");
 
         //Assert
-        assertFalse(result);
+        assertEquals(pubType1, pubType2);
 
     }
 
     @Test
-    void isSamePublicationTypeShouldReturnFalseIfNull() {
+    void differentPublicationTypesAreNotEqual() {
 
         //Arrange
-        String book = null;
-
-        //Act
-        boolean result = _publicationType1.isSamePublicationType(book);
+        PublicationType pubType1 = new PublicationType("book");
+        PublicationType pubType2 = new PublicationType("magazine");
 
         //Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void isSamePublicationTypeShouldReturnFalseIfBlank() {
-
-        //Arrange
-        String book = "   ";
-
-        //Act
-        boolean result = _publicationType1.isSamePublicationType(book);
-
-        //Assert
-        assertFalse(result);
-
-    }
-
-    @Test
-    void isSamePublicationTypeShouldReturnFalseIfEmpty() {
-
-        //Arrange
-        String book = "";
-
-        //Act
-        boolean result = _publicationType1.isSamePublicationType(book);
-
-        //Assert
-        assertFalse(result);
+        assertNotEquals(pubType1, pubType2);
 
     }
 
     @Test
     void toStringReturnsTypeName() {
 
+        //Arrange
+        PublicationType pubType = new PublicationType("book");
+
         //Act + Assert
-        assertEquals("BOOK", _publicationType2.toString());
+        assertEquals("BOOK", pubType.toString());
 
     }
 
     @Test
     void sameObjectShouldAssertEquals() {
 
-        //Assert
-        assertEquals(_publicationType1, _publicationType1);
-
-    }
-
-    @Test
-    void differentObjectsWithSameNameShouldReturnEquals() {
+        //Arrange
+        PublicationType pubType1 = new PublicationType("Pokemon Card");
 
         //Assert
-        assertEquals(_publicationType1, _publicationType2);
-
-    }
-
-    @Test
-    void differentObjectsWithDifferentNamesShouldAssertNotEquals() {
-
-        //Assert
-        assertNotEquals(_publicationType1, _publicationType3);
+        assertEquals(pubType1, pubType1);
 
     }
 
     @Test
     void objectsWithNullObjectShouldReturnNotEquals() {
 
-        assertNotEquals(null, _publicationType1);
+        //Arrange
+        PublicationType pubType1 = new PublicationType("book");
+
+        //Assert
+        assertNotEquals(null, pubType1);
 
     }
 
@@ -179,10 +144,11 @@ class PublicationTypeTest {
     void objectsWithDifferentTypesShouldReturnNotEquals() {
 
         //Arrange
-        String otherType = "publicationType";
+        PublicationType pubType1 = new PublicationType("book");
+        String otherType = "book";
 
         //Assert
-        assertFalse(_publicationType1.equals(otherType));
+        assertFalse(pubType1.equals(otherType));
 
     }
 
@@ -190,16 +156,24 @@ class PublicationTypeTest {
     @Test
     void sameNamesShouldHaveSameHashCode() {
 
+        //Arrange
+        PublicationType pubType1 = new PublicationType("book");
+        PublicationType pubType2 = new PublicationType("BOOK");
+
         //Act + Assert
-        assertEquals(_publicationType1.hashCode(), _publicationType2.hashCode());
+        assertEquals(pubType1.hashCode(), pubType2.hashCode());
 
     }
 
     @Test
     void differentNamesShouldHaveDifferentHashCode() {
 
+        //Arrange
+        PublicationType pubType1 = new PublicationType("magazine");
+        PublicationType pubType2 = new PublicationType("BOOK");
+
         //Act + Assert
-        assertNotEquals(_publicationType1.hashCode(), _publicationType3.hashCode());
+        assertNotEquals(pubType1.hashCode(), pubType2.hashCode());
 
     }
 
