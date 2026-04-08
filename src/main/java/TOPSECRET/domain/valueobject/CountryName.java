@@ -3,46 +3,55 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.ValueObject;
 
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Value object representing a validated and normalized country name.
  */
 public final class CountryName implements ValueObject {
 
-	private final String _value;
+    private final String _value;
 
-	public CountryName(String name) {
-		if (name == null) throw new IllegalArgumentException("Country name cannot be null");
-		String result = name.trim();
-		if (result.isEmpty()) throw new IllegalArgumentException("Country name cannot be empty");
+    public CountryName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Country name cannot be null");
+        }
 
-		String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
-		if (!result.matches(pattern)) throw new IllegalArgumentException("Invalid country name: " + name);
+        // 1. NORMALIZE FIRST: This turns "United    Kingdom" into "United Kingdom"
+        String normalized = name.trim().replaceAll("\\s+", " ");
 
-		result = result.replaceAll("\\s+", " ").toUpperCase(Locale.ROOT);
-		this._value = result;
-	}
+        if (normalized.isEmpty()) {
+            throw new IllegalArgumentException("Country name cannot be empty");
+        }
 
-	public String value() {
-		return _value;
-	}
+        // 2. VALIDATE SECOND: The regex now sees the cleaned string
+        String pattern = "^[\\p{L}]+(?: [\\p{L}]+)*$";
+        if (!normalized.matches(pattern)) {
+            throw new IllegalArgumentException("Invalid country name: " + name);
+        }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (!(o instanceof CountryName other)) return false;
-		return _value.equals(other._value);
-	}
+        // 3. FINAL FORMATTING
+        this._value = normalized.toUpperCase(Locale.ROOT);
+    }
 
-	@Override
-	public int hashCode() {
-		return _value.hashCode();
-	}
+    public String value() {
+        return _value;
+    }
 
-	@Override
-	public String toString() {
-		return _value;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CountryName other)) return false;
+        return Objects.equals(_value, other._value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(_value);
+    }
+
+    @Override
+    public String toString() {
+        return _value;
+    }
 }
-
-

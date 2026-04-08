@@ -19,9 +19,10 @@ public final class CountryId implements DomainId {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CountryId other)) return false;
-        return _code.equals(other._code);
+        if (o instanceof CountryId other) {
+            return this == o || _code.equals(other._code);
+        }
+        return false;
     }
 
     @Override

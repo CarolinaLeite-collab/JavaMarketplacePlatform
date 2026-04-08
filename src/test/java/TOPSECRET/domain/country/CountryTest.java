@@ -241,6 +241,15 @@ class CountryTest {
     }
 
     @Test
+    void equalsDifferentTypeReturnsFalse() {
+        // Arrange
+        Country country = new Country(_countryIdDouble, _countryNameDouble);
+
+        // Assert
+        assertNotEquals(country, "not a country");
+    }
+
+    @Test
     void equalsNullReturnsFalse() {
         // SUT
         Country country = new Country(_countryIdDouble, _countryNameDouble);
@@ -255,7 +264,7 @@ class CountryTest {
         Country country = new Country(_countryIdDouble, _countryNameDouble);
 
         // Assert
-        assertEquals(country, country);
+        assertTrue(country.equals(identity(country)));
     }
 
     @Test
@@ -267,6 +276,19 @@ class CountryTest {
 
         // Assert
         assertEquals(c1.hashCode(), c2.hashCode());
+    }
+
+    @Test
+    void hashCodeReturnsCountryIdHashCode() {
+        // Arrange
+        Country country = new Country(_countryIdDouble, _countryNameDouble);
+
+        // Assert
+        assertEquals(_countryIdDouble.hashCode(), country.hashCode());
+    }
+
+    private Country identity(Country country) {
+        return country;
     }
 
 }
