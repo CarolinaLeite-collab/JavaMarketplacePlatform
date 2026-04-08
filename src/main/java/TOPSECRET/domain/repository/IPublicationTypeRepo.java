@@ -1,6 +1,6 @@
 package TOPSECRET.domain.repository;
 
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.publicationtype.PublicationType;
 
 import java.util.List;
 

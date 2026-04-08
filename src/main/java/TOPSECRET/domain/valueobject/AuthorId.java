@@ -1,7 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.author.Author;
 
 import java.util.UUID;
 

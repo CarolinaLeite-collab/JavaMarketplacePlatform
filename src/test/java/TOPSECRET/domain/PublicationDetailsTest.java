@@ -1,7 +1,8 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +20,8 @@ class PublicationDetailsTest {
         Publication publicationDouble = mock(Publication.class);
 
         Title titleDouble = mock(Title.class);
-        Author authorDouble = mock(Author.class);
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
         //Identifier identifierDouble = mock(Identifier.class);
 
         // stub the item to return the publication
@@ -28,8 +29,8 @@ class PublicationDetailsTest {
 
         // stub the publication fields
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
-        when(publicationDouble.getAuthor()).thenReturn(authorDouble);
-        when(publicationDouble.getPublicationType()).thenReturn(publicationTypeDouble);
+        when(publicationDouble.getAuthorId()).thenReturn(authorIdDouble);
+        when(publicationDouble.getPublicationTypeId()).thenReturn(publicationTypeIdDouble);
         //when(publicationDouble.getIdentifier()).thenReturn(identifierDouble);
 
         // Act
@@ -38,8 +39,8 @@ class PublicationDetailsTest {
         // Assert
         assertNotNull(details);
         assertEquals(titleDouble, details.getTitle());
-        assertEquals(authorDouble, details.getAuthor());
-        assertEquals(publicationTypeDouble, details.getPublicationType());
+        assertEquals(authorIdDouble, details.getAuthorId());
+        assertEquals(publicationTypeIdDouble, details.getPublicationTypeId());
         //assertEquals(identifierDouble, details.getIdentifier());
     }
 }

@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
-import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.city.City;
+import TOPSECRET.domain.city.CityFactory;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.repository.ICountryRepo;
@@ -68,16 +68,22 @@ class RegisterCityControllerTest {
 
     @Test
     void getCountriesReturnsAllCountriesFromRepository() {
-        List<Country> countries = List.of(_countryDouble);
-        when(_iCountryRepoDouble.getAllCountries()).thenReturn(countries);
+        // Arrange
+        when(_iCountryRepoDouble.findAll()).thenReturn(List.of(_countryDouble));
 
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
+        // SUT
+        RegisterCityController controller = new RegisterCityController(
+                _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
-        List<Country> result = controller.getAllCountries();
 
-        assertEquals(1, result.size());
-        assertSame(_countryDouble, result.get(0));
-        verify(_iCountryRepoDouble, times(1)).getAllCountries();
+        Iterable<Country> result = controller.getAllCountries();
+        List<Country> list = new java.util.ArrayList<>();
+        result.forEach(list::add);
+
+        // Assert
+        assertEquals(1, list.size());
+        assertSame(_countryDouble, list.get(0));
+        verify(_iCountryRepoDouble, times(1)).findAll();
     }
 
     @Test

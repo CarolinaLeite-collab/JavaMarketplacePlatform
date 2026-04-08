@@ -14,14 +14,6 @@ public class CountryFactory {
         return new Country(id, name);
     }
 
-    // Backwards compatible: create from single countryName (legacy tests)
-    public Country createCountry(String countryName) {
-        // Use normalized country name as pseudo-id to preserve legacy behavior
-        CountryName name = new CountryName(countryName);
-        CountryId id = new CountryId(name.value().substring(0, Math.min(2, name.value().length())));
-        return new Country(id, name);
-    }
-
     public Country createCountry(CountryId id, CountryName name) {
         return new Country(id, name);
     }

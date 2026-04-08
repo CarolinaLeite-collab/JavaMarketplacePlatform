@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.IAuctionRepo;
 import TOPSECRET.domain.Item;
+import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,13 +17,13 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
     private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private Author _authorDouble;
+    private AuthorId _authorIdDouble;
 
     @BeforeEach
     void setUp() {
         _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
-        _authorDouble = mock(Author.class);
+        _authorIdDouble = mock(AuthorId.class);
     }
 
     @Test
@@ -37,13 +37,13 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems() {
         //Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of());
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of());
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         //Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -56,13 +56,13 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         Item _item1 = mock(Item.class);
         Item _item2 = mock(Item.class);
 
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2));
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of(_item1, _item2));
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -76,13 +76,13 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         Item _item2 = mock(Item.class);
         Item _item3 = mock(Item.class);
 
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorDouble)).thenReturn(List.of(_item1, _item2, _item3));
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of(_item1, _item2, _item3));
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         // Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
 
         // Assert
         assertTrue(result.containsAll(List.of(_item1, _item2, _item3)));
@@ -95,10 +95,10 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
         //Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorDouble);
+        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
 
         //Assert
-        verify(_iAuctionRepoDouble, times(1)).getAuctionItemsByAuthor(_authorDouble);
+        verify(_iAuctionRepoDouble, times(1)).getAuctionItemsByAuthor(_authorIdDouble);
 
     }
 

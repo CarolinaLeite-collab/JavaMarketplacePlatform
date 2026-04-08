@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -156,13 +157,13 @@ public class Auction {
         return result;
     }
 
-    public boolean isByGenre( Genre genre) {
-        return _item.isByGenre(genre);
+    public boolean isByGenre( GenreId genreId) {
+        return _item.isByGenre(genreId);
     }
 
-    public boolean isByAuthor(Author author) {
+    public boolean isByAuthor(AuthorId authorId) {
 
-        return _item.isByAuthor(author);
+        return _item.isByAuthor(authorId);
 
     }
 

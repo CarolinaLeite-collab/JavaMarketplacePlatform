@@ -1,9 +1,10 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.Condition;
+import TOPSECRET.domain.valueobject.GenreId;
 
 import java.util.Objects;
 
@@ -71,15 +72,15 @@ public class Item {
 
     }
 
-    public boolean isByAuthor(Author author) {
+    public boolean isByAuthor(AuthorId authorId) {
 
-        return _publication.isByAuthor(author);
+        return _publication.isByAuthor(authorId);
 
     }
 
-    public boolean isByGenre(Genre genre) {
+    public boolean isByGenre(GenreId genreId) {
 
-        return _publication.isByGenre(genre);
+        return _publication.isByGenre(genreId);
 
     }
 

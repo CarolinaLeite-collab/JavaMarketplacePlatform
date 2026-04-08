@@ -1,5 +1,6 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
 import org.junit.jupiter.api.Test;
 

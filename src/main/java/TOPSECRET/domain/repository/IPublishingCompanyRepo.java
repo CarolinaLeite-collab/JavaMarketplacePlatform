@@ -1,6 +1,6 @@
 package TOPSECRET.domain.repository;
 
-import TOPSECRET.domain.PublishingCompany.PublishingCompany;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
 
 public interface IPublishingCompanyRepo {
 

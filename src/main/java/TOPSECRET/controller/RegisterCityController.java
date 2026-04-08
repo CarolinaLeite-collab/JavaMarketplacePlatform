@@ -1,11 +1,11 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
-import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.city.City;
+import TOPSECRET.domain.city.CityFactory;
 import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.repository.ICountryRepo;
+import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CityId;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.Role;
@@ -27,8 +27,8 @@ public class RegisterCityController {
         _cityFactory = cityFactory;
     }
 
-    public List<Country> getAllCountries() {
-        return _iCountryRepo.getAllCountries();
+    public Iterable<Country> getAllCountries() {
+        return _iCountryRepo.findAll();
     }
 
     public City registerCity(String cityName, CountryId countryId) {

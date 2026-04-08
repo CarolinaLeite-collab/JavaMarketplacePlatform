@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.Publication;
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,7 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.DomainId;
 
 /**
- * Represents the unique identifier of a {@link TOPSECRET.domain.PublicationType.PublicationType}.
+ * Represents the unique identifier of a {@link TOPSECRET.domain.publicationtype.PublicationType}.
  * <p>
  * A {@code PublicationTypeId} wraps a {@link String} value derived from the publication type name,
  * normalized to uppercase and trimmed. This ensures that "Book ", " book" and "BOOK"

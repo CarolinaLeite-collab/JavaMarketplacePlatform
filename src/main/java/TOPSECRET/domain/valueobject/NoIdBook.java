@@ -3,10 +3,10 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.ValueObject;
 
 /**
- * Represents a placeholder identifier for Books when no actual identifier is available.
+ * Represents a placeholder identifier for book editions when no real identifier is available.
  * <p>
- * Implements the {@link BookId,} interface and always returns an empty string for {@link #getIdentifier()}.
- * </p>
+ * {@code NoIdBook} is a concrete implementation of {@link BookId} used in scenarios
+ * where a book edition does not have a valid or assigned identifier (Books older then 1970).
  */
 
 public class NoIdBook implements BookId, ValueObject {
@@ -15,4 +15,5 @@ public class NoIdBook implements BookId, ValueObject {
     public String getIdentifier() {
         return "";
     }
+
 }
