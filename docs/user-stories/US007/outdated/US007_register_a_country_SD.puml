@@ -4,6 +4,7 @@ title US007 - "As an Administrator, I want to register a new country in the syst
 
 '==== basic style ====
 skinparam monochrome false
+
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
@@ -20,57 +21,33 @@ autoactivate off
 actor Administrator as ADM
 participant ":RegisterCountryUI" as UI
 participant ":RegisterCountryController" as CTL
-participant "userId:UserId" as UID
 participant ":MemoCountryRepo" as CR
 participant ":CountryFactory" as FACTORY
-participant "c1:Country" as C
+
 
 '==== UI interaction ====
 ADM -> UI: I want to register a country
 activate UI
 UI --> ADM: What is the country's name?
 deactivate UI
-
 ADM -> UI: countryName
 activate UI
 UI -> UI: Validate field
 
+
 '==== Use case execution ====
-' Updated to pass userId
-UI -> CTL: registerCountry (userId, countryName)
+UI -> CTL: registerCountry (countryName)
 activate CTL
-
-' The controller verifies if this specific ID has admin rights
-CTL -> UID: isAdmin(userId)
-activate UID
-UID --> CTL: true
-deactivate UID
-
-CTL -> CR: addCountry (countryName)
+CTL -> CR: registerCountry (countryName)
 activate CR
 
-CR -> FACTORY: createCountry (countryName)
-activate FACTORY
-create C
-FACTORY -->> C: <<Create>>
-activate C
-create "name:CountryName" as CN
-C -->> CN: <<Create>>
-create "id:CountryId" as CID
-C -->> CID: <<Create(name)>>
-deactivate C
-
+CR -> FACTORY: createFactory (countryName)
+create "c1:Country"
+FACTORY -->> "c1:Country": <<Create>>
 FACTORY --> CR :c1
-deactivate FACTORY
 
-CR -> C: identity()
-activate C
-C --> CR: id
-deactivate C
-
-CR -> CR: containsOfIdentity(id)
-opt [containsOfIdentity == false]
-        CR -> CR: save(c1)
+opt existsCountry (country) == false
+        CR -> CR: add(c1)
 end
 
 CR --> CTL: c1

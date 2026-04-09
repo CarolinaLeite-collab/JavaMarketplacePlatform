@@ -1,0 +1,103 @@
+@startuml
+'https://plantuml.com/class-diagram
+title US007 – "As an Administrator, I want to register a new country in the system" - CD DDD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+' Control the layout flow
+top to bottom direction
+
+class RegisterCountryUI {
+}
+
+package "CONTROLLER" {
+    class RegisterCountryController {
+      + registerCountry(userId : UserId, countryName : String) : Country
+    }
+}
+
+package "DOMAIN" {
+
+    package "COUNTRY" #b0c4d4 {
+        class Country <<Root>> <<Entity>> {
+          + identity() : CountryId
+          + name() : CountryName
+          + sameAs(object : Object) : boolean
+          + getCountryName() : String
+        }
+
+        class CountryFactory <<Factory>> {
+          + createCountry(countryName : String) : Country
+        }
+    }
+
+    package "VALUE OBJECT" {
+        class CountryId <<Value Object>> #lightpink {
+            - _code : String
+        }
+        class CountryName <<Value Object>> {
+            - _value : String
+        }
+        class UserId <<Value Object>> {
+        }
+    }
+
+    package "REPOSITORY" {
+        interface ICountryRepo <<Interface>> {
+            + addCountry(countryName : String) : Country
+        }
+    }
+}
+
+package "PERSISTENCE" {
+    package "MEM" {
+        class MemoCountryRepo <<Repo>> {
+            - DATA : Map<CountryId, Country>
+        }
+    }
+}
+
+package "DDD" {
+    interface IRepository<ID, T> <<Interface>> {
+        + save(T) : T
+        + findAll() : Iterable<T>
+        + ofIdentity(ID) : Optional<T>
+        + containsOfIdentity(ID) : boolean
+    }
+}
+
+'==== Visual Layout Alignment (Hidden links to force grouping) ====
+RegisterCountryUI -[hidden]down- CONTROLLER
+CONTROLLER -[hidden]down- DOMAIN
+COUNTRY -[hidden]right- "VALUE OBJECT"
+"VALUE OBJECT" -[hidden]right- REPOSITORY
+DOMAIN -[hidden]down- PERSISTENCE
+
+'==== Connections ====
+RegisterCountryUI "1" .> "1" RegisterCountryController : invokes
+RegisterCountryController "1" ..> "1" ICountryRepo : calls
+RegisterCountryController "1" ..> "*" Country : <<use>>
+RegisterCountryController "1" ..> "1" UserId : <<use>>
+
+MemoCountryRepo ..|> ICountryRepo
+MemoCountryRepo "1" --> "1" CountryFactory : <<use>>
+MemoCountryRepo "1" --> "*" Country : persists
+
+CountryFactory "1" ..> "*" Country : <<create>>
+
+Country "1" --> "1" CountryId : has
+Country "1" *-- "1" CountryName : has
+
+ICountryRepo --|> IRepository
+
+@enduml
