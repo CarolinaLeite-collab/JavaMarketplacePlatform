@@ -152,4 +152,52 @@ class PublicationInLibraryForDirectSaleControllerTest {
         assertThrows(IllegalStateException.class, () ->
                 controller.addItemForDirectSale(_items, _priceDouble, _timeLimitDouble));
     }
+
+    @Test
+    void testAddItemForDirectSaleInvokesSetDirectSaleOnEachItem() {
+        DirectSale directSaleDouble = mock(DirectSale.class);
+        _items.add(_itemDouble);
+
+        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItem(_itemDouble)).thenReturn(_itemDouble);
+        when(_iDirectSaleRepoDouble.addDirectSale(_items, _priceDouble, _timeLimitDouble))
+                .thenReturn(directSaleDouble);
+
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(
+                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
+
+        DirectSale result = controller.addItemForDirectSale(_items, _priceDouble, _timeLimitDouble);
+
+        assertSame(directSaleDouble, result);
+        verify(_itemDouble).setDirectSale(directSaleDouble);
+    }
+
+    @Test
+    void testAddItemForDirectSaleUsesOnlyItemsFoundInLibrary() {
+        // Arrange
+        Item itemDouble2= mock(Item.class);
+        _items.add(_itemDouble);
+        _items.add(itemDouble2);
+
+        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
+        when(_libraryDouble.getItem(_itemDouble)).thenReturn(_itemDouble);
+        when(_libraryDouble.getItem(itemDouble2)).thenReturn(null);
+
+        DirectSale directSaleDouble = mock(DirectSale.class);
+
+        List<Item> expectedItemsForSale = List.of(_itemDouble);
+        when(_iDirectSaleRepoDouble.addDirectSale(expectedItemsForSale, _priceDouble, _timeLimitDouble))
+                .thenReturn(directSaleDouble);
+
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(
+                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
+
+        // Act
+        DirectSale result = controller.addItemForDirectSale(_items, _priceDouble, _timeLimitDouble);
+
+        // Assert
+        assertSame(directSaleDouble, result);
+    }
 }

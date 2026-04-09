@@ -39,7 +39,7 @@ class DirectSaleIdTest {
         DirectSaleId id2 = new DirectSaleId();
 
         //assert
-        assertNotEquals(id1, id2);
+        assertFalse(id1.equals(id2));
         assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
@@ -49,7 +49,8 @@ class DirectSaleIdTest {
         DirectSaleId id = new DirectSaleId();
 
         //assert
-        assertNotEquals(id, null);
-        assertNotEquals(id, "DS-ABC12345");
+        assertFalse(id.equals(null));
+        assertFalse((id.toString()).equals("DS-ABC12345"));
     }
+
 }

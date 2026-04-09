@@ -1,7 +1,6 @@
 package TOPSECRET.domain.directsale;
 
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -10,10 +9,8 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class DirectSaleFactoryTest {
 
@@ -41,8 +38,13 @@ class DirectSaleFactoryTest {
             // Assert
             assertNotNull(directSaleResult);
             List<Object> params = capturedArguments.get(0);
+            assertSame(items, params.get(0));
+            assertSame(priceDouble, params.get(1));
+            assertSame(timeLimit, params.get(2));
             assertEquals(1, mockedConstruction.constructed().size());
             assertEquals(mockedConstruction.constructed().get(0), directSaleResult);
         }
+
     }
+
 }
