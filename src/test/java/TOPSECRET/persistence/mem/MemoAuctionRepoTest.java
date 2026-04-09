@@ -166,7 +166,7 @@ class MemoAuctionRepoTest {
         //Act
         Auction created = _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByGenre(genreIdDouble);
+        List<Item> result = _repo.getAuctionItemsByGenreId(genreIdDouble);
 
         //Assert
         assertSame(_auctionDouble1, created);
@@ -192,7 +192,7 @@ class MemoAuctionRepoTest {
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
         //Act
-        List<Item> result = _repo.getAuctionItemsByGenre(genreIdDouble);
+        List<Item> result = _repo.getAuctionItemsByGenreId(genreIdDouble);
 
         //Assert
         assertNotNull(result);
@@ -214,7 +214,7 @@ class MemoAuctionRepoTest {
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
         _repo.addAuction(_items2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByGenre(genreIdDouble);
+        List<Item> result = _repo.getAuctionItemsByGenreId(genreIdDouble);
 
         //Assert
         assertEquals(2, result.size());
@@ -230,7 +230,7 @@ class MemoAuctionRepoTest {
         //Act
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByGenre(null);
+        List<Item> result = _repo.getAuctionItemsByGenreId(null);
 
         //Assert
         assertNotNull(result);
@@ -253,7 +253,7 @@ class MemoAuctionRepoTest {
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
         _repo.addAuction(_items2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByAuthor(authorIdDouble);
+        List<Item> result = _repo.getAuctionItemsByAuthorId(authorIdDouble);
 
         //Assert
         assertEquals(1, result.size());
@@ -273,7 +273,7 @@ class MemoAuctionRepoTest {
         //Act
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByAuthor(authorIdDouble);
+        List<Item> result = _repo.getAuctionItemsByAuthorId(authorIdDouble);
 
         //Assert
         assertTrue(result.isEmpty());
@@ -292,10 +292,10 @@ class MemoAuctionRepoTest {
         //Act
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> first = _repo.getAuctionItemsByAuthor(authorIdDouble);
+        List<Item> first = _repo.getAuctionItemsByAuthorId(authorIdDouble);
         first.clear();
 
-        List<Item> second = _repo.getAuctionItemsByAuthor(authorIdDouble);
+        List<Item> second = _repo.getAuctionItemsByAuthorId(authorIdDouble);
 
         //Assert
         assertEquals(1, second.size());
@@ -317,7 +317,7 @@ class MemoAuctionRepoTest {
         _repo.addAuction(_items2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
         _repo.addAuction(_items3, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByPublication(pubDouble);
+        List<Item> result = _repo.getAuctionItemsByPublicationId(pubDouble);
 
         //Assert
         assertEquals(2, result.size());
@@ -341,7 +341,7 @@ class MemoAuctionRepoTest {
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
         _repo.addAuction(_items2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByPublishingCompany(publisherDouble);
+        List<Item> result = _repo.getAuctionItemsByPublishingCompanyId(publisherDouble);
 
         //Assert
         assertEquals(1, result.size());
@@ -356,7 +356,7 @@ class MemoAuctionRepoTest {
         //Act
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByPublishingCompany(null);
+        List<Item> result = _repo.getAuctionItemsByPublishingCompanyId(null);
 
         //Assert
         assertTrue(result.isEmpty());

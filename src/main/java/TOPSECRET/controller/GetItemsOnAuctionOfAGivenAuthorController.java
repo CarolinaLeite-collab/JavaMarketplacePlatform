@@ -27,6 +27,6 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
     }
 
     public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
-        return _iAuctionRepo.getAuctionItemsByAuthor(authorId);
+        return _iAuctionRepo.getAuctionItemsByAuthorId(authorId);
     }
 }

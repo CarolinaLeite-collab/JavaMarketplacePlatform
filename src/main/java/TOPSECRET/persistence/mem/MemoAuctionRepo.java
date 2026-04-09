@@ -73,7 +73,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
+    public List<Item> getAuctionItemsByGenreId(GenreId genreId) {
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
+    public List<Item> getAuctionItemsByAuthorId(AuthorId authorId) {
 
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
 
@@ -99,7 +99,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByPublication(Publication publication) {
+    public List<Item> getAuctionItemsByPublicationId(Publication publication) {
 
         List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
 
@@ -112,7 +112,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
+    public List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompany publisher) {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 

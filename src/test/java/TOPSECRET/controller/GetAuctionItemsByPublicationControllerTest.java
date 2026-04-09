@@ -41,7 +41,7 @@ class GetAuctionItemsByPublicationControllerTest {
         Item item1Double = mock(Item.class);
         Item item2Double = mock(Item.class);
 
-        when(_iAuctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+        when(_iAuctionRepoDouble.getAuctionItemsByPublicationId(_publicationDouble))
                 .thenReturn(List.of(item1Double, item2Double));
 
         // SUT
@@ -62,7 +62,7 @@ class GetAuctionItemsByPublicationControllerTest {
     void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
 
         // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByPublication(_publicationDouble))
+        when(_iAuctionRepoDouble.getAuctionItemsByPublicationId(_publicationDouble))
                 .thenReturn(List.of());
 
         // SUT

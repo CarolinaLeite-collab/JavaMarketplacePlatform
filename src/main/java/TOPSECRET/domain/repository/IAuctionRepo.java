@@ -21,11 +21,11 @@ public interface IAuctionRepo extends IRepository<AuctionId, Auction> {
     Auction addAuction(List<Item> item, Price startingPrice, Price reservePrice,
                        ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
 
-    List<Item> getAuctionItemsByGenre(GenreId genreId);
+    List<Item> getAuctionItemsByGenreId(GenreId genreId);
 
-    List<Item> getAuctionItemsByAuthor(AuthorId authorId);
+    List<Item> getAuctionItemsByAuthorId(AuthorId authorId);
 
-    List<Item> getAuctionItemsByPublication(Publication publication);
+    List<Item> getAuctionItemsByPublicationId(Publication publication);
 
-    List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher);
+    List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompany publisher);
 }

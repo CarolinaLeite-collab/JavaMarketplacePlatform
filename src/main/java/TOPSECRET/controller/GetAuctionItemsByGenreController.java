@@ -27,7 +27,7 @@ public class GetAuctionItemsByGenreController {
 
     public List<Item> getAuctionItemsByGenre(GenreId genreId) {
 
-        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenre(genreId);
+        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenreId(genreId);
 
         return auctionItemsByGenre;
    }

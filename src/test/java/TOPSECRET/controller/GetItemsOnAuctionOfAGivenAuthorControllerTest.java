@@ -37,7 +37,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
     @Test
     void getAuctionItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems() {
         //Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of());
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of());
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
@@ -56,7 +56,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         Item _item1 = mock(Item.class);
         Item _item2 = mock(Item.class);
 
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of(_item1, _item2));
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of(_item1, _item2));
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
@@ -76,7 +76,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         Item _item2 = mock(Item.class);
         Item _item3 = mock(Item.class);
 
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthor(_authorIdDouble)).thenReturn(List.of(_item1, _item2, _item3));
+        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of(_item1, _item2, _item3));
 
         //SUT
         GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
@@ -98,7 +98,7 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
 
         //Assert
-        verify(_iAuctionRepoDouble, times(1)).getAuctionItemsByAuthor(_authorIdDouble);
+        verify(_iAuctionRepoDouble, times(1)).getAuctionItemsByAuthorId(_authorIdDouble);
 
     }
 
