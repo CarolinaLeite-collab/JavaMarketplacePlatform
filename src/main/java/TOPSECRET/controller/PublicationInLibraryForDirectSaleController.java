@@ -45,7 +45,7 @@ public class PublicationInLibraryForDirectSaleController {
                 itemsForSale.add(itemFromLibrary);
             }
         }
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(items, price, timeLimit);
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemsForSale, price, timeLimit);
 
         for (Item item : items){
             item.setDirectSale(directSale);
