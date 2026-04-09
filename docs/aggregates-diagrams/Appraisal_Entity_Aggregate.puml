@@ -39,7 +39,7 @@ Package "DOMAIN" {
 
     package "REPOSITORY" <<Folder>> {
         interface IAppraisalEntityRepo <<Interface>> {
-            +registerNewAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+            +addAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
         }
     }
 
