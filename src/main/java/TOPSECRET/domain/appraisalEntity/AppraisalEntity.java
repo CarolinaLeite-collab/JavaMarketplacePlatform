@@ -43,6 +43,22 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     }
 
+    AppraisalEntity(AppraisalEntityId appraisalEntityId, Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
+
+        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
+            throw new IllegalArgumentException("List of publication types cannot be null or empty");
+        }
+        if (genresId == null || genresId.isEmpty()) {
+            throw new IllegalArgumentException("List of genres cannot be null or empty");
+        }
+
+        _name = name;
+        _publicationTypesId = publicationTypesId;
+        _genresId = genresId;
+        _appraisalEntityId = Objects.requireNonNull(appraisalEntityId, "AppraisalEntityId is required");
+
+    }
+
     @Override
     public AppraisalEntityId identity() {
 

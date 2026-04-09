@@ -1,5 +1,6 @@
 package TOPSECRET.domain.appraisalEntity;
 
+import TOPSECRET.domain.valueobject.AppraisalEntityId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
@@ -9,8 +10,7 @@ import org.mockito.MockedConstruction;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AppraisalEntityFactoryTest {
@@ -48,6 +48,38 @@ public class AppraisalEntityFactoryTest {
 
             //Assert
             assertNotNull(appraisalEntityResult);
+            assertEquals(1, mockedConstruction.constructed().size());
+
+        }
+
+    }
+
+    @Test
+    void shouldCreateAppraisalEntityWithId() {
+
+        //Arrange
+        AppraisalEntityId appraisalEntityIdDouble = mock(AppraisalEntityId.class);
+        Name nameDouble = mock(Name.class);
+
+        PublicationTypeId pubTypeDouble = mock(PublicationTypeId.class);
+        List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
+        publicationTypeIds.add(pubTypeDouble);
+
+        GenreId genreDouble = mock(GenreId.class);
+        List<GenreId> genreIds = new ArrayList<>();
+        genreIds.add(genreDouble);
+
+        //SUT
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        try (MockedConstruction<AppraisalEntity> mockedConstruction = mockConstruction(AppraisalEntity.class)) {
+
+            //Act
+            AppraisalEntity result = factory.createAppraisalEntity(
+                    appraisalEntityIdDouble, nameDouble, publicationTypeIds, genreIds);
+
+            //Assert
+            assertNotNull(result);
             assertEquals(1, mockedConstruction.constructed().size());
 
         }

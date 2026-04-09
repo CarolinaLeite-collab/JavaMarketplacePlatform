@@ -21,4 +21,10 @@ public class AppraisalEntityFactory {
 
     }
 
+    public AppraisalEntity createAppraisalEntity(AppraisalEntityId appraisalEntityId, Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds) {
+
+        return new AppraisalEntity(appraisalEntityId, name, publicationTypeIds, genreIds);
+
+    }
+
 }
