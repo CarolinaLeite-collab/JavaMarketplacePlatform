@@ -1,5 +1,7 @@
 package TOPSECRET.domain.author;
 
+import TOPSECRET.domain.valueobject.AuthorId;
+
 /**
  * Factory responsible for creating {@link Author} instances.
  * <p>
@@ -8,7 +10,11 @@ package TOPSECRET.domain.author;
  */
 
 public class AuthorFactory {
+
     public Author createAuthor(String authorName){
+
         return new Author(authorName);
+
     }
+
 }

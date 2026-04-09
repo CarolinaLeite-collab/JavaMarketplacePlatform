@@ -17,7 +17,9 @@ public class CreateAuthorController {
     private IAuthorRepo _iAuthorRepo;
 
     public CreateAuthorController(IAuthorRepo ar, UserId adminId) {
+
         _iAuthorRepo = ar;
+
     }
 
     public Author createAuthor (String authorName){
@@ -25,4 +27,5 @@ public class CreateAuthorController {
         return _iAuthorRepo.addAuthor(authorName.trim());
 
     }
+
 }

@@ -20,7 +20,7 @@ public class Author implements AggregateRoot<AuthorId> {
         if (name == null || name.trim().isEmpty())
             throw new IllegalArgumentException("Author name cannot be null or empty");
 
-        _name = name;
+        _name = name.trim();
         _authorId = new AuthorId(name);
 
     }

@@ -22,12 +22,14 @@ class CreateAuthorControllerTest {
         _adminIdDouble = mock(UserId.class);
 
     }
+
     @Test
-    void testCreateAuthorControllerConstructor() {}
+    void testCreateAuthorControllerConstructor() {
 
-    // SUT & Act
-    CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
+        // SUT & Act
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
 
+    }
 
     @Test
     void shouldCreateAuthorWithValidName() {
