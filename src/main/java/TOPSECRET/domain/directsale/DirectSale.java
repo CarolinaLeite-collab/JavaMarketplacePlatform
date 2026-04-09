@@ -58,7 +58,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
     }
 
-    public boolean isByAuthor (AuthorId authorId) {
+    public boolean isByAuthor(AuthorId authorId) {
         for(Item item : _items) {
             if(item.isByAuthor(authorId)) {
                 return true;
@@ -97,11 +97,12 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     @Override
     public DirectSaleId identity() {
-        return null;
+        return _directSaleId;
     }
 
     @Override
     public boolean sameAs(Object object) {
-        return false;
+        if (!(object instanceof DirectSale other)) return false;
+        return _directSaleId.equals(other._directSaleId);
     }
 }

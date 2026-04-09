@@ -90,6 +90,61 @@ class DirectSaleTest {
         assertEquals("Time limit cannot be negative", ex.getMessage());
     }
 
+    @Test
+    void shouldReturnIdentity() {
+        //arrange
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
+
+        //act
+        DirectSaleId result = directSale.identity();
+
+        //assert
+        assertNotNull(result);
+        assertTrue(result instanceof DirectSaleId);
+
+    }
+
+    @Test
+    void shouldReturnTrueWhenSameIdentity() {
+        //arrange
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
+
+        //act+assert
+        assertTrue(directSale.sameAs(directSale));
+    }
+
+
+    @Test
+    void shouldReturnFalseWhenDifferentIdentities(){
+        //arrange
+        DirectSale directSale1 = new DirectSale(_items, _priceDouble, _period);
+        DirectSale directSale2 = new DirectSale(_items, _priceDouble, _period);
+
+        //act
+        boolean result = directSale1.sameAs(directSale2);
+
+        //assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenObjectIsNull() {
+        //arrange
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
+
+        //assert
+        assertFalse(directSale.sameAs(null));
+    }
+
+    @Test
+    void shouldReturnFalseWhenObjectIsDifferentType() {
+        //arrange
+        DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
+
+        //assert
+        assertFalse(directSale.sameAs(_itemDouble));
+    }
+
     // Isolated IsByAuthor Test
     @Test
     void isByAuthorShouldReturnTrueWhenAuthorMatches() {
