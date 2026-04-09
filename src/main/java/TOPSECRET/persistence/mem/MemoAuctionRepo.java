@@ -12,8 +12,7 @@ import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Repository class responsible for managing auctions within the system.
@@ -26,29 +25,51 @@ import java.util.List;
 
 public class MemoAuctionRepo implements IAuctionRepo {
 
-    private final List<Auction> _itemsOnAuction;
+    private final Map<AuctionId, Auction> DATA;
     private final AuctionFactory _auctionFactory;
 
     public MemoAuctionRepo() {
         this(new AuctionFactory());
     }
-
-
     MemoAuctionRepo(AuctionFactory auctionFactory) {
-        _itemsOnAuction = new ArrayList<>();
+        DATA = new HashMap<AuctionId, Auction>();
         _auctionFactory = auctionFactory;
     }
 
     @Override
-    public Auction addAuction(AuctionId auctionId, List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-            Auction auction = _auctionFactory.createAuction(auctionId, itemsOnAuction, startingPrice, reservePrice, outrightPrice,  auctionStartDate, auctionEndDate);
-            _itemsOnAuction.add(auction);
-            return auction;
+    public Auction save(Auction auction) {
+        DATA.put(auction.identity(), auction);
+        return auction;
     }
 
     @Override
-    public Auction addAuction(AuctionId auctionId, List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return addAuction(auctionId, itemsOnAuction, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
+    public Iterable<Auction> findAll() {
+        return DATA.values();
+    }
+
+    @Override
+    public Optional<Auction> ofIdentity(AuctionId id) {
+        return Optional.ofNullable(DATA.get(id));
+    }
+
+    @Override
+    public boolean containsOfIdentity(AuctionId id) {
+        return DATA.containsKey(id);
+    }
+
+    @Override
+    public Auction addAuction(List<Item> itemsOnAuction, Price startingPrice, Price reservePrice,
+                              Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+
+        Auction auction = _auctionFactory.createAuction(itemsOnAuction, startingPrice, reservePrice,
+                outrightPrice, auctionStartDate, auctionEndDate);
+
+        return save(auction);
+    }
+
+    @Override
+    public Auction addAuction(List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        return addAuction(itemsOnAuction, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
     @Override
@@ -56,15 +77,12 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
-        for (Auction auction : _itemsOnAuction) {
+        for (Auction auction : findAll()) {
             if (auction.isByGenre(genreId)) {
                 listOfAuctionItemsByGenre.addAll(auction.getItems());
             }
         }
-        List<Item> copyOfListOfAuctionItemsByGenre =
-                new ArrayList<>(listOfAuctionItemsByGenre);
-
-        return copyOfListOfAuctionItemsByGenre;
+        return new ArrayList<>(listOfAuctionItemsByGenre);
     }
 
     @Override
@@ -72,7 +90,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
 
-        for (Auction auction : _itemsOnAuction) {
+        for (Auction auction : findAll()) {
             if (auction.isByAuthor(authorId)) {
                 listOfAuctionItemsByAuthor.addAll(auction.getItems());
             }
@@ -85,15 +103,12 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByPublication = new ArrayList<>();
 
-        for (Auction auction : _itemsOnAuction) {
+        for (Auction auction : findAll()) {
             if(auction.isByPublication(publication)) {
                 listOfAuctionItemsByPublication.addAll(auction.getItems());
             }
         }
-        List<Item> copyOfListOfAuctionItemsByPublication =
-                new ArrayList<>(listOfAuctionItemsByPublication);
-
-        return copyOfListOfAuctionItemsByPublication;
+        return new ArrayList<>(listOfAuctionItemsByPublication);
     }
 
     @Override
@@ -101,13 +116,11 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 
-        for (Auction auction : _itemsOnAuction) {
+        for (Auction auction : findAll()) {
             if (auction.isByPublishingCompany(publisher)){
                 listOfAuctionItemsByPublisher.addAll(auction.getItems());
             }
         }
-
         return new ArrayList<>(listOfAuctionItemsByPublisher);
     }
-
 }
