@@ -27,12 +27,17 @@ public class MemoCountryRepo implements ICountryRepo {
 
     @Override
     public Iterable<Country> findAll() {
-        return List.copyOf(DATA.values());
+        return DATA.values();
     }
 
     @Override
     public Optional<Country> ofIdentity(CountryId id) {
-        return Optional.ofNullable(DATA.get(id));
+        if (!containsOfIdentity(id))
+        {
+            return Optional.empty();
+        } else {
+            return Optional.of(DATA.get(id));
+        }
     }
 
     @Override
@@ -41,19 +46,11 @@ public class MemoCountryRepo implements ICountryRepo {
     }
 
     @Override
-    public Optional<Country> findByName(String name) {
-        if (name == null) return Optional.empty();
-        CountryName target = new CountryName(name);
-        return DATA.values().stream()
-                .filter(c -> c.isNamed(target))
-                .findFirst();
-    }
-
-    public Country addCountry(String isoCode, String countryName) {
-        CountryId id = new CountryId(isoCode);
-        if (containsOfIdentity(id))
+    public Country addCountry(String countryName) {
+        Country country = _countryFactory.createCountry(countryName);
+        if (containsOfIdentity(country.identity()))
             throw new IllegalArgumentException("Country already exists in the repository");
-        Country country = _countryFactory.createCountry(isoCode, countryName);
+
         return save(country);
     }
 }
