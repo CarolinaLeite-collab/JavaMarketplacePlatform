@@ -55,10 +55,10 @@ public class Auction implements AggregateRoot<AuctionId> {
     private Price _finalPrice;
 
 
-    Auction(AuctionId auctionId, List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
         _bids = new MemoBidRepo( new BidFactory());
-        _auctionId = auctionId;
+        _auctionId = new AuctionId();
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -95,8 +95,8 @@ public class Auction implements AggregateRoot<AuctionId> {
         }
     }
 
-    Auction(AuctionId auctionId, List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        this (auctionId, item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
     @Override

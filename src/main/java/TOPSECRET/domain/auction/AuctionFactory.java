@@ -1,7 +1,6 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -17,17 +16,17 @@ import java.util.List;
  */
 public class AuctionFactory {
 
-    public Auction createAuction(AuctionId auctionId, List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate,
+    public Auction createAuction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate,
                                  ZonedDateTime auctionEndDate) {
 
-            return new Auction(auctionId, item, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
+            return new Auction(item, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
 
     }
 
-    public Auction createAuction(AuctionId auctionId, List<Item> item, Price startingPrice, Price reservePrice , Price outrightPrice,
+    public Auction createAuction(List<Item> item, Price startingPrice, Price reservePrice , Price outrightPrice,
                                  ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
-            return new Auction(auctionId, item, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
+            return new Auction(item, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
 
     }
 }

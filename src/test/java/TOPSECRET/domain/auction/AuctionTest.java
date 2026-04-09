@@ -23,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AuctionTest {
-    private AuctionId _auctionIdDouble1;
-    private AuctionId _auctionIdDouble2;
     private List<Item> _items;
     private Item _itemDouble;
     private Price _startingPriceDouble;
@@ -40,8 +38,6 @@ class AuctionTest {
         _itemDouble = mock(Item.class);
         _items = new ArrayList<>();
         _items.add(_itemDouble);
-        _auctionIdDouble1 = mock(AuctionId.class);
-        _auctionIdDouble2 = mock(AuctionId.class);
         _startingPriceDouble = mock(Price.class);
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
         _reservePriceDouble = mock(Price.class);
@@ -57,7 +53,7 @@ class AuctionTest {
     @Test
     void shouldCreateAuctionWithoutOutrightPrice() {
         // Act
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Assert
         assertNotNull(auction);
@@ -68,7 +64,7 @@ class AuctionTest {
     @Test
     void shouldCreateAuctionWithOutrightPrice() {
         // Act
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,_auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,_auctionStart, _auctionEnd); // SUT
 
         // Assert
         assertNotNull(auction);
@@ -82,7 +78,7 @@ class AuctionTest {
         when(_reservePriceDouble.getValue()).thenReturn(10.0);
 
         // Act
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Assert
         assertNotNull(auction);
@@ -95,7 +91,7 @@ class AuctionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd));
+                () -> new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd));
     }
 
     @Test
@@ -105,7 +101,7 @@ class AuctionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, endBefore_start)); // SUT
+                () -> new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, endBefore_start)); // SUT
     }
 
     @Test
@@ -115,13 +111,13 @@ class AuctionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, pastDate, _auctionEnd)); // SUT
+                () -> new Auction( _items, _startingPriceDouble, _reservePriceDouble, pastDate, _auctionEnd)); // SUT
     }
 
     @Test
     void createAuctionThrowsExceptionWhenItemListIsNull() {
         // Assert & Act
-        assertThrows(IllegalArgumentException.class, () -> new Auction(_auctionIdDouble1, null, _startingPriceDouble, _reservePriceDouble, null, _start, _end));
+        assertThrows(IllegalArgumentException.class, () -> new Auction(null, _startingPriceDouble, _reservePriceDouble, null, _start, _end));
     }
 
     @Test
@@ -130,39 +126,27 @@ class AuctionTest {
         List<Item> emptyItems = new ArrayList<>();
 
         // Assert & Act
-        assertThrows(IllegalArgumentException.class, () -> new Auction(_auctionIdDouble1, emptyItems, _startingPriceDouble, _reservePriceDouble, null, _start, _end));
+        assertThrows(IllegalArgumentException.class, () -> new Auction(emptyItems, _startingPriceDouble, _reservePriceDouble, null, _start, _end));
     }
 
     @Test
     void shouldReturnAuctionId() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Act
         AuctionId result = auction.identity();
 
         // Assert
-        assertSame(_auctionIdDouble1, result);
-    }
-
-    @Test
-    void shouldReturnTrueWhenIdsAreEqual() {
-        // Arrange
-        Auction auction1 = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
-        Auction auction2 = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
-
-        // Act
-        boolean result = auction1.sameAs(auction2);
-
-        // Assert
-        assertTrue(result);
+        assertNotNull(result);
+        assertTrue(result instanceof AuctionId);
     }
 
     @Test
     void shouldReturnFalseWhenIdsAreDifferent() {
         // Arrange
-        Auction auction1 = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
-        Auction auction2 = new Auction(_auctionIdDouble2, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction1 = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction2 = new Auction(_items, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Act
         boolean result = auction1.sameAs(auction2);
@@ -174,7 +158,7 @@ class AuctionTest {
     @Test
     void shouldReturnFalseWhenObjectIsNull() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Assert
         assertFalse(auction.sameAs(null));
@@ -183,7 +167,7 @@ class AuctionTest {
     @Test
     void shouldReturnFalseWhenObjectIsDifferentType() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Assert
         assertFalse(auction.sameAs("not an auction"));
@@ -192,7 +176,7 @@ class AuctionTest {
     @Test
     void shouldReturnStartingPrice() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         Price result = auction.getStartingPrice();
@@ -204,7 +188,7 @@ class AuctionTest {
     @Test
     void shouldReturnOutrightPriceWhenDefined() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,_auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,_auctionStart, _auctionEnd); // SUT
 
         // Act
         Price result = auction.getOutrightPrice();
@@ -216,7 +200,7 @@ class AuctionTest {
     @Test
     void shouldReturnNullOutrightPriceWhenNotDefined() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, null,_auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, null,_auctionStart, _auctionEnd); // SUT
 
         // Act
         Price result = auction.getOutrightPrice();
@@ -228,7 +212,7 @@ class AuctionTest {
     @Test
     void acceptBidShouldThrowWhenAuctionIsNotActive() {
         // Arrange
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
         Bid bidDouble = mock(Bid.class); // stub
         Price bidPriceDouble = mock(Price.class); // stub
         when(bidDouble.getOfferPrice()).thenReturn(bidPriceDouble);
@@ -243,7 +227,7 @@ class AuctionTest {
         // Arrange
         ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = _startFuture.plusDays(1);
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture); //SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture); //SUT
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -266,7 +250,7 @@ class AuctionTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd)); // SUT
+                () -> new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd)); // SUT
     }
 
     @Test
@@ -276,7 +260,7 @@ class AuctionTest {
         ZonedDateTime end = _start.plusHours(1);
 
         //SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _start, end);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, end);
 
         // Act
         MemoBidRepo bidRepo = auction.getBids();
@@ -293,7 +277,7 @@ class AuctionTest {
         ZonedDateTime endFuture = _startFuture.plusDays(1);
         User buyerDouble = mock(User.class);
         // #SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -318,7 +302,7 @@ class AuctionTest {
         ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = _startFuture.plusDays(1);
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startFuture, endFuture);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startFuture, endFuture);
 
         ZonedDateTime now = ZonedDateTime.now();
         setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
@@ -347,7 +331,7 @@ class AuctionTest {
         ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = _startFuture.plusDays(1);
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
 
         Bid bidDouble = mock(Bid.class);
         Price priceDouble = mock(Price.class);
@@ -375,7 +359,7 @@ class AuctionTest {
         ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endFuture = _startFuture.plusDays(1);
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
 
         Bid bidDouble = mock(Bid.class);
         Price priceDouble = mock(Price.class);
@@ -415,7 +399,7 @@ class AuctionTest {
         when(_itemDouble.isByAuthor(authorIdDouble)).thenReturn(true);
 
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByAuthor(authorIdDouble);
@@ -432,7 +416,7 @@ class AuctionTest {
         when(_itemDouble.isByAuthor(author2IdDouble)).thenReturn(false);
 
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByAuthor(author2IdDouble);
@@ -448,7 +432,7 @@ class AuctionTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
 
         //SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         auction.isByAuthor(authorIdDouble);
@@ -464,7 +448,7 @@ class AuctionTest {
         when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(true);
 
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByGenre(genreIdDouble);
@@ -480,7 +464,7 @@ class AuctionTest {
         when(_itemDouble.isByGenre(genreId2Double)).thenReturn(false);
 
         // SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         boolean result = auction.isByGenre(genreId2Double);
@@ -495,7 +479,7 @@ class AuctionTest {
         GenreId genreIdDouble = mock(GenreId.class);
 
         //SUT
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
         auction.isByGenre(genreIdDouble);
@@ -510,7 +494,7 @@ class AuctionTest {
         // Arrange
         PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
         when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(true);
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         boolean result = auction.isByPublishingCompany(publisherDouble);
@@ -524,7 +508,7 @@ class AuctionTest {
         // Arrange
         PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
         when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(false);
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         boolean result = auction.isByPublishingCompany(publisherDouble);
@@ -539,7 +523,7 @@ class AuctionTest {
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
         when(_outrightPriceDouble.getValue()).thenReturn(100.0);
         PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         auction.isByPublishingCompany(publisherDouble);
@@ -554,7 +538,7 @@ class AuctionTest {
         Publication publicationDouble = mock(Publication.class); // stub
         when(_itemDouble.isByPublication(publicationDouble)).thenReturn(true);
 
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         boolean result = auction.isByPublication(publicationDouble);
@@ -568,7 +552,7 @@ class AuctionTest {
         // Arrange
         Publication publicationDouble = mock(Publication.class); // stub
         when(_itemDouble.isByPublication(publicationDouble)).thenReturn(false);
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         boolean result = auction.isByPublication(publicationDouble);
@@ -581,7 +565,7 @@ class AuctionTest {
     void isByPublicationShouldDelegateToItem() {
         // Arrange
         Publication publicationDouble = mock(Publication.class); // stub
-        Auction auction = new Auction(_auctionIdDouble1, _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
+        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
         auction.isByPublication(publicationDouble);
