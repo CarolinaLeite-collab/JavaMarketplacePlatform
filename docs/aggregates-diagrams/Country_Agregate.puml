@@ -27,7 +27,7 @@ Package "DOMAIN" {
         }
 
         class CountryFactory <<Factory>> {
-            +createCountry(CountryId, CountryName) : Country
+            +createCountry(String countryName) : Country
         }
     }
 
@@ -41,7 +41,7 @@ Package "DOMAIN" {
 
     Package "REPOSITORY" <<Folder>> {
         interface ICountryRepo <<Interface>> {
-            +findByName(String) : Optional<Country>
+            +addCountry(String) : Country
         }
     }
 
