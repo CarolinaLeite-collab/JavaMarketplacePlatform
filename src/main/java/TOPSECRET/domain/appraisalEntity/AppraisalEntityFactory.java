@@ -1,9 +1,9 @@
 package TOPSECRET.domain.appraisalEntity;
 
-import TOPSECRET.domain.publicationtype.PublicationType;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AppraisalEntityId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
-
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import java.util.List;
 
 /**
@@ -13,7 +13,12 @@ import java.util.List;
  */
 
 public class AppraisalEntityFactory {
-    public AppraisalEntity createAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) {
-        return new AppraisalEntity(name, publicationTypes, genres);
+
+
+    public AppraisalEntity createAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresId) {
+
+        return new AppraisalEntity(name, publicationTypeIds, genresId);
+
     }
+
 }
