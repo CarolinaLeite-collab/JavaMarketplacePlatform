@@ -27,9 +27,7 @@ package "CONTROLLER" {
 
 package "PERSISTENCE" {
     package "MEM" {
-        class MemoAuctionRepo {
-            -_itemsOnAuction : List<Auction>
-        }
+        class MemoAuctionRepo
     }
 }
 
