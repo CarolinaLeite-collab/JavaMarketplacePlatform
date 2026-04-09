@@ -55,8 +55,8 @@ package DOMAIN {
         }
 
         class AuctionFactory {
-            + createAuction(auctionId : AuctionId, itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            + createAuction(auctionId : AuctionId, itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
         }
 
     }
@@ -64,8 +64,8 @@ package DOMAIN {
     package REPOSITORY {
 
         interface IAuctionRepo {
-            addAuction(auctionId : AuctionId, itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            addAuction(auctionId : AuctionId, itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
+            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
             getAuctionItemsByGenreId(genreId : GenreId) :  List<ItemId>
             getAuctionItemsByAuthorId(authorId : AuthorId) :  List<ItemId>
             getAuctionItemsByPublicationId(publicationId : PublicationId):  List<ItemId>
@@ -75,8 +75,7 @@ package DOMAIN {
 
     package VALUEOBJECT {
         class AuctionId <<ValueObject>> #LightPink {
-            _id : UUID
-            +createId() : AuctionId
+            _id : String
         }
         class Price <<ValueObject>>
         class ItemId <<ValueObject>>
