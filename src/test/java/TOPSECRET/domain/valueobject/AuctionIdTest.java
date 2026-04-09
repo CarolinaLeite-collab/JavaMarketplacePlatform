@@ -2,67 +2,51 @@ package TOPSECRET.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionIdTest {
 
     @Test
     void shouldCreateIdAuctionId() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
+        // Act
+        new AuctionId();
     }
 
     @Test
-    void shouldThrowExceptionWhenCreateIdAuctionIdIsNull() {
-        //Assert, Act & SUT
-        assertThrows(IllegalArgumentException.class, () -> new AuctionId(null));
-    }
+    void IdsShouldBeUnique() {
+        // Act
+        AuctionId id1 = new AuctionId();
+        AuctionId id2 = new AuctionId();
 
-    @Test
-    void shouldReturnSameUIID() {
-        // Act & SUT
-        UUID uuid = UUID.randomUUID();
-        AuctionId auctionId = new AuctionId(uuid);
-
-        // Assert
-        assertEquals(uuid, auctionId.getId());
+        //Assert
+        assertNotEquals(id1, id2);
+        assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
     void shouldReturnTrueWhenComparingSameInstance() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
         // Act
-        AuctionId id = AuctionId.createId();
+        AuctionId id = new AuctionId();
 
         // Assert
         assertEquals(id, id);
     }
 
     @Test
-    void ShouldReturnTrueWhenUUIDsAreEqual() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
-
+    void ShouldReturnTrueWhenIdsAreEqual() {
         // ACT
-        AuctionId id1 = new AuctionId(uuid);
-        AuctionId id2 = new AuctionId(uuid);
+        AuctionId id1 = new AuctionId("AU-12345678");
+        AuctionId id2 = new AuctionId("AU-12345678");
 
         // Assert
         assertEquals(id1, id2);
     }
 
     @Test
-    void shouldReturnFalseWhenUUIDAreDifferent() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
+    void shouldReturnFalseWhenIdAreDifferent() {
         // Act
-        AuctionId id1 = AuctionId.createId();
-        AuctionId id2 = AuctionId.createId();
+        AuctionId id1 = new AuctionId();
+        AuctionId id2 = new AuctionId();
 
         // Assert
         assertNotEquals(id1, id2);
@@ -70,24 +54,17 @@ class AuctionIdTest {
 
     @Test
     void shouldReturnFalseWhenComparedWithNull() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
         // Act
-        AuctionId id = AuctionId.createId();
+        AuctionId id = new AuctionId();
 
         // Assert
         assertNotEquals(id, null);
-
     }
 
     @Test
     void shouldReturnFalseWhenCompareWithDifferentType() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
         // Act
-        AuctionId id = AuctionId.createId();
+        AuctionId id = new AuctionId();
 
         // Assert
         assertNotEquals(id, "some string");
@@ -95,12 +72,9 @@ class AuctionIdTest {
 
     @Test
     void hashCodeShouldBeEqualForSameUUID() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
-
         // Act
-        AuctionId id1 = new AuctionId(uuid);
-        AuctionId id2 = new AuctionId(uuid);
+        AuctionId id1 = new AuctionId("AU-12345678");
+        AuctionId id2 = new AuctionId("AU-12345678");
 
         // Assert
         assertEquals(id1.hashCode(), id2.hashCode());
@@ -108,12 +82,9 @@ class AuctionIdTest {
 
     @Test
     void hashCodeShouldBeDifferentForDifferentUUID() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
         // Act
-        AuctionId id1 = AuctionId.createId();
-        AuctionId id2 = AuctionId.createId();
+        AuctionId id1 = new AuctionId();
+        AuctionId id2 = new AuctionId();
 
         // Assert
         assertNotEquals(id1.hashCode(), id2.hashCode());
@@ -122,13 +93,12 @@ class AuctionIdTest {
 
     @Test
     void shouldReturnUUIDString() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
-
         // Act
-        AuctionId id = new AuctionId(uuid);
+        AuctionId id = new AuctionId();
 
         // Assert
-        assertEquals(uuid.toString(), id.toString());
+        assertEquals(id.toString(), id.toString());
+        assertTrue(id.toString().startsWith("AU-"));
+        assertEquals(11, id.toString().length());
     }
 }
