@@ -1,15 +1,12 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
-import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.valueobject.*;
 
 import java.util.List;
 
@@ -47,12 +44,12 @@ public class RegisterNewAppraisalEntityController {
         return _iGenreRepo.findAll();
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationType, List<Genre> genre, User user){
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds, User admin){
 
-        if (!user.hasRole(Role.ADMIN)) {
+        if (!admin.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not authorized to register appraisal entities");
         }
-        return _iAppraisalEntityRepo.registerNewAppraisalEntity(name, publicationType, genre);
+        return _iAppraisalEntityRepo.addAppraisalEntity(name, publicationTypeIds, genreIds);
     }
 
 }

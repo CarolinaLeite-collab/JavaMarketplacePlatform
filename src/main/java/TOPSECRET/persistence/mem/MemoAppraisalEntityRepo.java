@@ -5,10 +5,8 @@ import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.Name;
-
-import java.util.ArrayList;
-import java.util.List;
+import TOPSECRET.domain.valueobject.*;
+import java.util.*;
 
 /**
  * Repository responsible for managing {@link AppraisalEntity} persistence.
@@ -21,37 +19,62 @@ import java.util.List;
  */
 
 public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
-    private final List<AppraisalEntity> _appraisalEntities;
+
+    private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
     private AppraisalEntityFactory _factoryAppraisalEntity;
 
-    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
-        _appraisalEntities = new ArrayList<>();
-        _factoryAppraisalEntity = factoryAppraisalEntity;
-    }
 
-    private boolean appraisalEntityExists(Name name) {
-        for (AppraisalEntity appraisalEntity : _appraisalEntities) {
-            if (appraisalEntity.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
+
+        _factoryAppraisalEntity = factoryAppraisalEntity;
+
     }
 
     @Override
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
+    public AppraisalEntity save(AppraisalEntity appraisalEntity) {
 
-        if (appraisalEntityExists(name)) {
-            throw new IllegalArgumentException("This appraisal entity already exists");
-        }
-
-        List<PublicationType> typesCopy = new ArrayList<>(publicationTypes);
-        List<Genre> genresCopy = new ArrayList<>(genres);
-
-        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, typesCopy, genresCopy);
-
-        _appraisalEntities.add(appraisalEntity);
+        DATA.put(appraisalEntity.identity(), appraisalEntity);
 
         return appraisalEntity;
+
     }
+
+    @Override
+    public Iterable<AppraisalEntity> findAll() {
+
+        return DATA.values();
+
+    }
+
+    @Override
+    public Optional<AppraisalEntity> ofIdentity(AppraisalEntityId id) {
+
+        if(!containsOfIdentity(id)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(id));
+
+        }
+
+    }
+
+    @Override
+    public boolean containsOfIdentity(AppraisalEntityId id) {
+
+        return DATA.containsKey(id);
+
+    }
+
+    @Override
+    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
+
+        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, publicationTypeIds, genresIds);
+
+        return save (appraisalEntity);
+
+    }
+
 }

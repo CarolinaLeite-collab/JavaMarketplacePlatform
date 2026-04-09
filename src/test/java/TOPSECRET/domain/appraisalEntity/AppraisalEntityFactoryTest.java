@@ -1,7 +1,7 @@
 package TOPSECRET.domain.appraisalEntity;
 
-import TOPSECRET.domain.publicationtype.PublicationType;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.valueobject.AppraisalEntityId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.Test;
@@ -10,31 +10,33 @@ import org.mockito.MockedConstruction;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class AppraisalEntityFactoryTest {
+
+
+    @Test
+    void testConstructor() {
+
+        //SUT
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+    }
+
     @Test
     void shouldCreateAppraisalEntity(){
 
         //Arrange
         Name _nameDouble = mock(Name.class);
-        when(_nameDouble.get_Name()).thenReturn("Helpingz TM");
 
-        PublicationType _publicationTypeDouble = mock(PublicationType.class);
         PublicationTypeId _publicationTypeIdDouble = mock(PublicationTypeId.class);
-        when(_publicationTypeIdDouble.toString()).thenReturn("Book");
-        when(_publicationTypeDouble.identity()).thenReturn(_publicationTypeIdDouble);
+        List<PublicationTypeId> _publicationTypeIds = new ArrayList<>();
+        _publicationTypeIds.add(_publicationTypeIdDouble);
 
-        List<PublicationType> _publicationTypes = new ArrayList<>();
-        _publicationTypes.add(_publicationTypeDouble);
-
-        Genre _genreDouble = mock(Genre.class);
-        when(_genreDouble.getGenre()).thenReturn("Self-Help");
-
-        List<Genre> _genres = new ArrayList<>();
-        _genres.add(_genreDouble);
+        GenreId _genreIdDouble = mock(GenreId.class);
+        List<GenreId> _genreIds = new ArrayList<>();
+        _genreIds.add(_genreIdDouble);
 
         //SUT
         AppraisalEntityFactory factory = new AppraisalEntityFactory();
@@ -42,10 +44,42 @@ public class AppraisalEntityFactoryTest {
         try (MockedConstruction<AppraisalEntity> mockedConstruction = mockConstruction(AppraisalEntity.class)){
 
             //Act
-            AppraisalEntity appraisalEntityResult = factory.createAppraisalEntity(_nameDouble, _publicationTypes, _genres);
+            AppraisalEntity appraisalEntityResult = factory.createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
 
             //Assert
             assertNotNull(appraisalEntityResult);
+            assertEquals(1, mockedConstruction.constructed().size());
+
+        }
+
+    }
+
+    @Test
+    void shouldCreateAppraisalEntityWithId() {
+
+        //Arrange
+        AppraisalEntityId appraisalEntityIdDouble = mock(AppraisalEntityId.class);
+        Name nameDouble = mock(Name.class);
+
+        PublicationTypeId pubTypeDouble = mock(PublicationTypeId.class);
+        List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
+        publicationTypeIds.add(pubTypeDouble);
+
+        GenreId genreDouble = mock(GenreId.class);
+        List<GenreId> genreIds = new ArrayList<>();
+        genreIds.add(genreDouble);
+
+        //SUT
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        try (MockedConstruction<AppraisalEntity> mockedConstruction = mockConstruction(AppraisalEntity.class)) {
+
+            //Act
+            AppraisalEntity result = factory.createAppraisalEntity(
+                    appraisalEntityIdDouble, nameDouble, publicationTypeIds, genreIds);
+
+            //Assert
+            assertNotNull(result);
             assertEquals(1, mockedConstruction.constructed().size());
 
         }
