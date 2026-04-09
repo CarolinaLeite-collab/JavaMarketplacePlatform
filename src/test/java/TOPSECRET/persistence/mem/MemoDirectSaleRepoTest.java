@@ -6,14 +6,17 @@ import TOPSECRET.domain.directsale.DirectSaleFactory;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestClassOrder;
 
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
         import static org.mockito.Mockito.*;
@@ -23,6 +26,7 @@ class MemoDirectSaleRepoTest {
     private DirectSaleFactory _factoryDouble;
     private DirectSale _ds1Double;
     private DirectSale _ds2Double;
+    private DirectSaleId _dsIdDouble;
     private List<Item> _items1;
     private List<Item> _items2;
     private Item _item1Double;
@@ -35,6 +39,7 @@ class MemoDirectSaleRepoTest {
         _factoryDouble = mock(DirectSaleFactory.class);
         _ds1Double = mock(DirectSale.class);
         _ds2Double = mock(DirectSale.class);
+        _dsIdDouble = mock(DirectSaleId.class);
         _items1 = new ArrayList<>();
         _items2 = new ArrayList<>();
         _item1Double = mock(Item.class);
@@ -385,6 +390,91 @@ class MemoDirectSaleRepoTest {
         assertTrue(resultsList.contains(_item1Double));
         assertFalse(resultsList.contains(_item2Double));
         assertSame(_item1Double, resultsList.get(0));
+    }
+
+    @Test
+    void shouldSaveDirectSale(){
+        // SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        DirectSale ds = dsr.save(_ds1Double);
+
+        //assert
+        assertSame(ds, _ds1Double);
+    }
+
+    @Test
+    void shouldReturnOptionalWhenDSIsPresent(){
+        //arrange
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        dsr.save(_ds1Double);
+
+        Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble);
+
+        //assert
+        assertTrue(result.isPresent());
+        assertSame(_ds1Double, result.get());
+    }
+
+    @Test
+    void shouldReturnEmptyWhenDSNotPresent(){
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble);
+
+        //assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnTrueWhenContainsIdAndFalseOtherwise(){
+        //arrange
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        dsr.save(_ds1Double);
+        DirectSaleId dsId = mock(DirectSaleId.class);
+
+        //assert
+        assertTrue(dsr.containsOfIdentity(_dsIdDouble));
+        assertFalse(dsr.containsOfIdentity(dsId));
+    }
+
+    @Test
+    void shouldFindAll(){
+        //arrange
+        DirectSaleId dsIdDouble = mock(DirectSaleId.class);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+        when(_ds2Double.identity()).thenReturn(dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        dsr.save(_ds1Double);
+        dsr.save(_ds2Double);
+
+        //act
+        Iterable<DirectSale> result = dsr.findAll();
+
+        //assert
+        List<DirectSale> list = new ArrayList<>();
+        result.forEach(list::add);
+
+        assertEquals(2, list.size());
+        assertTrue(list.contains(_ds1Double));
+        assertTrue(list.contains(_ds2Double));
     }
 
 }
