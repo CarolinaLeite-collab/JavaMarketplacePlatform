@@ -64,13 +64,13 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     public List<GenreId> getGenreIds() {
 
-        return List.copyOf(_genresId);
+        return _genresId;
 
     }
 
     public List<PublicationTypeId> getPublicationTypeIds() {
 
-        return List.copyOf(_publicationTypesId);
+        return _publicationTypesId;
 
     }
 

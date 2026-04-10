@@ -1,25 +1,26 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
 
-import java.util.Arrays;
-import java.util.UUID;
 
 /**
- * Represents the unique identifier of an {@link AppraisalEntityId}.
+ * Value object that represents the unique identity of an {@link AppraisalEntity}.
  * <p>
- * The identifier is automatically generated from the entity's full name and
- * a random code. The format is:
- * <pre>
- * LastName + InitialsOfOtherNames + "-" + Random6CharCode
- * </pre>
- * Example: "Marcelo Pedro Rocha Junior" → "JuniorM.P.R-4F7A1B"
+ * The identifier is automatically generated from a given name by normalizing and formatting it
+ * into a structured string with an acronym prefix and a readable normalized form.
  * </p>
- *
- * <p><b>Validation:</b> The full name cannot be null or blank.</p>
- *
- * <p><b>Equality:</b> Two {@code AppraisalEntityId} instances are equal if they
- * wrap the same underlying string value.</p>
+ * <p>
+ * Format: {@code entity:ACRONYM-NormalizedName}
+ * <ul>
+ *   <li>Acronym is built from the first letter of each word (uppercase).</li>
+ *   <li>Normalized name capitalizes each word and removes extra spaces or hyphens.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * This class ensures identity consistency by overriding {@code equals}, {@code hashCode},
+ * and {@code toString} based on the generated identifier.
+ * </p>
  */
 
 public class AppraisalEntityId implements DomainId {
@@ -45,7 +46,7 @@ public class AppraisalEntityId implements DomainId {
             normalized += Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
         }
 
-        this._id = "entity:" + acronym + "-" + normalized;
+        _id = "entity:" + acronym + "-" + normalized;
 
     }
 
