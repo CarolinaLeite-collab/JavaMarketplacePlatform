@@ -33,18 +33,11 @@ deactivate UI
 
 ADM -> UI: countryName
 activate UI
-UI -> UI: Validate field
 
 '==== Use case execution ====
 ' Updated to pass userId
 UI -> CTL: registerCountry (userId, countryName)
 activate CTL
-
-' The controller verifies if this specific ID has admin rights
-CTL -> UID: isAdmin(userId)
-activate UID
-UID --> CTL: true
-deactivate UID
 
 CTL -> CR: addCountry (countryName)
 activate CR
@@ -53,22 +46,10 @@ CR -> FACTORY: createCountry (countryName)
 activate FACTORY
 create C
 FACTORY -->> C: <<Create>>
-activate C
-create "name:CountryName" as CN
-C -->> CN: <<Create>>
-create "id:CountryId" as CID
-C -->> CID: <<Create(name)>>
-deactivate C
 
 FACTORY --> CR :c1
 deactivate FACTORY
 
-CR -> C: identity()
-activate C
-C --> CR: id
-deactivate C
-
-CR -> CR: containsOfIdentity(id)
 opt containsOfIdentity == false
         CR -> CR: save(c1)
 end

@@ -22,7 +22,6 @@ Package "DOMAIN" {
         class Country <<Entity>> <<Root>> {
             +identity() : CountryId
             +name() : CountryName
-            +isNamed(CountryName) : boolean
             +sameAs(Object) : boolean
         }
 

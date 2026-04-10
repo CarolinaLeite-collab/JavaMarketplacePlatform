@@ -20,11 +20,6 @@ public final class CountryName implements ValueObject {
             throw new IllegalArgumentException("Country name cannot be empty");
         }
 
-        /* * Updated Regex Pattern:
-         * ^[\\p{L}]+          -> Starts with one or more letters
-         * (?:[ '-][\\p{L}]+)* -> Followed by zero or more groups of (space, apostrophe, or hyphen) + letters
-         * $                   -> End of string
-         */
         String pattern = "^[\\p{L}]+(?:[ '-][\\p{L}]+)*$";
 
         if (!normalized.matches(pattern)) {

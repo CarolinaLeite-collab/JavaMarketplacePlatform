@@ -28,10 +28,15 @@ public class Country implements AggregateRoot<CountryId> {
     }
 
     @Override
-    public boolean sameAs(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof Country other)) return false;
-        return _countryId.equals(other._countryId);
+    public boolean sameAs(Object other) {
+        if (!(other instanceof Country)) {
+            return false;
+        }
+        final Country that = (Country) other;
+        if (this == that) {
+            return true;
+        }
+        return identity().equals(that.identity());
     }
 
     @Override
