@@ -30,25 +30,4 @@ class PublicationTypeFactoryTest {
 
     }
 
-    @Test
-    void shouldCreatePublicationTypeFromExistingId() {
-
-        //Arrange
-        PublicationTypeId _pubTypeIdDouble = mock(PublicationTypeId.class);
-
-        //SUT
-        PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
-
-        try (MockedConstruction<PublicationType> mockedConstruction = mockConstruction(PublicationType.class)){
-
-            //Act
-            PublicationType publicationTypeResult = publicationTypeFactory.createPublicationType(_pubTypeIdDouble);
-
-            //Assert
-            assertNotNull(publicationTypeResult);
-            assertEquals(1, mockedConstruction.constructed().size());
-
-        }
-    }
-
 }

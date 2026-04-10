@@ -18,50 +18,6 @@ class PublicationTypeTest {
     }
 
     @Test
-    void constructorShouldBuildPublicationTypeFromId() {
-
-        //Arrange
-        PublicationTypeId idDouble = mock(PublicationTypeId.class);
-
-        //Act
-        new PublicationType(idDouble);
-
-    }
-
-    @Test
-    void constructorWithNullPublicationTypeIdShouldThrowException() {
-
-        //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
-    }
-
-    @Test
-    void constructorWithNullPublicationTypeIdExpectedMessage() {
-
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
-
-        //Assert
-        assertEquals("PublicationTypeId is required.", exception.getMessage());
-
-    }
-
-    @Test
-    void identityShouldReturnUnderlyingId() {
-
-        //Arrange
-        PublicationTypeId idDouble = mock(PublicationTypeId.class);
-        PublicationType publicationType = new PublicationType(idDouble);
-
-        // Act
-        PublicationTypeId pubTypeId = publicationType.identity();
-
-        //Assert
-        assertSame(idDouble, pubTypeId);
-
-    }
-
-    @Test
     void sameAsShouldReturnTrueForEqualPublicationType() {
 
         //Arrange
@@ -176,5 +132,54 @@ class PublicationTypeTest {
         assertNotEquals(pubType1.hashCode(), pubType2.hashCode());
 
     }
+
+    @Test
+    void identityShouldReturnUnderlyingId() {
+
+        //Arrange
+        String pubType = "book";
+        PublicationType publicationType = new PublicationType(pubType);
+
+        // Act
+        PublicationTypeId pubTypeId = publicationType.identity();
+
+        //Assert
+        assertEquals("BOOK", pubTypeId.toString());
+
+    }
+
+    /* Tests from deleted constructor that took in PublicationTypeId as a parameter
+
+        @Test
+    void constructorShouldBuildPublicationTypeFromId() {
+
+        //Arrange
+        PublicationTypeId idDouble = mock(PublicationTypeId.class);
+
+        //Act
+        new PublicationType(idDouble);
+
+    }
+
+        @Test
+    void constructorWithNullPublicationTypeIdShouldThrowException() {
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
+
+    }
+
+     @Test
+    void constructorWithNullPublicationTypeIdExpectedMessage() {
+
+        //Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new PublicationType((PublicationTypeId) null));
+
+        //Assert
+        assertEquals("PublicationTypeId is required.", exception.getMessage());
+
+    }
+
+     */
 
 }

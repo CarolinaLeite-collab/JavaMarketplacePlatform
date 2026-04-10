@@ -23,13 +23,13 @@ public class PublicationType implements AggregateRoot<PublicationTypeId> {
         _id = new PublicationTypeId(publicationTypeName);
     }
 
-     PublicationType(PublicationTypeId publicationTypeId) {
+    /* PublicationType(PublicationTypeId publicationTypeId) {
         if (publicationTypeId == null) {
             throw new IllegalArgumentException("PublicationTypeId is required.");
         }
         _id = publicationTypeId;
 
-    }
+    }*/
 
     @Override
     public PublicationTypeId identity() {

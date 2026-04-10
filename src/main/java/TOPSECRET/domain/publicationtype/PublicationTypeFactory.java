@@ -17,10 +17,4 @@ public class PublicationTypeFactory {
 
     }
 
-    public PublicationType createPublicationType(PublicationTypeId publicationTypeId) {
-
-        return new PublicationType(publicationTypeId);
-
-    }
-
 }
