@@ -2,12 +2,21 @@ package TOPSECRET.domain.author;
 
 import TOPSECRET.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 
 public class AuthorTest {
+
+    @Test
+    void testConstructor() {
+
+        // Arrange
+        String name = "Eça de Queirós";
+
+        // Act & SUT
+        AuthorId authorId = new AuthorId(name);
+
+    }
 
     @Test
     void validNameAuthor() {
@@ -270,6 +279,19 @@ public class AuthorTest {
         Author a2 = new Author("Seneca");
 
         // Act & Assert
+        assertFalse(a1.equals(a2));
+
+    }
+
+    @Test
+    void equalsShouldDependOnAuthorIdNotObjectReference() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Seneca");
+
+        // Act & Assert
+        assertNotSame(a1, a2);
         assertFalse(a1.equals(a2));
 
     }
