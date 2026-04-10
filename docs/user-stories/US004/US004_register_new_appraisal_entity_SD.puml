@@ -1,6 +1,7 @@
 @startuml
-title US004 - "Register a new Appraisal Entity, including the genres and publication types it can appraise" - SD
-hidefootbox
+'==== Title ====
+title US004 - "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" - SD
+
 
 '==== basic style ====
 skinparam monochrome false
@@ -12,78 +13,79 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
-
+hidefootbox
 autonumber
 
 
+' ==== Actor and participants ====
 actor Administrator
-participant "UI1:RegisterNewAppraisalEntityUI" as UI
-participant "Ctl1:RegisterNewAppraisalEntityController" as ctl
-participant "_ptr:IPublicationTypeRepo" as ptr
-participant "_gr:IGenreRepo" as grRepo
-participant "_aer:MemoAppraisalEntityRepo" as aeRepo
-participant "aef:AppraisalEntityFactory" as aeFactory
+participant ":RegisterNewAppraisalEntityUI" as UI
+participant ":RegisterNew\nAppraisalEntityController" as CTL
+participant ":IPublicationTypeRepo" as PTR
+participant ":IGenreRepo" as grRepo
+participant ":MemoAppraisalEntityRepo" as aeRepo
+participant ":AppraisalEntityFactory" as Factory
 
+
+'==== UI interaction ====
 Administrator -> UI: I want to register an Appraisal Entity
 activate UI
 UI --> Administrator: What is the Appraisal Entity's name?
 deactivate UI
 Administrator -> UI: name
 activate UI
-UI -> ctl: getPublicationTypes()
-activate ctl
-ctl -> ptr: getPublicationTypes()
-activate ptr
-ptr --> ctl: copyOfListOfPublicationTypes
-deactivate ptr
-ctl --> UI: copyOfListOfPublicationTypes
-deactivate ctl
+
+'==== Use case execution ====
+UI -> CTL: getPublicationTypes()
+activate CTL
+CTL -> PTR: findAll()
+activate PTR
+PTR --> CTL: List<PublicationType>
+deactivate PTR
+CTL --> UI: List<PublicationType>
+deactivate CTL
 
 UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
 deactivate UI
 
 Administrator -> UI: publicationTypes
 activate UI
-UI -> ctl: getGenres()
-activate ctl
-ctl -> grRepo: getGenres()
+UI -> CTL: getGenres()
+activate CTL
+CTL -> grRepo: findAll()
 activate grRepo
-grRepo --> ctl: copyOfListOfGenres
+grRepo --> CTL: List<Genre>
 deactivate grRepo
-ctl --> UI: copyOfListOfOfficialGenres
-deactivate ctl
+CTL --> UI: List<Genre>
+deactivate CTL
+
 UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
 deactivate UI
 
 Administrator -> UI: genres
 activate UI
-UI -> ctl: registerNewAppraisalEntity(name, publicationTypes, genres)
-activate ctl
-ctl -> aeRepo: registerNewAppraisalEntity(name, publicationTypes, genres)
+UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
+activate CTL
+CTL -> aeRepo: addAppraisalEntity(name, publicationTypeIds, genreIds)
 activate aeRepo
-create "_listae:List <AppraisalEntity>"
-aeRepo -->> "_listae:List <AppraisalEntity>": <<Create>>
 
-opt appraisalEntityExists(name, publicationTypes, genres) == false
-        aeRepo -> aeFactory: createAppraisalEntity(name, publicationTypes, genres)
-        create "_AppraisalEntity:AppraisalEntity"
-        activate aeFactory
-        aeFactory -->> "_AppraisalEntity:AppraisalEntity": <<Create>>
-        aeFactory -> aeRepo: _AppraisalEntity
-        deactivate aeFactory
-        aeRepo -> "_listae:List <AppraisalEntity>":add(_AppraisalEntity)
-        activate "_listae:List <AppraisalEntity>"
-        "_listae:List <AppraisalEntity>" --> aeRepo: true
+opt containsOfIdentity(appraisalEntityId) == false
+        aeRepo -> Factory: createAppraisalEntity(\nname, publicationTypeIds, genreIds)
+        create "appraisalEntity:AppraisalEntity"
+        activate Factory
+        Factory -->> "appraisalEntity:AppraisalEntity": <<create>>
+        Factory -> aeRepo: appraisalEntity
+        deactivate Factory
+
+        aeRepo -> aeRepo : save(appraisalEntity)
+
     end
 
-deactivate "_listae:List <AppraisalEntity>"
-aeRepo --> ctl: _AppraisalEntity
+aeRepo --> CTL: appraisalEntity
 deactivate aeRepo
-ctl --> UI: _AppraisalEntity
-deactivate ctl
+CTL --> UI: appraisalEntity
+deactivate CTL
 UI --> Administrator: Done!
 deactivate UI
-
-
 
 @enduml

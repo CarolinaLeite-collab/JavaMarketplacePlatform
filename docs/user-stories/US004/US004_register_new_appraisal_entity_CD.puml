@@ -1,6 +1,8 @@
 @startuml
-'https://plantuml.com/class-diagram
-title US004 - "Register a new Appraisal Entity, including the genres and publication types it can appraise" - CD
+
+'==== Title ====
+title US004 - "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" - CD
+top to bottom direction
 
 
 '==== basic style ====
@@ -15,53 +17,142 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
+
+' ===== Domain =====
 class RegisterNewAppraisalEntityUI {
 }
 
-class RegisterNewAppraisalEntityController {
-- _appraisalEntityRepo : MemoAppraisalEntityRepo
-- _genreRepo : IGenreRepo
-- _publicationTypeRepo : IPublicationTypeRepo
-+ registerNewAppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>) : AppraisalEntity
-+ getPublicationTypes() : List<PublicationType>
-+ getGenres() : List<Genre>
+package "controller" {
+
+    class RegisterNewAppraisalEntityController {
+
+        + registerNewAppraisalEntity(name : Name, publicationTypeIds : List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
+        + getPublicationTypes() : Iterable<PublicationType>
+        + getGenres() : Iterable<Genre>
+
+    }
+
 }
 
-interface IAppraisalEntityRepo {
-+ registerNewAppraisalEntity(name : Name, publicationTypes: List<PublicationType>, genres : List<Genre>) : AppraisalEntity
+package "persistence" {
+
+    package "mem" {
+
+        class MemoAppraisalEntityRepo {
+
+        }
+
+        class MemoGenreRepo {
+
+        }
+
+        class MemoPublicationTypeRepo {
+
+        }
+
+    }
+
 }
 
-class MemoAppraisalEntityRepo {
--_appraisalEntity : List<AppraisalEntity>
-- appraisalEntityExists(name:Name) : boolean
+package "domain" {
+    package "repository" {
+
+        interface IAppraisalEntityRepo <<Interface>> {
+        + addAppraisalEntity(name : Name, \npublicationTypeIds: List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
+
+        }
+
+        interface IGenreRepo <<Interface>> {
+
+        }
+
+        interface IPublicationTypeRepo <<Interface>> {
+
+        }
+
+    }
+
+    package "appraisalEntity" #b0c4d4 {
+
+        class AppraisalEntity <<Root>> <<Entity>>{
+            -_publicationTypeIds : List<PublicationTypeId>
+            -_genreIds : List<GenreId>
+
+            +identity() : AppraisalEntityId
+            +sameAs(Object) : boolean
+            +getName() : Name
+            +getGenres () : List<GenreId>
+            +getPublicationTypes() : List<PublicationTypeId>
+        }
+
+        class AppraisalEntityFactory <<Factory>> {
+        + createAppraisalEntity(name : Name, \npublicationTypeIds: List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
+        }
+
+    }
+
+    Package "valueobject"  {
+
+        '== Value Objects (Ids) ==
+        class AppraisalEntityId <<ValueObject>> #LightPink {
+        -_id : String
+
+        }
+
+        class GenreId <<ValueObject>> {
+
+        }
+
+        class PublicationTypeId <<ValueObject>> {
+
+        }
+        ' ===== Value Objects =====
+        class Name <<ValueObject>> {
+
+        }
+
+    }
+
 }
 
-class AppraisalEntityFactory {
-+ createAppraisalEntity(name : Name, publicationTypes: List<PublicationType>, genres : List<Genre>) : AppraisalEntity
-}
-interface IGenreRepo {
-- _genre : List<Genre>
-+ getAll() : List<Genre>
+Package "ddd" {
+
+    interface IRepository<ID, T> <<Interface>> {
+    save(T) : T
+    findAll() : Iterable<T>
+    ofIdentity(ID) : Optional <T>
+    containsOfIdentity(ID) : boolean
+    }
+
 }
 
-interface IPublicationTypeRepo {
--_publicationType : List<PublicationType>
-+ getAll() : List<PublicationType>
-}
 
-class AppraisalEntity{
-- _name : Name
-- _publicationTypes : List<PublicationType>
-- _genres : List<Genre>
-+ AppraisalEntity(name : Name, publicationTypes : List<PublicationType>, genres : List<Genre>)
-}
+'==== Interactions ====
 
-RegisterNewAppraisalEntityUI "1" ..> "1" RegisterNewAppraisalEntityController : uses
-RegisterNewAppraisalEntityController "1" ..> "1" IGenreRepo : accesses
-RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : accesses
-RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : uses
-IAppraisalEntityRepo "1" <|.. "1" MemoAppraisalEntityRepo
-MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : uses
-AppraisalEntityFactory "1" --> "*" AppraisalEntity : creates
+RegisterNewAppraisalEntityUI "1" ..> "1" RegisterNewAppraisalEntityController : invokes
+
+RegisterNewAppraisalEntityController "1" ..> "1" IGenreRepo : calls
+RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : calls
+RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : calls
+RegisterNewAppraisalEntityController "1" ....> "*" AppraisalEntity : <<use>>
+
+MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : <<use>>
+
+AppraisalEntityFactory "1" ..> "*" AppraisalEntity : <<create>>
+
+AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
+AppraisalEntity "1" --> "1..*" GenreId : references
+AppraisalEntity "1" --> "1..*" PublicationTypeId : references
+AppraisalEntity "1" *-- "1" Name : has
+AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
+
+IAppraisalEntityRepo <|.. MemoAppraisalEntityRepo
+MemoGenreRepo ..|> IGenreRepo
+MemoPublicationTypeRepo ..|> IPublicationTypeRepo
+
+IAppraisalEntityRepo ----|> IRepository
+IPublicationTypeRepo -|> IRepository
+IGenreRepo -|> IRepository
+
 
 @enduml
