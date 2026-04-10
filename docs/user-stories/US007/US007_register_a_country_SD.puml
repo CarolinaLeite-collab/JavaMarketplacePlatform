@@ -69,7 +69,7 @@ C --> CR: id
 deactivate C
 
 CR -> CR: containsOfIdentity(id)
-opt [containsOfIdentity == false]
+opt containsOfIdentity == false
         CR -> CR: save(c1)
 end
 

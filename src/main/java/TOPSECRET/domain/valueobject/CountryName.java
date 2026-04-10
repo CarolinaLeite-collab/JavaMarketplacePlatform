@@ -31,7 +31,7 @@ public final class CountryName implements ValueObject {
             throw new IllegalArgumentException("Invalid country name: " + name);
         }
 
-        this._value = normalized.toUpperCase(Locale.ROOT);
+        _value = normalized.toUpperCase(Locale.ROOT);
     }
 
     @Override

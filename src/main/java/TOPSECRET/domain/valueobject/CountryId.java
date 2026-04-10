@@ -12,18 +12,16 @@ public final class CountryId implements DomainId {
 
     private final String _code;
 
-    /**
-     * Backward-compatible constructor that accepts an ISO 3166-1 alpha-2 code.
-     */
+    // Backward-compatible constructor that accepts an ISO 3166-1 alpha-2 code.
     public CountryId(String isoCode) {
-        this._code = normalizeAndValidateIsoCode(isoCode);
+        _code = normalizeAndValidateIsoCode(isoCode);
     }
 
     public CountryId(CountryName name) {
         // Technical safety: ensures we don't call .toString() on null
         Objects.requireNonNull(name, "CountryName is required to generate an ID");
 
-        this._code = generateIsoCode(name.toString());
+        _code = generateIsoCode(name.toString());
     }
 
     private String normalizeAndValidateIsoCode(String isoCode) {

@@ -9,10 +9,9 @@ public class Country implements AggregateRoot<CountryId> {
     private final CountryId _countryId;
     private final CountryName _name;
 
-    // Package-private constructor: Encourages use of the Factory
     Country(String countryName) {
-        this._name = new CountryName(countryName);
-        this._countryId = new CountryId(this._name);
+        _name = new CountryName(countryName);
+        _countryId = new CountryId(this._name);
     }
 
     public CountryId identity() {
@@ -23,9 +22,7 @@ public class Country implements AggregateRoot<CountryId> {
         return _name;
     }
 
-    /**
-     * Backward-compatible accessor kept for existing callers.
-     */
+    @Deprecated
     public String getCountryName() {
         return _name.toString();
     }
