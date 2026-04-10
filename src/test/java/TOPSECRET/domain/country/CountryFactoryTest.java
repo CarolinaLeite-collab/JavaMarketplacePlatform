@@ -13,17 +13,21 @@ class CountryFactoryTest {
     void shouldSuccessfullyCreateCountry() {
         // Arrange
         String countryName = "Deutschland";
+        CountryFactory factory = new CountryFactory(); // SUT
+        Country result;
+        int constructedCount;
+        Country mockedInstance;
 
-        // SUT
-        CountryFactory factory = new CountryFactory();
-
+        // Act
         try (MockedConstruction<Country> mocked = mockConstruction(Country.class)) {
-            // Act
-            Country result = factory.createCountry(countryName);
+            result = factory.createCountry(countryName);
 
-            // Assert
-            assertEquals(1, mocked.constructed().size());
-            assertSame(mocked.constructed().get(0), result);
+            constructedCount = mocked.constructed().size();
+            mockedInstance = mocked.constructed().get(0);
         }
+
+        // Assert
+        assertEquals(1, constructedCount);
+        assertSame(mockedInstance, result);
     }
 }
