@@ -81,7 +81,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         if (object == this) return true;
         if (!(object instanceof AppraisalEntity)) return false;
         AppraisalEntity appraisalEntity = (AppraisalEntity) object;
-        return this._appraisalEntityId.equals(appraisalEntity._appraisalEntityId);
+        return _appraisalEntityId.equals(appraisalEntity._appraisalEntityId);
 
     }
 

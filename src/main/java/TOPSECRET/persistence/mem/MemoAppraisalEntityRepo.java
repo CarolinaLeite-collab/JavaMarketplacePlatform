@@ -26,9 +26,9 @@ public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
     private AppraisalEntityFactory _appraisalEntityFactory;
 
 
-    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
+    public MemoAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
 
-        _appraisalEntityFactory = factoryAppraisalEntity;
+        _appraisalEntityFactory = appraisalEntityFactory;
 
     }
 
