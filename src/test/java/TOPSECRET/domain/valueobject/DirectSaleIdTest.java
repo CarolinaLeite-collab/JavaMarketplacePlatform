@@ -10,13 +10,13 @@ class DirectSaleIdTest {
     void testConstructot() {
 
         //Act
-        DirectSaleId id = new DirectSaleId();
+        DirectSaleId id = new DirectSaleId(); //SUT
 
     }
     @Test
     void shouldReturnNonNullId() {
         //act
-        DirectSaleId id = new DirectSaleId();
+        DirectSaleId id = new DirectSaleId(); //SUT
 
         //assert
         assertNotNull(id);
@@ -25,8 +25,8 @@ class DirectSaleIdTest {
     @Test
     void shouldCreateDifferentIdsEachTime() {
         //act
-        DirectSaleId id1 = new DirectSaleId();
-        DirectSaleId id2 = new DirectSaleId();
+        DirectSaleId id1 = new DirectSaleId(); //SUT
+        DirectSaleId id2 = new DirectSaleId(); //SUT
 
         // assert
         assertNotEquals(id1, id2);
@@ -35,8 +35,8 @@ class DirectSaleIdTest {
     @Test
     void equalsAndHashCodeShouldWorkForSameUnderlyingValue() {
         //act
-        DirectSaleId id1 = new DirectSaleId();
-        DirectSaleId id2 = new DirectSaleId();
+        DirectSaleId id1 = new DirectSaleId(); //SUT
+        DirectSaleId id2 = new DirectSaleId(); //SUT
 
         //assert
         assertFalse(id1.equals(id2));
@@ -46,7 +46,7 @@ class DirectSaleIdTest {
     @Test
     void equalsShouldReturnFalseForDifferentTypeOrNull() {
         //act
-        DirectSaleId id = new DirectSaleId();
+        DirectSaleId id = new DirectSaleId(); //SUT
 
         //assert
         assertFalse(id.equals(null));
