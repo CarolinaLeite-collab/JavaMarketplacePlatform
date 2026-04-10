@@ -12,7 +12,7 @@ class AppraisalEntityIdTest {
         // Arrange
         String name = null;
 
-        // Act + Assert
+        // Act & Assert & SUT
         assertThrows(IllegalArgumentException.class, () -> new AppraisalEntityId(name));
 
     }
@@ -23,7 +23,7 @@ class AppraisalEntityIdTest {
         // Arrange
         String name = "   ";
 
-        // Act + Assert
+        // Act & Assert & SUT
         assertThrows(IllegalArgumentException.class,() -> new AppraisalEntityId(name));
 
     }
@@ -293,7 +293,7 @@ class AppraisalEntityIdTest {
     @Test
     void equalObjectsMustHaveSameHashCode() {
 
-        // Arrange
+        // Arrange & SUT
         AppraisalEntityId id1 = new AppraisalEntityId("The Book Watchers");
         AppraisalEntityId id2 = new AppraisalEntityId("The Book Watchers");
 
@@ -309,7 +309,7 @@ class AppraisalEntityIdTest {
     @Test
     void differentNamesShouldHaveDifferentHashCodes() {
 
-        // Arrange
+        // Arrange & SUT
         AppraisalEntityId id1 = new AppraisalEntityId("Book Lovers");
         AppraisalEntityId id2 = new AppraisalEntityId("Book Watchers");
 
