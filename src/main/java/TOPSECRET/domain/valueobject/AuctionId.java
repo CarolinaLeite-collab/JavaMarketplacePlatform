@@ -25,6 +25,10 @@ import java.util.UUID;
     }
 
     public AuctionId(String id) {
+        if (id == null || !id.matches("AU-[A-Z0-9]{8}")) {
+            throw new IllegalArgumentException("Invalid AuctionId format");
+        }
+
         _id = id;
     }
 
