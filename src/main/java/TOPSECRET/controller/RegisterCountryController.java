@@ -4,6 +4,7 @@ import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the country registration use case.
@@ -11,7 +12,7 @@ import TOPSECRET.domain.valueobject.Role;
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo) {
+    public RegisterCountryController(ICountryRepo iCountryRepo, UserId userAdmin) {
         _iCountryRepo = iCountryRepo;
     }
 
