@@ -30,11 +30,13 @@ Package "DOMAIN" {
             +isByPublication(publication : PublicationId) : boolean
             +isByPublisher(publishingCompany : PublishingCompanyId) : boolean
             +isByGenre(genre : GenreId) : boolean
+            +sameAs(object : Object) : boolean
+            +identity() : DirectSaleId
             -requiresItemAndPrice(items : List<ItemId>, price : Price)
             -timeLimitMustBeValid(timeLimit : Period)
             }
 
-            class DirectSaleFactory {
+            class DirectSaleFactory <<Factory>> {
             + createDirectSale(item : ItemId, price : Price, timeLimit : Period) : DirectSale
             }
 }
