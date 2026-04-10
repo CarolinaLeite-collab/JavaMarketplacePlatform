@@ -102,9 +102,9 @@ CreateAuthorUI "1" ..> "1" CreateAuthorController : invokes
 CreateAuthorController "1" ..> "1" IAuthorRepo : calls
 CreateAuthorController "1" .> "*" Author : <<use>>
 
-MemoAuthorRepo "1" --> "1" AuthorFactory : <<use>>
+MemoAuthorRepo "1" --> "1" AuthorFactory : invokes
 
-AuthorFactory "1" ..> "*" Author : creates
+AuthorFactory "1" ..> "*" Author : <<create>>
 
 Author "1" -> "ID 1" AuthorId : has
 

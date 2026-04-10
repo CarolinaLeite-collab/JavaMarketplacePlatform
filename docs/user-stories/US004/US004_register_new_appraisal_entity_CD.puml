@@ -81,8 +81,8 @@ package "domain" {
             +identity() : AppraisalEntityId
             +sameAs(Object) : boolean
             +getName() : Name
-            +getGenres () : List<GenreId>
-            +getPublicationTypes() : List<PublicationTypeId>
+            +getGenreIds () : List<GenreId>
+            +getPublicationTypeIds() : List<PublicationTypeId>
         }
 
         class AppraisalEntityFactory <<Factory>> {
@@ -136,7 +136,7 @@ RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : calls
 RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : calls
 RegisterNewAppraisalEntityController "1" ....> "*" AppraisalEntity : <<use>>
 
-MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : <<use>>
+MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : invokes
 
 AppraisalEntityFactory "1" ..> "*" AppraisalEntity : <<create>>
 

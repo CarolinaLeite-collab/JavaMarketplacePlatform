@@ -1,5 +1,5 @@
 @startuml
-title US004 - "Register a new Appraisal Entity, including \nthe genres and publication types it can appraise" - SSD
+title US004 - "As an Administrator, I want to register an Appraisal Entity, \nincluding the list of genres and publication types it can appraisal" - SSD
 hidefootbox
 
 '==== basic style ====
