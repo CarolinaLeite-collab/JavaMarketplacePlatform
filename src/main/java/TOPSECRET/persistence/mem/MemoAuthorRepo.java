@@ -4,14 +4,17 @@ import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.author.AuthorFactory;
 import TOPSECRET.domain.valueobject.AuthorId;
-
 import java.util.*;
 
 /**
- * Repository for managing {@link Author} instances.
+ * In-memory implementation of the {@link IAuthorRepo} repository.
  * <p>
- * Provides methods to create new authors, check for the existence of authors by name,
- * and retrieve all authors in the repository.
+ * This class stores {@link Author} entities in a HashMap using their identity as the key.
+ * It is intended for testing, prototyping, or scenarios where persistence is not required.
+ * </p>
+ * <p>
+ * It provides basic repository operations such as saving, retrieving, checking existence,
+ * and creating new {@link Author} instances through an injected {@link AuthorFactory}.
  * </p>
  */
 
@@ -69,10 +72,6 @@ public class MemoAuthorRepo implements IAuthorRepo {
     public Author addAuthor(String authorName) {
 
         Author newAuthor = _authorFactory.createAuthor(authorName);
-
-        if (containsOfIdentity(newAuthor.identity())) {
-            throw new IllegalArgumentException("Author already exists in the repository");
-        }
 
         return save (newAuthor);
 
