@@ -2,6 +2,7 @@ package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -27,28 +28,24 @@ public class AppraisalEntityId implements DomainId {
 
     public AppraisalEntityId(String name) {
 
-        if ( name == null || name.isBlank() ) {
-
+        if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntityId cannot be null or blank");
-
         }
 
-        String[] parts = name.trim().split("\\s+");
-        String lastName = parts[parts.length - 1];
+        String trimmed = name.trim();
+        String[] words = trimmed.split("[\\s-]+");
 
-        StringBuilder initials = new StringBuilder();
+        String acronym = "";
+        String normalized = "";
 
-        for (int i = 0; i < parts.length - 1; i++) {
+        for (String word : words) {
 
-            initials.append(Character.toUpperCase(parts[i].charAt(0)));
+            acronym += Character.toUpperCase(word.charAt(0));
 
-            initials.append(".");
-
+            normalized += Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
         }
 
-        String code = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-
-        _id = lastName + initials + "-" + code;
+        this._id = "entity:" + acronym + "-" + normalized;
 
     }
 
