@@ -68,9 +68,13 @@ public class MemoAuthorRepo implements IAuthorRepo {
     @Override
     public Author addAuthor(String authorName) {
 
-        Author author = _authorFactory.createAuthor(authorName);
+        Author newAuthor = _authorFactory.createAuthor(authorName);
 
-        return save (author);
+        if (containsOfIdentity(newAuthor.identity())) {
+            throw new IllegalArgumentException("Author already exists in the repository");
+        }
+
+        return save (newAuthor);
 
     }
 
