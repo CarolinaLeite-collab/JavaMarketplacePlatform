@@ -22,6 +22,8 @@ package DOMAIN {
         class Auction <<Entity>> <<Root>> {
             -ZonedDateTime _auctionStartDate;
             -ZonedDateTime _auctionEndDate;
+            +identity() : AuctionId
+            +sameAs(Object) : boolean
             +placeBid (userId : UserId, price : Price) : Bid
             +getHighestBid() : Bid
             +acceptBid(Bid : Bid) : void
@@ -50,11 +52,11 @@ package DOMAIN {
             -validateOfferPrice(UserId)
         }
 
-        class BidFactory {
+        class BidFactory <<Factory>> {
             + createBid(bidderId : UserId, offerPrice : Price) : Bid
         }
 
-        class AuctionFactory {
+        class AuctionFactory <<Factory>> {
             + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
             + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
         }
