@@ -40,9 +40,9 @@ UI -> CTL: getPublicationTypes()
 activate CTL
 CTL -> PTR: findAll()
 activate PTR
-PTR --> CTL: List<PublicationType>
+PTR --> CTL: Collection<PublicationType>
 deactivate PTR
-CTL --> UI: List<PublicationType>
+CTL --> UI: Collection<PublicationType>
 deactivate CTL
 
 UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
@@ -54,9 +54,9 @@ UI -> CTL: getGenres()
 activate CTL
 CTL -> grRepo: findAll()
 activate grRepo
-grRepo --> CTL: List<Genre>
+grRepo --> CTL: Collection<Genre>
 deactivate grRepo
-CTL --> UI: List<Genre>
+CTL --> UI: Collection<Genre>
 deactivate CTL
 
 UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
