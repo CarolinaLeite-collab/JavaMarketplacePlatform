@@ -2,84 +2,110 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
+import org.junit.jupiter.api.function.Executable;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 class CreateAuthorControllerTest {
 
     private IAuthorRepo _iAuthorRepoDouble;
-    private UserId _adminIdDouble;
+    private User _adminDouble;
+    private Author _authorDouble;
+    private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _iAuthorRepoDouble = mock(IAuthorRepo.class);
-        _adminIdDouble = mock(UserId.class);
+        _adminDouble = mock(User.class);
+        _authorDouble = mock(Author.class);
+        _userIdDouble = mock(UserId.class);
 
     }
+
 
     @Test
     void testCreateAuthorControllerConstructor() {
 
         // SUT & Act
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
 
     }
 
     @Test
-    void shouldCreateAuthorWithValidName() {
-        //arrange
-        String name = "João";
-        Author authorDouble = mock(Author.class);
+    void shouldCreateAuthorWhenUserIsAdmin() {
 
-        //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
+        // Arrange
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_iAuthorRepoDouble.addAuthor("Tolstói")).thenReturn(_authorDouble);
 
-        //act
-        when(_iAuthorRepoDouble.addAuthor("João")).thenReturn(authorDouble);
+        // SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
 
-        Author author = controller.createAuthor(name);
+        // Act
+        Author result = controller.createAuthor("Tolstói", _adminDouble);
 
-        //assert
-        assertNotNull(author);
-        assertEquals(authorDouble, author);
+        // Assert
+        assertEquals(_authorDouble, result);
+
     }
 
     @Test
-    void shouldTrimAuthorName() {
-        //arrange
-        String name = "João";
-        Author authorDouble = mock(Author.class);
+    void shouldThrowExceptionWhenUserIsNotAdmin() {
 
-        //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
+        // Arrange
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
-        //act
-        when(_iAuthorRepoDouble.addAuthor(name)).thenReturn(authorDouble);
-        when(authorDouble.getName()).thenReturn(name);
+        // SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
 
-        Author author = controller.createAuthor("João  ");
+        // Act
+        Executable action = () -> controller.createAuthor("Tolstói", _adminDouble);
 
-        //assert
-        assertEquals(authorDouble.getName(), author.getName());
+        // Assert
+        assertThrows(SecurityException.class, action);
+
     }
 
     @Test
-    void shouldThrowExceptionWhenAuthorAlreadyExists() {
-        //SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _adminIdDouble);
+    void shouldTrimAuthorNameBeforeSaving() {
 
-        //Act
-        when(_iAuthorRepoDouble.addAuthor("Maria")).thenThrow(new IllegalStateException("Author already exists"));
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> controller.createAuthor("Maria "));
+        // Arrange
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_iAuthorRepoDouble.addAuthor("Tolstói")).thenReturn(_authorDouble);
 
-        //Assert
-        assertEquals("Author already exists", ex.getMessage());
+        // SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
+
+        // Act
+        controller.createAuthor("   Tolstói   ", _adminDouble);
+
+        // Assert
+        verify(_iAuthorRepoDouble).addAuthor("Tolstói");
+
+    }
+
+    @Test
+    void shouldNotCallRepoWhenUserIsNotAdmin() {
+
+        // Arrange
+        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        // SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
+
+        // Act
+        Executable action = () -> controller.createAuthor("Tolstói", _adminDouble);
+
+        // Assert
+        assertThrows(SecurityException.class, action);
+
     }
 
 }

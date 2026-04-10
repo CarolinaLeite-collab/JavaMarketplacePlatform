@@ -2,6 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.repository.IAuthorRepo;
+import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 
 /**
@@ -22,7 +24,11 @@ public class CreateAuthorController {
 
     }
 
-    public Author createAuthor (String authorName){
+    public Author createAuthor (String authorName, User admin){
+
+        if (!admin.hasRole(Role.ADMIN)) {
+            throw new SecurityException("User is not authorized to register authors");
+        }
 
         return _iAuthorRepo.addAuthor(authorName.trim());
 
