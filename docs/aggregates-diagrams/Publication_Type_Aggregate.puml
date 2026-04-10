@@ -21,7 +21,7 @@ package "PERSISTENCE" {
     package "MEM" {
 
         class MemoPublicationTypeRepo <<Repo>> {
-        - publicationTypeExists(PublicationTypeId : PublicationTypeId) : boolean
+
         }
 
     }
@@ -33,7 +33,6 @@ package "DOMAIN" {
 
         interface IPublicationTypeRepo <<Interface>> {
         + addPublicationType(publicationTypeName : String) : PublicationType
-        + getAll() : List<PublicationType>
         }
 
     }
@@ -53,7 +52,6 @@ package "DOMAIN" {
 
         class PublicationTypeFactory <<Factory>> {
         + createPublicationType(publicationTypeName : String) : PublicationType
-        + createPublicationType(publicationTypeId : PublicationTypeId): PublicationType
 
         }
 
@@ -64,10 +62,10 @@ package "DOMAIN" {
 package "DDD" {
 
     interface IRepository<ID, T> <<Interface>> {
-    save(T) : T
+    save(entity : T) : T
     findAll() : Iterable<T>
-    ofIdentity(ID) : Optional <T>
-    containsOfIdentity(ID) : boolean
+    ofIdentity(id : ID) : Optional <T>
+    containsOfIdentity(id : ID) : boolean
 
     }
 
@@ -75,7 +73,7 @@ package "DDD" {
 
 
 MemoPublicationTypeRepo ..|> IPublicationTypeRepo
-IPublicationTypeRepo ..|> IRepository
+IPublicationTypeRepo --|> IRepository
 MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory : invokes
 
 MemoPublicationTypeRepo "1" --> "*" PublicationType : persists
