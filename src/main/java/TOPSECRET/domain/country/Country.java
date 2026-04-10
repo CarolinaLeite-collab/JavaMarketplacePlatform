@@ -11,7 +11,7 @@ public class Country implements AggregateRoot<CountryId> {
 
     Country(String countryName) {
         _name = new CountryName(countryName);
-        _countryId = new CountryId(this._name);
+        _countryId = new CountryId(_name);
     }
 
     public CountryId identity() {

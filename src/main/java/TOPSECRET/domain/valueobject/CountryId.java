@@ -18,7 +18,6 @@ public final class CountryId implements DomainId {
     }
 
     public CountryId(CountryName name) {
-        // Technical safety: ensures we don't call .toString() on null
         Objects.requireNonNull(name, "CountryName is required to generate an ID");
 
         _code = generateIsoCode(name.toString());
@@ -42,7 +41,6 @@ public final class CountryId implements DomainId {
     private String generateIsoCode(String name) {
         for (String isoCode : Locale.getISOCountries()) {
             Locale l = new Locale("", isoCode);
-            // Matches against the English display name (e.g., "PORTUGAL" vs "Portugal")
             if (l.getDisplayCountry(Locale.ENGLISH).equalsIgnoreCase(name)) {
                 return isoCode.toUpperCase(Locale.ROOT);
             }

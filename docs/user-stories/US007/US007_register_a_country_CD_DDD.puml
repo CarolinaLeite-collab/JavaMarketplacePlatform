@@ -62,7 +62,6 @@ package "DOMAIN" {
 package "PERSISTENCE" {
     package "MEM" {
         class MemoCountryRepo <<Repo>> {
-            - DATA : Map<CountryId, Country>
         }
     }
 }
