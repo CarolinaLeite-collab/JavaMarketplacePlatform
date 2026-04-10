@@ -6,7 +6,6 @@ import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,8 +57,8 @@ class AppraisalEntityTest {
 
         //Assert
         assertEquals(name, entity.getName());
-        assertEquals(publications, entity.getPublicationTypes());
-        assertEquals(genres, entity.getGenres());
+        assertEquals(publications, entity.getPublicationTypeIds());
+        assertEquals(genres, entity.getGenreIds());
 
     }
 
@@ -164,24 +163,6 @@ class AppraisalEntityTest {
 
     }
 
-    @Test
-    void sameAsShouldReturnTrueWhenAppraisalEntitiesAreSame() {
-
-        //Arrange
-        List<PublicationTypeId> publicationTypesId = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genresId = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //SUT
-        AppraisalEntity appraisalEntity1 = new AppraisalEntity(_nameDouble, publicationTypesId, genresId);
-        AppraisalEntity appraisalEntity2 = new AppraisalEntity(_nameDouble, publicationTypesId, genresId);
-
-        //Act
-        boolean result = appraisalEntity1.sameAs(appraisalEntity2);
-
-        //Assert
-        assertFalse(result);
-
-    }
 
     @Test
     void sameAsShouldReturnTrueForSameObject() {
@@ -264,7 +245,7 @@ class AppraisalEntityTest {
         AppraisalEntity entity = new AppraisalEntity(_nameDouble, publicationTypesId, genresId);
 
         //Act
-        List<PublicationTypeId> result = entity.getPublicationTypes();
+        List<PublicationTypeId> result = entity.getPublicationTypeIds();
 
         //Assert
         assertEquals(publicationTypesId, result);
@@ -282,7 +263,7 @@ class AppraisalEntityTest {
         AppraisalEntity entity = new AppraisalEntity(_nameDouble, publicationTypesId, genresId);
 
         //Act
-        List<GenreId> result = entity.getGenres();
+        List<GenreId> result = entity.getGenreIds();
 
         //Assert
         assertEquals(genresId, result);
@@ -355,25 +336,6 @@ class AppraisalEntityTest {
     }
 
     @Test
-    void equalsShouldReturnTrueForDifferentObjectsWithSameId() {
-
-        // Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //SUT
-        AppraisalEntity entity1 = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, genres);
-        AppraisalEntity entity2 = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, genres);
-
-        //Act
-        boolean result = entity1.equals(entity2);
-
-        //Assert
-        assertTrue(result);
-
-    }
-
-    @Test
     void equalsShouldReturnFalseWhenNull() {
 
         //Arrange
@@ -392,129 +354,22 @@ class AppraisalEntityTest {
     }
 
     @Test
-    void shouldCreateAppraisalEntityWithIdWhenValidArguments() {
+    void shouldBeEqualWhenAppraisalEntitiesHaveSameName() {
 
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("SameName");
 
-        //Act & SUT
-        AppraisalEntity entity = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, genres);
+        List<PublicationTypeId> publications = List.of(mock(PublicationTypeId.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
 
-        //Assert
-        assertEquals(_appraisalEntityIdDouble, entity.identity());
-        assertEquals(_nameDouble, entity.getName());
-        assertEquals(pubTypes, entity.getPublicationTypes());
-        assertEquals(genres, entity.getGenres());
+        // Act
+        AppraisalEntity entity1 = new AppraisalEntity(name, publications, genres);
+        AppraisalEntity entity2 = new AppraisalEntity(name, publications, genres);
 
-    }
+        // Assert
+        assertTrue(entity1.equals(entity2));
 
-    @Test
-    void shouldThrowIfAppraisalEntityIdIsNull() {
-
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //Act & SUT
-        Exception exception = assertThrows(NullPointerException.class, () ->
-                new AppraisalEntity(null, _nameDouble, pubTypes, genres));
-
-        //Assert
-        assertEquals("AppraisalEntityId is required", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldThrowIfPublicationTypesIsNullWithId() {
-
-        //Arrange
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //Act & SUT
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, null, genres));
-
-        //Assert
-        assertEquals("List of publication types cannot be null or empty", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldThrowIfPublicationTypesIsEmptyWithId() {
-
-        //Arrange
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //Act & SUT
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, List.of(), genres));
-
-        //Assert
-        assertEquals("List of publication types cannot be null or empty", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldThrowIfGenresIsNullWithId() {
-
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-
-        //Act & SUT
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, null));
-
-        //Assert
-        assertEquals("List of genres cannot be null or empty", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldThrowIfGenresIsEmptyWithId() {
-
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-
-        //Act & SUT
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, List.of()));
-
-        //Assert
-        assertEquals("List of genres cannot be null or empty", exception.getMessage());
-
-    }
-
-    @Test
-    void equalsShouldReturnTrueForSameObjectWithId() {
-
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        //Act & SUT
-        AppraisalEntity entity = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, genres);
-
-        //Assert
-        assertTrue(entity.equals(entity));
-
-    }
-
-    @Test
-    void equalsShouldReturnFalseForDifferentIds() {
-
-        //Arrange
-        List<PublicationTypeId> pubTypes = Arrays.asList(_publicationTypeIdDouble1, _publicationTypeIdDouble2);
-        List<GenreId> genres = Arrays.asList(_genreIdDouble1, _genreIdDouble2);
-
-        AppraisalEntityId otherId = mock(AppraisalEntityId.class);
-
-        //Act & SUT
-        AppraisalEntity entity1 = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble, pubTypes, genres);
-        AppraisalEntity entity2 = new AppraisalEntity(otherId, _nameDouble, pubTypes, genres);
-
-        //Assert
-        assertFalse(entity1.equals(entity2));
     }
 
 }
