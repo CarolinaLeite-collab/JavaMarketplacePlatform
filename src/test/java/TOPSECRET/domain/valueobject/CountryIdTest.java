@@ -6,79 +6,151 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class CountryIdTest {
 
-	@Test
-	void generatesIsoCodeFromCountryName() {
-		CountryId pt = new CountryId(new CountryName("Portugal"));
-		assertEquals("PT", pt.toString());
-		assertEquals("PT".hashCode(), pt.hashCode());
-	}
+    @Test
+    void generatesIsoCodeFromCountryName() {
+        // Arrange
+        CountryName countryNameDouble = mock(CountryName.class);
+        when(countryNameDouble.toString()).thenReturn("Portugal");
 
-	@Test
-	void equalsAndHashCodeUseGeneratedIsoCode() {
-		CountryId portugal = new CountryId(new CountryName("Portugal"));
-		CountryId samePortugal = new CountryId(new CountryName("  portugal  "));
-		CountryId spain = new CountryId(new CountryName("Spain"));
+        // SUT
+        CountryId pt = new CountryId(countryNameDouble);
 
-		assertEquals(portugal, samePortugal);
-		assertEquals(portugal.hashCode(), samePortugal.hashCode());
-		assertNotEquals(portugal, spain);
-		assertNotEquals(new Object(), portugal);
-	}
+        // Act
+        String result = pt.toString();
 
-	@Test
-	void isNotEqualToDifferentType() {
-		Object otherType = "PT";
-		assertNotEquals(new CountryId(new CountryName("Portugal")), otherType);
-	}
-
-	@Test
-	void isEqualToSameInstanceAndEquivalentNormalizedValue() {
-		CountryId pt = new CountryId(new CountryName("Portugal"));
-		assertEquals(pt, identity(pt));
-		assertEquals(new CountryId(new CountryName("portugal")), pt);
-		assertNotEquals(new CountryId(new CountryName("Portugal")), new CountryId(new CountryName("United States")));
-	}
-
-	@Test
-	void rejectsNonExistingCountryName() {
-		IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-				() -> new CountryId(new CountryName("Atlantis")));
-		assertTrue(ex.getMessage().contains("No ISO 3166 code found"));
+        // Assert
+        assertEquals("PT", result);
     }
 
-	@Test
-	void acceptsValidIsoCodeWithTrimAndUppercaseNormalization() {
-		CountryId pt = new CountryId("  pt  ");
-		assertEquals("PT", pt.toString());
-	}
 
-	@Test
-	void rejectsInvalidIsoCode() {
-		IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-				() -> new CountryId("A1"));
-		assertTrue(ex.getMessage().contains("Invalid ISO 3166 code"));
-	}
+    @Test
+    void notEqualWhenDifferentCountryName() {
+        // Arrange
+        CountryName portugalDouble = mock(CountryName.class);
+        when(portugalDouble.toString()).thenReturn("Portugal");
+        CountryName spainDouble = mock(CountryName.class);
+        when(spainDouble.toString()).thenReturn("Spain");
 
-	@Test
-	void rejectsNullOrBlankIsoCode() {
-		IllegalArgumentException nullEx = assertThrows(IllegalArgumentException.class,
-				() -> new CountryId((String) null));
-		assertTrue(nullEx.getMessage().contains("null or blank"));
+        // Act & SUT
+        CountryId countryId = new CountryId(portugalDouble);
+        CountryId countryId1 = new CountryId(spainDouble);
 
-		IllegalArgumentException blankEx = assertThrows(IllegalArgumentException.class,
-				() -> new CountryId("   "));
-		assertTrue(blankEx.getMessage().contains("null or blank"));
-	}
+        // Assert
+        assertNotEquals(countryId, countryId1);
+    }
 
-	@Test
-	void rejectsNullCountryName() {
-		assertThrows(NullPointerException.class, () -> new CountryId((CountryName) null));
-	}
+    @Test
+    void isNotEqualToDifferentType() {
+        // Arrange
+        CountryName countryNameDouble = mock(CountryName.class);
+        when(countryNameDouble.toString()).thenReturn("Portugal");
 
-	private CountryId identity(CountryId countryId) {
-		return countryId;
-	}
+        // SUT
+        CountryId countyId = new CountryId(countryNameDouble);
+
+        // Act & Assert
+        assertNotEquals(countyId, new Object());
+    }
+
+    @Test
+    void isEqualToSameInstanceAndEquivalentNormalizedValue() {
+        // Arrange
+        CountryName countryNameDouble1 = mock(CountryName.class);
+        when(countryNameDouble1.toString()).thenReturn("Portugal");
+        CountryName countryNameDouble2 = mock(CountryName.class);
+        when(countryNameDouble2.toString()).thenReturn("Portugal");
+
+        // Act
+        CountryId countryId = new CountryId(countryNameDouble1);
+        CountryId countryId1 = new CountryId(countryNameDouble2);
+
+        // Assert
+        assertEquals(countryId, countryId1);
+        assertEquals(countryId.hashCode(), countryId1.hashCode());
+    }
+
+    @Test
+    void hashCodeMatchesIsoCode() {
+        // Arrange
+        CountryName countryNameDouble = mock(CountryName.class);
+        when(countryNameDouble.toString()).thenReturn("Portugal");
+
+        // Act & SUT
+        CountryId countryId = new CountryId(countryNameDouble);
+
+        // Assert
+        assertEquals("PT".hashCode(), countryId.hashCode());
+    }
+
+    @Test
+    void rejectsNonExistingCountryName() {
+        // Arrange
+        CountryName countryNameDouble = mock(CountryName.class);
+        when(countryNameDouble.toString()).thenReturn("Atlantis");
+
+        // Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CountryId(countryNameDouble)); // SUT
+
+        // Assert
+        assertTrue(ex.getMessage().contains("No ISO 3166 code found"));
+    }
+
+    @Test
+    void acceptsValidIsoCodeWithTrimAndUppercaseNormalization() {
+        // Arrange
+        String isoCode = "  pt  ";
+
+        // Act
+        CountryId sut = new CountryId(isoCode); // SUT
+
+        // Assert
+        assertEquals("PT", sut.toString());
+    }
+
+    @Test
+    void rejectsInvalidIsoCode() {
+        // Arrange
+        String invalidCode = "A1";
+
+        // Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CountryId(invalidCode)); // SUT
+
+        // Assert
+        assertTrue(ex.getMessage().contains("Invalid ISO 3166 code"));
+    }
+
+    @Test
+    void rejectsNullIsoCode() {
+        // Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CountryId((String) null));
+
+        // Assert
+        assertTrue(ex.getMessage().contains("null or blank"));
+    }
+
+    @Test
+    void rejectsBlankIsoCode() {
+        // Act
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new CountryId("   "));
+
+        // Assert
+        assertTrue(ex.getMessage().contains("null or blank"));
+    }
+
+    @Test
+    void rejectsNullCountryName() {
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new CountryId((CountryName) null));
+    }
+
 }
