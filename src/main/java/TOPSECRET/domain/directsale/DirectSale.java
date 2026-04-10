@@ -12,7 +12,6 @@ import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Represents a direct sale of an {@link Item} with a specified {@link Price} and optional time limit.
