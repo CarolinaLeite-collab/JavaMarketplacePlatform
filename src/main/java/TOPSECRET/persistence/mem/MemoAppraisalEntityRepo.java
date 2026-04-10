@@ -23,12 +23,12 @@ import java.util.*;
 public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
-    private AppraisalEntityFactory _factoryAppraisalEntity;
+    private AppraisalEntityFactory _appraisalEntityFactory;
 
 
     public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
 
-        _factoryAppraisalEntity = factoryAppraisalEntity;
+        _appraisalEntityFactory = factoryAppraisalEntity;
 
     }
 
@@ -73,7 +73,7 @@ public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
     @Override
     public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
 
-        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, publicationTypeIds, genresIds);
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
 
         if (containsOfIdentity(appraisalEntity.identity())) {
 
