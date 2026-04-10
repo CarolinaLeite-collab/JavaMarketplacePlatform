@@ -49,7 +49,15 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
     @Override
     public Optional<Auction> ofIdentity(AuctionId id) {
-        return Optional.ofNullable(DATA.get(id));
+        if(!containsOfIdentity(id)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(id));
+
+        }
     }
 
     @Override

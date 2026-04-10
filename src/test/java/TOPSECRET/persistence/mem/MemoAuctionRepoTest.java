@@ -55,10 +55,10 @@ class MemoAuctionRepoTest {
 
         _auctionDouble1 = mock(Auction.class);
         when(_auctionDouble1.getItems()).thenReturn(_items1);
-        when(_auctionDouble1.identity()).thenReturn(new AuctionId("AUC-1"));
+        when(_auctionDouble1.identity()).thenReturn(new AuctionId("AU-12345678"));
         _auctionDouble2 = mock(Auction.class);
         when(_auctionDouble2.getItems()).thenReturn(_items2);
-        when(_auctionDouble2.identity()).thenReturn(new AuctionId("AUC-2"));
+        when(_auctionDouble2.identity()).thenReturn(new AuctionId("AU-12345679"));
         _auctionDouble3 = mock(Auction.class);
         when(_auctionDouble3.getItems()).thenReturn(_items3);
 
@@ -90,8 +90,8 @@ class MemoAuctionRepoTest {
         Auction result = _repo.save(_auctionDouble1);
 
         //Assert
-        assertSame(_auctionDouble1, result, "save should return the same Auction object");
-        assertTrue(_repo.containsOfIdentity(_idDouble), "Auction should be contained after save");
+        assertSame(_auctionDouble1, result);
+        assertTrue(_repo.containsOfIdentity(_idDouble));
     }
 
     @Test
@@ -105,7 +105,7 @@ class MemoAuctionRepoTest {
         Optional<Auction> result = _repo.ofIdentity(_idDouble);
 
         //Assert
-        assertTrue(result.isPresent(), "ofIdentity should return a non-empty Optional for stored Auction");
+        assertTrue(result.isPresent());
         assertSame(_auctionDouble1, result.get());
     }
 
@@ -118,7 +118,7 @@ class MemoAuctionRepoTest {
         Optional<Auction> result = _repo.ofIdentity(mock(AuctionId.class));
 
         //Assert
-        assertTrue(result.isEmpty(), "ofIdentity should return empty Optional for unknown AuctionId");
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -131,8 +131,8 @@ class MemoAuctionRepoTest {
         AuctionId unknownId = mock(AuctionId.class);
 
         //Assert
-        assertTrue(_repo.containsOfIdentity(_idDouble), "containsOfIdentity should return true for stored AuctionId");
-        assertFalse(_repo.containsOfIdentity(unknownId), "containsOfIdentity should return false for unknown AuctionId");
+        assertTrue(_repo.containsOfIdentity(_idDouble));
+        assertFalse(_repo.containsOfIdentity(unknownId));
     }
 
     @Test
