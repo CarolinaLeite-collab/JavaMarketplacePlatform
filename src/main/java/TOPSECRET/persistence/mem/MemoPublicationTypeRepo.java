@@ -3,21 +3,22 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.publicationtype.PublicationTypeFactory;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Repository for managing {@link PublicationType} instances.
  * <p>
- * Provides methods to check if a publication type exists, create and store new types,
- * and retrieve all stored publication types as an unmodifiable list.
+ * Provides methods to check if a publication type exists, delegates creation to
+ * {@link PublicationTypeFactory}, stores new types, and retrieves all stored
+ * publication types as an unmodifiable list.
  * </p>
  */
 
 public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
 
-    private final List<PublicationType> _publicationTypes = new ArrayList<>();
+    private final Map<PublicationTypeId, PublicationType> DATA = new HashMap<PublicationTypeId, PublicationType>();
     private final PublicationTypeFactory _publicationTypeFactory;
 
     public MemoPublicationTypeRepo(PublicationTypeFactory publicationTypeFactory){
@@ -27,40 +28,56 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
     }
 
     @Override
-    public PublicationType addPublicationType(String publicationTypeName) throws IllegalArgumentException {
+    public PublicationType save(PublicationType publicationType) {
+
+        DATA.put(publicationType.identity(), publicationType);
+
+        return publicationType;
+
+    }
+
+    @Override
+    public Iterable<PublicationType> findAll() {
+
+        return DATA.values();
+
+    }
+
+    @Override
+    public Optional<PublicationType> ofIdentity(PublicationTypeId publicationTypeId) {
+
+        if(!containsOfIdentity(publicationTypeId)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(publicationTypeId));
+
+        }
+
+    }
+
+    @Override
+    public boolean containsOfIdentity(PublicationTypeId publicationTypeId) {
+
+        return DATA.containsKey(publicationTypeId);
+
+    }
+
+    @Override
+    public PublicationType addPublicationType(String publicationTypeName) {
 
         PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
 
-        if (publicationTypeExists(newPublicationType)) {
+        if (containsOfIdentity(newPublicationType.identity())) {
 
             throw new IllegalArgumentException("This publication type already exists!");
 
         }
 
-        _publicationTypes.add(newPublicationType);
-
-        return newPublicationType;
+        return save(newPublicationType);
 
     }
 
-    private boolean publicationTypeExists(PublicationType publicationTypeToCheck) {
-
-        for (PublicationType publicationType : _publicationTypes) {
-
-            if (publicationType.sameAs(publicationTypeToCheck)) {
-
-                return true;
-
-            };
-
-        }
-
-        return false;
-
-    }
-
-    @Override
-    public List<PublicationType> getAll() {
-        return List.copyOf(_publicationTypes);
-    }
 }

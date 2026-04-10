@@ -22,7 +22,7 @@ public class GetPublicationTypeListController {
         _iPublicationTypeRepo = iPublicationTypeRepo;
     }
 
-    public List<PublicationType> getListOfPublicationTypes() {
-        return _iPublicationTypeRepo.getAll();
+    public Iterable<PublicationType> getListOfPublicationTypes() {
+        return _iPublicationTypeRepo.findAll();
     }
 }
