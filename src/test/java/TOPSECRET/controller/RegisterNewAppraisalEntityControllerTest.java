@@ -75,8 +75,6 @@ class RegisterNewAppraisalEntityControllerTest {
         // SUT
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
-        assertNotNull(controller);
-
     }
 
     @Test
