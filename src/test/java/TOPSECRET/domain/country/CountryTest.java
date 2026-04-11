@@ -49,23 +49,32 @@ class CountryTest {
     }
 
     @Test
-    void sameAsSameIdReturnsTrue() {
-        // SUT
-        Country c1 = new Country("Portugal");
-        Country c2 = new Country("  portugal  ");
+     void sameAsDifferentNameReturnsFalse() {
+        // Arrange
+        CountryId _sharedIdDouble = mock(CountryId.class);
+        Country c1 = new Country(_sharedIdDouble, _countryNameDouble);
+        Country c2 = new Country(_sharedIdDouble, mock(CountryName.class));
 
-        // Act + Assert
+        // SUT
+        boolean result = c1.sameAs(c2);
+
+        // Assert
+        assertFalse(result);
+    }
         assertTrue(c1.sameAs(c2));
     }
 
     @Test
-    void sameAsDifferentIdReturnsFalse() {
-        // SUT
-        Country c1 = new Country("Portugal");
-        Country c2 = new Country("Spain");
+        void sameAsSameNameReturnsTrue() {
+        // Arrange
+        Country c1 = new Country(_countryIdDouble, _countryNameDouble);
+        Country c2 = new Country(mock(CountryId.class), _countryNameDouble);
 
-        // Act + Assert
-        assertFalse(c1.sameAs(c2));
+        // SUT
+        boolean result = c1.sameAs(c2);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
