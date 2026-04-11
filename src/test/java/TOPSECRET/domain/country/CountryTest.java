@@ -49,51 +49,56 @@ class CountryTest {
     }
 
     @Test
-     void sameAsDifferentNameReturnsFalse() {
+    void sameAsReturnsTrueForSameName() {
         // Arrange
-        CountryId _sharedIdDouble = mock(CountryId.class);
-        Country c1 = new Country(_sharedIdDouble, _countryNameDouble);
-        Country c2 = new Country(_sharedIdDouble, mock(CountryName.class));
+        Country country = new Country("Portugal");
+        Country other = new Country("Portugal");
 
-        // SUT
-        boolean result = c1.sameAs(c2);
-
-        // Assert
-        assertFalse(result);
-    }
-        assertTrue(c1.sameAs(c2));
-    }
-
-    @Test
-        void sameAsSameNameReturnsTrue() {
-        // Arrange
-        Country c1 = new Country(_countryIdDouble, _countryNameDouble);
-        Country c2 = new Country(mock(CountryId.class), _countryNameDouble);
-
-        // SUT
-        boolean result = c1.sameAs(c2);
+        // Act
+        boolean result = country.sameAs(other);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void sameAsNullReturnsFalse() {
-        // SUT
+    void sameAsReturnsFalseForDifferentName() {
+        // Arrange
         Country country = new Country("Portugal");
+        Country other = new Country("Spain");
 
-        // Act + Assert
-        assertFalse(country.sameAs(null));
+        // Act
+        boolean result = country.sameAs(other);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void sameAsDifferentTypeReturnsFalse() {
-        // SUT
+    void sameAsReturnsFalseForNull() {
+        // Arrange
         Country country = new Country("Portugal");
 
-        // Act + Assert
-        assertFalse(country.sameAs("not a country"));
+        // Act
+        boolean result = country.sameAs(null);
+
+        // Assert
+        assertFalse(result);
     }
+
+    @Test
+    void sameAsReturnsFalseForDifferentType() {
+        // Arrange
+        Country country = new Country("Portugal");
+
+        // Act
+        boolean result = country.sameAs("Portugal");
+
+        // Assert
+        assertFalse(result);
+    }
+
+
 
     @Test
     void sameAsSameInstanceReturnsTrue() {
