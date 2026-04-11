@@ -296,4 +296,16 @@ public class ISBNTest {
         // Assert
         assertEquals(first, second);
     }
+
+    @Test
+    void toStringReturnsIdentifier() {
+        // arrange
+        ISBN isbn = new ISBN("9780618260300");
+
+        // act
+        String result = isbn.toString();
+
+        // assert
+        assertEquals(isbn.getIdentifier(), result);
+    }
 }
