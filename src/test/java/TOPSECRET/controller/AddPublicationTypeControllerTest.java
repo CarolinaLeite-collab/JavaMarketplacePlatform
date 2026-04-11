@@ -4,6 +4,7 @@ import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,17 +18,12 @@ class AddPublicationTypeControllerTest {
 
     private IPublicationTypeRepo _iPublicationTypeRepoDouble;
     private PublicationType _pubTypeDouble;
-    private User _adminDouble;
+    private UserId _adminDoubleId;
 
     @BeforeEach
     void setUp() throws InstantiationException {
         _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-
-        _pubTypeDouble = mock(PublicationType.class);
-        when(_iPublicationTypeRepoDouble.addPublicationType("book")).thenReturn(_pubTypeDouble);
-
-        _adminDouble = mock(User.class);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        _adminDoubleId = mock(UserId.class);
 
     }
 
@@ -35,29 +31,20 @@ class AddPublicationTypeControllerTest {
     void constructorAddPublicationTypeControllerShouldCreateController() {
 
         //SUT
-        new  AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
+        new  AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDoubleId);
 
     }
 
-    @Test
-    void addPublicationTypeThrowsWhenUserIsNotAdmin() {
-        //arrange
-        User adminDouble = mock(User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        String publicationTypeName = "book";
-
-        //act + assert
-        assertThrows(SecurityException.class, () -> new AddPublicationTypeController(_iPublicationTypeRepoDouble, adminDouble)); //SUT
-    }
 
     @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
         String publicationTypeName = "book";
+        _pubTypeDouble = mock(PublicationType.class);
+        when(_iPublicationTypeRepoDouble.addPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDoubleId);
 
         //act
 
@@ -72,11 +59,11 @@ class AddPublicationTypeControllerTest {
 
         //arrange
         String publicationTypeName = "book";
-        when(_iPublicationTypeRepoDouble.addPublicationType("book"))
+        when(_iPublicationTypeRepoDouble.addPublicationType(publicationTypeName))
             .thenThrow(new IllegalArgumentException("This publication type already exists!"));
 
         //SUT
-        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDouble);
+        AddPublicationTypeController _addPublicationTypeController = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _adminDoubleId);
 
         //act + assert
         assertThrows(IllegalArgumentException.class, () -> _addPublicationTypeController.addPublicationType(publicationTypeName));
