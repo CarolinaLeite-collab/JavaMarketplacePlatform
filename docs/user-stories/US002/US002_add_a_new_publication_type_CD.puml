@@ -67,7 +67,7 @@ AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
 AddPublicationTypeController "1" --> "1" IPublicationTypeRepo: calls
 MemoPublicationTypeRepo ..|> IPublicationTypeRepo
 IPublicationTypeRepo --|> IRepository
-MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory: uses
+MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory: <<use>>
 PublicationTypeFactory "1" ..> "*" PublicationType: <<create>>
 MemoPublicationTypeRepo "1"--> "*" PublicationType: persists
 PublicationType "1" --> "1" PublicationTypeId: has
