@@ -4,9 +4,21 @@ import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
 
-public class EditionFactory {
+/**
+ * Factory responsible for creating {@link Edition} aggregate instances,
+ * namely {@link EditionBook} and {@link EditionMagazine}.
+ *
+ * <p>
+ * - Mandatory attributes are enforced by the corresponding builders.
+ * - Domain invariants (e.g., ISBN/ISSN rules) are enforced within the aggregate.
+ * - Ensures that an Edition is created either as a Book or a Magazine,
+ *   never both.
+ * </p>
+ */
 
-    public Edition createEditionBook(BookId bookId,
+public final class EditionFactory {
+
+    public EditionBook createEditionBook(BookId bookId,
                                      PublicationId publicationId,
                                      PublishingCompanyId publishingCompanyId,
                                      Year publishingYear,
@@ -17,15 +29,6 @@ public class EditionFactory {
                                      EditionNumber editionNumber,
                                      Binding binding) {
 
-        if (publishingYear == null) {
-            throw new IllegalArgumentException("PublishingYear cannot be null");
-        }
-
-        if (bookId instanceof NoIdBook && publishingYear.isAfter(Year.of(1970))) {
-            throw new IllegalArgumentException(
-                    "Books published after 1970 must have a valid ISBN"
-            );
-        }
         EditionBook.Builder builder = new EditionBook.Builder(
                 bookId,
                 publicationId,
@@ -36,16 +39,15 @@ public class EditionFactory {
 
         if (dimension != null) builder.withDimension(dimension);
         if (weight != null) builder.withWeight(weight);
-
         if (numberOfPages != null) builder.withNumberOfPages(numberOfPages);
         if (editionNumber != null) builder.withEditionNumber(editionNumber);
         if (binding != null) builder.withBinding(binding);
         return builder.build();
     }
 
-    public Edition createEditionMagazine(MagazineId magazineId,
-                                         PublicationId publication,
-                                         PublishingCompanyId publishingCompany,
+    public EditionMagazine createEditionMagazine(MagazineId magazineId,
+                                         PublicationId publicationId,
+                                         PublishingCompanyId publishingCompanyId,
                                          Year publishingYear,
                                          Language editionLanguage,
                                          Dimension dimension,
@@ -53,20 +55,11 @@ public class EditionFactory {
                                          IssueNumber issueNumber,
                                          Periodicity periodicity) {
 
-        if (publishingYear == null) {
-            throw new IllegalArgumentException("PublishingYear cannot be null");
-        }
-
-        if (magazineId instanceof NoIdMagazine && publishingYear.isAfter(Year.of(1976))) {
-            throw new IllegalArgumentException(
-                    "Magazines published after 1976 must have a valid ISSN"
-            );
-        }
 
         EditionMagazine.Builder builder = new EditionMagazine.Builder(
                 magazineId,
-                publication,
-                publishingCompany,
+                publicationId,
+                publishingCompanyId,
                 publishingYear,
                 editionLanguage,
                 issueNumber,
@@ -77,7 +70,5 @@ public class EditionFactory {
         if (weight != null) builder.withWeight(weight);
         return builder.build();
     }
-
-
 
 }
