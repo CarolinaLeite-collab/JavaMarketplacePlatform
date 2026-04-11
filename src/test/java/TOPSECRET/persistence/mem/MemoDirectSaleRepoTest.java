@@ -435,7 +435,7 @@ class MemoDirectSaleRepoTest {
     }
 
     @Test
-    void shouldReturnTrueWhenContainsIdAndFalseOtherwise(){
+    void shouldReturnTrueWhenContainsId(){
         //arrange
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
@@ -448,6 +448,21 @@ class MemoDirectSaleRepoTest {
 
         //assert
         assertTrue(dsr.containsOfIdentity(_dsIdDouble));
+    }
+
+    @Test
+    void shouldReturnFalseWhenDoesNotContainId(){
+        //arrange
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        dsr.save(_ds1Double);
+        DirectSaleId dsId = mock(DirectSaleId.class);
+
+        //assert
         assertFalse(dsr.containsOfIdentity(dsId));
     }
 

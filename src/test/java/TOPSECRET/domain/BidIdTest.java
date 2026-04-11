@@ -64,7 +64,7 @@ class BidIdTest {
     }
 
     @Test
-    void returnTrueWhenTwoBidIdIsEqual() {
+    void returnTrueWhenTwoBidIdsAreEqual() {
 
         //SUT
         BidId id = new BidId(_uuid);

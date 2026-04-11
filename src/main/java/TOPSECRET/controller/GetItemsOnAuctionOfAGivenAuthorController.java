@@ -22,8 +22,7 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
     private final IAuctionRepo _iAuctionRepo;
 
     public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, UserId buyerId) {
-        _iAuctionRepo = Objects.requireNonNull(iAuctionRepo, "auctionRepo");
-        Objects.requireNonNull(buyerId, "buyer"); // buyer kept for parity/validation
+        _iAuctionRepo = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {

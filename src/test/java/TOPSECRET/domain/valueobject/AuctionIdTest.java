@@ -37,7 +37,7 @@ class AuctionIdTest {
     }
 
     @Test
-    void IdsShouldBeUnique() {
+    void idsShouldBeUnique() {
         // Arrange & SUT
         AuctionId id1 = new AuctionId();
         AuctionId id2 = new AuctionId();
@@ -57,7 +57,7 @@ class AuctionIdTest {
     }
 
     @Test
-    void ShouldReturnTrueWhenIdsAreEqual() {
+    void shouldReturnTrueWhenIdsAreEqual() {
         // Arrange & SUT
         AuctionId id1 = new AuctionId("AU-12345678");
         AuctionId id2 = new AuctionId("AU-12345678");

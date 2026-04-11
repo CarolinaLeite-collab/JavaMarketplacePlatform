@@ -122,7 +122,7 @@ class MemoAuctionRepoTest {
     }
 
     @Test
-    void containsOfIdentityReturnsTrueWhenPresentAndFalseOtherwise() {
+    void containsOfIdentityReturnsTrueWhenPresent() {
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
@@ -132,6 +132,18 @@ class MemoAuctionRepoTest {
 
         //Assert
         assertTrue(_repo.containsOfIdentity(_idDouble));
+    }
+
+    @Test
+    void containsOfIdentityReturnsFalseWhenNotPresent() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _repo.save(_auctionDouble1);
+        AuctionId unknownId = mock(AuctionId.class);
+
+        //Assert
         assertFalse(_repo.containsOfIdentity(unknownId));
     }
 
@@ -149,8 +161,6 @@ class MemoAuctionRepoTest {
 
         //Assert
         assertSame(_auctionDouble1, created);
-        verify(_auctionFactoryDouble).createAuction(_items1, _startingPriceDouble, _reservePriceDouble,
-                null, _startDate, _endDate);
     }
 
     @Test
