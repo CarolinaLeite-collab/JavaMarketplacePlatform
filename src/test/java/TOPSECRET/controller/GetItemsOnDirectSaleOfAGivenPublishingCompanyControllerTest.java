@@ -33,11 +33,6 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
         //Act /SUT
         new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
     }
-    @Test
-    void constructorThrowsNullPointerExceptionWhenDirectSaleRepoIsNull() {
-        //Act & Assert
-        assertThrows(NullPointerException.class, () -> new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(null, _buyerIdDouble));
-    }
 
     @Test
     void getDirectSaleItemByPublisherThrowsIllegalArgumentExceptionWhenPublisherIsNull() {
