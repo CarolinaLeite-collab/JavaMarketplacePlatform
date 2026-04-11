@@ -71,21 +71,20 @@ class MemoAppraisalEntityRepoTest {
     void findAllShouldReturnAllStoredAppraisalEntities() {
 
         //Arrange
-        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+        when(_AppraisalEntityDouble.identity())
+                .thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
         MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
         repo.save(_AppraisalEntityDouble);
 
         //Act
-        Iterable<AppraisalEntity> result = repo.findAll();
-
         List<AppraisalEntity> list = new ArrayList<>();
-        result.forEach(list::add);
+        repo.findAll().forEach(list::add);
 
         //Assert
         assertEquals(1, list.size());
+        assertTrue(list.contains(_AppraisalEntityDouble));
 
     }
 
@@ -97,10 +96,9 @@ class MemoAppraisalEntityRepoTest {
 
         //SUT
         MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        //Act
         repo.save(_AppraisalEntityDouble);
 
+        //Act
         AppraisalEntity result = repo.ofIdentity(_AppraisalEntityIdDouble)
                 .orElseThrow(() -> new AssertionError("AppraisalEntity not found"));
 
@@ -121,10 +119,9 @@ class MemoAppraisalEntityRepoTest {
 
         //SUT
         MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        //Act
         repo.save(appraisalEntityDouble2);
 
+        //Act
         Optional<AppraisalEntity> result = repo.ofIdentity(_AppraisalEntityIdDouble);
 
         //Assert
@@ -135,15 +132,14 @@ class MemoAppraisalEntityRepoTest {
     @Test
     void containsOfIdentityShouldReturnTrueIfAppraisalEntityIsPresent() {
 
-        // Arrange
+        //Arrange
         when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
         MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        //Act
         repo.save(_AppraisalEntityDouble);
 
+        //Act
         boolean result = repo.containsOfIdentity(_AppraisalEntityIdDouble);
 
         //Assert
@@ -154,7 +150,7 @@ class MemoAppraisalEntityRepoTest {
     @Test
     void containsOfIdentityShouldReturnTrueIfAppraisalEntityIsNotPresent() {
 
-        // Arrange
+        //Arrange
         AppraisalEntity appraisalEntityDouble2 = mock(AppraisalEntity.class);
         AppraisalEntityId appraisalEntityIdDouble2 = mock(AppraisalEntityId.class);
 
@@ -163,10 +159,9 @@ class MemoAppraisalEntityRepoTest {
 
         //SUT
         MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        //Act
         repo.save(appraisalEntityDouble2);
 
+        //Act
         boolean result = repo.containsOfIdentity(_AppraisalEntityIdDouble);
 
         //Assert
@@ -179,8 +174,9 @@ class MemoAppraisalEntityRepoTest {
 
         //Arrange
         when(_AppraisalEntityDouble.getName()).thenReturn(_nameDouble);
-        when(_AppraisalEntityDouble.getPublicationTypes()).thenReturn(_publicationTypeIds);
-        when(_AppraisalEntityDouble.getGenres()).thenReturn(_genreIds);
+        when(_AppraisalEntityDouble.getPublicationTypeIds()).thenReturn(_publicationTypeIds);
+        when(_AppraisalEntityDouble.getGenreIds()).thenReturn(_genreIds);
+
         when(_AppraisalEntityFactoryDouble
                 .createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_AppraisalEntityDouble);
 
@@ -191,10 +187,95 @@ class MemoAppraisalEntityRepoTest {
         AppraisalEntity appraisalEntity = repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
 
         //Assert
-        assertEquals(_nameDouble, appraisalEntity.getName());
-        assertEquals(_publicationTypeIds, appraisalEntity.getPublicationTypes());
-        assertEquals(_genreIds, appraisalEntity.getGenres());
+        assertEquals(_AppraisalEntityDouble, appraisalEntity);
 
     }
+
+    @Test
+    void shouldThrowWhenAddingDuplicateAppraisalEntity() {
+
+        // Arrange
+        when(_AppraisalEntityFactoryDouble.createAppraisalEntity(
+                _nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_AppraisalEntityDouble);
+
+        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+
+        //SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, () ->
+                repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
+
+    }
+
+    @Test
+    void saveShouldOverwriteExistingEntityWithSameIdentity() {
+
+        // Arrange
+        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+
+        AppraisalEntity other = mock(AppraisalEntity.class);
+        when(other.identity()).thenReturn(_AppraisalEntityIdDouble);
+
+        //SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        // Act
+        repo.save(_AppraisalEntityDouble);
+        repo.save(other);
+
+        // Assert
+        assertEquals(other, repo.ofIdentity(_AppraisalEntityIdDouble).orElseThrow());
+
+    }
+
+    @Test
+    void findAllShouldReturnEmptyWhenRepoIsEmpty() {
+
+        // Arrange & SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        // Act
+        List<AppraisalEntity> list = new ArrayList<>();
+        repo.findAll().forEach(list::add);
+
+        // Assert
+        assertTrue(list.isEmpty());
+
+    }
+
+    @Test
+    void ofIdentityShouldReturnEmptyForNull() {
+
+        // Arrange & SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        // Act
+        Optional<AppraisalEntity> result = repo.ofIdentity(null);
+
+        // Assert
+        assertTrue(result.isEmpty());
+
+    }
+
+    @Test
+    void containsOfIdentityShouldReturnFalseForNull() {
+
+        // Arrange & SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        // Act
+        boolean result = repo.containsOfIdentity(null);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+
+
 
 }

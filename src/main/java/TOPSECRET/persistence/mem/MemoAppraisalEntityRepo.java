@@ -3,30 +3,32 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
-import TOPSECRET.domain.publicationtype.PublicationType;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.*;
 import java.util.*;
 
 /**
- * Repository responsible for managing {@link AppraisalEntity} persistence.
+ * In-memory implementation of {@link IAppraisalEntityRepo}.
  * <p>
- * Provides operations to check existence by {@link Name} and create new appraisal entities
- * with associated {@link PublicationType}s and {@link Genre}s. Ensures uniqueness by name
- * before creation, throwing {@link IllegalArgumentException} if a duplicate is detected.
+ * This repository is responsible for persisting {@link AppraisalEntity} instances
+ * during runtime using a {@link HashMap} as storage, where the key is the
+ * {@link AppraisalEntityId}.
+ * </p>
  *
- * @see AppraisalEntity
+ * <p>
+ * It provides basic CRUD-like operations such as saving, retrieving by identity,
+ * checking existence, and listing all stored entities.
+ * </p>
  */
 
 public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
-    private AppraisalEntityFactory _factoryAppraisalEntity;
+    private AppraisalEntityFactory _appraisalEntityFactory;
 
 
-    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
+    public MemoAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
 
-        _factoryAppraisalEntity = factoryAppraisalEntity;
+        _appraisalEntityFactory = appraisalEntityFactory;
 
     }
 
@@ -71,7 +73,13 @@ public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
     @Override
     public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
 
-        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, publicationTypeIds, genresIds);
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
+
+        if (containsOfIdentity(appraisalEntity.identity())) {
+
+            throw new IllegalStateException("Appraisal entity already exists!");
+
+        }
 
         return save (appraisalEntity);
 

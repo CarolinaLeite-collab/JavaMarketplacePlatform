@@ -2,41 +2,25 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.country.Country;
-import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.repository.ICountryRepo;
 import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.valueobject.CountryId;
-import TOPSECRET.domain.valueobject.CountryName;
-
-import java.util.Optional;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for handling the country registration use case.
  */
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
-    private final CountryFactory _countryFactory;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory) {
+    public RegisterCountryController(ICountryRepo iCountryRepo, UserId userAdmin) {
         _iCountryRepo = iCountryRepo;
-        _countryFactory = countryFactory;
     }
 
-    public Optional<Country> registerCountry(User user, String isoCode, String countryName) {
+    public Country registerCountry(User user, String countryName) {
         if (!user.hasRole(Role.ADMIN)) {
             throw new SecurityException("User is not authorized to register countries");
         }
 
-        CountryId id = new CountryId(isoCode);
-        CountryName name = new CountryName(countryName);
-
-        // If a country with the same id already exists, return it
-        if (_iCountryRepo.containsOfIdentity(id)) {
-            return _iCountryRepo.ofIdentity(id);
-        }
-
-        Country country = _countryFactory.createCountry(id, name);
-        Country saved = _iCountryRepo.save(country);
-        return Optional.ofNullable(saved);
+        return _iCountryRepo.addCountry(countryName);
     }
 }

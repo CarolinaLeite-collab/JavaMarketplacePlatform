@@ -7,7 +7,6 @@ import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * An {@link AppraisalEntity} is a registered {@link User} that is responsible for evaluating
@@ -43,22 +42,6 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     }
 
-    AppraisalEntity(AppraisalEntityId appraisalEntityId, Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
-
-        if (publicationTypesId == null || publicationTypesId.isEmpty()) {
-            throw new IllegalArgumentException("List of publication types cannot be null or empty");
-        }
-        if (genresId == null || genresId.isEmpty()) {
-            throw new IllegalArgumentException("List of genres cannot be null or empty");
-        }
-
-        _name = name;
-        _publicationTypesId = publicationTypesId;
-        _genresId = genresId;
-        _appraisalEntityId = Objects.requireNonNull(appraisalEntityId, "AppraisalEntityId is required");
-
-    }
-
     @Override
     public AppraisalEntityId identity() {
 
@@ -79,15 +62,15 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     }
 
-    public List<GenreId> getGenres() {
+    public List<GenreId> getGenreIds() {
 
-        return List.copyOf(_genresId);
+        return _genresId;
 
     }
 
-    public List<PublicationTypeId> getPublicationTypes() {
+    public List<PublicationTypeId> getPublicationTypeIds() {
 
-        return List.copyOf(_publicationTypesId);
+        return _publicationTypesId;
 
     }
 
@@ -98,7 +81,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         if (object == this) return true;
         if (!(object instanceof AppraisalEntity)) return false;
         AppraisalEntity appraisalEntity = (AppraisalEntity) object;
-        return this._appraisalEntityId.equals(appraisalEntity._appraisalEntityId);
+        return _appraisalEntityId.equals(appraisalEntity._appraisalEntityId);
 
     }
 

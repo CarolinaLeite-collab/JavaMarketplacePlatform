@@ -1,124 +1,75 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.country.Country;
-import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.repository.ICountryRepo;
-import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.valueobject.CountryId;
-import TOPSECRET.domain.valueobject.CountryName;
-import org.junit.jupiter.api.AfterEach;
+import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RegisterCountryControllerTest {
 
-    private AutoCloseable _mocks;
-
-    @Mock
     private ICountryRepo _iCountryRepoDouble;
-    @Mock
-    private CountryFactory _countryFactory;
-    @Mock
-    private User _adminDouble;
-
-    @InjectMocks
-    private RegisterCountryController _controller;
+    private User _userDouble;
+    private Country _countryDouble;
+    private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
-        _mocks = MockitoAnnotations.openMocks(this);
-    }
-
-    @AfterEach
-    void tearDown() throws Exception {
-        _mocks.close();
+        // Arrange
+        _iCountryRepoDouble = mock(ICountryRepo.class);
+        _userDouble = mock(User.class);
+        _countryDouble = mock(Country.class);
+        _userIdDouble = mock(UserId.class);
     }
 
     @Test
     void constructsControllerSuccessfully() {
-        assertNotNull(_controller);
+        // Act & SUT
+        new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() {
         // Arrange
-        Country created = org.mockito.Mockito.mock(Country.class);
-        Country saved = org.mockito.Mockito.mock(Country.class);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iCountryRepoDouble.containsOfIdentity(any(CountryId.class))).thenReturn(false);
-        when(_countryFactory.createCountry(any(CountryId.class), any(CountryName.class))).thenReturn(created);
-        when(_iCountryRepoDouble.save(created)).thenReturn(saved);
+        String countryName = "Portugal";
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_iCountryRepoDouble.addCountry(countryName)).thenReturn(_countryDouble);
+
+        // SUT
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
 
         // Act
-        Optional<Country> opt = _controller.registerCountry(_adminDouble, "PT", "Portugal");
+        Country result = controller.registerCountry(_userDouble, countryName);
 
         // Assert
-        assertTrue(opt.isPresent());
-        assertSame(saved, opt.orElseThrow());
-        verify(_countryFactory).createCountry(any(CountryId.class), any(CountryName.class));
-        verify(_iCountryRepoDouble).save(created);
+        assertSame(_countryDouble, result);
+        verify(_iCountryRepoDouble, times(1)).addCountry(countryName);
     }
 
     @Test
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() {
         // Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
+        String countryName = "Portugal";
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
-        // Act
-        SecurityException exception = assertThrows(SecurityException.class,
-                () -> _controller.registerCountry(_adminDouble, null, null));
+        // SUT
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
 
-        // Assert
-        assertEquals("User is not authorized to register countries", exception.getMessage());
-        verify(_iCountryRepoDouble, never()).containsOfIdentity(any(CountryId.class));
-        verify(_countryFactory, never()).createCountry(any(CountryId.class), any(CountryName.class));
-        verify(_iCountryRepoDouble, never()).save(any(Country.class));
-    }
-
-    @Test
-    void shouldReturnExistingCountryWhenCountryAlreadyExists() {
-        // Arrange
-        Country existing = org.mockito.Mockito.mock(Country.class);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iCountryRepoDouble.containsOfIdentity(any(CountryId.class))).thenReturn(true);
-        when(_iCountryRepoDouble.ofIdentity(any(CountryId.class))).thenReturn(Optional.of(existing));
-
-        // Act
-        Optional<Country> opt = _controller.registerCountry(_adminDouble, "PT", "Portugal");
+        // Act & Assert
+        assertThrows(SecurityException.class,
+                () -> controller.registerCountry(_userDouble, countryName));
 
         // Assert
-        assertTrue(opt.isPresent());
-        assertSame(existing, opt.orElseThrow());
-        verify(_iCountryRepoDouble, never()).save(any(Country.class));
-        verify(_countryFactory, never()).createCountry(any(CountryId.class), any(CountryName.class));
-    }
-
-    @Test
-    void shouldReturnEmptyOptionalWhenSaveReturnsNull() {
-        // Arrange
-        Country created = org.mockito.Mockito.mock(Country.class);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iCountryRepoDouble.containsOfIdentity(any(CountryId.class))).thenReturn(false);
-        when(_countryFactory.createCountry(any(CountryId.class), any(CountryName.class))).thenReturn(created);
-        when(_iCountryRepoDouble.save(created)).thenReturn(null);
-
-        // Act
-        Optional<Country> opt = _controller.registerCountry(_adminDouble, "PT", "Portugal");
-
-        // Assert
-        assertTrue(opt.isEmpty());
+        verify(_iCountryRepoDouble, never()).addCountry(anyString());
     }
 }
-

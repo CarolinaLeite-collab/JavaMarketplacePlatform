@@ -15,8 +15,6 @@ import java.util.Optional;
 
 public interface ICountryRepo extends IRepository<CountryId, Country> {
 
-    Country addCountry(String isoCode, String countryName);
-
-    Optional<Country> findByName(String name);
+    Country addCountry(String countryName);
 
 }

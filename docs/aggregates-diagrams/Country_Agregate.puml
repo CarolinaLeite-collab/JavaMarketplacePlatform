@@ -22,12 +22,11 @@ Package "DOMAIN" {
         class Country <<Entity>> <<Root>> {
             +identity() : CountryId
             +name() : CountryName
-            +isNamed(CountryName) : boolean
             +sameAs(Object) : boolean
         }
 
         class CountryFactory <<Factory>> {
-            +createCountry(CountryId, CountryName) : Country
+            +createCountry(String countryName) : Country
         }
     }
 
@@ -41,7 +40,7 @@ Package "DOMAIN" {
 
     Package "REPOSITORY" <<Folder>> {
         interface ICountryRepo <<Interface>> {
-            +findByName(String) : Optional<Country>
+            +addCountry(String) : Country
         }
     }
 
@@ -63,7 +62,6 @@ Package "ddd" {
 Package "PERSISTENCE" {
     package "MEM" {
         class MemoCountryRepo <<Repo>> {
-        -DATA : Map<CountryId, Country>
         }
     }
 }

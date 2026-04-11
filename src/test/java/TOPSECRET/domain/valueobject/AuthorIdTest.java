@@ -177,4 +177,65 @@ class AuthorIdTest {
 
     }
 
+    @Test
+    void equalObjectsMustHaveSameHashCode() {
+
+        // Arrange
+        AppraisalEntityId id1 = new AppraisalEntityId("Lev Nikoláievitch Tolstói");
+        AppraisalEntityId id2 = new AppraisalEntityId("Lev Nikoláievitch Tolstói");
+
+        // Act
+        int hash1 = id1.hashCode();
+        int hash2 = id2.hashCode();
+
+        // Assert
+        assertEquals(hash1, hash2);
+    }
+
+    @Test
+    void shouldNotBeEqualForSameName() {
+
+        // Arrange
+        String name = "Lev Nikoláievitch Tolstói";
+
+        // Act
+        AuthorId id1 = new AuthorId(name);
+        AuthorId id2 = new AuthorId(name);
+
+        // Assert
+        assertFalse(id1.equals(id2));
+
+    }
+
+    @Test
+    void shouldReturnFalseWhenIdsAreDifferentEvenIfNamesAreSame() {
+
+        // Arrange
+        String name = "Lev Nikoláievitch Tolstói";
+
+        // Act
+        AuthorId id1 = new AuthorId(name);
+        AuthorId id2 = new AuthorId(name);
+
+        // Assert
+        assertFalse(id1.equals(id2));
+
+    }
+
+    @Test
+    void differentObjectsShouldHaveDifferentHashCodes() {
+
+        // Arrange
+        AuthorId id1 = new AuthorId("Lev Tolstói");
+        AuthorId id2 = new AuthorId("Masaoka Shiki");
+
+        // Act
+        int hash1 = id1.hashCode();
+        int hash2 = id2.hashCode();
+
+        // Assert
+        assertNotEquals(hash1, hash2);
+
+    }
+
 }

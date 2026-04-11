@@ -1,6 +1,5 @@
 package TOPSECRET.domain.appraisalEntity;
 
-import TOPSECRET.domain.valueobject.AppraisalEntityId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
@@ -18,12 +17,6 @@ public class AppraisalEntityFactory {
     public AppraisalEntity createAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresId) {
 
         return new AppraisalEntity(name, publicationTypeIds, genresId);
-
-    }
-
-    public AppraisalEntity createAppraisalEntity(AppraisalEntityId appraisalEntityId, Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds) {
-
-        return new AppraisalEntity(appraisalEntityId, name, publicationTypeIds, genreIds);
 
     }
 
