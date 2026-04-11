@@ -17,7 +17,7 @@ actor User
 
 participant ":UIPublicationTypeList" as UI
 participant ":GetPublicationType%n()ListController" as CTRL
-participant ":MemoPublication%n()TypeRepo" as PTR
+participant ":IPublication%n()TypeRepo" as PTR
 
 User -> UI : 1. I want the list of %n()all publication types.
 Activate UI
