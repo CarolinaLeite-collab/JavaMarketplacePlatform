@@ -3,55 +3,86 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
-import TOPSECRET.domain.publicationtype.PublicationType;
-import TOPSECRET.domain.genre.Genre;
-import TOPSECRET.domain.valueobject.Name;
-
-import java.util.ArrayList;
-import java.util.List;
+import TOPSECRET.domain.valueobject.*;
+import java.util.*;
 
 /**
- * Repository responsible for managing {@link AppraisalEntity} persistence.
+ * In-memory implementation of {@link IAppraisalEntityRepo}.
  * <p>
- * Provides operations to check existence by {@link Name} and create new appraisal entities
- * with associated {@link PublicationType}s and {@link Genre}s. Ensures uniqueness by name
- * before creation, throwing {@link IllegalArgumentException} if a duplicate is detected.
+ * This repository is responsible for persisting {@link AppraisalEntity} instances
+ * during runtime using a {@link HashMap} as storage, where the key is the
+ * {@link AppraisalEntityId}.
+ * </p>
  *
- * @see AppraisalEntity
+ * <p>
+ * It provides basic CRUD-like operations such as saving, retrieving by identity,
+ * checking existence, and listing all stored entities.
+ * </p>
  */
 
 public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
-    private final List<AppraisalEntity> _appraisalEntities;
-    private AppraisalEntityFactory _factoryAppraisalEntity;
 
-    public MemoAppraisalEntityRepo(AppraisalEntityFactory factoryAppraisalEntity) {
-        _appraisalEntities = new ArrayList<>();
-        _factoryAppraisalEntity = factoryAppraisalEntity;
-    }
+    private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
+    private AppraisalEntityFactory _appraisalEntityFactory;
 
-    private boolean appraisalEntityExists(Name name) {
-        for (AppraisalEntity appraisalEntity : _appraisalEntities) {
-            if (appraisalEntity.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+
+    public MemoAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
+
+        _appraisalEntityFactory = appraisalEntityFactory;
+
     }
 
     @Override
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationType> publicationTypes, List<Genre> genres) throws IllegalArgumentException {
+    public AppraisalEntity save(AppraisalEntity appraisalEntity) {
 
-        if (appraisalEntityExists(name)) {
-            throw new IllegalArgumentException("This appraisal entity already exists");
-        }
-
-        List<PublicationType> typesCopy = new ArrayList<>(publicationTypes);
-        List<Genre> genresCopy = new ArrayList<>(genres);
-
-        AppraisalEntity appraisalEntity = _factoryAppraisalEntity.createAppraisalEntity(name, typesCopy, genresCopy);
-
-        _appraisalEntities.add(appraisalEntity);
+        DATA.put(appraisalEntity.identity(), appraisalEntity);
 
         return appraisalEntity;
+
     }
+
+    @Override
+    public Iterable<AppraisalEntity> findAll() {
+
+        return DATA.values();
+
+    }
+
+    @Override
+    public Optional<AppraisalEntity> ofIdentity(AppraisalEntityId id) {
+
+        if(!containsOfIdentity(id)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(id));
+
+        }
+
+    }
+
+    @Override
+    public boolean containsOfIdentity(AppraisalEntityId id) {
+
+        return DATA.containsKey(id);
+
+    }
+
+    @Override
+    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
+
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
+
+        if (containsOfIdentity(appraisalEntity.identity())) {
+
+            throw new IllegalStateException("Appraisal entity already exists!");
+
+        }
+
+        return save (appraisalEntity);
+
+    }
+
 }

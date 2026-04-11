@@ -18,39 +18,38 @@ skinparam PackageBorderColor #black
 skinparam classAttributeIconSize 0
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "APPRAISALENTITY" <<Folder>> #c0d8d8 {
+    Package "appraisalEntity" <<Folder>> #c0d8d8 {
         class AppraisalEntity <<Root>> <<Entity>>  {
             -_publicationTypeIds : List<PublicationTypeId>
             -_genreIds : List<GenreId>
 
+            +identity() : AppraisalEntityId
+            +sameAs(Object) : boolean
             +getName() : Name
-            +getGenres () : List<GenreId>
-            +getPublicationTypes() : List<PublicationTypeId>
+            +getGenreIds () : List<GenreId>
+            +getPublicationTypeIds() : List<PublicationTypeId>
             }
 
     class AppraisalEntityFactory <<Factory>> {
-        +createAppraisalEntity(name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
-        +createAppraisalEntity(id : AppraisalEntityID, name : Name, genresId : List<Genre>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        +createAppraisalEntity(name : Name, genresId : List<GenreId>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
 
         }
     }
 
-    package "REPOSITORY" <<Folder>> {
+    package "repository" <<Folder>> {
         interface IAppraisalEntityRepo <<Interface>> {
-            +registerNewAppraisalEntity(name : Name, genresId : List<Genre> \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+            +addAppraisalEntity(name : Name, genreIds : List<GenreId> \npublicationTypeIds : List<PublicationTypeId>) : AppraisalEntity
         }
     }
 
-    Package "VALUEOBJECT" {
+    Package "valueobject" {
         '== Value Objects (Ids) ==
         class AppraisalEntityId <<ValueObject>> #LightPink {
         -_id : String
 
-        equals() : boolean
-        toString() : String
-        }
+       }
         class GenreId <<ValueObject>> {
 
         }
@@ -67,9 +66,9 @@ Package "DOMAIN" {
 }
 
 ' ===== Repository =====
-package "PERSISTENCE" <<Folder>> {
+package "persistence" <<Folder>> {
 
-    package "Memo" {
+    package "mem" {
         class MemoAppraisalEntityRepo {
 
         }
@@ -78,7 +77,7 @@ package "PERSISTENCE" <<Folder>> {
 
 }
 
-Package "DDD" {
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(T) : T
         +findAll() : Iterable<T>

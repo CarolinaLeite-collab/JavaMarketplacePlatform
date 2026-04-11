@@ -1,7 +1,9 @@
 @startuml
-title US005 - As an Administrator, I want to register an Author in the system \n so that publications of that author can be added.
-hidefootbox
+'==== Title ====
+title US005 - "As an Administrator, I want to register an Author in the system, so that publications of that author can be added." - SD
 
+
+'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -11,15 +13,21 @@ skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
-
+hidefootbox
 autonumber
 autoactivate off
 
+
+' ==== Actor and participants ====
 actor Administrator
 
 
+'==== UI interaction ====
 Administrator -> ":CreateAuthorUI": I want to register an Author
+activate ":CreateAuthorUI"
+
 ":CreateAuthorUI" --> Administrator: What is the author's name?
+deactivate ":CreateAuthorUI"
 
 Administrator -> ":CreateAuthorUI": authorName
 activate ":CreateAuthorUI"
@@ -27,23 +35,23 @@ activate ":CreateAuthorUI"
 ":CreateAuthorUI" -> ":CreateAuthorController": createAuthor(authorName)
 
 activate ":CreateAuthorController"
-":CreateAuthorController"-> ":MemoAuthorRepo": createAuthor(authorName)
+":CreateAuthorController"-> ":MemoAuthorRepo": addAuthor(authorName)
 
 activate ":MemoAuthorRepo"
-opt existsByName(authorName) == false
 ":MemoAuthorRepo" -> ":AuthorFactory": createAuthor(authorName)
 
 activate ":AuthorFactory"
-create "myAuthor:Author"
-":AuthorFactory" -->> "myAuthor:Author": <<create>>
-":AuthorFactory" --> ":MemoAuthorRepo": myAuthor
+create "author:Author"
+":AuthorFactory" -->> "author:Author": <<create>>
+":AuthorFactory" --> ":MemoAuthorRepo": author
 deactivate ":AuthorFactory"
-":MemoAuthorRepo" -> ":MemoAuthorRepo": add(myAuthor)
-end
-":MemoAuthorRepo" --> ":CreateAuthorController": myAuthor
+":MemoAuthorRepo" -> ":MemoAuthorRepo": save(author)
+
+
+":MemoAuthorRepo" --> ":CreateAuthorController": author
 deactivate ":MemoAuthorRepo"
 
-":CreateAuthorController" --> ":CreateAuthorUI": myAuthor
+":CreateAuthorController" --> ":CreateAuthorUI": author
 deactivate ":CreateAuthorController"
 
 ":CreateAuthorUI" --> Administrator: Done!
