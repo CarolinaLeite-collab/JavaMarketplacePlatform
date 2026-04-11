@@ -3,7 +3,6 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.valueobject.CountryId;
-import TOPSECRET.domain.valueobject.CountryName;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,103 +19,104 @@ class MemoCountryRepoTest {
 
     @BeforeEach
     void setUp() {
-        
+        // Arrange
         _countryFactoryDouble = mock(CountryFactory.class);
     }
 
     @Test
     void shouldConstructRepoSuccessfully() {
-        //Act
-        //SUT
+        // SUT
         MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+
+        // Assert
+        assertNotNull(memoCountryRepo);
     }
 
     @Test
     void shouldRegisterCountrySuccessfully() {
         // Arrange
-        CountryId _countryIdDouble = new CountryId("PT");
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
-        when(_countryFactoryDouble.createCountry("PT", "Portugal")).thenReturn(_countryDouble);
+        CountryId countryIdDouble = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
+        when(countryDouble.identity()).thenReturn(countryIdDouble);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
 
-        //SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
-
-        //Act
-        Country result = memoCountryRepo.addCountry("PT", "Portugal");
-
-        //Assert
-        assertNotNull(result);
-        assertSame(_countryDouble, result);
-    }
-
-
-    @Test
-    void addCountryDuplicateThrowsIllegalArgumentException() {
-
-        // Arrange
-        CountryId _countryIdDouble = new CountryId("PT");
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
-        when(_countryFactoryDouble.createCountry("PT", "Portugal")).thenReturn(_countryDouble);
-
-        //SUT
+        // SUT
         MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
 
         // Act
-        memoCountryRepo.addCountry("PT", "Portugal");
+        Country result = memoCountryRepo.addCountry("Portugal");
 
         // Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                memoCountryRepo.addCountry("PT", "Portugal"));
+        assertNotNull(result);
+        assertSame(countryDouble, result);
+    }
 
+    @Test
+    void addCountryDuplicateThrowsIllegalArgumentException() {
+        // Arrange
+        CountryId countryIdDouble = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
+        when(countryDouble.identity()).thenReturn(countryIdDouble);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
+
+        // SUT
+        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+
+        // Act
+        memoCountryRepo.addCountry("Portugal");
+
+        // Assert
+        IllegalArgumentException result = assertThrows(IllegalArgumentException.class,
+                () -> memoCountryRepo.addCountry("Portugal"));
+        assertEquals("Country already exists in the repository", result.getMessage());
     }
 
     @Test
     void saveValidCountryReturnsCountry() {
         // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        CountryId countryIdDouble = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
+        when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-
-        Country result = repo.save(_countryDouble);
+        // Act
+        Country result = repo.save(countryDouble);
 
         // Assert
-        assertSame(_countryDouble, result);
+        assertSame(countryDouble, result);
     }
 
     @Test
     void ofIdentityExistingCountryIdReturnsCountry() {
         // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        CountryId countryIdDouble = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
+        when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-        repo.save(_countryDouble);
-        Optional<Country> result = repo.ofIdentity(_countryIdDouble);
+        // Act
+        repo.save(countryDouble);
+        Optional<Country> result = repo.ofIdentity(countryIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
-        assertSame(_countryDouble, result.get());
+        assertSame(countryDouble, result.get());
     }
 
     @Test
     void ofIdentityNonExistingCountryIdReturnsEmpty() {
         // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
+        CountryId countryIdDouble = mock(CountryId.class);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-
-        Optional<Country> result = repo.ofIdentity(_countryIdDouble);
+        // Act
+        Optional<Country> result = repo.ofIdentity(countryIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -125,16 +125,16 @@ class MemoCountryRepoTest {
     @Test
     void containsOfIdentityExistingCountryIdReturnsTrue() {
         // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        CountryId countryIdDouble = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
+        when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
         // Act
-        repo.save(_countryDouble);
-        boolean result = repo.containsOfIdentity(_countryIdDouble);
+        repo.save(countryDouble);
+        boolean result = repo.containsOfIdentity(countryIdDouble);
 
         // Assert
         assertTrue(result);
@@ -143,13 +143,13 @@ class MemoCountryRepoTest {
     @Test
     void containsOfIdentityNonExistingCountryIdReturnsFalse() {
         // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
+        CountryId countryIdDouble = mock(CountryId.class);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-
-        boolean result = repo.containsOfIdentity(_countryIdDouble);
+        // Act
+        boolean result = repo.containsOfIdentity(countryIdDouble);
 
         // Assert
         assertFalse(result);
@@ -158,18 +158,20 @@ class MemoCountryRepoTest {
     @Test
     void findAllReturnsTwoStoredCountries() {
         // Arrange
-        CountryId _countryId1Double = mock(CountryId.class);
-        CountryId _countryId2Double = mock(CountryId.class);
-        Country _country1Double = mock(Country.class);
-        Country _country2Double = mock(Country.class);
-        when(_country1Double.identity()).thenReturn(_countryId1Double);
-        when(_country2Double.identity()).thenReturn(_countryId2Double);
+        CountryId countryId1Double = mock(CountryId.class);
+        Country country1Double = mock(Country.class);
+        when(country1Double.identity()).thenReturn(countryId1Double);
+
+        CountryId countryId2Double = mock(CountryId.class);
+        Country country2Double = mock(Country.class);
+        when(country2Double.identity()).thenReturn(countryId2Double);
 
         // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-        repo.save(_country1Double);
-        repo.save(_country2Double);
+        // Act
+        repo.save(country1Double);
+        repo.save(country2Double);
         Iterable<Country> result = repo.findAll();
 
         // Assert
@@ -180,62 +182,13 @@ class MemoCountryRepoTest {
 
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
-        // Arrange
+        // SUT
         MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
 
-        // SUT
+        // Act
         Iterable<Country> result = repo.findAll();
 
         // Assert
         assertFalse(result.iterator().hasNext());
-    }
-
-    @Test
-    void findByNameExistingNameReturnsCountry() {
-        // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
-        when(_countryDouble.isNamed(new CountryName("Portugal"))).thenReturn(true);
-
-        // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
-
-        repo.save(_countryDouble);
-        Optional<Country> result = repo.findByName("Portugal");
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertSame(_countryDouble, result.get());
-    }
-
-    @Test
-    void findByNameNonExistingNameReturnsEmpty() {
-        // Arrange
-        CountryId _countryIdDouble = mock(CountryId.class);
-        Country _countryDouble = mock(Country.class);
-        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
-        when(_countryDouble.isNamed(new CountryName("Portugal"))).thenReturn(true);
-
-        // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
-
-        repo.save(_countryDouble);
-        Optional<Country> result = repo.findByName("Deutschland");
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void findByNameNullReturnsEmpty() {
-        // Arrange
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
-
-        // SUT
-        Optional<Country> result = repo.findByName(null);
-
-        // Assert
-        assertTrue(result.isEmpty());
     }
 }

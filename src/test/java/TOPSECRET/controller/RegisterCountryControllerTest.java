@@ -1,65 +1,75 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.country.Country;
-import TOPSECRET.domain.country.CountryFactory;
 import TOPSECRET.domain.repository.ICountryRepo;
-import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class RegisterCountryControllerTest {
+
     private ICountryRepo _iCountryRepoDouble;
-    private User _adminDouble;
-    private UserId _adminIdDouble;
-    private CountryFactory _countryFactory;
+    private User _userDouble;
+    private Country _countryDouble;
+    private UserId _userIdDouble;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
+        // Arrange
         _iCountryRepoDouble = mock(ICountryRepo.class);
-        _adminDouble = mock(User.class);
-        _adminIdDouble = mock(UserId.class);
-        _countryFactory = new CountryFactory();
+        _userDouble = mock(User.class);
+        _countryDouble = mock(Country.class);
+        _userIdDouble = mock(UserId.class);
     }
 
     @Test
     void constructsControllerSuccessfully() {
-        //Act
-        //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
+        // Act & SUT
+        new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
     }
 
     @Test
-    void shouldRegisterCountrySuccessfully() throws InstantiationException {
-        //Arrange
-        Country portugal = mock(Country.class);
-        when(_iCountryRepoDouble.save(org.mockito.ArgumentMatchers.any())).thenReturn(portugal);
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        //SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
-        //Act
-        java.util.Optional<Country> opt = controller.registerCountry(_adminDouble, "PT", "Portugal");
+    void shouldRegisterCountrySuccessfully() {
+        // Arrange
+        String countryName = "Portugal";
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_iCountryRepoDouble.addCountry(countryName)).thenReturn(_countryDouble);
+
+        // SUT
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
+
+        // Act
+        Country result = controller.registerCountry(_userDouble, countryName);
+
         // Assert
-        assertTrue(opt.isPresent());
-        assertSame(portugal, opt.get());
-        org.mockito.Mockito.verify(_iCountryRepoDouble).save(org.mockito.ArgumentMatchers.any());
+        assertSame(_countryDouble, result);
+        verify(_iCountryRepoDouble, times(1)).addCountry(countryName);
     }
 
     @Test
     void shouldNotRegisterCountrySuccessfullyIfUserNotAdmin() {
-        //Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactory, _adminIdDouble);
-        //Act
-        SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerCountry(_adminDouble, null, "Portugal"));
+        // Arrange
+        String countryName = "Portugal";
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
 
-        //Assert
-        assertEquals("User is not authorized to register countries", exception.getMessage());
+        // SUT
+        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _userIdDouble);
+
+        // Act & Assert
+        assertThrows(SecurityException.class,
+                () -> controller.registerCountry(_userDouble, countryName));
+
+        // Assert
+        verify(_iCountryRepoDouble, never()).addCountry(anyString());
     }
 }
-

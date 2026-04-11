@@ -18,10 +18,13 @@ skinparam PackageBorderColor #black
 skinparam classAttributeIconSize 0
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "AUTHOR" <<Folder>> #c0d8d8 {
+    Package "author" <<Folder>> #c0d8d8 {
         class Author <<Root>> <<Entity>> {
+            -_name : String
+            +identity() : AuthorId
+            +sameAs(Object) : boolean
             +getName() : Name
             +getLowerCaseName() : Name
         }
@@ -32,20 +35,18 @@ Package "DOMAIN" {
         }
     }
 
-    package "REPOSITORY" <<Folder>>  {
+    package "repository" <<Folder>>  {
         interface IAuthorRepo <<Interface>> {
         +addAuthor(authorName : String) : Author
 
         }
     }
 
-    Package "VALUEOBJECT"  {
+    Package "valueobject"  {
         '== Value Objects (Ids) ==
         class AuthorId <<ValueObject>> #LightPink {
         -_id : String
 
-        equals() : boolean
-        toString() : String
         }
 
         ' ===== Value Objects =====
@@ -58,16 +59,16 @@ Package "DOMAIN" {
 }
 
 ' ===== Repository =====
-package "PERSISTENCE" <<Folder>> {
+package "persistence" <<Folder>> {
 
-    package "Memo"  {
+    package "mem"  {
         class MemoAuthorRepo {
 
         }
     }
 }
 
-Package "DDD" {
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(T) : T
         +findAll() : Iterable<T>

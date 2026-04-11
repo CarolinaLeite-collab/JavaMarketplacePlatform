@@ -1,65 +1,115 @@
 package TOPSECRET.domain.author;
 
+import TOPSECRET.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+
 public class AuthorTest {
+
+    @Test
+    void testConstructor() {
+
+        // Arrange
+        String name = "Eça de Queirós";
+
+        // Act & SUT
+        AuthorId authorId = new AuthorId(name);
+
+    }
+
     @Test
     void validNameAuthor() {
-        Author a = new Author("Eça de Queirós");
+
+        // Arrange
+        String name = "Eça de Queirós";
+
+        // Act & SUT
+        Author a = new Author(name);
+
+        // Assert
         assertEquals("Eça de Queirós", a.getName());
+
     }
 
     @Test
     void authorNameIsTrimmed() {
-        Author a1 = new Author(" Eça de Queirós ");
-        assertEquals("Eça de Queirós", a1.getName());
+
+        // Arrange
+        String name = " Eça de Queirós ";
+
+        // Act & SUT
+        Author a = new Author(name);
+
+        // Assert
+        assertEquals("Eça de Queirós", a.getName());
+
     }
 
     @Test
     void capitalizationNameTest() {
+
+        // Arrange & SUT
         Author a2 = new Author("Eça De Queirós");
         Author a3 = new Author("EÇA DE QUEIRÓS");
         Author a4 = new Author("eça de queirós");
 
+        // Act & Assert
         assertEquals(a2.getLowerCaseName(), a3.getLowerCaseName());
         assertEquals(a2.getLowerCaseName(), a4.getLowerCaseName());
+
     }
 
     @Test
     void authorNameIsTrimmedAndLowerCased() {
-        Author a5 = new Author("  EÇA DE QUEIRÓS  ");
-        assertEquals("eça de queirós", a5.getLowerCaseName());
+
+        // Arrange & SUT
+        Author a = new Author("  EÇA DE QUEIRÓS  ");
+
+        // Act
+        String lowerName = a.getLowerCaseName();
+
+        // Assert
+        assertEquals("eça de queirós", lowerName);
+
     }
 
     @Test
-    void rejectEmptyNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author("   ");}); }
+    void rejectEmptyNameAuthor() {
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Author("   "));
+    }
 
     @Test
-    void rejectNullNameAuthor() { assertThrows(IllegalArgumentException.class, () -> {new Author(null);}); }
+    void rejectNullNameAuthor() {
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new Author(null));
+    }
 
     @Test
-    void testEqualsWithDifferentObjectTypes(){
+    void testEqualsWithDifferentObjectTypes() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
         String b = "Seneca";
         Author b2 = null;
 
-        //assert
+        // Act & Assert
         assertFalse(a.equals(b));
         assertFalse(a.equals(b2));
 
     }
 
+
     @Test
     void testEqualsWithSameObject() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
 
-        //assert
+        // Act & Assert
         assertTrue(a.equals(a));
 
     }
@@ -67,48 +117,182 @@ public class AuthorTest {
     @Test
     void testEqualsWithDifferentAuthorObjectsSameName() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
         Author b = new Author("SeNeca");
 
-        //assert
-        assertTrue(a.equals(b));
+        // Act & Assert
+        assertFalse(a.equals(b));
 
     }
 
     @Test
     void testEqualsWithDifferentAuthorObjectsDifferentName() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
         Author b = new Author("Justinian");
 
-        //assert
+        // Act & Assert
         assertFalse(a.equals(b));
 
     }
 
     @Test
-    void test_equal_hash_code(){
+    void test_equal_hash_code() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
         Author a2 = new Author("SeneCA");
 
-        //assert
+        // Act & Assert
         assertEquals(a.hashCode(), a2.hashCode());
 
     }
 
     @Test
-    void test_non_equal_hash_code(){
+    void test_non_equal_hash_code() {
 
-        //act and arrange
+        // Arrange & SUT
         Author a = new Author("Seneca");
         Author a2 = new Author("SeneCAR");
 
-        //assert
+        // Act & Assert
         assertNotEquals(a.hashCode(), a2.hashCode());
+
+    }
+
+    @Test
+    void identityShouldReturnAuthorId() {
+
+        // Arrange & SUT
+        Author author = new Author("Seneca");
+
+        // Act
+        AuthorId id = author.identity();
+
+        // Assert
+        assertNotNull(id);
+
+    }
+
+    @Test
+    void identityShouldBeNotEqualForSameName() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Seneca");
+
+        // Act & Assert
+        assertNotEquals(a1.identity(), a2.identity());
+
+    }
+
+    @Test
+    void identityShouldBeDifferentForDifferentNames() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Justinian");
+
+        // Act & Assert
+        assertNotEquals(a1.identity(), a2.identity());
+
+    }
+
+    @Test
+    void sameAsShouldReturnTrueForSameObject() {
+
+        // Arrange & SUT
+        Author author = new Author("Seneca");
+
+        // Act
+        boolean result = author.sameAs(author);
+
+        // Assert
+        assertTrue(result);
+
+    }
+
+    @Test
+    void sameAsShouldReturnFalseForDifferentObjectWithSameId() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Seneca");
+
+        // Act
+        boolean result = a1.sameAs(a2);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void sameAsShouldReturnFalseForDifferentAuthors() {
+
+        // Arrange & SUT
+        Author a = new Author("Seneca");
+        Author b = new Author("Justinian");
+
+        // Act
+        boolean result = a.sameAs(b);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenNull() {
+
+        // Arrange & SUT
+        Author author = new Author("Seneca");
+
+        // Act
+        boolean result = author.sameAs(null);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void sameAsShouldReturnFalseForDifferentType() {
+
+        // Arrange & SUT
+        Author author = new Author("Seneca");
+
+        // Act
+        boolean result = author.sameAs("Seneca");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentAuthorObjectsWithSameName() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Seneca");
+
+        // Act & Assert
+        assertFalse(a1.equals(a2));
+
+    }
+
+    @Test
+    void equalsShouldDependOnAuthorIdNotObjectReference() {
+
+        // Arrange & SUT
+        Author a1 = new Author("Seneca");
+        Author a2 = new Author("Seneca");
+
+        // Act & Assert
+        assertNotSame(a1, a2);
+        assertFalse(a1.equals(a2));
 
     }
 

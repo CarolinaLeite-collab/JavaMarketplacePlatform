@@ -3,50 +3,78 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.author.AuthorFactory;
-
-import java.util.ArrayList;
-import java.util.List;
+import TOPSECRET.domain.valueobject.AuthorId;
+import java.util.*;
 
 /**
- * Repository for managing {@link Author} instances.
+ * In-memory implementation of the {@link IAuthorRepo} repository.
  * <p>
- * Provides methods to create new authors, check for the existence of authors by name,
- * and retrieve all authors in the repository.
+ * This class stores {@link Author} entities in a HashMap using their identity as the key.
+ * It is intended for testing, prototyping, or scenarios where persistence is not required.
+ * </p>
+ * <p>
+ * It provides basic repository operations such as saving, retrieving, checking existence,
+ * and creating new {@link Author} instances through an injected {@link AuthorFactory}.
  * </p>
  */
 
 public class MemoAuthorRepo implements IAuthorRepo {
 
-    private List<Author> _authors;
-    private AuthorFactory _authorFactory;
+    private Map<AuthorId, Author> DATA = new HashMap<AuthorId, Author>();
+    private final AuthorFactory _authorFactory;
 
     public MemoAuthorRepo(AuthorFactory authorFactory) {
-        _authorFactory = new AuthorFactory();
-        _authors = new ArrayList<>();
+
+        _authorFactory = authorFactory;
+
+    }
+
+
+    @Override
+    public Author save(Author author) {
+
+        DATA.put(author.identity(), author);
+
+        return author;
+
+    }
+
+    @Override
+    public Iterable<Author> findAll() {
+
+        return DATA.values();
+
+    }
+
+    @Override
+    public Optional<Author> ofIdentity(AuthorId id) {
+
+        if(!containsOfIdentity(id)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(id));
+
+        }
+
+    }
+
+    @Override
+    public boolean containsOfIdentity(AuthorId id) {
+
+        return DATA.containsKey(id);
+
     }
 
     @Override
     public Author addAuthor(String authorName) {
 
-        String normalizedName = authorName.trim();
-        if (existsByName(normalizedName)) {
-            throw new IllegalStateException("Author already exists");
-        }
+        Author newAuthor = _authorFactory.createAuthor(authorName);
 
-        Author author = _authorFactory.createAuthor(normalizedName);
+        return save (newAuthor);
 
-        _authors.add(author);
-
-        return author;
     }
 
-    @Override
-    public boolean existsByName(String name) {
-        return _authors.stream().anyMatch(a -> a.getName().equalsIgnoreCase(name));
-    }
-
-    @Override
-    public List<Author> findAll() {
-        return new ArrayList<>(_authors);
-    }
 }
