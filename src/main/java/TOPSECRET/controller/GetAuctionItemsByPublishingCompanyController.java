@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.UserId;
@@ -26,6 +26,6 @@ public class GetAuctionItemsByPublishingCompanyController {
 
     public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
 
-        return _iAuctionRepo.getAuctionItemsByPublishingCompany(publisher);
+        return _iAuctionRepo.getAuctionItemsByPublishingCompanyId(publisher);
     }
 }

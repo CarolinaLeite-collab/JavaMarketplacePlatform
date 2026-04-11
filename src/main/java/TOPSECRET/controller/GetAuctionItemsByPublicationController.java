@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;
@@ -24,7 +24,7 @@ public class GetAuctionItemsByPublicationController {
 
     public List<Item> getAuctionItemsByPublication(Publication publication) {
 
-        List<Item> auctionItemsByPublication = _iAuctionRepo.getAuctionItemsByPublication(publication);
+        List<Item> auctionItemsByPublication = _iAuctionRepo.getAuctionItemsByPublicationId(publication);
 
         return auctionItemsByPublication;
 

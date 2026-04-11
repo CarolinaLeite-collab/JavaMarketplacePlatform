@@ -1,16 +1,23 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Bid;
+import TOPSECRET.domain.BidFactory;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.MemoBidRepo;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.AuctionId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 /**
- * Represents a time-bounded selling mechanism where a {@link Item} is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where one or more {@link Item}s is sold via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.
@@ -20,6 +27,8 @@ import java.time.ZonedDateTime;
  * <h2>Seller-defined parameters</h2>
  * <ul>
  *   <li><b>startingPrice</b>: minimum price required for the first valid bid.</li>
+ *   <li><b>reservePrice</b>: minimum acceptable price for the item to be sold; bids below this
+ *       price do not result in a sale.</li>
  *   <li><b>outrightPrice</b> (optional): a "buy now" price that allows immediate purchase without waiting
  *       for the auction to end.</li>
  *   <li><b>auctionStartDate</b>: date/time when the auction becomes active.</li>
@@ -32,9 +41,10 @@ import java.time.ZonedDateTime;
  * </ul>
  */
 
-public class Auction {
+public class Auction implements AggregateRoot<AuctionId> {
 
-    private final Item _item;
+    private final AuctionId _auctionId;
+    private final List<Item> _items;
     private final Price _startingPrice;
     private final Price _reservePrice;
     private final Price _outrightPrice;
@@ -45,11 +55,10 @@ public class Auction {
     private Price _finalPrice;
 
 
-    Auction(Item item, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        _item = item;
+    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
         _bids = new MemoBidRepo( new BidFactory());
-
+        _auctionId = new AuctionId();
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -75,15 +84,34 @@ public class Auction {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        _item.setAuction(this);
+        if (items == null || items.isEmpty()) {
+            throw new IllegalArgumentException("Items cannot be null or empty");
+        } else {
+            _items = items;
+        }
+
+        for (Item item : _items) {
+            item.setAuction(this);
+        }
     }
 
-    Auction(Item item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
-    public Item getItem() {
-        return _item;
+    @Override
+    public AuctionId identity() {
+        return _auctionId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (!(object instanceof Auction other)) return false;
+        return _auctionId.equals(other._auctionId);
+    }
+
+    public List <Item> getItems() {
+        return _items;
     }
 
     public MemoBidRepo getBids() {
@@ -145,7 +173,7 @@ public class Auction {
         return result;
     }
 
-    private boolean isReserveMet (Price price) {
+    private boolean isReserveMet(Price price) {
         return price.isGreaterOrEqualThan(_reservePrice);
     }
 
@@ -157,25 +185,39 @@ public class Auction {
         return result;
     }
 
-    public boolean isByGenre( GenreId genreId) {
-        return _item.isByGenre(genreId);
+    public boolean isByGenre(GenreId genreId) {
+        for (Item item : _items) {
+            if (item.isByGenre(genreId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public boolean isByAuthor(AuthorId authorId) {
-
-        return _item.isByAuthor(authorId);
-
+    public boolean isByAuthor(AuthorId authorId){
+        for (Item item : _items) {
+            if (item.isByAuthor(authorId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isByPublication(Publication publication) {
-
-        return _item.isByPublication(publication);
-
+        for(Item item : _items) {
+            if(item.isByPublication(publication)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isByPublishingCompany(PublishingCompany publisher) {
-
-        return _item.isByPublishingCompany(publisher);
-
+        for(Item item : _items) {
+            if(item.isByPublishingCompany(publisher)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

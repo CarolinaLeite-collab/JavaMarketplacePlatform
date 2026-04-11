@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
+import TOPSECRET.domain.Item;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -18,7 +19,9 @@ class AuctionFactoryTest {
     @Test
     void shouldConstructAuctionWithoutOutright() {
         // Arrange
-        Item item = mock(Item.class);
+        List<Item> items = new ArrayList<>();
+        Item itemDouble = mock(Item.class);
+        items.add(itemDouble);
         Price startingPrice = mock(Price.class);
         Price reservePrice = mock(Price.class);
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
@@ -33,13 +36,13 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(item, startingPrice, reservePrice,start, end);
+            Auction created = factory.createAuction(items, startingPrice, reservePrice,start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
             assertEquals(1, capturedArguments.size());
             List<Object> params = capturedArguments.get(0);
-            assertSame(item, params.get(0));
+            assertSame(items, params.get(0));
             assertSame(startingPrice, params.get(1));
             assertSame(reservePrice, params.get(2));
             assertSame(start, params.get(3));
@@ -50,7 +53,9 @@ class AuctionFactoryTest {
     @Test
     void shouldConstructAuctionWithOutright() {
         // Arrange
-        Item item = mock(Item.class);
+        List<Item> items = new ArrayList<>();
+        Item itemDouble = mock(Item.class);
+        items.add(itemDouble);
         Price startingPrice = mock(Price.class);
         Price reservePrice = mock(Price.class);
         Price outrightPrice = mock(Price.class);
@@ -65,13 +70,13 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(item, startingPrice, reservePrice,outrightPrice, start, end);
+            Auction created = factory.createAuction(items, startingPrice, reservePrice,outrightPrice, start, end);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
             assertEquals(1, capturedArguments.size());
             List<Object> params = capturedArguments.get(0);
-            assertSame(item, params.get(0));
+            assertSame(items, params.get(0));
             assertSame(startingPrice, params.get(1));
             assertSame(reservePrice, params.get(2));
             assertSame(outrightPrice, params.get(3));

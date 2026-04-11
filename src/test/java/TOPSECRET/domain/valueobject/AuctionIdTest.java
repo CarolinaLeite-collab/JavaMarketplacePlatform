@@ -2,8 +2,6 @@ package TOPSECRET.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionIdTest {
@@ -11,124 +9,110 @@ class AuctionIdTest {
     @Test
     void shouldCreateIdAuctionId() {
         // SUT
-        new AuctionId(UUID.randomUUID());
+        new AuctionId();
     }
 
     @Test
-    void shouldThrowExceptionWhenCreateIdAuctionIdIsNull() {
-        //Assert, Act & SUT
-        assertThrows(IllegalArgumentException.class, () -> new AuctionId(null));
+    void shouldThrowExceptionWhenIdIsNull() {
+        //assert & act
+        assertThrows(IllegalArgumentException.class, () -> new AuctionId(null));    // SUT
     }
 
     @Test
-    void shouldReturnSameUIID() {
-        // Act & SUT
-        UUID uuid = UUID.randomUUID();
-        AuctionId auctionId = new AuctionId(uuid);
+    void shouldThrowExceptionWhenIdHasInvalidFormat() {
+        //assert & act
+        assertThrows(IllegalArgumentException.class, () -> new AuctionId("INVALID"));   // SUT
+    }
 
-        // Assert
-        assertEquals(uuid, auctionId.getId());
+    @Test
+    void shouldThrowExceptionWhenIdDoesNotStartWithAU() {
+        //assert & act
+        assertThrows(IllegalArgumentException.class, () -> new AuctionId("XX-12345678"));   // SUT
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIdHasWrongLength() {
+        //assert & act
+        assertThrows(IllegalArgumentException.class, () -> new AuctionId("AU-1234"));   // SUT
+    }
+
+    @Test
+    void idsShouldBeUnique() {
+        // Arrange & SUT
+        AuctionId id1 = new AuctionId();
+        AuctionId id2 = new AuctionId();
+
+        //Assert & Act
+        assertNotEquals(id1, id2);
+        assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
     void shouldReturnTrueWhenComparingSameInstance() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
+        // Arrange & SUT
+        AuctionId id = new AuctionId();
 
-        // Act
-        AuctionId id = AuctionId.createId();
-
-        // Assert
+        // Assert & Act
         assertEquals(id, id);
     }
 
     @Test
-    void ShouldReturnTrueWhenUUIDsAreEqual() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
+    void shouldReturnTrueWhenIdsAreEqual() {
+        // Arrange & SUT
+        AuctionId id1 = new AuctionId("AU-12345678");
+        AuctionId id2 = new AuctionId("AU-12345678");
 
-        // ACT
-        AuctionId id1 = new AuctionId(uuid);
-        AuctionId id2 = new AuctionId(uuid);
-
-        // Assert
+        // Assert & Act
         assertEquals(id1, id2);
     }
 
     @Test
-    void shouldReturnFalseWhenUUIDAreDifferent() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
-
-        // Act
-        AuctionId id1 = AuctionId.createId();
-        AuctionId id2 = AuctionId.createId();
-
-        // Assert
-        assertNotEquals(id1, id2);
-    }
-
-    @Test
     void shouldReturnFalseWhenComparedWithNull() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
+        // Arrange & SUT
+        AuctionId id = new AuctionId();
 
-        // Act
-        AuctionId id = AuctionId.createId();
-
-        // Assert
+        // Assert & Act
         assertNotEquals(id, null);
-
     }
 
     @Test
     void shouldReturnFalseWhenCompareWithDifferentType() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
+        // Arrange & SUT
+        AuctionId id = new AuctionId();
+        String string = "some string";
 
-        // Act
-        AuctionId id = AuctionId.createId();
-
-        // Assert
-        assertNotEquals(id, "some string");
+        // Assert & Act
+        assertNotEquals(id, string);
     }
 
     @Test
     void hashCodeShouldBeEqualForSameUUID() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
+        // Arrange & SUT
+        AuctionId id1 = new AuctionId("AU-12345678");
+        AuctionId id2 = new AuctionId("AU-12345678");
 
-        // Act
-        AuctionId id1 = new AuctionId(uuid);
-        AuctionId id2 = new AuctionId(uuid);
-
-        // Assert
+        // Assert & Act
         assertEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
     void hashCodeShouldBeDifferentForDifferentUUID() {
-        // SUT
-        new AuctionId(UUID.randomUUID());
+        // Arrange & SUT
+        AuctionId id1 = new AuctionId();
+        AuctionId id2 = new AuctionId();
 
-        // Act
-        AuctionId id1 = AuctionId.createId();
-        AuctionId id2 = AuctionId.createId();
-
-        // Assert
+        // Assert & Act
         assertNotEquals(id1.hashCode(), id2.hashCode());
 
     }
 
     @Test
     void shouldReturnUUIDString() {
-        // SUT
-        UUID uuid = UUID.randomUUID();
+        // Arrange & SUT
+        AuctionId id = new AuctionId();
 
-        // Act
-        AuctionId id = new AuctionId(uuid);
-
-        // Assert
-        assertEquals(uuid.toString(), id.toString());
+        // Assert & Act
+        assertTrue(id.toString().matches("AU-[A-Z0-9]{8}"));
+        assertEquals(11, id.toString().length());
     }
 }

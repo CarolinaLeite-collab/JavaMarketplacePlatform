@@ -1,8 +1,10 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
+import TOPSECRET.domain.Item;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 /**
  * Factory responsible for creating {@link Auction} instances.
@@ -14,15 +16,15 @@ import java.time.ZonedDateTime;
  */
 public class AuctionFactory {
 
-    public Auction createAuction(Item item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate,
+    public Auction createAuction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate,
                                  ZonedDateTime auctionEndDate) {
 
             return new Auction(item, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
 
     }
 
-    public Auction createAuction(Item item, Price startingPrice, Price reservePrice ,Price outrightPrice,
-                          ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    public Auction createAuction(List<Item> item, Price startingPrice, Price reservePrice , Price outrightPrice,
+                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
 
             return new Auction(item, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
 

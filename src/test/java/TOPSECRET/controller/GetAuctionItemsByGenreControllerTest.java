@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
@@ -40,7 +40,7 @@ class GetAuctionItemsByGenreControllerTest {
         // Arrange
         Item _itemDouble = mock(Item.class);
         List<Item> itemsList = List.of(_itemDouble);
-        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreIdDouble)).thenReturn(itemsList);
+        when(_iAuctionRepoDouble.getAuctionItemsByGenreId(_genreIdDouble)).thenReturn(itemsList);
 
         // SUT
         GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
@@ -50,14 +50,14 @@ class GetAuctionItemsByGenreControllerTest {
 
         // Assert
         assertEquals(itemsList, items);
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreIdDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenreId(_genreIdDouble);
     }
 
     @Test
     void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
 
         // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByGenre(_genreIdDouble)).thenReturn(List.of());
+        when(_iAuctionRepoDouble.getAuctionItemsByGenreId(_genreIdDouble)).thenReturn(List.of());
 
         // SUT
         GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
@@ -67,6 +67,6 @@ class GetAuctionItemsByGenreControllerTest {
 
         // Assert
         assertTrue(listOfAuctionItemsByGenre.isEmpty());
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenre(_genreIdDouble);
+        verify(_iAuctionRepoDouble).getAuctionItemsByGenreId(_genreIdDouble);
     }
 }

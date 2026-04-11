@@ -1,27 +1,35 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import TOPSECRET.domain.auction.Auction;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class AuctionId implements DomainId {
+/**
+ * Represents the unique identifier of an {@link Auction} in the domain.
+ * <p>
+ * Each {@code AuctionId} is automatically generated upon instantiation,
+ * with the format {@code "AU-" + 8-character uppercase UUID substring}.
+ * This ensures that each auction has a unique and easily recognizable identifier.
+ * </p>
+ */
 
-    private final UUID _id;
+ public class AuctionId implements DomainId {
 
-    public AuctionId(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("id cannot be null");
+    private String _id;
+
+    public AuctionId() {
+
+        _id = "AU-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    public AuctionId(String id) {
+        if (id == null || !id.matches("AU-[A-Z0-9]{8}")) {
+            throw new IllegalArgumentException("Invalid AuctionId format");
         }
+
         _id = id;
-    }
-
-    public static AuctionId createId() {
-        return new AuctionId(UUID.randomUUID());
-    }
-
-    public UUID getId() {
-        return _id;
     }
 
     @Override
