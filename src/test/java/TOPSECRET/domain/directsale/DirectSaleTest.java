@@ -109,8 +109,11 @@ class DirectSaleTest {
         //arrange
         DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
-        //act+assert
-        assertTrue(directSale.sameAs(directSale));
+        //act
+        boolean result = directSale.equals(directSale);
+
+        //assert
+        assertTrue(result);
     }
 
 
@@ -121,7 +124,7 @@ class DirectSaleTest {
         DirectSale directSale2 = new DirectSale(_items, _priceDouble, _period);
 
         //act
-        boolean result = directSale1.sameAs(directSale2);
+        boolean result = directSale1.equals(directSale2);
 
         //assert
         assertFalse(result);
@@ -141,8 +144,70 @@ class DirectSaleTest {
         //arrange
         DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
+        boolean result = directSale.equals(_itemDouble);
+
         //assert
-        assertFalse(directSale.sameAs(_itemDouble));
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnTrueWhenSameFields() {
+        //arrange
+        DirectSale directSale1 = new DirectSale(_items, _priceDouble, _period);
+        DirectSale directSale2 = new DirectSale(_items, _priceDouble, _period);
+
+        //act
+        boolean result = directSale1.sameAs(directSale2);
+
+        //assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDifferentItems() {
+        //arrange
+        Item itemdouble2 = mock(Item.class);
+        List<Item> items2 = new ArrayList<>();
+        items2.add(itemdouble2);
+
+        DirectSale directSale1 = new DirectSale(_items, _priceDouble, _period);
+        DirectSale directSale2 = new DirectSale(items2, _priceDouble, _period);
+
+        //act
+        boolean result = directSale1.sameAs(directSale2);
+
+        //assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDifferentPrice() {
+        //arrange
+        Price pricedouble2 = mock(Price.class);
+
+        DirectSale directSale1 = new DirectSale(_items, pricedouble2, _period);
+        DirectSale directSale2 = new DirectSale(_items, _priceDouble, _period);
+
+        //act
+        boolean result = directSale1.sameAs(directSale2);
+
+        //assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDifferentTime() {
+        //arrange
+        Period timeDouble = mock(Period.class);
+
+        DirectSale directSale1 = new DirectSale(_items, _priceDouble, timeDouble);
+        DirectSale directSale2 = new DirectSale(_items, _priceDouble, _period);
+
+        //act
+        boolean result = directSale1.sameAs(directSale2);
+
+        //assert
+        assertFalse(result);
     }
 
     // Isolated IsByAuthor Test

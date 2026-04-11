@@ -100,8 +100,22 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
     }
 
     @Override
-    public boolean sameAs(Object object) {
+    public boolean equals(Object object) {
         if (!(object instanceof DirectSale other)) return false;
         return _directSaleId.equals(other._directSaleId);
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (object instanceof DirectSale) {
+            DirectSale other = (DirectSale) object;
+
+            if (this._items.equals(other._items) &&
+                    this._price.equals(other._price) &&
+                    this._timeLimit.equals(other._timeLimit)
+            )
+                return true;
+        }
+        return false;
     }
 }
