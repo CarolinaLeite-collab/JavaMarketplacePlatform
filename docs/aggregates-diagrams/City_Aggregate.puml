@@ -19,8 +19,9 @@ skinparam classAttributeIconSize 0
 ' ===== Persistence =====
 Package "PERSISTENCE" {
     class MemoCityRepo <<Repo>> {
-        - _cities : List<City>
+        - DATA : Map<CityId, City>
         + save(City) : City
+        + addCity(City) : City
         + findAll() : Iterable<City>
         + ofIdentity(CityId) : Optional<City>
         + containsOfIdentity(CityId) : boolean
@@ -68,7 +69,9 @@ Package "DOMAIN" {
     }
 
     Package "REPOSITORY" <<Folder>> #d4c4b0 {
-        interface ICityRepo <<Interface>>
+        interface ICityRepo <<Interface>>  {
+            + addCity(City) : City
+        }
     }
 
 }
