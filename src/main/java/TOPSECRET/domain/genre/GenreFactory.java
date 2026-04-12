@@ -14,7 +14,4 @@ public class GenreFactory {
         return new Genre(genreName);
     }
 
-    public Genre createGenre(GenreId genreId, String name) {
-        return new Genre(genreId, name);
-    }
 }
