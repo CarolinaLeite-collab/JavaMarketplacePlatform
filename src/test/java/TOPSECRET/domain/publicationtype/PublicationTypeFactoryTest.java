@@ -1,10 +1,12 @@
 package TOPSECRET.domain.publicationtype;
 
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 
 class PublicationTypeFactoryTest {
@@ -12,7 +14,7 @@ class PublicationTypeFactoryTest {
     @Test
     void shouldCreatePublicationType() {
 
-        //SUT
+        //Arrange + SUT
         PublicationTypeFactory publicationTypeFactory = new PublicationTypeFactory();
 
         try (MockedConstruction<PublicationType> mockedConstruction = mockConstruction(PublicationType.class)){

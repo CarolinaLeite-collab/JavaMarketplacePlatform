@@ -1,5 +1,7 @@
 package TOPSECRET.domain.publicationtype;
 
+import TOPSECRET.domain.valueobject.PublicationTypeId;
+
 /**
  * Factory responsible for creating {@link PublicationType} instances.
  * <p>

@@ -24,26 +24,59 @@ Package "DOMAIN" {
     Package "EDITION" <<Folder>> #b0c4d4 {
 
         interface Edition <<Root>> <<Entity>> {
-            -_publicationDate : LocalDate
-            +getIdentifier()
-            +getPublication()
+            +getPublicationId() : PublicationId
+            +getPublishingCompanyId() : PublishingCompanyId
+            +getPublishingYear() : Year
+            +getEditionLanguage() : Language
         }
 
         class EditionBook <<Entity>> {
-            -_identifier : EditionId
-            -_editionNumber : Integer
+            -_bookId : BookId
+            +identity() : EditionId
+                +equals(Object) : boolean
+                +sameAs(Object) : boolean
+                +toString() : String
+
+            +getNumberOfPages() : NumberOfPages
+            +getEditionNumber() : EditionNumber
+            +getBinding() : Binding
+            +getDimension() : Dimension
+            +getWeight() : Weight
         }
+
 
         class EditionMagazine <<Entity>> {
-            -_identifier : EditionId
+            -_magazineId : MagazineId
+            +identity() : EditionId
+                +equals(Object) : boolean
+                +sameAs(Object) : boolean
+                +toString() : String
+
+                +getDimension() : Dimension
+                +getWeight() : Weight
+                +getIssueNumber() : IssueNumber
+                +getPeriodicity() : Periodicity
+
         }
 
-        class EditionOther <<Entity>> {
-        }
 
         class EditionFactory <<Factory>> {
-            +createEdition() : Edition
+            +createEditionBook : EditionBook
+            +createEditionMagazine : EditionMagazine
         }
+
+        class "EditionBook::Builder" as EditionBookBuilder <<Builder>>
+
+        class "EditionMagazine::Builder" as EditionMagazineBuilder <<Builder>>
+
+
+        EditionBook +- EditionBookBuilder
+        EditionBookBuilder ..> EditionBook : builds
+
+        EditionMagazine +- EditionMagazineBuilder
+        EditionMagazineBuilder ..> EditionMagazine : builds
+
+
     }
 
     Package "VALUEOBJECT" <<Folder>> {
@@ -51,22 +84,29 @@ Package "DOMAIN" {
         class EditionId <<ValueObject>> #LightPink {
             +getIdentifier()
         }
+        interface MagazineId {}
+
+        interface BookId {}
 
         class NumberOfPages <<ValueObject>>
         class Binding <<ValueObject>>
         class IssueNumber <<ValueObject>>
         class Periodicity <<ValueObject>>
-        class Rarity <<ValueObject>>
         class ISBN <<ValueObject>>
         class ISSN <<ValueObject>>
-        class NoIdentifier <<ValueObject>>
+        class NoIsbnBook <<ValueObject>>
+        class NoIssnMagazine <<ValueObject>>
         class Language <<ValueObject>>
         class PublicationId <<ValueObject>>
         class PublishingCompanyId <<ValueObject>>
+        class EditionNumber <<ValueObject>>
     }
 
     Package "REPOSITORY" <<Folder>> {
-        interface IEditionRepo <<Interface>>
+        interface IEditionRepo <<Interface>>{
+        +addEditionBook(): Edition
+        +addEditionMagazine(): Edition
+        }
     }
 
     EDITION -[hidden]right- REPOSITORY
@@ -94,20 +134,25 @@ Package "PERSISTENCE" {
 Edition "1" --> "ID 1" EditionId : has
 Edition <|.. EditionBook
 Edition <|.. EditionMagazine
-Edition <|.. EditionOther
 Edition ..> PublicationId : references
 Edition ..> PublishingCompanyId : references
 Edition --> Language : has
+Edition --> EditionNumber : has
 
 EditionBook --> NumberOfPages : has
 EditionBook --> Binding : has
 EditionMagazine --> IssueNumber : has
 EditionMagazine --> Periodicity : has
-EditionOther --> Rarity : has
 
-EditionId <|.. ISBN
-EditionId <|.. ISSN
-EditionId <|.. NoIdentifier
+EditionId <|.. BookId
+EditionId <|.. MagazineId
+
+BookId <|.. ISBN
+BookId <|.. NoIsbnBook
+
+MagazineId <|.. ISSN
+MagazineId <|.. NoIssnMagazine
+
 
 IEditionRepo -|> IRepository
 MemoEditionRepo ..|> IEditionRepo

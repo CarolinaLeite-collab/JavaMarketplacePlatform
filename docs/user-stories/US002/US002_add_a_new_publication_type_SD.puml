@@ -1,5 +1,5 @@
 @startuml
-title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" - Level 2 SD
+title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" %n()SD
 hidefootbox
 
 '==== basic style ====
@@ -18,40 +18,39 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Administrator" as Admin
-participant "UI1:AddPublicationTypeUI" as UI
-participant "Ctl1:AddPublicationTypeCtl" as Ctl
-participant "mptr:MemoPublicationTypeRepo" as REPO
-participant "ptf:PublicationTypeFactory" as FACTORY
+participant ":AddPublicationTypeUI" as UI
+participant ":AddPublicationTypeCtl" as Ctl
+participant ":MemoPublicationTypeRepo" as REPO
+participant ":PublicationTypeFactory" as FACTORY
 
 ' --- System dialog ---
-Admin -> UI: I want to add a new publication type!
+Admin -> UI: I want to add a %n()new publication type.
 activate "UI"
-UI --> Admin: What type would you like to add?
+UI --> Admin: What type would %n()you like to add?
 deactivate "UI"
 Admin -> UI: publicationTypeName
 activate "UI"
 UI -> Ctl: addPublicationType %n() (publicationTypeName)
 activate "Ctl"
 Ctl -> REPO: addPublicationType %n() (publicationTypeName)
-
-    opt publicationTypeExists (publicationTypeName) == false
-
-        activate "REPO"
-        REPO -> FACTORY: createPublicationType %n() (publicationTypeName)
-        activate FACTORY
-        create "publicationTypeName: %n() PublicationType" as instance
-        FACTORY -->> instance: <<Create>>
-        FACTORY --> REPO: publicationTypeName
-        deactivate FACTORY
-        REPO -> REPO: add(publicationTypeName)
-    end
-
-REPO --> Ctl: publicationTypeName
+activate "REPO"
+REPO -> FACTORY: createPublicationType%n()(publicationTypeName)
+activate FACTORY
+create "newPublicationType %n() :PublicationType" as instance
+FACTORY -->> instance: <<create>>
+FACTORY --> REPO: newPublicationType
+deactivate FACTORY
+note right of REPO
+  assuming happy path:
+  containsOfIdentity(newPublicationType.identity())
+   == false
+end note
+REPO -> REPO: save(newPublicationType)
+REPO --> Ctl: newPublicationType
 deactivate "REPO"
-Ctl --> UI: publicationTypeName
+Ctl --> UI: newPublicationType
 deactivate "Ctl"
-UI --> Admin: Publication Type successfully %n() added to the official type list!
+UI --> Admin: publicationTypeName %n()was successfully added %n()to the official type list as %n()newPublicationType.
 deactivate "UI"
-
 
 @enduml

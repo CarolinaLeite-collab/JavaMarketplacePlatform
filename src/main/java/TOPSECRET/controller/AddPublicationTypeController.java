@@ -4,6 +4,7 @@ import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.Role;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Controller responsible for managing the creation of new publication types.
@@ -17,10 +18,7 @@ public class AddPublicationTypeController {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
 
-    public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, User admin) {
-        if(!admin.hasRole(Role.ADMIN)){
-            throw new SecurityException("User is not allowed to add publication type");
-        }
+    public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, UserId adminId) {
 
         _iPublicationTypeRepo = iPublicationTypeRepo;
 

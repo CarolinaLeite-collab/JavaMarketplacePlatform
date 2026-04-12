@@ -29,6 +29,7 @@ class PublicationTypeIdTest {
 
         // Assert
         assertNotNull(exception);
+        assertEquals(exception.getMessage(), "PublicationTypeId cannot be null, blank, or empty.");
     }
 
     @Test
@@ -42,6 +43,7 @@ class PublicationTypeIdTest {
 
         // Assert
         assertNotNull(exception);
+        assertEquals(exception.getMessage(), "PublicationTypeId cannot be null, blank, or empty.");
     }
 
     @Test
@@ -55,18 +57,7 @@ class PublicationTypeIdTest {
 
         // Assert
         assertNotNull(exception);
-    }
-
-    @Test
-    void constructorNormalisesNameToUpperCase() {
-        // Arrange
-        String name = "magazine";
-
-        // Act
-        PublicationTypeId publicationTypeId = new PublicationTypeId(name);
-
-        // Assert
-        assertEquals("MAGAZINE", publicationTypeId.toString());
+        assertEquals(exception.getMessage(), "PublicationTypeId cannot be null, blank, or empty.");
     }
 
     @Test
@@ -130,15 +121,15 @@ class PublicationTypeIdTest {
     }
 
     @Test
-    void toStringReturnsNormalisedName() {
+    void toStringNormalisesNameToUpperCaseCollapsesSpacingAndTrims() {
         // Arrange
-        String name = "  mAgAzInE ";
+        String name = "  Pokemon trading    CARDS    ";
 
         // Act
         PublicationTypeId publicationTypeId = new PublicationTypeId(name);
 
         // Assert
-        assertEquals("MAGAZINE", publicationTypeId.toString());
+        assertEquals("POKEMON TRADING CARDS", publicationTypeId.toString());
     }
 
 }
