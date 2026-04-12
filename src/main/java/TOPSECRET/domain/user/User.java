@@ -90,16 +90,14 @@ public class User implements AggregateRoot<UserId> {
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return _email.equals(user._email);
-
+        return _userId.equals(user._userId);
     }
 
     @Override
     public int hashCode() {
-        return _email.hashCode();
+        return _userId.hashCode();
     }
 }
