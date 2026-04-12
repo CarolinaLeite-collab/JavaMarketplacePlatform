@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;

@@ -1,14 +1,18 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.Item;
+import TOPSECRET.domain.directsale.DirectSaleFactory;
+import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Repository responsible for managing {@link DirectSale} entities.
@@ -24,6 +28,7 @@ import java.util.List;
 
 public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
+    private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
     private final List<DirectSale> _directSales;
     private final DirectSaleFactory _factory;
 
@@ -33,14 +38,47 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public DirectSale addDirectSale(Item item, Price price, Period timeLimit) {
+    public DirectSale save(DirectSale directSale) {
 
-        DirectSale directSale = _factory.createDirectSale(item, price, timeLimit);
-        _directSales.add(directSale);
+        DATA.put(directSale.identity(), directSale);
 
         return directSale;
+    }
+
+    @Override
+    public Iterable<DirectSale> findAll() {
+
+        return DATA.values();
+    }
+
+    @Override
+    public Optional<DirectSale> ofIdentity(DirectSaleId id) {
+        if(!containsOfIdentity(id)) {
+
+            return Optional.empty();
+
+        } else {
+
+            return Optional.of(DATA.get(id));
+
+        }
+    }
+
+    @Override
+    public boolean containsOfIdentity(DirectSaleId id) {
+        return DATA.containsKey(id);
+    }
+
+    @Override
+    public DirectSale addDirectSale(List<Item> items, Price price, Period timeLimit) {
+
+        DirectSale directSale = _factory.createDirectSale(items, price, timeLimit);
+        _directSales.add(directSale);
+
+        return save(directSale);
 
     }
+
 
     @Override
     public List<Item> getDirectSaleItemsByAuthor(AuthorId authorId) {
@@ -48,9 +86,10 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
         for (DirectSale directSale : _directSales) {
             if (directSale.isByAuthor(authorId)) {
-                list.add(directSale.getItem());
+                list.addAll(directSale.getItems());
             }
         }
+
         return List.copyOf(list);
     }
 
@@ -60,13 +99,9 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-
             if (directSale.isByGenre(genreId)) {
-
-                list.add(directSale.getItem());
-
+                list.addAll(directSale.getItems());
             }
-
         }
 
         return List.copyOf(list);
@@ -79,9 +114,10 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
         for (DirectSale directSale : _directSales) {
             if (directSale.isByPublication(publication)) {
-                list.add(directSale.getItem());
+                list.addAll(directSale.getItems());
             }
         }
+
         return List.copyOf(list);
     }
 
@@ -90,10 +126,11 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByPublisher(publisher)) {
-                list.add(directSale.getItem());
+            if (directSale.isByPublishingCompany(publisher)) {
+                list.addAll(directSale.getItems());
             }
         }
+
         return List.copyOf(list);
     }
 

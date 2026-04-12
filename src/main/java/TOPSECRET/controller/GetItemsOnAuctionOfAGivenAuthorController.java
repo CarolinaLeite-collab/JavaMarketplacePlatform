@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.author.Author;
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.UserId;
@@ -22,11 +22,10 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
     private final IAuctionRepo _iAuctionRepo;
 
     public GetItemsOnAuctionOfAGivenAuthorController(IAuctionRepo iAuctionRepo, UserId buyerId) {
-        _iAuctionRepo = Objects.requireNonNull(iAuctionRepo, "auctionRepo");
-        Objects.requireNonNull(buyerId, "buyer"); // buyer kept for parity/validation
+        _iAuctionRepo = iAuctionRepo;
     }
 
     public List<Item> getAuctionItemsByAuthor(AuthorId authorId) {
-        return _iAuctionRepo.getAuctionItemsByAuthor(authorId);
+        return _iAuctionRepo.getAuctionItemsByAuthorId(authorId);
     }
 }

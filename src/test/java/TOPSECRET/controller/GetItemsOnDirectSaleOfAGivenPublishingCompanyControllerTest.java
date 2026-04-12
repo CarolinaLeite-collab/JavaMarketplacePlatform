@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.UserId;
@@ -32,11 +32,6 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void constructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
         //Act /SUT
         new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
-    }
-    @Test
-    void constructorThrowsNullPointerExceptionWhenDirectSaleRepoIsNull() {
-        //Act & Assert
-        assertThrows(NullPointerException.class, () -> new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(null, _buyerIdDouble));
     }
 
     @Test

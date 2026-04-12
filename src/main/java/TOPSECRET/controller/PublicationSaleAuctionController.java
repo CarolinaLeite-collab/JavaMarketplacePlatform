@@ -1,8 +1,7 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.*;
-import TOPSECRET.domain.Auction;
-import TOPSECRET.domain.IAuctionRepo;
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
@@ -10,6 +9,7 @@ import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,12 +43,22 @@ public class PublicationSaleAuctionController {
         return List.copyOf(items);
    }
 
-    public Auction putItemOnAuction(Item item, Price startPrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(List<Item> items, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
-        Item itemForAuction = _library.getItem(item);
+        List<Item> itemsForAuction = new ArrayList<>();
+        for (Item item : items) {
+            Item itemFromLibrary = _library.getItem(item);
+            if (itemFromLibrary != null) {
+                itemsForAuction.add(itemFromLibrary);
+            }
+        }
 
-        Auction newAuction = _iAuctionRepo.createAuction(itemForAuction, startPrice, outrightPrice, startDate, endDate);
-        itemForAuction.setAuction(newAuction);
+        Auction newAuction = _iAuctionRepo.addAuction(itemsForAuction, startPrice, reservePrice, outrightPrice, startDate, endDate);
+
+        for (Item item : items) {
+            item.setAuction(newAuction);
+        }
+
         return newAuction;
     }
 }

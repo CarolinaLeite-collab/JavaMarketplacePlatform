@@ -9,9 +9,6 @@ import TOPSECRET.domain.valueobject.LibraryId;
  */
 public class LibraryFactory {
 
-//    public Library createLibrary(User user) {
-//        return new Library(user);
-//    }
     public Library createLibrary(LibraryId libraryId) {
         return new Library(libraryId);
     }

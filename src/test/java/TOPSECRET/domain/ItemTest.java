@@ -1,12 +1,17 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -57,8 +62,10 @@ class ItemTest {
     @Test
     void canSetDirectSaleWhenNoAuctionExists() {
         Item item = new Item(publicationDouble, Condition.LIKE_NEW);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(directSaleDouble.getItem()).thenReturn(item);
+        when(directSaleDouble.getItems()).thenReturn(items);
 
         assertDoesNotThrow(() -> item.setDirectSale(directSaleDouble));
     }
@@ -66,11 +73,13 @@ class ItemTest {
     @Test
     void cannotSetDirectSaleIfAuctionAlreadyExists() {
         Item item = new Item(publicationDouble, Condition.GOOD);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(auctionDouble.getItem()).thenReturn(item);
+        when(auctionDouble.getItems()).thenReturn(items);
         item.setAuction(auctionDouble);
 
-        when(directSaleDouble.getItem()).thenReturn(item);
+        when(directSaleDouble.getItems()).thenReturn(items);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -83,8 +92,10 @@ class ItemTest {
     @Test
     void settingDirectSaleDoesNotOverwriteCondition() {
         Item item = new Item(publicationDouble, Condition.POOR);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(directSaleDouble.getItem()).thenReturn(item);
+        when(directSaleDouble.getItems()).thenReturn(items);
         item.setDirectSale(directSaleDouble);
 
         assertEquals(Condition.POOR, item.get_condition());
@@ -93,9 +104,14 @@ class ItemTest {
     @Test
     void puttingPublicationOnDirectSaleWrongDirectSaleItem() {
         Item item = new Item(publicationDouble, Condition.GOOD);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
         Item wrongItem = mock(Item.class);
-        when(directSaleDouble.getItem()).thenReturn(wrongItem);
+        List<Item> wrongItems = new ArrayList<>();
+        wrongItems.add(wrongItem);
+
+        when(directSaleDouble.getItems()).thenReturn(wrongItems);
 
         assertThrows(IllegalArgumentException.class,
                 () -> item.setDirectSale(directSaleDouble));
@@ -104,8 +120,10 @@ class ItemTest {
     @Test
     void getDirectSaleReturnsAssignedDirectSale() {
         Item item = new Item(publicationDouble, Condition.GOOD);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(directSaleDouble.getItem()).thenReturn(item);
+        when(directSaleDouble.getItems()).thenReturn(items);
         item.setDirectSale(directSaleDouble);
 
         assertSame(directSaleDouble, item.getDirectSale());
@@ -125,8 +143,10 @@ class ItemTest {
     @Test
     void canSetAuctionWhenNoDirectSaleExists() {
         Item item = new Item(publicationDouble, Condition.FAIR);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(auctionDouble.getItem()).thenReturn(item);
+        when(auctionDouble.getItems()).thenReturn(items);
 
         assertDoesNotThrow(() -> item.setAuction(auctionDouble));
     }
@@ -134,11 +154,13 @@ class ItemTest {
     @Test
     void cannotSetAuctionIfDirectSaleAlreadyExists() {
         Item item = new Item(publicationDouble, Condition.GOOD);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(directSaleDouble.getItem()).thenReturn(item);
+        when(directSaleDouble.getItems()).thenReturn(items);
         item.setDirectSale(directSaleDouble);
 
-        when(auctionDouble.getItem()).thenReturn(item);
+        when(auctionDouble.getItems()).thenReturn(items);
 
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
@@ -151,8 +173,10 @@ class ItemTest {
     @Test
     void settingAuctionDoesNotOverwriteCondition() {
         Item item = new Item(publicationDouble, Condition.LIKE_NEW);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(auctionDouble.getItem()).thenReturn(item);
+        when(auctionDouble.getItems()).thenReturn(items);
         item.setAuction(auctionDouble);
 
         assertEquals(Condition.LIKE_NEW, item.get_condition());
@@ -162,8 +186,11 @@ class ItemTest {
     void puttingPublicationOnAuctionWrongAuctionItem() {
         Item item = new Item(publicationDouble, Condition.GOOD);
 
+
         Item wrongItem = mock(Item.class);
-        when(auctionDouble.getItem()).thenReturn(wrongItem);
+        List<Item> items = new ArrayList<>();
+        items.add(wrongItem);
+        when(auctionDouble.getItems()).thenReturn(items);
 
         assertThrows(IllegalArgumentException.class,
                 () -> item.setAuction(auctionDouble));
@@ -172,8 +199,10 @@ class ItemTest {
     @Test
     void getAuctionReturnsAssignedAuction() {
         Item item = new Item(publicationDouble, Condition.GOOD);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
 
-        when(auctionDouble.getItem()).thenReturn(item);
+        when(auctionDouble.getItems()).thenReturn(items);
         item.setAuction(auctionDouble);
 
         assertSame(auctionDouble, item.getAuction());

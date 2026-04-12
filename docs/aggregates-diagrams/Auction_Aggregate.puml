@@ -22,11 +22,13 @@ package DOMAIN {
         class Auction <<Entity>> <<Root>> {
             -ZonedDateTime _auctionStartDate;
             -ZonedDateTime _auctionEndDate;
+            +identity() : AuctionId
+            +sameAs(Object) : boolean
             +placeBid (userId : UserId, price : Price) : Bid
             +getHighestBid() : Bid
             +acceptBid(Bid : Bid) : void
             +finalizeAuction() : void
-            +getItem() : Item
+            +getItemsId() : ItemId
             +getBid() : Bid
             +getStartingPrice()
             +getOutrightPrice()
@@ -50,11 +52,11 @@ package DOMAIN {
             -validateOfferPrice(UserId)
         }
 
-        class BidFactory {
+        class BidFactory <<Factory>> {
             + createBid(bidderId : UserId, offerPrice : Price) : Bid
         }
 
-        class AuctionFactory {
+        class AuctionFactory <<Factory>> {
             + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
             + createAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
         }
@@ -64,8 +66,8 @@ package DOMAIN {
     package REPOSITORY {
 
         interface IAuctionRepo {
-            createAndAddAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, outrightPrice : Price, %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            createAndAddAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price %n()  auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
+            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
             getAuctionItemsByGenreId(genreId : GenreId) :  List<ItemId>
             getAuctionItemsByAuthorId(authorId : AuthorId) :  List<ItemId>
             getAuctionItemsByPublicationId(publicationId : PublicationId):  List<ItemId>
@@ -75,8 +77,7 @@ package DOMAIN {
 
     package VALUEOBJECT {
         class AuctionId <<ValueObject>> #LightPink {
-            _id : UUID
-            +createId() : AuctionId
+            _id : String
         }
         class Price <<ValueObject>>
         class ItemId <<ValueObject>>

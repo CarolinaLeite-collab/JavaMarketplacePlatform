@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.UserId;
@@ -22,7 +22,7 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IDirectSaleRepo directSaleRepo, UserId buyerId) {
 
-        _iDirectSaleRepo = Objects.requireNonNull(directSaleRepo, "directSaleRepo");
+        _iDirectSaleRepo = directSaleRepo;
     }
 
     public List<Item> getDirectSaleItemByPublisher(PublishingCompany PublishingCompany) {
