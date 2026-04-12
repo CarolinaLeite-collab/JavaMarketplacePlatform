@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
  * Factory responsible for creating {@link Bid} instances.
@@ -11,7 +11,7 @@ import TOPSECRET.domain.valueobject.Price;
  */
 
 public class BidFactory {
-    public Bid createBid(User bidder, Price offerPrice){
-        return new  Bid(bidder, offerPrice);
+    public Bid createBid(UserId userId, Price offerPrice){
+        return new Bid(userId, offerPrice);
     }
 }
