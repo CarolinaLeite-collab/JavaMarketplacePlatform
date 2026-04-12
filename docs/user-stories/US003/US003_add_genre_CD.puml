@@ -18,40 +18,78 @@ class AddGenreUI {
 
 }
 
-class AddGenreController {
-    - _admin : User
+package "controller" {
+
+    class AddGenreController {
     + addGenre(genreName : String) : Genre
+    }
 }
 
-interface IGenreRepo {
-    + addGenre(genreName : String) : Genre
+package "domain" {
+
+
+
+    package "valueobject" {
+
+        class GenreId <<ValueObject>> #lightpink {
+        -_id : String
+        }
+
+    }
+
+    package "repository" {
+
+             interface IGenreRepo <<Interface>>{
+                 + addGenre(genreName : String) : Genre
+             }
+         }
+
+    package "genre" #b0c4d4 {
+
+        class Genre  <<Root>> <<Entity>> {
+            - _genre : String
+
+        }
+
+        class GenreFactory <<Factory>> {
+            + createGenre(genreName : String) : Genre
+        }
+    }
+
+
 }
 
-class MemoGenreRepo {
-    - genreExists(genreName : String) : boolean
+package "persistence"  {
+    package "mem" {
+
+        class MemoGenreRepo {
+        }
+    }
 }
 
-class GenreFactory {
-    + createGenre(genreName : String) : Genre
-}
+package ddd {
 
-class Genre {
-    - _genre : String
-    + Genre(genre : String)
-}
+     interface IRepository<ID, T> <<Interface>> {
+        save(entity:T) : T
+        findAll() : Iterable<T>
+        ofIdentity(id: ID) : Optional <T>
+        containsOfIdentity(id: ID) : boolean
+        }
 
+}
 '==== Relationships ====
-AddGenreUI "1" ..> "1" AddGenreController : uses
-AddGenreController "1" --> "1" IGenreRepo : uses
-MemoGenreRepo "1" ..|> "1" IGenreRepo
-MemoGenreRepo "1" --> "_genreFactory 1" GenreFactory : uses
-MemoGenreRepo "1" -----> "_genresList *" Genre : manages
-GenreFactory "1" --> "*" Genre : creates
+AddGenreUI "1" .> "1" AddGenreController : invokes
 
-note right of AddGenreController
-    Right now, User is simply
-    required for Controller's
-    constructor
-endNote
+AddGenreController "1" .> "1" IGenreRepo : <<use>>
+AddGenreController  "1".....> "*" Genre : <<use>>
+
+
+MemoGenreRepo .|> IGenreRepo
+MemoGenreRepo "1" ---> " 1" GenreFactory : invokes
+MemoGenreRepo "1" --> "*" Genre : persists
+GenreFactory "1" ..> "*" Genre : <<create>>
+Genre "1" ---> "1" GenreId: has
+
+IGenreRepo --|> IRepository
 
 @enduml
