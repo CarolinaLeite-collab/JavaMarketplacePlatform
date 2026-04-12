@@ -5,7 +5,7 @@ import TOPSECRET.ddd.ValueObject;
 /**
  * Represents an ISSN (International Standard Serial Number) for a publication.
  * <p>
- * Implements the {@link EditionId} interface and ensures that the ISSN follows the standard
+ * Implements the {@link MagazineId} interface and ensures that the ISSN follows the standard
  * format (four digits, a hyphen, three digits, and a check digit which may be 'X').
  * </p>
  */
@@ -14,36 +14,66 @@ public class ISSN implements MagazineId, ValueObject {
 
     private final String _issn;
 
-    public ISSN(String value) {
-        if (value == null || !value.matches("\\d{4}-\\d{3}[\\dX]$")) {
+    public ISSN(String issn) {
+        String normalized = normalize(issn);
+        if (!isValidIssn(normalized)) {
             throw new IllegalArgumentException("Invalid ISSN format");
         }
-        _issn = value;
+        _issn = normalized;
     }
 
-    public String get_issn() {
-        return _issn;
-    }
+    private String normalize(String value) {
+        if (value == null) {
+            throw new IllegalArgumentException("ISSN cannot be null");
+        }
+        return value.replace("-", "")
+                    .replace(" ", "")
+                    .toUpperCase();
+        }
 
-    @Override
-    public String toString() {
-        return _issn;
-    }
+        public static boolean isValidIssn (String s){
+            if (s == null || s.length() != 8) return false;
+            int sum = 0;
 
-    @Override
-    public String getIdentifier() {
-        return _issn;
-    }
+            for (int i = 0; i < 7; i++) {
+                char c = s.charAt(i);
+                if (!Character.isDigit(c)) return false;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ISSN other)) return false;
-        return _issn.equals(other._issn);
-    }
+                int digit = c - '0';
+                sum += digit * (8 - i);
+            }
 
-    @Override
-    public int hashCode() {
-        return _issn.hashCode();
+            char last = s.charAt(7);
+            int checkDigit;
+
+            if (last == 'X') checkDigit = 10;
+            else if (Character.isDigit(last)) checkDigit = last - '0';
+            else return false;
+
+            sum += checkDigit;
+
+            return sum % 11 == 0;
+        }
+
+        public String get_issn () {
+            return _issn;
+        }
+
+        @Override
+        public String toString () {
+            return _issn;
+        }
+
+        @Override
+        public String getIdentifier () {
+            return _issn;
+        }
+
+        @Override
+        public boolean equals (Object o){
+            if (this == o) return true;
+            if (!(o instanceof ISSN other)) return false;
+            return _issn.equals(other._issn);
+        }
+
     }
-}

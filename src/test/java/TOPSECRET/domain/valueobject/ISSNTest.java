@@ -6,28 +6,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for {@link ISSN}.
- *
- * <p>Covers construction rules, format validation, equality contract,
- * and hash code consistency.</p>
- *
- * <p>No Mockito doubles are used — {@link ISSN} is a pure Value Object.</p>
- */
-
 class ISSNTest {
 
     @Test
     void shouldStoreAndReturnIssnValue() {
         // Arrange
-        ISSN issn = new ISSN("1234-5678");
+        ISSN issn = new ISSN("2156-5570");
 
         // Assert
-        assertAll(
-                () -> assertEquals("1234-5678", issn.get_issn()),
-                () -> assertEquals("1234-5678", issn.toString()),
-                () -> assertEquals("1234-5678", issn.getIdentifier())
-        );
+         assertEquals("21565570", issn.get_issn());
     }
 
     @Test
@@ -38,10 +25,21 @@ class ISSNTest {
     }
 
     @Test
-    void shouldRejectIssnWithoutHyphen(){
-        // act + assert
-        assertThrows(IllegalArgumentException.class, () ->
-            new ISSN("12345678"));
+    void constructor_throwsCorrectMessageForNull() {
+        //Act
+        IllegalArgumentException ex =
+                assertThrows(IllegalArgumentException.class, () -> new ISSN(null));
+
+        //Assert
+        assertEquals("ISSN cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void constructor_throwsCorrectMessageForInvalidFormat() {
+        IllegalArgumentException ex =
+                assertThrows(IllegalArgumentException.class, () -> new ISSN("12345678"));
+
+        assertEquals("Invalid ISSN format", ex.getMessage());
     }
 
     @ParameterizedTest
@@ -61,7 +59,7 @@ class ISSNTest {
     @Test
     void equals_returnsTrueForSameIssn(){
         // arrange
-        ISSN issn = new ISSN("1234-5678");
+        ISSN issn = new ISSN("21565570");
         // assert
         assertTrue(issn.equals(issn));
     }
@@ -69,10 +67,20 @@ class ISSNTest {
     @Test
     void equals_returnsFalseForDiferentIssn(){
         // arrange
-        ISSN issn = new ISSN("1234-5678");
-        ISSN issn2 = new ISSN("1234-5679");
+        ISSN issn = new ISSN("21565570");
+        ISSN issn2 = new ISSN("03178471");
         // assert
         assertFalse(issn.equals(issn2));
+    }
+
+    @Test
+    void equals_returnsTrueForSameIssnDifferentFormats() {
+        // Arrange
+        ISSN a = new ISSN("0317-8471");
+        ISSN b = new ISSN("03178471");
+
+        // Assert
+        assertEquals(a, b);
     }
 
     @Test
@@ -90,33 +98,57 @@ class ISSNTest {
         // act + assert
         assertFalse(a.equals("1234-5679"));
     }
-
     @Test
-    void hashCode_sameValue_sameHash() {
-        // arrange
-        ISSN a = new ISSN("1234-5678");
-        ISSN b = new ISSN("1234-5678");
-        // assert
-        assertEquals(a.hashCode(), b.hashCode());
+    void isValidIssnReturnsFalseWhenNull() {
+        // Act + Assert
+        assertFalse(ISSN.isValidIssn(null));
+    }
+    @Test
+    void isValidIssnReturnsFalseWhenTooShort() {
+        //Act & Assert
+        assertFalse(ISSN.isValidIssn("1234567"));
     }
 
     @Test
-    void equals_returnsTrueForSameValueDifferentObjects() {
-        // arrange
-        ISSN a = new ISSN("1234-5678");
-        ISSN b = new ISSN("1234-5678");
-
-        // assert
-        assertTrue(a.equals(b));   // <- mata "return false" na linha 32
-        assertTrue(b.equals(a));   // extra: simetria
+    void isValidIssnReturnsTrueWhenEndsWithX() {
+        //Act & Assert
+        assertTrue(ISSN.isValidIssn("2434561X"));
     }
 
     @Test
-    void hashCode_shouldMatchStringHashCode() {
-        // arrange
-        ISSN a = new ISSN("1234-5678");
-        // assert
-        assertEquals("1234-5678".hashCode(), a.hashCode()); // <- mata "return 0"
+    void isValidIssnReturnsTrueWhenEndsWithDigit() {
+        //Act & Assert
+        assertTrue(ISSN.isValidIssn("03178471"));
+    }
+
+    @Test
+    void isValidIssnReturnsFalseWhenLastCharInvalid() {
+        //Act & Assert
+        assertFalse(ISSN.isValidIssn("0317847A"));
+    }
+
+    @Test
+    void toStringReturnsNormalizedIssn() {
+        // Arrange
+        ISSN issn = new ISSN("2156-5570");
+
+        // Act
+        String result = issn.toString();
+
+        // Assert
+        assertEquals("21565570", result);
+    }
+
+    @Test
+    void getIdentifierReturnsNormalizedIssn() {
+        // Arrange
+        ISSN issn = new ISSN("2156-5570");
+
+        // Act
+        String result = issn.getIdentifier();
+
+        // Assert
+        assertEquals("21565570", result);
     }
 
 }

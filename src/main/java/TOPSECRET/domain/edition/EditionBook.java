@@ -12,7 +12,7 @@ import java.time.Year;
  * </p>
  */
 
-public class EditionBook implements Edition {
+public final class EditionBook implements Edition {
 
     private final BookId _bookId;
     private final PublicationId _publicationId;
@@ -26,8 +26,19 @@ public class EditionBook implements Edition {
     private final EditionNumber _editionNumber;
     private final Binding _binding;
 
-    protected EditionBook(Builder builder) {
-        _bookId = builder._bookId;
+    private EditionBook(Builder builder) {
+        //deals with NoIsbnBooks
+        BookId bookIdPlaceholder = builder._bookId;
+
+        if (bookIdPlaceholder == null) {
+            bookIdPlaceholder = NoIsbnBook.generate();
+        }
+
+        if (bookIdPlaceholder instanceof NoIsbnBook && builder._publishingYear.isAfter(Year.of(1970))) {
+            throw new IllegalArgumentException("Books published after 1970 must have a valid ISBN.");
+        }
+        _bookId = bookIdPlaceholder;
+        //
         _publicationId = builder._publicationId;
         _publishingCompanyId = builder._publishingCompanyId;
         _publishingYear = builder._publishingYear;
@@ -65,8 +76,6 @@ public class EditionBook implements Edition {
         }
 
         public EditionBook build() {
-            if (_bookId == null)
-                throw new IllegalArgumentException("BookId is required");
 
             if (_publicationId == null)
                 throw new IllegalArgumentException("PublicationId is required");
@@ -87,7 +96,8 @@ public class EditionBook implements Edition {
             _dimension = dimension;
             return this;
         }
-        public Builder withWeight(Weight weight){
+
+        public Builder withWeight(Weight weight) {
             _weight = weight;
             return this;
         }
@@ -108,49 +118,98 @@ public class EditionBook implements Edition {
         }
     }
 
+    //methods from DomainEntity contract
     @Override
-    public EditionId getId() {
+    public EditionId identity() {
         return _bookId;
     }
 
+    //Identity-based equality
     @Override
-    public PublicationId getPublication() {
-        return _publicationId;
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+
+        if (object instanceof EditionBook) {
+            EditionBook otherEditionBook = (EditionBook) object;
+            return _bookId.equals(otherEditionBook._bookId);
+        }
+        return false;
+    }
+
+    //Field-base equality
+    @Override
+    public boolean sameAs(Object object) {
+        if (object instanceof EditionBook) {
+            EditionBook otherEditionBook = (EditionBook) object;
+
+            if (_bookId instanceof ISBN) {
+                return _bookId.equals(otherEditionBook._bookId);
+            }
+
+            if (_publicationId.equals(otherEditionBook._publicationId) &&
+                    _publishingCompanyId.equals(otherEditionBook._publishingCompanyId) &&
+                    _publishingYear.equals(otherEditionBook._publishingYear) &&
+                    _editionLanguage.equals(otherEditionBook._editionLanguage)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public PublishingCompanyId getPublishingCompany() {
-        return _publishingCompanyId;
+    public String toString() {
+        return "Id: " + identity().toString() +
+                "\nPublication: " + _publicationId +
+                "\nPublishing Company: " + _publishingCompanyId +
+                "\nYear: " + _publishingYear +
+                "\nLanguage: " + _editionLanguage +
+                (_dimension != null ? "\nDimension: " + _dimension : "") +
+                (_weight != null ? "\nWeight: " + _weight : "") +
+                (_numberOfPages != null ? "\nNumber of pages: " + _numberOfPages : "") +
+                (_editionNumber != null ? "\nEdition number: " + _editionNumber : "") +
+                (_binding != null ? "\nBinding: " + _binding : "");
     }
 
-    @Override
-    public Year getPublishingYear() {
-        return _publishingYear;
-    }
+// Methods from Edition contract
+@Override
+public PublicationId getPublicationId() {
+    return _publicationId;
+}
 
-    @Override
-    public Language getEditionLanguage() {
-        return _editionLanguage;
-    }
+@Override
+public PublishingCompanyId getPublishingCompanyId() {
+    return _publishingCompanyId;
+}
 
-    public NumberOfPages getNumberOfPages() {
-        return _numberOfPages;
-    }
+@Override
+public Year getPublishingYear() {
+    return _publishingYear;
+}
 
-    public EditionNumber getEditionNumber() {
-        return _editionNumber;
-    }
+@Override
+public Language getEditionLanguage() {
+    return _editionLanguage;
+}
 
-    public Binding getBinding() {
-        return _binding;
-    }
+public NumberOfPages getNumberOfPages() {
+    return _numberOfPages;
+}
 
-    public Dimension getDimension() {
-        return _dimension;
-    }
+public EditionNumber getEditionNumber() {
+    return _editionNumber;
+}
 
-    public Weight getWeight() {
-        return _weight;
-    }
+public Binding getBinding() {
+    return _binding;
+}
+
+public Dimension getDimension() {
+    return _dimension;
+}
+
+public Weight getWeight() {
+    return _weight;
+}
 
 }

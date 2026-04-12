@@ -9,7 +9,7 @@ import TOPSECRET.ddd.ValueObject;
  * and a 13-digit code for books published after 2007.
  * An ISBN-10 can be converted to an ISBN-13 by adding a "978" prefix and recalculating the check digit.
  * ISBN-10 and ISBN-13 can coexist for the same edition.
- * Implements the {@link EditionId} interface.
+ * Implements the {@link BookId} interface.
  */
 
 public class ISBN implements BookId, ValueObject {
@@ -122,6 +122,11 @@ public class ISBN implements BookId, ValueObject {
         int check = (10 - (sum % 10)) % 10;
 
         return isbn12 + check;
+    }
+
+    @Override
+    public String toString() {
+        return _isbn;
     }
 
 }

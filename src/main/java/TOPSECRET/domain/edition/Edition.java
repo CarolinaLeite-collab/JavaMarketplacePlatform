@@ -1,5 +1,6 @@
 package TOPSECRET.domain.edition;
 
+import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
@@ -13,10 +14,15 @@ import java.time.Year;
  * </p>
  */
 
-public interface Edition {
-    EditionId getId();
-    PublicationId getPublication();
-    PublishingCompanyId getPublishingCompany();
+public sealed interface Edition extends AggregateRoot<EditionId>
+        permits EditionBook, EditionMagazine {
+
+    PublicationId getPublicationId();
+
+    PublishingCompanyId getPublishingCompanyId();
+
     Year getPublishingYear();
+
     Language getEditionLanguage();
+
 }
