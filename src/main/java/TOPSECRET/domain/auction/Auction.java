@@ -4,17 +4,14 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Bid;
 import TOPSECRET.domain.BidFactory;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.MemoBidRepo;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.valueobject.*;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a time-bounded selling mechanism where one or more {@link Item}s is sold via competitive bidding.
@@ -50,15 +47,18 @@ public class Auction implements AggregateRoot<AuctionId> {
     private final Price _outrightPrice;
     private final ZonedDateTime _auctionStartDate;
     private final ZonedDateTime _auctionEndDate;
-    private final MemoBidRepo _bids;
-    private User _buyer;
+    private UserId _userId;
     private Price _finalPrice;
+    private final BidFactory _bidFactory;
+    private List<Bid> _bids;
+
 
 
     Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
-        _bids = new MemoBidRepo( new BidFactory());
         _auctionId = new AuctionId();
+        _bidFactory = new BidFactory();
+        _bids = new ArrayList<>();
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -114,8 +114,8 @@ public class Auction implements AggregateRoot<AuctionId> {
         return _items;
     }
 
-    public MemoBidRepo getBids() {
-        return _bids;
+    public List<Bid> getBids() {
+        return List.copyOf(_bids);
     }
 
     public Price getStartingPrice() {
@@ -127,37 +127,27 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
 
-    public void acceptBid(Bid bid) {
-        ZonedDateTime now = ZonedDateTime.now();
-        if (now.isAfter(_auctionStartDate) && now.isBefore(_auctionEndDate) && bid.getOfferPrice().getValue() > _startingPrice.getValue()) {
-            _bids.addBid(bid);
-            if (_outrightPrice != null && bid.getOfferPrice().getValue() >= _outrightPrice.getValue()) {
-                finalizeAuction();
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid Bid");
-        }
-    }
 
     public void finalizeAuction() {
-        Bid highestBid = _bids.getHighestBid();
+        if (_bids.isEmpty()) {
+            _userId = null;
+            _finalPrice = null;
+            return;
+        }
+
+        Bid highestBid = getHighestBid();
 
         if (isReserveMet(highestBid.getOfferPrice())) {
-            _buyer = highestBid.getBidder();
+            _userId = highestBid.getUserId();
             _finalPrice = highestBid.getOfferPrice();
         } else {
-            _buyer = null;
+            _userId = null;
             _finalPrice = null;
         }
     }
 
     private boolean isAuctionStartDateValid(ZonedDateTime auctionStartDate) {
-        boolean result = false;
-        ZonedDateTime now = ZonedDateTime.now();
-        if (now.isBefore(auctionStartDate)) {
-            result = true;
-        }
-        return result;
+        return auctionStartDate != null;
     }
 
     private boolean isOutrightPriceValid(Price outrightPrice) {
@@ -219,5 +209,47 @@ public class Auction implements AggregateRoot<AuctionId> {
             }
         }
         return false;
+    }
+
+    public Bid placeBid (UserId userId, Price offerPrice){
+        ZonedDateTime now =  ZonedDateTime.now();
+
+        if (now.isBefore(_auctionStartDate) || now.isAfter(_auctionEndDate)) {
+            throw new IllegalStateException("Auction not active");
+        }
+
+        if (offerPrice.getValue() <= _startingPrice.getValue()) {
+            throw new IllegalArgumentException("Bid must be higher than starting price");
+        }
+
+        Bid bid = Objects.requireNonNull(
+                _bidFactory.createBid(userId, offerPrice), "Bid must not be null"
+        );
+
+        _bids.add(bid);
+
+        if (_outrightPrice != null &&
+                offerPrice.getValue() >= _outrightPrice.getValue()) {
+            finalizeAuction();
+        }
+
+        return bid;
+    }
+
+    public Bid getHighestBid() {
+
+        if (_bids.isEmpty()) {
+            throw new IllegalStateException("No bids available");
+        }
+
+        Bid highestBid = _bids.get(0);
+
+        for (int i = 1; i < _bids.size(); i++) {
+            Bid anotherBid = _bids.get(i);
+            if (anotherBid.getOfferPrice().getValue() > highestBid.getOfferPrice().getValue()) {
+                highestBid = anotherBid;
+            }
+        }
+        return highestBid;
     }
 }

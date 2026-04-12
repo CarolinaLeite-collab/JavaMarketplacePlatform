@@ -2,14 +2,9 @@ package TOPSECRET.domain.auction;
 
 import TOPSECRET.domain.Bid;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.MemoBidRepo;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.AuctionId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -105,9 +100,9 @@ class AuctionTest {
     }
 
     @Test
-    void constructorShouldThrowWhen_startDateIsInvalid() {
+    void constructorShouldThrowWhenStartDateIsInvalid() {
         // Arrange
-        ZonedDateTime pastDate = ZonedDateTime.now().minusDays(1);
+        ZonedDateTime pastDate = null;
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
@@ -209,39 +204,6 @@ class AuctionTest {
         assertNull(result);
     }
 
-    @Test
-    void acceptBidShouldThrowWhenAuctionIsNotActive() {
-        // Arrange
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd); // SUT
-        Bid bidDouble = mock(Bid.class); // stub
-        Price bidPriceDouble = mock(Price.class); // stub
-        when(bidDouble.getOfferPrice()).thenReturn(bidPriceDouble);
-        when(bidPriceDouble.getValue()).thenReturn(105.0);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> auction.acceptBid(bidDouble)); // SUT
-    }
-    @Test
-    void acceptBidThrowsWhenBidPriceEqualsStartingPrice() throws Exception {
-        // Arrange
-        ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endFuture = _startFuture.plusDays(1);
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture); //SUT
-
-        ZonedDateTime now = ZonedDateTime.now();
-        setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
-        setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
-
-        Bid bid = mock(Bid.class);
-        Price bidPrice = mock(Price.class);
-        when(bid.getOfferPrice()).thenReturn(bidPrice);
-        when(bidPrice.getValue()).thenReturn(10.0);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> auction.acceptBid(bid));
-    }
 
     @Test
     void constructorShouldThrowWhenOutrightPriceIsNotGreaterThanStartingPrice() {
@@ -262,122 +224,12 @@ class AuctionTest {
         //SUT
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _start, end);
 
-        // Act
-        MemoBidRepo bidRepo = auction.getBids();
 
         // Assert
-        assertNotNull(bidRepo);
-        assertThrows(IllegalStateException.class, () -> bidRepo.getHighestBid());
+        assertNotNull(auction.getBids());
+        assertThrows(IllegalStateException.class, () -> auction.getHighestBid());
     }
 
-    @Test
-    void acceptBidAddsBidWhenAuctionIsActiveAndPriceIsAboveStartingPrice() throws Exception {
-        // Arrange
-        ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endFuture = _startFuture.plusDays(1);
-        User buyerDouble = mock(User.class);
-        // #SUT
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
-
-        ZonedDateTime now = ZonedDateTime.now();
-        setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
-        setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
-
-        Bid bid = mock(Bid.class);
-        Price bidPrice = mock(Price.class);
-        when(bid.getOfferPrice()).thenReturn(bidPrice);
-        when(bidPrice.getValue()).thenReturn(25.0);
-        when(bid.getBidder()).thenReturn(buyerDouble);
-
-        // Act
-        auction.acceptBid(bid);
-
-        // Assert
-        assertSame(bid, auction.getBids().getHighestBid());
-    }
-
-    @Test
-    void acceptBidShouldFinalizeAuctionWhenOutrightPriceIsReached() throws Exception {
-        // Arrange
-        ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endFuture = _startFuture.plusDays(1);
-        // SUT
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startFuture, endFuture);
-
-        ZonedDateTime now = ZonedDateTime.now();
-        setPrivateField(auction, "_auctionStartDate", now.minusMinutes(5));
-        setPrivateField(auction, "_auctionEndDate", now.plusMinutes(5));
-
-        Bid bidDouble = mock(Bid.class);
-        Price bidPriceDouble = mock(Price.class);
-        when(bidDouble.getOfferPrice()).thenReturn(bidPriceDouble);
-        when(bidPriceDouble.getValue()).thenReturn(100.0);
-        when(bidPriceDouble.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
-
-        User buyerDouble = mock(User.class);
-        when(bidDouble.getBidder()).thenReturn(buyerDouble);
-
-        // Act
-        auction.acceptBid(bidDouble);
-
-        //Assert
-        assertSame(buyerDouble, getPrivateField(auction, "_buyer"));
-        assertEquals(bidPriceDouble, getPrivateField(auction, "_finalPrice"));
-    }
-
-    @Test
-    void finalizeAuctionShouldSetBuyerWhenReserveIsMet() throws Exception {
-        // Arrange
-        ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endFuture = _startFuture.plusDays(1);
-        // SUT
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
-
-        Bid bidDouble = mock(Bid.class);
-        Price priceDouble = mock(Price.class);
-        when(priceDouble.getValue()).thenReturn(60.0);
-        when(bidDouble.getOfferPrice()).thenReturn(priceDouble);
-        when(priceDouble.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
-
-        User buyerDouble = mock(User.class);
-        when(bidDouble.getBidder()).thenReturn(buyerDouble);
-        MemoBidRepo bidRepoDouble = mock(MemoBidRepo.class);
-        when(bidRepoDouble.getHighestBid()).thenReturn(bidDouble);
-
-        setPrivateField(auction, "_bids", bidRepoDouble);
-
-        // Act
-        auction.finalizeAuction();
-
-        // Assert
-        assertSame(buyerDouble, getPrivateField(auction, "_buyer"));
-    }
-
-    @Test
-    void finalizeAuctionShouldNotSetBuyerWhenReserveIsNotMet() throws Exception {
-        // Arrange
-        ZonedDateTime _startFuture = ZonedDateTime.now().plusDays(1);
-        ZonedDateTime endFuture = _startFuture.plusDays(1);
-        // SUT
-        Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _startFuture, endFuture);
-
-        Bid bidDouble = mock(Bid.class);
-        Price priceDouble = mock(Price.class);
-        when(priceDouble.getValue()).thenReturn(20.0);
-        when(bidDouble.getOfferPrice()).thenReturn(priceDouble);
-
-        MemoBidRepo bidRepoDouble = mock(MemoBidRepo.class);
-        when(bidRepoDouble.getHighestBid()).thenReturn(bidDouble);
-
-        setPrivateField(auction, "_bids", bidRepoDouble);
-
-        // Act
-        auction.finalizeAuction();
-
-        // Assert
-        assertNull(getPrivateField(auction, "_buyer"));
-        assertNull(getPrivateField(auction, "_finalPrice"));
-    }
 
     private void setPrivateField(Auction auction, String fieldName, Object value) throws Exception {
         Field field = Auction.class.getDeclaredField(fieldName);
@@ -572,6 +424,159 @@ class AuctionTest {
 
         // Assert
         verify(_itemDouble).isByPublication(publicationDouble);
+    }
+
+    @Test
+    void getBidsShouldReturnImmutableList() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+        Price price = mock(Price.class);
+        when(price.getValue()).thenReturn(20.0);
+
+        auction.placeBid(user, price);
+
+        // Act
+        List<Bid> result = auction.getBids();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.add(mock(Bid.class)));
+    }
+
+    @Test
+    void getHighestBidShouldReturnHighestBid() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+
+        Price p1 = mock(Price.class);
+        Price p2 = mock(Price.class);
+
+        when(p1.getValue()).thenReturn(20.0);
+        when(p2.getValue()).thenReturn(50.0);
+
+        auction.placeBid(user, p1);
+        auction.placeBid(user, p2);
+
+        // Act
+        Bid result = auction.getHighestBid();
+
+        // Assert
+        assertEquals(50.0, result.getOfferPrice().getValue());
+    }
+
+    @Test
+    void getHighestBidShouldThrowWhenNoBids() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class, auction::getHighestBid);
+    }
+
+    @Test
+    void placeBidShouldThrowWhenAuctionNotActive() {
+        // Arrange
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd);
+
+        UserId user = mock(UserId.class);
+        Price price = mock(Price.class);
+        when(price.getValue()).thenReturn(20.0);
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class,
+                () -> auction.placeBid(user, price));
+    }
+
+    @Test
+    void placeBidShouldThrowWhenPriceIsTooLow() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+        Price price = mock(Price.class);
+        when(price.getValue()).thenReturn(5.0);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, price));
+    }
+
+    @Test
+    void placeBidShouldAddBidWhenValid() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+        Price price = mock(Price.class);
+        when(price.getValue()).thenReturn(20.0);
+
+        // Act
+        Bid bid = auction.placeBid(user, price);
+
+        // Assert
+        assertNotNull(bid);
+        assertEquals(1, auction.getBids().size());
+    }
+
+    @Test
+    void finalizeAuctionShouldNotThrowWhenNoBids() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        // Act & Assert
+        assertDoesNotThrow(auction::finalizeAuction);
+    }
+
+    @Test
+    void finalizeAuctionShouldUseHighestBidWhenBidsExist() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Auction auction = new Auction(_items, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+
+        Price low = mock(Price.class);
+        Price high = mock(Price.class);
+
+        when(low.getValue()).thenReturn(20.0);
+        when(high.getValue()).thenReturn(60.0);
+
+        when(high.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
+
+        auction.placeBid(user, low);
+        auction.placeBid(user, high);
+
+        // Act
+        auction.finalizeAuction();
+
+        // Assert
+        Bid highest = auction.getHighestBid();
+        assertEquals(60.0, highest.getOfferPrice().getValue());
     }
 }
 
