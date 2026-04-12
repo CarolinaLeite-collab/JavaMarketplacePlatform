@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -18,15 +18,15 @@ class BidTest {
     void shouldCreateValidBid() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //act & SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //assert
         assertNotNull(bid);
-        assertEquals(bidder, bid.getBidder());
+        assertEquals(userIdDouble, bid.getUserId());
         assertEquals(offerPrice, bid.getOfferPrice());
         assertNotNull(bid.getBidDate());
     }
@@ -35,14 +35,14 @@ class BidTest {
     void shouldUseFixedClockWhenCreatingBid() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         Instant fixedInstant = Instant.parse("2024-01-01T10:15:30Z");
         Clock fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault());
 
         //act
-        Bid bid = new Bid(bidder, offerPrice, fixedClock);
+        Bid bid = new Bid(userIdDouble, offerPrice, fixedClock);
 
         //assert
         assertEquals(fixedInstant, bid.getBidDate());
@@ -66,11 +66,11 @@ class BidTest {
     void shouldThrowExceptionWhenOfferPriceIsNull() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
 
         //act
         Exception exception = assertThrows(
-                IllegalArgumentException.class, () -> new Bid(bidder, null));
+                IllegalArgumentException.class, () -> new Bid(userIdDouble, null));
 
         //assert
         assertEquals("Offer Price cannot be null", exception.getMessage());
@@ -80,12 +80,12 @@ class BidTest {
     void shouldThrowExceptionWhenClockIsNull() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //act
         IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class, () -> new Bid(bidder, offerPrice, null));
+                IllegalArgumentException.class, () -> new Bid(userIdDouble, offerPrice, null));
 
         //assert
         assertEquals("Clock cannot be null", exception.getMessage());
@@ -95,28 +95,28 @@ class BidTest {
     void shouldReturnCorrectBidder() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
-        User result = bid.getBidder();
+        UserId result = bid.getUserId();
 
         //assert
-        assertEquals(bidder, result);
+        assertEquals(userIdDouble, result);
     }
 
     @Test
     void shouldReturnCorrectOfferPrice() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         Price result = bid.getOfferPrice();
@@ -129,11 +129,11 @@ class BidTest {
     void shouldReturnValidBidDate() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         Instant bidDate = bid.getBidDate();
@@ -146,11 +146,11 @@ class BidTest {
     void shouldBeEqualToItself() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //act & SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //assert
         assertEquals(bid, bid);
@@ -160,11 +160,11 @@ class BidTest {
     void shouldNotBeEqualToNull() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //act & SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //assert
         assertNotEquals(bid, null);
@@ -174,13 +174,13 @@ class BidTest {
     void shouldNotBeEqualWhenPricesAreDifferent() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
         Price otherPrice = mock(Price.class);
 
         //act & SUT
-        Bid bid1 = new Bid(bidder, offerPrice);
-        Bid bid2 = new Bid(bidder, otherPrice);
+        Bid bid1 = new Bid(userIdDouble, offerPrice);
+        Bid bid2 = new Bid(userIdDouble, otherPrice);
 
         //assert
         assertNotEquals(bid1, bid2);
@@ -190,15 +190,15 @@ class BidTest {
     void shouldHaveSameHashCodeWhenObjectsAreEqual() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         Instant fixedInstant = Instant.parse("2024-01-01T10:15:30Z");
         Clock fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault());
 
         //act
-        Bid bid1 = new Bid(bidder, offerPrice, fixedClock);
-        Bid bid2 = new Bid(bidder, offerPrice, fixedClock);
+        Bid bid1 = new Bid(userIdDouble, offerPrice, fixedClock);
+        Bid bid2 = new Bid(userIdDouble, offerPrice, fixedClock);
 
         //assert
         assertEquals(bid1, bid2);
@@ -209,11 +209,11 @@ class BidTest {
     void shouldNotBeEqualToDifferentClass() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         String notABid = "not a bid";
@@ -227,11 +227,11 @@ class BidTest {
     void shouldReturnConsistentHashCode() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         int hash1 = bid.hashCode();
@@ -248,14 +248,14 @@ class BidTest {
     void shouldContainExpectedFieldsInToString() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
-        when(bidder.toString()).thenReturn("MockUser");
+        when(userIdDouble.toString()).thenReturn("MockUser");
         when(offerPrice.toString()).thenReturn("100 EUR");
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         String result = bid.toString();
@@ -263,7 +263,7 @@ class BidTest {
         //assert
         assertNotNull(result);
         assertTrue(result.contains("Bid{"));
-        assertTrue(result.contains("bidder="));
+        assertTrue(result.contains("userId="));
         assertTrue(result.contains("offerPrice="));
         assertTrue(result.contains("date="));
     }
@@ -272,14 +272,14 @@ class BidTest {
     void shouldContainCorrectValuesInToString() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
-        when(bidder.toString()).thenReturn("MockUser");
+        when(userIdDouble.toString()).thenReturn("MockUser");
         when(offerPrice.toString()).thenReturn("100 EUR");
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
         String result = bid.toString();
@@ -293,19 +293,19 @@ class BidTest {
     void shouldKeepBidImmutable() {
 
         //arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         //SUT
-        Bid bid = new Bid(bidder, offerPrice);
+        Bid bid = new Bid(userIdDouble, offerPrice);
 
         //act
-        User retrievedBidder = bid.getBidder();
+        UserId retrievedBidder = bid.getUserId();
         Price retrievedPrice = bid.getOfferPrice();
         Instant retrievedDate = bid.getBidDate();
 
         //assert
-        assertSame(bidder, retrievedBidder);
+        assertSame(userIdDouble, retrievedBidder);
         assertSame(offerPrice, retrievedPrice);
         assertNotNull(retrievedDate);
     }
@@ -313,15 +313,15 @@ class BidTest {
     @Test
     void equalBidsHaveSameHashCode() {
         // Arrange
-        User bidder = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
         Instant fixedInstant = Instant.parse("2024-01-01T10:15:30Z");
         Clock fixedClock = Clock.fixed(fixedInstant, ZoneId.systemDefault());
 
         // Act
-        Bid bid1 = new Bid(bidder, offerPrice, fixedClock);
-        Bid bid2 = new Bid(bidder, offerPrice, fixedClock);
+        Bid bid1 = new Bid(userIdDouble, offerPrice, fixedClock);
+        Bid bid2 = new Bid(userIdDouble, offerPrice, fixedClock);
 
         // Assert
         assertEquals(bid1, bid2);
@@ -331,18 +331,131 @@ class BidTest {
     @Test
     void hashCodeChangesWhenBidderChanges() {
         // Arrange
-        User bidder1 = mock(User.class);
-        User bidder2 = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
+        UserId userIdDouble2 = mock(UserId.class);
         Price price = mock(Price.class);
 
         Instant instant = Instant.parse("2024-01-01T10:15:30Z");
         Clock clock = Clock.fixed(instant, ZoneId.systemDefault());
 
-        Bid bid1 = new Bid(bidder1, price, clock);
-        Bid bid2 = new Bid(bidder2, price, clock);
+        Bid bid1 = new Bid(userIdDouble, price, clock);
+        Bid bid2 = new Bid(userIdDouble2, price, clock);
 
         // Act & Assert
         assertNotEquals(bid1.hashCode(), bid2.hashCode());
     }
 
+    @Test
+    void identityIsNotNull() {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price offerPrice1 = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, offerPrice1);
+
+        //Act
+        BidId bidId = bid1.identity();
+
+        //Assert
+        assertNotNull(bidId);
+    }
+
+    @Test
+    void identityIsAlwaysTheSame() {
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price price  = mock(Price.class);
+
+
+        //SUT
+        Bid bid = new Bid(userIdDouble, price);
+
+        //Act
+        BidId bidId = bid.identity();
+        BidId bidId2 = bid.identity();
+
+        //Assert
+        assertEquals(bidId, bidId2);
+    }
+
+    @Test
+    void identityIsDifferentForDifferentBids() {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        UserId userIdDouble2 = mock(UserId.class);
+        Price price1 = mock(Price.class);
+        Price price2 = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, price1);
+        Bid bid2 = new Bid(userIdDouble2, price2);
+
+        //Act
+        BidId bidId1 = bid1.identity();
+        BidId bidId2 = bid2.identity();
+
+        //Assert
+        assertNotEquals(bidId1, bidId2);
+    }
+
+    @Test
+    void returnFalseWhenBidsAreNotSame() {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price price = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, price);
+        Bid bid2 = new Bid(userIdDouble, price);
+
+        //Act + Assert
+        assertFalse(bid1.sameAs(bid2));
+    }
+
+    @Test
+    void returnTrueWhenBidsAreSame() {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price price = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, price);
+
+        //Act + Assert
+        assertTrue(bid1.sameAs(bid1));
+    }
+
+    @Test
+    void returnFalseWhenBidIsNull () {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price price = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, price);
+
+        //Act + Assert
+        assertFalse(bid1.sameAs(null));
+    }
+
+    @Test
+    void returnFalseWhenObjectIsDifferentType() {
+
+        //Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Price price = mock(Price.class);
+
+        //SUT
+        Bid bid1 = new Bid(userIdDouble, price);
+
+        //Act + Assert
+        String bid2 = "Bid";
+        assertFalse(bid1.sameAs(bid2));
+    }
 }

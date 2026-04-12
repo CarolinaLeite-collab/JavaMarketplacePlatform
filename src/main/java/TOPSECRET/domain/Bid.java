@@ -1,7 +1,8 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.user.User;
+import TOPSECRET.ddd.DomainEntity;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -19,31 +20,33 @@ import java.util.Objects;
  *  This class is immutable - once a bid is placed, it cannot be modified.
  */
 
-public class Bid {
+public class Bid implements DomainEntity<BidId> {
 
-    private final User _bidder;
+    private final UserId _userId;
     private final Price _offerPrice;
     private final Instant _bidDate;
+    private final BidId _bidId;
 
-    Bid(User bidder, Price offerPrice) {
-        this(bidder, offerPrice, Clock.systemDefaultZone());
+    Bid(UserId userId, Price offerPrice) {
+        this(userId, offerPrice, Clock.systemDefaultZone());
     }
 
-    Bid(User bidder, Price offerPrice, Clock clock) {
-        validateBidder(bidder);
+    Bid(UserId userId, Price offerPrice, Clock clock) {
+        validateBidder(userId);
         validateOfferPrice(offerPrice);
 
         if (clock == null) {
             throw new IllegalArgumentException ("Clock cannot be null");
         }
 
-        _bidder = bidder;
+        _userId = userId;
         _offerPrice = offerPrice;
         _bidDate = Instant.now(clock);
+        _bidId = BidId.newId();
     }
 
-    public User getBidder() {
-        return _bidder;
+    public UserId getUserId() {
+        return _userId;
     }
 
     public Price getOfferPrice() {
@@ -54,8 +57,8 @@ public class Bid {
         return _bidDate;
     }
 
-    private void validateBidder(User bidder) {
-        if (bidder == null) {
+    private void validateBidder(UserId userId) {
+        if (userId == null) {
             throw new IllegalArgumentException("Bidder cannot be null");
         }
     }
@@ -71,14 +74,14 @@ public class Bid {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Bid bid = (Bid) o;
-        return Objects.equals(_bidder, bid._bidder) &&
+        return Objects.equals(_userId, bid._userId) &&
                 Objects.equals(_offerPrice, bid._offerPrice) &&
                 Objects.equals(_bidDate, bid._bidDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_bidder, _offerPrice, _bidDate);
+        return Objects.hash(_userId, _offerPrice, _bidDate);
     }
 
     @Override
@@ -87,10 +90,23 @@ public class Bid {
                 DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")
                         .withZone(ZoneId.systemDefault());
 
-        return String.format("Bid{bidder=%s, offerPrice=%s, date=%s}",
-                _bidder,
+        return String.format("Bid{id=%s, userId=%s, offerPrice=%s, date=%s}",
+                _bidId,
+                _userId,
                 _offerPrice,
                 formatter.format(_bidDate));
+    }
+
+    @Override
+    public BidId identity() {
+        return _bidId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Bid other)) return false;
+        return _bidId.equals(other._bidId);
     }
 
 }
