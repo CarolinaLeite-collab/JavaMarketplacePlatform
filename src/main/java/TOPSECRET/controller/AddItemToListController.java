@@ -1,7 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IListOfItemsRepo;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.listofitems.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;

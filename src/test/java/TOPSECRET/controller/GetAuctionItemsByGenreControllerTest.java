@@ -1,13 +1,9 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,6 +1,6 @@
 package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

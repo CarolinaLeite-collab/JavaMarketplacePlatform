@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.item;
 
 import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.valueobject.Condition;

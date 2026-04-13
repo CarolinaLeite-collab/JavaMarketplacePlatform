@@ -1,8 +1,6 @@
 package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

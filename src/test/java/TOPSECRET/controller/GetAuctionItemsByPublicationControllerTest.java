@@ -1,17 +1,11 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class GetAuctionItemsByPublicationControllerTest {
 

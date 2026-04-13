@@ -1,10 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.item;
 
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.Description;
 import TOPSECRET.domain.valueobject.EditionId;
-import TOPSECRET.domain.valueobject.SaleStatus;
 
 /**
  * Factory responsible for creating {@link Item} instances.

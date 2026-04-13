@@ -1,7 +1,7 @@
 package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;

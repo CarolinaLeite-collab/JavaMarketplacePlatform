@@ -1,6 +1,6 @@
 package TOPSECRET.domain.library;
 
-import TOPSECRET.domain.*;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.LibraryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

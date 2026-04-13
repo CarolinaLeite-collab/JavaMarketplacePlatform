@@ -1,13 +1,9 @@
 package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.valueobject.AuctionId;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;

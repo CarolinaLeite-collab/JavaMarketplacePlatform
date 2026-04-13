@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.repository.IDirectSaleRepo;

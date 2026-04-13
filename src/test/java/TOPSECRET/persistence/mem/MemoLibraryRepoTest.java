@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.library.LibraryFactory;
 import TOPSECRET.domain.repository.ILibraryRepo;

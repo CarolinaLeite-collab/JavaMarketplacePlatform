@@ -1,7 +1,7 @@
 package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.Price;

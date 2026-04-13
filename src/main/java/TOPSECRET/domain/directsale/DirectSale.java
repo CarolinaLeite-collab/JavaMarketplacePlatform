@@ -2,7 +2,7 @@ package TOPSECRET.domain.directsale;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.author.Author;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Period;

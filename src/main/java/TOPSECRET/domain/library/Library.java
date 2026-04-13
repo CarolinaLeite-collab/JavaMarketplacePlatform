@@ -1,12 +1,11 @@
 package TOPSECRET.domain.library;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

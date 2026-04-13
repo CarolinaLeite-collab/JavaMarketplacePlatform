@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.item;
 
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.*;

@@ -1,7 +1,5 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.item;
 
-import TOPSECRET.domain.edition.Edition;
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.Description;
 import TOPSECRET.domain.valueobject.EditionId;

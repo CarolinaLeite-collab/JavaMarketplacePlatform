@@ -2,12 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.UserId;
-
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Controller responsible for retrieving auction items by a specific author.
