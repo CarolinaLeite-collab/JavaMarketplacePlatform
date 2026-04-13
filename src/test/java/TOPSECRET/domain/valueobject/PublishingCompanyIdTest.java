@@ -28,7 +28,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null or blank");
+        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
     }
 
     @Test
@@ -41,7 +41,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null or blank");
+        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
     }
 
     @Test
@@ -54,7 +54,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null or blank");
+        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
     }
 
     @Test
@@ -121,7 +121,7 @@ class PublishingCompanyIdTest {
     @Test
     void toStringReturnsNormalisedName() {
         // Arrange
-        String name = " PEnguIN RANdom houSE   ";
+        String name = " PEnguIN RANdom    houSE   ";
 
         // Act
         PublishingCompanyId publishingCompanyId = new PublishingCompanyId(name);
