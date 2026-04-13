@@ -1,22 +1,16 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.valueobject.Condition;
-import TOPSECRET.domain.valueobject.GenreId;
-
-import java.util.Objects;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.valueobject.*;
 
 /**
  * <h3>Item represents a publication that has been listed for sale.</h3>
  * <p>
- * An {@code Item} wraps a {@link Publication} and captures its sale context,
+ * An {@code Item} wraps a {@link Edition} and captures its sale context,
  * including its {@link Condition} and the type of sale it belongs to .
- * Each item can only be part of either a {@link DirectSale} or an {@link Auction}, but never both.
+ * Each item can only be part of either a DirectSale or an Auction, but never both.
  * </p>
  *
  * <p>
@@ -26,90 +20,84 @@ import java.util.Objects;
  * </p>
  */
 
-public class Item {
+public class Item implements AggregateRoot<ItemId> {
 
-    private final Publication _publication;
     private final Condition _condition;
-    private DirectSale directSale;
-    private Auction auction;
+    private final EditionId _editionId;
+    private final Description _description;
+    private final ItemId _itemId;
+    private SaleStatus _saleStatus;
 
-    Item(Publication publication, Condition condition) {
-        _publication = publication;
+
+    Item(EditionId editionId, Condition condition, Description description) {
+        _editionId = editionId;
         _condition = condition;
+        _description = description;
+
+        _itemId = new ItemId();
+        _saleStatus = SaleStatus.NotOnSale;
     }
 
-    public Publication get_publication() {
-        return _publication;
+    @Override
+    public ItemId identity() {
+        return _itemId;
+    }
+
+    @Override
+    public boolean sameAs(Object object) {
+
+        return equals(object);
+    }
+
+    public void markAsAuction() {
+        ensureNotOnSale();
+        _saleStatus = SaleStatus.OnAuction;
+    }
+
+    public void markAsDirectSale() {
+        ensureNotOnSale();
+        _saleStatus = SaleStatus.OnDirectSale;
+    }
+
+    public void markAsSold() {
+        if (_saleStatus == SaleStatus.NotOnSale) {
+            throw new IllegalStateException("Item is not on sale.");
+        }
+
+        _saleStatus = SaleStatus.Sold;
+    }
+
+    private void ensureNotOnSale() {
+        if (_saleStatus != SaleStatus.NotOnSale) {
+            throw new IllegalStateException("Item is already on sale.");
+        }
+    }
+
+    public EditionId get_editionId() {
+        return _editionId;
     }
 
     public Condition get_condition() {
         return _condition;
     }
 
-    public void setDirectSale(DirectSale directSale) {
-        if (this.auction != null) {
-            throw new IllegalStateException("Item is already in an auction.");
+    public SaleStatus get_saleStatus() {
+        return _saleStatus;
+    }
+
+    public Description get_description() {
+            return _description;
         }
-        if (!directSale.getItems().contains(this)) {
-            throw new IllegalArgumentException("This DirectSale does not belong to this Item.");
-        }
-        this.directSale = directSale;
-    }
-
-    public void setAuction(Auction auction) {
-        if (this.directSale != null) {
-            throw new IllegalStateException("Item is already in a direct sale.");
-        }
-        if (!auction.getItems().contains(this)) {
-            throw new IllegalArgumentException("This Auction does not belong to this Item.");
-        }
-        this.auction = auction;
-    }
-
-    public DirectSale getDirectSale() {
-        return directSale;
-    }
-
-    public Auction getAuction() {
-        return auction;
-
-    }
-
-    public boolean isByAuthor(AuthorId authorId) {
-
-        return _publication.isByAuthor(authorId);
-
-    }
-
-    public boolean isByGenre(GenreId genreId) {
-
-        return _publication.isByGenre(genreId);
-
-    }
-
-    /** @deprecated filtering by publishing company moves to Edition — remove when Item references Edition */
-    @Deprecated
-    public boolean isByPublishingCompany( PublishingCompany publisher) {
-
-        return false;
-    }
-
-    public boolean isByPublication(Publication publication) {
-
-        return publication.equals(this._publication);
-    }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Item other)) return false;
-
-        return Objects.equals(_publication, other._publication)
-                && _condition == other._condition;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Item other)) return false;
+        return _itemId.equals(other._itemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_publication, _condition);
+        return _itemId.hashCode();
     }
 }

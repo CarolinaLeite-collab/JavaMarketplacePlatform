@@ -1,7 +1,10 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
+import TOPSECRET.domain.valueobject.Description;
+import TOPSECRET.domain.valueobject.EditionId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -13,7 +16,8 @@ class ItemFactoryTest {
     @Test
     void shouldSuccessfullyCreateItem() {
         //Arrange
-        Publication publicationDouble = mock(Publication.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.LIKE_NEW;
 
         //SUT
@@ -24,9 +28,11 @@ class ItemFactoryTest {
                              (mock, context) -> {
                                  when(mock.get_condition())
                                          .thenReturn(condition);
+                                 when(mock.get_description())
+                                         .thenReturn(descriptionDouble);
                              })) {
             //Act
-            Item newItem = factory.createItem(publicationDouble, condition);
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
             //Assert
             assertEquals(condition, newItem.get_condition());
         }

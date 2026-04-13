@@ -1,17 +1,9 @@
 package TOPSECRET.domain;
 
-import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.valueobject.Condition;
-import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,17 +22,15 @@ import static org.mockito.Mockito.*;
 
 class ItemTest {
 
-    private Publication publicationDouble;
+    private EditionId editionIdDouble;
     private Condition conditionDouble;
-    private Auction auctionDouble;
-    private DirectSale directSaleDouble;
+    private Description descriptionDouble;
 
     @BeforeEach
     void setUp() {
-        publicationDouble = mock(Publication.class);
-        conditionDouble = Condition.GOOD; // enum, no need to mock
-        auctionDouble = mock(Auction.class);
-        directSaleDouble = mock(DirectSale.class);
+        editionIdDouble = mock(EditionId.class);
+        conditionDouble = Condition.GOOD;
+        descriptionDouble = mock(Description.class);
     }
 
     // ------------------------------------------------------------
@@ -48,303 +38,380 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void itemIsCreatedWithPublicationAndCondition() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-
-        assertSame(publicationDouble, item.get_publication());
-        assertEquals(Condition.GOOD, item.get_condition());
-    }
-
-    // ------------------------------------------------------------
-    // Direct Sale
-    // ------------------------------------------------------------
-
-    @Test
-    void canSetDirectSaleWhenNoAuctionExists() {
-        Item item = new Item(publicationDouble, Condition.LIKE_NEW);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(directSaleDouble.getItems()).thenReturn(items);
-
-        assertDoesNotThrow(() -> item.setDirectSale(directSaleDouble));
-    }
-
-    @Test
-    void cannotSetDirectSaleIfAuctionAlreadyExists() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(auctionDouble.getItems()).thenReturn(items);
-        item.setAuction(auctionDouble);
-
-        when(directSaleDouble.getItems()).thenReturn(items);
-
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> item.setDirectSale(directSaleDouble)
-        );
-
-        assertEquals("Item is already in an auction.", ex.getMessage());
-    }
-
-    @Test
-    void settingDirectSaleDoesNotOverwriteCondition() {
-        Item item = new Item(publicationDouble, Condition.POOR);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(directSaleDouble.getItems()).thenReturn(items);
-        item.setDirectSale(directSaleDouble);
-
-        assertEquals(Condition.POOR, item.get_condition());
-    }
-
-    @Test
-    void puttingPublicationOnDirectSaleWrongDirectSaleItem() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        Item wrongItem = mock(Item.class);
-        List<Item> wrongItems = new ArrayList<>();
-        wrongItems.add(wrongItem);
-
-        when(directSaleDouble.getItems()).thenReturn(wrongItems);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> item.setDirectSale(directSaleDouble));
-    }
-
-    @Test
-    void getDirectSaleReturnsAssignedDirectSale() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(directSaleDouble.getItems()).thenReturn(items);
-        item.setDirectSale(directSaleDouble);
-
-        assertSame(directSaleDouble, item.getDirectSale());
-    }
-
-    @Test
-    void getDirectSaleReturnsNullWhenNoneAssigned() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-
-        assertNull(item.getDirectSale());
-    }
-
-    // ------------------------------------------------------------
-    // Auction
-    // ------------------------------------------------------------
-
-    @Test
-    void canSetAuctionWhenNoDirectSaleExists() {
-        Item item = new Item(publicationDouble, Condition.FAIR);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(auctionDouble.getItems()).thenReturn(items);
-
-        assertDoesNotThrow(() -> item.setAuction(auctionDouble));
-    }
-
-    @Test
-    void cannotSetAuctionIfDirectSaleAlreadyExists() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(directSaleDouble.getItems()).thenReturn(items);
-        item.setDirectSale(directSaleDouble);
-
-        when(auctionDouble.getItems()).thenReturn(items);
-
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> item.setAuction(auctionDouble)
-        );
-
-        assertTrue(ex.getMessage().contains("Item is already in a direct sale."));
-    }
-
-    @Test
-    void settingAuctionDoesNotOverwriteCondition() {
-        Item item = new Item(publicationDouble, Condition.LIKE_NEW);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(auctionDouble.getItems()).thenReturn(items);
-        item.setAuction(auctionDouble);
-
-        assertEquals(Condition.LIKE_NEW, item.get_condition());
-    }
-
-    @Test
-    void puttingPublicationOnAuctionWrongAuctionItem() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-
-
-        Item wrongItem = mock(Item.class);
-        List<Item> items = new ArrayList<>();
-        items.add(wrongItem);
-        when(auctionDouble.getItems()).thenReturn(items);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> item.setAuction(auctionDouble));
-    }
-
-    @Test
-    void getAuctionReturnsAssignedAuction() {
-        Item item = new Item(publicationDouble, Condition.GOOD);
-        List<Item> items = new ArrayList<>();
-        items.add(item);
-
-        when(auctionDouble.getItems()).thenReturn(items);
-        item.setAuction(auctionDouble);
-
-        assertSame(auctionDouble, item.getAuction());
-    }
-
-    // ------------------------------------------------------------
-    // Delegation to Publication
-    // ------------------------------------------------------------
-
-    @Test
-    void isByAuthorDelegatesToPublication() {
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        item.isByAuthor(authorIdDouble);
-
-        verify(publicationDouble).isByAuthor(authorIdDouble);
-    }
-
-    @Test
-    void isByGenreDelegatesToPublication() {
-        GenreId genreIdDouble = mock(GenreId.class);
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        item.isByGenre(genreIdDouble);
-
-        verify(publicationDouble).isByGenre(genreIdDouble);
-    }
-
-    @Test
-    void isByPublicationDelegatesCorrectly() {
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        assertTrue(item.isByPublication(publicationDouble));
-        assertFalse(item.isByPublication(mock(Publication.class)));
-    }
-
-    // ------------------------------------------------------------
-    // Equality & HashCode
-    // ------------------------------------------------------------
-
-    @Test
-    void equalItemsReturnTrueWhenPublicationsMatch() {
-        Item item1 = new Item(publicationDouble, conditionDouble);
-        Item item2 = new Item(publicationDouble, conditionDouble);
-
-        assertEquals(item1, item2);
-        assertEquals(item1.hashCode(), item2.hashCode());
-    }
-
-    @Test
-    void notEqualWhenPublicationsDiffer() {
-        Publication publication_double2 = mock(Publication.class);
-
-        Item item1 = new Item(publicationDouble, conditionDouble);
-        Item item2 = new Item(publication_double2, conditionDouble);
-
-        assertNotEquals(item1, item2);
-        assertNotEquals(item1.hashCode(), item2.hashCode());
-    }
-
-    @Test
-    void equalsReturnsTrueForSameObject() {
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        assertEquals(item, item);
-    }
-
-    @Test
-    void equalsReturnsFalseForDifferentType() {
-        Item item = new Item(publicationDouble, conditionDouble);
-
-        assertNotEquals(item, "not-an-item");
-    }
-
-    // -------------
-    // Is by Author
-    // -------------
-
-    @Test
-    void isByAuthorReturnsTrueWhenPublicationMatches() {
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(true);
-
-        Item item = new Item(pubDouble, conditionDouble);
-
-        assertTrue(item.isByAuthor(authorIdDouble));
-    }
-
-    @Test
-    void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(false);
-
-        Item item = new Item(pubDouble, conditionDouble);
-
-        assertFalse(item.isByAuthor(authorIdDouble));
-    }
-
-    // --------------------
-    // Is By Genre
-    // --------------------
-
-    @Test
-    void isByGenreReturnsTrueWhenPublicationMatches() {
-        GenreId genreIdDouble = mock(GenreId.class);
-        Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genreIdDouble)).thenReturn(true);
-
-        Item item = new Item(pub, conditionDouble);
-
-        assertTrue(item.isByGenre(genreIdDouble));
-    }
-
-    @Test
-    void isByGenreReturnsFalseWhenPublicationDoesNotMatch() {
-        GenreId genreIdDouble = mock(GenreId.class);
-        Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genreIdDouble)).thenReturn(false);
-
-        Item item = new Item(pub, conditionDouble);
-
-        assertFalse(item.isByGenre(genreIdDouble));
-    }
-
-    // ------------------------------
-    // Is by PublishingCompany - waiting for refactoring
-    // ------------------------------
-
-    @Test
-    void isByPublishingCompany_returnsAlwaysFalse() {
+    void constructor_validArguments_createsItemWithAssignedValues() {
         // Arrange
-        PublishingCompany _publisherDouble = mock(PublishingCompany.class);
-        Item item = new Item(publicationDouble, conditionDouble);
 
         // Act
-        boolean result = item.isByPublishingCompany(_publisherDouble); // SUT
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Assert
+        assertSame(editionIdDouble, sut.get_editionId());
+        assertEquals(conditionDouble, sut.get_condition());
+        assertSame(descriptionDouble, sut.get_description());
+    }
+
+    @Test
+    void constructor_validArguments_generatesIdentity() {
+        // Arrange
+
+        // Act
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Assert
+        assertNotNull(sut.identity());
+    }
+
+    @Test
+    void constructor_validArguments_setsDefaultSaleStatusNotOnSale() {
+        // Arrange
+
+        // Act
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Assert
+        assertEquals(SaleStatus.NotOnSale, sut.get_saleStatus());
+    }
+
+    // ------------------------------------------------------------
+    // startAuction
+    // ------------------------------------------------------------
+
+    @Test
+    void markAsAuction_itemNotOnSale_changesStatusToOnAuction() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        sut.markAsAuction();
+
+        // Assert
+        assertEquals(SaleStatus.OnAuction, sut.get_saleStatus());
+    }
+
+    @Test
+    void markAsAuction_itemAlreadyOnAuction_throwsIllegalStateException() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsAuction();
+
+        // Act
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                sut::markAsAuction
+        );
+
+        // Assert
+        assertEquals("Item is already on sale.", exception.getMessage());
+    }
+
+    @Test
+    void markAsAuction_itemAlreadyOnDirectSale_throwsIllegalStateException() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsDirectSale();
+
+        // Act
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                sut::markAsAuction
+        );
+
+        // Assert
+        assertEquals("Item is already on sale.", exception.getMessage());
+    }
+
+    // ------------------------------------------------------------
+    // startDirectSale
+    // ------------------------------------------------------------
+
+    @Test
+    void markAsDirectSale_itemNotOnSale_changesStatusToOnDirectSale() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        sut.markAsDirectSale();
+
+        // Assert
+        assertEquals(SaleStatus.OnDirectSale, sut.get_saleStatus());
+    }
+
+    @Test
+    void markAsDirectSale_itemAlreadyOnDirectSale_throwsIllegalStateException() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsDirectSale();
+
+        // Act
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                sut::markAsDirectSale
+        );
+
+        // Assert
+        assertEquals("Item is already on sale.", exception.getMessage());
+    }
+
+    @Test
+    void markAsDirectSale_itemAlreadyOnAuction_throwsIllegalStateException() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsAuction();
+
+        // Act
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                sut::markAsDirectSale
+        );
+
+        // Assert
+        assertEquals("Item is already on sale.", exception.getMessage());
+    }
+
+    // ------------------------------------------------------------
+    // markAsSold
+    // ------------------------------------------------------------
+
+    @Test
+    void markAsSold_itemOnAuction_changesStatusToSold() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsAuction();
+
+        // Act
+        sut.markAsSold();
+
+        // Assert
+        assertEquals(SaleStatus.Sold, sut.get_saleStatus());
+    }
+
+    @Test
+    void markAsSold_itemOnDirectSale_changesStatusToSold() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsDirectSale();
+
+        // Act
+        sut.markAsSold();
+
+        // Assert
+        assertEquals(SaleStatus.Sold, sut.get_saleStatus());
+    }
+
+    @Test
+    void markAsSold_itemNotOnSale_throwsIllegalStateException() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                sut::markAsSold
+        );
+
+        // Assert
+        assertEquals("Item is not on sale.", exception.getMessage());
+    }
+
+    // ------------------------------------------------------------
+    // Getters
+    // ------------------------------------------------------------
+
+    @Test
+    void getEditionId_existingItem_returnsAssignedEditionId() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        EditionId result = sut.get_editionId();
+
+        // Assert
+        assertSame(editionIdDouble, result);
+    }
+
+    @Test
+    void getCondition_existingItem_returnsAssignedCondition() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        Condition result = sut.get_condition();
+
+        // Assert
+        assertEquals(conditionDouble, result);
+    }
+
+    @Test
+    void getDescription_existingItem_returnsAssignedDescription() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        Description result = sut.get_description();
+
+        // Assert
+        assertSame(descriptionDouble, result);
+    }
+
+    @Test
+    void getSaleStatus_newItem_returnsNotOnSale() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        SaleStatus result = sut.get_saleStatus();
+
+        // Assert
+        assertEquals(SaleStatus.NotOnSale, result);
+    }
+
+    @Test
+    void getSaleStatus_itemOnAuction_returnsOnAuction() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        sut.markAsAuction();
+
+        // Act
+        SaleStatus result = sut.get_saleStatus();
+
+        // Assert
+        assertEquals(SaleStatus.OnAuction, result);
+    }
+
+    // ------------------------------------------------------------
+    // identity
+    // ------------------------------------------------------------
+
+    @Test
+    void identity_existingItem_returnsNonNullItemId() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        ItemId result = sut.identity();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    // ------------------------------------------------------------
+    // sameAs
+    // ------------------------------------------------------------
+
+    @Test
+    void sameAs_sameObject_returnsTrue() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.sameAs(sut);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAs_differentItem_returnsFalse() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.sameAs(otherItem);
 
         // Assert
         assertFalse(result);
     }
 
+    @Test
+    void sameAs_differentType_returnsFalse() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.sameAs("not-an-item");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // ------------------------------------------------------------
+    // equals and hashCode
+    // ------------------------------------------------------------
+
+    @Test
+    void equals_sameObject_returnsTrue() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.equals(sut);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void equals_null_returnsFalse() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.equals(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void equals_differentType_returnsFalse() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.equals("not-an-item");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void equals_differentItemsWithSameAttributes_returnsFalse() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        boolean result = sut.equals(otherItem);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void hashCode_sameObject_returnsSameHashCode() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        int firstHash = sut.hashCode();
+        int secondHash = sut.hashCode();
+
+        // Assert
+        assertEquals(firstHash, secondHash);
+    }
+
+    @Test
+    void hashCode_differentItems_returnsDifferentHashCodes() {
+        // Arrange
+        Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+        Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
+
+        // Act
+        int sutHash = sut.hashCode();
+        int otherHash = otherItem.hashCode();
+
+        // Assert
+        assertNotEquals(sutHash, otherHash);
+    }
 }
