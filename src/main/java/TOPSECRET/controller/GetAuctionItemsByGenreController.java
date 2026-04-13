@@ -24,11 +24,4 @@ public class GetAuctionItemsByGenreController {
 
         _iAuctionRepo = iAuctionRepo;
     }
-
-    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
-
-        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenreId(genreId);
-
-        return auctionItemsByGenre;
-   }
 }

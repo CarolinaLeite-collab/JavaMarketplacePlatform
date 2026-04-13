@@ -17,13 +17,11 @@ class GetAuctionItemsByGenreControllerTest {
 
     private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private GenreId _genreIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _buyerIdDouble = mock(UserId.class);
-        _genreIdDouble = mock (GenreId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
     }
 
@@ -32,41 +30,5 @@ class GetAuctionItemsByGenreControllerTest {
 
         // SUT
         new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
-    }
-
-    @Test
-    void testGetAuctionItemsByGenreWithAuctionShouldReturnANotEmptyList(){
-
-        // Arrange
-        Item _itemDouble = mock(Item.class);
-        List<Item> itemsList = List.of(_itemDouble);
-        when(_iAuctionRepoDouble.getAuctionItemsByGenreId(_genreIdDouble)).thenReturn(itemsList);
-
-        // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> items = controller.getAuctionItemsByGenre(_genreIdDouble);
-
-        // Assert
-        assertEquals(itemsList, items);
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenreId(_genreIdDouble);
-    }
-
-    @Test
-    void testGetAuctionItemsByGenreWithNoAuctionShouldReturnEmptyList(){
-
-        // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByGenreId(_genreIdDouble)).thenReturn(List.of());
-
-        // SUT
-        GetAuctionItemsByGenreController controller = new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> listOfAuctionItemsByGenre = controller.getAuctionItemsByGenre(_genreIdDouble);
-
-        // Assert
-        assertTrue(listOfAuctionItemsByGenre.isEmpty());
-        verify(_iAuctionRepoDouble).getAuctionItemsByGenreId(_genreIdDouble);
     }
 }
