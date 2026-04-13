@@ -1,6 +1,9 @@
 package TOPSECRET.domain.user;
 
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.Address;
+import TOPSECRET.domain.valueobject.Email;
+import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.Phone;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -13,43 +16,17 @@ class UserFactoryTest {
 
     @Test
     void shouldCreateUser() {
-        // Arrange
         Name nameDouble = mock(Name.class);
-        Email emailDouble = mock(Email.class);
-
-        // SUT
-        UserFactory userFactory = new UserFactory();
-
-        try (MockedConstruction<User> mockedConstruction = mockConstruction(User.class)) {
-
-            // Act
-            User userResult = userFactory.createUser(nameDouble, emailDouble);
-
-            // Assert
-            assertNotNull(userResult);
-            assertEquals(1, mockedConstruction.constructed().size());
-        }
-    }
-
-    @Test
-    void shouldCreateUserTypeB() {
-
-        //Arrange
-        Name nameDouble = mock(Name.class);
-        Email emailDouble = mock(Email.class);
         Address addressDouble = mock(Address.class);
+        Email emailDouble = mock(Email.class);
         Phone phoneDouble = mock(Phone.class);
-        UserId userIDDouble = mock(UserId.class);
 
-        // SUT
         UserFactory userFactory = new UserFactory();
 
         try (MockedConstruction<User> mockedConstruction = mockConstruction(User.class)) {
 
-            //Act
-            User userResult = userFactory.createUser(userIDDouble, nameDouble, addressDouble, emailDouble, phoneDouble);
+            User userResult = userFactory.createUser(nameDouble, addressDouble, emailDouble, phoneDouble);
 
-            //Assert
             assertNotNull(userResult);
             assertEquals(1, mockedConstruction.constructed().size());
         }

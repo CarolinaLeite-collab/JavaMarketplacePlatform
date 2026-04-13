@@ -24,18 +24,11 @@ public class Genre implements AggregateRoot<GenreId> {
     private final GenreId _genreId;
     private final String _genre;
 
-    protected Genre(String genre) {
+    Genre(String genre) {
         if (genre == null || genre.trim().isEmpty())
             throw new IllegalArgumentException("Genre name cannot be null or empty");
         _genre = genre.trim();
         _genreId = new GenreId(_genre);
-    }
-
-    protected Genre(GenreId genreId, String genre) {
-        if (genre == null || genre.trim().isEmpty())
-            throw new IllegalArgumentException("Genre name cannot be null or empty");
-        _genreId = Objects.requireNonNull(genreId, "GenreId is required");
-        _genre = genre.trim();
     }
 
     public String getGenre() {
@@ -48,14 +41,14 @@ public class Genre implements AggregateRoot<GenreId> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof Genre other)) return false;
-        return _genreId.equals(other._genreId);
+        return _genre.equalsIgnoreCase(other._genre);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Genre other)) return false;
-        return _genre.equalsIgnoreCase(other._genre);
+        return _genreId.equals(other._genreId);
     }
 
     @Override

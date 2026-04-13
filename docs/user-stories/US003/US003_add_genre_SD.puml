@@ -1,58 +1,60 @@
-@startuml
+    @startuml
 
-title "US003 - As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" - SD
+    title "US003 - As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" - SD
 
-'==== basic style ====
-skinparam monochrome false
-skinparam shadowing false
-skinparam defaultFontName Futura
-skinparam objectFontSize 20
-skinparam backgroundColor CornSilk
-skinparam objectBackgroundColor WhiteSmoke
-skinparam noteBackgroundColor #FFFFE0
-skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #57595BAA
-skinparam ActivationBackgroundColor WhiteSmoke
-hide footbox
+    '==== basic style ====
+    skinparam monochrome false
+    skinparam shadowing false
+    skinparam defaultFontName Futura
+    skinparam objectFontSize 20
+    skinparam backgroundColor CornSilk
+    skinparam objectBackgroundColor WhiteSmoke
+    skinparam noteBackgroundColor #FFFFE0
+    skinparam ArrowFontColor #3B4953
+    skinparam ArrowColor #57595BAA
+    skinparam ActivationBackgroundColor WhiteSmoke
+    hide footbox
 
-autonumber
+    autonumber
 
-actor Administrator
-participant ":AddGenreUI" as UI
-participant ":AddGenreController" as Ctl
-participant "memoGenreRepo:MemoGenreRepo" as gr
-participant "genreFactory:GenreFactory" as gf
+    actor Administrator
+    participant ":AddGenreUI" as UI
+    participant ":AddGenreController" as Ctl
+    participant ":MemoGenreRepo" as gr
+    participant ":GenreFactory" as gf
 
-Administrator -> UI: I want to add a publication genre
-activate UI
-UI --> Administrator: What is the genre name?
-deactivate UI
-Administrator -> UI: genreName
-activate UI
+    Administrator -> UI: I want to add a publication genre
+    activate UI
+    UI --> Administrator: What is the genre name?
+    deactivate UI
+    Administrator -> UI: genreName
+    activate UI
 
-UI -> Ctl: addGenre(genreName)
-activate Ctl
-Ctl -> gr: addGenre(genreName)
-activate gr
+    UI -> Ctl: addGenre(genreName)
+    activate Ctl
+    Ctl -> gr: addGenre(genreName)
+    activate gr
 
-opt genreExists(genreName) == false
-        gr -> gf : createGenre(genreName)
-        activate gf
-        create "genreName:Genre"
-        gf -->> "genreName:Genre": <<Create>>
-        gf --> gr : genreName
-        deactivate gf
-        gr -> gr: addGenre(genreName)
-end
+    gr -> gf : createGenre(genreName)
+    activate gf
+    create "genreName:Genre"
+    gf -->> "genreName:Genre": <<Create>>
+
+    gf --> gr : genreName
+    deactivate gf
+
+    opt containsOfIdentity(genreName.identity()) == false
+            gr -> gr: save(genreName)
+    end
 
 
-gr --> Ctl: genreName
-deactivate gr
+    gr --> Ctl: genreName
+    deactivate gr
 
-Ctl --> UI: genreName
-deactivate Ctl
+    Ctl --> UI: genreName
+    deactivate Ctl
 
-UI --> Administrator: genreName added successfully \nto the official genre list!
-deactivate UI
+    UI --> Administrator: genreName added successfully \nto the official genre list!
+    deactivate UI
 
-@enduml
+    @enduml

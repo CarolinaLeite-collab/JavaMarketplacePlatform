@@ -12,11 +12,8 @@ import TOPSECRET.domain.valueobject.*;
 
 public class UserFactory {
 
-    public User createUser(Name name, Email email) {
-        return new User(name, email);
-    }
+    public User createUser(Name name, Address address, Email email, Phone phone) {
 
-    public User createUser(UserId userId, Name name, Address address, Email email, Phone phone) {
-        return new User (name, address, email, phone);
+        return new User(name, address, email, phone);
     }
 }

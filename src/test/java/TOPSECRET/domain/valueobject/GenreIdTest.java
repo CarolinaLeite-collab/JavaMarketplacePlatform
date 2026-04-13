@@ -11,7 +11,7 @@ class GenreIdTest {
         // Arrange
         String name = "Fiction";
 
-        // Act
+        // SUT
         GenreId genreId = new GenreId(name);
 
         // Assert
@@ -61,8 +61,6 @@ class GenreIdTest {
     void constructorNormalisesNameToUpperCase() {
         // Arrange
         String name = "fiction";
-
-        // Act
         GenreId genreId = new GenreId(name);
 
         // Assert
@@ -73,8 +71,6 @@ class GenreIdTest {
     void equalsSameNameCaseInsensitiveReturnsTrue() {
         // Arrange
         GenreId genreId1 = new GenreId("Fiction");
-
-        // Act
         GenreId genreId2 = new GenreId("fiction");
 
         // Assert
@@ -83,10 +79,8 @@ class GenreIdTest {
 
     @Test
     void equalsDifferentNameReturnsFalse() {
-        // Arrange
+        // Arrange & SUT
         GenreId genreId1 = new GenreId("Fiction");
-
-        // Act
         GenreId genreId2 = new GenreId("Horror");
 
         // Assert
@@ -95,7 +89,7 @@ class GenreIdTest {
 
     @Test
     void equalsSameInstanceReturnsTrue() {
-        // Arrange
+        // Arrange & SUT
         GenreId genreId = new GenreId("Fiction");
 
         // Act
@@ -107,7 +101,7 @@ class GenreIdTest {
 
     @Test
     void equalsNullReturnsFalse() {
-        // Arrange
+        // Arrange & SUT
         GenreId genreId = new GenreId("Fiction");
 
         // Act
@@ -119,14 +113,24 @@ class GenreIdTest {
 
     @Test
     void hashCodeSameNameReturnsSameHash() {
-        // Arrange
+        // Arrange & SUT
         GenreId genreId1 = new GenreId("Fiction");
-
-        // Act
         GenreId genreId2 = new GenreId("fiction");
 
-        // Assert
+        // Act & Assert
         assertEquals(genreId1.hashCode(), genreId2.hashCode());
+    }
+
+    @Test
+    void hashCodeReturnsIdHashCode() {
+        // Arrange + SUT
+        GenreId genreId = new GenreId("Fiction");
+
+        // Act
+        int result = genreId.hashCode();
+
+        // Assert
+        assertEquals("FICTION".hashCode(), result);
     }
 
     @Test
