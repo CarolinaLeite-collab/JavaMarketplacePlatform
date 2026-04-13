@@ -132,4 +132,10 @@ class PublicationTypeIdTest {
         assertEquals("POKEMON TRADING CARDS", publicationTypeId.toString());
     }
 
+    @Test
+    void equalsDifferentTypeReturnsFalse() {
+        PublicationTypeId id = new PublicationTypeId("BOOK");
+        assertNotEquals(id, "BOOK");
+    }
+
 }
