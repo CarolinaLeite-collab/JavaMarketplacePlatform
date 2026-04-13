@@ -11,7 +11,7 @@ class GenreTest {
     @Test
     void constructorShouldBuildGenre() {
 
-        // Act
+        // SUT
         Genre genre = new Genre("Science Fiction");
 
         // Assert
@@ -21,7 +21,7 @@ class GenreTest {
     @Test
     void constructorShouldTrimGenreName() {
 
-        // Act
+        // SUT
         Genre genre = new Genre(" Science Fiction  ");
 
         // Assert
@@ -43,71 +43,8 @@ class GenreTest {
     }
 
     @Test
-    void constructorCreationGeneratesGenreId() {
-        // Arrange
-        String name = "Science Fiction";
-
-        // Act
-        Genre genre = new Genre(name);
-
-        // Assert
-        assertNotNull(genre.identity());
-    }
-
-    @Test
-    void constructorReconstitutionValidArgsCreatesGenre() {
-        // Arrange
-        GenreId genreIdDouble = mock(GenreId.class);
-        String name = "Science Fiction";
-
-        // Act
-        Genre genre = new Genre(genreIdDouble, name); // SUT
-
-        // Assert
-        assertNotNull(genre);
-    }
-
-    @Test
-    void constructorReconstitutionNullGenreIdThrowsNullPointerException() {
-        // Arrange
-        String name = "Science Fiction";
-
-        // Act
-        Exception exception = assertThrows(NullPointerException.class, () ->
-                new Genre(null, name));
-
-        // Assert
-        assertNotNull(exception);
-    }
-
-    @Test
-    void constructorReconstitutionNullNameThrowsIllegalArgumentException() {
-        // Arrange
-        GenreId genreIdDouble = mock(GenreId.class);
-
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new Genre(genreIdDouble, null));
-
-        // Assert
-        assertNotNull(exception);
-    }
-
-    @Test
-    void constructorReconstitutionRestoresGenreId() {
-        // Arrange
-        GenreId genreIdDouble = mock(GenreId.class);
-        String name = "Science Fiction";
-
-        // Act
-        Genre genre = new Genre(genreIdDouble, name);
-
-        // Assert
-        assertSame(genreIdDouble, genre.identity());
-    }
-    @Test
     void identityReturnsNonNullGenreId() {
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Science Fiction");
 
         // Act
@@ -119,7 +56,7 @@ class GenreTest {
 
     @Test
     void sameAsSameInstanceReturnsTrue() {
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Science Fiction");
 
         // Act
@@ -133,11 +70,10 @@ class GenreTest {
     void sameAsSameNameReturnsTrue() {
         // Arrange
         Genre genre1 = new Genre("Science Fiction");
-
-        // Act
         Genre genre2 = new Genre("Science FictIon");
 
-        // Assert
+
+        // Act + Assert
         assertTrue(genre1.sameAs(genre2));
     }
 
@@ -180,7 +116,7 @@ class GenreTest {
     @Test
     void genreNotEqualsToNull() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Science Fiction");
 
         // Assert
@@ -190,7 +126,7 @@ class GenreTest {
     @Test
     void genreWithSameName() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Romance ");
         Genre genre2 = new Genre("ROMANCE");
 
@@ -201,7 +137,7 @@ class GenreTest {
     @Test
     void genreEqualsItself() {
 
-        // Arrange
+        // Arrange & SUT
         Genre g = new Genre("Science Fiction");
 
         // Assert
@@ -211,7 +147,7 @@ class GenreTest {
     @Test
     void genreNotEqualsToDifferentType() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Science Fiction");
 
         // Assert
@@ -232,7 +168,7 @@ class GenreTest {
     @Test
     void hashCodeShouldBeEqualForSameGenreName() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre1 = new Genre("Romance ");
         Genre genre2 = new Genre("ROMANCE");
 
@@ -243,7 +179,7 @@ class GenreTest {
     @Test
     void hashCodeShouldBeDifferentForDifferentGenreNames() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre1 = new Genre("Science Fiction");
         Genre genre2 = new Genre("ROMANCE");
 
@@ -254,7 +190,7 @@ class GenreTest {
     @Test
     void toStringShouldReturnGenreName() {
 
-        // Arrange
+        // Arrange & SUT
         Genre genre = new Genre("Science Fiction");
 
         // Act

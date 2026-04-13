@@ -1,10 +1,10 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-import TOPSECRET.domain.genre.Genre;
+
 
 /**
- * Represents the unique identifier of a {@link Genre}.
+ * Represents the unique identifier of a {@link TOPSECRET.domain.genre.Genre}.
  * <p>
  * A {@code GenreId} wraps a {@link String} value derived from the genre name,
  * normalised to uppercase. This ensures that "Fiction", "fiction" and "FICTION"

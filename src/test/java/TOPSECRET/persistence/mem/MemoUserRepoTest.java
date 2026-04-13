@@ -1,25 +1,27 @@
 package TOPSECRET.persistence.mem;
 
-
 import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.user.UserFactory;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-// MemoUserRepoTest.java
 class MemoUserRepoTest {
 
     private User _user1Double;
     private User _user2Double;
     private UserId _userId1Double;
     private UserId _userId2Double;
+    private UserFactory _userFactoryDouble;
+    private Name _nameDouble;
+    private Address _addressDouble;
+    private Email _emailDouble;
+    private Phone _phoneDouble;
 
     @BeforeEach
     void setUp() {
@@ -27,14 +29,25 @@ class MemoUserRepoTest {
         _user2Double = mock(User.class);
         _userId1Double = mock(UserId.class);
         _userId2Double = mock(UserId.class);
+        _userFactoryDouble = mock(UserFactory.class);
+        _nameDouble = mock(Name.class);
+        _addressDouble = mock(Address.class);
+        _emailDouble = mock(Email.class);
+        _phoneDouble = mock(Phone.class);
 
         when(_user1Double.identity()).thenReturn(_userId1Double);
         when(_user2Double.identity()).thenReturn(_userId2Double);
     }
 
+    private <T> long count(Iterable<T> iterable) {
+        long count = 0;
+        for (T ignored : iterable) count++;
+        return count;
+    }
+
     @Test
     void saveShouldReturnUserForNewUser() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
 
         User result = repo.save(_user1Double);
 
@@ -43,44 +56,82 @@ class MemoUserRepoTest {
 
     @Test
     void saveShouldAddUserToRepo() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
 
         repo.save(_user1Double);
 
-        assertEquals(1, ((List<User>) repo.findAll()).size());
-    }
-
-    @Test
-    void saveShouldThrowForDuplicateUser() {
-        MemoUserRepo repo = new MemoUserRepo();
-        repo.save(_user1Double);
-
-        assertThrows(IllegalStateException.class, () -> repo.save(_user1Double));
-    }
-
-    @Test
-    void saveShouldNotAddDuplicateUser() {
-        MemoUserRepo repo = new MemoUserRepo();
-        repo.save(_user1Double);
-
-        assertThrows(IllegalStateException.class, () -> repo.save(_user1Double));
-
-        assertEquals(1, ((List<User>) repo.findAll()).size());
+        assertEquals(1, count(repo.findAll()));
     }
 
     @Test
     void saveShouldAllowMultipleDistinctUsers() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
 
         repo.save(_user1Double);
         repo.save(_user2Double);
 
-        assertEquals(2, ((List<User>) repo.findAll()).size());
+        assertEquals(2, count(repo.findAll()));
+    }
+
+    @Test
+    void addUserShouldReturnUserForNewUser() {
+        when(_userFactoryDouble.createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenReturn(_user1Double);
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+
+        User result = repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+
+        assertSame(_user1Double, result);
+    }
+
+    @Test
+    void addUserShouldThrowForDuplicateUser() {
+        when(_userFactoryDouble.createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenReturn(_user1Double);
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+
+        assertThrows(IllegalStateException.class,
+                () -> repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble));
+    }
+
+    @Test
+    void addUserShouldNotAddDuplicateUser() {
+        when(_userFactoryDouble.createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenReturn(_user1Double);
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+
+        assertThrows(IllegalStateException.class,
+                () -> repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble));
+
+        assertEquals(1, count(repo.findAll()));
+    }
+
+    @Test
+    void addUserShouldThrowCorrectMessage() {
+        when(_userFactoryDouble.createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenReturn(_user1Double);
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble));
+
+        assertEquals("User already exists", ex.getMessage());
     }
 
     @Test
     void containsOfIdentityShouldReturnTrueIfUserExists() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         assertTrue(repo.containsOfIdentity(_userId1Double));
@@ -88,24 +139,25 @@ class MemoUserRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnFalseIfUserDoesNotExist() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
 
         assertFalse(repo.containsOfIdentity(_userId1Double));
     }
 
     @Test
-    void findAllShouldReturnImmutableList() {
-        MemoUserRepo repo = new MemoUserRepo();
+    void findAllShouldReturnUnmodifiableCollection() {
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
-        List<User> result = (List<User>) repo.findAll();
+        Iterable<User> result = repo.findAll();
 
-        assertThrows(UnsupportedOperationException.class, () -> result.add(_user2Double));
+        assertThrows(UnsupportedOperationException.class,
+                () -> ((java.util.Collection<User>) result).add(_user2Double));
     }
 
     @Test
     void ofIdentityShouldReturnUserIfExists() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         Optional<User> result = repo.ofIdentity(_userId1Double);
@@ -116,7 +168,7 @@ class MemoUserRepoTest {
 
     @Test
     void ofIdentityShouldReturnEmptyIfUserDoesNotExist() {
-        MemoUserRepo repo = new MemoUserRepo();
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
 
         Optional<User> result = repo.ofIdentity(_userId1Double);
 

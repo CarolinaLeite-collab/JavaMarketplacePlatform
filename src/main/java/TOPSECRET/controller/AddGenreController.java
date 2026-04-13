@@ -22,10 +22,8 @@ public class AddGenreController {
         _iGenreRepo = iGenreRepo;
     }
 
-    public Genre addGenre(User user, String genreName){
-        if(!user.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not allowed to add genres");
-        }
+    public Genre addGenre(String genreName){
+
         Genre genre = _iGenreRepo.addGenre(genreName);
 
         return genre;

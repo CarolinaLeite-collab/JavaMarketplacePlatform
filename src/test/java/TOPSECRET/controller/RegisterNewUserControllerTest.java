@@ -1,12 +1,8 @@
 package TOPSECRET.controller;
-import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.Role;
-import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.user.UserFactory;
 
-import TOPSECRET.domain.valueobject.Email;
-import TOPSECRET.domain.valueobject.Name;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.repository.IUserRepo;
+import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,17 +12,23 @@ import static org.mockito.Mockito.*;
 class RegisterNewUserControllerTest {
 
     private IUserRepo _iUserRepoDouble;
-    private UserFactory _userFactoryDouble;
     private User _adminDouble;
     private User _userDouble;
+    private Name _nameDouble;
+    private Address _addressDouble;
+    private Email _emailDouble;
+    private Phone _phoneDouble;
     private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() {
         _iUserRepoDouble = mock(IUserRepo.class);
-        _userFactoryDouble = mock(UserFactory.class);
         _adminDouble = mock(User.class);
         _userDouble = mock(User.class);
+        _nameDouble = mock(Name.class);
+        _addressDouble = mock(Address.class);
+        _emailDouble = mock(Email.class);
+        _phoneDouble = mock(Phone.class);
         _adminIdDouble = mock(UserId.class);
 
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
@@ -34,23 +36,22 @@ class RegisterNewUserControllerTest {
 
     @Test
     void shouldConstructController() {
-        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
+        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _adminIdDouble);
 
         assertNotNull(controller);
     }
 
     @Test
     void registerNewUserShouldCreateAndReturnUser() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(false);
-        when(_userFactoryDouble.createUser(any(Name.class), any(Email.class))).thenReturn(_userDouble);
-        doReturn(_userDouble).when(_iUserRepoDouble).save(any(User.class));
+        when(_iUserRepoDouble.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenReturn(_userDouble);
 
-        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
+        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _adminIdDouble);
 
-        User result = controller.registerNewUser(_adminDouble, "Tiago", "tiago@example.com");
+        User result = controller.registerNewUser(_adminDouble, _nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
         assertEquals(_userDouble, result);
-        verify(_iUserRepoDouble).save(_userDouble);
+        verify(_iUserRepoDouble).addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
     }
 
     @Test
@@ -58,30 +59,32 @@ class RegisterNewUserControllerTest {
         User nonAdmin = mock(User.class);
         when(nonAdmin.hasRole(Role.ADMIN)).thenReturn(false);
 
-        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
+        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _adminIdDouble);
 
         assertThrows(SecurityException.class,
-                () -> controller.registerNewUser(nonAdmin, "Tiago", "tiago@example.com"));
+                () -> controller.registerNewUser(nonAdmin, _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
     }
 
     @Test
     void registerNewUserShouldThrowWhenUserAlreadyExists() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(true);
+        when(_iUserRepoDouble.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenThrow(new IllegalStateException("User already exists"));
 
-        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
+        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _adminIdDouble);
 
         assertThrows(IllegalStateException.class,
-                () -> controller.registerNewUser(_adminDouble, "Tiago", "tiago@example.com"));
+                () -> controller.registerNewUser(_adminDouble, _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
     }
 
     @Test
     void registerNewUserShouldThrowCorrectMessageWhenUserAlreadyExists() {
-        when(_iUserRepoDouble.containsOfIdentity(any(UserId.class))).thenReturn(true);
+        when(_iUserRepoDouble.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))
+                .thenThrow(new IllegalStateException("User already exists"));
 
-        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
+        RegisterNewUserController controller = new RegisterNewUserController(_iUserRepoDouble, _adminIdDouble);
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> controller.registerNewUser(_adminDouble, "Tiago", "tiago@example.com"));
+                () -> controller.registerNewUser(_adminDouble, _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
 
         assertEquals("User already exists", ex.getMessage());
     }

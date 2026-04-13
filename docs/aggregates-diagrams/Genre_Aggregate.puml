@@ -30,11 +30,11 @@ Package "DOMAIN" {
 
         class GenreFactory <<Factory>> {
             +createGenre(name : String) : Genre
-            +createGenre(genreID: GenreID , name : String) : Genre
+            '+createGenre(genreID: GenreID , name : String) : Genre'
         }
     }
 
-    Package "valueobject" <<Folder>> {
+    Package "VALUEOBJECT" <<Folder>> {
         class GenreId <<ValueObject>> #LightPink {
             -_id : String
         }
@@ -45,19 +45,14 @@ Package "DOMAIN" {
             +addGenre(name : String) : Genre
         }
     }
-
-    GENRE -[hidden]right- REPOSITORY
-    valueobject -[hidden]right- REPOSITORY
-    GENRE -[hidden]down- valueobject
-
 }
 
-Package "ddd" {
+Package "DDD" {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity: T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +ofIdentity(id :ID) : Optional<T>
+        +containsOfIdentity(id :ID) : boolean
     }
 }
 
@@ -71,8 +66,8 @@ Package "PERSISTENCE" {
 GenreFactory "1" <-- "1" MemoGenreRepo : invokes
 Genre "1" --> "1" GenreId : has
 IGenreRepo -|> IRepository
-MemoGenreRepo ..|> IGenreRepo
-Genre "*" <- "1" MemoGenreRepo : persists
+MemoGenreRepo ...|> IGenreRepo
+Genre "*" <-- "1" MemoGenreRepo : persists
 
 GenreFactory ..> Genre : <<create>>
 

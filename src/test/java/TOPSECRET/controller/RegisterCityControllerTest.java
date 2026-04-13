@@ -6,7 +6,6 @@ import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.repository.ICityRepo;
 import TOPSECRET.domain.repository.ICountryRepo;
-import TOPSECRET.domain.valueobject.CityId;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,21 +67,15 @@ class RegisterCityControllerTest {
 
     @Test
     void getCountriesReturnsAllCountriesFromRepository() {
-        // Arrange
         when(_iCountryRepoDouble.findAll()).thenReturn(List.of(_countryDouble));
 
-        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
+        List<Country> result = controller.getAllCountries();
 
-        Iterable<Country> result = controller.getAllCountries();
-        List<Country> list = new java.util.ArrayList<>();
-        result.forEach(list::add);
-
-        // Assert
-        assertEquals(1, list.size());
-        assertSame(_countryDouble, list.get(0));
+        assertEquals(1, result.size());
+        assertSame(_countryDouble, result.get(0));
         verify(_iCountryRepoDouble, times(1)).findAll();
     }
 
@@ -90,10 +83,8 @@ class RegisterCityControllerTest {
     void registerCityCallsRepoAndReturnsCreatedCity() {
         CountryId countryId = new CountryId("PT");
         when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_countryDouble.identity()).thenReturn(countryId);
-        when(_iCityRepoDouble.containsOfIdentity(any(CityId.class))).thenReturn(false);
         when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        doReturn(_cityDouble).when(_iCityRepoDouble).save(any(City.class));
+        doReturn(_cityDouble).when(_iCityRepoDouble).addCity(any(City.class));
 
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
@@ -101,9 +92,8 @@ class RegisterCityControllerTest {
 
         assertSame(_cityDouble, result);
         verify(_iCountryRepoDouble).ofIdentity(countryId);
-        verify(_iCityRepoDouble).containsOfIdentity(any(CityId.class));
         verify(_cityFactoryDouble).createCity("Porto", _countryDouble);
-        verify(_iCityRepoDouble).save(_cityDouble);
+        verify(_iCityRepoDouble).addCity(_cityDouble);
     }
 
     @Test
@@ -121,8 +111,9 @@ class RegisterCityControllerTest {
     void registerCityShouldThrowWhenCityAlreadyExists() {
         CountryId countryId = new CountryId("PT");
         when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_countryDouble.identity()).thenReturn(countryId);
-        when(_iCityRepoDouble.containsOfIdentity(any(CityId.class))).thenReturn(true);
+        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
+        when(_iCityRepoDouble.addCity(any(City.class)))
+                .thenThrow(new IllegalStateException("City already exists for this country"));
 
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
@@ -135,9 +126,8 @@ class RegisterCityControllerTest {
         CountryId countryId = new CountryId("PT");
         when(_countryDouble.identity()).thenReturn(countryId);
         when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_iCityRepoDouble.containsOfIdentity(any(CityId.class))).thenReturn(false);
         when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        doReturn(_cityDouble).when(_iCityRepoDouble).save(any(City.class));
+        doReturn(_cityDouble).when(_iCityRepoDouble).addCity(any(City.class));
 
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 

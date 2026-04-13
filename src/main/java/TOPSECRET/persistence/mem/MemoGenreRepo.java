@@ -30,22 +30,28 @@ public class MemoGenreRepo implements IGenreRepo {
     }
 
     @Override
-    public Genre addGenre(String name) {
-        GenreId genreId = new GenreId(name);
-        if (containsOfIdentity(genreId))
+    public Genre addGenre(String genreName) {
+
+        Genre newGenre =  _genreFactory.createGenre(genreName);
+
+        if (containsOfIdentity(newGenre.identity())) {
             throw new IllegalArgumentException("Genre already exists in the repository");
-        Genre genre = _genreFactory.createGenre(genreId, name);
-        return save(genre);
+        }
+        return save(newGenre);
     }
 
     @Override
     public Iterable<Genre> findAll() {
-        return List.copyOf(DATA.values());
+        return DATA.values();
     }
 
     @Override
     public Optional<Genre> ofIdentity(GenreId genreId) {
-        return Optional.ofNullable(DATA.get(genreId));
+        if (!containsOfIdentity(genreId)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(DATA.get(genreId));
+        }
     }
 
     @Override

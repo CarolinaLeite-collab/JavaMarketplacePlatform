@@ -312,11 +312,21 @@ class UserTest {
 
     @Test
     void shouldThrowWhenNameIsNull() {
-        assertThrows(NullPointerException.class, () -> new UserFactory().createUser(null, new Email("a@b.com")));
+        Address addressDouble = mock(Address.class);
+        Email emailDouble = mock(Email.class);
+        Phone phoneDouble = mock(Phone.class);
+
+        assertThrows(NullPointerException.class,
+                () -> new UserFactory().createUser(null, addressDouble, emailDouble, phoneDouble));
     }
 
     @Test
     void shouldThrowWhenEmailIsNull() {
-        assertThrows(NullPointerException.class, () -> new UserFactory().createUser(new Name("Tiago"), null));
+        Name nameDouble = mock(Name.class);
+        Address addressDouble = mock(Address.class);
+        Phone phoneDouble = mock(Phone.class);
+
+        assertThrows(NullPointerException.class,
+                () -> new UserFactory().createUser(nameDouble, addressDouble, null, phoneDouble));
     }
 }

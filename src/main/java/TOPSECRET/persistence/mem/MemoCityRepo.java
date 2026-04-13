@@ -8,29 +8,38 @@ import java.util.*;
 
 public class MemoCityRepo implements ICityRepo {
 
-    private final Map<CityId, City> _cities = new HashMap<>();
+    private final Map<CityId, City> DATA = new HashMap<>();
 
     @Override
     public City save(City city) {
-        if (containsOfIdentity(city.identity())) {
-            throw new IllegalStateException("City already exists for this country");
-        }
-        _cities.put(city.identity(), city);
+        DATA.put(city.identity(), city);
         return city;
     }
 
     @Override
+    public City addCity(City city) {
+        if (containsOfIdentity(city.identity())) {
+            throw new IllegalStateException("City already exists for this country");
+        }
+        return save(city);
+    }
+
+    @Override
     public Iterable<City> findAll() {
-        return List.copyOf(_cities.values());
+        return DATA.values();
     }
 
     @Override
     public Optional<City> ofIdentity(CityId cityId) {
-        return Optional.ofNullable(_cities.get(cityId));
+        if (!containsOfIdentity(cityId)) {
+            return Optional.empty();
+        } else  {
+            return Optional.of(DATA.get(cityId));
+        }
     }
 
     @Override
     public boolean containsOfIdentity(CityId cityId) {
-        return _cities.containsKey(cityId);
+        return DATA.containsKey(cityId);
     }
 }
