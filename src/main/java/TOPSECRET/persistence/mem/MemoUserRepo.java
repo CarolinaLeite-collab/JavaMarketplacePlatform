@@ -44,7 +44,11 @@ public class MemoUserRepo implements IUserRepo {
 
     @Override
     public Optional<User> ofIdentity(UserId userId) {
-        return Optional.ofNullable(DATA.get(userId));
+        if (!containsOfIdentity(userId)) {
+            return Optional.empty();
+        } else  {
+            return Optional.of(DATA.get(userId));
+        }
     }
 
     @Override
