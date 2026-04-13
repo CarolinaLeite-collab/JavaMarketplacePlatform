@@ -52,7 +52,16 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     @Override
     public boolean sameAs(Object object) {
 
-        return equals(object);
+        if (object instanceof AppraisalEntity) {
+
+            AppraisalEntity other = (AppraisalEntity) object;
+
+            return _name.equals(other._name) && _publicationTypesId.equals(other._publicationTypesId) &&
+                    _genresId.equals(other._genresId);
+
+        }
+
+        return false;
 
     }
 
