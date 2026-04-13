@@ -17,7 +17,7 @@ public class DirectSaleFactory {
         DirectSale newDirectSale = new DirectSale(items, price, timeLimit);
 
         for(Item item : items) {
-            item.setDirectSale(newDirectSale);
+            item.markAsDirectSale();
         }
 
         return newDirectSale;
