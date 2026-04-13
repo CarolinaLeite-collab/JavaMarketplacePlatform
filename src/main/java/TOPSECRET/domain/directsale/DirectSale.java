@@ -57,43 +57,6 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
     }
 
-    public boolean isByAuthor(AuthorId authorId) {
-        for(Item item : _items) {
-            if(item.isByAuthor(authorId)) {
-                return true;
-            }
-        }
-        return false;
-
-    }
-
-    public boolean isByPublication (Publication publication) {
-        for(Item item : _items) {
-            if(item.isByPublication(publication)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isByPublishingCompany(PublishingCompany publisher) {
-        for(Item item : _items) {
-            if(item.isByPublishingCompany(publisher)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isByGenre(GenreId genreId) {
-        for(Item item : _items) {
-            if(item.isByGenre(genreId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public DirectSaleId identity() {
         return _directSaleId;
