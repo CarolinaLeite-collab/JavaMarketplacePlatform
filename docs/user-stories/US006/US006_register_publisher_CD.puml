@@ -18,34 +18,57 @@ skinparam classAttributeIconSize 0
 class RegisterPublishingCompanyUI {
 }
 
-class RegisterPublishingCompanyController {
-- _iPublishingCompanyRepo: IPublishingCompanyRepo
-+ registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+package "PERSISTENCE" {
+    package "MEM" {
+        class MemoPublishingCompanyRepo {
+        + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+        }
+    }
 }
 
-interface IPublishingCompanyRepo {
-+ registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+package "CONTROLLER" {
+    class RegisterPublishingCompanyController {
+    + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+    }
 }
 
-class MemoPublishingCompanyRepo {
-- _publishingCompanies: List<PublishingCompany>
-- _publishingCompanyFactory: PublishingCompanyFactory
-+ registerPublishingCompany(name: String): PublishingCompany
+package "DOMAIN" {
+    package "PUBLISHINGCOMPANY" #b0c4d4 {
+        class PublishingCompany <<Root>> <<Entity>> {
+        }
+        class PublishingCompanyFactory <<Factory>> {
+        + createPublishingCompany(publishingCompanyName : String) : PublishingCompany
+        }
+
+    }
+    package "REPOSITORY" {
+        interface IPublishingCompanyRepo {
+        }
+    }
+
+    package "VALUE OBJECT" {
+        class PublishingCompanyId <<Value Object>> #LightPink {
+        }
+    }
+
 }
 
-class PublishingCompanyFactory {
-+ createPublishingCompany(publishingCompanyName: String)
-}
-
-class PublishingCompany {
-  - publishingCompanyName: String
-  + PublishingCompany(publishingCompanyName: String)
+package "DDD" {
+    interface IRepository <ID, T> <<Interface>> {
+        save(entity : T) : T
+        findAll() : Iterable<T>
+        ofIdentity(id : ID) : Optional <T>
+        containsOfIdentity(id : ID) : boolean
+    }
 }
 
 RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
-RegisterPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : uses
-IPublishingCompanyRepo "1" ..|> "                           1" MemoPublishingCompanyRepo : calls
-MemoPublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : uses
-PublishingCompanyFactory "1" --> "*" PublishingCompany : creates
+RegisterPublishingCompanyController "1" --> "1" IPublishingCompanyRepo: calls
+MemoPublishingCompanyRepo ..|> IPublishingCompanyRepo
+IPublishingCompanyRepo --|> IRepository
+MemoPublishingCompanyRepo "1" --> "1" PublishingCompanyFactory: <<use>>
+PublishingCompanyFactory "1" ..> "*" PublishingCompany: <<create>>
+MemoPublishingCompanyRepo "1" --> "*" PublishingCompany: persists
+PublishingCompany "1" --> "1" PublishingCompanyId: has
 
 @enduml
