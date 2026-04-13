@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.DomainEntity;
 import TOPSECRET.domain.valueobject.Price;

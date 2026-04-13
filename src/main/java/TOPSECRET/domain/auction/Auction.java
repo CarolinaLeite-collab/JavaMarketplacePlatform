@@ -1,8 +1,6 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Bid;
-import TOPSECRET.domain.BidFactory;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.*;

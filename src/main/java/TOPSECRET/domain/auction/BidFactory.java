@@ -1,4 +1,4 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
