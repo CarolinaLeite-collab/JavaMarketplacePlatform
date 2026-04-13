@@ -194,8 +194,7 @@ class MemoPublishingCompanyRepoTest {
     @Test
     void ofIdentityShouldReturnEmptyOptionalWhenIdNotPresent(){
 
-      //SUT
-
+        //SUT
         MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
 
         PublishingCompanyId notSavedIdDouble = mock(PublishingCompanyId.class);
@@ -206,6 +205,75 @@ class MemoPublishingCompanyRepoTest {
         //Assert
         assertTrue(result.isEmpty());
 
+    }
+
+    @Test
+    void findAllKeysShouldReturnListOfIds() {
+
+        // Arrange
+        String pubCoName1 = "Penguin Random House";
+        String pubCoName2 = "Pendant Publishing";
+
+        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
+        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
+
+        PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
+        PublishingCompanyId pubCoIdDouble2 = mock(PublishingCompanyId.class);
+
+        when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
+        when(pubCoDouble2.identity()).thenReturn(pubCoIdDouble2);
+
+        when(_pcfDouble.createPublishingCompany(pubCoName1)).thenReturn(pubCoDouble1);
+        when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
+
+        // SUT
+        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+
+        // Act
+        repo.registerPublishingCompany(pubCoName1);
+        repo.registerPublishingCompany(pubCoName2);
+        List<PublishingCompanyId> result = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pubCoIdDouble1));
+        assertTrue(result.contains(pubCoIdDouble2));
+    }
+
+    @Test
+    void findAllKeysShouldReturnDefensiveCopy() {
+
+        // Arrange
+        String pubCoName1 = "Penguin Random House";
+        String pubCoName2 = "Pendant Publishing";
+
+        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
+        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
+
+        PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
+        PublishingCompanyId pubCoIdDouble2 = mock(PublishingCompanyId.class);
+
+        when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
+        when(pubCoDouble2.identity()).thenReturn(pubCoIdDouble2);
+
+        when(_pcfDouble.createPublishingCompany(pubCoName1)).thenReturn(pubCoDouble1);
+        when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
+
+        // SUT
+        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+
+        repo.registerPublishingCompany(pubCoName1);
+        repo.registerPublishingCompany(pubCoName2);
+
+        // Act
+        List<PublishingCompanyId> result = repo.findAllKeys();
+        result.clear();
+        List<PublishingCompanyId> resultAfterClear = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, resultAfterClear.size());
+        assertTrue(resultAfterClear.contains(pubCoIdDouble1));
+        assertTrue(resultAfterClear.contains(pubCoIdDouble2));
     }
 
 }

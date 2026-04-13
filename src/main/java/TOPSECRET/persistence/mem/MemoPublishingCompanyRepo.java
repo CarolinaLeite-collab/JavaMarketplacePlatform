@@ -63,6 +63,12 @@ public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     }
 
+    public List<PublishingCompanyId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
     @Override
     public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
 
