@@ -31,7 +31,11 @@ public class MemoCityRepo implements ICityRepo {
 
     @Override
     public Optional<City> ofIdentity(CityId cityId) {
-        return Optional.ofNullable(DATA.get(cityId));
+        if (!containsOfIdentity(cityId)) {
+            return Optional.empty();
+        } else  {
+            return Optional.of(DATA.get(cityId));
+        }
     }
 
     @Override
