@@ -170,7 +170,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         DirectSale result = controller.addItemForDirectSale(_items, _priceDouble, _timeLimitDouble);
 
         assertSame(directSaleDouble, result);
-        verify(_itemDouble).setDirectSale(directSaleDouble);
+        verify(_itemDouble).markAsDirectSale();
     }
 
     @Test

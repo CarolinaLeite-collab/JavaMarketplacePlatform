@@ -48,7 +48,7 @@ public class PublicationInLibraryForDirectSaleController {
         DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemsForSale, price, timeLimit);
 
         for (Item item : items){
-            item.setDirectSale(directSale);
+            item.markAsDirectSale();
         }
 
         return directSale;

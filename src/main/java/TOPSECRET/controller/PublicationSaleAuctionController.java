@@ -56,7 +56,7 @@ public class PublicationSaleAuctionController {
         Auction newAuction = _iAuctionRepo.addAuction(itemsForAuction, startPrice, reservePrice, outrightPrice, startDate, endDate);
 
         for (Item item : items) {
-            item.setAuction(newAuction);
+            item.markAsAuction();
         }
 
         return newAuction;

@@ -142,7 +142,7 @@ class PublicationSaleAuctionControllerTest {
         // Assert
         assertNotNull(result);
         assertSame(_auctionDouble, result);;
-        verify(_itemDouble).setAuction(_auctionDouble);
+        verify(_itemDouble).markAsAuction();
         verify(_libraryDouble2).getItem(_itemDouble);
         verify(_iAuctionRepoDouble).addAuction(_items, startPrice, reservePrice, outrightPrice, startDate, endDate);
     }
