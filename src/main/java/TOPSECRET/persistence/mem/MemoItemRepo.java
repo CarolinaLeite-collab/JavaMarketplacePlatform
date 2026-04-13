@@ -1,5 +1,6 @@
-package TOPSECRET.domain;
+package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.item.ItemFactory;
 import TOPSECRET.domain.publication.Publication;
@@ -23,7 +24,7 @@ import java.util.*;
  * </p>
  */
 
-public class MemoItemRepo implements IItemRepo{
+public class MemoItemRepo implements IItemRepo {
 
     private final Map<ItemId, Item> DATA = new HashMap<ItemId, Item>();
     private  final ItemFactory _itemFactory;
