@@ -3,12 +3,7 @@ package TOPSECRET.domain.directsale;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.DirectSaleId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Period;
 import java.util.List;
@@ -33,10 +28,23 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         requiresItemAndPrice(items, price);
         timeLimitMustBeValid(timeLimit);
 
+        for (Item item : items) {
+            if (item == null) {
+                throw new IllegalArgumentException("Items cannot contain null elements.");
+            }
+            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
+                throw new IllegalStateException("Item is already on sale.");
+            }
+        }
+
         _items = items;
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
+
+        for (Item item : _items) {
+            item.markAsDirectSale();
+        }
     }
 
     public List<Item> getItems() { return _items; }

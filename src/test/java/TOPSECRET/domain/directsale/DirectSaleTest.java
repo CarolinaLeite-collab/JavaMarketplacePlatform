@@ -3,10 +3,7 @@ package TOPSECRET.domain.directsale;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.valueobject.DirectSaleId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +27,7 @@ class DirectSaleTest {
 
         _items = new ArrayList<>();
         _itemDouble = mock(Item.class);
+        when(_itemDouble.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
         _items.add(_itemDouble);
         _priceDouble = mock(Price.class);
         _period = Period.ofMonths(3);
@@ -167,6 +165,7 @@ class DirectSaleTest {
     void shouldReturnFalseWhenDifferentItems() {
         //arrange
         Item itemdouble2 = mock(Item.class);
+        when(itemdouble2.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
         List<Item> items2 = new ArrayList<>();
         items2.add(itemdouble2);
 
