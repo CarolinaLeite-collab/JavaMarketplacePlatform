@@ -6,6 +6,7 @@ import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -174,4 +175,35 @@ class MemoUserRepoTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findAllKeysShouldReturnEmptyWhenNoUser() {
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+
+        assertTrue(repo.findAllKeys().isEmpty());
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllKeys() {
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        repo.save(_user1Double);
+        repo.save(_user2Double);
+
+        List<UserId> keys = repo.findAllKeys();
+
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(_userId1Double));
+        assertTrue(keys.contains(_userId2Double));
+    }
+
+    @Test
+    void findAllKeysShouldReturnMutableList() {
+        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        repo.save(_user1Double);
+
+        List<UserId> keys = repo.findAllKeys();
+
+        assertDoesNotThrow(() -> keys.add(_userId2Double));
+    }
+
 }

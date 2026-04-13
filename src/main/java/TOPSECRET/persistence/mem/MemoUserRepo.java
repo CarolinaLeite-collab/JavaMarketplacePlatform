@@ -42,6 +42,13 @@ public class MemoUserRepo implements IUserRepo {
         return DATA.values();
     }
 
+    public List<UserId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
+
     @Override
     public Optional<User> ofIdentity(UserId userId) {
         if (!containsOfIdentity(userId)) {
