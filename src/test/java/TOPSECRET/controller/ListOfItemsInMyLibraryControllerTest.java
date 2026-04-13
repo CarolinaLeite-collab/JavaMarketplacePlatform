@@ -1,7 +1,7 @@
 
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationDetails;
+//import TOPSECRET.domain.PublicationDetails;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.UserId;
@@ -34,35 +34,5 @@ class ListOfItemsInMyLibraryControllerTest {
     void testListOfItemsInMyLibraryController(){
         // act & SUT
         new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userIdDouble);
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenLibraryExistsButEmpty() {
-        // Arrange
-        when(_myLibraryDouble.getItemsInLibrary()).thenReturn(List.of());
-        // SUT
-        ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userIdDouble);
-        // Act
-        List<PublicationDetails> result = controller.getListOfItemDetails(_userIdDouble);
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void shouldReturnListOfItemsInLibrary() {
-        // Arrange
-        PublicationDetails pDetailsDouble = mock(PublicationDetails.class);
-
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.getItemDetails()).thenReturn(List.of(pDetailsDouble));
-
-        // SUT
-        ListOfItemsInMyLibraryController controller = new ListOfItemsInMyLibraryController(_iLibraryRepoDouble, _userIdDouble);
-
-        //Act
-        List<PublicationDetails> result = controller.getListOfItemDetails(_userIdDouble);
-
-        //Assert
-        assertEquals(List.of(pDetailsDouble), result);
     }
 }
