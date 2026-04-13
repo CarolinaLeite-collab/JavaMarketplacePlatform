@@ -15,12 +15,15 @@ import static org.mockito.Mockito.when;
 class MemoPublicationTypeRepoTest {
 
     @Test
-    void constructorOfPublicationTypeRepoShouldCreatePublicationTypeRepo() {
+    void constructorShouldCreateNonNullPublicationTypeRepo() {
         //Arrange
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
 
-        //SUT
-        new MemoPublicationTypeRepo(ptfDouble);
+        //SUT + Act
+        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+
+        //Assert
+        assertNotNull(repo);
 
     }
 
@@ -32,10 +35,6 @@ class MemoPublicationTypeRepoTest {
 
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
         PublicationType publicationType1Double = mock(PublicationType.class);
-        PublicationTypeId publicationTypeId1Double = mock(PublicationTypeId.class);
-
-        when(publicationType1Double.identity()).thenReturn(publicationTypeId1Double);
-
         when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationType1Double);
 
         // SUT
@@ -55,9 +54,6 @@ class MemoPublicationTypeRepoTest {
 
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
         PublicationType publicationType1Double = mock(PublicationType.class);
-        PublicationTypeId publicationTypeId1Double = mock(PublicationTypeId.class);
-
-        when(publicationType1Double.identity()).thenReturn(publicationTypeId1Double);
         when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationType1Double);
 
         // SUT
@@ -79,8 +75,10 @@ class MemoPublicationTypeRepoTest {
         String pubTypeName = "MAGAZINE";
 
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
+
         PublicationType firstPublicationTypeDouble = mock(PublicationType.class);
         PublicationType secondPublicationTypeDouble = mock(PublicationType.class);
+
         PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
 
         when(firstPublicationTypeDouble.identity()).thenReturn(publicationTypeIdDouble);
@@ -104,7 +102,7 @@ class MemoPublicationTypeRepoTest {
         //Arrange
         String pubTypeName1 = "MAGAZINE";
         String pubTypeName2 = "BOOK";
-        String pubTypeName3 = "POKEMON_CARD";
+        String pubTypeName3 = "POKEMON CARD";
 
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
 
@@ -122,7 +120,7 @@ class MemoPublicationTypeRepoTest {
 
         when(ptfDouble.createPublicationType("MAGAZINE")).thenReturn(publicationType1Double);
         when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationType2Double);
-        when(ptfDouble.createPublicationType("POKEMON_CARD")).thenReturn(publicationType3Double);
+        when(ptfDouble.createPublicationType("POKEMON CARD")).thenReturn(publicationType3Double);
 
         //SUT
         MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
@@ -157,9 +155,10 @@ class MemoPublicationTypeRepoTest {
 
         //SUT
         MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
-        repo.addPublicationType(pubTypeName);
 
         // Act
+        repo.addPublicationType(pubTypeName);
+
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.addPublicationType(pubTypeName));
 
         //Assert
@@ -188,17 +187,19 @@ class MemoPublicationTypeRepoTest {
     @Test
     void ofIdentityShouldReturnPublicationTypeWhenIdPresent() {
         // Arrange
+        String pubTypeName = "BOOK";
+
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
 
         PublicationType publicationTypeDouble = mock(PublicationType.class);
         PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
 
         when(publicationTypeDouble.identity()).thenReturn(publicationTypeIdDouble);
-        when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationTypeDouble);
+        when(ptfDouble.createPublicationType(pubTypeName)).thenReturn(publicationTypeDouble);
 
         //SUT
         MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
-        repo.addPublicationType("BOOK");
+        repo.addPublicationType(pubTypeName);
 
         // Act
         var result = repo.ofIdentity(publicationTypeIdDouble);
