@@ -21,11 +21,4 @@ public interface IAuctionRepo extends IRepository<AuctionId, Auction> {
     Auction addAuction(List<Item> item, Price startingPrice, Price reservePrice,
                        ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate);
 
-    List<Item> getAuctionItemsByGenreId(GenreId genreId);
-
-    List<Item> getAuctionItemsByAuthorId(AuthorId authorId);
-
-    List<Item> getAuctionItemsByPublicationId(Publication publication);
-
-    List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompany publisher);
 }
