@@ -372,4 +372,67 @@ class AppraisalEntityTest {
 
     }
 
+    @Test
+    void sameAsShouldReturnTrueForSameNameDifferentInstances() {
+
+        // Arrange
+        Name name1 = new Name("SameName");
+        Name name2 = new Name("SameName");
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+        List<GenreId> genres = List.of(mock(GenreId.class));
+
+        AppraisalEntity e1 = new AppraisalEntity(name1, pubs, genres);
+        AppraisalEntity e2 = new AppraisalEntity(name2, pubs, genres);
+
+        // Act
+        boolean result = e1.sameAs(e2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenPublicationTypesDiffer() {
+
+        // Arrange
+        Name name = mock(Name.class);
+
+        List<PublicationTypeId> pubs1 = List.of(mock(PublicationTypeId.class));
+        List<PublicationTypeId> pubs2 = List.of(mock(PublicationTypeId.class));
+
+        List<GenreId> genres = List.of(mock(GenreId.class));
+
+        AppraisalEntity e1 = new AppraisalEntity(name, pubs1, genres);
+        AppraisalEntity e2 = new AppraisalEntity(name, pubs2, genres);
+
+        // Act
+        boolean result = e1.sameAs(e2);
+
+        // Assert
+        assertFalse(result);
+
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenGenresDiffer() {
+
+        // Arrange
+        Name name = mock(Name.class);
+
+        List<PublicationTypeId> pubs = List.of(mock(PublicationTypeId.class));
+
+        List<GenreId> g1 = List.of(mock(GenreId.class));
+        List<GenreId> g2 = List.of(mock(GenreId.class));
+
+        AppraisalEntity e1 = new AppraisalEntity(name, pubs, g1);
+        AppraisalEntity e2 = new AppraisalEntity(name, pubs, g2);
+
+        // Act
+        boolean result = e1.sameAs(e2);
+
+        // Assert
+        assertFalse(result);
+
+    }
 }
