@@ -17,14 +17,13 @@ class GetAuctionItemsByPublicationControllerTest {
 
     private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private Publication _publicationDouble;
+
 
     @BeforeEach
     void setUp() {
 
         _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
-        _publicationDouble = mock(Publication.class);
     }
 
     @Test
@@ -32,47 +31,5 @@ class GetAuctionItemsByPublicationControllerTest {
 
         // SUT
         new GetAuctionItemsByGenreController(_iAuctionRepoDouble, _buyerIdDouble);
-    }
-
-    @Test
-    void shouldReturnAuctionItemsForGivenPublication() {
-
-        // Arrange
-        Item item1Double = mock(Item.class);
-        Item item2Double = mock(Item.class);
-
-        when(_iAuctionRepoDouble.getAuctionItemsByPublicationId(_publicationDouble))
-                .thenReturn(List.of(item1Double, item2Double));
-
-        // SUT
-        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> result = controller.getAuctionItemsByPublication(_publicationDouble);
-
-        // Assert
-        assertAll(
-                () -> assertEquals(2, result.size()),
-                () -> assertTrue(result.contains(item1Double)),
-                () -> assertTrue(result.contains(item2Double))
-        );
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenNoAuctionMatchesPublication() {
-
-        // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByPublicationId(_publicationDouble))
-                .thenReturn(List.of());
-
-        // SUT
-        GetAuctionItemsByPublicationController controller = new GetAuctionItemsByPublicationController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> result = controller.getAuctionItemsByPublication(_publicationDouble);
-
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
     }
 }

@@ -21,14 +21,4 @@ public class GetAuctionItemsByPublicationController {
 
         _iAuctionRepo = iAuctionRepo;
     }
-
-    public List<Item> getAuctionItemsByPublication(Publication publication) {
-
-        List<Item> auctionItemsByPublication = _iAuctionRepo.getAuctionItemsByPublicationId(publication);
-
-        return auctionItemsByPublication;
-
-    }
-
-
 }
