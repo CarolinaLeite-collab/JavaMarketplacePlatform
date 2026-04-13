@@ -2,7 +2,6 @@ package TOPSECRET.domain.library;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.PublicationDetails;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
@@ -47,20 +46,6 @@ public class Library implements AggregateRoot<LibraryId> {
 
         return equals(object);
 
-    }
-
-    public List<PublicationDetails> getItemDetails() {
-
-        List <PublicationDetails> listWithDetails = new ArrayList<>();
-
-        for (Item p : _items) {
-
-            PublicationDetails pDetails = new PublicationDetails(p);
-
-            listWithDetails.add(pDetails);
-        }
-
-        return Collections.unmodifiableList(listWithDetails);
     }
 
     public List<Item> getItemsInLibrary() {

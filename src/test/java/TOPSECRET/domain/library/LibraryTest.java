@@ -245,36 +245,4 @@ class LibraryTest {
         // Assert
         assertNull(itemResult);
     }
-
-//    @Test
-//    void getPublicationDetailsShouldReturnPublicationDetailsOfItem() {
-//
-//        // Arrange
-//        Item itemDouble2 = mock(Item.class);
-//
-//        when(_itemDouble.get_publication()).thenReturn(mock(Publication.class));
-//        when(_itemDouble.get_publication().getTitle()).thenReturn(mock(Title.class));
-//        when(_itemDouble.get_publication().getAuthor()).thenReturn(mock(Author.class));
-//        when(_itemDouble.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
-//        when(_itemDouble.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
-//
-//        when(itemDouble2.get_publication()).thenReturn(mock(Publication.class));
-//        when(itemDouble2.get_publication().getTitle()).thenReturn(mock(Title.class));
-//        when(itemDouble2.get_publication().getAuthor()).thenReturn(mock(Author.class));
-//        when(itemDouble2.get_publication().getPublicationType()).thenReturn(mock(PublicationType.class));
-//        when(itemDouble2.get_publication().getIdentifier()).thenReturn(mock(Identifier.class));
-//
-//        // SUT
-//        Library library = new Library(_libraryIdDouble);
-//
-//        // Act
-//        library.addItemToLibrary(_itemDouble);
-//        library.addItemToLibrary(itemDouble2);
-//
-//        List<PublicationDetails> result = library.getItemDetails();
-//
-//        // Assert
-//        assertEquals(2, result.size());
-//
-//    }
 }
