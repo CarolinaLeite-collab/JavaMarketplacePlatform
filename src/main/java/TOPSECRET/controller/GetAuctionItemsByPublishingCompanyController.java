@@ -23,9 +23,4 @@ public class GetAuctionItemsByPublishingCompanyController {
 
         _iAuctionRepo = iAuctionRepo;
     }
-
-    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
-
-        return _iAuctionRepo.getAuctionItemsByPublishingCompanyId(publisher);
-    }
 }

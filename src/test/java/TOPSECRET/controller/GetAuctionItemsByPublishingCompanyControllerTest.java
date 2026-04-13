@@ -16,7 +16,6 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
 
     private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private PublishingCompany _publisherDouble;
 
     private Item _item1Double;
     private Item _item2Double;
@@ -25,7 +24,6 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
     void setUp() {
         _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
-        _publisherDouble = mock(PublishingCompany.class);
 
         _item1Double = mock(Item.class);
         _item2Double = mock(Item.class);
@@ -35,59 +33,5 @@ class GetAuctionItemsByPublishingCompanyControllerTest {
     void constructorWithValidDependenciesDoesNotThrow() {
         assertDoesNotThrow(() ->
                 new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble));
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenNoAuctions() {
-        // Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompanyId(_publisherDouble)).thenReturn(List.of());
-
-        //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
-
-        // Assert
-        assertNotNull(items);
-        assertTrue(items.isEmpty());
-        verify(_iAuctionRepoDouble).getAuctionItemsByPublishingCompanyId(_publisherDouble);
-    }
-
-    @Test
-    void shouldReturnCorrectListForPublishingCompany() {
-        // Arrange
-        List<Item> expectedItems = List.of(_item1Double, _item2Double);
-        when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompanyId(_publisherDouble)).thenReturn(expectedItems);
-
-        //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> items = ctl.getAuctionItemsByPublishingCompany(_publisherDouble);
-
-        // Assert
-        assertEquals(2, items.size());
-        assertSame(_item1Double, items.get(0));
-        assertSame(_item2Double, items.get(1));
-        verify(_iAuctionRepoDouble).getAuctionItemsByPublishingCompanyId(_publisherDouble);
-    }
-
-    @Test
-    void shouldReturnEmptyWhenPublishingCompanyDoesNotMatch() {
-        // Arrange
-        PublishingCompany otherPublisherDouble = mock(PublishingCompany.class);
-        when(_iAuctionRepoDouble.getAuctionItemsByPublishingCompanyId(otherPublisherDouble)).thenReturn(List.of());
-
-        //SUT
-        GetAuctionItemsByPublishingCompanyController ctl = new GetAuctionItemsByPublishingCompanyController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> items = ctl.getAuctionItemsByPublishingCompany(otherPublisherDouble);
-
-        // Assert
-        assertNotNull(items);
-        assertTrue(items.isEmpty());
-        verify(_iAuctionRepoDouble).getAuctionItemsByPublishingCompanyId(otherPublisherDouble);
     }
 }
