@@ -29,6 +29,13 @@ public class MemoCityRepo implements ICityRepo {
         return DATA.values();
     }
 
+    public List<CityId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
+
     @Override
     public Optional<City> ofIdentity(CityId cityId) {
         if (!containsOfIdentity(cityId)) {
