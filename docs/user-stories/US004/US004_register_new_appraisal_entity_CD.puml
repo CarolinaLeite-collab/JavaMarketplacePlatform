@@ -120,6 +120,7 @@ Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
     save(T) : T
     findAll() : Iterable<T>
+    findAllKeys() : List<ID>
     ofIdentity(ID) : Optional <T>
     containsOfIdentity(ID) : boolean
     }

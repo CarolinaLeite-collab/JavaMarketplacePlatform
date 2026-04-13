@@ -38,11 +38,11 @@ activate UI
 '==== Use case execution ====
 UI -> CTL: getPublicationTypes()
 activate CTL
-CTL -> PTR: findAll()
+CTL -> PTR: findAllKeys()
 activate PTR
-PTR --> CTL: Collection<PublicationType>
+PTR --> CTL: List<PublicationTypeId>
 deactivate PTR
-CTL --> UI: Collection<PublicationType>
+CTL --> UI: List<PublicationTypeId>
 deactivate CTL
 
 UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
@@ -52,11 +52,11 @@ Administrator -> UI: publicationTypes
 activate UI
 UI -> CTL: getGenres()
 activate CTL
-CTL -> grRepo: findAll()
+CTL -> grRepo: findAllKeys()
 activate grRepo
-grRepo --> CTL: Collection<Genre>
+grRepo --> CTL: List<GenreId>
 deactivate grRepo
-CTL --> UI: Collection<Genre>
+CTL --> UI: List<GenreId>
 deactivate CTL
 
 UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
@@ -69,13 +69,17 @@ activate CTL
 CTL -> aeRepo: addAppraisalEntity(name, publicationTypeIds, genreIds)
 activate aeRepo
 
-opt containsOfIdentity(appraisalEntityId) == false
-        aeRepo -> Factory: createAppraisalEntity(\nname, publicationTypeIds, genreIds)
-        create "appraisalEntity:AppraisalEntity"
-        activate Factory
-        Factory -->> "appraisalEntity:AppraisalEntity": <<create>>
-        Factory -> aeRepo: appraisalEntity
-        deactivate Factory
+aeRepo -> Factory: createAppraisalEntity(\nname, publicationTypeIds, genreIds)
+create "appraisalEntity:AppraisalEntity"
+
+activate Factory
+Factory -->> "appraisalEntity:AppraisalEntity": <<create>>
+Factory -> aeRepo: appraisalEntity
+deactivate Factory
+
+aeRepo -> aeRepo : isRepeated = containsOfIdentity(appraisalEntity.identity())
+
+opt !isRepeated
 
         aeRepo -> aeRepo : save(appraisalEntity)
 
