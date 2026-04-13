@@ -8,13 +8,9 @@ public final class ItemId implements DomainId {
 
     private final SKU _sku;
 
-    public ItemId(SKU sku) {
+    public ItemId() {
 
-        _sku = Objects.requireNonNull(sku,"SKU is required.");
-    }
-
-    public static ItemId generate() {
-        return new ItemId(SKU.generate());
+        _sku = new SKU();
     }
 
     public SKU getSku() { return _sku; }
