@@ -48,6 +48,12 @@ public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     }
 
+    public List<AppraisalEntityId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
     @Override
     public Optional<AppraisalEntity> ofIdentity(AppraisalEntityId id) {
 
