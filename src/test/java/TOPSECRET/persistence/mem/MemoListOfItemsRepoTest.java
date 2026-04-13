@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.ListOfItems.ListOfItems;
-import TOPSECRET.domain.ListOfItems.ListOfItemsFactory;
+import TOPSECRET.domain.listofitems.ListOfItems;
+import TOPSECRET.domain.listofitems.ListOfItemsFactory;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;

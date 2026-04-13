@@ -1,9 +1,9 @@
 
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.IListOfItemsRepo;
+import TOPSECRET.domain.repository.IListOfItemsRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.ListOfItems.ListOfItems;
+import TOPSECRET.domain.listofitems.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.GenreId;
