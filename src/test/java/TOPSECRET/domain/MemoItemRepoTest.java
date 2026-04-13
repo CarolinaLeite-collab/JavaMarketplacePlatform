@@ -1,233 +1,387 @@
 package TOPSECRET.domain;
 
+import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
+import TOPSECRET.domain.valueobject.Description;
+import TOPSECRET.domain.valueobject.EditionId;
+import TOPSECRET.domain.valueobject.ItemId;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class MemoItemRepoTest {
+        // ------------------------------------------------------------
+        // save
+        // ------------------------------------------------------------
 
-    @Test
-    void existsReturnsFalseWhenRepoIsEmpty() {
-        // Arrange
-        Publication pubicationDouble = mock(Publication.class);
-        ItemFactory factoryDouble = mock(ItemFactory.class);
+        @Test
+        void save_validItem_returnsSameItem() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
 
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
 
-        // Act
-        boolean result = repo.exists(pubicationDouble);
+            // Act
+            Item result = sut.save(itemDouble);
 
-        // Assert
-        assertFalse(result);
+            // Assert
+            assertSame(itemDouble, result);
+        }
+
+        @Test
+        void save_validItem_storesItemInRepository() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            sut.save(itemDouble);
+            Optional<Item> result = sut.ofIdentity(itemIdDouble);
+
+            // Assert
+            assertTrue(result.isPresent());
+            assertSame(itemDouble, result.get());
+        }
+
+        // ------------------------------------------------------------
+        // findAll
+        // ------------------------------------------------------------
+
+        @Test
+        void findAll_emptyRepository_returnsEmptyIterable() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            Iterable<Item> result = sut.findAll();
+
+            // Assert
+            assertFalse(result.iterator().hasNext());
+        }
+
+        @Test
+        void findAll_repositoryWithItems_returnsStoredItems() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item item1Double = mock(Item.class);
+            ItemId itemId1Double = mock(ItemId.class);
+            when(item1Double.identity()).thenReturn(itemId1Double);
+
+            Item item2Double = mock(Item.class);
+            ItemId itemId2Double = mock(ItemId.class);
+            when(item2Double.identity()).thenReturn(itemId2Double);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(item1Double);
+            sut.save(item2Double);
+
+            // Act
+            List<Item> result = new ArrayList<>();
+            sut.findAll().forEach(result::add);
+
+            // Assert
+            assertEquals(2, result.size());
+            assertTrue(result.contains(item1Double));
+            assertTrue(result.contains(item2Double));
+        }
+
+        // ------------------------------------------------------------
+        // ofIdentity
+        // ------------------------------------------------------------
+
+        @Test
+        void ofIdentity_existingId_returnsItemWrappedInOptional() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(itemDouble);
+
+            // Act
+            Optional<Item> result = sut.ofIdentity(itemIdDouble);
+
+            // Assert
+            assertTrue(result.isPresent());
+            assertSame(itemDouble, result.get());
+        }
+
+        @Test
+        void ofIdentity_nonExistingId_returnsEmptyOptional() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            ItemId unknownIdDouble = mock(ItemId.class);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            Optional<Item> result = sut.ofIdentity(unknownIdDouble);
+
+            // Assert
+            assertTrue(result.isEmpty());
+        }
+
+        // ------------------------------------------------------------
+        // containsOfIdentity
+        // ------------------------------------------------------------
+
+        @Test
+        void containsOfIdentity_existingId_returnsTrue() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(itemDouble);
+
+            // Act
+            boolean result = sut.containsOfIdentity(itemIdDouble);
+
+            // Assert
+            assertTrue(result);
+        }
+
+        @Test
+        void containsOfIdentity_nonExistingId_returnsFalse() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            ItemId unknownIdDouble = mock(ItemId.class);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            boolean result = sut.containsOfIdentity(unknownIdDouble);
+
+            // Assert
+            assertFalse(result);
+        }
+
+        // ------------------------------------------------------------
+        // addItem
+        // ------------------------------------------------------------
+
+        @Test
+        void addItem_validArguments_usesFactoryToCreateItem() {
+            // Arrange
+            EditionId editionIdDouble = mock(EditionId.class);
+            Condition conditionDouble = mock(Condition.class);
+            Description descriptionDouble = mock(Description.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            when(factoryDouble.createItem(editionIdDouble, conditionDouble, descriptionDouble))
+                    .thenReturn(itemDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
+
+            // Assert
+            verify(factoryDouble).createItem(editionIdDouble, conditionDouble, descriptionDouble);
+        }
+
+        @Test
+        void addItem_validArguments_returnsCreatedItem() {
+            // Arrange
+            EditionId editionIdDouble = mock(EditionId.class);
+            Condition conditionDouble = mock(Condition.class);
+            Description descriptionDouble = mock(Description.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            when(factoryDouble.createItem(editionIdDouble, conditionDouble, descriptionDouble))
+                    .thenReturn(itemDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            Item result = sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
+
+            // Assert
+            assertSame(itemDouble, result);
+        }
+
+        @Test
+        void addItem_validArguments_storesCreatedItemInRepository() {
+            // Arrange
+            EditionId editionIdDouble = mock(EditionId.class);
+            Condition conditionDouble = mock(Condition.class);
+            Description descriptionDouble = mock(Description.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+            when(factoryDouble.createItem(editionIdDouble, conditionDouble, descriptionDouble))
+                    .thenReturn(itemDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+            // Act
+            sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
+
+            // Assert
+            assertTrue(sut.containsOfIdentity(itemIdDouble));
+            assertEquals(Optional.of(itemDouble), sut.ofIdentity(itemIdDouble));
+        }
+
+        // ------------------------------------------------------------
+        // getDifferentOf
+        // ------------------------------------------------------------
+
+        @Test
+        void getDifferentOf_nullList_returnsAllStoredItems() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item item1Double = mock(Item.class);
+            ItemId itemId1Double = mock(ItemId.class);
+            when(item1Double.identity()).thenReturn(itemId1Double);
+
+            Item item2Double = mock(Item.class);
+            ItemId itemId2Double = mock(ItemId.class);
+            when(item2Double.identity()).thenReturn(itemId2Double);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(item1Double);
+            sut.save(item2Double);
+
+            // Act
+            List<Item> result = sut.getDifferentOf(null);
+
+            // Assert
+            assertEquals(2, result.size());
+            assertTrue(result.contains(item1Double));
+            assertTrue(result.contains(item2Double));
+        }
+
+        @Test
+        void getDifferentOf_emptyList_returnsAllStoredItems() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(itemDouble);
+
+            // Act
+            List<Item> result = sut.getDifferentOf(List.of());
+
+            // Assert
+            assertEquals(1, result.size());
+            assertTrue(result.contains(itemDouble));
+        }
+
+        @Test
+        void getDifferentOf_allItemsAlreadyExist_returnsEmptyList() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(itemDouble);
+
+            // Act
+            List<Item> result = sut.getDifferentOf(List.of(itemDouble));
+
+            // Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void getDifferentOf_someItemsAlreadyExist_returnsOnlyDifferentItems() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item item1Double = mock(Item.class);
+            ItemId itemId1Double = mock(ItemId.class);
+            when(item1Double.identity()).thenReturn(itemId1Double);
+
+            Item item2Double = mock(Item.class);
+            ItemId itemId2Double = mock(ItemId.class);
+            when(item2Double.identity()).thenReturn(itemId2Double);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(item1Double);
+            sut.save(item2Double);
+
+            // Act
+            List<Item> existentItems = List.of(item1Double);
+            List<Item> result = sut.getDifferentOf(existentItems);
+
+            // Assert
+            assertEquals(List.of(item2Double), result);
+        }
+
+        @Test
+        void getDifferentOf_resultIsUnmodifiable() {
+            // Arrange
+            ItemFactory factoryDouble = mock(ItemFactory.class);
+
+            Item itemDouble = mock(Item.class);
+            ItemId itemIdDouble = mock(ItemId.class);
+            when(itemDouble.identity()).thenReturn(itemIdDouble);
+
+            // SUT
+            MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+            sut.save(itemDouble);
+
+            // Act
+            List<Item> result = sut.getDifferentOf(List.of());
+
+            // Assert
+            assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Item.class)));
+        }
     }
-
-    @Test
-    void existsReturnsTrueWhenItemWithPublicationExists() {
-        // Arrange
-        Publication publicationDouble = mock(Publication.class);
-        Condition conditionDouble = mock(Condition.class);
-        Item itemDouble = mock(Item.class);
-        when(itemDouble.get_publication()).thenReturn(publicationDouble);
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
-
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-        repo.createItem(publicationDouble, conditionDouble);
-
-        // Act
-        boolean result = repo.exists(publicationDouble);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void existsReturnsFalseForNullPublication() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);;
-
-        // Act
-        boolean result = repo.exists(null);
-
-        // Assert
-        assertFalse(result);
-    }
-
-    @Test
-    void createItemCreatesAndStoresNewItem() {
-        // Arrange
-        Publication publicationDouble = mock(Publication.class);
-        Condition conditionDouble = mock(Condition.class);
-        Item itemDouble = mock(Item.class);
-
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
-
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-
-        //SUT
-        // Act
-        Item result = repo.createItem(publicationDouble, conditionDouble);
-
-        // Assert
-        assertEquals(itemDouble, result);
-    }
-
-    @Test
-    void createItemThrowsWhenPublicationAlreadyExists() {
-        // Arrange
-        Publication publicationDouble = mock(Publication.class);
-        Condition conditionDouble = mock(Condition.class);
-        Item itemDouble = mock(Item.class);
-        when(itemDouble.get_publication()).thenReturn(publicationDouble);
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        when(factoryDouble.createItem(publicationDouble, conditionDouble)).thenReturn(itemDouble);
-
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-        repo.createItem(publicationDouble, conditionDouble);
-
-        // Act + Assert
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> repo.createItem(publicationDouble, conditionDouble)
-        );
-
-        assertEquals("Item for this publication already exists!", ex.getMessage());
-    }
-
-    @Test
-    void getAllReturnsUnmodifiableList() {
-        // Arrange
-        Publication publicationDouble = mock(Publication.class);
-        Condition conditionDouble = mock(Condition.class);
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-        repo.createItem(publicationDouble, conditionDouble);
-
-        // Act
-        List<Item> list = repo.getAll();
-
-        // Assert
-        assertAll(
-                () -> assertEquals(1, list.size()),
-                () -> assertThrows(UnsupportedOperationException.class, () -> list.add(null))
-        );
-    }
-
-    @Test
-    void getAllReflectsNewItems() {
-        // Arrange
-        Publication publication1Double = mock(Publication.class);
-        Publication publication2Double = mock(Publication.class);
-        Condition conditionDouble = mock(Condition.class);
-        Item item1Double = mock(Item.class);
-        when(item1Double.get_publication()).thenReturn(publication1Double);
-
-        Item item2Double = mock(Item.class);
-        when(item2Double.get_publication()).thenReturn(publication2Double);
-
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        when(factoryDouble.createItem(publication1Double, conditionDouble)).thenReturn(item1Double);
-        when(factoryDouble.createItem(publication2Double, conditionDouble)).thenReturn(item2Double);
-
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-
-        // Act + Assert
-        repo.createItem(publication1Double, conditionDouble);
-        List<Item> list1 = repo.getAll();
-        assertEquals(1, list1.size());
-
-        repo.createItem(publication2Double, conditionDouble);
-        List<Item> list2 = repo.getAll();
-        assertEquals(2, list2.size());
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenAllItemsExist() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        Item _item1Double = mock(Item.class);
-        Item _item2Double = mock(Item.class);
-
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-
-        List<Item> existentItems = List.of(_item1Double, _item2Double);
-
-        // Act
-        List<Item> result = repo.getDifferentOf(existentItems);
-
-        // Assert
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertTrue(result.isEmpty())
-        );
-
-    }
-
-    @Test
-    void shouldHandleEmptyInputList() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        //SUT
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-
-        List<Item> existentItems = List.of();
-
-        // Act
-        List<Item> result = repo.getDifferentOf(existentItems);
-
-        // Assert
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertTrue(result.isEmpty())
-        );
-    }
-
-    @Test
-    void shouldReturnListWhenOnlySomeItemsExist() {
-        //Arrange
-        Publication publication1Double = mock(Publication.class);
-        Publication publication2Double = mock(Publication.class);
-
-        Condition conditionDouble = mock(Condition.class);
-
-        Item item1Double = mock(Item.class);
-        when(item1Double.get_publication()).thenReturn(publication1Double);
-
-        Item item2Double = mock(Item.class);
-        when(item2Double.get_publication()).thenReturn(publication2Double);
-
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-        when(factoryDouble.createItem(publication1Double, conditionDouble)).thenReturn(item1Double);
-        when(factoryDouble.createItem(publication2Double, conditionDouble)).thenReturn(item2Double);
-
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
-
-        //SUT
-        repo.createItem(publication1Double, conditionDouble);
-        repo.createItem(publication2Double, conditionDouble);
-
-        //Act
-        List<Item> existentItems = List.of(item1Double);
-
-        List<Item> result = repo.getDifferentOf(existentItems);
-
-        //Assert
-        assertEquals(List.of(item2Double), result);
-    }
-}
