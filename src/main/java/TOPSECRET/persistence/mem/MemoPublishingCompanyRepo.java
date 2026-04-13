@@ -1,22 +1,24 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.publicationtype.PublicationTypeFactory;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publishingcompany.PublishingCompanyFactory;
 import TOPSECRET.domain.repository.IPublishingCompanyRepo;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Repository responsible for storing and managing {@link PublishingCompany} entities.
  * <p>
- * Handles the registration of publishing companies using a {@link PublishingCompanyFactory}
- * and ensures that duplicate entities are not added to the repository.
+ * Provides methods to check if a publication company already exists, delegates creation to
+ * {@link PublishingCompanyFactory}, stores new publishing companies, and retrieves all stored
+ * publishing companies as an unmodifiable list.
  */
 
 public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
 
-    private final List<PublishingCompany> _publishingCompany = new ArrayList<>();
+    private final Map<PublishingCompanyId, PublishingCompany> DATA = new HashMap<PublishingCompanyId, PublishingCompany>();
     private final PublishingCompanyFactory _publishingCompanyFactory;
 
     public MemoPublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
@@ -26,35 +28,53 @@ public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
     }
 
     @Override
-    public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
+    public PublishingCompany save(PublishingCompany publishingCompany) {
 
-        if (publishingCompanyExists(publishingCompanyName)) {
+        DATA.put(publishingCompany.identity(), publishingCompany);
 
-            throw new IllegalArgumentException(("Publishing Company with name " + publishingCompanyName + " already exists."));
+        return publishingCompany;
+    }
 
-        }
+    @Override
+    public Iterable<PublishingCompany> findAll() {
 
-        PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyName);
-
-        _publishingCompany.add(newPublishingCompany);
-
-        return newPublishingCompany;
+        return DATA.values();
 
     }
 
-    private boolean publishingCompanyExists(String publishingCompanyName) {
+    @Override
+    public Optional<PublishingCompany> ofIdentity(PublishingCompanyId publishingCompanyId) {
 
-        for (PublishingCompany publishingCompany : _publishingCompany) {
+        if(!containsOfIdentity(publishingCompanyId)) {
 
-            if (publishingCompany.isSamePublishingCompany(publishingCompanyName)) {
+            return Optional.empty();
 
-                return true;
+        } else {
 
-            }
+            return Optional.of(DATA.get(publishingCompanyId));
+
+        }
+    }
+
+    @Override
+    public boolean containsOfIdentity(PublishingCompanyId publishingCompanyId) {
+
+        return DATA.containsKey(publishingCompanyId);
+
+    }
+
+    @Override
+    public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
+
+        PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyName);
+
+        if (containsOfIdentity(newPublishingCompany.identity())) {
+
+            throw new IllegalArgumentException("This publishing company is already registered.");
 
         }
 
-        return false;
+        return save(newPublishingCompany);
 
     }
 
