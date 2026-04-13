@@ -169,4 +169,20 @@ class CityTest {
 
         assertEquals("Porto, Portugal", city.toString());
     }
+
+    @Test
+    void equalsShouldReturnTrueForSameReference() {
+        City city = new City("Porto", _countryDouble);
+
+        assertTrue(city.equals(city));
+    }
+
+    @Test
+    void equalsShouldReturnFalseForNonCityObject() {
+        City city = new City("Porto", _countryDouble);
+        String notACity = "Porto";
+
+        assertFalse(city.equals(notACity));
+    }
+    
 }
