@@ -1,5 +1,5 @@
 @startuml
-title SSD N1 (System Sequence Diagram) - to get list of publication types (US014)
+title US014 - "As a User, I want to get the %n()list of official publication types" %n() SSD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,11 +16,11 @@ hidefootbox
 actor User
 participant "MiteLovers" as System
 
-User -> System: Get all publication types
+User -> System: I want the list of %n()all publication types.
 
 activate System
 
-System --> User: Here's the list!
+System --> User: Here is the list of %n()official publication %n()types.
 
 
 

@@ -1,53 +1,49 @@
 package TOPSECRET.domain.publicationtype;
 
-import java.util.Objects;
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.valueobject.PublicationTypeId;
 
 /**
- * Represents a classification that defines the category of a publication
- * (e.g. book, magazine) and allows the system to classify and organize publications.
+ * Represents the type of publication (e.g. BOOK, MAGAZINE), used to
+ * classify and organize publications.
  * <p>
- * A publication type is defined by a name that cannot be null, empty, or blank.
- * The name is normalized by trimming whitespace and converting it to uppercase.
+ * A {@code PublicationType} is an aggregate root identified by a
+ * {@link TOPSECRET.domain.valueobject.PublicationTypeId}. The identity is
+ * derived from the publication type name, which is validated (non-null,
+ * non-blank, and non-empty) and normalized by trimming whitespace and
+ * converting it to uppercase.
  * </p>
  */
 
-public class PublicationType {
+public class PublicationType implements AggregateRoot<PublicationTypeId> {
 
-    private final String _publicationType;
+    private final PublicationTypeId _id;
 
-     PublicationType(String publicationTypeName) throws IllegalArgumentException {
-
-        if (publicationTypeName == null || publicationTypeName.isBlank()) {
-
-            throw new IllegalArgumentException("Publication type name is required!");
-
-        }
-
-        _publicationType = publicationTypeName.toUpperCase().trim();
-
+    PublicationType(String publicationTypeName) {
+        _id = new PublicationTypeId(publicationTypeName);
     }
 
-    public boolean isSamePublicationType (String publicationTypeName) {
-
-        if  (publicationTypeName == null || publicationTypeName.isBlank()) {
-
-            return false;
-
+    /* PublicationType(PublicationTypeId publicationTypeId) {
+        if (publicationTypeId == null) {
+            throw new IllegalArgumentException("PublicationTypeId is required.");
         }
+        _id = publicationTypeId;
 
-        String publicationTypeNameNormalized = publicationTypeName.toUpperCase().trim();
+    }*/
 
-        return publicationTypeNameNormalized.equals(_publicationType);
-
+    @Override
+    public PublicationTypeId identity() {
+        return _id;
     }
 
-    public String getPublicationType() {
-        return _publicationType;
+    @Override
+    public boolean sameAs(Object object) {
+        return equals(object);
     }
 
     @Override
     public String toString() {
-        return _publicationType;
+        return _id.toString();
     }
 
     @Override
@@ -55,12 +51,11 @@ public class PublicationType {
         if (this == o) return true;
         if (!(o instanceof PublicationType)) return false;
         PublicationType pubType = (PublicationType) o;
-        return _publicationType.equals(pubType._publicationType.toUpperCase().trim());
+        return _id.equals(pubType._id);
     }
 
-    // Normalizing hash codes will prevent false negatives
     @Override
     public int hashCode() {
-        return Objects.hash(_publicationType);
+        return _id.hashCode();
     }
 }

@@ -1,5 +1,5 @@
 @startuml
-title US014 - "As a User, I want to get the list of official publication types" - SD
+title US014 - "As a User, I want to get the list of official publication types" %n() SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -15,22 +15,22 @@ hidefootbox
 
 actor User
 
-participant "UI : UserPublicationTypeList" as UI
-participant "Ctrl : GetPublicationTypeListController" as CTRL
-participant "_Ptr : IPublicationTypeRepo" as PTR
+participant ":UIPublicationTypeList" as UI
+participant ":GetPublicationType%n()ListController" as CTRL
+participant ":IPublication%n()TypeRepo" as PTR
 
-User -> UI : 1. I want to know all publication types
+User -> UI : 1. I want the list of %n()all publication types.
 Activate UI
-UI -> CTRL : 2. getListOfPublicationTypes()
+UI -> CTRL : 2. getListOf%n()PublicationTypes()
 Activate CTRL
-CTRL -> PTR : 3. getAll()
+CTRL -> PTR : 3. findAll()
 Activate PTR
 
-PTR --> CTRL : 4. PublicationTypeList
+PTR --> CTRL : 4. Iterable%n()<PublicationType>
 Deactivate PTR
-CTRL --> UI : 5. PublicationTypeList
+CTRL --> UI : 5. Iterable%n()<PublicationType>
 Deactivate CTRL
-UI --> User : 6. Here's the list!
+UI --> User : 6. Here is the list of %n()official publication %n()types.
 Deactivate UI
 
 @enduml

@@ -60,7 +60,7 @@ class RegisterNewAppraisalEntityControllerTest {
         _publicationTypeIds.add(_publicationTypeIdDouble);
 
         _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        when(_iPublicationTypeRepoDouble.getAll()).thenReturn(_publicationTypes);
+        when(_iPublicationTypeRepoDouble.findAll()).thenReturn(_publicationTypes);
 
         _appraisalEntityDouble = mock(AppraisalEntity.class);
 
@@ -84,11 +84,11 @@ class RegisterNewAppraisalEntityControllerTest {
         RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
-        List types = controller.getPublicationTypes();
+        Iterable <PublicationType> types = controller.getPublicationTypes();
 
         // assert
         assertEquals(_publicationTypes, types);
-        verify(_iPublicationTypeRepoDouble).getAll();
+        verify(_iPublicationTypeRepoDouble).findAll();
 
     }
 

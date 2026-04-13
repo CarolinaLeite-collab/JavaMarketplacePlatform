@@ -12,20 +12,44 @@ skinparam classAttributeIconSize 0
 class UIPublicationTypeList {
 }
 
-class GetPublicationTypeListController {
-    - publicationTypeRepo : MemoPublicationTypeRepo
-    + getListOfPublicationTypes() : List<PublicationType>
+package "CONTROLLER" {
+    class GetPublicationTypeListController {
+        + getListOfPublicationTypes() : Iterable<PublicationType>
+    }
 }
 
-interface IPublicationTypeRepo {
-+ getAll() : List<PublicationType>
+package "PERSISTENCE" {
+            package "MEM" {
+                class MemoPublicationTypeRepo <<Repo>> {
+                }
+            }
 }
 
-class MemoPublicationTypeRepo {
-    - publicationTypes : List<PublicationType>
+package "DOMAIN" {
+    package "PUBLICATIONTYPE" #b0c4d4 {
+        class PublicationType <<Root>> <<Entity>> {
+        }
+    }
+
+    package "REPOSITORY" {
+        interface IPublicationTypeRepo <<Interface>> {
+        }
+    }
 }
+
+package "DDD" {
+    interface IRepository <ID, T> <<Interface>> {
+        save(T) : T
+        findAll() : Iterable<T>
+        ofIdentity(ID) : Optional <T>
+        containsOfIdentity(ID) : boolean
+    }
+}
+
 
 UIPublicationTypeList "1" ..> "1" GetPublicationTypeListController : invokes
-GetPublicationTypeListController "1" ..> "1" IPublicationTypeRepo : use
-IPublicationTypeRepo "1" <|.. "1" MemoPublicationTypeRepo
+GetPublicationTypeListController "1" --> "1" IPublicationTypeRepo : calls
+MemoPublicationTypeRepo ..|> IPublicationTypeRepo
+MemoPublicationTypeRepo --> PublicationType : persists
+IPublicationTypeRepo --|> IRepository
 @enduml

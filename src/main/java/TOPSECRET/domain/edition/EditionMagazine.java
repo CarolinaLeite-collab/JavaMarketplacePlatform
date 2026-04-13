@@ -12,7 +12,7 @@ import java.time.Year;
  * </p>
  */
 
-public class EditionMagazine implements Edition {
+public final class EditionMagazine implements Edition {
 
     private final MagazineId _magazineId;
     private final PublicationId _publicationId;
@@ -26,8 +26,21 @@ public class EditionMagazine implements Edition {
     private final Weight _weight;
 
 
-    protected EditionMagazine(Builder builder){
-        _magazineId = builder._magazineId;
+    private EditionMagazine(Builder builder){
+        //Deals with NoIssnMagazines
+        MagazineId magazineIdPlaceholder = builder._magazineId;
+
+        if (magazineIdPlaceholder == null) {
+            magazineIdPlaceholder = NoIssnMagazine.generate();
+        }
+
+        if (magazineIdPlaceholder instanceof NoIssnMagazine && builder._publishingYear.isAfter(Year.of(1976))) {
+            throw new IllegalArgumentException(
+                    "Magazines published after 1976 must have a valid ISSN"
+            );
+        }
+        _magazineId = magazineIdPlaceholder;
+        //
         _publicationId = builder._publicationId;
         _publishingCompanyId = builder._publishingCompanyId;
         _publishingYear = builder._publishingYear;
@@ -70,9 +83,6 @@ public class EditionMagazine implements Edition {
 
         public EditionMagazine build() {
 
-            if (_magazineId == null)
-                throw new IllegalArgumentException("MagazineId is required");
-
             if (_publicationId == null)
                 throw new IllegalArgumentException("PublicationId is required");
 
@@ -105,19 +115,67 @@ public class EditionMagazine implements Edition {
 
     }
 
-
+    //methods from DomainEntity contract
     @Override
-    public EditionId getId() {
+    public EditionId identity() {
         return _magazineId;
     }
 
+    //Identity-based equality
     @Override
-    public PublicationId getPublication() {
+    public boolean equals(Object object) {
+        if (this == object)
+            return true;
+
+        if(object instanceof EditionMagazine) {
+            EditionMagazine otherEditionMagazine = (EditionMagazine) object;
+            return _magazineId.equals(otherEditionMagazine._magazineId);
+        }
+        return false;
+    }
+
+    //Field-base equality
+    @Override
+    public boolean sameAs(Object object){
+        if (object instanceof EditionMagazine) {
+            EditionMagazine otherEditionMagazine = (EditionMagazine) object;
+
+            if (_magazineId instanceof ISSN) {
+                return _magazineId.equals(otherEditionMagazine._magazineId);
+            }
+
+            if (_publicationId.equals(otherEditionMagazine._publicationId) &&
+                    _publishingCompanyId.equals(otherEditionMagazine._publishingCompanyId) &&
+                    _publishingYear.equals(otherEditionMagazine._publishingYear) &&
+                    _editionLanguage.equals(otherEditionMagazine._editionLanguage) &&
+                    _issueNumber.equals(otherEditionMagazine._issueNumber) &&
+                    _periodicity.equals(otherEditionMagazine._periodicity)
+            ){
+                return true;
+            }
+        }
+        return false;    }
+
+    @Override
+    public String toString() {
+        return "Id: " + identity().toString() +
+                "\nPublication: " + _publicationId +
+                "\nPublishing Company: " + _publishingCompanyId +
+                "\nYear: " + _publishingYear +
+                "\nLanguage: " + _editionLanguage +
+                "\nIssue Number: " + _issueNumber +
+                "\nPeriodicity: " + _periodicity +
+                (_dimension != null ? "\nDimension: " + _dimension : "") +
+                (_weight != null ? "\nWeight: " + _weight : "");
+    }
+
+    @Override
+    public PublicationId getPublicationId() {
         return _publicationId;
     }
 
     @Override
-    public PublishingCompanyId getPublishingCompany() {
+    public PublishingCompanyId getPublishingCompanyId() {
         return _publishingCompanyId;
     }
 

@@ -1,5 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
+import TOPSECRET.ddd.DomainId;
 import TOPSECRET.ddd.ValueObject;
 
 /**
@@ -9,7 +10,7 @@ import TOPSECRET.ddd.ValueObject;
  * </p>
  */
 
-public interface EditionId extends ValueObject {
+public interface EditionId extends ValueObject, DomainId {
 
     String getIdentifier();
 
