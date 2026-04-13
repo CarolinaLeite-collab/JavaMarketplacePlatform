@@ -4,7 +4,7 @@ import TOPSECRET.domain.Item;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.DirectSaleId;
@@ -122,11 +122,11 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<Item> getDirectSaleItemsByPublisher(PublishingCompany publisher) {
+    public List<Item> getDirectSaleItemsByPublisher(PublishingCompanyId publisherId) {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByPublishingCompany(publisher)) {
+            if (directSale.isByPublishingCompany(publisherId)) {
                 list.addAll(directSale.getItems());
             }
         }

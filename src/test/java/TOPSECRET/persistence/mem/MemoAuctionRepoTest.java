@@ -5,10 +5,7 @@ import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.auction.AuctionFactory;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuctionId;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -337,12 +334,12 @@ class MemoAuctionRepoTest {
     }
 
     @Test
-    void getAuctionItemsByPublishingCompanyReturnsMatchingItems() throws Exception {
+    void getAuctionItemsByPublishingCompanyIdReturnsMatchingItems() throws Exception {
         //Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class);
 
-        when(_auctionDouble1.isByPublishingCompany(publisherDouble)).thenReturn(true);
-        when(_auctionDouble2.isByPublishingCompany(publisherDouble)).thenReturn(false);
+        when(_auctionDouble1.isByPublishingCompany(publisherIdDouble)).thenReturn(true);
+        when(_auctionDouble2.isByPublishingCompany(publisherIdDouble)).thenReturn(false);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
@@ -351,7 +348,7 @@ class MemoAuctionRepoTest {
         _repo.addAuction(_items1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
         _repo.addAuction(_items2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        List<Item> result = _repo.getAuctionItemsByPublishingCompanyId(publisherDouble);
+        List<Item> result = _repo.getAuctionItemsByPublishingCompanyId(publisherIdDouble);
 
         //Assert
         assertEquals(1, result.size());

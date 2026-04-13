@@ -5,7 +5,7 @@ import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.auction.AuctionFactory;
 import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.valueobject.AuctionId;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.GenreId;
@@ -120,12 +120,12 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompany publisher) {
+    public List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompanyId publishingCompanyId) {
 
         List<Item> listOfAuctionItemsByPublisher = new ArrayList<>();
 
         for (Auction auction : findAll()) {
-            if (auction.isByPublishingCompany(publisher)){
+            if (auction.isByPublishingCompany(publishingCompanyId)){
                 listOfAuctionItemsByPublisher.addAll(auction.getItems());
             }
         }

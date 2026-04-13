@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,13 +16,13 @@ import static org.mockito.Mockito.when;
 
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     private Item _itemDouble;
-    private PublishingCompany _publisherCompanyDouble;
+    private PublishingCompanyId _publisherCompanyIdDouble;
     private IDirectSaleRepo _iDirectSaleRepoDouble;
     private UserId _buyerIdDouble;
 
     @BeforeEach
     void setUp() {
-        _publisherCompanyDouble = mock(PublishingCompany.class);
+        _publisherCompanyIdDouble = mock(PublishingCompanyId.class);
         _itemDouble = mock(Item.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
         _buyerIdDouble = mock(UserId.class);
@@ -46,11 +46,11 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherDelegatesToRepository() {
         //Arrange
         List<Item> expected = List.of(_itemDouble);
-        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyIdDouble)).thenReturn(expected);
         //SUT
         GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
-        List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
+        List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyIdDouble);
         //Assert
         assertEquals(expected, actual);
     }
@@ -59,11 +59,11 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     void getDirectSaleItemByPublisherReturnsEmptyListWhenRepositoryReturnsEmpty() {
         //Arrange
         List<Item> expected = List.of();
-        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyDouble)).thenReturn(expected);
+        when(_iDirectSaleRepoDouble.getDirectSaleItemsByPublisher(_publisherCompanyIdDouble)).thenReturn(expected);
         //SUT
         GetItemsOnDirectSaleOfAGivenPublishingCompanyController ctr = new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
         //Act
-        List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyDouble);
+        List<Item> actual = ctr.getDirectSaleItemByPublisher(_publisherCompanyIdDouble);
         //Assert
         assertEquals(expected, actual);
     }

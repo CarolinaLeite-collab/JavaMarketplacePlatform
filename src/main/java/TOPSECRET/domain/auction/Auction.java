@@ -5,13 +5,9 @@ import TOPSECRET.domain.Bid;
 import TOPSECRET.domain.BidFactory;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.MemoBidRepo;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.valueobject.*;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -212,9 +208,9 @@ public class Auction implements AggregateRoot<AuctionId> {
         return false;
     }
 
-    public boolean isByPublishingCompany(PublishingCompany publisher) {
+    public boolean isByPublishingCompany(PublishingCompanyId publishingCompanyId) {
         for(Item item : _items) {
-            if(item.isByPublishingCompany(publisher)) {
+            if(item.isByPublishingCompany(publishingCompanyId)) {
                 return true;
             }
         }

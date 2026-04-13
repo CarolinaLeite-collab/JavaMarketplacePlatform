@@ -1,47 +1,55 @@
 package TOPSECRET.domain.publishingcompany;
 
+import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
+
 import java.util.Objects;
 
 /**
- * Represents the organization or company that formally releases the work (publication). Cannot be null, empty, or whitespace‑only.
+ * Represents the organization or company that formally releases the work (publication).
+ *
+ * <p>
+ * A {@code PublishingCompany} is an aggregate root identified by a
+ * {@link TOPSECRET.domain.valueobject.PublishingCompanyId}. The identity is
+ * derived from the publishing company name, which is validated (non-null,
+ * non-blank, and non-empty) and normalized by trimming whitespace and
+ * converting it to uppercase.
+ * </p>
  */
 
-public class PublishingCompany {
-    private final String _name;
+public class PublishingCompany implements AggregateRoot<PublishingCompanyId> {
 
-    PublishingCompany(String name){
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("Publisher name cannot be null, empty or blank");
+    private final PublishingCompanyId _id;
 
-        _name = name.trim().toUpperCase().replaceAll("\\s+", " ");
+    PublishingCompany(String publishingCompanyName) {
+        _id = new PublishingCompanyId(publishingCompanyName);
     }
 
-    public boolean isSamePublishingCompany (String publishingCompanyName) {
-
-        if (publishingCompanyName == null || publishingCompanyName.trim().isEmpty()) {
-            return false;
-        }
-
-        String publishingCompanyNameNormalized = publishingCompanyName.trim().toUpperCase().replaceAll("\\s+", " ");
-
-        return _name.equals(publishingCompanyNameNormalized);
-
+    @Override
+    public PublishingCompanyId identity() {
+        return _id;
     }
 
-    public String getName() {
-        return _name;
+    @Override
+    public boolean sameAs(Object object) {
+        return equals(object);
+    }
+
+    @Override
+    public String toString() {
+        return _id.toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PublishingCompany)) return false;
-        PublishingCompany publisher = (PublishingCompany) o;
-        return _name.equals(publisher._name);
+        PublishingCompany pubCo = (PublishingCompany) o;
+        return _id.equals(pubCo._id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_name);
+        return _id.hashCode();
     }
 }

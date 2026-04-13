@@ -3,7 +3,7 @@ package TOPSECRET.domain.auction;
 import TOPSECRET.domain.Bid;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.MemoBidRepo;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
@@ -492,12 +492,12 @@ class AuctionTest {
     @Test
     void isByPublisherShouldReturnTrueWhenPublisherMatches() {
         // Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
-        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(true);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class); // stub
+        when(_itemDouble.isByPublishingCompany(publisherIdDouble)).thenReturn(true);
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
-        boolean result = auction.isByPublishingCompany(publisherDouble);
+        boolean result = auction.isByPublishingCompany(publisherIdDouble);
 
         // Assert
         assertTrue(result);
@@ -506,12 +506,12 @@ class AuctionTest {
     @Test
     void isByPublisherShouldReturnFalseWhenPublisherDoesNotMatch() {
         // Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
-        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(false);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class); // stub
+        when(_itemDouble.isByPublishingCompany(publisherIdDouble)).thenReturn(false);
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
-        boolean result = auction.isByPublishingCompany(publisherDouble);
+        boolean result = auction.isByPublishingCompany(publisherIdDouble);
 
         // Assert
         assertFalse(result);
@@ -522,14 +522,14 @@ class AuctionTest {
         // Arrange
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
         when(_outrightPriceDouble.getValue()).thenReturn(100.0);
-        PublishingCompany publisherDouble = mock(PublishingCompany.class); // stub
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class); // stub
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd); // SUT
 
         // Act
-        auction.isByPublishingCompany(publisherDouble);
+        auction.isByPublishingCompany(publisherIdDouble);
 
         // Assert
-        verify(_itemDouble).isByPublishingCompany(publisherDouble);
+        verify(_itemDouble).isByPublishingCompany(publisherIdDouble);
     }
 
     @Test
