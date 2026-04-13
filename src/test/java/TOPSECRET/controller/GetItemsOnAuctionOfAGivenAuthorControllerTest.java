@@ -17,13 +17,11 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
 
     private UserId _buyerIdDouble;
     private IAuctionRepo _iAuctionRepoDouble;
-    private AuthorId _authorIdDouble;
 
     @BeforeEach
     void setUp() {
         _buyerIdDouble = mock(UserId.class);
         _iAuctionRepoDouble = mock(IAuctionRepo.class);
-        _authorIdDouble = mock(AuthorId.class);
     }
 
     @Test
@@ -33,73 +31,4 @@ class GetItemsOnAuctionOfAGivenAuthorControllerTest {
         new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
 
     }
-
-    @Test
-    void getAuctionItemsByAuthorShouldReturnEmptyListWhenThereAreNoItems() {
-        //Arrange
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of());
-
-        //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        //Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getAuctionItemsByAuthorReturnsListWithCorrectSize() {
-        // Arrange
-
-        Item _item1 = mock(Item.class);
-        Item _item2 = mock(Item.class);
-
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of(_item1, _item2));
-
-        //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
-
-        // Assert
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void getAuctionItemsByAuthorReturnsListContainingCorrectItems() {
-        // Arrange
-
-        Item _item1 = mock(Item.class);
-        Item _item2 = mock(Item.class);
-        Item _item3 = mock(Item.class);
-
-        when(_iAuctionRepoDouble.getAuctionItemsByAuthorId(_authorIdDouble)).thenReturn(List.of(_item1, _item2, _item3));
-
-        //SUT
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        // Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
-
-        // Assert
-        assertTrue(result.containsAll(List.of(_item1, _item2, _item3)));
-    }
-
-    @Test
-    void getAuctionItemsByAuthorShouldCallRepoWithCorrectAuthor() {
-
-        //SUT / Arrange
-        GetItemsOnAuctionOfAGivenAuthorController ctl = new GetItemsOnAuctionOfAGivenAuthorController(_iAuctionRepoDouble, _buyerIdDouble);
-
-        //Act
-        List<Item> result = ctl.getAuctionItemsByAuthor(_authorIdDouble);
-
-        //Assert
-        verify(_iAuctionRepoDouble, times(1)).getAuctionItemsByAuthorId(_authorIdDouble);
-
-    }
-
 }
