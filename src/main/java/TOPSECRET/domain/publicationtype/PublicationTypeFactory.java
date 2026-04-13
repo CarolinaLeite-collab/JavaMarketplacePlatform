@@ -5,7 +5,7 @@ import TOPSECRET.domain.valueobject.PublicationTypeId;
 /**
  * Factory responsible for creating {@link PublicationType} instances.
  * <p>
- * @throws IllegalArgumentException if publicationTypeName is invalid (as defined by {@link PublicationType}'s constructor)
+ * IllegalArgumentException is thrown if publicationTypeName is invalid (as defined by {@link PublicationTypeId}'s constructor)
  * </p>
  */
 
