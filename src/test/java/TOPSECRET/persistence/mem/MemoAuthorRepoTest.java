@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -196,6 +197,65 @@ public class MemoAuthorRepoTest {
 
         // Assert
         verify(_authorFactoryDouble).createAuthor(_authorName);
+
+    }
+
+    @Test
+    void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
+
+        // Arrange & SUT
+        MemoAuthorRepo memoAuthorRepo = new MemoAuthorRepo(_authorFactoryDouble);
+
+        // Act
+        List<AuthorId> keys = memoAuthorRepo.findAllKeys();
+
+        // Assert
+        assertTrue(keys.isEmpty());
+
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllStoredKeys() {
+
+        // Arrange
+        Author author2 = mock(Author.class);
+        AuthorId author2Id = mock(AuthorId.class);
+
+        when(_authorDouble.identity()).thenReturn(_authorIdDouble);
+        when(author2.identity()).thenReturn(author2Id);
+
+        // SUT
+        MemoAuthorRepo memoAuthorRepo = new MemoAuthorRepo(_authorFactoryDouble);
+
+        memoAuthorRepo.save(_authorDouble);
+        memoAuthorRepo.save(author2);
+
+        // Act
+        List<AuthorId> keys = memoAuthorRepo.findAllKeys();
+
+        // Assert
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(_authorIdDouble));
+        assertTrue(keys.contains(author2Id));
+
+    }
+
+    @Test
+    void findAllKeysShouldReturnCopyNotAffectingRepo() {
+
+        // Arrange
+        when(_authorDouble.identity()).thenReturn(_authorIdDouble);
+
+        // SUT
+        MemoAuthorRepo memoAuthorRepo = new MemoAuthorRepo(_authorFactoryDouble);
+        memoAuthorRepo.save(_authorDouble);
+
+        // Act
+        List<AuthorId> keys = memoAuthorRepo.findAllKeys();
+        keys.clear();
+
+        // Assert
+        assertTrue(memoAuthorRepo.containsOfIdentity(_authorIdDouble));
 
     }
 
