@@ -19,7 +19,7 @@ import java.util.*;
 
 public class MemoPublicationRepo implements IPublicationRepo {
 
-    private Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
+    private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
     private final PublicationFactory _publicationFactory;
 
     public MemoPublicationRepo(PublicationFactory publicationFactory) {
@@ -33,19 +33,23 @@ public class MemoPublicationRepo implements IPublicationRepo {
     }
 
     @Override
-    public Publication addPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
-        PublicationId publicationId = new PublicationId(title, authorId, releaseYear);
-        if (containsOfIdentity(publicationId)){
+    public Publication addPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId) {
+
+        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
+
+        if (containsOfIdentity(newPublication.identity())){
             throw new IllegalArgumentException("Publication already exists in the repository");
         }
-        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, publicationTypeId, genreId);
-
         return save(newPublication);
     }
 
     @Override
     public Optional<Publication> ofIdentity(PublicationId publicationId) {
-        return Optional.ofNullable(DATA.get(publicationId));
+        if (!containsOfIdentity(publicationId)) {
+            return Optional.empty();
+        } else {
+            return Optional.of(DATA.get(publicationId));
+        }
     }
 
     @Override
@@ -55,9 +59,17 @@ public class MemoPublicationRepo implements IPublicationRepo {
 
     @Override
     public Iterable<Publication> findAll() {
-        return List.copyOf(DATA.values());
+        return DATA.values();
     }
 
+
+    public List<PublicationId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+    }
+
+
+    // TODO: move to Service layer
     @Override
     public List<Publication> getDifferentOf(List<Publication> existentPublications) {
         List<Publication> result = new ArrayList<>();
@@ -67,13 +79,5 @@ public class MemoPublicationRepo implements IPublicationRepo {
             }
         }
         return List.copyOf(result);
-    }
-
-    @Override
-    public Publication getPublication(Publication publication) {
-        return DATA.values().stream()
-                .filter(p -> p.equals(publication))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Publication not found"));
     }
 }
