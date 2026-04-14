@@ -91,8 +91,8 @@ PublicationFactory "1" ..> "*" Publication : <<create>>
 
 Publication "1" --> "1" PublicationId: has
 Publication "1" ..> "1" AuthorId : references
-Publication "1" --> "1" Title : has
-Publication "1" ..> "1" GenreId : references
+Publication "*" --> "1" Title : has
+Publication "*" ..> "1" GenreId : references
 
 IPublicationRepo --|> IRepository
 

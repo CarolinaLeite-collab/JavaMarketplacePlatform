@@ -77,19 +77,19 @@ Package "ddd" {
 
 ' ===== Persistence =====
 Package "persistence" {
-     package "mem"  {
+     package "memo"  {
      class MemoPublicationRepo <<Repo>>
     }
 }
 
 ' ===== Relations =====
 Publication "1" --> "ID 1" PublicationId : has
-Publication "1"-> "1" Title : has
+Publication "*"-> "1" Title : has
 Publication "1"..> "1" AuthorId : references
-Publication "1"..> "1" GenreId : references
+Publication "*"..> "1" GenreId : references
 
-PublicationId "1" --> "1" Title : has
-PublicationId "1" -> "1" AuthorId : has
+PublicationId "*" --> "1" Title : uses
+PublicationId "*" -> "1" AuthorId : uses
 
 IPublicationRepo -|> IRepository
 MemoPublicationRepo ..|> IPublicationRepo
