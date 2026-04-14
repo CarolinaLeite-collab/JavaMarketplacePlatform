@@ -85,7 +85,7 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByAuthor(authorId)) {
+            if (directSale.isByAuthorId(authorId)) {
                 list.addAll(directSale.getItems());
             }
         }

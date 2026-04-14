@@ -57,7 +57,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
     }
 
-    public boolean isByAuthor(AuthorId authorId) {
+    public boolean isByAuthorId(AuthorId authorId) {
         for(Item item : _items) {
             if(item.isByAuthorId(authorId)) {
                 return true;

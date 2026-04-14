@@ -222,7 +222,7 @@ class DirectSaleTest {
         DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(_authorIdDouble);
+        boolean result = ds.isByAuthorId(_authorIdDouble);
 
         //Assert
         assertTrue(result);
@@ -240,7 +240,7 @@ class DirectSaleTest {
         DirectSale ds = new DirectSale(_items, _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(authorIdDouble);
+        boolean result = ds.isByAuthorId(authorIdDouble);
 
         //Assert
         assertFalse(result);
@@ -257,7 +257,7 @@ class DirectSaleTest {
         DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
-        ds.isByAuthor(authorIdDouble);
+        ds.isByAuthorId(authorIdDouble);
 
         //Assert
         verify(_itemDouble, times(1)).isByAuthorId(authorIdDouble);
