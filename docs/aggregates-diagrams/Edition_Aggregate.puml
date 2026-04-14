@@ -24,10 +24,20 @@ Package "DOMAIN" {
     Package "EDITION" <<Folder>> #b0c4d4 {
 
         class Edition <<Root>> <<Entity>> {
+            -_publishingYear : Year
+
+            -isValidIdentifier(typeId : PublicationTypeId, identifier : Identifier, year : Year) : boolean
+            +getPublicationTypeId() : PublicationTypeId
+            +getIdentifier() : Identifier
             +getPublicationId() : PublicationId
             +getPublishingCompanyId() : PublishingCompanyId
             +getPublishingYear() : Year
             +getEditionLanguage() : Language
+            +getNumberOfPages() : NumberOfPages
+            +getEditionNumber() : EditionNumber
+            +getBinding() : Binding
+            +getDimension() : Dimension
+            +getWeight() : Weight
         }
 
 
@@ -40,7 +50,6 @@ Package "DOMAIN" {
     Package "VALUEOBJECT" <<Folder>> {
 
         class EditionId <<ValueObject>> #LightPink {
-            +getIdentifier()
             +equals()
         }
 
@@ -49,14 +58,18 @@ Package "DOMAIN" {
         }
 
         class PublicationTypeId <<ValueObject>>
-        class NumberOfPages <<ValueObject>>
-        class Binding <<ValueObject>>
-        class ISBN <<ValueObject>>
-        class ISSN <<ValueObject>>
-        class Language <<ValueObject>>
         class PublicationId <<ValueObject>>
         class PublishingCompanyId <<ValueObject>>
+        class Language <<ValueObject>>
+        class ISBN <<ValueObject>>
+        class ISSN <<ValueObject>>
+
+        class Dimension <<ValueObject>>
+        class Weight <<ValueObject>>
+        class NumberOfPages <<ValueObject>>
         class EditionNumber <<ValueObject>>
+        class Binding <<ValueObject>>
+
     }
 
     Package "REPOSITORY" <<Folder>> {
@@ -77,10 +90,11 @@ Package "DDD" {
         +findAll() : Iterable<T>
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
     }
 
     interface DomainEntity<ID, T> <<Interface>> {
-        +identity() : EditionId
+        +identity() : ID
         +equals(Object) : boolean
         +sameAs(Object) : boolean
         +toString() : String
@@ -95,19 +109,22 @@ Package "PERSISTENCE" {
 
 ' ===== Relations =====
 Edition "1" --> "ID 1" EditionId : has
-Edition ..> PublicationId : references
-Edition ..> PublishingCompanyId : references
-Edition ..> PublicationTypeId : references
+Edition "*" ..> "1" PublicationId : references
+Edition "*" ..> "1" PublishingCompanyId : references
+Edition "*" ..> "1" PublicationTypeId : references
+Edition "*" --> "1" Language : has
 
-Edition --> Language : has
-Edition --> EditionNumber : has
-
-Edition --> NumberOfPages : has
-Edition --> Binding : has
-Edition --> Identifier : has
-
+Edition "1" --> "1" Identifier : has
 Identifier <|.. ISBN
 Identifier <|.. ISSN
+
+' optional atributes
+Edition "*" --> "0..1" Dimension : has
+Edition "*" --> "0..1" Weight : has
+Edition "*" --> "0..1" NumberOfPages : has
+Edition "*" --> "0..1" EditionNumber : has
+Edition "*" --> "0..1" Binding : has
+
 
 
 IEditionRepo ..|> IRepository
