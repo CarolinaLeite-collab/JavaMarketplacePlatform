@@ -8,27 +8,17 @@ import java.time.Year;
 
 public interface IEditionRepo extends IRepository<EditionId, Edition> {
 
-    Edition addEditionBook(BookId bookId,
-                                  PublicationId publicationId,
-                                  PublishingCompanyId publishingCompanyId,
-                                  Year publishingYear,
-                                  Language editionLanguage,
-                                  Dimension dimension,
-                                  Weight weight,
-                                  NumberOfPages numberOfPages,
-                                  EditionNumber editionNumber,
-                                  Binding binding
+    Edition addEdition(PublicationTypeId typeId,
+                       Identifier identifier,
+                       PublicationId publicationId,
+                       PublishingCompanyId publishingCompanyId,
+                       Year publishingYear,
+                       Language editionLanguage,
+                       Dimension dimension,
+                       Weight weight,
+                       NumberOfPages numberOfPages,
+                       EditionNumber editionNumber,
+                       Binding binding
     );
-
-    Edition addEditionMagazine(MagazineId magazineId,
-                               PublicationId publicationId,
-                               PublishingCompanyId publishingCompanyId,
-                               Year publishingYear,
-                               Language editionLanguage,
-                               Dimension dimension,
-                               Weight weight,
-                               IssueNumber issueNumber,
-                               Periodicity periodicity
-                               );
 
 }
