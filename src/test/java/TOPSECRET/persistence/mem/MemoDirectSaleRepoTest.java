@@ -3,7 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.DirectSaleId;
@@ -235,7 +235,7 @@ class MemoDirectSaleRepoTest {
     void getDirectSaleItemsByPublisherFiltersCorrectly(){
 
         // Arrange
-        PublishingCompany pcDouble = mock(PublishingCompany.class);
+        PublishingCompanyId pcDouble = mock(PublishingCompanyId.class);
         when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);
 
         when(_ds1Double.isByPublishingCompany(pcDouble)).thenReturn(true);

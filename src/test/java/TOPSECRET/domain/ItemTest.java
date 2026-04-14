@@ -1,7 +1,7 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.directsale.DirectSale;
@@ -337,11 +337,11 @@ class ItemTest {
     @Test
     void isByPublishingCompany_returnsAlwaysFalse() {
         // Arrange
-        PublishingCompany _publisherDouble = mock(PublishingCompany.class);
+        PublishingCompanyId _publisherIdDouble = mock(PublishingCompanyId.class);
         Item item = new Item(publicationDouble, conditionDouble);
 
         // Act
-        boolean result = item.isByPublishingCompany(_publisherDouble); // SUT
+        boolean result = item.isByPublishingCompany(_publisherIdDouble); // SUT
 
         // Assert
         assertFalse(result);

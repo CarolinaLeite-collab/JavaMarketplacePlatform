@@ -1,11 +1,10 @@
 package TOPSECRET.domain;
 
 import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.GenreId;
 
@@ -89,7 +88,7 @@ public class Item {
 
     /** @deprecated filtering by publishing company moves to Edition — remove when Item references Edition */
     @Deprecated
-    public boolean isByPublishingCompany( PublishingCompany publisher) {
+    public boolean isByPublishingCompany(PublishingCompanyId publisherId) {
 
         return false;
     }

@@ -6,6 +6,7 @@ import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -162,4 +163,35 @@ class MemoCityRepoTest {
 
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findAllKeysShouldReturnEmptyWhenNoCity() {
+        MemoCityRepo repo = new MemoCityRepo();
+
+        assertTrue(repo.findAllKeys().isEmpty());
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllKeys() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
+        repo.save(_cityDouble2);
+
+        List<CityId> keys = repo.findAllKeys();
+
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(_cityId1));
+        assertTrue(keys.contains(_cityId2));
+    }
+
+    @Test
+    void findAllKeysShouldReturnMutableList() {
+        MemoCityRepo repo = new MemoCityRepo();
+        repo.save(_cityDouble);
+
+        List<CityId> keys = repo.findAllKeys();
+
+        assertDoesNotThrow(() -> keys.add(_cityId2));
+    }
+
 }

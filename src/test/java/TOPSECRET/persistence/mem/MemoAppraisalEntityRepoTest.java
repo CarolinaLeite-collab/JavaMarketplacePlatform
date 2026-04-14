@@ -8,6 +8,7 @@ import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -275,7 +276,102 @@ class MemoAppraisalEntityRepoTest {
 
     }
 
+    @Test
+    void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
 
+        // Arrange & SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
 
+        // Act
+        List<AppraisalEntityId> keys = repo.findAllKeys();
+
+        // Assert
+        assertTrue(keys.isEmpty());
+
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllKeys() {
+
+        // Arrange
+        AppraisalEntity entity2 = mock(AppraisalEntity.class);
+        AppraisalEntityId id2 = mock(AppraisalEntityId.class);
+
+        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+        when(entity2.identity()).thenReturn(id2);
+
+        // SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        repo.save(_AppraisalEntityDouble);
+        repo.save(entity2);
+
+        // Act
+        List<AppraisalEntityId> keys = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(_AppraisalEntityIdDouble));
+        assertTrue(keys.contains(id2));
+
+    }
+
+    @Test
+    void findAllKeysShouldReturnCopyNotAffectingRepo() {
+
+        // Arrange
+        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+
+        // SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        repo.save(_AppraisalEntityDouble);
+
+        // Act
+        List<AppraisalEntityId> keys = repo.findAllKeys();
+        keys.clear();
+
+        // Assert
+        assertTrue(repo.containsOfIdentity(_AppraisalEntityIdDouble));
+
+    }
+
+    @Test
+    void saveShouldThrowWhenEntityIsNull() {
+
+        // Arrange & SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        // Act
+        Executable action = () -> repo.save(null);
+
+        // Assert
+        assertThrows(NullPointerException.class, action);
+    }
+
+    @Test
+    void findAllKeysOrderShouldNotBeGuaranteed() {
+
+        // Arrange
+        AppraisalEntity entity2 = mock(AppraisalEntity.class);
+        AppraisalEntityId id2 = mock(AppraisalEntityId.class);
+
+        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
+        when(entity2.identity()).thenReturn(id2);
+
+        // SUT
+        MemoAppraisalEntityRepo repo = new MemoAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+
+        repo.save(_AppraisalEntityDouble);
+        repo.save(entity2);
+
+        // Act
+        List<AppraisalEntityId> keys = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, keys.size());
+        assertTrue(keys.contains(_AppraisalEntityIdDouble));
+        assertTrue(keys.contains(id2));
+
+    }
 
 }

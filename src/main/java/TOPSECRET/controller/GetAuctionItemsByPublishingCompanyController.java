@@ -2,7 +2,7 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  * Controller responsible for retrieving auction items by a specific publishingCompany.
  * <p>
  * This controller uses the {@link IAuctionRepo} to obtain a list of {@link Item}
- * instances that are currently on auction and were created by a given {@link PublishingCompany}.
+ * instances that are currently on auction and were created by a given {@link PublishingCompanyId}.
  * </p>
  */
 
@@ -24,8 +24,8 @@ public class GetAuctionItemsByPublishingCompanyController {
         _iAuctionRepo = iAuctionRepo;
     }
 
-    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompany publisher) {
+    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompanyId publishingCompanyId) {
 
-        return _iAuctionRepo.getAuctionItemsByPublishingCompanyId(publisher);
+        return _iAuctionRepo.getAuctionItemsByPublishingCompanyId(publishingCompanyId);
     }
 }

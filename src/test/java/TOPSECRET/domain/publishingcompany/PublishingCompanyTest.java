@@ -1,5 +1,6 @@
 package TOPSECRET.domain.publishingcompany;
 
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -7,127 +8,128 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PublishingCompanyTest {
 
     @Test
-    void testConstructor() {
+    void constructorShouldBuildPublishingCompanyFromString() {
+
+        //Arrange + Act
         new PublishingCompany("Penguin Random House");
     }
 
     @Test
-    void validPublisher() {
+    void identityShouldReturnUnderlyingId() {
+
         //Arrange
-        PublishingCompany p = new PublishingCompany("Porto Editora");
+        String pubType = "Pendant Publishing";
+        PublishingCompany publishingCompany = new PublishingCompany(pubType);
 
-        //Act + Assert
-        assertEquals("PORTO EDITORA", p.getName());
+        // Act
+        PublishingCompanyId pubCoId = publishingCompany.identity();
+
+        //Assert
+        assertEquals("PENDANT PUBLISHING", pubCoId.toString());
+
     }
 
     @Test
-    void publisherNameIsTrimmed() {
+    void sameAsShouldReturnTrueForEqualPublishingCompanies() {
+
         //Arrange
-        PublishingCompany p1 = new PublishingCompany(" Porto Editora  ");
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
+        PublishingCompany pubCo2 = new PublishingCompany("PORTO EDITORA");
 
         //Act + Assert
-        assertEquals("PORTO EDITORA", p1.getName());
+        assertTrue(pubCo.sameAs(pubCo2));
+
     }
 
     @Test
-    void emptyPublisher() {
+    void sameAsShouldReturnFalseForDifferentPublishingCompanies() {
+
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
+        PublishingCompany pubCo2 = new PublishingCompany("PORTUGAL EDITORA");
+
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> {new PublishingCompany("  ");});
+        assertFalse(pubCo.sameAs(pubCo2));
+
     }
 
     @Test
-    void nullPublisher() {
+    void samePublishingCompaniesAreEqual() {
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto editora");
+        PublishingCompany pubCo2 = new PublishingCompany("PORTO EDITORA");
+
         //Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> {new PublishingCompany(null);});
+        assertEquals(pubCo, pubCo2);
     }
 
     @Test
-    void publishersWithSameName() {
-        //Act
-        PublishingCompany p2 = new PublishingCompany("Porto editora");
-        PublishingCompany p3 = new PublishingCompany("PORTO EDITORA");
+    void differentPublishingCompaniesAreNotEqual() {
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
+        PublishingCompany pubCo2 = new PublishingCompany("Tinta da China");
 
-        //Assert
-        assertEquals(p2, p3);
+        //Act + Assert
+        assertNotEquals(pubCo, pubCo2);
     }
 
     @Test
-    void publishersWithSameNameHaveSameHashCode() {
-        //Act
-        PublishingCompany p4 = new PublishingCompany("Porto editora");
-        PublishingCompany p5 = new PublishingCompany("PORTO EDITORA");
+    void toStringShouldReturnPublishingCompanyName() {
 
-        //Assert
-        assertEquals(p4.hashCode(), p5.hashCode());
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Pendant Publishing");
+
+        //Act + Assert
+        assertEquals("PENDANT PUBLISHING", pubCo.toString());
+
     }
 
     @Test
-    void publisherEqualsItself() {
-        //Act
-        PublishingCompany p6 = new PublishingCompany("Porto Editora");
+    void sameObjectShouldAssertEquals() {
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
 
         //Assert
-        assertEquals(p6, p6);
+        assertEquals(pubCo, pubCo);
     }
 
     @Test
     void publisherNotEqualToNull() {
-        //Act
-        PublishingCompany p7 = new PublishingCompany("Porto Editora");
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
 
         //Assert
-        assertNotEquals(p7, null);
+        assertNotEquals(null, pubCo);
     }
 
     @Test
     void publisherNotEqualToDifferentType() {
-        //Act
-        PublishingCompany p8 = new PublishingCompany("Porto Editora");
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
+        String differentType = "Porto Editora";
 
         //Assert
-        assertNotEquals(p8, "Porto Editora");
+        assertNotEquals(pubCo, differentType);
     }
 
     @Test
-    void publisherWithDifferentNameAreNotEqual() {
-        //Act
-        PublishingCompany p9 = new PublishingCompany("Porto Editora");
-        PublishingCompany p10 = new PublishingCompany("Tinta da China");
+    void publishersWithSameNameHaveSameHashCode() {
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto editora");
+        PublishingCompany pubCo2 = new PublishingCompany("PORTO EDITORA");
 
-        //Assert
-        assertNotEquals(p9, p10);
+        //Act + Assert
+        assertEquals(pubCo.hashCode(), pubCo2.hashCode());
     }
 
     @Test
     void publisherWithDifferentNameHaveDifferentHashCode() {
-        //Act
-        PublishingCompany p11 = new PublishingCompany("Porto Editora");
-        PublishingCompany p12 = new PublishingCompany("Tinta da China");
+        //Arrange
+        PublishingCompany pubCo = new PublishingCompany("Porto Editora");
+        PublishingCompany pubCo2 = new PublishingCompany("Tinta da China");
 
-        //Assert
-        assertNotEquals(p11.hashCode(), p12.hashCode());
-    }
-
-    @Test
-    void isSamePublishingCompanyShouldReturnTrueIfSame() {
-
-        //Act
-        PublishingCompany p13 = new PublishingCompany("Porto Editora");
-
-        //Assert
-        assertTrue(p13.isSamePublishingCompany("PORTO EDITORA"));
-
-    }
-
-    @Test
-    void isSamePublishingCompanyShouldReturnFalseIfNotSame() {
-
-        //Act
-        PublishingCompany p14 = new PublishingCompany("Porto Editora");
-
-        //Assert
-        assertFalse(p14.isSamePublishingCompany("Pendant Publishing"));
-
+        //Act + Assert
+        assertNotEquals(pubCo.hashCode(), pubCo2.hashCode());
     }
 
 }

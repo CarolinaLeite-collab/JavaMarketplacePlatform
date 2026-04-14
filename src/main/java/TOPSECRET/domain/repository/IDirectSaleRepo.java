@@ -3,12 +3,8 @@ package TOPSECRET.domain.repository;
 import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.DirectSaleId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Period;
 import java.util.List;
@@ -23,5 +19,5 @@ public interface IDirectSaleRepo extends IRepository<DirectSaleId, DirectSale> {
 
     List<Item> getDirectSaleItemsByPublication(Publication publication);
 
-    List<Item> getDirectSaleItemsByPublisher(PublishingCompany publisher);
+    List<Item> getDirectSaleItemsByPublisher(PublishingCompanyId publisherId);
 }

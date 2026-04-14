@@ -27,11 +27,6 @@ public class RegisterCityController {
         _cityFactory = cityFactory;
     }
 
-    public List<Country> getAllCountries() {
-        List<Country> countries = new ArrayList<>();
-        _iCountryRepo.findAll().forEach(countries::add);
-        return countries;
-    }
 
     public City registerCity(String cityName, CountryId countryId) {
         Country country = _iCountryRepo.ofIdentity(countryId)

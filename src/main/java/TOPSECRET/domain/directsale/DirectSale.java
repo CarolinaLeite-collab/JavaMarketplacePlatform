@@ -4,7 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.GenreId;
@@ -76,9 +76,9 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         return false;
     }
 
-    public boolean isByPublishingCompany(PublishingCompany publisher) {
+    public boolean isByPublishingCompany(PublishingCompanyId publisherId) {
         for(Item item : _items) {
-            if(item.isByPublishingCompany(publisher)) {
+            if(item.isByPublishingCompany(publisherId)) {
                 return true;
             }
         }

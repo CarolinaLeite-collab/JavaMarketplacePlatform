@@ -2,7 +2,7 @@ package TOPSECRET.domain.directsale;
 
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.AuthorId;
@@ -267,14 +267,14 @@ class DirectSaleTest {
     void isByPublisherShouldReturnTrueWhenPublishingCompanyMatches()  {
 
         // Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class);
-        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(true);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class);
+        when(_itemDouble.isByPublishingCompany(publisherIdDouble)).thenReturn(true);
 
         // SUT
         DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        boolean result = directSale.isByPublishingCompany(publisherDouble);
+        boolean result = directSale.isByPublishingCompany(publisherIdDouble);
 
         // Assert
         assertTrue(result);
@@ -285,14 +285,14 @@ class DirectSaleTest {
     void isByPublisherShouldReturnFalseWhenPublishingCompanyDoesNotMatch() {
 
         // Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class);
-        when(_itemDouble.isByPublishingCompany(publisherDouble)).thenReturn(false);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class);
+        when(_itemDouble.isByPublishingCompany(publisherIdDouble)).thenReturn(false);
 
         // SUT
         DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        boolean result = directSale.isByPublishingCompany(publisherDouble);
+        boolean result = directSale.isByPublishingCompany(publisherIdDouble);
 
         // Assert
         assertFalse(result);
@@ -303,16 +303,16 @@ class DirectSaleTest {
     void isByPublishingCompanyShouldDelegateToItem() {
 
         // Arrange
-        PublishingCompany publisherDouble = mock(PublishingCompany.class);
+        PublishingCompanyId publisherIdDouble = mock(PublishingCompanyId.class);
 
         // SUT
         DirectSale directSale = new DirectSale(_items, _priceDouble, _period);
 
         // Act
-        directSale.isByPublishingCompany(publisherDouble);
+        directSale.isByPublishingCompany(publisherIdDouble);
 
         // Assert
-        verify(_itemDouble).isByPublishingCompany(publisherDouble);
+        verify(_itemDouble).isByPublishingCompany(publisherIdDouble);
     }
 
     @Test

@@ -65,6 +65,12 @@ public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
 
     }
 
+    public List<PublicationTypeId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
     @Override
     public PublicationType addPublicationType(String publicationTypeName) {
 

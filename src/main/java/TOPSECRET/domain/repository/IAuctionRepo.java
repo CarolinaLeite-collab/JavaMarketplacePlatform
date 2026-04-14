@@ -4,7 +4,7 @@ import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.Item;
 import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.valueobject.AuctionId;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.GenreId;
@@ -27,5 +27,5 @@ public interface IAuctionRepo extends IRepository<AuctionId, Auction> {
 
     List<Item> getAuctionItemsByPublicationId(Publication publication);
 
-    List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompany publisher);
+    List<Item> getAuctionItemsByPublishingCompanyId(PublishingCompanyId publisherId);
 }

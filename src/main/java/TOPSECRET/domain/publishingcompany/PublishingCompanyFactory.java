@@ -2,6 +2,9 @@ package TOPSECRET.domain.publishingcompany;
 
 /**
  * Factory responsible for creating {@link PublishingCompany} instances.
+ * <p>
+ * IllegalArgumentException is thrown if publishingCompanyName is invalid (as defined by {@link TOPSECRET.domain.valueobject.PublishingCompanyId}'s constructor)
+ * </p>
  */
 
 public class PublishingCompanyFactory {
