@@ -25,7 +25,7 @@ User -> System: I want to put for Direct Sale\nan item in my library!
 activate "System"
 System --> User: Which item\nwould you like to sell?
 deactivate "System"
-User -> System: itemID
+User -> System: Item
 activate "System"
 System --> User: What is the price \nand time limit for this sale?
 deactivate "System"
