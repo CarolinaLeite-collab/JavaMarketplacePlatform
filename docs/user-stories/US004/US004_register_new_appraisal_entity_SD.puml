@@ -36,7 +36,7 @@ Administrator -> UI: name
 activate UI
 
 '==== Use case execution ====
-UI -> CTL: getPublicationTypes()
+UI -> CTL: getPublicationTypesId()
 activate CTL
 CTL -> PTR: findAllKeys()
 activate PTR
@@ -48,9 +48,9 @@ deactivate CTL
 UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
 deactivate UI
 
-Administrator -> UI: publicationTypes
+Administrator -> UI: publicationTypesId
 activate UI
-UI -> CTL: getGenres()
+UI -> CTL: getGenresId()
 activate CTL
 CTL -> grRepo: findAllKeys()
 activate grRepo
@@ -62,7 +62,7 @@ deactivate CTL
 UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
 deactivate UI
 
-Administrator -> UI: genres
+Administrator -> UI: genresId
 activate UI
 UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
 activate CTL

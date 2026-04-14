@@ -41,7 +41,7 @@ create "newPublishingCompany:%n()PublishingCompany"
 deactivate "Factory"
 note right of Repo
     assuming happy path:
-    containsOfIdentity(newPublishingCompany.identity()) %n()== false
+    containsOfIdentity(PublishingCompanyId) == false
 end note
 "Repo" -> "Repo": save(newPublishingCompany);
 "Repo" --> "Ctl": newPublishingCompany

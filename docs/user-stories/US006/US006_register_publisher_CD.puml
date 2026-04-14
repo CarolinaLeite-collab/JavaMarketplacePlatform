@@ -18,22 +18,22 @@ skinparam classAttributeIconSize 0
 class RegisterPublishingCompanyUI {
 }
 
-package "PERSISTENCE" {
-    package "MEM" {
+package "persistence" {
+    package "memo" {
         class MemoPublishingCompanyRepo {
         + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
         }
     }
 }
 
-package "CONTROLLER" {
+package "controller" {
     class RegisterPublishingCompanyController {
     + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
     }
 }
 
-package "DOMAIN" {
-    package "PUBLISHINGCOMPANY" #b0c4d4 {
+package "domain" {
+    package "publishingcompany" #b0c4d4 {
         class PublishingCompany <<Root>> <<Entity>> {
         }
         class PublishingCompanyFactory <<Factory>> {
@@ -41,19 +41,19 @@ package "DOMAIN" {
         }
 
     }
-    package "REPOSITORY" {
+    package "repository" {
         interface IPublishingCompanyRepo {
         }
     }
 
-    package "VALUE OBJECT" {
+    package "valueobject" {
         class PublishingCompanyId <<Value Object>> #LightPink {
         }
     }
 
 }
 
-package "DDD" {
+package "ddd" {
     interface IRepository <ID, T> <<Interface>> {
         save(entity : T) : T
         findAll() : Iterable<T>

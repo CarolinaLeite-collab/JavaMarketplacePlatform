@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ICityRepo extends IRepository<CityId, City> {
     City addCity(City city);
-    List<CityId> findAllKeys();
+    
 
 }
