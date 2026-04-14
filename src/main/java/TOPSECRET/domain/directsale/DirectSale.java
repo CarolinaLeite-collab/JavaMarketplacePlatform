@@ -59,7 +59,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     public boolean isByAuthor(AuthorId authorId) {
         for(Item item : _items) {
-            if(item.isByAuthor(authorId)) {
+            if(item.isByAuthorId(authorId)) {
                 return true;
             }
         }
@@ -85,9 +85,9 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         return false;
     }
 
-    public boolean isByGenre(GenreId genreId) {
+    public boolean isByGenreId(GenreId genreId) {
         for(Item item : _items) {
-            if(item.isByGenre(genreId)) {
+            if(item.isByGenreId(genreId)) {
                 return true;
             }
         }

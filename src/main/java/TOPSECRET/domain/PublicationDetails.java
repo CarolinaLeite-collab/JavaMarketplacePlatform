@@ -17,7 +17,7 @@ public class PublicationDetails {
 
     private final Title _title;
     private final AuthorId _authorId;
-    private final PublicationTypeId _publicationTypeId;
+//    private final PublicationTypeId _publicationTypeId;
     //private final Identifier _identifier;
 
     public PublicationDetails(Item item) {
@@ -25,7 +25,7 @@ public class PublicationDetails {
 
         _title = publication.getTitle();
         _authorId = publication.getAuthorId();
-        _publicationTypeId = publication.getPublicationTypeId();
+//        _publicationTypeId = publication.getPublicationTypeId();
         //_identifier = publication.getIdentifier();
     }
 
@@ -37,9 +37,9 @@ public class PublicationDetails {
         return _authorId;
     }
 
-    public PublicationTypeId getPublicationTypeId() {
-        return _publicationTypeId;
-    }
+//    public PublicationTypeId getPublicationTypeId() {
+//        return _publicationTypeId;
+//    }
 
 //    public Identifier getIdentifier() {
 //        return _identifier;

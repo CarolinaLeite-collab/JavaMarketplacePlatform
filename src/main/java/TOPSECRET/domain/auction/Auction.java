@@ -181,18 +181,18 @@ public class Auction implements AggregateRoot<AuctionId> {
         return result;
     }
 
-    public boolean isByGenre(GenreId genreId) {
+    public boolean isByGenreId(GenreId genreId) {
         for (Item item : _items) {
-            if (item.isByGenre(genreId)) {
+            if (item.isByGenreId(genreId)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isByAuthor(AuthorId authorId){
+    public boolean isByAuthorId(AuthorId authorId){
         for (Item item : _items) {
-            if (item.isByAuthor(authorId)) {
+            if (item.isByAuthorId(authorId)) {
                 return true;
             }
         }

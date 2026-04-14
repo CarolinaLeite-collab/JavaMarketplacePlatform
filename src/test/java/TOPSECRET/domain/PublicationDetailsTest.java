@@ -30,7 +30,7 @@ class PublicationDetailsTest {
         // stub the publication fields
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
         when(publicationDouble.getAuthorId()).thenReturn(authorIdDouble);
-        when(publicationDouble.getPublicationTypeId()).thenReturn(publicationTypeIdDouble);
+//        when(publicationDouble.getPublicationTypeId()).thenReturn(publicationTypeIdDouble);
         //when(publicationDouble.getIdentifier()).thenReturn(identifierDouble);
 
         // Act
@@ -40,7 +40,7 @@ class PublicationDetailsTest {
         assertNotNull(details);
         assertEquals(titleDouble, details.getTitle());
         assertEquals(authorIdDouble, details.getAuthorId());
-        assertEquals(publicationTypeIdDouble, details.getPublicationTypeId());
+//        assertEquals(publicationTypeIdDouble, details.getPublicationTypeId());
         //assertEquals(identifierDouble, details.getIdentifier());
     }
 }

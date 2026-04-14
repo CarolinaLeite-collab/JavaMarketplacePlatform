@@ -99,7 +99,7 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
         List<Item> list = new ArrayList<>();
 
         for (DirectSale directSale : _directSales) {
-            if (directSale.isByGenre(genreId)) {
+            if (directSale.isByGenreId(genreId)) {
                 list.addAll(directSale.getItems());
             }
         }

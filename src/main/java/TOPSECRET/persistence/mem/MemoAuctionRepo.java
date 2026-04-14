@@ -86,7 +86,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
         List<Item> listOfAuctionItemsByGenre = new ArrayList<>();
 
         for (Auction auction : findAll()) {
-            if (auction.isByGenre(genreId)) {
+            if (auction.isByGenreId(genreId)) {
                 listOfAuctionItemsByGenre.addAll(auction.getItems());
             }
         }
@@ -99,7 +99,7 @@ public class MemoAuctionRepo implements IAuctionRepo {
         List<Item> listOfAuctionItemsByAuthor = new ArrayList<>();
 
         for (Auction auction : findAll()) {
-            if (auction.isByAuthor(authorId)) {
+            if (auction.isByAuthorId(authorId)) {
                 listOfAuctionItemsByAuthor.addAll(auction.getItems());
             }
         }

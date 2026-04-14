@@ -74,15 +74,15 @@ public class Item {
 
     }
 
-    public boolean isByAuthor(AuthorId authorId) {
+    public boolean isByAuthorId(AuthorId authorId) {
 
-        return _publication.isByAuthor(authorId);
+        return _publication.isByAuthorId(authorId);
 
     }
 
-    public boolean isByGenre(GenreId genreId) {
+    public boolean isByGenreId(GenreId genreId) {
 
-        return _publication.isByGenre(genreId);
+        return _publication.isByGenreId(genreId);
 
     }
 

@@ -165,7 +165,7 @@ class MemoAuctionRepoTest {
         //Arrange
         GenreId genreIdDouble = mock(GenreId.class);
 
-        when(_auctionDouble1.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_auctionDouble1.isByGenreId(genreIdDouble)).thenReturn(true);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
@@ -211,8 +211,8 @@ class MemoAuctionRepoTest {
         //Arrange
         GenreId genreIdDouble = mock(GenreId.class);
 
-        when(_auctionDouble1.isByGenre(genreIdDouble)).thenReturn(true);
-        when(_auctionDouble2.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_auctionDouble1.isByGenreId(genreIdDouble)).thenReturn(true);
+        when(_auctionDouble2.isByGenreId(genreIdDouble)).thenReturn(true);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
@@ -242,7 +242,7 @@ class MemoAuctionRepoTest {
         //Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(_auctionDouble1).isByGenre(null);
+        verify(_auctionDouble1).isByGenreId(null);
     }
 
     @Test
@@ -250,8 +250,8 @@ class MemoAuctionRepoTest {
         //Arrange
         AuthorId authorIdDouble = mock(AuthorId.class);
 
-        when(_auctionDouble1.isByAuthor(authorIdDouble)).thenReturn(true);
-        when(_auctionDouble2.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(_auctionDouble1.isByAuthorId(authorIdDouble)).thenReturn(true);
+        when(_auctionDouble2.isByAuthorId(authorIdDouble)).thenReturn(false);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
@@ -272,7 +272,7 @@ class MemoAuctionRepoTest {
         //Arrange
         AuthorId authorIdDouble = mock(AuthorId.class);
 
-        when(_auctionDouble1.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(_auctionDouble1.isByAuthorId(authorIdDouble)).thenReturn(false);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
@@ -291,7 +291,7 @@ class MemoAuctionRepoTest {
         //Arrange
         AuthorId authorIdDouble = mock(AuthorId.class);
 
-        when(_auctionDouble1.isByAuthor(authorIdDouble)).thenReturn(true);
+        when(_auctionDouble1.isByAuthorId(authorIdDouble)).thenReturn(true);
 
         //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
