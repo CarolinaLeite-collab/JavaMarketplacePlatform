@@ -17,83 +17,84 @@ skinparam classAttributeIconSize 0
 '==== classes ====
 class RegisterPublicationUI {}
 
+package "controller" {
 class RegisterNewPublicationController {
-  + registerPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
+  + registerPublication(Title title, AuthorId authorId, Year releaseYear,\nGenreId genreId) : Publication
+}
 }
 
-interface IPublicationRepo {
-  + addPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
-}
+package "domain"{
 
-class MemoPublicationRepo{
-- _publications: List<Publication>
-  - add(publication: Publication) : Publication
-  - contains(publication: Publication): boolean
-}
+    package "valueobject"{
+        class PublicationId <<ValueObject>> #lightpink {
+        }
+        class Title <<ValueObject>>{
+        }
+        class AuthorId <<ValueObject>>{
+        }
+        class GenreId <<ValueObject>>{
+        }
+    }
 
-class PublicationFactory{
-+ createPublication(publicationType: PublicationType, %n()identifier: Identifier, publicationYear: Year, title: Title, author: Author, %n()publisher: PublishingCompany, edition: Edition, %n()genre: Genre) : Publication
-}
+    package "repository" {
+        interface IPublicationRepo <<Interface>> {
+            + addPublication(Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
+            + getDifferentOf(List<Publication> existentPublications) : List<Publication>
+         }
+    }
 
-class Publication{
-  - _publicationType: PublicationType
-  - _identifier: Identifier
-  - _publicationYear: Year
-  - _title: Title
-  - _author: Author
-  - _publisher: Publisher
-  - _edition: Edition
-  - _genre: Genre
-}
+    package "publication" #b0c4d4 {
 
-/' interface EditionId {
-  + getIdentifier(): String
- }
-class ISBN {
-  - _isbn: String
-  + equals(Object): boolean
-  + getIdentifier(): String
+        class Publication  <<Root>> <<Entity>> {
+            - _publicationYear: Year
+             +sameAs(object : Object)
+             +identity() : PublicationId
+        }
+
+        class PublicationFactory <<Factory>> {
+            + createPublication(Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
+        }
+    }
+}
+    package "persistence"  {
+       package "memo" {
+          class MemoPublicationRepo{
+          }
+       }
+    }
+
+
+  package ddd {
+
+       interface IRepository<ID, T> <<Interface>> {
+          save(entity:T) : T
+          findAll() : Iterable<T>
+          findAllKeys () : List <ID>
+          ofIdentity(id: ID) : Optional <T>
+          containsOfIdentity(id: ID) : boolean
+          }
+
   }
-class ISSN {
-  - _issn: String
-  + equals(Object): boolean
-  + getIdentifier(): String
-  }
 
-class NoEditionId {
-  - _noIdentifier: String
-  + NoEditionId()
-  + getIdentifier(): String
-  }
-'/
 '==== relations ====
-RegisterPublicationUI "1" ..> "1" RegisterNewPublicationController : uses
-RegisterNewPublicationController "1" --> "1" IPublicationRepo: uses
-IPublicationRepo "1" <|.. "1" MemoPublicationRepo
-MemoPublicationRepo "1" --> "*" PublicationFactory : uses
-PublicationFactory "1" --> "*" Publication : creates
-'Publication --> "1" EditionId : has
+RegisterPublicationUI "1" ..> "1" RegisterNewPublicationController : invokes
+
+RegisterNewPublicationController "1" ..> "1" IPublicationRepo: <<use>>
+RegisterNewPublicationController "1" ..> "*" Publication : <<use>>
+
+MemoPublicationRepo .|> IPublicationRepo
+MemoPublicationRepo "1" ---> "1" PublicationFactory : invokes
+MemoPublicationRepo "1" -----> "*" Publication : persists
+
+PublicationFactory "1" ..> "*" Publication : <<create>>
 
 
-' --- identifier hierarchy ---
-/'EditionId <|.. ISBN
-EditionId <|.. ISSN
-EditionId <|.. NoEditionId'/
+Publication "1" --> "1" PublicationId: has
+Publication "1" ..> "1" AuthorId : references
+Publication "1" --> "1" Title : has
+Publication "1" ..> "1" GenreId : references
 
-note right of MemoPublicationRepo
-  these methods are
-  implementation details
-  of MemoPublicationRepo
-end note
+IPublicationRepo --|> IRepository
 
-note right of Publication
-  abstract editorial work,
-  independent of any specific copy;
-  previously named PublicationInfo
-end note
-
-note left of Publication
-identifier is either %n()ISBN, ISSN or %n()NoIdentifier
-end note
 
 @enduml
