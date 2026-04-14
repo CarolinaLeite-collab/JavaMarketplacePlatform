@@ -21,51 +21,61 @@ class PublicationSaleAuctionUI {
 class PublicationSaleAuctionController {
   - _iLibraryRepo: ILibraryRepo
   - _iAuctionRepo: IAuctionRepo
+  - _library: Library
   --
-  + getItemsInLibraryByUser(userID: UserID): List<Item>
-  + putItemOnAuction(item : Item, startPrice : Price, startDate : ZonedDateTime,
-                            endDate : ZonedDateTime): Auction
+  + getLibraryItemsIdList(userId: UserId): List<ItemId>
+  + putItemIdOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
 Interface ILibraryRepo {
-  - _libraries: List<Library>
-  + findLibraryByUser(user: User): Library
+  + addLibrary(userId: UserId): Library
+  + findLibraryByUserId(userId: UserId): Library
+  + getItemsInLibraryByUserId(userId: UserId): List<ItemId>
 }
 
 class MemoLibraryRepo {
-  - _libraries: List<Library>
-}
-
-
-class Item {
-  - auction: Auction
-  + setAuction(auction: Auction): void
-}
-
-Interface IAuctionRepo {
-  - itemsOnAuction: List<Auction>
-  + addAuction(item: Item, startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
-}
-
-class MemoAuctionRepo {
--_itemsOnAuction: List<Auction>
--_auctionFactory: AuctionFactory
-}
-
-class Auction {
-- itemID: ItemID
-- startPrice: Price
-- outrightPrice: Price
-- auctionStartDate: ZonedDateTime
-- auctionEndDate: ZonedDateTime
-}
-
-class AuctionFactory {
-  + createAuction(item: Item, startPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  - DATA: Map<LibraryId, Library>
+  - _libraryFactory: LibraryFactory
 }
 
 class Library {
--_items: List<Item>
+  - _libraryId: LibraryId
+  - _itemsId: List<ItemId>
+  --
+  + getItemsIdInLibrary(): List<ItemId>
+  + addItemIdToLibrary(itemId: ItemId): boolean
+  + getItemId(itemId: ItemId): ItemId
+}
+
+class ItemId {
+  - _sku: SKU
+  - _auction: Auction
+  --
+  + setAuction(auction: Auction): void
+  + getAuction(): Auction
+}
+
+Interface IAuctionRepo {
+  + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+}
+
+class MemoAuctionRepo {
+  - DATA: Map<AuctionId, Auction>
+  - _auctionFactory: AuctionFactory
+}
+
+class AuctionFactory {
+  + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+}
+
+class Auction {
+  - _auctionId: AuctionId
+  - _itemsId: List<ItemId>
+  - _startingPrice: Price
+  - _reservePrice: Price
+  - _outrightPrice: Price
+  - _auctionStartDate: ZonedDateTime
+  - _auctionEndDate: ZonedDateTime
 }
 
 '=== Relationships ===
@@ -77,21 +87,21 @@ PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : uses
 PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : uses
 
 ' Interfaces → Repos
-ILibraryRepo "1" <|.. "1" MemoLibraryRepo : relies on
-IAuctionRepo "1" <|.. "1" MemoAuctionRepo : relies on
+ILibraryRepo "1" <|.. "1" MemoLibraryRepo : implements
+IAuctionRepo "1" <|.. "1" MemoAuctionRepo : implements
 
-' Repos delegate creation to factories
+' Library chain
+MemoLibraryRepo "1" --> "*" Library : manages
+Library "1" --> "*" ItemId : stores
+
+' Controller holds library directly
+PublicationSaleAuctionController "1" --> "1" Library : holds
+
+' ItemId links to Auction after creation
+ItemId "1" --> "0..1" Auction : references
+
+' Auction creation chain
 MemoAuctionRepo "1" --> "1" AuctionFactory : uses
-AuctionFactory "1" --> "*" Auction : creates
-
-MemoLibraryRepo "1" --> "*" Library : contains
-Library "1" --> "*" Item : stores
-
-' Tem sets Auction
-Item "1" --> "1" Auction : sets
-
-note as N1
- Only US016 SD methods/attributes shown
-end note
+AuctionFactory "1" ..> "*" Auction : creates
 
 @enduml
