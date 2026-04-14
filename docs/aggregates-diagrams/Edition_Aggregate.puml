@@ -23,59 +23,17 @@ Package "DOMAIN" {
 
     Package "EDITION" <<Folder>> #b0c4d4 {
 
-        interface Edition <<Root>> <<Entity>> {
+        class Edition <<Root>> <<Entity>> {
             +getPublicationId() : PublicationId
             +getPublishingCompanyId() : PublishingCompanyId
             +getPublishingYear() : Year
             +getEditionLanguage() : Language
         }
 
-        class EditionBook <<Entity>> {
-            -_bookId : BookId
-            +identity() : EditionId
-                +equals(Object) : boolean
-                +sameAs(Object) : boolean
-                +toString() : String
-
-            +getNumberOfPages() : NumberOfPages
-            +getEditionNumber() : EditionNumber
-            +getBinding() : Binding
-            +getDimension() : Dimension
-            +getWeight() : Weight
-        }
-
-
-        class EditionMagazine <<Entity>> {
-            -_magazineId : MagazineId
-            +identity() : EditionId
-                +equals(Object) : boolean
-                +sameAs(Object) : boolean
-                +toString() : String
-
-                +getDimension() : Dimension
-                +getWeight() : Weight
-                +getIssueNumber() : IssueNumber
-                +getPeriodicity() : Periodicity
-
-        }
-
 
         class EditionFactory <<Factory>> {
-            +createEditionBook : EditionBook
-            +createEditionMagazine : EditionMagazine
+            +createEdition : Edition
         }
-
-        class "EditionBook::Builder" as EditionBookBuilder <<Builder>>
-
-        class "EditionMagazine::Builder" as EditionMagazineBuilder <<Builder>>
-
-
-        EditionBook +- EditionBookBuilder
-        EditionBookBuilder ..> EditionBook : builds
-
-        EditionMagazine +- EditionMagazineBuilder
-        EditionMagazineBuilder ..> EditionMagazine : builds
-
 
     }
 
@@ -83,19 +41,18 @@ Package "DOMAIN" {
 
         class EditionId <<ValueObject>> #LightPink {
             +getIdentifier()
+            +equals()
         }
-        interface MagazineId {}
 
-        interface BookId {}
+        Interface Identifier <<ValueObject>> {
+            +getIdentifier()
+        }
 
+        class PublicationTypeId <<ValueObject>>
         class NumberOfPages <<ValueObject>>
         class Binding <<ValueObject>>
-        class IssueNumber <<ValueObject>>
-        class Periodicity <<ValueObject>>
         class ISBN <<ValueObject>>
         class ISSN <<ValueObject>>
-        class NoIsbnBook <<ValueObject>>
-        class NoIssnMagazine <<ValueObject>>
         class Language <<ValueObject>>
         class PublicationId <<ValueObject>>
         class PublishingCompanyId <<ValueObject>>
@@ -104,9 +61,8 @@ Package "DOMAIN" {
 
     Package "REPOSITORY" <<Folder>> {
         interface IEditionRepo <<Interface>>{
-        +addEditionBook(): Edition
-        +addEditionMagazine(): Edition
-        }
+        +addEdition(): Edition
+                }
     }
 
     EDITION -[hidden]right- REPOSITORY
@@ -122,6 +78,13 @@ Package "DDD" {
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
     }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : EditionId
+        +equals(Object) : boolean
+        +sameAs(Object) : boolean
+        +toString() : String
+    }
 }
 
 Package "PERSISTENCE" {
@@ -132,30 +95,25 @@ Package "PERSISTENCE" {
 
 ' ===== Relations =====
 Edition "1" --> "ID 1" EditionId : has
-Edition <|.. EditionBook
-Edition <|.. EditionMagazine
 Edition ..> PublicationId : references
 Edition ..> PublishingCompanyId : references
+Edition ..> PublicationTypeId : references
+
 Edition --> Language : has
 Edition --> EditionNumber : has
 
-EditionBook --> NumberOfPages : has
-EditionBook --> Binding : has
-EditionMagazine --> IssueNumber : has
-EditionMagazine --> Periodicity : has
+Edition --> NumberOfPages : has
+Edition --> Binding : has
+Edition --> Identifier : has
 
-EditionId <|.. BookId
-EditionId <|.. MagazineId
-
-BookId <|.. ISBN
-BookId <|.. NoIsbnBook
-
-MagazineId <|.. ISSN
-MagazineId <|.. NoIssnMagazine
+Identifier <|.. ISBN
+Identifier <|.. ISSN
 
 
-IEditionRepo -|> IRepository
+IEditionRepo ..|> IRepository
 MemoEditionRepo ..|> IEditionRepo
+Edition ..|> DomainEntity
+
 
 EditionFactory ..> Edition : <<create>>
 
