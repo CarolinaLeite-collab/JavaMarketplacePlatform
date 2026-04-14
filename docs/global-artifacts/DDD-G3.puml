@@ -108,9 +108,7 @@ Package "DOMAIN" {
             Package "EDITION" <<Folder>> #b0c4d4 {
 
                 object Edition <<AggregateRoot>>
-                object EditionBook <<Entity>>
-                object EditionMagazine <<Entity>>
-                object EditionOther <<Entity>>
+
 
             }
 
@@ -121,14 +119,12 @@ Package "DOMAIN" {
             }
 
             '== Value Object (Id) ==
-            interface EditionId <<Value Object>> <<Interface>> #LightPink
+            object EditionId <<Value Object>> #LightPink
             object PublishingCompanyId <<Value Object>> #LightPink
 
             '=== Value Objects (other) ===
 
-            object ISBN <<Value Object>> #FFE6EE
-            object ISSN <<Value Object>> #FFE6EE
-            object NoIdentifier <<Value Object>> #FFE6EE
+
             object PublicationId <<Value Object>> #LightPink
 
         }
@@ -189,13 +185,8 @@ Package "DOMAIN" {
 Edition "*" ..> "1" PublishingCompanyId : references
 Edition "*" ..> "1" PublicationId : references
 Edition "1" --> "1" EditionId : has
+Edition "*" ..> "1" PublicationTypeId : references
 
-ISBN ..|> EditionId
-ISSN ..|> EditionId
-NoIdentifier ..|> EditionId
-Edition <|.. EditionBook
-Edition <|.. EditionMagazine
-Edition <|.. EditionOther
 
 
 
@@ -205,7 +196,6 @@ User "1" --> "1" Address : has
 
 '--- Publication ---'
 Publication "1" ..> "1..*" AuthorId : references
-Publication "*" ..> "1" PublicationTypeId : references
 Publication "*" ..> "1..*" GenreId : references
 Publication "1" --> "1" PublicationId : has
 
