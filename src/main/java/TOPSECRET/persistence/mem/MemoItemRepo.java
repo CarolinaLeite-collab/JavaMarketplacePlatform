@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.item.ItemFactory;
@@ -12,16 +13,13 @@ import TOPSECRET.domain.valueobject.ItemId;
 import java.util.*;
 
 /**
- * <h3>Item Repository responsible for managing all {@link Item} instances in the domain </h3>
+ * Repository responsible for managing {@link Item} entities.
  * <p>
- * Responsible for creation, existence checking, and read-only retrieval of items.
- * Each {@link Publication} is only able to correspond to a single {@link Item}.
- * </p>
- *
- * <p>
- * This repository ensures the uniqueness of items based on their associated publications,
- * preventing duplicates, and ensures referential integrity between publications and items.
- * </p>
+ * This class provides management mechanisms for
+ * {@link Item} objects.
+ *  <p>
+ * Each edition is uniquely identified by its {@link ItemId}.
+ *<p>
  */
 
 public class MemoItemRepo implements IItemRepo {
@@ -46,12 +44,23 @@ public class MemoItemRepo implements IItemRepo {
 
     @Override
     public Optional<Item> ofIdentity(ItemId id){
-        return Optional.ofNullable(DATA.get(id));
+        if (!containsOfIdentity(id)){
+
+            return Optional.empty();
+        }
+        return Optional.of(DATA.get(id));
     }
 
     @Override
     public boolean containsOfIdentity(ItemId id){
         return DATA.containsKey(id);
+    }
+
+    public List<ItemId> findAllKeys(){
+
+        List<ItemId> itemIds = new ArrayList<>(DATA.keySet());
+
+        return itemIds;
     }
 
     @Override
