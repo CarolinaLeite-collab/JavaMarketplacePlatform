@@ -74,8 +74,8 @@ User "1" --> "*" Auction
 User "1" --> "*" DirectSale
 
 '--- Publication ---'
-Publication "1" --> "1" Author
-Publication "1" --> "1" Genre
+Publication "*" --> "1" Author
+Publication "*" --> "1" Genre
 
 '--- AppraisalEntity ---'
 AppraisalEntity "1" --> "1..*" PublicationType

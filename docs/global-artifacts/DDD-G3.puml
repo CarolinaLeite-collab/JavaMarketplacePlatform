@@ -195,8 +195,8 @@ User "1" --> "1" UserId : has
 User "1" --> "1" Address : has
 
 '--- Publication ---'
-Publication "1" ..> "1..*" AuthorId : references
-Publication "*" ..> "1..*" GenreId : references
+Publication "1" ..> "1" AuthorId : references
+Publication "*" ..> "1" GenreId : references
 Publication "1" --> "1" PublicationId : has
 
 '--- PublicationType ---'
