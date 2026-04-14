@@ -64,7 +64,7 @@ public class MemoItemRepo implements IItemRepo {
     }
 
     @Override
-    public Item addItem(EditionId editionId, Condition condition, Description description) {
+    public ItemId addItem(EditionId editionId, Condition condition, Description description) {
 
         Item item = _itemFactory.createItem(editionId, condition, description);
 
@@ -72,20 +72,20 @@ public class MemoItemRepo implements IItemRepo {
             throw new IllegalArgumentException("Item already exists");
         }
 
-        return save(item);
+        return save(item).identity();
     }
 
     @Override
-    public List<Item> getDifferentOf(List<Item> existentItems) {
+    public List<ItemId> getDifferentOf(List<ItemId> existentItemIds) {
 
-        if (existentItems == null) {
-            return List.copyOf(DATA.values());
+        if (existentItemIds == null) {
+            return List.copyOf(DATA.keySet());
         }
 
-        List<Item> result = new ArrayList<>();
-        for (Item item : DATA.values()) {
-            if (!existentItems.contains(item)) {
-                result.add(item);
+        List<ItemId> result = new ArrayList<>();
+        for (ItemId itemId : DATA.keySet()) {
+            if (!existentItemIds.contains(itemId)) {
+                result.add(itemId);
             }
         }
         return List.copyOf(result);

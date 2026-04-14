@@ -2,7 +2,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IListOfItemsRepo;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.listofitems.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
@@ -24,7 +23,6 @@ class AddItemToListControllerTest {
     private UserId _userIdDouble;
     private GenreId _genreIdDouble;
     private ItemId _itemIdDouble;
-    private Item _itemDouble;
     private Library _libraryDouble;
     private ListOfItems _listDouble;
 
@@ -35,7 +33,6 @@ class AddItemToListControllerTest {
         _userIdDouble = mock(UserId.class);
         _genreIdDouble = mock(GenreId.class);
         _itemIdDouble = mock(ItemId.class);
-        _itemDouble = mock(Item.class);
         _libraryDouble = mock(Library.class);
         _listDouble = mock(ListOfItems.class);
     }
@@ -59,14 +56,14 @@ class AddItemToListControllerTest {
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
         //arrange
-        when(_libraryDouble.getItemsInLibrary()).thenReturn(List.of(_itemDouble));
+        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
 
         //SUT
         AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
         //act
-        List<Item> result = _controllerSUT.getItemsInMyLibrary(_userIdDouble);
+        List<ItemId> result = _controllerSUT.getItemsInMyLibrary(_userIdDouble);
 
         //assert
         assertEquals(1, result.size());

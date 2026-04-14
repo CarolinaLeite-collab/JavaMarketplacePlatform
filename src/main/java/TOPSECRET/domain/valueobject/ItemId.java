@@ -1,6 +1,9 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.directsale.DirectSale;
+import TOPSECRET.domain.publication.Publication;
 
 /**
  * Represents the unique identifier of an {@link TOPSECRET.domain.item.Item}.
@@ -28,6 +31,9 @@ import TOPSECRET.ddd.DomainId;
 public final class ItemId implements DomainId {
 
     private final SKU _sku;
+    private Auction _auction;
+    private DirectSale _directSale;
+    private Publication _publication;
 
     public ItemId() {
 
@@ -35,6 +41,18 @@ public final class ItemId implements DomainId {
     }
 
     public SKU getSku() { return _sku; }
+
+    public void setAuction(Auction auction) { _auction = auction; }
+
+    public Auction getAuction() { return _auction; }
+
+    public void setDirectSale(DirectSale directSale) { _directSale = directSale; }
+
+    public DirectSale getDirectSale() { return _directSale; }
+
+    public void setPublication(Publication publication) { _publication = publication; }
+
+    public Publication get_publication() { return _publication; }
 
     @Override
     public boolean equals(Object o) {

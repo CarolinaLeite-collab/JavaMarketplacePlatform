@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class MemoItemRepoTest {
+
     // ------------------------------------------------------------
     // save
     // ------------------------------------------------------------
@@ -146,6 +147,21 @@ class MemoItemRepoTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void ofIdentityNullIdReturnsEmptyOptional() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+
+        // SUT
+        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+
+        // Act
+        Optional<Item> result = sut.ofIdentity(null);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
     // ------------------------------------------------------------
     // containsOfIdentity
     // ------------------------------------------------------------
@@ -186,24 +202,9 @@ class MemoItemRepoTest {
         assertFalse(result);
     }
 
-    @Test
-    void ofIdentityNullIdReturnsEmptyOptional() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-
-        // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
-
-        // Act
-        Optional<Item> result = sut.ofIdentity(null);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    //-------------------------------------------------------------
+    // ------------------------------------------------------------
     // findAllKeys
-    //-------------------------------------------------------------
+    // ------------------------------------------------------------
 
     @Test
     void findAllKeysShouldReturnEmptyListWhenRepoIsEmpty() {
@@ -301,7 +302,7 @@ class MemoItemRepoTest {
     }
 
     @Test
-    void addItemValidArgumentsReturnsCreatedItem() {
+    void addItemValidArgumentsReturnsCreatedItemId() {
         // Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Condition conditionDouble = mock(Condition.class);
@@ -319,10 +320,10 @@ class MemoItemRepoTest {
         MemoItemRepo sut = new MemoItemRepo(factoryDouble);
 
         // Act
-        Item result = sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
+        ItemId result = sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Assert
-        assertSame(itemDouble, result);
+        assertSame(itemIdDouble, result);
     }
 
     @Test
@@ -356,7 +357,7 @@ class MemoItemRepoTest {
     // ------------------------------------------------------------
 
     @Test
-    void getDifferentOfNullListReturnsAllStoredItems() {
+    void getDifferentOfNullListReturnsAllStoredItemIds() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
@@ -374,16 +375,16 @@ class MemoItemRepoTest {
         sut.save(item2Double);
 
         // Act
-        List<Item> result = sut.getDifferentOf(null);
+        List<ItemId> result = sut.getDifferentOf(null);
 
         // Assert
         assertEquals(2, result.size());
-        assertTrue(result.contains(item1Double));
-        assertTrue(result.contains(item2Double));
+        assertTrue(result.contains(itemId1Double));
+        assertTrue(result.contains(itemId2Double));
     }
 
     @Test
-    void getDifferentOfEmptyListReturnsAllStoredItems() {
+    void getDifferentOfEmptyListReturnsAllStoredItemIds() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
@@ -396,15 +397,15 @@ class MemoItemRepoTest {
         sut.save(itemDouble);
 
         // Act
-        List<Item> result = sut.getDifferentOf(List.of());
+        List<ItemId> result = sut.getDifferentOf(List.of());
 
         // Assert
         assertEquals(1, result.size());
-        assertTrue(result.contains(itemDouble));
+        assertTrue(result.contains(itemIdDouble));
     }
 
     @Test
-    void getDifferentOfAllItemsAlreadyExistReturnsEmptyList() {
+    void getDifferentOfAllItemIdsAlreadyExistReturnsEmptyList() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
@@ -417,7 +418,7 @@ class MemoItemRepoTest {
         sut.save(itemDouble);
 
         // Act
-        List<Item> result = sut.getDifferentOf(List.of(itemDouble));
+        List<ItemId> result = sut.getDifferentOf(List.of(itemIdDouble));
 
         // Assert
         assertNotNull(result);
@@ -425,7 +426,7 @@ class MemoItemRepoTest {
     }
 
     @Test
-    void getDifferentOfReturnsOnlyNonExistingItems() {
+    void getDifferentOfSomeItemIdsAlreadyExistReturnsOnlyDifferentItemIds() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
@@ -443,11 +444,11 @@ class MemoItemRepoTest {
         sut.save(item2Double);
 
         // Act
-        List<Item> existentItems = List.of(item1Double);
-        List<Item> result = sut.getDifferentOf(existentItems);
+        List<ItemId> existentItemIds = List.of(itemId1Double);
+        List<ItemId> result = sut.getDifferentOf(existentItemIds);
 
         // Assert
-        assertEquals(List.of(item2Double), result);
+        assertEquals(List.of(itemId2Double), result);
     }
 
     @Test
@@ -464,9 +465,9 @@ class MemoItemRepoTest {
         sut.save(itemDouble);
 
         // Act
-        List<Item> result = sut.getDifferentOf(List.of());
+        List<ItemId> result = sut.getDifferentOf(List.of());
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Item.class)));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(ItemId.class)));
     }
 }

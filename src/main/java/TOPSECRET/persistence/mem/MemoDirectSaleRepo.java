@@ -5,6 +5,7 @@ import TOPSECRET.domain.directsale.DirectSaleFactory;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.valueobject.DirectSaleId;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
@@ -79,6 +80,11 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
         return save(directSale);
 
+    }
+
+    @Override
+    public DirectSale addDirectSale(ItemId itemId, Price price, Period timeLimit) {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }

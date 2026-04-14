@@ -3,13 +3,12 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.library.Library;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,29 +26,22 @@ public class PublicationInLibraryForDirectSaleController {
         _library = libraryRepo.findLibraryByUserId(userId);
     }
 
-    public List<Item> getItemsInLibraryByUser(UserId userId) {
+    public List<ItemId> getItemsInLibraryByUser(UserId userId) {
 
         Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
 
-        List<Item> items = userLibrary.getItemsInLibrary();
-        return List.copyOf(items);
+        List<ItemId> itemIds = userLibrary.getItemsIdInLibrary();
+        return List.copyOf(itemIds);
 
     }
 
-    public DirectSale addItemForDirectSale(List<Item> items, Price price, Period timeLimit) {
+    public DirectSale addItemIdForDirectSale(ItemId itemId, Price price, Period timeLimit) {
 
-        List<Item> itemsForSale = new ArrayList<>();
-        for (Item item : items) {
-            Item itemFromLibrary = _library.getItem(item);
-            if (itemFromLibrary != null) {
-                itemsForSale.add(itemFromLibrary);
-            }
-        }
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemsForSale, price, timeLimit);
+        ItemId itemIdFromLibrary = _library.getItemId(itemId);
 
-        for (Item item : items){
-            item.markAsDirectSale();
-        }
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemIdFromLibrary, price, timeLimit);
+
+        itemId.setDirectSale(directSale);
 
         return directSale;
     }

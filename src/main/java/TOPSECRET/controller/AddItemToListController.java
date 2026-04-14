@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IListOfItemsRepo;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.listofitems.ListOfItems;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
@@ -33,9 +32,9 @@ public class AddItemToListController {
         return _iListOfItemsRepo.findListsByUserId(userId);
     }
 
-    public List<Item> getItemsInMyLibrary(UserId userId) {
+    public List<ItemId> getItemsInMyLibrary(UserId userId) {
         Library lib = _iLibraryRepo.findLibraryByUserId(userId);
-        return lib.getItemsInLibrary();
+        return lib.getItemsIdInLibrary();
     }
 
     public void addItemToList(UserId userId, String listName, GenreId genreId, ItemId itemId) {

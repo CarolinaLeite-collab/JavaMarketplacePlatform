@@ -1,6 +1,6 @@
 package TOPSECRET.domain.library;
 
-import TOPSECRET.domain.item.Item;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,13 +14,13 @@ import static org.mockito.Mockito.mock;
 class LibraryTest {
 
     private LibraryId _libraryIdDouble;
-    private Item _itemDouble;
+    private ItemId _itemIdDouble;
 
     @BeforeEach
     void setUp() {
 
         _libraryIdDouble = mock(LibraryId.class);
-        _itemDouble = mock(Item.class);
+        _itemIdDouble = mock(ItemId.class);
 
     }
 
@@ -129,12 +129,12 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsInLibraryShouldReturnEmptyListWhenNoItemsExist() {
+    void getItemsIdInLibraryShouldReturnEmptyListWhenNoItemsExist() {
         // Arrange
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        List<Item> result = library.getItemsInLibrary();
+        List<ItemId> result = library.getItemsIdInLibrary();
 
         // Assert
         assertAll(
@@ -144,37 +144,37 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsInLibraryShouldReturnUnmodifiableList() {
+    void getItemsIdInLibraryShouldReturnUnmodifiableList() {
         // Arrange
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        List<Item> result = library.getItemsInLibrary();
+        List<ItemId> result = library.getItemsIdInLibrary();
 
         // Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(_itemDouble));
+        assertThrows(UnsupportedOperationException.class, () -> result.add(_itemIdDouble));
     }
 
     @Test
-    void getItemsInLibraryShouldReturnItemsWhenItemsExist() {
+    void getItemsIdInLibraryShouldReturnItemsWhenItemsExist() {
         // Arrange / SUT
         Library library = new Library(_libraryIdDouble);
-        library.addItemToLibrary(_itemDouble);
+        library.addItemIdToLibrary(_itemIdDouble);
 
         // Act
-        List<Item> result = library.getItemsInLibrary();
+        List<ItemId> result = library.getItemsIdInLibrary();
 
         // Assert
         assertEquals(1, result.size());
     }
 
     @Test
-    void addItemToLibraryShouldAddItemWhenValid() {
+    void addItemIdToLibraryShouldAddItemIdWhenValid() {
         // Arrange / SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        boolean result = library.addItemToLibrary(_itemDouble);
+        boolean result = library.addItemIdToLibrary(_itemIdDouble);
 
         // Assert
         assertTrue(result);
@@ -182,25 +182,25 @@ class LibraryTest {
     }
 
     @Test
-    void addItemToLibraryShouldReturnFalseWhenItemIsNull() {
+    void addItemIdToLibraryShouldReturnFalseWhenItemIdIsNull() {
         // Arrange / SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        boolean result = library.addItemToLibrary(null);
+        boolean result = library.addItemIdToLibrary(null);
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void addItemToLibraryShouldReturnFalseWhenItemIsAlreadyInLibrary() {
+    void addItemIdToLibraryShouldReturnFalseWhenItemIdIsAlreadyInLibrary() {
         // Arrange
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        library.addItemToLibrary(_itemDouble);
-        boolean result = library.addItemToLibrary(_itemDouble);
+        library.addItemIdToLibrary(_itemIdDouble);
+        boolean result = library.addItemIdToLibrary(_itemIdDouble);
 
         // Assert
         assertFalse(result);
@@ -208,41 +208,41 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsInLibraryShouldReturnItemWhenItemFound() {
+    void getItemIdShouldReturnItemIdWhenFound() {
         // Arrange
-        Item itemDouble2 = mock(Item.class);
+        ItemId itemIdDouble2 = mock(ItemId.class);
 
         // SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        library.addItemToLibrary(_itemDouble);
-        library.addItemToLibrary(itemDouble2);
+        library.addItemIdToLibrary(_itemIdDouble);
+        library.addItemIdToLibrary(itemIdDouble2);
 
-        Item itemResult = library.getItem(_itemDouble);
+        ItemId result = library.getItemId(_itemIdDouble);
 
         // Assert
-        assertEquals(_itemDouble, itemResult);
+        assertEquals(_itemIdDouble, result);
 
     }
 
     @Test
-    void getItemsInLibraryShouldReturnNullWhenNoItemFound() {
+    void getItemIdShouldReturnNullWhenNotFound() {
 
         // Arrange
-        Item itemDouble2 = mock(Item.class);
-        Item itemDouble3 = mock(Item.class);
+        ItemId itemIdDouble2 = mock(ItemId.class);
+        ItemId itemIdDouble3 = mock(ItemId.class);
 
         // SUT
         Library library = new Library(_libraryIdDouble);
 
         // Act
-        library.addItemToLibrary(_itemDouble);
-        library.addItemToLibrary(itemDouble2);
+        library.addItemIdToLibrary(_itemIdDouble);
+        library.addItemIdToLibrary(itemIdDouble2);
 
-        Item itemResult = library.getItem(itemDouble3);
+        ItemId result = library.getItemId(itemIdDouble3);
 
         // Assert
-        assertNull(itemResult);
+        assertNull(result);
     }
 }

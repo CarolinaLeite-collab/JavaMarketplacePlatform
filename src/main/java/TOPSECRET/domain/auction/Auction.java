@@ -1,7 +1,6 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.ZonedDateTime;
@@ -10,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a time-bounded selling mechanism where one or more {@link Item}s is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where one or more {@link ItemId}s is sold via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.
@@ -37,7 +36,7 @@ import java.util.Objects;
 public class Auction implements AggregateRoot<AuctionId> {
 
     private final AuctionId _auctionId;
-    private final List<Item> _items;
+    private final List<ItemId> _itemsId;
     private final Price _startingPrice;
     private final Price _reservePrice;
     private final Price _outrightPrice;
@@ -48,9 +47,7 @@ public class Auction implements AggregateRoot<AuctionId> {
     private final BidFactory _bidFactory;
     private List<Bid> _bids;
 
-
-
-    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
         _auctionId = new AuctionId();
         _bidFactory = new BidFactory();
@@ -64,7 +61,7 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         if (isReservePriceValid(reservePrice)) {
             _reservePrice = reservePrice;
-        }  else {
+        } else {
             throw new IllegalArgumentException("Invalid reserve price");
         }
 
@@ -80,24 +77,15 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        if (items == null || items.isEmpty()) {
+        if (itemsId == null || itemsId.isEmpty()) {
             throw new IllegalArgumentException("Items cannot be null or empty");
         }
 
-        for (Item item : items) {
-            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
-                throw new IllegalStateException("Item is already on sale.");
-            }
-        }
-            _items = items;
-
-        for (Item item : _items) {
-            item.markAsAuction();
-        }
+        _itemsId = itemsId;
     }
 
-    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        this(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
     @Override
@@ -111,8 +99,8 @@ public class Auction implements AggregateRoot<AuctionId> {
         return _auctionId.equals(other._auctionId);
     }
 
-    public List <Item> getItems() {
-        return _items;
+    public List<ItemId> getItemsId() {
+        return _itemsId;
     }
 
     public List<Bid> getBids() {
@@ -126,8 +114,6 @@ public class Auction implements AggregateRoot<AuctionId> {
     public Price getOutrightPrice() {
         return _outrightPrice;
     }
-
-
 
     public void finalizeAuction() {
         if (_bids.isEmpty()) {
@@ -157,11 +143,7 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     private boolean isReservePriceValid(Price reservePrice) {
-        boolean result = false;
-        if (reservePrice.getValue() >= _startingPrice.getValue()) {
-            result = true;
-        }
-        return result;
+        return reservePrice.getValue() >= _startingPrice.getValue();
     }
 
     private boolean isReserveMet(Price price) {
@@ -169,15 +151,11 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     private boolean isAuctionEndDateValid(ZonedDateTime auctionEndDate) {
-        boolean result = false;
-        if (auctionEndDate.isAfter(_auctionStartDate)) {
-            result = true;
-        }
-        return result;
+        return auctionEndDate.isAfter(_auctionStartDate);
     }
 
-    public Bid placeBid (UserId userId, Price offerPrice){
-        ZonedDateTime now =  ZonedDateTime.now();
+    public Bid placeBid(UserId userId, Price offerPrice) {
+        ZonedDateTime now = ZonedDateTime.now();
 
         if (now.isBefore(_auctionStartDate) || now.isAfter(_auctionEndDate)) {
             throw new IllegalStateException("Auction not active");

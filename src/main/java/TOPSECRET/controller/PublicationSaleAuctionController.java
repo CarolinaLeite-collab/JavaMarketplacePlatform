@@ -2,14 +2,13 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,29 +34,21 @@ public class PublicationSaleAuctionController {
 
     }
 
-   public List<Item> getLibraryItemsList(UserId userId) {
+   public List<ItemId> getLibraryItemsIdList(UserId userId) {
 
         Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
 
-        List<Item> items = userLibrary.getItemsInLibrary();
-        return List.copyOf(items);
+        List<ItemId> itemIds = userLibrary.getItemsIdInLibrary();
+        return List.copyOf(itemIds);
    }
 
-    public Auction putItemOnAuction(List<Item> items, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemIdOnAuction(ItemId itemId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
-        List<Item> itemsForAuction = new ArrayList<>();
-        for (Item item : items) {
-            Item itemFromLibrary = _library.getItem(item);
-            if (itemFromLibrary != null) {
-                itemsForAuction.add(itemFromLibrary);
-            }
-        }
+        ItemId itemIdFromLibrary = _library.getItemId(itemId);
 
-        Auction newAuction = _iAuctionRepo.addAuction(itemsForAuction, startPrice, reservePrice, outrightPrice, startDate, endDate);
+        Auction newAuction = _iAuctionRepo.createAuction(itemIdFromLibrary, startPrice, reservePrice, outrightPrice, startDate, endDate);
 
-        for (Item item : items) {
-            item.markAsAuction();
-        }
+        itemId.setAuction(newAuction);
 
         return newAuction;
     }

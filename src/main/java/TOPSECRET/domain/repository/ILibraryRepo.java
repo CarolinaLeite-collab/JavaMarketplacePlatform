@@ -1,8 +1,8 @@
 package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
@@ -14,5 +14,5 @@ public interface ILibraryRepo extends IRepository<LibraryId, Library> {
 
     Library findLibraryByUserId(UserId userId);
 
-    List<Item> getItemsInLibraryByUserId(UserId userId);
+    List<ItemId> getItemsInLibraryByUserId(UserId userId);
 }

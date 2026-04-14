@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IItemRepo extends IRepository<ItemId, Item> {
 
-    Item addItem(EditionId editionId, Condition condition, Description description);
+    ItemId addItem(EditionId editionId, Condition condition, Description description);
 
-    List<Item> getDifferentOf(List<Item> existentItems);
+    List<ItemId> getDifferentOf(List<ItemId> existentItemIds);
 }

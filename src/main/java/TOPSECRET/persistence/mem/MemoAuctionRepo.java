@@ -1,10 +1,10 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.auction.AuctionFactory;
 import TOPSECRET.domain.repository.IAuctionRepo;
 import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.ZonedDateTime;
@@ -27,8 +27,9 @@ public class MemoAuctionRepo implements IAuctionRepo {
     public MemoAuctionRepo() {
         this(new AuctionFactory());
     }
+
     MemoAuctionRepo(AuctionFactory auctionFactory) {
-        DATA = new HashMap<AuctionId, Auction>();
+        DATA = new HashMap<>();
         _auctionFactory = auctionFactory;
     }
 
@@ -45,14 +46,10 @@ public class MemoAuctionRepo implements IAuctionRepo {
 
     @Override
     public Optional<Auction> ofIdentity(AuctionId id) {
-        if(!containsOfIdentity(id)) {
-
+        if (!containsOfIdentity(id)) {
             return Optional.empty();
-
         } else {
-
             return Optional.of(DATA.get(id));
-
         }
     }
 
@@ -62,17 +59,24 @@ public class MemoAuctionRepo implements IAuctionRepo {
     }
 
     @Override
-    public Auction addAuction(List<Item> itemsOnAuction, Price startingPrice, Price reservePrice,
+    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
                               Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-
-        Auction auction = _auctionFactory.createAuction(itemsOnAuction, startingPrice, reservePrice,
+        Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
                 outrightPrice, auctionStartDate, auctionEndDate);
-
         return save(auction);
     }
 
     @Override
-    public Auction addAuction(List<Item> itemsOnAuction, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return addAuction(itemsOnAuction, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
+                              ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        return addAuction(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    }
+
+    @Override
+    public Auction createAuction(ItemId itemId, Price startingPrice, Price reservePrice, Price outrightPrice,
+                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        Auction auction = _auctionFactory.createAuction(itemId, startingPrice, reservePrice,
+                outrightPrice, auctionStartDate, auctionEndDate);
+        return save(auction);
     }
 }
