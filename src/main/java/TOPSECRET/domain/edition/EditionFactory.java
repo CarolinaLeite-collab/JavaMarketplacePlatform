@@ -7,7 +7,7 @@ import java.time.Year;
 /**
  * Factory responsible for creating {@link Edition} aggregate instances.
  * <p>
- * This factory centralizes the creation of {@code Edition} objects while
+ * It centralizes the creation of {@code Edition} objects while
  * delegating validation of domain invariants to the aggregate itself.
  */
 

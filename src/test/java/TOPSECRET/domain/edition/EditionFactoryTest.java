@@ -8,11 +8,13 @@ import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class EditionFactoryTest {
 
-    private PublicationTypeId _typeIdDouble;
-    private Identifier _identifierDouble;
+    private PublicationTypeId _bookTypeId;
+    private Identifier _bookIdentifier;
+
     private PublicationId _publicationIdDouble;
     private PublishingCompanyId _companyIdDouble;
     private Language _languageDouble;
@@ -25,12 +27,14 @@ class EditionFactoryTest {
 
     private Year _publishingYear;
 
-    private static final String expectedMessageType = "Publication Type Id is required";
 
     @BeforeEach
     void setUp() {
-        _typeIdDouble = mock(PublicationTypeId.class);
-        _identifierDouble = mock(Identifier.class);
+        _bookTypeId = mock(PublicationTypeId.class);
+        when(_bookTypeId.isBook()).thenReturn(true);
+
+        _bookIdentifier = mock(ISBN.class);
+
         _publicationIdDouble = mock(PublicationId.class);
         _companyIdDouble = mock(PublishingCompanyId.class);
         _languageDouble = mock(Language.class);
@@ -45,14 +49,16 @@ class EditionFactoryTest {
     }
 
     @Test
-    void shouldCreateEditionSuccessfully() {
-        // Arrange
+    void shouldCreateEditionWithGivenMandatoryArguments() {
+
+        //Arrange
         EditionFactory factory = new EditionFactory();
 
-        // Act
+        //Act
+        //SUT
         Edition result = factory.createEdition(
-                _typeIdDouble,
-                _identifierDouble,
+                _bookTypeId,
+                _bookIdentifier,
                 _publicationIdDouble,
                 _companyIdDouble,
                 _publishingYear,
@@ -60,25 +66,30 @@ class EditionFactoryTest {
                 null, null, null, null, null
         );
 
-        // Assert
+        //Assert
         assertNotNull(result);
-        assertSame(_typeIdDouble, result.getPublicationTypeId());
-        assertSame(_identifierDouble, result.getIdentifier());
+        assertSame(_bookTypeId, result.getPublicationTypeId());
+        assertSame(_bookIdentifier, result.getIdentifier());
         assertSame(_publicationIdDouble, result.getPublicationId());
         assertSame(_companyIdDouble, result.getPublishingCompanyId());
-        assertSame(_publishingYear, result.getPublishingYear());
+        assertEquals(_publishingYear, result.getPublishingYear());
         assertSame(_languageDouble, result.getEditionLanguage());
+        assertNull(result.getDimension());
+        assertNull(result.getWeight());
+        assertNull(result.getNumberOfPages());
+        assertNull(result.getEditionNumber());
+        assertNull(result.getBinding());
     }
 
     @Test
     void shouldCreateEditionWithOptionalFields() {
-        // Arrange
+        //Arrange
         EditionFactory factory = new EditionFactory();
 
-        // Act
+        //Act
         Edition result = factory.createEdition(
-                _typeIdDouble,
-                _identifierDouble,
+                _bookTypeId,
+                _bookIdentifier,
                 _publicationIdDouble,
                 _companyIdDouble,
                 _publishingYear,
@@ -90,7 +101,7 @@ class EditionFactoryTest {
                 _bindingDouble
         );
 
-        // Assert
+        //Assert
         assertNotNull(result);
         assertSame(_dimensionDouble, result.getDimension());
         assertSame(_weightDouble, result.getWeight());
@@ -99,45 +110,4 @@ class EditionFactoryTest {
         assertSame(_bindingDouble, result.getBinding());
     }
 
-    @Test
-    void shouldThrowWhenTypeIdIsNull() {
-        // Arrange
-        EditionFactory factory = new EditionFactory();
-
-        // Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                factory.createEdition(
-                        null,
-                        _identifierDouble,
-                        _publicationIdDouble,
-                        _companyIdDouble,
-                        _publishingYear,
-                        _languageDouble,
-                        null, null, null, null, null
-                )
-        );
-
-        // Assert
-        assertEquals(expectedMessageType, exception.getMessage());
-    }
-
-    @Test
-    void shouldUsePublicationTypeIdInEdition() {
-        // Arrange
-        EditionFactory factory = new EditionFactory();
-
-        // Act
-        Edition result = factory.createEdition(
-                _typeIdDouble,
-                _identifierDouble,
-                _publicationIdDouble,
-                _companyIdDouble,
-                _publishingYear,
-                _languageDouble,
-                null, null, null, null, null
-        );
-
-        // Assert
-        assertSame(_typeIdDouble, result.getPublicationTypeId());
-    }
 }
