@@ -18,29 +18,28 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "PUBLICATION" #b0c4d4 {
+    Package "publication" #b0c4d4 {
 
         class Publication <<Root>> <<Entity>> {
             -_releaseYear : Year
-            +isByAuthor( a : AuthorId) : boolean
-            +isByGenre(g : GenreId) : boolean
+            +isByAuthorId( a : AuthorId) : boolean
+            +isByGenreId(g : GenreId) : boolean
             +identity() : PublicationId
             +sameAs(Object) : boolean
         }
 
         class PublicationFactory <<Factory>> {
-            +createPublication(t : Title, a : AuthorId, y : Year, pubTypId : PublicationTypeId, gId: GenreId) : Publication
-            +createPublication(p : PublicationId, t :Title, a : AuthorId, y : Year, pubTypId : PublicationTypeId, g : GenreId) : Publication
+            +createPublication(t : Title, a : AuthorId, y : Year, gId: GenreId) : Publication
         }
 
     }
 
-    Package "VALUEOBJECT"  {
+    Package "valueobject"  {
 
         class PublicationId <<ValueObject>> #LightPink {
-            -_id : String
+           - _releaseYear : Year
 
         }
 
@@ -53,12 +52,11 @@ Package "DOMAIN" {
         class GenreId <<ValueObject>>{
         }
 
-        class PublicationTypeId <<ValueObject>>  {
-        }
+
 
     }
 
-    Package "REPOSITORY"   {
+    Package "repository"   {
         interface IPublicationRepo <<Interface>>
     }
 
@@ -69,15 +67,16 @@ Package "DOMAIN" {
 
 Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity : T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
     }
 }
 
 ' ===== Persistence =====
-Package "PERSISTENCE" {
+Package "persistence" {
      package "mem"  {
      class MemoPublicationRepo <<Repo>>
     }
@@ -85,10 +84,12 @@ Package "PERSISTENCE" {
 
 ' ===== Relations =====
 Publication "1" --> "ID 1" PublicationId : has
-Publication --> Title : has
-Publication ..> AuthorId : references
-Publication ..> GenreId : references
-Publication ..> PublicationTypeId : references
+Publication "1"-> "1" Title : has
+Publication "1"..> "1" AuthorId : references
+Publication "1"..> "1" GenreId : references
+
+PublicationId "1" --> "1" Title : has
+PublicationId "1" -> "1" AuthorId : has
 
 IPublicationRepo -|> IRepository
 MemoPublicationRepo ..|> IPublicationRepo
