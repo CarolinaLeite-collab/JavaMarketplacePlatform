@@ -8,18 +8,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link Item}.
- *
- * <p>Tests are divided into two categories:
- * <ul>
- *   <li><b>Integration-style</b> — use real domain objects ({@link Publication}, {@link Condition})
- *       to verify Item behaviour end-to-end (sale/auction lifecycle, condition preservation).</li>
- *   <li><b>Isolated</b> — use Mockito doubles for {@link Publication} and {@link Condition}
- *       to verify delegation of {@code isByAuthor}, {@code isByGenre} and {@code isByPublication}.</li>
- * </ul>
- */
-
 class ItemTest {
 
     private EditionId editionIdDouble;
@@ -38,7 +26,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void constructor_validArguments_createsItemWithAssignedValues() {
+    void constructorValidArgumentsCreatesItemWithAssignedValues() {
         // Arrange
 
         // Act
@@ -51,7 +39,7 @@ class ItemTest {
     }
 
     @Test
-    void constructor_validArguments_generatesIdentity() {
+    void constructorValidArgumentsGeneratesIdentity() {
         // Arrange
 
         // Act
@@ -62,7 +50,7 @@ class ItemTest {
     }
 
     @Test
-    void constructor_validArguments_setsDefaultSaleStatusNotOnSale() {
+    void constructorValidArgumentsSetsDefaultSaleStatusNotOnSale() {
         // Arrange
 
         // Act
@@ -77,7 +65,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void markAsAuction_itemNotOnSale_changesStatusToOnAuction() {
+    void markAsAuctionItemNotOnSaleChangesStatusToOnAuction() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -89,7 +77,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsAuction_itemAlreadyOnAuction_throwsIllegalStateException() {
+    void markAsAuctionItemAlreadyOnAuctionThrowsIllegalStateException() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsAuction();
@@ -105,7 +93,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsAuction_itemAlreadyOnDirectSale_throwsIllegalStateException() {
+    void markAsAuctionItemAlreadyOnDirectSaleThrowsIllegalStateException() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsDirectSale();
@@ -125,7 +113,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void markAsDirectSale_itemNotOnSale_changesStatusToOnDirectSale() {
+    void markAsDirectSaleItemNotOnSaleChangesStatusToOnDirectSale() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -137,7 +125,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsDirectSale_itemAlreadyOnDirectSale_throwsIllegalStateException() {
+    void markAsDirectSaleItemAlreadyOnDirectSaleThrowsIllegalStateException() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsDirectSale();
@@ -153,7 +141,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsDirectSale_itemAlreadyOnAuction_throwsIllegalStateException() {
+    void markAsDirectSaleItemAlreadyOnAuctionThrowsIllegalStateException() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsAuction();
@@ -173,7 +161,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void markAsSold_itemOnAuction_changesStatusToSold() {
+    void markAsSoldItemOnAuctionChangesStatusToSold() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsAuction();
@@ -186,7 +174,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsSold_itemOnDirectSale_changesStatusToSold() {
+    void markAsSoldItemOnDirectSaleChangesStatusToSold() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsDirectSale();
@@ -199,7 +187,7 @@ class ItemTest {
     }
 
     @Test
-    void markAsSold_itemNotOnSale_throwsIllegalStateException() {
+    void markAsSoldItemNotOnSaleThrowsIllegalStateException() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -218,7 +206,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void getEditionId_existingItem_returnsAssignedEditionId() {
+    void getEditionIdExistingItemReturnsAssignedEditionId() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -230,7 +218,7 @@ class ItemTest {
     }
 
     @Test
-    void getCondition_existingItem_returnsAssignedCondition() {
+    void getConditionExistingItemReturnsAssignedCondition() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -242,7 +230,7 @@ class ItemTest {
     }
 
     @Test
-    void getDescription_existingItem_returnsAssignedDescription() {
+    void getDescriptionExistingItemReturnsAssignedDescription() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -254,7 +242,7 @@ class ItemTest {
     }
 
     @Test
-    void getSaleStatus_newItem_returnsNotOnSale() {
+    void getSaleStatusNewItemReturnsNotOnSale() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -266,7 +254,7 @@ class ItemTest {
     }
 
     @Test
-    void getSaleStatus_itemOnAuction_returnsOnAuction() {
+    void getSaleStatusItemOnAuctionReturnsOnAuction() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         sut.markAsAuction();
@@ -283,7 +271,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void identity_existingItem_returnsNonNullItemId() {
+    void identityExistingItemReturnsNonNullItemId() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -299,7 +287,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void sameAs_sameObject_returnsTrue() {
+    void sameAsSameObjectReturnsTrue() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -311,7 +299,7 @@ class ItemTest {
     }
 
     @Test
-    void sameAs_differentItem_returnsFalse() {
+    void sameAsDifferentItemReturnsFalse() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
@@ -324,7 +312,7 @@ class ItemTest {
     }
 
     @Test
-    void sameAs_differentType_returnsFalse() {
+    void sameAsDifferentTypeReturnsFalse() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -340,7 +328,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void equals_sameObject_returnsTrue() {
+    void equalsSameObjectReturnsTrue() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -352,7 +340,7 @@ class ItemTest {
     }
 
     @Test
-    void equals_null_returnsFalse() {
+    void equalsNullReturnsFalse() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -364,7 +352,7 @@ class ItemTest {
     }
 
     @Test
-    void equals_differentType_returnsFalse() {
+    void equalsDifferentTypeReturnsFalse() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -376,7 +364,7 @@ class ItemTest {
     }
 
     @Test
-    void equals_differentItemsWithSameAttributes_returnsFalse() {
+    void equalsDifferentItemsWithSameAttributesReturnsFalse() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
@@ -389,7 +377,7 @@ class ItemTest {
     }
 
     @Test
-    void hashCode_sameObject_returnsSameHashCode() {
+    void hashCodeSameObjectReturnsSameHashCode() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
@@ -402,7 +390,7 @@ class ItemTest {
     }
 
     @Test
-    void hashCode_differentItems_returnsDifferentHashCodes() {
+    void hashCodeDifferentItemsReturnsDifferentHashCodes() {
         // Arrange
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
         Item otherItem = new Item(editionIdDouble, conditionDouble, descriptionDouble);
