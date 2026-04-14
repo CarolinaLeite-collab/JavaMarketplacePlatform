@@ -29,34 +29,21 @@ public class Publication implements AggregateRoot<PublicationId> {
     private final Title _title;
     private final AuthorId _authorId;
     private final Year _releaseYear;
-    private final PublicationTypeId _publicationTypeId;
     private final GenreId _genreId;
 
-    // Creation
-    protected Publication( Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId ){
-        _title = title;
-        _authorId = authorId;
+    Publication( Title title, AuthorId authorId, Year releaseYear, GenreId genreId ){
+        _title = Objects.requireNonNull(title, "Title is required");
+        _authorId = Objects.requireNonNull(authorId, "AuthorId is required");
         _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
-        _publicationTypeId = publicationTypeId;
-        _genreId = genreId;
+        _genreId = Objects.requireNonNull(genreId, "GenreId is required");
         _publicationId = new PublicationId(_title, _authorId, _releaseYear);
     }
 
-    // Reconstitution
-    protected Publication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
-        _publicationId = Objects.requireNonNull(publicationId, "PublicationId is required");
-        _title = title;
-        _authorId = authorId;
-        _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
-        _publicationTypeId = publicationTypeId;
-        _genreId = genreId;
-    }
-
-    public boolean isByAuthor(AuthorId authorId) {
+    public boolean isByAuthorId(AuthorId authorId) {
         return Objects.equals(_authorId, authorId);
     }
 
-    public boolean isByGenre(GenreId genreId) {
+    public boolean isByGenreId(GenreId genreId) {
         return Objects.equals(_genreId, genreId);
     }
 
@@ -64,7 +51,6 @@ public class Publication implements AggregateRoot<PublicationId> {
     public Title getTitle() { return _title; }
     public AuthorId getAuthorId() { return _authorId; }
     public Year getReleaseYear() { return _releaseYear; }
-    public PublicationTypeId getPublicationTypeId() { return _publicationTypeId; }
     public GenreId getGenreId() { return _genreId; }
 
     @Override
@@ -73,7 +59,10 @@ public class Publication implements AggregateRoot<PublicationId> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof Publication other)) return false;
-        return _publicationId.equals(other._publicationId);
+        return _title.equals(other._title)
+                && _authorId.equals(other._authorId)
+                && _releaseYear.equals(other._releaseYear)
+                && _genreId.equals(other._genreId);
     }
 
     @Override
@@ -86,5 +75,15 @@ public class Publication implements AggregateRoot<PublicationId> {
     @Override
     public int hashCode() {
         return _publicationId.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return  "Id: " + _publicationId.toString() +
+                "\nTitle: " + _title.toString() +
+                "\nAuthor: " + _authorId.toString() +
+                "\nRelease Year: " + _releaseYear.toString() +
+                "\nGenre: " + _genreId.toString();
+
     }
 }
