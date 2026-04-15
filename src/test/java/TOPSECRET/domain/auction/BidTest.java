@@ -1,5 +1,6 @@
 package TOPSECRET.domain.auction;
 
+import TOPSECRET.domain.valueobject.BidId;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;

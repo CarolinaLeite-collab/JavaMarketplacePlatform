@@ -1,6 +1,7 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.DomainEntity;
+import TOPSECRET.domain.valueobject.BidId;
 import TOPSECRET.domain.valueobject.Price;
 import TOPSECRET.domain.valueobject.UserId;
 
