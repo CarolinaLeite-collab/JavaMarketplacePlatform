@@ -1,6 +1,7 @@
 package TOPSECRET.domain.directsale;
 
 import TOPSECRET.domain.item.Item;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -17,9 +18,9 @@ class DirectSaleFactoryTest {
     @Test
     void shouldCreateDirectSale() {
         // Arrange
-        List<Item> items = new ArrayList<>();
-        Item itemDouble = mock(Item.class);
-        items.add(itemDouble);
+        List<ItemId> itemsId = new ArrayList<>();
+        ItemId itemIdDouble = mock(ItemId.class);
+        itemsId.add(itemIdDouble);
 
         Price priceDouble = mock(Price.class);
         Period timeLimit = Period.ofDays(30);
@@ -33,12 +34,12 @@ class DirectSaleFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            DirectSale directSaleResult = directSaleFactory.createDirectSale(items, priceDouble, timeLimit);
+            DirectSale directSaleResult = directSaleFactory.createDirectSale(itemsId, priceDouble, timeLimit);
 
             // Assert
             assertNotNull(directSaleResult);
             List<Object> params = capturedArguments.get(0);
-            assertSame(items, params.get(0));
+            assertSame(itemsId, params.get(0));
             assertSame(priceDouble, params.get(1));
             assertSame(timeLimit, params.get(2));
             assertEquals(1, mockedConstruction.constructed().size());

@@ -18,42 +18,36 @@ import java.util.List;
 
 public class DirectSale implements AggregateRoot<DirectSaleId> {
 
-    private final List<Item> _items;
+    private final List<ItemId> _itemsId;
     private final Price _price;
     private final Period _timeLimit; // optional
     private DirectSaleId _directSaleId;
 
-    DirectSale(List<Item> items, Price price, Period timeLimit) {
+    DirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        requiresItemAndPrice(items, price);
+        requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
 
-        for (Item item : items) {
-            if (item == null) {
+        for (ItemId itemId : itemsId) {
+            if (itemId == null) {
                 throw new IllegalArgumentException("Items cannot contain null elements.");
-            }
-            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
-                throw new IllegalStateException("Item is already on sale.");
             }
         }
 
-        _items = items;
+        _itemsId = itemsId;
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
 
-        for (Item item : _items) {
-            item.markAsDirectSale();
-        }
     }
 
-    public List<Item> getItems() { return _items; }
+    public List<ItemId> getItems() { return _itemsId; }
     public Price getPrice() { return _price; }
     public Period getTimeLimit() { return _timeLimit; }
 
-    private static void requiresItemAndPrice(List<Item> items, Price price) {
-        if (items == null) {
-            throw new IllegalArgumentException("Item is required for a direct sale");
+    private static void requiresItemAndPrice(List<ItemId> itemsId, Price price) {
+        if (itemsId == null) {
+            throw new IllegalArgumentException("ItemId is required for a direct sale");
         }
         if (price == null) {
             throw new IllegalArgumentException("Price is required for a direct sale");
@@ -81,7 +75,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         if (object instanceof DirectSale) {
             DirectSale other = (DirectSale) object;
 
-            if (this._items.equals(other._items) &&
+            if (this._itemsId.equals(other._itemsId) &&
                     this._price.equals(other._price) &&
                     this._timeLimit.equals(other._timeLimit)
             )

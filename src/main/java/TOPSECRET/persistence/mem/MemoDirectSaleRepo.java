@@ -67,9 +67,9 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public DirectSale addDirectSale(List<Item> items, Price price, Period timeLimit) {
+    public DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        DirectSale directSale = _factory.createDirectSale(items, price, timeLimit);
+        DirectSale directSale = _factory.createDirectSale(itemsId, price, timeLimit);
         _directSales.add(directSale);
 
         if (containsOfIdentity(directSale.identity())) {
@@ -81,10 +81,4 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
         return save(directSale);
 
     }
-
-    @Override
-    public DirectSale addDirectSale(ItemId itemId, Price price, Period timeLimit) {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
 }
