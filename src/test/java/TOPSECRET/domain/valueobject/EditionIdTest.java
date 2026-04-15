@@ -94,7 +94,7 @@ class EditionIdTest {
     }
 
     @Test
-    void equalsShouldReturnTrueForSameReference() {
+    void equalsShouldReturnTrueForSameReferenceId() {
         //Arrange
         //SUT
         EditionId id = new EditionId();
