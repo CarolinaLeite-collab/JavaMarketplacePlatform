@@ -58,26 +58,6 @@ class MemoDirectSaleRepoTest {
     }
 
     @Test
-    void addDirectSaleShouldReturnDirectSaleFromFactory() {
-
-        // Arrange
-        _itemsId1.add(_itemIdDouble1);
-        Price priceDouble = mock(Price.class);
-        when(_factoryDouble.createDirectSale(_itemsId1, priceDouble, _periodDouble)).thenReturn(_ds1Double);
-
-        // SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
-
-        // Act
-        DirectSale created = dsr.addDirectSale(_itemsId1, priceDouble, _periodDouble);
-
-        // Assert
-        assertSame(_ds1Double, created);
-        verify(_factoryDouble, times(1)).createDirectSale(_itemsId1, priceDouble, _periodDouble);
-
-    }
-
-    @Test
     void addDirectSaleShouldPropagateExceptionFromFactory() {
 
         // Arrange

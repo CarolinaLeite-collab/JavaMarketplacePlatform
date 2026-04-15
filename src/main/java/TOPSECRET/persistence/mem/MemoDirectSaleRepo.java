@@ -26,12 +26,10 @@ import java.util.*;
 public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
-    private final List<DirectSale> _directSales;
     private final DirectSaleFactory _factory;
 
     public MemoDirectSaleRepo(DirectSaleFactory factory) {
         _factory = factory;
-        _directSales = new ArrayList<>();
     }
 
     @Override
@@ -70,7 +68,6 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     public DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
 
         DirectSale directSale = _factory.createDirectSale(itemsId, price, timeLimit);
-        _directSales.add(directSale);
 
         if (containsOfIdentity(directSale.identity())) {
 
