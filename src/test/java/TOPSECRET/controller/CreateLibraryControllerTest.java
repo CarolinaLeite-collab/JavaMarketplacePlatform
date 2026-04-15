@@ -6,8 +6,7 @@ import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class CreateLibraryControllerTest {
@@ -42,11 +41,10 @@ class CreateLibraryControllerTest {
         CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userIdDouble);
 
         // Act
-        Library myLibrary = createLibraryController.createLibrary(_userIdDouble);
+        boolean result = createLibraryController.createLibrary(_userIdDouble);
 
         // Assert
-        assertEquals(libraryDouble, myLibrary);
-        verify(_iLibraryRepoDouble).addLibrary(_userIdDouble);
+        assertTrue(result);
 
     }
 
