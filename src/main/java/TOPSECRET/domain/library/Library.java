@@ -9,27 +9,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a {@link UserId} library in the domain model.
+ * Domain aggregate root representing a user's Library.
  *
  * <p>
- * A {@code Library} is an entity that groups publications and is owned by
- * a {@link UserId}. A library is uniquely identified within the system
- * and encapsulates the core data related to a user's library.
+ * A {@code Library} is a core domain entity that groups {@link ItemId} instances
+ * belonging to a specific {@link UserId}. Each library is uniquely identified
+ * by a {@link LibraryId}, which is derived from the user identity.
+ * </p>
  *
+ * <p>
+ * This aggregate enforces basic invariants such as preventing duplicate item
+ * entries and ensuring that only valid item identifiers can be added.
+ * It encapsulates all behavior related to managing the collection of items
+ * within a user's library.
+ * </p>
  */
 
 public class Library implements AggregateRoot<LibraryId> {
 
     private LibraryId _libraryId;
-    private List<ItemId> _itemsId = new ArrayList<>();
+    private List<ItemId> _itemIds = new ArrayList<>();
 
-    Library(LibraryId libraryId){
+    Library(UserId userId) {
 
-        if (libraryId == null) {
+        if (userId == null) {
             throw new IllegalArgumentException("LibraryId is required");
         }
 
-        _libraryId = libraryId;
+        _libraryId = LibraryId.fromUserId(userId);
 
     }
 
@@ -48,29 +55,21 @@ public class Library implements AggregateRoot<LibraryId> {
     }
 
     public List<ItemId> getItemsIdInLibrary() {
-        return List.copyOf(_itemsId);
+        return List.copyOf(_itemIds);
+    }
+
+    public boolean containsItemId(ItemId itemId) {
+        return _itemIds.contains(itemId);
     }
 
     public boolean addItemIdToLibrary(ItemId itemId) {
-        if (itemId == null) {
+
+        if (itemId == null || _itemIds.contains(itemId)) {
             return false;
         }
 
-        if (_itemsId.contains(itemId)) {
-            return false;
-        }
+        return _itemIds.add(itemId);
 
-        _itemsId.add(itemId);
-        return true;
-    }
-
-    public ItemId getItemId(ItemId itemId) {
-        for (ItemId id : _itemsId) {
-            if (itemId.equals(id)) {
-                return id;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -82,5 +81,10 @@ public class Library implements AggregateRoot<LibraryId> {
         Library library = (Library) object;
         return this._libraryId.equals(library._libraryId);
 
+    }
+
+    @Override
+    public int hashCode() {
+        return _libraryId.hashCode();
     }
 }

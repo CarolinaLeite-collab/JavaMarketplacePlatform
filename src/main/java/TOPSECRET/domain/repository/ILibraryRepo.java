@@ -15,4 +15,6 @@ public interface ILibraryRepo extends IRepository<LibraryId, Library> {
     Library findLibraryByUserId(UserId userId);
 
     List<ItemId> getItemsInLibraryByUserId(UserId userId);
+
+    boolean existsItemIdInAnyLibrary(ItemId itemId);
 }

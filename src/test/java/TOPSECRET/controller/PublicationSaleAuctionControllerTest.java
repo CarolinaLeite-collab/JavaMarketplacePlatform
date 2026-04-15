@@ -140,7 +140,7 @@ class PublicationSaleAuctionControllerTest {
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_libraryDouble2.getItemId(_itemIdDouble)).thenReturn(_itemIdDouble);
+        when(_libraryDouble2.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
         when(_iAuctionRepoDouble.addAuction(_itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate))
                 .thenReturn(_auctionDouble);
 
