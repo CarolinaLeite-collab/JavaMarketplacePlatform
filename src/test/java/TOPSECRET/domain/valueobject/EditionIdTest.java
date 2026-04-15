@@ -94,12 +94,23 @@ class EditionIdTest {
     }
 
     @Test
-    void equalsShouldReturnTrueForSameReferenceId() {
+    void equalsShouldReturnTrueForDifferentObjectsWithSameInternalId() throws Exception {
         //Arrange
         //SUT
-        EditionId id = new EditionId();
+        EditionId first = new EditionId();
+        EditionId second = new EditionId();
 
-        //Assert
-        assertEquals(id, id);
+        Field field = EditionId.class.getDeclaredField("_eId");
+        field.setAccessible(true);
+
+        String sameInternalId = "E-ABCDEFGH";
+        field.set(first, sameInternalId);
+        field.set(second, sameInternalId);
+
+        //Act & Assert
+        assertNotSame(first, second);
+        assertEquals(first, second);
+        assertTrue(first.equals(second));
     }
+
 }
