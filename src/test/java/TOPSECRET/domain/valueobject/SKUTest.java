@@ -7,8 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class SKUTest {
 
     @Test
-    void constructorShouldGenerateSkuAutomatically() {
-        // Act
+    void constructorShouldGenerateSKUAutomatically() {
+        // SUT
         SKU sut = new SKU();
 
         // Assert
@@ -17,8 +17,8 @@ class SKUTest {
     }
 
     @Test
-    void generatedSkuShouldHaveCorrectLength() {
-        // Act
+    void generatedSKUShouldHaveCorrectLength() {
+        // SUT
         SKU sut = new SKU();
 
         // Assert
@@ -26,8 +26,8 @@ class SKUTest {
     }
 
     @Test
-    void generatedSkuShouldMatchExpectedFormat() {
-        // Act
+    void generatedSKUShouldMatchExpectedFormat() {
+        // SUT
         SKU sut = new SKU();
 
         // Assert
@@ -35,8 +35,8 @@ class SKUTest {
     }
 
     @Test
-    void generatedSkuShouldBeUppercase() {
-        // Act
+    void generatedSKUShouldBeUppercase() {
+        // SUT
         SKU sut = new SKU();
 
         // Assert
@@ -44,8 +44,8 @@ class SKUTest {
     }
 
     @Test
-    void skuShouldBeEqualToItself() {
-        // Arrange
+    void SKUShouldBeEqualToItself() {
+        // SUT
         SKU sut = new SKU();
 
         // Act
@@ -56,8 +56,8 @@ class SKUTest {
     }
 
     @Test
-    void skuShouldNotBeEqualToNull() {
-        // Arrange
+    void SKUShouldNotBeEqualToNull() {
+        // SUT
         SKU sut = new SKU();
 
         // Act
@@ -68,8 +68,8 @@ class SKUTest {
     }
 
     @Test
-    void skuShouldNotBeEqualToDifferentType() {
-        // Arrange
+    void SKUShouldNotBeEqualToDifferentType() {
+        // SUT
         SKU sut = new SKU();
 
         // Act
@@ -80,8 +80,8 @@ class SKUTest {
     }
 
     @Test
-    void differentGeneratedSkusShouldNormallyNotBeEqual() {
-        // Arrange
+    void differentGeneratedSKUsShouldNormallyNotBeEqual() {
+        // SUT
         SKU sut = new SKU();
         SKU otherSku = new SKU();
 
@@ -93,8 +93,8 @@ class SKUTest {
     }
 
     @Test
-    void toStringShouldReturnSkuValue() {
-        // Arrange
+    void toStringShouldReturnSKUValue() {
+        // SUT
         SKU sut = new SKU();
 
         // Act
@@ -106,7 +106,7 @@ class SKUTest {
 
     @Test
     void hashCodeShouldBeStableForSameObject() {
-        // Arrange
+        // SUT
         SKU sut = new SKU();
 
         // Act

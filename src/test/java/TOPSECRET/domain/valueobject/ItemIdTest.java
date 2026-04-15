@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 class ItemIdTest {
 
     @Test
-    void constructor_shouldCreateItemId() {
-        // Act
+    void constructorShouldCreateItemId() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Assert
@@ -19,8 +19,8 @@ class ItemIdTest {
     }
 
     @Test
-    void getSku_shouldReturnNonNullSku() {
-        // Arrange
+    void getSKUShouldReturnNonNullSku() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -31,8 +31,8 @@ class ItemIdTest {
     }
 
     @Test
-    void equals_sameObject_shouldReturnTrue() {
-        // Arrange
+    void equalsSameObjectShouldReturnTrue() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -43,8 +43,8 @@ class ItemIdTest {
     }
 
     @Test
-    void equals_null_shouldReturnFalse() {
-        // Arrange
+    void equalsNullShouldReturnFalse() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -55,8 +55,8 @@ class ItemIdTest {
     }
 
     @Test
-    void equals_differentType_shouldReturnFalse() {
-        // Arrange
+    void equalsDifferentTypeShouldReturnFalse() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -67,8 +67,8 @@ class ItemIdTest {
     }
 
     @Test
-    void equals_differentItemIds_shouldReturnFalse() {
-        // Arrange
+    void equalsDifferentItemIdsShouldReturnFalse() {
+        // SUT
         ItemId sut = new ItemId();
         ItemId otherItemId = new ItemId();
 
@@ -80,8 +80,8 @@ class ItemIdTest {
     }
 
     @Test
-    void hashCode_sameObject_shouldReturnSameHashCode() {
-        // Arrange
+    void hashCodeSameObjectShouldReturnSameHashCode() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -93,8 +93,8 @@ class ItemIdTest {
     }
 
     @Test
-    void toString_shouldReturnNonNullString() {
-        // Arrange
+    void toStringShouldReturnNonNullString() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
@@ -105,8 +105,8 @@ class ItemIdTest {
     }
 
     @Test
-    void toString_shouldMatchSkuToString() {
-        // Arrange
+    void toStringShouldMatchSkuToString() {
+        // SUT
         ItemId sut = new ItemId();
 
         // Act
