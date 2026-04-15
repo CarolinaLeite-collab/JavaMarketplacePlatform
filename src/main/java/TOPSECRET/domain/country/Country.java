@@ -3,6 +3,12 @@ package TOPSECRET.domain.country;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.CountryName;
+/**
+ * A {@code Country} represents geographical country identified by its name.
+ * <p>
+ * It is modeled as an {@link AggregateRoot} and is uniquely identified by a {@link CountryId},
+ * which is derived from its {@link CountryName}.
+ */
 
 public class Country implements AggregateRoot<CountryId> {
 
