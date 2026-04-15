@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Represents a time-bounded selling mechanism where one or more {@link ItemId}s is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where one or more {@link ItemId}s are listed for sale via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.
