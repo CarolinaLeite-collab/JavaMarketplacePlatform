@@ -48,7 +48,7 @@ deactivate UI
 User -> UI: price, time limit
 activate UI
 
-UI -> Ctl: addItemIdForDirectSale\n(itemID, price, timeLimit)
+UI -> Ctl: putItemIdOnDirectSale\n(itemID, price, timeLimit)
 activate Ctl
 
 Ctl -> DirectSaleRepo: addDirectSale\n(itemID, price, timeLimit)
