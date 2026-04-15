@@ -6,8 +6,19 @@ import TOPSECRET.domain.valueobject.*;
 import java.time.Year;
 
 /**
- * An {@code Edition} models a specific publication instance of a book or magazine,
- * including its identity, publishing metadata, and optional physical characteristics.
+ * Represents a specific released version of a {@link PublicationId},
+ * such as a book or magazine edition.
+ * <p>
+ * An {@code Edition} is an Aggregate Root identified by a generated {@link EditionId}.
+ * It captures the publishing metadata of a release, including the {@link PublicationId}
+ * it refers to, the {@link PublishingCompanyId} responsible for the release,
+ * the {@link PublicationTypeId}, the publishing {@link Year}, and the {@link Language}.
+ * </p>
+ * <p>
+ * An {@code Edition} may also carry optional physical characteristics such as
+ * {@link Dimension}, {@link Weight}, {@link NumberOfPages}, {@link EditionNumber},
+ * and {@link Binding}.
+ * </p>
  */
 
 public class Edition implements AggregateRoot<EditionId> {
