@@ -1,6 +1,5 @@
 package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,7 @@ class DirectSaleTest {
         DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period); // SUT
 
         // Assert
-        assertEquals(_itemsId, directSale.getItems());
+        assertEquals(_itemsId, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
         assertEquals(_period, directSale.getTimeLimit());
     }
@@ -49,7 +48,7 @@ class DirectSaleTest {
         DirectSale directSale = new DirectSale(_itemsId, _priceDouble, null); // SUT
 
         // Assert
-        assertEquals(_itemsId, directSale.getItems());
+        assertEquals(_itemsId, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
         assertNull(directSale.getTimeLimit());
     }
