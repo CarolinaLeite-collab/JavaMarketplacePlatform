@@ -1,179 +1,126 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AddPublicationOnLibraryControllerTest {
 
-    @Test
-    void shouldReturnLibraryOfUser() {
-        //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _libraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
+    private IItemRepo _itemRepoDouble;
+    private ILibraryRepo _libraryRepoDouble;
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
+    @BeforeEach
+    void setUp() {
 
-        //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userIdDouble);
+        _libraryRepoDouble = mock(ILibraryRepo.class);
+        _itemRepoDouble = mock(IItemRepo.class);
 
-        //act
-        Library result = controller.getMyLibrary(_userIdDouble);
-
-        //assert
-        assertEquals(_libraryDouble, result);
-        verify(_iLibraryRepoDouble).findLibraryByUserId(_userIdDouble);
     }
 
     @Test
-    void shouldReturnAllItemsFromLibrary() {
-        //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _libraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
+    void shouldReturnAllAvailableItems() {
 
-        ItemId _itemIdDouble1 = mock(ItemId.class);
-        ItemId _itemIdDouble2 = mock(ItemId.class);
+        //Arrange
+        ItemId itemId1Double = mock(ItemId.class);
+        ItemId itemId2Double = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
 
-        List<ItemId> items = List.of(_itemIdDouble1, _itemIdDouble2);
-
-        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(items);
+        when(_itemRepoDouble.findAllKeys()).thenReturn(List.of(itemId1Double, itemId2Double));
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId1Double)).thenReturn(true);
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId2Double)).thenReturn(false);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userIdDouble);
+        AddPublicationOnLibraryController ctl = new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
-        //act
-        List<ItemId> result = controller.getAllItems();
-
-        //assert
-        assertEquals(items, result);
-        verify(_libraryDouble).getItemsIdInLibrary();
-    }
-
-    @Test
-    void shouldReturnListOfAvailableItems() {
-        //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _myLibraryDouble = mock(Library.class);
-        Library _libraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
-
-        ItemId _itemIdDouble1 = mock(ItemId.class);
-        ItemId _itemIdDouble2 = mock(ItemId.class);
-
-        List<ItemId> existingItemIds = List.of(_itemIdDouble1);
-        List<ItemId> availableItemIds = List.of(_itemIdDouble2);
-
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.getItemsIdInLibrary()).thenReturn(existingItemIds);
-        when(_iItemRepoDouble.getDifferentOf(existingItemIds)).thenReturn(availableItemIds);
-
-        //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userIdDouble);
-
-        //act
-        List<ItemId> result = controller.getListOfAvailableItems(_userIdDouble);
+        //Act
+        List<ItemId> result = ctl.getListOfAvailableItemIds();
 
         //assert
-        assertEquals(availableItemIds, result);
+        assertEquals(1, result.size());
 
-        verify(_iLibraryRepoDouble).findLibraryByUserId(_userIdDouble);
-        verify(_myLibraryDouble).getItemsIdInLibrary();
-        verify(_iItemRepoDouble).getDifferentOf(existingItemIds);
     }
 
     @Test
     void shouldReturnEmptyListWhenNoAvailableItemsExist() {
-        // arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _libraryDouble = mock(Library.class);
-        Library _myLibraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
 
-        ItemId _itemIdDouble1 = mock(ItemId.class);
+        //Arrange
+        ItemId itemId1Double = mock(ItemId.class);
+        ItemId itemId2Double = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        UserId userId2Double = mock(UserId.class);
 
-        List<ItemId> existingItemIds = List.of(_itemIdDouble1);
-        List<ItemId> availableItemIds = List.of();
+        when(_itemRepoDouble.findAllKeys()).thenReturn(List.of(itemId1Double, itemId2Double));
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId1Double)).thenReturn(true);
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId2Double)).thenReturn(true);
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.getItemsIdInLibrary()).thenReturn(existingItemIds);
-        when(_iItemRepoDouble.getDifferentOf(existingItemIds)).thenReturn(availableItemIds);
+        //SUT
+        AddPublicationOnLibraryController ctl = new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
-        // SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userIdDouble);
+        //Act
+        List<ItemId> result = ctl.getListOfAvailableItemIds();
 
-        // act
-        List<ItemId> result = controller.getListOfAvailableItems(_userIdDouble);
+        //Assert
+        assertEquals(0, result.size());
 
-        // assert
-        assertTrue(result.isEmpty());
-        verify(_iLibraryRepoDouble).findLibraryByUserId(_userIdDouble);
-        verify(_myLibraryDouble).getItemsIdInLibrary();
-        verify(_iItemRepoDouble).getDifferentOf(existingItemIds);
     }
 
     @Test
-    void shouldAddItemToLibrary() {
-        //arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _myLibraryDouble = mock(Library.class);
-        Library _libraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
-        ItemId _itemIdDouble = mock(ItemId.class);
+    void shouldReturnTrueWhenItemAddedToLibrary() {
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.addItemIdToLibrary(_itemIdDouble)).thenReturn(true);
+        //Arrange
+        ItemId itemId1Double = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Library libraryDouble = mock(Library.class);
+
+        when(_itemRepoDouble.findAllKeys()).thenReturn(List.of(itemId1Double));
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId1Double)).thenReturn(false);
+        when(_libraryRepoDouble.addLibrary(userIdDouble)).thenReturn(libraryDouble);
+        when(_libraryRepoDouble.findLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryDouble.addItemIdToLibrary(itemId1Double)).thenReturn(true);
 
         //SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble,
-                _userIdDouble);
+        AddPublicationOnLibraryController ctl = new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
-        //act
-        boolean result = controller.addItemToLibrary(_itemIdDouble, _userIdDouble);
+        //Act
+        boolean result = ctl.addItemIdToLibrary(itemId1Double, userIdDouble);
 
-        //assert
+        //Assert
         assertTrue(result);
 
-        verify(_iLibraryRepoDouble).findLibraryByUserId(_userIdDouble);
-        verify(_myLibraryDouble).addItemIdToLibrary(_itemIdDouble);
     }
 
     @Test
     void shouldReturnFalseWhenItemNotAddedToLibrary() {
-        // arrange
-        ILibraryRepo _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        Library _libraryDouble = mock(Library.class);
-        Library _myLibraryDouble = mock(Library.class);
-        IItemRepo _iItemRepoDouble = mock(IItemRepo.class);
-        UserId _userIdDouble = mock(UserId.class);
-        ItemId _itemIdDouble = mock(ItemId.class);
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_myLibraryDouble);
-        when(_myLibraryDouble.addItemIdToLibrary(_itemIdDouble)).thenReturn(false);
+        //Arrange
+        ItemId itemId1Double = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Library libraryDouble = mock(Library.class);
 
-        // SUT
-        AddPublicationOnLibraryController controller = new AddPublicationOnLibraryController(_iLibraryRepoDouble, _libraryDouble, _iItemRepoDouble, _userIdDouble);
+        when(_itemRepoDouble.findAllKeys()).thenReturn(List.of(itemId1Double));
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId1Double)).thenReturn(true);
+        when(_libraryRepoDouble.addLibrary(userIdDouble)).thenReturn(libraryDouble);
+        when(_libraryRepoDouble.findLibraryByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryDouble.addItemIdToLibrary(itemId1Double)).thenReturn(false);
 
-        // act
-        boolean result = controller.addItemToLibrary(_itemIdDouble, _userIdDouble);
+        //SUT
+        AddPublicationOnLibraryController ctl = new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
-        // assert
+        //Act
+        boolean result = ctl.addItemIdToLibrary(itemId1Double, userIdDouble);
+
+        //Assert
         assertFalse(result);
-        verify(_iLibraryRepoDouble).findLibraryByUserId(_userIdDouble);
-        verify(_myLibraryDouble).addItemIdToLibrary(_itemIdDouble);
+
     }
 }
