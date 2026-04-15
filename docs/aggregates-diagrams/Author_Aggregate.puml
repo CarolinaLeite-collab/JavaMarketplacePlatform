@@ -20,7 +20,7 @@ skinparam classAttributeIconSize 0
 ' ===== Domain =====
 Package "domain" {
 
-    Package "author" <<Folder>> #c0d8d8 {
+    Package "author" <<Folder>> #b0c4d4 {
         class Author <<Root>> <<Entity>> {
             -_name : String
             +identity() : AuthorId
@@ -31,7 +31,6 @@ Package "domain" {
 
         class AuthorFactory <<Factory>> {
             +createAuthor(authorName : String) : Author
-            +createAuthor(authorId : AuthorId, authorName : String) : Author
         }
     }
 
@@ -68,24 +67,37 @@ package "persistence" <<Folder>> {
     }
 }
 
+
 Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(T) : T
         +findAll() : Iterable<T>
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
     }
+
+    interface AggregateRoot <ID >{
+    }
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
+    }
+}
 
 
 ' ===== Interactions =====
 Author "1" --> "ID 1" AuthorId : has
 Author "*" <- "1" MemoAuthorRepo : persists
-Author "1" *-- "1" Name : has
+Author "1" --> "1" Name : has
 
 AuthorFactory ..> Author : <<create>>
 AuthorFactory "1"<-- "1" MemoAuthorRepo : invokes
 
 IAuthorRepo <|. MemoAuthorRepo
 IAuthorRepo -|> IRepository
+
+AggregateRoot -|> DomainEntity
+Author .|> AggregateRoot
 
 @enduml

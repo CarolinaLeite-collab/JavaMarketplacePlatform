@@ -93,11 +93,11 @@ Package "ddd" {
         +findAllKeys() : List<ID>
     }
 
+    interface AggregateRoot <ID >{
+    }
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
-        +equals(Object) : boolean
         +sameAs(Object) : boolean
-        +toString() : String
     }
 }
 
@@ -127,10 +127,10 @@ Edition "*" --> "0..1" Binding : has
 
 
 
-IEditionRepo ..|> IRepository
+IEditionRepo -|> IRepository
 MemoEditionRepo ..|> IEditionRepo
-Edition ..|> DomainEntity
-
+Edition ..|> AggregateRoot
+AggregateRoot -|> DomainEntity
 
 EditionFactory ..> Edition : <<create>>
 

@@ -16,7 +16,7 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-package "PERSISTENCE" {
+package "persistence" {
 
     package "memo" {
 
@@ -26,17 +26,17 @@ package "PERSISTENCE" {
     }
 }
 
-package "DOMAIN" {
+package "domain" {
 
-    package "REPOSITORY" {
+    package "repository" {
 
         interface IPublishingCompanyRepo <<Interface>> {
-        + registerPublishingCompany(publishingCompanyName : String) : PublishingCompany
+        + registerPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
         }
 
     }
 
-    package "VALUE OBJECT" {
+    package "valueobject" {
 
         class PublishingCompanyId <<valueobject>> #LightPink {
         - _id : String
@@ -52,7 +52,7 @@ package "DOMAIN" {
         }
 
         class PublishingCompanyFactory <<Factory>> {
-        + createPublishingCompany(publishingCompanyName : String) : PublishingCompany
+        + createPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
 
         }
 
@@ -60,16 +60,21 @@ package "DOMAIN" {
 
 }
 
-package "ddd" {
-
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-    save(entity : T) : T
-    findAll() : Iterable<T>
-    ofIdentity(id : ID) : Optional <T>
-    containsOfIdentity(id : ID) : boolean
-
+        +save(T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(ID) : Optional<T>
+        +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
     }
 
+    interface AggregateRoot <ID >{
+    }
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
+    }
 }
 
 
@@ -83,4 +88,6 @@ PublishingCompany "1" --> "1" PublishingCompanyId: has
 
 PublishingCompanyFactory "1" ..> "*" PublishingCompany: <<create>>
 
+AggregateRoot -|> DomainEntity
+PublishingCompany .|> AggregateRoot
 @enduml
