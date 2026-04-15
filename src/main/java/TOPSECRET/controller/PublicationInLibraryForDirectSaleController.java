@@ -1,11 +1,15 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.SaleStatus;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Period;
@@ -19,10 +23,12 @@ public class PublicationInLibraryForDirectSaleController {
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
     private Library _library;
+    private final IItemRepo _iItemRepo;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, UserId userId) {
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
+        _iItemRepo = iItemRepo;
         _library = libraryRepo.findLibraryByUserId(userId);
     }
 
@@ -35,13 +41,27 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public DirectSale addItemIdForDirectSale(ItemId itemId, Price price, Period timeLimit) {
+    public DirectSale putItemIdOnDirectSale(IItemRepo iItemRepo, List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        ItemId itemIdFromLibrary = _library.getItemId(itemId);
+        for (ItemId itemId : itemsId) {
 
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemIdFromLibrary, price, timeLimit);
+            Item item = iItemRepo.ofIdentity(itemId)
+                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
-        itemId.setDirectSale(directSale);
+            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
+                throw new IllegalStateException(itemId + " is already on sale!");
+            }
+        }
+
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(
+                itemsId, price, timeLimit
+        );
+
+        for (ItemId itemId : itemsId) {
+
+            Item item = iItemRepo.ofIdentity(itemId).get();
+            item.markAsDirectSale();
+        }
 
         return directSale;
     }
