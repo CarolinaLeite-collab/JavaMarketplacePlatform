@@ -131,7 +131,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
         when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
                 .thenReturn(directSaleDouble);
 
@@ -157,7 +157,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
         when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
                 .thenReturn(directSaleDouble);
 

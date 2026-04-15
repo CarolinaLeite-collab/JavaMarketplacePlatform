@@ -1,6 +1,5 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.auction.Auction;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.directsale.DirectSale;
@@ -48,7 +47,7 @@ public class PublicationInLibraryForDirectSaleController {
             Item item = _iItemRepo.ofIdentity(itemId)
                     .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
-            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
+            if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
         }

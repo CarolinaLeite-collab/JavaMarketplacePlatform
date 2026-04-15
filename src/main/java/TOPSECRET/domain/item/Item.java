@@ -74,19 +74,19 @@ public class Item implements AggregateRoot<ItemId> {
         }
     }
 
-    public EditionId get_editionId() {
+    public EditionId getEditionId() {
         return _editionId;
     }
 
-    public Condition get_condition() {
+    public Condition getCondition() {
         return _condition;
     }
 
-    public SaleStatus get_saleStatus() {
+    public SaleStatus getSaleStatus() {
         return _saleStatus;
     }
 
-    public Description get_description() {
+    public Description getDescription() {
             return _description;
         }
 

@@ -1,6 +1,5 @@
 package TOPSECRET.domain.item;
 
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,9 +32,9 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Assert
-        assertSame(editionIdDouble, sut.get_editionId());
-        assertEquals(conditionDouble, sut.get_condition());
-        assertSame(descriptionDouble, sut.get_description());
+        assertSame(editionIdDouble, sut.getEditionId());
+        assertEquals(conditionDouble, sut.getCondition());
+        assertSame(descriptionDouble, sut.getDescription());
     }
 
     @Test
@@ -57,7 +56,7 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Assert
-        assertEquals(SaleStatus.NotOnSale, sut.get_saleStatus());
+        assertEquals(SaleStatus.NotOnSale, sut.getSaleStatus());
     }
 
     // ------------------------------------------------------------
@@ -73,7 +72,7 @@ class ItemTest {
         sut.markAsAuction();
 
         // Assert
-        assertEquals(SaleStatus.OnAuction, sut.get_saleStatus());
+        assertEquals(SaleStatus.OnAuction, sut.getSaleStatus());
     }
 
     @Test
@@ -121,7 +120,7 @@ class ItemTest {
         sut.markAsDirectSale();
 
         // Assert
-        assertEquals(SaleStatus.OnDirectSale, sut.get_saleStatus());
+        assertEquals(SaleStatus.OnDirectSale, sut.getSaleStatus());
     }
 
     @Test
@@ -170,7 +169,7 @@ class ItemTest {
         sut.markAsSold();
 
         // Assert
-        assertEquals(SaleStatus.Sold, sut.get_saleStatus());
+        assertEquals(SaleStatus.Sold, sut.getSaleStatus());
     }
 
     @Test
@@ -183,7 +182,7 @@ class ItemTest {
         sut.markAsSold();
 
         // Assert
-        assertEquals(SaleStatus.Sold, sut.get_saleStatus());
+        assertEquals(SaleStatus.Sold, sut.getSaleStatus());
     }
 
     @Test
@@ -211,7 +210,7 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Act
-        EditionId result = sut.get_editionId();
+        EditionId result = sut.getEditionId();
 
         // Assert
         assertSame(editionIdDouble, result);
@@ -223,7 +222,7 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Act
-        Condition result = sut.get_condition();
+        Condition result = sut.getCondition();
 
         // Assert
         assertEquals(conditionDouble, result);
@@ -235,7 +234,7 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Act
-        Description result = sut.get_description();
+        Description result = sut.getDescription();
 
         // Assert
         assertSame(descriptionDouble, result);
@@ -247,7 +246,7 @@ class ItemTest {
         Item sut = new Item(editionIdDouble, conditionDouble, descriptionDouble);
 
         // Act
-        SaleStatus result = sut.get_saleStatus();
+        SaleStatus result = sut.getSaleStatus();
 
         // Assert
         assertEquals(SaleStatus.NotOnSale, result);
@@ -260,7 +259,7 @@ class ItemTest {
         sut.markAsAuction();
 
         // Act
-        SaleStatus result = sut.get_saleStatus();
+        SaleStatus result = sut.getSaleStatus();
 
         // Assert
         assertEquals(SaleStatus.OnAuction, result);

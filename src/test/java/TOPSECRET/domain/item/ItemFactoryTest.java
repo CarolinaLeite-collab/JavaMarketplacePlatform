@@ -24,15 +24,15 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class,
                              (mock, context) -> {
-                                 when(mock.get_condition())
+                                 when(mock.getCondition())
                                          .thenReturn(condition);
-                                 when(mock.get_description())
+                                 when(mock.getDescription())
                                          .thenReturn(descriptionDouble);
                              })) {
             //Act
             Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
             //Assert
-            assertEquals(condition, newItem.get_condition());
+            assertEquals(condition, newItem.getCondition());
         }
     }
 }

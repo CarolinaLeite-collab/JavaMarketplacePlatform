@@ -46,14 +46,14 @@ public class PublicationSaleAuctionController {
         return List.copyOf(itemIds);
     }
 
-    public void putItemIdOnAuction (List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(IItemRepo iItemRepo, List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         for (ItemId itemId : itemsId) {
 
             Item item = _itemRepo.ofIdentity(itemId)
                     .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
-            if (item.get_saleStatus() != SaleStatus.NotOnSale) {
+            if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
         }
@@ -67,5 +67,7 @@ public class PublicationSaleAuctionController {
             Item item = _itemRepo.ofIdentity(itemId).get();
             item.markAsAuction();
         }
+
+        return auction;
     }
 }
