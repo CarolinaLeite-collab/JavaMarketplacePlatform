@@ -18,35 +18,35 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Admin" as Administrator
-participant ":RegisterPublishingCompanyUI" as UI
-participant ":RegisterPublishingCompanyController" as Ctl
-participant ":MemoPublishingCompanyRepo" as Repo
-participant ":PublishingCompanyFactory" as Factory
+participant ":RegisterPublishing%n()CompanyUI" as UI
+participant ":RegisterPublishing%n()CompanyCtl" as Ctl
+participant ":MemoPublishing%n()CompanyRepo" as Repo
+participant ":PublishingCompany%n()Factory" as Factory
 
 ' --- SD (Happy Path only)---
 
-Administrator -> "UI": I want to register a publishing company.
+Administrator -> "UI": I want to register %n()a publishing company.
 activate "UI"
-"UI" --> Administrator:Name of the publishing company?
+"UI" --> Administrator:Name of the %n()publishing company?
 Administrator -> "UI": publishingCompanyName
-"UI" -> "Ctl": registerPublishingCompany(publishingCompanyName)
+"UI" -> "Ctl": registerPublishingCompany%n()(publishingCompanyName)
 activate "Ctl"
-"Ctl" -> "Repo": registerPublishingCompany(publishingCompanyName)
+"Ctl" -> "Repo": registerPublishingCompany%n()(publishingCompanyName)
 activate "Repo"
-
-opt publishingCompanyExists(publishingCompanyName) == false
-        "Repo" -> "Factory" : createPublishingCompany(publishingCompanyName)
-        activate "Factory"
-        create "pc1:PublishingCompany"
-        "Factory" -->> "pc1:PublishingCompany": <<create>>
-        "Factory" --> "Repo": pc1
-        deactivate "Factory"
-        "Repo" -> "Repo": add(pc1);
-        end
-
-"Repo" --> "Ctl": pc1
+"Repo" -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
+activate "Factory"
+create "newPublishingCompany:%n()PublishingCompany"
+"Factory" -->> "newPublishingCompany:%n()PublishingCompany": <<create>>
+"Factory" --> "Repo": newPublishingCompany
+deactivate "Factory"
+note right of Repo
+    assuming happy path:
+    containsOfIdentity(PublishingCompanyId) == false
+end note
+"Repo" -> "Repo": save(newPublishingCompany);
+"Repo" --> "Ctl": newPublishingCompany
 deactivate "Repo"
-"Ctl" --> "UI": pc1
+"Ctl" --> "UI": newPublishingCompany
 deactivate "Ctl"
 "UI" --> Administrator: Registered successfully!
 deactivate "UI"

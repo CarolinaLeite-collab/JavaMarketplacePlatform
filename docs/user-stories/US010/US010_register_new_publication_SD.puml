@@ -17,27 +17,27 @@ autonumber
 ' --- Actor and participants ---
 actor User
 participant ":RegisterPublicationUI" as UI
-participant ":RegisterNew%n()PublicationController" as Ctl
+participant ":RegisterNew\nPublicationController" as Ctl
 participant ":MemoPublicationRepo" as PR
 participant ":PublicationFactory" as PF
 
 ' --- UI interaction ---
-User -> UI: I want to register %n()a new publication
+User -> UI: I want to register \na new publication
 activate UI
-UI --> User: Fill in the publication's %n()information
+UI --> User: Fill in the publication's \ninformation
 deactivate UI
 
-User -> UI: publicationType, %n()identifier, %n()publicationYear, %n()title, author, %n()publisher, edition, %n()genre
+User -> UI: title, author, \n releaseYear, genre
 activate UI
 
 ' --- Use case execution ---
-UI -> Ctl: registerPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
+UI -> Ctl: registerPublication(title, authorId, \nreleaseYear, genreId)
 activate Ctl
-Ctl -> PR: addPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
+Ctl -> PR: addPublication(title, authorId, \nreleaseYear, genreId)
 activate PR
 
 ' --- Creation  ---
-PR -> PF: createPublication(%n()publicationType, %n()identifier, %n()publicationYear, %n()title, author, publisher, %n()edition, genre)
+PR -> PF: createPublication(title, authorId, releaseYear, genreId)
 activate PF
 create "newPublication:Publication"
 PF -->> "newPublication:Publication": <<create>>
@@ -45,18 +45,20 @@ PF --> PR: newPublication
 deactivate PF
 
 ' --- Duplication check ---
-PR -> PR : contains(%n()newPublication)
+PR -> PR : isRepeated = containsOfIdentity(newPublication.identity())
+    opt !isRepeated
+            PR -> PR: save(newPublication)
+    end
 
-note right PR: assuming happy path %n()where the above returns %n()**false**
 
 
 ' --- Storage ---
-PR -> PR: add(newPublication)
+
 PR --> Ctl: newPublication
 deactivate PR
 Ctl --> UI: newPublication
 deactivate Ctl
 
-UI --> User: You have %n()successfully %n()registered a %n()new publication.
+UI --> User: You have \nsuccessfully \nregistered a \nnew publication.
 deactivate UI
 @enduml

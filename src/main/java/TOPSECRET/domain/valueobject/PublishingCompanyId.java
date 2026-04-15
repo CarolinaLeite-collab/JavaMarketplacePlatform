@@ -6,7 +6,7 @@ import TOPSECRET.ddd.DomainId;
  * Represents the unique identifier of a {@link TOPSECRET.domain.publishingcompany.PublishingCompany}.
  * <p>
  * A {@code PublishingCompanyId} wraps a {@link String} value derived from the publishing company name,
- * normalised to uppercase and trimmed. This ensures that "Porto Editora ", " porto editora" and "PORTO EDITORA"
+ * normalised to uppercase and trimmed. This ensures that "Porto  Editora ", " porto editora" and "PORTO EDITORA"
  * all resolve to the same identifier.
  * </p>
  *
@@ -22,9 +22,9 @@ public class PublishingCompanyId implements DomainId {
 
     public PublishingCompanyId(String publishingCompanyName) {
         if (publishingCompanyName == null || publishingCompanyName.isBlank()) {
-            throw new IllegalArgumentException("PublishingCompanyId cannot be null or blank");
+            throw new IllegalArgumentException("PublishingCompanyId cannot be null, blank, or empty");
         }
-        _id = publishingCompanyName.trim().toUpperCase();
+        _id = publishingCompanyName.trim().replaceAll("\\s+", " ").toUpperCase();
     }
 
     @Override

@@ -6,9 +6,7 @@ import TOPSECRET.domain.repository.IEditionRepo;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Represents an in-memory repository of {@link Edition} entities.
@@ -59,20 +57,23 @@ public class MemoEditionRepo implements IEditionRepo {
 
     }
 
+
     @Override
-    public Edition addEditionBook(BookId bookId,
-                                  PublicationId publicationId,
-                                  PublishingCompanyId publishingCompanyId,
-                                  Year publishingYear,
-                                  Language editionLanguage,
-                                  Dimension dimension,
-                                  Weight weight,
-                                  NumberOfPages numberOfPages,
-                                  EditionNumber editionNumber,
-                                  Binding binding
-    ) {
-        Edition editionBook = _editionFactory.createEditionBook(
-                bookId,
+    public Edition addEdition(PublicationTypeId typeId,
+                              Identifier identifier,
+                              PublicationId publicationId,
+                              PublishingCompanyId publishingCompanyId,
+                              Year publishingYear,
+                              Language editionLanguage,
+                              Dimension dimension,
+                              Weight weight,
+                              NumberOfPages numberOfPages,
+                              EditionNumber editionNumber,
+                              Binding binding) {
+
+        Edition edition = _editionFactory.createEdition(
+                typeId,
+                identifier,
                 publicationId,
                 publishingCompanyId,
                 publishingYear,
@@ -83,57 +84,29 @@ public class MemoEditionRepo implements IEditionRepo {
                 editionNumber,
                 binding
         );
-        if (bookId instanceof ISBN && containsOfIdentity(bookId)) {
-            throw new IllegalStateException("An Edition with this ISBN already exists!");
-        }
 
-        if (bookId instanceof NoIsbnBook) {
-            for (Edition existingEdition : findAll()) {
-                if (existingEdition.sameAs(editionBook)) {
+        for (Edition existingEdition : findAll()) {
+            if (identifier != null && existingEdition.getIdentifier() != null) {
+                if (existingEdition.getPublicationTypeId().equals(typeId) &&
+                        existingEdition.getIdentifier().equals(identifier)) {
+                    throw new IllegalStateException("An Edition with this identifier already exists!");
+                }
+            } else {
+                if (existingEdition.sameAs(edition)) {
                     throw new IllegalStateException("Edition already exists!");
                 }
             }
         }
 
-        return save(editionBook);
+        return save(edition);
     }
 
-    @Override
-    public Edition addEditionMagazine(MagazineId magazineId,
-                                      PublicationId publicationId,
-                                      PublishingCompanyId publishingCompanyId,
-                                      Year publishingYear,
-                                      Language editionLanguage,
-                                      Dimension dimension,
-                                      Weight weight,
-                                      IssueNumber issueNumber,
-                                      Periodicity periodicity
+    public List<EditionId> findAllKeys() {
 
-    ) {
-        Edition editionMagazine = _editionFactory.createEditionMagazine(
-                magazineId,
-                publicationId,
-                publishingCompanyId,
-                publishingYear,
-                editionLanguage,
-                dimension,
-                weight,
-                issueNumber,
-                periodicity
-        );
+        return new ArrayList<>(DATA.keySet());
 
-        if (magazineId instanceof ISSN && containsOfIdentity(magazineId)) {
-            throw new IllegalStateException("An Edition with this ISSN already exists!");
-        }
-
-        if (magazineId instanceof NoIssnMagazine) {
-            for (Edition existingEdition : findAll()) {
-                if (existingEdition.sameAs(editionMagazine)) {
-                    throw new IllegalStateException("Edition already exists!");
-                }
-            }
-        }
-
-        return save(editionMagazine);
     }
+
+
+
 }

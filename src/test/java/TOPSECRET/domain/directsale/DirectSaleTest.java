@@ -25,7 +25,6 @@ class DirectSaleTest {
 
         _items = new ArrayList<>();
         _itemDouble = mock(Item.class);
-        when(_itemDouble.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
         _items.add(_itemDouble);
         _priceDouble = mock(Price.class);
         _period = Period.ofMonths(3);
@@ -163,7 +162,6 @@ class DirectSaleTest {
     void shouldReturnFalseWhenDifferentItems() {
         //arrange
         Item itemdouble2 = mock(Item.class);
-        when(itemdouble2.get_saleStatus()).thenReturn(SaleStatus.NotOnSale);
         List<Item> items2 = new ArrayList<>();
         items2.add(itemdouble2);
 

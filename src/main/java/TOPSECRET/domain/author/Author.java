@@ -36,8 +36,13 @@ public class Author implements AggregateRoot<AuthorId> {
     @Override
     public boolean sameAs(Object object) {
 
-        return equals(object);
+        if (object instanceof Author other) {
 
+            return _name.equalsIgnoreCase(other._name);
+
+        }
+
+        return false;
     }
 
     public String getName() {

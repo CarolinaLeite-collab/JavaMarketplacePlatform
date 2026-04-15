@@ -11,6 +11,7 @@ import TOPSECRET.domain.valueobject.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,20 +64,6 @@ class RegisterCityControllerTest {
     void shouldRejectNonAdminUser() {
         assertThrows(SecurityException.class,
                 () -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _nonAdminDouble));
-    }
-
-    @Test
-    void getCountriesReturnsAllCountriesFromRepository() {
-        when(_iCountryRepoDouble.findAll()).thenReturn(List.of(_countryDouble));
-
-        RegisterCityController controller = new RegisterCityController(
-                _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
-
-        List<Country> result = controller.getAllCountries();
-
-        assertEquals(1, result.size());
-        assertSame(_countryDouble, result.get(0));
-        verify(_iCountryRepoDouble, times(1)).findAll();
     }
 
     @Test

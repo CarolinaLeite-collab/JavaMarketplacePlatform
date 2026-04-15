@@ -132,4 +132,58 @@ class PublicationTypeIdTest {
         assertEquals("POKEMON TRADING CARDS", publicationTypeId.toString());
     }
 
+    @Test
+    void equalsDifferentTypeReturnsFalse() {
+        PublicationTypeId id = new PublicationTypeId("BOOK");
+        assertNotEquals(id, "BOOK");
+    }
+
+    @Test
+    void isBookReturnsTrueWhenTypeIsBook() {
+        // arrange
+        PublicationTypeId type = new PublicationTypeId("book");
+
+        // act
+        boolean result = type.isBook();
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isBookReturnsFalseWhenTypeIsNotBook() {
+        // arrange
+        PublicationTypeId type = new PublicationTypeId("magazine");
+
+        // act
+        boolean result = type.isBook();
+
+        // assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isMagazineReturnsTrueWhenTypeIsMagazine() {
+        // arrange
+        PublicationTypeId type = new PublicationTypeId("magazine");
+
+        // act
+        boolean result = type.isMagazine();
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isMagazineReturnsFalseWhenTypeIsNotMagazine() {
+        // arrange
+        PublicationTypeId type = new PublicationTypeId("book");
+
+        // act
+        boolean result = type.isMagazine();
+
+        // assert
+        assertFalse(result);
+    }
+
 }

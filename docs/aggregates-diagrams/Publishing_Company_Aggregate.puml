@@ -18,10 +18,9 @@ top to bottom direction
 
 package "PERSISTENCE" {
 
-    package "MEM" {
+    package "memo" {
 
         class MemoPublishingCompanyRepo <<Repo>> {
-        - publishingCompanyExists(publishingCompanyId : PublishingCompanyId) : boolean
         }
 
     }
@@ -39,24 +38,21 @@ package "DOMAIN" {
 
     package "VALUE OBJECT" {
 
-        class PublishingCompanyId <<Value Object>> #LightPink {
+        class PublishingCompanyId <<valueobject>> #LightPink {
         - _id : String
-        +equals(object : Object) : boolean
-        +toString() : String
         }
 
     }
 
-    package "PUBLISHING COMPANY" #b0c4d4 {
+    package "publishingcompany" #b0c4d4 {
 
         class PublishingCompany <<Root>> <<Entity>> {
-          + identity() : PublishingCompanyId
-          + isSamePublishingCompany(publishingCompanyId : PublishingCompanyId) : boolean
+        + isSamePublishingCompany (publishingCompanyName : String) : boolean
+        + getName() : String
         }
 
         class PublishingCompanyFactory <<Factory>> {
         + createPublishingCompany(publishingCompanyName : String) : PublishingCompany
-        + createPublishingCompany(publishingCompanyId : PublishingCompanyId) : PublishingCompany
 
         }
 
@@ -64,13 +60,13 @@ package "DOMAIN" {
 
 }
 
-package "DDD" {
+package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
-    save(T) : T
+    save(entity : T) : T
     findAll() : Iterable<T>
-    ofIdentity(ID) : Optional <T>
-    containsOfIdentity(ID) : boolean
+    ofIdentity(id : ID) : Optional <T>
+    containsOfIdentity(id : ID) : boolean
 
     }
 

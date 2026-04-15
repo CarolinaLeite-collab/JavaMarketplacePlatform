@@ -45,4 +45,13 @@ public class PublicationTypeId implements DomainId {
         return _id;
     }
 
+    //methods needed by Edition
+    public boolean isBook() {
+        return "BOOK".equals(_id);
+    }
+
+    public boolean isMagazine() {
+        return "MAGAZINE".equals(_id);
+    }
+
 }

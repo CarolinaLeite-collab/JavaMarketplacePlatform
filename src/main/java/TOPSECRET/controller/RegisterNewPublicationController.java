@@ -27,8 +27,8 @@ public class RegisterNewPublicationController {
         _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo");
     }
 
-    public Publication registerPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
+    public Publication registerPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId) {
 
-        return _iPublicationRepo.addPublication(title, authorId, releaseYear, publicationTypeId, genreId);
+        return _iPublicationRepo.addPublication(title, authorId, releaseYear,  genreId);
     }
 }
