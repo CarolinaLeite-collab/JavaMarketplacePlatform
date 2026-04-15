@@ -1,64 +1,73 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
+import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.SaleStatus;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <h3>Controller responsible for handling publication auction operations (US016). </h3>
+ * <h3>Controller responsible for handling item auction operations. </h3>
  * Separated into two steps:
  * <ol>
- *     <li>lookup of user's list of publications in their library (immutable copy)</li>
- *     <li>retrieval of actual publication, item creation, auction setup, and link between item and auction</li>
+ *     <li>lookup of user's list of items in their library (immutable copy)</li>
+ *     <li>retrieval of actual item, auction setup, and link between item and auction</li>
  * </ol>
  */
 
 public class PublicationSaleAuctionController {
 
     private final ILibraryRepo _iLibraryRepo;
-    private final IAuctionRepo _iAuctionRepo;
-    private final Library _library;
+    private  IAuctionRepo _iAuctionRepo;
+    private  Library _library;
+    private  IItemRepo _itemRepo;
 
-    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, UserId userId) {
+    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, IItemRepo itemRepo, UserId userId) {
 
         _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;
-        _library = library;
+        _itemRepo = itemRepo;
 
     }
 
-   public List<Item> getLibraryItemsList(UserId userId) {
+    public List<ItemId> getLibraryItemsIdList(UserId userId) {
 
         Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
 
-        List<Item> items = userLibrary.getItemsInLibrary();
-        return List.copyOf(items);
-   }
+        List<ItemId> itemIds = userLibrary.getItemsIdInLibrary();
+        return List.copyOf(itemIds);
+    }
 
-    public Auction putItemOnAuction(List<Item> items, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(IItemRepo iItemRepo, List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
-        List<Item> itemsForAuction = new ArrayList<>();
-        for (Item item : items) {
-            Item itemFromLibrary = _library.getItem(item);
-            if (itemFromLibrary != null) {
-                itemsForAuction.add(itemFromLibrary);
+        for (ItemId itemId : itemsId) {
+
+            Item item = _itemRepo.ofIdentity(itemId)
+                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+
+            if (item.getSaleStatus() != SaleStatus.NotOnSale) {
+                throw new IllegalStateException(itemId + " is already on sale!");
             }
         }
 
-        Auction newAuction = _iAuctionRepo.addAuction(itemsForAuction, startPrice, reservePrice, outrightPrice, startDate, endDate);
+        Auction auction = _iAuctionRepo.addAuction(
+                itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate
+        );
 
-        for (Item item : items) {
-            item.setAuction(newAuction);
+        for (ItemId itemId : itemsId) {
+
+            Item item = _itemRepo.ofIdentity(itemId).get();
+            item.markAsAuction();
         }
 
-        return newAuction;
+        return auction;
     }
 }

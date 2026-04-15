@@ -1,19 +1,15 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Bid;
-import TOPSECRET.domain.BidFactory;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.MemoBidRepo;
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.*;
-import TOPSECRET.domain.publication.Publication;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Represents a time-bounded selling mechanism where one or more {@link Item}s is sold via competitive bidding.
+ * Represents a time-bounded selling mechanism where one or more {@link ItemId}s are listed for sale via competitive bidding.
  * <p>
  * An auction is active only within its configured time window: {@code auctionStartDate}
  * to {@code auctionEndDate}.
@@ -40,21 +36,22 @@ import java.util.List;
 public class Auction implements AggregateRoot<AuctionId> {
 
     private final AuctionId _auctionId;
-    private final List<Item> _items;
+    private final List<ItemId> _itemsId;
     private final Price _startingPrice;
     private final Price _reservePrice;
     private final Price _outrightPrice;
     private final ZonedDateTime _auctionStartDate;
     private final ZonedDateTime _auctionEndDate;
-    private final MemoBidRepo _bids;
-    private User _buyer;
+    private UserId _userId;
     private Price _finalPrice;
+    private final BidFactory _bidFactory;
+    private List<Bid> _bids;
 
-
-    Auction(List<Item> items, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         _startingPrice = startingPrice;
-        _bids = new MemoBidRepo( new BidFactory());
         _auctionId = new AuctionId();
+        _bidFactory = new BidFactory();
+        _bids = new ArrayList<>();
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -64,7 +61,7 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         if (isReservePriceValid(reservePrice)) {
             _reservePrice = reservePrice;
-        }  else {
+        } else {
             throw new IllegalArgumentException("Invalid reserve price");
         }
 
@@ -80,19 +77,15 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalArgumentException("Invalid end date");
         }
 
-        if (items == null || items.isEmpty()) {
+        if (itemsId == null || itemsId.isEmpty()) {
             throw new IllegalArgumentException("Items cannot be null or empty");
-        } else {
-            _items = items;
         }
 
-        for (Item item : _items) {
-            item.setAuction(this);
-        }
+        _itemsId = itemsId;
     }
 
-    Auction(List<Item> item, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        this (item, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+        this(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
     @Override
@@ -106,12 +99,12 @@ public class Auction implements AggregateRoot<AuctionId> {
         return _auctionId.equals(other._auctionId);
     }
 
-    public List <Item> getItems() {
-        return _items;
+    public List<ItemId> getItemsId() {
+        return _itemsId;
     }
 
-    public MemoBidRepo getBids() {
-        return _bids;
+    public List<Bid> getBids() {
+        return List.copyOf(_bids);
     }
 
     public Price getStartingPrice() {
@@ -122,38 +115,26 @@ public class Auction implements AggregateRoot<AuctionId> {
         return _outrightPrice;
     }
 
-
-    public void acceptBid(Bid bid) {
-        ZonedDateTime now = ZonedDateTime.now();
-        if (now.isAfter(_auctionStartDate) && now.isBefore(_auctionEndDate) && bid.getOfferPrice().getValue() > _startingPrice.getValue()) {
-            _bids.addBid(bid);
-            if (_outrightPrice != null && bid.getOfferPrice().getValue() >= _outrightPrice.getValue()) {
-                finalizeAuction();
-            }
-        } else {
-            throw new IllegalArgumentException("Invalid Bid");
-        }
-    }
-
     public void finalizeAuction() {
-        Bid highestBid = _bids.getHighestBid();
+        if (_bids.isEmpty()) {
+            _userId = null;
+            _finalPrice = null;
+            return;
+        }
+
+        Bid highestBid = getHighestBid();
 
         if (isReserveMet(highestBid.getOfferPrice())) {
-            _buyer = highestBid.getBidder();
+            _userId = highestBid.getUserId();
             _finalPrice = highestBid.getOfferPrice();
         } else {
-            _buyer = null;
+            _userId = null;
             _finalPrice = null;
         }
     }
 
     private boolean isAuctionStartDateValid(ZonedDateTime auctionStartDate) {
-        boolean result = false;
-        ZonedDateTime now = ZonedDateTime.now();
-        if (now.isBefore(auctionStartDate)) {
-            result = true;
-        }
-        return result;
+        return auctionStartDate != null;
     }
 
     private boolean isOutrightPriceValid(Price outrightPrice) {
@@ -162,11 +143,7 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     private boolean isReservePriceValid(Price reservePrice) {
-        boolean result = false;
-        if (reservePrice.getValue() >= _startingPrice.getValue()) {
-            result = true;
-        }
-        return result;
+        return reservePrice.getValue() >= _startingPrice.getValue();
     }
 
     private boolean isReserveMet(Price price) {
@@ -174,46 +151,48 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     private boolean isAuctionEndDateValid(ZonedDateTime auctionEndDate) {
-        boolean result = false;
-        if (auctionEndDate.isAfter(_auctionStartDate)) {
-            result = true;
-        }
-        return result;
+        return auctionEndDate.isAfter(_auctionStartDate);
     }
 
-    public boolean isByGenreId(GenreId genreId) {
-        for (Item item : _items) {
-            if (item.isByGenreId(genreId)) {
-                return true;
-            }
+    public Bid placeBid(UserId userId, Price offerPrice) {
+        ZonedDateTime now = ZonedDateTime.now();
+
+        if (now.isBefore(_auctionStartDate) || now.isAfter(_auctionEndDate)) {
+            throw new IllegalStateException("Auction not active");
         }
-        return false;
+
+        if (offerPrice.getValue() <= _startingPrice.getValue()) {
+            throw new IllegalArgumentException("Bid must be higher than starting price");
+        }
+
+        Bid bid = Objects.requireNonNull(
+                _bidFactory.createBid(userId, offerPrice), "Bid must not be null"
+        );
+
+        _bids.add(bid);
+
+        if (_outrightPrice != null &&
+                offerPrice.getValue() >= _outrightPrice.getValue()) {
+            finalizeAuction();
+        }
+
+        return bid;
     }
 
-    public boolean isByAuthorId(AuthorId authorId){
-        for (Item item : _items) {
-            if (item.isByAuthorId(authorId)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    public Bid getHighestBid() {
 
-    public boolean isByPublication(Publication publication) {
-        for(Item item : _items) {
-            if(item.isByPublication(publication)) {
-                return true;
-            }
+        if (_bids.isEmpty()) {
+            throw new IllegalStateException("No bids available");
         }
-        return false;
-    }
 
-    public boolean isByPublishingCompany(PublishingCompanyId publishingCompanyId) {
-        for(Item item : _items) {
-            if(item.isByPublishingCompany(publishingCompanyId)) {
-                return true;
+        Bid highestBid = _bids.get(0);
+
+        for (int i = 1; i < _bids.size(); i++) {
+            Bid anotherBid = _bids.get(i);
+            if (anotherBid.getOfferPrice().getValue() > highestBid.getOfferPrice().getValue()) {
+                highestBid = anotherBid;
             }
         }
-        return false;
+        return highestBid;
     }
 }

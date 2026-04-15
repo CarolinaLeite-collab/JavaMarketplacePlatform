@@ -1,11 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.PublishingCompanyId;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.UserId;
-
-import java.util.List;
 
 /**
  * Controller responsible for retrieving auction items by a specific publishingCompany.
@@ -22,10 +19,5 @@ public class GetAuctionItemsByPublishingCompanyController {
     public GetAuctionItemsByPublishingCompanyController(IAuctionRepo iAuctionRepo, UserId buyerId) {
 
         _iAuctionRepo = iAuctionRepo;
-    }
-
-    public List<Item> getAuctionItemsByPublishingCompany(PublishingCompanyId publishingCompanyId) {
-
-        return _iAuctionRepo.getAuctionItemsByPublishingCompanyId(publishingCompanyId);
     }
 }

@@ -14,21 +14,24 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
 autonumber
+autoactivate off
 
 ' --- Actor and participants ---
-actor "User" as User
-participant "Mitelovers" as System
+actor User
+participant ":MiteLovers" as System
 
 ' --- System dialog ---
-User -> System: I want to put a publication in my library %n()for sale in an auction
+User -> System: I want to put for auction\nan item in my library
 activate "System"
-System --> User: Which publication?
-User -> System: This publication
-System --> User: What is its condition?
-User -> System: condition
-System --> User: Please provide auction details
-User -> System: Start price, start date, end date
-System --> User: Done! Publication for sale in auction
+System --> User: Which item\nwould you like to sell?
+deactivate "System"
+User -> System: item
+activate "System"
+System --> User: What are the starting, reserve and outright prices,\n plus the end date for this sale?
+deactivate "System"
+User -> System: starting price, reserve price, outright price, end date
+activate "System"
+System --> User: Your item was \nsuccessfully put up on an auction!
 deactivate "System"
 
 @enduml

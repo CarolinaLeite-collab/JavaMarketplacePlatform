@@ -1,12 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IDirectSaleRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.List;
 
 /**
  * Controller responsible for retrieving direct sale items filtered by genre.
@@ -25,13 +23,4 @@ public class GetDirectSaleItemsByGenreController {
         _iDirectSaleRepo = directSaleRepo;
 
     }
-
-    public List<Item> getDirectSaleItemsByGenre(GenreId genreId) {
-
-        List<Item> directSaleItemsByGenre = _iDirectSaleRepo.getDirectSaleItemsByGenre(genreId);
-
-        return directSaleItemsByGenre;
-
-    }
-
 }

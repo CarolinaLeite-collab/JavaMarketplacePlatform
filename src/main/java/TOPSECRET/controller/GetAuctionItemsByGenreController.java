@@ -2,11 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.UserId;
-
-import java.util.List;
 
 /**
  * Controller responsible for retrieving auction items filtered by genre.
@@ -24,11 +21,4 @@ public class GetAuctionItemsByGenreController {
 
         _iAuctionRepo = iAuctionRepo;
     }
-
-    public List<Item> getAuctionItemsByGenre(GenreId genreId) {
-
-        List<Item> auctionItemsByGenre = _iAuctionRepo.getAuctionItemsByGenreId(genreId);
-
-        return auctionItemsByGenre;
-   }
 }

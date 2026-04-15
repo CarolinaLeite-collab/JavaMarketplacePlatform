@@ -1,4 +1,4 @@
-package TOPSECRET.domain.ListOfItems;
+package TOPSECRET.domain.listofitems;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.GenreId;

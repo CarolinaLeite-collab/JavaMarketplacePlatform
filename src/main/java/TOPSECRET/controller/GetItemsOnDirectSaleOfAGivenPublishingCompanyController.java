@@ -1,12 +1,10 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IDirectSaleRepo;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.List;
 
 /**
  * Controller responsible for retrieving direct sale items by a specific publishing company.
@@ -23,13 +21,5 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
     public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IDirectSaleRepo directSaleRepo, UserId buyerId) {
 
         _iDirectSaleRepo = directSaleRepo;
-    }
-
-    public List<Item> getDirectSaleItemByPublisher(PublishingCompanyId publishingCompanyId) {
-
-        if (publishingCompanyId == null) {
-            throw new IllegalArgumentException("Please provide a publishing company.");
-        }
-        return _iDirectSaleRepo.getDirectSaleItemsByPublisher(publishingCompanyId);
     }
 }

@@ -1,15 +1,17 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.library.Library;
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.SaleStatus;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,35 +22,44 @@ public class PublicationInLibraryForDirectSaleController {
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
     private Library _library;
+    private final IItemRepo _iItemRepo;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, UserId userId) {
+    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
+        _iItemRepo = iItemRepo;
         _library = libraryRepo.findLibraryByUserId(userId);
     }
 
-    public List<Item> getItemsInLibraryByUser(UserId userId) {
+    public List<ItemId> getItemsInLibraryByUser(UserId userId) {
 
         Library userLibrary = _iLibraryRepo.findLibraryByUserId(userId);
 
-        List<Item> items = userLibrary.getItemsInLibrary();
-        return List.copyOf(items);
+        List<ItemId> itemIds = userLibrary.getItemsIdInLibrary();
+        return List.copyOf(itemIds);
 
     }
 
-    public DirectSale addItemForDirectSale(List<Item> items, Price price, Period timeLimit) {
+    public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        List<Item> itemsForSale = new ArrayList<>();
-        for (Item item : items) {
-            Item itemFromLibrary = _library.getItem(item);
-            if (itemFromLibrary != null) {
-                itemsForSale.add(itemFromLibrary);
+        for (ItemId itemId : itemsId) {
+
+            Item item = _iItemRepo.ofIdentity(itemId)
+                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+
+            if (item.getSaleStatus() != SaleStatus.NotOnSale) {
+                throw new IllegalStateException(itemId + " is already on sale!");
             }
         }
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(itemsForSale, price, timeLimit);
 
-        for (Item item : items){
-            item.setDirectSale(directSale);
+        DirectSale directSale = _iDirectSaleRepo.addDirectSale(
+                itemsId, price, timeLimit
+        );
+
+        for (ItemId itemId : itemsId) {
+
+            Item item = _iItemRepo.ofIdentity(itemId).get();
+            item.markAsDirectSale();
         }
 
         return directSale;

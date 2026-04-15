@@ -1,7 +1,7 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.auction;
 
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -12,7 +12,7 @@ class BidFactoryTest {
     @Test
     void shouldSuccessfullyCreateBid() throws IllegalArgumentException {
         // arrange
-        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price priceDouble = mock(Price.class);
 
         //SUT
@@ -24,7 +24,7 @@ class BidFactoryTest {
                                  when(mock.getOfferPrice()).thenReturn(priceDouble);
                              })) {
             // act
-            Bid newBid = bidFactory.createBid(userDouble, priceDouble);
+            Bid newBid = bidFactory.createBid(userIdDouble, priceDouble);
             //assert
             assertEquals(priceDouble, newBid.getOfferPrice());
         }
@@ -33,7 +33,7 @@ class BidFactoryTest {
     @Test
     void shouldThrowExceptionWhenCreatingBidWithInvalidPrice() throws IllegalArgumentException {
         // arrange
-        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Price priceDouble = mock(Price.class);
 
         //SUT
@@ -47,7 +47,7 @@ class BidFactoryTest {
                                  when(mock.getOfferPrice()).thenReturn(priceDouble);
                              })) {
             // act
-            Bid newBid = bidFactory.createBid(userDouble, priceDouble);
+            Bid newBid = bidFactory.createBid(userIdDouble, priceDouble);
             //assert
             assertEquals(priceDouble, newBid.getOfferPrice());
         }

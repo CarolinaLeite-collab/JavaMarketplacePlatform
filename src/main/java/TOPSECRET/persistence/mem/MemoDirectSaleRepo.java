@@ -1,14 +1,11 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Item;
+import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
 import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import TOPSECRET.domain.repository.IDirectSaleRepo;
-import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.DirectSaleId;
-import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
@@ -29,12 +26,10 @@ import java.util.*;
 public class MemoDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
-    private final List<DirectSale> _directSales;
     private final DirectSaleFactory _factory;
 
     public MemoDirectSaleRepo(DirectSaleFactory factory) {
         _factory = factory;
-        _directSales = new ArrayList<>();
     }
 
     @Override
@@ -70,68 +65,17 @@ public class MemoDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public DirectSale addDirectSale(List<Item> items, Price price, Period timeLimit) {
+    public DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        DirectSale directSale = _factory.createDirectSale(items, price, timeLimit);
-        _directSales.add(directSale);
+        DirectSale directSale = _factory.createDirectSale(itemsId, price, timeLimit);
+
+        if (containsOfIdentity(directSale.identity())) {
+
+            throw new IllegalStateException("Direct sale already exists!");
+
+        }
 
         return save(directSale);
 
     }
-
-
-    @Override
-    public List<Item> getDirectSaleItemsByAuthor(AuthorId authorId) {
-        List<Item> list = new ArrayList<>();
-
-        for (DirectSale directSale : _directSales) {
-            if (directSale.isByAuthorId(authorId)) {
-                list.addAll(directSale.getItems());
-            }
-        }
-
-        return List.copyOf(list);
-    }
-
-    @Override
-    public List<Item> getDirectSaleItemsByGenre(GenreId genreId) {
-
-        List<Item> list = new ArrayList<>();
-
-        for (DirectSale directSale : _directSales) {
-            if (directSale.isByGenreId(genreId)) {
-                list.addAll(directSale.getItems());
-            }
-        }
-
-        return List.copyOf(list);
-
-    }
-
-    @Override
-    public List<Item> getDirectSaleItemsByPublication(Publication publication) {
-        List<Item> list = new ArrayList<>();
-
-        for (DirectSale directSale : _directSales) {
-            if (directSale.isByPublication(publication)) {
-                list.addAll(directSale.getItems());
-            }
-        }
-
-        return List.copyOf(list);
-    }
-
-    @Override
-    public List<Item> getDirectSaleItemsByPublisher(PublishingCompanyId publisherId) {
-        List<Item> list = new ArrayList<>();
-
-        for (DirectSale directSale : _directSales) {
-            if (directSale.isByPublishingCompany(publisherId)) {
-                list.addAll(directSale.getItems());
-            }
-        }
-
-        return List.copyOf(list);
-    }
-
 }

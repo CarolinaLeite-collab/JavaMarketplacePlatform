@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.PublicationDetails;
+//import TOPSECRET.domain.PublicationDetails;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.UserId;
@@ -21,13 +21,7 @@ public class ListOfItemsInMyLibraryController {
 
     private final ILibraryRepo _iLibraryRepo;
 
-    public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo, UserId userId){
+    public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
-    }
-
- public List<PublicationDetails> getListOfItemDetails (UserId userId) {
-        Library library = _iLibraryRepo.findLibraryByUserId(userId);
-
-        return library.getItemDetails();
     }
 }

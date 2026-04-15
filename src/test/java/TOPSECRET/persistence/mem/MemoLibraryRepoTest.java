@@ -1,10 +1,10 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.library.LibraryFactory;
 import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.Email;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -285,22 +285,22 @@ class MemoLibraryRepoTest {
     }
 
     @Test
-    void getItemsInLibraryShouldReturnListOfItems() {
+    void getItemsInLibraryShouldReturnListOfItemIds() {
 
         // Arrange
-        Item itemInLibrary1 = mock(Item.class);
-        Item itemInLibrary2 = mock(Item.class);
+        ItemId itemIdInLibrary1 = mock(ItemId.class);
+        ItemId itemIdInLibrary2 = mock(ItemId.class);
         LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(libraryDouble.getItemsInLibrary()).thenReturn(Arrays.asList(itemInLibrary1, itemInLibrary2));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(Arrays.asList(itemIdInLibrary1, itemIdInLibrary2));
 
         // SUT
         MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
-        List <Item> result =  repo.getItemsInLibraryByUserId(_userIdDouble);
+        List<ItemId> result = repo.getItemsInLibraryByUserId(_userIdDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -310,12 +310,12 @@ class MemoLibraryRepoTest {
     void getItemsInLibraryShouldThrowWhenLibraryNotFoundForUser() {
 
         // Arrange
-        Item itemInLibrary1 = mock(Item.class);
-        Item itemInLibrary2 = mock(Item.class);
+        ItemId itemIdInLibrary1 = mock(ItemId.class);
+        ItemId itemIdInLibrary2 = mock(ItemId.class);
         LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
         Library libraryDouble = mock(Library.class);
         when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(libraryDouble.getItemsInLibrary()).thenReturn(Arrays.asList(itemInLibrary1, itemInLibrary2));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(Arrays.asList(itemIdInLibrary1, itemIdInLibrary2));
 
         UserId otherUserIdDouble = mock(UserId.class);
         Email otherEmailDouble = mock(Email.class);
