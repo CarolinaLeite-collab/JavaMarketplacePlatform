@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.edition.Edition;
-import TOPSECRET.domain.edition.EditionBook;
 import TOPSECRET.domain.edition.EditionFactory;
-import TOPSECRET.domain.edition.EditionMagazine;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +17,11 @@ import static org.mockito.Mockito.*;
 class MemoEditionRepoTest {
 
     private EditionFactory _editionFactoryDouble;
+    private Edition _editionDouble;
     private EditionId _editionIdDouble;
-    private EditionBook _editionBookDouble;
 
-    private ISBN _bookIdIsbnDouble;
-    private NoIsbnBook _NoIsbnBookIdDouble;
+    private PublicationTypeId _typeIdDouble;
+    private Identifier _identifierDouble;
     private PublicationId _publicationIdDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
     private Language _languageDouble;
@@ -33,30 +31,22 @@ class MemoEditionRepoTest {
     private EditionNumber _editionNumberDouble;
     private Binding _bindingDouble;
 
-    //Edition Magazine
-    private EditionMagazine _editionMagazineDouble;
-
-    private ISSN _issnDouble;
-    private NoIssnMagazine _noIssnMagazineDouble;
-    private IssueNumber _issueNumberDouble;
-    private Periodicity _periodicityDouble;
-
-    private static final String expectedMessageMagazineIssnAlreadyExists = "An Edition with this ISSN already exists!";
-    private static final String expectedMessagePublicationIsbnAlreadyExists = "An Edition with this ISBN already exists!";
-    private static final String expectedMessagePublicationNoIsbnAlreadyExists = "Edition already exists!";
+    private static final String expectedMessageIdentifierAlreadyExists =
+            "An Edition with this identifier already exists!";
+    private static final String expectedMessageEditionAlreadyExists =
+            "Edition already exists!";
 
     @BeforeEach
-    void setUp () {
-        //EditionBook
+    void setUp() {
+        // Arrange
         _editionFactoryDouble = mock(EditionFactory.class);
+
+        _editionDouble = mock(Edition.class);
         _editionIdDouble = mock(EditionId.class);
+        when(_editionDouble.identity()).thenReturn(_editionIdDouble);
 
-        _editionBookDouble = mock(EditionBook.class);
-        when(_editionBookDouble.identity()).thenReturn(_editionIdDouble);
-
-        _bookIdIsbnDouble= mock(ISBN.class);
-        _NoIsbnBookIdDouble = mock(NoIsbnBook.class);
-
+        _typeIdDouble = mock(PublicationTypeId.class);
+        _identifierDouble = mock(Identifier.class);
         _publicationIdDouble = mock(PublicationId.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
         _languageDouble = mock(Language.class);
@@ -65,122 +55,111 @@ class MemoEditionRepoTest {
         _numberOfPagesDouble = mock(NumberOfPages.class);
         _editionNumberDouble = mock(EditionNumber.class);
         _bindingDouble = mock(Binding.class);
-
-        //Edition Magazine
-        _editionMagazineDouble = mock(EditionMagazine.class);
-        when(_editionMagazineDouble.identity()).thenReturn(_editionIdDouble);
-
-        _issnDouble = mock(ISSN.class);
-        _noIssnMagazineDouble = mock(NoIssnMagazine.class);
-
-        _issueNumberDouble = mock(IssueNumber.class);
-        _periodicityDouble = mock(Periodicity.class);
     }
 
     @Test
     void saveShouldStoreEditionAndReturnIt() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
 
-        //Act
-        Edition result = memoRepo.save(_editionBookDouble);
+        // Act
+        Edition result = memoRepo.save(_editionDouble);
 
-        //Assert
-        assertEquals(_editionBookDouble, result);
+        // Assert
+        assertEquals(_editionDouble, result);
     }
+
     @Test
     void findAllShouldReturnSavedEditions() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
 
-        EditionBook anotherEditionBookDouble = mock(EditionBook.class);
+        Edition anotherEditionDouble = mock(Edition.class);
         EditionId anotherEditionIdDouble = mock(EditionId.class);
+        when(anotherEditionDouble.identity()).thenReturn(anotherEditionIdDouble);
 
-        when(anotherEditionBookDouble.identity()).thenReturn(anotherEditionIdDouble);
+        memoRepo.save(_editionDouble);
+        memoRepo.save(anotherEditionDouble);
 
-        memoRepo.save(_editionBookDouble);
-        memoRepo.save(anotherEditionBookDouble);
-
-        //Act
+        // Act
         Iterable<Edition> result = memoRepo.findAll();
 
-        //Assert
+        // Assert
         List<Edition> editions = new ArrayList<>();
         result.forEach(editions::add);
 
         assertEquals(2, editions.size());
-        assertTrue(editions.contains(_editionBookDouble));
-        assertTrue(editions.contains(anotherEditionBookDouble));
+        assertTrue(editions.contains(_editionDouble));
+        assertTrue(editions.contains(anotherEditionDouble));
     }
 
     @Test
     void ofIdentityShouldReturnEditionWhenItExists() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-        memoRepo.save(_editionBookDouble);
+        memoRepo.save(_editionDouble);
 
-        //Act
+        // Act
         Optional<Edition> result = memoRepo.ofIdentity(_editionIdDouble);
 
-        //Assert
+        // Assert
         assertTrue(result.isPresent());
-        assertEquals(_editionBookDouble, result.get());
+        assertEquals(_editionDouble, result.get());
     }
 
     @Test
     void ofIdentityShouldReturnEmptyWhenEditionDoesNotExist() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
 
-        //Act
+        // Act
         Optional<Edition> result = memoRepo.ofIdentity(_editionIdDouble);
 
-        //Assert
+        // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void containsOfIdentityShouldReturnTrueWhenEditionExists() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-        memoRepo.save(_editionBookDouble);
+        memoRepo.save(_editionDouble);
 
-        //Act
+        // Act
         boolean result = memoRepo.containsOfIdentity(_editionIdDouble);
 
-        //Assert
+        // Assert
         assertTrue(result);
     }
 
     @Test
     void containsOfIdentityShouldReturnFalseWhenEditionDoesNotExist() {
-        //Arrange
-        //SUT
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
 
-        //Act
+        // Act
         boolean result = memoRepo.containsOfIdentity(_editionIdDouble);
 
-        //Assert
+        // Assert
         assertFalse(result);
     }
 
     @Test
-    void addEditionBookShouldCreateSaveAndReturnEditionWhenBookIdIsIsbnAndDoesNotExist() {
-        //Arrange
-        //SUT
+    void addEditionShouldCreateSaveAndReturnEditionWhenItDoesNotExist() {
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-
-        ISBN isbnDouble = mock(ISBN.class);
         Year publishingYear = Year.of(2020);
 
-        when(_editionFactoryDouble.createEditionBook(
-                isbnDouble,
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -190,11 +169,12 @@ class MemoEditionRepoTest {
                 _numberOfPagesDouble,
                 _editionNumberDouble,
                 _bindingDouble
-        )).thenReturn(_editionBookDouble);
+        )).thenReturn(_editionDouble);
 
-        //Act
-        Edition result = memoRepo.addEditionBook(
-                isbnDouble,
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                _identifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -206,21 +186,26 @@ class MemoEditionRepoTest {
                 _bindingDouble
         );
 
-        //Assert
-        assertEquals(_editionBookDouble, result);
+        // Assert
+        assertEquals(_editionDouble, result);
     }
 
     @Test
-    void addEditionBookShouldThrowExceptionWhenBookIdIsIsbnAndAlreadyExists() {
-        //Arrange
-        //SUT
+    void addEditionShouldThrowExceptionWhenIdentifierAlreadyExists() {
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-
-        ISBN isbnDouble = mock(ISBN.class);
         Year publishingYear = Year.of(2020);
 
-        when(_editionFactoryDouble.createEditionBook(
-                isbnDouble,
+        Edition existingEditionDouble = mock(Edition.class);
+        EditionId existingEditionIdDouble = mock(EditionId.class);
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(_identifierDouble);
+        when(existingEditionDouble.getPublicationTypeId()).thenReturn(_typeIdDouble);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -230,16 +215,15 @@ class MemoEditionRepoTest {
                 _numberOfPagesDouble,
                 _editionNumberDouble,
                 _bindingDouble
-        )).thenReturn(_editionBookDouble);
+        )).thenReturn(_editionDouble);
 
-        when(_editionBookDouble.identity()).thenReturn(isbnDouble);
+        memoRepo.save(existingEditionDouble);
 
-        memoRepo.save(_editionBookDouble);
-
-        //Act
+        // Act
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                memoRepo.addEditionBook(
-                        isbnDouble,
+                memoRepo.addEdition(
+                        _typeIdDouble,
+                        _identifierDouble,
                         _publicationIdDouble,
                         _publishingCompanyIdDouble,
                         publishingYear,
@@ -252,27 +236,27 @@ class MemoEditionRepoTest {
                 )
         );
 
-        //Assert
-        assertEquals(expectedMessagePublicationIsbnAlreadyExists, exception.getMessage());
+        // Assert
+        assertEquals(expectedMessageIdentifierAlreadyExists, exception.getMessage());
     }
 
     @Test
-    void addEditionBookShouldThrowExceptionWhenBookIdIsNoIsbnBookAndEquivalentEditionAlreadyExists() {
-        //Arrange
-        //SUT
+    void addEditionShouldThrowExceptionWhenEquivalentEditionAlreadyExistsAndIdentifierIsNull() {
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-
-        NoIsbnBook noIsbnBookDouble = mock(NoIsbnBook.class);
         Year publishingYear = Year.of(1960);
 
-        EditionBook existingEditionBookDouble = mock(EditionBook.class);
+        Edition existingEditionDouble = mock(Edition.class);
         EditionId existingEditionIdDouble = mock(EditionId.class);
 
-        when(existingEditionBookDouble.identity()).thenReturn(existingEditionIdDouble);
-        when(existingEditionBookDouble.sameAs(_editionBookDouble)).thenReturn(true);
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(null);
+        when(existingEditionDouble.sameAs(_editionDouble)).thenReturn(true);
 
-        when(_editionFactoryDouble.createEditionBook(
-                noIsbnBookDouble,
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                null,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -282,14 +266,15 @@ class MemoEditionRepoTest {
                 _numberOfPagesDouble,
                 _editionNumberDouble,
                 _bindingDouble
-        )).thenReturn(_editionBookDouble);
+        )).thenReturn(_editionDouble);
 
-        memoRepo.save(existingEditionBookDouble);
+        memoRepo.save(existingEditionDouble);
 
-        //Act
+        // Act
         IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
-                memoRepo.addEditionBook(
-                        noIsbnBookDouble,
+                memoRepo.addEdition(
+                        _typeIdDouble,
+                        null,
                         _publicationIdDouble,
                         _publishingCompanyIdDouble,
                         publishingYear,
@@ -302,27 +287,27 @@ class MemoEditionRepoTest {
                 )
         );
 
-        //Assert
-        assertEquals(expectedMessagePublicationNoIsbnAlreadyExists, exception.getMessage());
+        // Assert
+        assertEquals(expectedMessageEditionAlreadyExists, exception.getMessage());
     }
 
     @Test
-    void addEditionBookShouldSaveAndReturnEditionWhenBookIdIsNoIsbnBookAndEquivalentEditionDoesNotExist() {
-        //Arrange
-        //SUT
+    void addEditionShouldSaveAndReturnEditionWhenEquivalentEditionDoesNotExistAndIdentifierIsNull() {
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
-
-        NoIsbnBook noIsbnBookDouble = mock(NoIsbnBook.class);
         Year publishingYear = Year.of(1960);
 
-        EditionBook existingEditionBookDouble = mock(EditionBook.class);
+        Edition existingEditionDouble = mock(Edition.class);
         EditionId existingEditionIdDouble = mock(EditionId.class);
 
-        when(existingEditionBookDouble.identity()).thenReturn(existingEditionIdDouble);
-        when(existingEditionBookDouble.sameAs(_editionBookDouble)).thenReturn(false);
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(null);
+        when(existingEditionDouble.sameAs(_editionDouble)).thenReturn(false);
 
-        when(_editionFactoryDouble.createEditionBook(
-                noIsbnBookDouble,
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                null,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -332,13 +317,14 @@ class MemoEditionRepoTest {
                 _numberOfPagesDouble,
                 _editionNumberDouble,
                 _bindingDouble
-        )).thenReturn(_editionBookDouble);
+        )).thenReturn(_editionDouble);
 
-        memoRepo.save(existingEditionBookDouble);
+        memoRepo.save(existingEditionDouble);
 
-        //Act
-        Edition result = memoRepo.addEditionBook(
-                noIsbnBookDouble,
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                null,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
@@ -350,45 +336,339 @@ class MemoEditionRepoTest {
                 _bindingDouble
         );
 
-        //Assert
-        assertEquals(_editionBookDouble, result);
+        // Assert
+        assertEquals(_editionDouble, result);
     }
 
     @Test
-    void addEditionMagazineShouldCreateSaveAndReturnEditionWhenMagazineIdIsIssnAndDoesNotExist() {
-        //Arrange
+    void addEditionShouldThrowWhenExistingEditionHasSameTypeAndSameIdentifier() {
+        // Arrange
+        // SUT
         MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
-        when(_editionFactoryDouble.createEditionMagazine(
-                _issnDouble,
+        Edition existingEditionDouble = mock(Edition.class);
+        EditionId existingEditionIdDouble = mock(EditionId.class);
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(_identifierDouble);
+        when(existingEditionDouble.getPublicationTypeId()).thenReturn(_typeIdDouble);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 publishingYear,
                 _languageDouble,
                 _dimensionDouble,
                 _weightDouble,
-                _issueNumberDouble,
-                _periodicityDouble
-        )).thenReturn(_editionMagazineDouble);
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
 
-        //Act
-        Edition result = memoRepo.addEditionMagazine(
-                _issnDouble,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                publishingYear,
-                _languageDouble,
-                _dimensionDouble,
-                _weightDouble,
-                _issueNumberDouble,
-                _periodicityDouble
+        memoRepo.save(existingEditionDouble);
 
+        // Act
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () ->
+                memoRepo.addEdition(
+                        _typeIdDouble,
+                        _identifierDouble,
+                        _publicationIdDouble,
+                        _publishingCompanyIdDouble,
+                        publishingYear,
+                        _languageDouble,
+                        _dimensionDouble,
+                        _weightDouble,
+                        _numberOfPagesDouble,
+                        _editionNumberDouble,
+                        _bindingDouble
+                )
         );
 
-        //Assert
-        assertEquals(_editionMagazineDouble, result);
+        // Assert
+        assertEquals(expectedMessageIdentifierAlreadyExists, exception.getMessage());
     }
+
+    @Test
+    void addEditionShouldNotThrowWhenExistingEditionHasDifferentTypeButSameIdentifier() {
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        Year publishingYear = Year.of(2020);
+
+        PublicationTypeId otherTypeIdDouble = mock(PublicationTypeId.class);
+
+        Edition existingEditionDouble = mock(Edition.class);
+        EditionId existingEditionIdDouble = mock(EditionId.class);
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(_identifierDouble);
+        when(existingEditionDouble.getPublicationTypeId()).thenReturn(otherTypeIdDouble);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
+
+        memoRepo.save(existingEditionDouble);
+
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+
+        // Assert
+        assertEquals(_editionDouble, result);
+    }
+
+    @Test
+    void addEditionShouldEvaluateIdentifierComparisonWhenBothIdentifiersAreNotNull() {
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        Year publishingYear = Year.of(2020);
+
+        Identifier existingIdentifier = mock(Identifier.class);
+
+        Edition existingEdition = mock(Edition.class);
+        EditionId existingEditionId = mock(EditionId.class);
+        PublicationTypeId otherTypeId = mock(PublicationTypeId.class);
+
+        when(existingEdition.identity()).thenReturn(existingEditionId);
+        when(existingEdition.getIdentifier()).thenReturn(existingIdentifier);
+        when(existingEdition.getPublicationTypeId()).thenReturn(otherTypeId);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
+
+        memoRepo.save(existingEdition);
+
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+
+        // Assert
+        assertEquals(_editionDouble, result);
+        verify(existingEdition, atLeastOnce()).getIdentifier();
+        verify(existingEdition, atLeastOnce()).getPublicationTypeId();
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllEditionIds() {
+
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+
+        Edition edition1 = mock(Edition.class);
+        EditionId id1 = mock(EditionId.class);
+        when(edition1.identity()).thenReturn(id1);
+
+        Edition edition2 = mock(Edition.class);
+        EditionId id2 = mock(EditionId.class);
+        when(edition2.identity()).thenReturn(id2);
+
+        memoRepo.save(edition1);
+        memoRepo.save(edition2);
+
+        // Act
+        List<EditionId> result = memoRepo.findAllKeys();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(id1));
+        assertTrue(result.contains(id2));
+    }
+
+    @Test
+    void addEditionShouldSkipIdentifierComparisonWhenNewIdentifierIsNull() {
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        Year publishingYear = Year.of(1960);
+
+        Edition existingEdition = mock(Edition.class);
+        EditionId existingEditionId = mock(EditionId.class);
+
+        when(existingEdition.identity()).thenReturn(existingEditionId);
+        when(existingEdition.getIdentifier()).thenReturn(mock(Identifier.class));
+        when(existingEdition.sameAs(_editionDouble)).thenReturn(false);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                null,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
+
+        memoRepo.save(existingEdition);
+
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                null,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+
+        // Assert
+        assertEquals(_editionDouble, result);
+    }
+
+    @Test
+    void addEditionShouldSkipIdentifierComparisonWhenExistingIdentifierIsNull() {
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        Year publishingYear = Year.of(2020);
+
+        Edition existingEdition = mock(Edition.class);
+        EditionId existingEditionId = mock(EditionId.class);
+
+        when(existingEdition.identity()).thenReturn(existingEditionId);
+        when(existingEdition.getIdentifier()).thenReturn(null);
+        when(existingEdition.sameAs(_editionDouble)).thenReturn(false);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
+
+        memoRepo.save(existingEdition);
+
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+
+        // Assert
+        assertEquals(_editionDouble, result);
+    }
+
+    @Test
+    void addEditionShouldNotThrowWhenExistingEditionHasSameTypeButDifferentIdentifier() {
+        // Arrange
+        // SUT
+        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        Year publishingYear = Year.of(2020);
+
+        Identifier otherIdentifierDouble = mock(Identifier.class);
+
+        Edition existingEditionDouble = mock(Edition.class);
+        EditionId existingEditionIdDouble = mock(EditionId.class);
+
+        when(existingEditionDouble.identity()).thenReturn(existingEditionIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(otherIdentifierDouble);
+        when(existingEditionDouble.getPublicationTypeId()).thenReturn(_typeIdDouble);
+
+        when(_editionFactoryDouble.createEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        )).thenReturn(_editionDouble);
+
+        memoRepo.save(existingEditionDouble);
+
+        // Act
+        Edition result = memoRepo.addEdition(
+                _typeIdDouble,
+                _identifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _numberOfPagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+
+        // Assert
+        assertEquals(_editionDouble, result);
+    }
+
 
 }
-

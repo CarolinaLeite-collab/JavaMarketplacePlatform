@@ -216,13 +216,13 @@ class DirectSaleTest {
 
         //Arrange
         AuthorId _authorIdDouble = mock(AuthorId.class);
-        when(_itemDouble.isByAuthor(_authorIdDouble)).thenReturn(true);
+        when(_itemDouble.isByAuthorId(_authorIdDouble)).thenReturn(true);
 
         // SUT
         DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(_authorIdDouble);
+        boolean result = ds.isByAuthorId(_authorIdDouble);
 
         //Assert
         assertTrue(result);
@@ -234,13 +234,13 @@ class DirectSaleTest {
 
         //Arrange
         AuthorId authorIdDouble = mock(AuthorId.class);
-        when(_itemDouble.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(_itemDouble.isByAuthorId(authorIdDouble)).thenReturn(false);
 
         // SUT
         DirectSale ds = new DirectSale(_items, _priceDouble, _period);
 
         //Act
-        boolean result = ds.isByAuthor(authorIdDouble);
+        boolean result = ds.isByAuthorId(authorIdDouble);
 
         //Assert
         assertFalse(result);
@@ -257,10 +257,10 @@ class DirectSaleTest {
         DirectSale ds = new DirectSale(_items,  _priceDouble, _period);
 
         //Act
-        ds.isByAuthor(authorIdDouble);
+        ds.isByAuthorId(authorIdDouble);
 
         //Assert
-        verify(_itemDouble, times(1)).isByAuthor(authorIdDouble);
+        verify(_itemDouble, times(1)).isByAuthorId(authorIdDouble);
     }
 
     @Test
@@ -320,13 +320,13 @@ class DirectSaleTest {
 
         //Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_itemDouble.isByGenreId(genreIdDouble)).thenReturn(true);
 
         // SUT
         DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
-        boolean result = directSale.isByGenre(genreIdDouble);
+        boolean result = directSale.isByGenreId(genreIdDouble);
 
         //Assert
         assertTrue(result);
@@ -337,13 +337,13 @@ class DirectSaleTest {
 
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(false);
+        when(_itemDouble.isByGenreId(genreIdDouble)).thenReturn(false);
 
         // SUT
         DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
-        boolean result = directSale.isByGenre(genreIdDouble);
+        boolean result = directSale.isByGenreId(genreIdDouble);
 
         //Assert
         assertFalse(result);
@@ -359,10 +359,10 @@ class DirectSaleTest {
         DirectSale directSale = new DirectSale(_items,_priceDouble, _period);
 
         //Act
-        directSale.isByGenre(genreIdDouble);
+        directSale.isByGenreId(genreIdDouble);
 
         //Assert
-        verify(_itemDouble).isByGenre(genreIdDouble);
+        verify(_itemDouble).isByGenreId(genreIdDouble);
     }
 
     // isByPublication isolated tests

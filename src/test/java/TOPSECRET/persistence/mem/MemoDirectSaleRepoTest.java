@@ -110,8 +110,8 @@ class MemoDirectSaleRepoTest {
         when(_factoryDouble.createDirectSale(_items2, priceDouble, _periodDouble))
                 .thenReturn(_ds2Double);
 
-        when(_ds1Double.isByAuthor(authorIdDouble)).thenReturn(true);
-        when(_ds2Double.isByAuthor(authorIdDouble)).thenReturn(true);
+        when(_ds1Double.isByAuthorId(authorIdDouble)).thenReturn(true);
+        when(_ds2Double.isByAuthorId(authorIdDouble)).thenReturn(true);
         when(_ds1Double.getItems()).thenReturn(_items1);
         when(_ds2Double.getItems()).thenReturn(_items2);
 
@@ -141,8 +141,8 @@ class MemoDirectSaleRepoTest {
         when(_factoryDouble.createDirectSale(_items2, startingPriceDouble, _periodDouble))
                 .thenReturn(_ds2Double);
 
-        when(_ds1Double.isByAuthor(authorIdDouble)).thenReturn(false);
-        when(_ds2Double.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(_ds1Double.isByAuthorId(authorIdDouble)).thenReturn(false);
+        when(_ds2Double.isByAuthorId(authorIdDouble)).thenReturn(false);
         when(_ds1Double.getItems()).thenReturn(_items1);
         when(_ds2Double.getItems()).thenReturn(_items2);
 
@@ -179,9 +179,9 @@ class MemoDirectSaleRepoTest {
         when(_factoryDouble.createDirectSale(items3, startingPriceDouble, _periodDouble))
                 .thenReturn(dsDouble3);
 
-        when(_ds1Double.isByAuthor(authorIdDouble)).thenReturn(true);
-        when(_ds2Double.isByAuthor(authorIdDouble)).thenReturn(true);
-        when(dsDouble3.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(_ds1Double.isByAuthorId(authorIdDouble)).thenReturn(true);
+        when(_ds2Double.isByAuthorId(authorIdDouble)).thenReturn(true);
+        when(dsDouble3.isByAuthorId(authorIdDouble)).thenReturn(false);
         when(_ds1Double.getItems()).thenReturn(_items1);
         when(_ds2Double.getItems()).thenReturn(_items2);
         when(dsDouble3.getItems()).thenReturn(items3);
@@ -264,7 +264,7 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(_ds1Double.isByGenre(genreIdDouble)).thenReturn(false);
+        when(_ds1Double.isByGenreId(genreIdDouble)).thenReturn(false);
         when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double);
 
         // SUT
@@ -284,10 +284,10 @@ class MemoDirectSaleRepoTest {
 
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(_ds1Double.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_ds1Double.isByGenreId(genreIdDouble)).thenReturn(true);
         when(_ds1Double.getItems()).thenReturn(_items1);
 
-        when(_ds2Double.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_ds2Double.isByGenreId(genreIdDouble)).thenReturn(true);
         when(_ds2Double.getItems()).thenReturn(_items2);
 
         when(_factoryDouble.createDirectSale(any(), any(), any())).thenReturn(_ds1Double, _ds2Double);

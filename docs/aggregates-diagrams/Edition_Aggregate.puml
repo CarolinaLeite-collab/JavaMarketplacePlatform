@@ -19,24 +19,20 @@ skinparam classAttributeFontSize 11
 skinparam classAttributeFontStyle plain
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "edition" {
 
-    Package "EDITION" <<Folder>> #b0c4d4 {
+    Package "edition" <<Folder>> #b0c4d4 {
 
-        interface Edition <<Root>> <<Entity>> {
+        class Edition <<Root>> <<Entity>> {
+            -_publishingYear : Year
+
+            -isValidIdentifier(typeId : PublicationTypeId, identifier : Identifier, year : Year) : boolean
+            +getPublicationTypeId() : PublicationTypeId
+            +getIdentifier() : Identifier
             +getPublicationId() : PublicationId
             +getPublishingCompanyId() : PublishingCompanyId
             +getPublishingYear() : Year
             +getEditionLanguage() : Language
-        }
-
-        class EditionBook <<Entity>> {
-            -_bookId : BookId
-            +identity() : EditionId
-                +equals(Object) : boolean
-                +sameAs(Object) : boolean
-                +toString() : String
-
             +getNumberOfPages() : NumberOfPages
             +getEditionNumber() : EditionNumber
             +getBinding() : Binding
@@ -45,117 +41,96 @@ Package "DOMAIN" {
         }
 
 
-        class EditionMagazine <<Entity>> {
-            -_magazineId : MagazineId
-            +identity() : EditionId
-                +equals(Object) : boolean
-                +sameAs(Object) : boolean
-                +toString() : String
-
-                +getDimension() : Dimension
-                +getWeight() : Weight
-                +getIssueNumber() : IssueNumber
-                +getPeriodicity() : Periodicity
-
-        }
-
-
         class EditionFactory <<Factory>> {
-            +createEditionBook : EditionBook
-            +createEditionMagazine : EditionMagazine
+            +createEdition : Edition
         }
-
-        class "EditionBook::Builder" as EditionBookBuilder <<Builder>>
-
-        class "EditionMagazine::Builder" as EditionMagazineBuilder <<Builder>>
-
-
-        EditionBook +- EditionBookBuilder
-        EditionBookBuilder ..> EditionBook : builds
-
-        EditionMagazine +- EditionMagazineBuilder
-        EditionMagazineBuilder ..> EditionMagazine : builds
-
 
     }
 
-    Package "VALUEOBJECT" <<Folder>> {
+    Package "valueobject" <<Folder>> {
 
         class EditionId <<ValueObject>> #LightPink {
+            +equals()
+        }
+
+        Interface Identifier <<ValueObject>> {
             +getIdentifier()
         }
-        interface MagazineId {}
 
-        interface BookId {}
-
-        class NumberOfPages <<ValueObject>>
-        class Binding <<ValueObject>>
-        class IssueNumber <<ValueObject>>
-        class Periodicity <<ValueObject>>
-        class ISBN <<ValueObject>>
-        class ISSN <<ValueObject>>
-        class NoIsbnBook <<ValueObject>>
-        class NoIssnMagazine <<ValueObject>>
-        class Language <<ValueObject>>
+        class PublicationTypeId <<ValueObject>>
         class PublicationId <<ValueObject>>
         class PublishingCompanyId <<ValueObject>>
+        class Language <<ValueObject>>
+        class ISBN <<ValueObject>>
+        class ISSN <<ValueObject>>
+
+        class Dimension <<ValueObject>>
+        class Weight <<ValueObject>>
+        class NumberOfPages <<ValueObject>>
         class EditionNumber <<ValueObject>>
+        class Binding <<ValueObject>>
+
     }
 
-    Package "REPOSITORY" <<Folder>> {
+    Package "repository" <<Folder>> {
         interface IEditionRepo <<Interface>>{
-        +addEditionBook(): Edition
-        +addEditionMagazine(): Edition
-        }
+        +addEdition(): Edition
+                }
     }
 
-    EDITION -[hidden]right- REPOSITORY
-    EDITION -[hidden]down- VALUEOBJECT
-    VALUEOBJECT -[hidden]right- REPOSITORY
+    edition -[hidden]right- repository
+    edition -[hidden]down- valueobject
+    valueobject -[hidden]right- repository
 
 }
 
-Package "DDD" {
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(T) : T
         +findAll() : Iterable<T>
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +equals(Object) : boolean
+        +sameAs(Object) : boolean
+        +toString() : String
     }
 }
 
-Package "PERSISTENCE" {
-    package "MEM" {
+Package "persistence" {
+    package "mem" {
         class MemoEditionRepo <<Repo>>
     }
 }
 
 ' ===== Relations =====
 Edition "1" --> "ID 1" EditionId : has
-Edition <|.. EditionBook
-Edition <|.. EditionMagazine
-Edition ..> PublicationId : references
-Edition ..> PublishingCompanyId : references
-Edition --> Language : has
-Edition --> EditionNumber : has
+Edition "*" ..> "1" PublicationId : references
+Edition "*" ..> "1" PublishingCompanyId : references
+Edition "*" ..> "1" PublicationTypeId : references
+Edition "*" --> "1" Language : has
 
-EditionBook --> NumberOfPages : has
-EditionBook --> Binding : has
-EditionMagazine --> IssueNumber : has
-EditionMagazine --> Periodicity : has
+Edition "1" --> "1" Identifier : has
+Identifier <|.. ISBN
+Identifier <|.. ISSN
 
-EditionId <|.. BookId
-EditionId <|.. MagazineId
-
-BookId <|.. ISBN
-BookId <|.. NoIsbnBook
-
-MagazineId <|.. ISSN
-MagazineId <|.. NoIssnMagazine
+' optional atributes
+Edition "*" --> "0..1" Dimension : has
+Edition "*" --> "0..1" Weight : has
+Edition "*" --> "0..1" NumberOfPages : has
+Edition "*" --> "0..1" EditionNumber : has
+Edition "*" --> "0..1" Binding : has
 
 
-IEditionRepo -|> IRepository
+
+IEditionRepo ..|> IRepository
 MemoEditionRepo ..|> IEditionRepo
+Edition ..|> DomainEntity
+
 
 EditionFactory ..> Edition : <<create>>
 

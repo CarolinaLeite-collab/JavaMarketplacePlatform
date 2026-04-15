@@ -217,9 +217,9 @@ class ItemTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Item item = new Item(publicationDouble, conditionDouble);
 
-        item.isByAuthor(authorIdDouble);
+        item.isByAuthorId(authorIdDouble);
 
-        verify(publicationDouble).isByAuthor(authorIdDouble);
+        verify(publicationDouble).isByAuthorId(authorIdDouble);
     }
 
     @Test
@@ -227,9 +227,9 @@ class ItemTest {
         GenreId genreIdDouble = mock(GenreId.class);
         Item item = new Item(publicationDouble, conditionDouble);
 
-        item.isByGenre(genreIdDouble);
+        item.isByGenreId(genreIdDouble);
 
-        verify(publicationDouble).isByGenre(genreIdDouble);
+        verify(publicationDouble).isByGenreId(genreIdDouble);
     }
 
     @Test
@@ -286,22 +286,22 @@ class ItemTest {
     void isByAuthorReturnsTrueWhenPublicationMatches() {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(true);
+        when(pubDouble.isByAuthorId(authorIdDouble)).thenReturn(true);
 
         Item item = new Item(pubDouble, conditionDouble);
 
-        assertTrue(item.isByAuthor(authorIdDouble));
+        assertTrue(item.isByAuthorId(authorIdDouble));
     }
 
     @Test
     void isByAuthorReturnsFalseWhenPublicationDoesNotMatch() {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Publication pubDouble = mock(Publication.class);
-        when(pubDouble.isByAuthor(authorIdDouble)).thenReturn(false);
+        when(pubDouble.isByAuthorId(authorIdDouble)).thenReturn(false);
 
         Item item = new Item(pubDouble, conditionDouble);
 
-        assertFalse(item.isByAuthor(authorIdDouble));
+        assertFalse(item.isByAuthorId(authorIdDouble));
     }
 
     // --------------------
@@ -312,22 +312,22 @@ class ItemTest {
     void isByGenreReturnsTrueWhenPublicationMatches() {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genreIdDouble)).thenReturn(true);
+        when(pub.isByGenreId(genreIdDouble)).thenReturn(true);
 
         Item item = new Item(pub, conditionDouble);
 
-        assertTrue(item.isByGenre(genreIdDouble));
+        assertTrue(item.isByGenreId(genreIdDouble));
     }
 
     @Test
     void isByGenreReturnsFalseWhenPublicationDoesNotMatch() {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication pub = mock(Publication.class);
-        when(pub.isByGenre(genreIdDouble)).thenReturn(false);
+        when(pub.isByGenreId(genreIdDouble)).thenReturn(false);
 
         Item item = new Item(pub, conditionDouble);
 
-        assertFalse(item.isByGenre(genreIdDouble));
+        assertFalse(item.isByGenreId(genreIdDouble));
     }
 
     // ------------------------------

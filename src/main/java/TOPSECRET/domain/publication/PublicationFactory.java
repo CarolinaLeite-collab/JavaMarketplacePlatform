@@ -12,13 +12,9 @@ import java.time.Year;
 
 public class PublicationFactory {
 
-    public Publication createPublication(Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId ) {
+    public Publication createPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId ) {
 
-        return new Publication( title, authorId, releaseYear, publicationTypeId, genreId );
+        return new Publication( title, authorId, releaseYear, genreId );
     }
 
-    public Publication createPublication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, PublicationTypeId publicationTypeId, GenreId genreId) {
-
-        return new Publication( publicationId, title, authorId, releaseYear, publicationTypeId, genreId );
-    }
 }

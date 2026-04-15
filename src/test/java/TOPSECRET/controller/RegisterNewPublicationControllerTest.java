@@ -4,7 +4,6 @@ import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.repository.IPublicationRepo;
 import TOPSECRET.domain.valueobject.AuthorId;
 import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.PublicationTypeId;
 import TOPSECRET.domain.valueobject.Title;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
@@ -22,26 +21,25 @@ class RegisterNewPublicationControllerTest {
     @Test
     void registerPublicationCallsRepoWithCorrectArguments() {
         //arrange
-        IPublicationRepo _iPublicationRepo = mock(IPublicationRepo.class);
-        PublicationTypeId _typeIdDouble = mock(PublicationTypeId.class);
-        Year _yearDouble = mock(Year.class);
-        Title _titleDouble = mock(Title.class);
-        AuthorId _authorIdDouble = mock(AuthorId.class);
-        GenreId _genreIdDouble = mock(GenreId.class);
-        Publication expected = mock(Publication.class);
-        UserId _userIdDouble = mock(UserId.class);
+        IPublicationRepo iPublicationRepo = mock(IPublicationRepo.class);
+        Year yearDouble = mock(Year.class);
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        GenreId genreIdDouble = mock(GenreId.class);
+        Publication publicationDouble = mock(Publication.class);
+        UserId userIdDouble = mock(UserId.class);
 
-        when(_iPublicationRepo.addPublication(_titleDouble, _authorIdDouble, _yearDouble, _typeIdDouble, _genreIdDouble))
-                .thenReturn(expected);
+        when(iPublicationRepo.addPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
+                .thenReturn(publicationDouble);
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(_iPublicationRepo, _userIdDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepo, userIdDouble);
 
         //act
-        Publication result = controller.registerPublication( _titleDouble, _authorIdDouble, _yearDouble, _typeIdDouble, _genreIdDouble);
+        Publication result = controller.registerPublication( titleDouble, authorIdDouble, yearDouble, genreIdDouble);
 
         //assert
-        assertSame(expected, result);
+        assertSame(publicationDouble, result);
     }
 
     @Test
@@ -50,7 +48,7 @@ class RegisterNewPublicationControllerTest {
         UserId userIdDouble = mock(UserId.class);
 
         IPublicationRepo iPublicationRepoDouble = mock(IPublicationRepo.class);
-        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any(), any()))
+        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
@@ -62,7 +60,6 @@ class RegisterNewPublicationControllerTest {
                         mock(Title.class),
                         mock(AuthorId.class),
                         mock(Year.class),
-                        mock(PublicationTypeId.class),
                         mock(GenreId.class)
                 )
         );
@@ -71,11 +68,11 @@ class RegisterNewPublicationControllerTest {
     @Test
     void constructorThrowsWhenRepoIsNull() {
         //Arrange
-        UserId _userIdDouble = mock(UserId.class);
+        UserId userIdDouble = mock(UserId.class);
 
         //assert
         assertThrows(NullPointerException.class, () ->
-                new RegisterNewPublicationController(null, _userIdDouble)
+                new RegisterNewPublicationController(null, userIdDouble)
         );
     }
 

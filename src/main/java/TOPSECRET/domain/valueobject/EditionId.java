@@ -3,15 +3,30 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.DomainId;
 import TOPSECRET.ddd.ValueObject;
 
+import java.util.UUID;
+
 /**
- * Represents a generic identifier for an edition.
+ * Represents a unique internal identity for an {@link TOPSECRET.domain.edition.Edition}.
  * <p>
- * Implementing classes must provide the {@link #getIdentifier()} method to return the identifier value.
- * </p>
+ * {@code EditionId} is a {@link DomainId} generated automatically and used as the
+ * aggregate identity. It is independent from external identifiers such as ISBN or ISSN,
+ * which are modeled separately as {@link Identifier}.
  */
 
-public interface EditionId extends ValueObject, DomainId {
+public class EditionId implements DomainId {
 
-    String getIdentifier();
+    private final String _eId;
+
+    public EditionId(){
+        _eId = "E-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EditionId other)) return false;
+        return _eId.equals(other._eId);
+    }
 
 }

@@ -8,13 +8,13 @@ import java.time.Year;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationTest {
 
     private Title _titleDouble;
     private AuthorId _authorIdDouble;
     private Year _yearDouble;
-    private PublicationTypeId _publicationTypeIdDouble;
     private GenreId _genreIdDouble;
 
     @BeforeEach
@@ -23,7 +23,6 @@ class PublicationTest {
         _titleDouble = mock(Title.class);
         _authorIdDouble = mock(AuthorId.class);
         _yearDouble = mock(Year.class);
-        _publicationTypeIdDouble = mock(PublicationTypeId.class);
         _genreIdDouble = mock(GenreId.class);
     }
 
@@ -31,7 +30,7 @@ class PublicationTest {
     void constructorAllFieldsCreatesPublication() {
         // Act & SUT
         Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+                _genreIdDouble);
 
         // Assert
         assertNotNull(p);
@@ -41,15 +40,14 @@ class PublicationTest {
     void constructorNullYearThrowsNullPointerException() {
         // SUT + Assert
         assertThrows(NullPointerException.class, () ->
-                new Publication(_titleDouble, _authorIdDouble, null,
-                        _publicationTypeIdDouble, _genreIdDouble));
+                new Publication(_titleDouble, _authorIdDouble, null, _genreIdDouble));
     }
 
     @Test
     void constructionCreationGeneratesNonNullPublicationId() {
-        // Act
+        // SUT
         Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble); // SUT
+                 _genreIdDouble);
 
         // Assert
         assertNotNull(p.getPublicationId());
@@ -58,65 +56,29 @@ class PublicationTest {
     @Test
     void constructorCreationSameFieldsGenerateEqualIds() {
         // SUT
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
-        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
         assertEquals(p1.getPublicationId(), p2.getPublicationId());
     }
 
     @Test
-    void constructionReconstitutionAllFieldsCreatesPublication() {
-        // Arrange
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-
-        // Act
-        Publication p = new Publication(publicationIdDouble, _titleDouble, _authorIdDouble,
-                _yearDouble, _publicationTypeIdDouble, _genreIdDouble); // SUT
+    void gettersReturnCorrectValues() {
+        // SUT
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
-        assertNotNull(p);
-    }
-
-    @Test
-    void constructionReconstitutionNullPublicationIdThrowsNullPointerException() {
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                new Publication(null, _titleDouble, _authorIdDouble,
-                        _yearDouble, _publicationTypeIdDouble, _genreIdDouble)); // SUT
-    }
-
-    @Test
-    void constructionReconstitutionNullYearThrowsNullPointerException() {
-        // Arrange
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                new Publication(publicationIdDouble, _titleDouble, _authorIdDouble,
-                        null, _publicationTypeIdDouble, _genreIdDouble)); // SUT
-    }
-
-    @Test
-    void constructionReconstitutionRestoresPublicationId() {
-        // Arrange
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-
-        // Act
-        Publication p = new Publication(publicationIdDouble, _titleDouble, _authorIdDouble,
-                _yearDouble, _publicationTypeIdDouble, _genreIdDouble); // SUT
-
-        // Assert
-        assertSame(publicationIdDouble, p.getPublicationId());
+        assertSame(_titleDouble, p.getTitle());
+        assertSame(_authorIdDouble, p.getAuthorId());
+        assertSame(_yearDouble, p.getReleaseYear());
+        assertSame(_genreIdDouble, p.getGenreId());
     }
 
     @Test
     void identityReturnsNonNullPublicationId() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
         PublicationId id = p.identity();
@@ -129,10 +91,8 @@ class PublicationTest {
     void equalsSameFieldsReturnsTrue() {
 
         // SUT
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
-        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
         assertEquals(p1, p2);
@@ -141,13 +101,11 @@ class PublicationTest {
     @Test
     void equalsDifferentTitleReturnsFalse() {
         // Arrange
-        Title _otherTitleDouble = mock(Title.class);
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Title otherTitleDouble = mock(Title.class);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
-        // Act
-        Publication p2 = new Publication(_otherTitleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble); // SUT
+        // SUT
+        Publication p2 = new Publication(otherTitleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
         assertNotEquals(p1, p2);
@@ -156,13 +114,11 @@ class PublicationTest {
     @Test
     void equalsDifferentAuthorReturnsFalse() {
         // Arrange
-        AuthorId _otherAuthorIdDouble = mock(AuthorId.class);
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        AuthorId otherAuthorIdDouble = mock(AuthorId.class);
 
-        // Act
-        Publication p2 = new Publication(_titleDouble, _otherAuthorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble); // SUT
+        // SUT
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(_titleDouble, otherAuthorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
         assertNotEquals(p1, p2);
@@ -171,23 +127,44 @@ class PublicationTest {
     @Test
     void equalsDifferentYearReturnsFalse() {
         // Arrange
-        Year _otherYearDouble = mock(Year.class);
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Year otherYearDouble = mock(Year.class);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _otherYearDouble,
-                _publicationTypeIdDouble, _genreIdDouble); // SUT
+        Publication p2 = new Publication(_titleDouble, _authorIdDouble, otherYearDouble, _genreIdDouble); // SUT
 
         // Assert
         assertNotEquals(p1, p2);
     }
 
     @Test
+    void equalsNullReturnsFalse() {
+        // SUT
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // Act
+        boolean result = p.equals(null);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void equalsDifferentTypeReturnsFalse() {
+        // SUT
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // Act
+        boolean result = p.equals("not a publication");
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
     void sameAsSameInstanceReturnsTrue() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
         boolean result = p.sameAs(p);
@@ -199,13 +176,11 @@ class PublicationTest {
     @Test
     void sameAsDifferentPublicationIdReturnsFalse() {
         // Arrange
-        Title _otherTitleDouble = mock(Title.class);
+        Title otherTitleDouble = mock(Title.class);
 
         // SUT
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
-        Publication p2 = new Publication(_otherTitleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(otherTitleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
         assertFalse(p1.sameAs(p2));
@@ -214,8 +189,7 @@ class PublicationTest {
     @Test
     void sameAsNullReturnsFalse() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
         boolean result = p.sameAs(null);
@@ -227,8 +201,7 @@ class PublicationTest {
     @Test
     void sameAsDifferentTypeReturnsFalse() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
         boolean result = p.sameAs("not a publication");
@@ -240,11 +213,10 @@ class PublicationTest {
     @Test
     void isByAuthorSameAuthorReturnsTrue() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByAuthor(_authorIdDouble);
+        boolean result = p.isByAuthorId(_authorIdDouble);
 
         // Assert
         assertTrue(result);
@@ -252,14 +224,13 @@ class PublicationTest {
     @Test
     void isByAuthorDifferentAuthorReturnsFalse() {
         // Arrange
-        AuthorId _otherAuthorIdDouble = mock(AuthorId.class);
+        AuthorId otherAuthorIdDouble = mock(AuthorId.class);
 
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByAuthor(_otherAuthorIdDouble);
+        boolean result = p.isByAuthorId(otherAuthorIdDouble);
 
         // Assert
         assertFalse(result);
@@ -268,11 +239,10 @@ class PublicationTest {
     @Test
     void isByAuthorNullReturnsFalse() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByAuthor(null);
+        boolean result = p.isByAuthorId(null);
 
         // Assert
         assertFalse(result);
@@ -281,11 +251,10 @@ class PublicationTest {
     @Test
     void isByGenreSameGenreReturnsTrue() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByGenre(_genreIdDouble);
+        boolean result = p.isByGenreId(_genreIdDouble);
 
         // Assert
         assertTrue(result);
@@ -294,14 +263,13 @@ class PublicationTest {
     @Test
     void isByGenreDifferentGenreReturnsFalse() {
         // Arrange
-        GenreId _otherGenreIdDouble = mock(GenreId.class);
+        GenreId otherGenreIdDouble = mock(GenreId.class);
 
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByGenre(_otherGenreIdDouble);
+        boolean result = p.isByGenreId(otherGenreIdDouble);
 
         // Assert
         assertFalse(result);
@@ -310,14 +278,73 @@ class PublicationTest {
     @Test
     void isByGenreNullReturnsFalse() {
         // SUT
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
-                _publicationTypeIdDouble, _genreIdDouble);
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Act
-        boolean result = p.isByGenre(null); // SUT
+        boolean result = p.isByGenreId(null);
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void hashCodeSameFieldsReturnsSameHash() {
+        // SUT
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // Act
+        int hash1 = p1.hashCode();
+        int hash2 = p2.hashCode();
+
+        // Assert
+        assertEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeDifferentFieldsReturnsDifferentHash() {
+        // Arrange
+        Title otherTitleDouble = mock(Title.class);
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+        Publication p2 = new Publication(otherTitleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // SUT
+        int hash1 = p1.hashCode();
+        int hash2 = p2.hashCode();
+
+        // Assert
+        assertNotEquals(hash1, hash2);
+    }
+
+    @Test
+    void toStringReturnsNonNull() {
+        // SUT
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // Act
+        String result = p.toString();
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void toStringContainsExpectedValues() {
+        // Arrange
+        when(_titleDouble.toString()).thenReturn("Dune");
+        when(_authorIdDouble.toString()).thenReturn("Herbert F.-ABC123");
+        when(_yearDouble.toString()).thenReturn("1965");
+        when(_genreIdDouble.toString()).thenReturn("SCIENCE FICTION");
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // SUT
+        String result = p.toString();
+
+        // Assert
+        assertTrue(result.contains("Dune"));
+        assertTrue(result.contains("Herbert F.-ABC123"));
+        assertTrue(result.contains("1965"));
+        assertTrue(result.contains("SCIENCE FICTION"));
     }
 
 }

@@ -396,13 +396,13 @@ class AuctionTest {
     void isByAuthorShouldReturnTrueWhenAuthorMatches() {
         //Arrange
         AuthorId authorIdDouble = mock(AuthorId.class);
-        when(_itemDouble.isByAuthor(authorIdDouble)).thenReturn(true);
+        when(_itemDouble.isByAuthorId(authorIdDouble)).thenReturn(true);
 
         // SUT
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        boolean result = auction.isByAuthor(authorIdDouble);
+        boolean result = auction.isByAuthorId(authorIdDouble);
 
         //Assert
         assertTrue(result);
@@ -413,13 +413,13 @@ class AuctionTest {
     void isByAuthorShouldReturnFalseWhenAuthorIsDifferent() {
         //Arrange
         AuthorId author2IdDouble = mock(AuthorId.class);
-        when(_itemDouble.isByAuthor(author2IdDouble)).thenReturn(false);
+        when(_itemDouble.isByAuthorId(author2IdDouble)).thenReturn(false);
 
         // SUT
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        boolean result = auction.isByAuthor(author2IdDouble);
+        boolean result = auction.isByAuthorId(author2IdDouble);
 
         //Assert
         assertFalse(result);
@@ -435,23 +435,23 @@ class AuctionTest {
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        auction.isByAuthor(authorIdDouble);
+        auction.isByAuthorId(authorIdDouble);
 
         //Assert
-        verify(_itemDouble, times(1)).isByAuthor(authorIdDouble);
+        verify(_itemDouble, times(1)).isByAuthorId(authorIdDouble);
     }
 
     @Test
     void isByGenreShouldReturnTrueWhenGenreMatches() {
         //Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(_itemDouble.isByGenre(genreIdDouble)).thenReturn(true);
+        when(_itemDouble.isByGenreId(genreIdDouble)).thenReturn(true);
 
         // SUT
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        boolean result = auction.isByGenre(genreIdDouble);
+        boolean result = auction.isByGenreId(genreIdDouble);
 
         //Assert
         assertTrue(result);
@@ -461,13 +461,13 @@ class AuctionTest {
     void isByGenreShouldReturnFalseWhenGenreIsDifferent() {
         //Arrange
         GenreId genreId2Double = mock(GenreId.class);
-        when(_itemDouble.isByGenre(genreId2Double)).thenReturn(false);
+        when(_itemDouble.isByGenreId(genreId2Double)).thenReturn(false);
 
         // SUT
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        boolean result = auction.isByGenre(genreId2Double);
+        boolean result = auction.isByGenreId(genreId2Double);
 
         //Assert
         assertFalse(result);
@@ -482,10 +482,10 @@ class AuctionTest {
         Auction auction = new Auction( _items, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
         //Act
-        auction.isByGenre(genreIdDouble);
+        auction.isByGenreId(genreIdDouble);
 
         //Assert
-        verify(_itemDouble, times(1)).isByGenre(genreIdDouble);
+        verify(_itemDouble, times(1)).isByGenreId(genreIdDouble);
     }
 
     // Isolated test of isByPublishingCompany method
