@@ -31,50 +31,68 @@ title US012 - "As a User, I want to get the list (title, author, type and ISBN/I
 ' --- Actor and participants ---'
 
 actor User
-participant ":ListOfPublicationsInMyLibraryUI" as UI
-participant ":ListOfPublicationsInMyLibraryController" as Ctl
+participant ":ListOfItemsInMyLibraryUI" as UI
+participant ":ListOfItemsInMyLibraryController" as Ctl
 participant ":ILibraryRepo" as LibRepo
-participant "library:Library" as Lib
+participant ":IItemRepo" as ItRepo
+participant ":IEditionRepo" as EdRepo
+participant ":IPublicationRepo" as PubRepo
+participant ":IPublicationTypeRepo" as PTRepo
+participant ":IAuthorRepo" as AutRepo
+participant ":ItemDetailsMapper" as Mapper
 
 
-
-User -> UI: Display List of my Publications
+User -> UI: Display list of information\n of Items in my library
 activate UI
 
-UI -> Ctl: getListOfPublicationDetails(userId)
+UI -> Ctl: getListOfItemInfoInMyLibrary(userId)
 activate Ctl
 
-Ctl -> LibRepo: findByUser(userId)
+Ctl -> LibRepo: getItemsInLibraryByUserId(userId)
 activate LibRepo
-LibRepo --> Ctl: library
+LibRepo --> Ctl: listOfItemIds
 deactivate LibRepo
+create "listOfItemDetailsDTOs: List<ItemDetailsDTO>" as listOfDTO
+Ctl -->> listOfDTO: <<create>>
 
-Ctl -> Lib: getPublicationDetails()
+loop for each itemId in listOfItemIds
 
-create "listWithDetails: List<PublicationsDetails>" as listOfPubs
-activate Lib
-Lib -->> listOfPubs: <<Create>>
+Ctl -> ItRepo: ofIdentity(itemId)
+activate ItRepo
+ItRepo --> Ctl : item
+deactivate ItRepo
+Ctl -> EdRepo : ofIdentity(item.get_editionId())
+activate EdRepo
+EdRepo --> Ctl : edition
+deactivate EdRepo
+Ctl -> PubRepo : ofIdentity(edition.getPublicationId())
+activate PubRepo
+PubRepo --> Ctl : publication
+deactivate PubRepo
+Ctl -> PTRepo : ofIdentity(edition.getPublicationTypeId())
+activate PTRepo
+PTRepo --> Ctl : publicationType
+deactivate PTRepo
+Ctl -> AutRepo : ofIdentity(publication.getAuthorId())
+activate AutRepo
+AutRepo --> Ctl : author
+deactivate AutRepo
 
+Ctl -> Mapper : toDTO(edition, publication, publicationType, author)
+activate Mapper
+create "itemDetailsDTO:ItemDetailsDTO" as DTO
+Mapper -->> DTO : <<create>>
+Mapper --> Ctl : itemDetailsDTO
+deactivate Mapper
 
+Ctl -> listOfDTO : add(itemDetailsDTO)
 
-loop for each itemId in library
-
-create "pDetails:PublicationDetails" as list
-    Lib -->> list: <<Create>>
-
-    Lib -> listOfPubs: add(pDetails)
-activate listOfPubs
-listOfPubs --> Lib :true
 end
 
-deactivate listOfPubs
-Lib --> Ctl: listWithDetails
-deactivate Lib
-
-Ctl --> UI: listWithDetails
+Ctl --> UI: listOfItemDetailsDTOs
 deactivate Ctl
 
-UI --> User: Publications list displayed\n with details
+UI --> User: Items details displayed!
 deactivate UI
 
 
