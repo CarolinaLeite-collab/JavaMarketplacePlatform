@@ -18,7 +18,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
     }
 
     @Test
-    void constructorShouldSuccessfullyGetItemsOnDirectSaleOfAGivenPublishingCompany(){
+    void constructorShouldSuccessfullyGetItemsIdOnDirectSaleOfAGivenPublishingCompany(){
         //Act /SUT
         new GetItemsOnDirectSaleOfAGivenPublishingCompanyController(_iDirectSaleRepoDouble, _buyerIdDouble);
     }

@@ -15,27 +15,26 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
- * <h3>Controller responsible for handling publication auction operations (US016). </h3>
+ * <h3>Controller responsible for handling item auction operations. </h3>
  * Separated into two steps:
  * <ol>
- *     <li>lookup of user's list of publications in their library (immutable copy)</li>
- *     <li>retrieval of actual publication, item creation, auction setup, and link between item and auction</li>
+ *     <li>lookup of user's list of items in their library (immutable copy)</li>
+ *     <li>retrieval of actual item, auction setup, and link between item and auction</li>
  * </ol>
  */
 
 public class PublicationSaleAuctionController {
 
     private final ILibraryRepo _iLibraryRepo;
-    private final IAuctionRepo _iAuctionRepo;
-    private final Library _library;
-    private final IItemRepo _itemRepo;
+    private  IAuctionRepo _iAuctionRepo;
+    private  Library _library;
+    private  IItemRepo _itemRepo;
 
-    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, Library library, IItemRepo iItemRepo, UserId userId) {
+    public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, IItemRepo itemRepo, UserId userId) {
 
         _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;
-        _itemRepo = iItemRepo;
-        _library = library;
+        _itemRepo = itemRepo;
 
     }
 
@@ -47,11 +46,11 @@ public class PublicationSaleAuctionController {
         return List.copyOf(itemIds);
     }
 
-    public Auction putItemOnAuction(IItemRepo iItemRepo, List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public void putItemIdOnAuction (List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         for (ItemId itemId : itemsId) {
 
-            Item item = iItemRepo.ofIdentity(itemId)
+            Item item = _itemRepo.ofIdentity(itemId)
                     .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
             if (item.get_saleStatus() != SaleStatus.NotOnSale) {
@@ -65,10 +64,8 @@ public class PublicationSaleAuctionController {
 
         for (ItemId itemId : itemsId) {
 
-            Item item = iItemRepo.ofIdentity(itemId).get();
+            Item item = _itemRepo.ofIdentity(itemId).get();
             item.markAsAuction();
         }
-
-        return auction;
     }
 }

@@ -60,7 +60,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testGetItemsInLibraryForUserWithoutLibraryByUser() {
+    void testGetItemsIdInLibraryForUserWithoutLibraryByUser() {
         //Arrange
         UserId _userIdDouble2 = mock(UserId.class);
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble2))
@@ -75,7 +75,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testGetItemsInLibraryForUserWithEmptyLibraryByUser() {
+    void testGetItemsIdInLibraryForUserWithEmptyLibraryByUser() {
         //Arrange
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
@@ -92,7 +92,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testGetItemsInLibraryForUserWithItemsInLibraryByUser() {
+    void testGetItemsInLibraryForUserWithItemsIdInLibraryByUser() {
         //Arrange
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
@@ -109,7 +109,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testGetItemsInLibraryByUserListIsImmutable() {
+    void testGetItemsIdInLibraryByUserListIsImmutable() {
         //Arrange
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
@@ -141,7 +141,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                         _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
         // Act
-        DirectSale result = controller.putItemIdOnDirectSale(_iItemRepoDouble, _itemsId, _priceDouble, _timeLimitDouble);
+        DirectSale result = controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
 
         // Assert
         assertNotNull(result);
@@ -166,7 +166,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                         _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
         // Act
-        controller.putItemIdOnDirectSale(_iItemRepoDouble, _itemsId, _priceDouble, _timeLimitDouble);
+        controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
 
         // Assert
         verify(_itemDouble).markAsDirectSale();
