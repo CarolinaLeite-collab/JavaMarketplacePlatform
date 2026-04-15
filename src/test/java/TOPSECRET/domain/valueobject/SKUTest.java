@@ -2,145 +2,132 @@ package TOPSECRET.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Constructor;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class SKUTest {
 
     @Test
-    void shouldGenerateSkuAutomatically() {
-        SKU sku = SKU.generate();
+    void constructorShouldGenerateSKUAutomatically() {
+        // SUT
+        SKU sut = new SKU();
 
-        assertNotNull(sku);
-        assertNotNull(sku.getValue());
+        // Assert
+        assertNotNull(sut);
+        assertNotNull(sut.getValue());
     }
 
     @Test
-    void generatedSkuShouldHaveCorrectLength() {
-        SKU sku = SKU.generate();
+    void generatedSKUShouldHaveCorrectLength() {
+        // SUT
+        SKU sut = new SKU();
 
-        assertEquals(10, sku.getValue().length());
+        // Assert
+        assertEquals(10, sut.getValue().length());
     }
 
     @Test
-    void generatedSkuShouldMatchExpectedFormat() {
-        SKU sku = SKU.generate();
+    void generatedSKUShouldMatchExpectedFormat() {
+        // SUT
+        SKU sut = new SKU();
 
-        assertTrue(sku.getValue().matches("^[A-F0-9]{10}$"));
+        // Assert
+        assertTrue(sut.getValue().matches("^[A-F0-9]{10}$"));
     }
 
     @Test
-    void generatedSkuShouldBeUppercase() {
-        SKU sku = SKU.generate();
+    void generatedSKUShouldBeUppercase() {
+        // SUT
+        SKU sut = new SKU();
 
-        assertEquals(sku.getValue(), sku.getValue().toUpperCase());
-    }
-
-
-    //Commented out below test because SKU.generate() uses UUID.randomUUID()
-    // making collisions extremely unlikely, but not impossible.
-
-    /*@Test
-    void twoGeneratedSkusShouldBeDifferent() {
-        SKU sku1 = SKU.generate();
-        SKU sku2 = SKU.generate();
-
-        assertNotEquals(sku1, sku2);
-    }*/
-
-    @Test
-    void skuShouldBeEqualToItself() {
-        SKU sku = SKU.generate();
-
-        assertEquals(sku, sku);
+        // Assert
+        assertEquals(sut.getValue(), sut.getValue().toUpperCase());
     }
 
     @Test
-    void skuShouldNotBeEqualToDifferentType() {
-        SKU sku = SKU.generate();
+    void SKUShouldBeEqualToItself() {
+        // SUT
+        SKU sut = new SKU();
 
-        assertNotEquals(sku, "NOT_A_SKU");
+        // Act
+        boolean result = sut.equals(sut);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
-    void skusWithSameValueShouldBeEqual() throws Exception {
+    void SKUShouldNotBeEqualToNull() {
+        // SUT
+        SKU sut = new SKU();
 
-        Constructor<SKU> constructor =
-                SKU.class.getDeclaredConstructor(String.class);
-        constructor.setAccessible(true);
+        // Act
+        boolean result = sut.equals(null);
 
-        SKU sku1 = constructor.newInstance("ABCDEF1234");
-        SKU sku2 = constructor.newInstance("ABCDEF1234");
-
-        assertEquals(sku1, sku2);
-        assertEquals(sku1.hashCode(), sku2.hashCode());
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void skusWithDifferentValuesShouldNotBeEqual() throws Exception {
+    void SKUShouldNotBeEqualToDifferentType() {
+        // SUT
+        SKU sut = new SKU();
 
-        Constructor<SKU> constructor =
-                SKU.class.getDeclaredConstructor(String.class);
-        constructor.setAccessible(true);
+        // Act
+        boolean result = sut.equals("NOT_A_SKU");
 
-        SKU sku1 = constructor.newInstance("ABCDEF1234");
-        SKU sku2 = constructor.newInstance("1234ABCDEF");
-
-        assertNotEquals(sku1, sku2);
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void toStringShouldReturnSkuValue() {
-        SKU sku = SKU.generate();
+    void differentGeneratedSKUsShouldNormallyNotBeEqual() {
+        // SUT
+        SKU sut = new SKU();
+        SKU otherSku = new SKU();
 
-        assertEquals(sku.getValue(), sku.toString());
+        // Act
+        boolean result = sut.equals(otherSku);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
-    void shouldRejectInvalidSkuFormat() throws Exception {
+    void toStringShouldReturnSKUValue() {
+        // SUT
+        SKU sut = new SKU();
 
-        Constructor<SKU> constructor =
-                SKU.class.getDeclaredConstructor(String.class);
-        constructor.setAccessible(true);
+        // Act
+        String result = sut.toString();
 
-        Exception exception = assertThrows(Exception.class, () ->
-                constructor.newInstance("INVALID!!"));
-
-        assertTrue(exception.getCause() instanceof IllegalArgumentException);
-        assertEquals(exception.getCause().getMessage(), "Invalid SKU format");
+        // Assert
+        assertEquals(sut.getValue(), result);
     }
 
     @Test
-    void shouldRejectNullSku() throws Exception {
+    void hashCodeShouldBeStableForSameObject() {
+        // SUT
+        SKU sut = new SKU();
 
-        Constructor<SKU> constructor =
-                SKU.class.getDeclaredConstructor(String.class);
-        constructor.setAccessible(true);
+        // Act
+        int firstHash = sut.hashCode();
+        int secondHash = sut.hashCode();
 
-        Exception exception = assertThrows(Exception.class, () ->
-                constructor.newInstance((String) null));
-
-        assertTrue(exception.getCause() instanceof IllegalArgumentException);
-        assertEquals(exception.getCause().getMessage(), "Invalid SKU format");
+        // Assert
+        assertEquals(firstHash, secondHash);
     }
 
     @Test
-    void hashCodeShouldBeEqual() throws Exception {
-        SKU sku1 = SKU.generate();
-        SKU sku2 = sku1;
+    void hashCodeShouldBeEqualForSameReference() {
+        // Arrange
+        SKU sut = new SKU();
+        SKU sameReference = sut;
 
-        assertEquals(sku1.hashCode(), sku2.hashCode());
+        // Act
+        int firstHash = sut.hashCode();
+        int secondHash = sameReference.hashCode();
+
+        // Assert
+        assertEquals(firstHash, secondHash);
     }
-
-    //Commented out below test because non-equal objects may still have the same hash code
-
-   /* @Test
-    void hashCodeShouldBeNotEqual() throws Exception {
-        SKU sku1 = SKU.generate();
-        SKU sku2 = SKU.generate();
-
-        assertNotEquals(sku1.hashCode(), sku2.hashCode());
-    }*/
 }
-

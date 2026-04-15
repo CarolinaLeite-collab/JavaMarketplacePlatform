@@ -19,30 +19,31 @@ class PublicationInLibraryForDirectSaleUI {
 
 class PublicationInLibraryForDirectSaleController {
   - libraryRepo: ILibraryRepo
-  - directSaleRepo: IDirectSaleRepo
-  + getItemsInLibraryByUser(userID: UserID): List<Item>
-  + addItemForDirectSale(itemID: ItemID, price: Price, timeLimit: Period): DirectSale
+  - directSaleRepo: IdirectSaleRepo
+  + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
+  + putItemIdOnDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
 }
 
 interface ILibraryRepo {
-  + getItemsInLibraryByUser(userID: UserID): List<Item>
+  + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
 }
 
 class Library {
-  - _userID: UserID
-  - _items: List<Item>
-  + getItemsInLibrary(): List<Item>
+  - _userId: UserId
+  - _itemsId: List<ItemId>
+  + getItemsIdInLibrary(): List<ItemId>
 }
 
 class MemoLibraryRepo{
-    - _libraries: List<Library>
+    - _librariesId: Map<LibraryId>
 }
 
-class Item {
+class ItemId {
+- _itemId : ItemId
 }
 
-interface IDirectSaleRepo{
-+ addDirectSale(itemID: ItemID, price: Price, timeLimit: Period): DirectSale
+interface IdirectSaleRepo{
++ addDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
 }
 
 class MemoDirectSaleRepo {
@@ -51,11 +52,11 @@ class MemoDirectSaleRepo {
 }
 
 class DirectSaleFactory {
-  + createDirectSale(itemID: ItemID, price: Price, timeLimit: Period): DirectSale
+  + createDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
 }
 
 class DirectSale {
-  - itemID: ItemID
+  - itemId: ItemId
   - price: Price
   - timeLimit: Period
 '  + DirectSale(item: Item, price: Price, timeLimit: Period)
@@ -63,15 +64,17 @@ class DirectSale {
 
 PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
 PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
-PublicationInLibraryForDirectSaleController "1" ..> "1" IDirectSaleRepo : calls
+PublicationInLibraryForDirectSaleController "1" ..> "1" IdirectSaleRepo : calls
 
-MemoLibraryRepo "1" --> "*" Library : contains
-Library "1" --> "*" Item : contains
-MemoLibraryRepo ..|> ILibraryRepo
+MemoLibraryRepo "1" --> "*" Library : manages
+Library "1" --> "*" ItemId : has
+MemoLibraryRepo "1" ..|> "1" ILibraryRepo : implements
 
-MemoDirectSaleRepo ..|> IDirectSaleRepo
-MemoDirectSaleRepo "1" --> "1" DirectSaleFactory : uses
-DirectSaleFactory "1" --> "*" DirectSale : creates
+MemoDirectSaleRepo "1     " ..|> "1" IdirectSaleRepo : implements
+MemoDirectSaleRepo "1" --> "1    " DirectSaleFactory : uses
+DirectSaleFactory "1" -.> "*" DirectSale : creates
+
+ItemId "*" --> "1" DirectSale : references
 
 'DirectSale "1" --> "1" Item : sells
 

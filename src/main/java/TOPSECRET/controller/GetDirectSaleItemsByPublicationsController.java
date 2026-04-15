@@ -1,11 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IDirectSaleRepo;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.List;
 
 /**
  * Controller responsible for retrieving the list of items that are currently
@@ -31,11 +28,4 @@ public class GetDirectSaleItemsByPublicationsController {
         _iDirectSaleRepo = dsr;
     }
 
-    public List<Item> getDirectSaleItemsByPublication (Publication publication) {
-
-        List<Item> directSaleItemsByPublication = _iDirectSaleRepo.getDirectSaleItemsByPublication(publication);
-
-        return directSaleItemsByPublication;
-
-    }
 }

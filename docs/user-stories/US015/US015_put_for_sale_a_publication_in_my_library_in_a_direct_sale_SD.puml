@@ -27,20 +27,20 @@ participant "directSale:DirectSale" as directSale
 User -> UI: I want to put for direct sale\nan item in my library!
 activate UI
 
-UI -> Ctl: getItemsInLibraryByUser\n(userID)
+UI -> Ctl: getItemsIdInLibraryByUserId\n(userId)
 activate Ctl
 
-Ctl -> LibraryRepo: getItemsInLibraryByUser\n(userID)
+Ctl -> LibraryRepo: getItemsIdInLibraryByUserId\n(userId)
 activate LibraryRepo
-LibraryRepo --> Ctl: ListOfUserLibraryItems
+LibraryRepo --> Ctl: ListOfUserLibraryItemsId
 deactivate LibraryRepo
 
-Ctl --> UI: ListOfUserLibraryItems
+Ctl --> UI: ListOfUserLibraryItemsId
 deactivate Ctl
 UI --> User: Which item\nwould you like to sell?
 deactivate UI
 
-User -> UI: itemID
+User -> UI: item
 activate UI
 
 UI --> User: What is the price \nand time limit for this sale?
@@ -48,7 +48,7 @@ deactivate UI
 User -> UI: price, time limit
 activate UI
 
-UI -> Ctl: addItemForDirectSale\n(itemID, price, timeLimit)
+UI -> Ctl: putItemIdOnDirectSale\n(itemID, price, timeLimit)
 activate Ctl
 
 Ctl -> DirectSaleRepo: addDirectSale\n(itemID, price, timeLimit)
@@ -62,12 +62,12 @@ DirectSaleFactory --> DirectSaleRepo: directSale
 deactivate DirectSaleFactory
 
 DirectSaleRepo -> DirectSaleRepo: add(directSale)
-DirectSaleRepo --> Ctl: directSale
+DirectSaleRepo --> Ctl: true
 deactivate DirectSaleRepo
 
-Ctl --> UI: directSale
+Ctl --> UI: true
 deactivate Ctl
-UI --> User: Your item was\nsuccessfully put up in a direct sale!
+UI --> User: Your item was\nsuccessfully put up on a direct sale!
 deactivate UI
 
 @enduml

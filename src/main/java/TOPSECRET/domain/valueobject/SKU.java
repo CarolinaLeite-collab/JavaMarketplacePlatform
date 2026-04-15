@@ -20,23 +20,12 @@ public class SKU implements ValueObject {
 
     private final String _value;
 
-    private SKU(String value) {
-
-        if (value == null || !value.matches(_format)) {
-            throw new IllegalArgumentException("Invalid SKU format");
-        }
-
-        _value = value;
-    }
-
-    // ÚNICO ponto de criação de SKUs
-    // Não aceita input externo → não há criação manual
-    public static SKU generate() {
-        return new SKU(generateRandomSKU());
+    public SKU() {
+        _value = generateRandomSKU();
     }
 
     // Geração interna e controlada
-    private static String generateRandomSKU() {
+    private String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();   // hex + hífens
         String compact = uuid.replace("-", "");       // remove hífens
         return compact.substring(0, _length).toUpperCase();

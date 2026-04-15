@@ -55,7 +55,7 @@ loop for each Auction in MemoAuctionRepo
 end
 
 '--- Make a copy of the list of selected items ---'
-create "copyListOfAuctionItemsId\nByPublisherId: List<Item>" as Copy
+create "copyListOfAuctionItemsId\nByPublisherId: List<ItemId>" as Copy
 MemoRepo -->> Copy : <<create>>
 MemoRepo --> Ctl : copyListOfAuctionItems\nByPublisherId
 deactivate MemoRepo

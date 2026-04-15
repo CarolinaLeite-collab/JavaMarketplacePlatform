@@ -1,13 +1,11 @@
 package TOPSECRET.domain.library;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.PublicationDetails;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +21,7 @@ import java.util.List;
 public class Library implements AggregateRoot<LibraryId> {
 
     private LibraryId _libraryId;
-    private List<Item> _items = new ArrayList<>();
+    private List<ItemId> _itemsId = new ArrayList<>();
 
     Library(LibraryId libraryId){
 
@@ -49,41 +47,27 @@ public class Library implements AggregateRoot<LibraryId> {
 
     }
 
-    public List<PublicationDetails> getItemDetails() {
-
-        List <PublicationDetails> listWithDetails = new ArrayList<>();
-
-        for (Item p : _items) {
-
-            PublicationDetails pDetails = new PublicationDetails(p);
-
-            listWithDetails.add(pDetails);
-        }
-
-        return Collections.unmodifiableList(listWithDetails);
+    public List<ItemId> getItemsIdInLibrary() {
+        return List.copyOf(_itemsId);
     }
 
-    public List<Item> getItemsInLibrary() {
-        return List.copyOf(_items);
-    }
-
-    public boolean addItemToLibrary(Item item) {
-        if (item == null) {
+    public boolean addItemIdToLibrary(ItemId itemId) {
+        if (itemId == null) {
             return false;
         }
 
-        if (_items.contains(item)) {
+        if (_itemsId.contains(itemId)) {
             return false;
         }
 
-        _items.add(item);
+        _itemsId.add(itemId);
         return true;
     }
 
-    public Item getItem(Item item) {
-        for (Item item1 : _items) {
-            if (item.equals(item1)) {
-                return item1;
+    public ItemId getItemId(ItemId itemId) {
+        for (ItemId id : _itemsId) {
+            if (itemId.equals(id)) {
+                return id;
             }
         }
         return null;

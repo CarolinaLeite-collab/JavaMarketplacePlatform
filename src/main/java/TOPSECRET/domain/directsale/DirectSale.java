@@ -2,13 +2,8 @@ package TOPSECRET.domain.directsale;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.author.Author;
-import TOPSECRET.domain.Item;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.valueobject.PublishingCompanyId;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.DirectSaleId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.item.Item;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Period;
 import java.util.List;
@@ -23,29 +18,36 @@ import java.util.List;
 
 public class DirectSale implements AggregateRoot<DirectSaleId> {
 
-    private final List<Item> _items;
+    private final List<ItemId> _itemsId;
     private final Price _price;
     private final Period _timeLimit; // optional
     private DirectSaleId _directSaleId;
 
-    DirectSale(List<Item> items, Price price, Period timeLimit) {
+    DirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        requiresItemAndPrice(items, price);
+        requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
 
-        _items = items;
+        for (ItemId itemId : itemsId) {
+            if (itemId == null) {
+                throw new IllegalArgumentException("Items cannot contain null elements.");
+            }
+        }
+
+        _itemsId = itemsId;
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
+
     }
 
-    public List<Item> getItems() { return _items; }
+    public List<ItemId> getItemsId() { return _itemsId; }
     public Price getPrice() { return _price; }
     public Period getTimeLimit() { return _timeLimit; }
 
-    private static void requiresItemAndPrice(List<Item> items, Price price) {
-        if (items == null) {
-            throw new IllegalArgumentException("Item is required for a direct sale");
+    private static void requiresItemAndPrice(List<ItemId> itemsId, Price price) {
+        if (itemsId == null) {
+            throw new IllegalArgumentException("ItemId is required for a direct sale");
         }
         if (price == null) {
             throw new IllegalArgumentException("Price is required for a direct sale");
@@ -55,43 +57,6 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         if (timeLimit != null && timeLimit.isNegative()) {
             throw new IllegalArgumentException("Time limit cannot be negative");
         }
-    }
-
-    public boolean isByAuthorId(AuthorId authorId) {
-        for(Item item : _items) {
-            if(item.isByAuthorId(authorId)) {
-                return true;
-            }
-        }
-        return false;
-
-    }
-
-    public boolean isByPublication (Publication publication) {
-        for(Item item : _items) {
-            if(item.isByPublication(publication)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isByPublishingCompany(PublishingCompanyId publisherId) {
-        for(Item item : _items) {
-            if(item.isByPublishingCompany(publisherId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isByGenreId(GenreId genreId) {
-        for(Item item : _items) {
-            if(item.isByGenreId(genreId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -110,7 +75,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         if (object instanceof DirectSale) {
             DirectSale other = (DirectSale) object;
 
-            if (this._items.equals(other._items) &&
+            if (this._itemsId.equals(other._itemsId) &&
                     this._price.equals(other._price) &&
                     this._timeLimit.equals(other._timeLimit)
             )

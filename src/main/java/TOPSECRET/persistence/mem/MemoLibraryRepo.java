@@ -1,9 +1,9 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Item;
 import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.library.LibraryFactory;
 import TOPSECRET.domain.repository.ILibraryRepo;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
@@ -99,7 +99,7 @@ public class MemoLibraryRepo implements ILibraryRepo {
     }
 
     @Override
-    public List<Item> getItemsInLibraryByUserId(UserId userId) {
+    public List<ItemId> getItemsInLibraryByUserId(UserId userId) {
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
 
@@ -109,7 +109,7 @@ public class MemoLibraryRepo implements ILibraryRepo {
 
         }
 
-        return (DATA.get(libraryID)).getItemsInLibrary();
+        return (DATA.get(libraryID)).getItemsIdInLibrary();
 
     }
 

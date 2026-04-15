@@ -24,9 +24,8 @@ package DOMAIN {
             -ZonedDateTime _auctionEndDate;
             +identity() : AuctionId
             +sameAs(Object) : boolean
-            +placeBid (userId : UserId, price : Price) : Bid
+            +placeBid (userId : UserId, offerPrice : Price) : Bid
             +getHighestBid() : Bid
-            +acceptBid(Bid : Bid) : void
             +finalizeAuction() : void
             +getItemsId() : ItemId
             +getBid() : Bid
@@ -79,6 +78,9 @@ package DOMAIN {
         class AuctionId <<ValueObject>> #LightPink {
             _id : String
         }
+        class BidId <<ValueObject>> #LightPink {
+                    _id : UUID
+                }
         class Price <<ValueObject>>
         class ItemId <<ValueObject>>
         class UserId <<ValueObject>>
@@ -86,6 +88,7 @@ package DOMAIN {
         class AuthorId <<ValueObject>>
         class PublicationId <<ValueObject>>
         class PublishingCompanyId <<ValueObject>>
+
     }
 }
 
@@ -103,6 +106,10 @@ package DDD {
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
     }
+
+    interface DomainEntity<ID> <<Interface>>{
+        +identity() : T
+        +sameAs(object : Object) : boolean
 }
 
 MemoAuctionRepo ..|> IAuctionRepo
@@ -122,5 +129,7 @@ Auction "*" .> "1..*" PublicationId : references
 Auction "*" .> "1..*" PublishingCompanyId : references
 Bid "*" ...> "1" Price : references
 Bid "*" ....> "1" UserId : references
+Bid -|> DomainEntity
+Bid "1" --> "1" BidId : has
 
 @enduml

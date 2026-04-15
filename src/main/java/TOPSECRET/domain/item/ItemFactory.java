@@ -1,7 +1,8 @@
-package TOPSECRET.domain;
+package TOPSECRET.domain.item;
 
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
+import TOPSECRET.domain.valueobject.Description;
+import TOPSECRET.domain.valueobject.EditionId;
 
 /**
  * Factory responsible for creating {@link Item} instances.
@@ -13,7 +14,7 @@ import TOPSECRET.domain.valueobject.Condition;
  */
 
 public class ItemFactory {
-    public Item createItem(Publication publication, Condition condition) {
-        return new Item(publication, condition);
+    public Item createItem(EditionId editionId, Condition condition, Description description) {
+        return new Item(editionId, condition, description);
     }
 }
