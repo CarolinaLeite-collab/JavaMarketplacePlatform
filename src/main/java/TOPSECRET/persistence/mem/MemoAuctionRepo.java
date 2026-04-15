@@ -71,12 +71,4 @@ public class MemoAuctionRepo implements IAuctionRepo {
                               ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         return addAuction(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
-
-    @Override
-    public Auction createAuction(ItemId itemId, Price startingPrice, Price reservePrice, Price outrightPrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        Auction auction = _auctionFactory.createAuction(itemId, startingPrice, reservePrice,
-                outrightPrice, auctionStartDate, auctionEndDate);
-        return save(auction);
-    }
 }

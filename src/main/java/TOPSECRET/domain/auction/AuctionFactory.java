@@ -24,9 +24,4 @@ public class AuctionFactory {
                                  ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
         return new Auction(itemsId, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
     }
-
-    public Auction createAuction(ItemId itemId, Price startingPrice, Price reservePrice, Price outrightPrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return new Auction(List.of(itemId), startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
-    }
 }

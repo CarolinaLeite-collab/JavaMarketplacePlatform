@@ -168,22 +168,4 @@ class MemoAuctionRepoTest {
         // Assert
         assertTrue(_repo.findAll().iterator().hasNext());
     }
-
-    @Test
-    void createAuctionShouldStoreAndReturnAuction() {
-        // Arrange
-        when(_auctionFactoryDouble.createAuction(_itemIdDouble1, _startingPriceDouble, _reservePriceDouble,
-                _outrightPriceDouble, _startDate, _endDate)).thenReturn(_auctionDouble1);
-
-        // SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
-
-        // Act
-        Auction result = _repo.createAuction(_itemIdDouble1, _startingPriceDouble, _reservePriceDouble,
-                _outrightPriceDouble, _startDate, _endDate);
-
-        // Assert
-        assertSame(_auctionDouble1, result);
-        assertTrue(_repo.containsOfIdentity(_idDouble));
-    }
 }
