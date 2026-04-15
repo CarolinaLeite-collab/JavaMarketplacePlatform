@@ -35,25 +35,25 @@ activate CTL
 CTL -> LR: addLibrary(userId)
 activate LR
 
-LR -> LR: LibraryId.fromUserId(userId)
 
-    opt containsOfIdentity(libraryId) == false
-        LR -> LF: createLibrary(libraryId)
-        activate LF
-        create "myLibrary:Library"
-        LF -->> "myLibrary:Library": <<create>>
-        LF --> LR: myLibrary
-        deactivate LF
+LR -> LF: createLibrary(userId)
+activate LF
+create "myLibrary:Library"
+LF -->> "myLibrary:Library": <<create>>
+LF --> LR: myLibrary
+deactivate LF
+LR -> LR : hasId = containsOfIdentity(libraryId)
 
-        LR -> LR: save(myLibrary)
-
-
+    opt !hasId
+    LR -> LR: save(myLibrary)
     end
+
+
 
 LR --> CTL: myLibrary
 deactivate LR
 
-CTL --> UI: myLibrary
+CTL --> UI: true
 deactivate CTL
 
 UI --> User: done!
