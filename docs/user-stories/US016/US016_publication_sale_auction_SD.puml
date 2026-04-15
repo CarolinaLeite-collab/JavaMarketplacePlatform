@@ -47,10 +47,10 @@ deactivate UI
 User -> UI: startingPrice, reservePrice, outrightPrice, startDate, endDate
 activate UI
 
-UI -> Ctl: createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
+UI -> Ctl: putItemIdOnAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
 activate Ctl
 
-Ctl -> AuctionRepo: createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
+Ctl -> AuctionRepo: addAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
 activate AuctionRepo
 
 AuctionRepo -> AuctionFactory: createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)

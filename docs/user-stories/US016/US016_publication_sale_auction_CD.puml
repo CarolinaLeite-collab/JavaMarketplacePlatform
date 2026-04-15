@@ -48,15 +48,12 @@ class Library {
 }
 
 class ItemId {
-  - _sku: SKU
-  - _auction: Auction
-  --
-  + setAuction(auction: Auction): void
-  + getAuction(): Auction
+- _itemId : ItemId
+
 }
 
 Interface IAuctionRepo {
-  + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  + addAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
 class MemoAuctionRepo {
@@ -94,8 +91,6 @@ IAuctionRepo "1" <|.. "1" MemoAuctionRepo : implements
 MemoLibraryRepo "1" --> "*" Library : manages
 Library "1" --> "*" ItemId : stores
 
-' Controller holds library directly
-PublicationSaleAuctionController "1" --> "1" Library : holds
 
 ' ItemId links to Auction after creation
 ItemId "1" --> "0..1" Auction : references
