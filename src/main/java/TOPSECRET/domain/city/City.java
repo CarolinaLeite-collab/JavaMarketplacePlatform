@@ -6,6 +6,12 @@ import TOPSECRET.domain.valueobject.CityId;
 
 import java.util.Objects;
 
+/**
+ * An {@code City} represents a geographical and administrative unit within a {@link Country}.
+ * <p>
+ * It is modeled as an {@link AggregateRoot} and is uniquely identified by a {@link CityId}.
+ */
+
 public class City implements AggregateRoot<CityId> {
 
     private final String _name;
