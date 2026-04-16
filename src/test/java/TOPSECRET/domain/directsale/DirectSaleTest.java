@@ -63,12 +63,27 @@ class DirectSaleTest {
     }
 
     @Test
-    void constructorShouldThrowExceptionWhenItemIdIsNull() {
+    void constructorShouldThrowExceptionWhenListOfItemIdIsNull() {
         // Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> new DirectSale(null, _priceDouble, _period)); // SUT
 
         assertEquals("ItemId is required for a direct sale", ex.getMessage());
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenItemIdIsNull() {
+        //arrange
+        ItemId nullItemId = null;
+
+        //act
+        _itemsId.add(_itemIdDouble);
+        _itemsId.add(nullItemId);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new DirectSale(_itemsId, _priceDouble, _period));
+
+        //assert
+        assertEquals("Items cannot contain null elements.", ex.getMessage());
     }
 
     @Test
