@@ -1,26 +1,35 @@
 package TOPSECRET.domain.library;
 
+import TOPSECRET.domain.valueobject.Email;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 
 class LibraryTest {
 
+    private UserId _userIdDouble;
     private LibraryId _libraryIdDouble;
     private ItemId _itemIdDouble;
+    private Email _emailDouble;
 
     @BeforeEach
     void setUp() {
 
+        _userIdDouble = mock(UserId.class);
         _libraryIdDouble = mock(LibraryId.class);
         _itemIdDouble = mock(ItemId.class);
+        _emailDouble = mock(Email.class);
+
+        when(_userIdDouble.getEmail()).thenReturn(_emailDouble);
 
     }
 
@@ -28,15 +37,15 @@ class LibraryTest {
     void testConstructor() {
 
         // SUT
-        new Library(_libraryIdDouble);
+        new Library(_userIdDouble);
 
     }
 
     @Test
     void sameAsShouldReturnTrueWhenLibrariesAreSame() {
         // Arrange
-        Library library1 = new Library(_libraryIdDouble);
-        Library library2 = new Library(_libraryIdDouble);
+        Library library1 = new Library(_userIdDouble);
+        Library library2 = new Library(_userIdDouble);
 
         // Act & Assert
         assertTrue(library1.sameAs(library2));
@@ -49,7 +58,7 @@ class LibraryTest {
         LibraryId otherLibraryIdDouble = mock(LibraryId.class);
 
         // SUT
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
 
         // Act & Assert
         assertFalse(library.sameAs(otherLibraryIdDouble));
@@ -59,18 +68,45 @@ class LibraryTest {
     void libraryShouldNotBeEqualsWithNull() {
 
         // SUT
-        Library libraryDouble = new Library(_libraryIdDouble);
+        Library libraryDouble = new Library(_userIdDouble);
 
         //Assert
-        assertNotEquals(libraryDouble, null);
+        assertFalse(libraryDouble.equals(null));
 
+    }
+
+    @Test
+    void equalLibrariesShouldHaveSameHashCode() {
+
+        //SUT
+        Library library1 = new Library(_userIdDouble);
+        Library library2 = new Library(_userIdDouble);
+
+        //Assert
+        assertEquals(library1.hashCode(), library2.hashCode());
+    }
+
+    @Test
+    void differentLibrariesShouldHavedifferentHashCode() {
+
+        //Arrange
+        Email emailDouble = mock(Email.class);
+        UserId otherUserIdDouble = mock(UserId.class);
+        when(otherUserIdDouble.getEmail()).thenReturn(emailDouble);
+
+        //SUT
+        Library library1 = new Library(_userIdDouble);
+        Library library2 = new Library(otherUserIdDouble);
+
+        //Assert
+        assertNotEquals(library1.hashCode(), library2.hashCode());
     }
 
     @Test
     void libraryShouldBeSameAsWithTheSameObject() {
 
         // SUT
-        Library libraryDouble = new Library(_libraryIdDouble);
+        Library libraryDouble = new Library(_userIdDouble);
 
         // Assert
         assertTrue(libraryDouble.sameAs(libraryDouble));
@@ -80,7 +116,7 @@ class LibraryTest {
     void libraryShouldNotBeSameAsWithDifferentObject() {
 
         // SUT
-        Library libraryDouble = new Library(_libraryIdDouble);
+        Library libraryDouble = new Library(_userIdDouble);
         String otherObject = "I am another object type";
 
         // Assert
@@ -91,8 +127,8 @@ class LibraryTest {
     void librariesShouldBeSameAsWhenLibraryIdIsEqual() {
 
         // SUT
-        Library library1Double = new Library(_libraryIdDouble);
-        Library library2Double = new Library(_libraryIdDouble);
+        Library library1Double = new Library(_userIdDouble);
+        Library library2Double = new Library(_userIdDouble);
 
         // Assert
         assertTrue(library1Double.sameAs(library2Double));
@@ -102,16 +138,16 @@ class LibraryTest {
     void librariesShouldNotBeSameAsWhenLibraryIdIsDifferent() {
 
         // SUT
-        LibraryId libraryId2Double = mock(LibraryId.class);
-        Library library1Double = new Library(_libraryIdDouble);
-        Library library2Double = new Library(libraryId2Double);
+        UserId userId2Double = mock(UserId.class);
+        Library library1Double = new Library(_userIdDouble);
+        Library library2Double = new Library(userId2Double);
 
         // Assert
         assertFalse(library1Double.sameAs(library2Double));
     }
 
     @Test
-    void ifUserIsNull_shouldReturnFalse() {
+    void ifUserIsNullShouldReturnFalse() {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> new Library(null));
@@ -119,19 +155,28 @@ class LibraryTest {
     }
 
     @Test
-    void test_get_identity() {
+    void testGetIdentityShouldReturnId() {
 
-        // Arrange / SUT
-        Library myLibrary = new Library(_libraryIdDouble);
+        // Arrange
+        when(_userIdDouble.getEmail()).thenReturn(_emailDouble);
 
-        // Assert
-        assertEquals(_libraryIdDouble,myLibrary.identity());
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
+
+            // SUT
+            Library myLibrary = new Library(_userIdDouble);
+
+            // Assert
+            assertEquals(_libraryIdDouble, myLibrary.identity());
+        }
     }
 
     @Test
-    void getItemsIdInLibraryShouldReturnEmptyListWhenNoItemsExist() {
+    void getItemsInLibraryShouldReturnEmptyListWhenNoItemsExist() {
         // Arrange
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
 
         // Act
         List<ItemId> result = library.getItemsIdInLibrary();
@@ -144,9 +189,9 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsIdInLibraryShouldReturnUnmodifiableList() {
+    void getItemsInLibraryShouldReturnUnmodifiableList() {
         // Arrange
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
 
         // Act
         List<ItemId> result = library.getItemsIdInLibrary();
@@ -156,9 +201,9 @@ class LibraryTest {
     }
 
     @Test
-    void getItemsIdInLibraryShouldReturnItemsWhenItemsExist() {
+    void getItemsInLibraryShouldReturnItemsWhenItemsExist() {
         // Arrange / SUT
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
         library.addItemIdToLibrary(_itemIdDouble);
 
         // Act
@@ -169,9 +214,9 @@ class LibraryTest {
     }
 
     @Test
-    void addItemIdToLibraryShouldAddItemIdWhenValid() {
+    void addItemToLibraryShouldReturnTrueWhenItemIdisValidAndAdded() {
         // Arrange / SUT
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
 
         // Act
         boolean result = library.addItemIdToLibrary(_itemIdDouble);
@@ -182,9 +227,22 @@ class LibraryTest {
     }
 
     @Test
-    void addItemIdToLibraryShouldReturnFalseWhenItemIdIsNull() {
+    void addItemToLibraryShouldAddItemWhenValid() {
         // Arrange / SUT
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
+
+        // Act
+        library.addItemIdToLibrary(_itemIdDouble);
+
+        // Assert
+        assertEquals(library.getItemsIdInLibrary().size(), 1);
+
+    }
+
+    @Test
+    void addItemToLibraryShouldReturnFalseWhenItemIsNull() {
+        // Arrange / SUT
+        Library library = new Library(_userIdDouble);
 
         // Act
         boolean result = library.addItemIdToLibrary(null);
@@ -194,9 +252,9 @@ class LibraryTest {
     }
 
     @Test
-    void addItemIdToLibraryShouldReturnFalseWhenItemIdIsAlreadyInLibrary() {
+    void addItemToLibraryShouldReturnFalseWhenItemIsAlreadyInLibrary() {
         // Arrange
-        Library library = new Library(_libraryIdDouble);
+        Library library = new Library(_userIdDouble);
 
         // Act
         library.addItemIdToLibrary(_itemIdDouble);
@@ -208,41 +266,37 @@ class LibraryTest {
     }
 
     @Test
-    void getItemIdShouldReturnItemIdWhenFound() {
-        // Arrange
-        ItemId itemIdDouble2 = mock(ItemId.class);
+    void shouldReturnTrueWhenItemIdExists() {
 
-        // SUT
-        Library library = new Library(_libraryIdDouble);
+        //Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
 
-        // Act
-        library.addItemIdToLibrary(_itemIdDouble);
-        library.addItemIdToLibrary(itemIdDouble2);
+        //SUT
+        Library library = new Library(_userIdDouble);
 
-        ItemId result = library.getItemId(_itemIdDouble);
+        //Act
+        library.addItemIdToLibrary(itemIdDouble);
 
-        // Assert
-        assertEquals(_itemIdDouble, result);
+        boolean result = library.containsItemId(itemIdDouble);
 
+        assertTrue(result);
     }
 
     @Test
-    void getItemIdShouldReturnNullWhenNotFound() {
+    void shouldReturnFalseWhenItemIdDoesNotExist() {
 
-        // Arrange
+        //Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
         ItemId itemIdDouble2 = mock(ItemId.class);
-        ItemId itemIdDouble3 = mock(ItemId.class);
 
-        // SUT
-        Library library = new Library(_libraryIdDouble);
+        //SUT
+        Library library = new Library(_userIdDouble);
 
-        // Act
-        library.addItemIdToLibrary(_itemIdDouble);
-        library.addItemIdToLibrary(itemIdDouble2);
+        //Act
+        library.addItemIdToLibrary(itemIdDouble);
 
-        ItemId result = library.getItemId(itemIdDouble3);
+        boolean result = library.containsItemId(itemIdDouble2);
 
-        // Assert
-        assertNull(result);
+        assertFalse(result);
     }
 }

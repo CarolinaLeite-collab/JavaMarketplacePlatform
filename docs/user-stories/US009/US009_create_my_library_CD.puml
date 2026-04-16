@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US009 – "As a user, I want to create my library" - CD DDD
+title US009 – "As a user, I want to create my library" - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -19,17 +19,17 @@ top to bottom direction
 class CreateLibraryUI {
 }
 
-package "CONTROLLER" {
+package "controller" {
 
     class CreateLibraryController {
-      + createLibrary(userId : UserId) : Library
+      + createLibrary(userId : UserId) : boolean
     }
 
 }
 
-package "DOMAIN" {
+package "domain" {
 
-package "REPOSITORY" {
+package "repository" {
 
     interface ILibraryRepo <<Interface>> {
         +addLibrary(userId : UserId) : Library
@@ -37,7 +37,7 @@ package "REPOSITORY" {
 
 }
 
-package "VALUE OBJECT" {
+package "valueobject" {
 
     class LibraryId <<Value Object>> #lightpink {
     +fromUserId(userId : UserId) : LibraryId
@@ -46,24 +46,22 @@ package "VALUE OBJECT" {
 
 }
 
-package "LIBRARY" #b0c4d4 {
+package "library" #b0c4d4 {
 
     class Library <<Root>> <<Entity>> {
-      +sameAs(object : Object)
-      +identity() : LibraryId
     }
 
     class LibraryFactory <<Factory>> {
-    + createLibrary(libraryId : LibraryId) : Library
+    + createLibrary(userId : UserId) : Library
     }
 
 }
 
 }
 
-package "PERSISTENCE"  {
+package "persistence"  {
 
-    package "MEM" {
+    package "mem" {
 
         class MemoLibraryRepo {
         }
@@ -72,18 +70,24 @@ package "PERSISTENCE"  {
 
 }
 
-Package "DDD" {
+Package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
     save(T) : T
-    findAll() : Iterable<T>
+'    findAll() : Iterable<T>
 '    ofIdentity(ID) : Optional <T>
     containsOfIdentity(ID) : boolean
     }
+    interface DomainEntity<ID> <<Interface>>{
+    +identity() : ID
+    +sameAs(Object) : boolean
+    }
+    interface AggregateRoot<ID> <<Interface>>{}
 
 }
 
 CreateLibraryUI "1" .> "1" CreateLibraryController : invokes
+
 CreateLibraryController "1" ..> "1" ILibraryRepo : calls
 CreateLibraryController "1" ..> "*" Library : <<use>>
 CreateLibraryController "1" ..> "*" UserId : <<use>>
@@ -95,9 +99,11 @@ MemoLibraryRepo "1" -> "*" Library: persists
 LibraryFactory "1" ..> "*" Library : <<create>>
 
 Library "1" -> "1" LibraryId: has
+Library ..|> AggregateRoot
 LibraryId "1" .> "1" UserId: <<use>>
 
 ILibraryRepo --|> IRepository
+AggregateRoot --|> DomainEntity
 
 
 

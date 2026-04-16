@@ -6,13 +6,18 @@ import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ILibraryRepo extends IRepository<LibraryId, Library> {
+
+    ArrayList<LibraryId> findAllKeys();
 
     Library addLibrary(UserId userId);
 
     Library findLibraryByUserId(UserId userId);
 
     List<ItemId> getItemsInLibraryByUserId(UserId userId);
+
+    boolean existsItemIdInAnyLibrary(ItemId itemId);
 }

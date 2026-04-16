@@ -1,15 +1,25 @@
 package TOPSECRET.domain.library;
 
-import TOPSECRET.domain.valueobject.LibraryId;
+import TOPSECRET.domain.valueobject.UserId;
 
 /**
- * Factory responsible for creating {@link Library} instances.
+ * Factory responsible for creating instances of {@link Library}.
+ *
  * <p>
- * @throws IllegalArgumentException if the user is null, as enforced by {@link Library}'s constructor.
+ * This factory encapsulates the creation logic of {@link Library} aggregates,
+ * ensuring that they are instantiated in a consistent and valid state.
+ * </p>
+ *
+ * <p>
+ * A {@link Library} is created based on a {@link UserId}, and validation rules
+ * (such as non-null constraints) are enforced by the {@link Library} constructor.
+ * </p>
  */
 public class LibraryFactory {
 
-    public Library createLibrary(LibraryId libraryId) {
-        return new Library(libraryId);
+    public Library createLibrary(UserId userId) {
+
+        return new Library(userId);
+
     }
 }

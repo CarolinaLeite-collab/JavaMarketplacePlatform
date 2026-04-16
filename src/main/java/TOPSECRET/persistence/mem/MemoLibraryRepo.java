@@ -7,20 +7,22 @@ import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.LibraryId;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * Repository responsible for managing {@link Library} entities.
+ * In-memory repository responsible for managing {@link Library} aggregates.
+ *
  * <p>
- * This class provides management mechanisms for
- * {@link Library} objects.
+ * This implementation of {@link ILibraryRepo} stores {@link Library} instances
+ * in a {@link java.util.HashMap}, using {@link LibraryId} as the key.
+ * It acts as a persistence adapter that isolates the domain and controller
+ * layers from storage concerns.
+ * </p>
+ *
  * <p>
- * It encapsulates all data access
- * operations related to libraries and isolates the domain and controller
- * layers from persistence concerns.
+ * The repository supports basic CRUD-style operations, as well as domain-specific
+ * queries such as retrieving a library by {@link UserId}, checking whether an
+ * {@link ItemId} exists in any library, and retrieving all items for a given user.
  * </p>
  */
 
@@ -50,6 +52,13 @@ public class MemoLibraryRepo implements ILibraryRepo {
     }
 
     @Override
+    public ArrayList<LibraryId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
+
+    @Override
     public Optional<Library> ofIdentity(LibraryId id) {
 
         if(!containsOfIdentity(id)) {
@@ -74,15 +83,13 @@ public class MemoLibraryRepo implements ILibraryRepo {
     @Override
     public Library addLibrary(UserId userId){
 
-        LibraryId libraryId = LibraryId.fromUserId(userId);
+        Library myLibrary = _libraryFactory.createLibrary(userId);
 
-        if (containsOfIdentity(libraryId)){
+        if (containsOfIdentity(myLibrary.identity())) {
 
             throw new IllegalStateException("User already has a library!");
 
         }
-
-        Library myLibrary = _libraryFactory.createLibrary(libraryId);
 
         return save(myLibrary);
 
@@ -111,6 +118,19 @@ public class MemoLibraryRepo implements ILibraryRepo {
 
         return (DATA.get(libraryID)).getItemsIdInLibrary();
 
+    }
+
+    @Override
+    public boolean existsItemIdInAnyLibrary(ItemId itemId) {
+
+        for (Library library : findAll()) {
+
+            if (library.getItemsIdInLibrary().contains(itemId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

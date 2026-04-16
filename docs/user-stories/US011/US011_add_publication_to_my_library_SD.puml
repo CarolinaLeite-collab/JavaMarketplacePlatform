@@ -21,41 +21,53 @@ autoactivate off
 actor User
 participant ":AddPublicationUI" as UI
 participant ":AddPublicationOnLibraryCtl" as CTL
+participant ":IItemRepo" as ITEMREPO
+
 participant ":ILibraryRepo" as LIBREPO
 participant "myLibrary:Library" as LIB
-participant ":IItemRepo" as ITEMREPO
 
 User -> UI : I want to add an Item to my library
 activate UI
-UI -> CTL : getListOfAvailableItems(userId)
+UI -> CTL : getListOfAvailableItemsIds()
 activate CTL
-CTL -> LIBREPO : getMyLibrary(userId)
-activate LIBREPO
-LIBREPO --> CTL : myLibrary
-deactivate LIBREPO
-CTL -> LIB : getAllItems()
-activate LIB
-LIB -> LIB : copyList
-LIB --> CTL : List<Items>
-deactivate LIB
-CTL -> ITEMREPO : getDifferentOf(existentItems)
+CTL -> ITEMREPO : findAllKeys()
 activate ITEMREPO
-ITEMREPO -> ITEMREPO : copyList
-ITEMREPO --> CTL : List<Items>
+ITEMREPO --> CTL : itemIds
 deactivate ITEMREPO
-CTL --> UI : List<Items>
+
+create "availableItemIds:List<ItemIds>"
+CTL -->> "availableItemIds:List<ItemIds>" : <<create>>
+
+    loop  for each itemId in itemIds
+    CTL -> LIBREPO : existsInAnyLibrary = existsItemIdInAnyLibrary(itemId)
+    opt !existsInAnyLibrary
+    CTL -> "availableItemIds:List<ItemIds>" : add
+    end
+    end
+
+CTL --> UI : availableItemIds
 deactivate CTL
-UI --> User : Select what available items you want to add
+
+UI --> User : Select what item you want to add
 deactivate UI
-User -> UI : Selection
+User -> UI : selectedItemId
 activate UI
-UI -> CTL : addItemToLibrary(selectedItem, userId)
+UI -> CTL : addItemIdToLibrary(selectedItemId, userId)
 activate CTL
-CTL -> LIB : addItemToLibrary(selectedItem, userId)
-activate LIB
-LIB -> LIB : addItemToLibrary(selectedItem)
-LIB --> CTL : true
-deactivate LIB
+CTL -> LIBREPO : existsInAnyLibrary = existsItemIdInAnyLibrary(selectedItemId)
+
+    opt !existsInAnyLibrary
+
+        CTL -> LIBREPO : findLibraryByUserId(userId)
+        activate LIBREPO
+        LIBREPO --> CTL : myLibrary
+        deactivate LIBREPO
+        CTL -> LIB : addItemIdToLibrary(selectedItemId)
+        activate LIB
+        LIB --> CTL : true
+        deactivate LIB
+
+    end
 CTL --> UI : true
 deactivate CTL
 UI --> User : Done!

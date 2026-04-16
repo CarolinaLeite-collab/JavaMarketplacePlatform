@@ -17,13 +17,13 @@ skinparam ActivationBackgroundColor black
 actor User
 participant ":MiteLovers" as System
 
-User -> System : I want to add a publication to my library
+User -> System : I want to add an item to my library
 activate System
-System --> User : Select what available books you want to add:
+System --> User : Select what item you want to add
 deactivate System
-User -> System : Selection
+User -> System : itemId
 activate System
-System --> User : Done
+System --> User : Done!
 deactivate System
 
 @enduml
