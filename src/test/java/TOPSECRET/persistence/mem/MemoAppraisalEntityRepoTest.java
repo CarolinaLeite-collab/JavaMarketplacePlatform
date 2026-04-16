@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
+import TOPSECRET.domain.appraisalentity.AppraisalEntity;
+import TOPSECRET.domain.appraisalentity.AppraisalEntityFactory;
 import TOPSECRET.domain.valueobject.AppraisalEntityId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;

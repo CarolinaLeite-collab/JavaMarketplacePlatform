@@ -4,6 +4,7 @@ import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.genre.GenreFactory;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.PublicationId;
 
 import java.util.*;
 
@@ -43,6 +44,12 @@ public class MemoGenreRepo implements IGenreRepo {
     @Override
     public Iterable<Genre> findAll() {
         return DATA.values();
+    }
+
+
+    public List<GenreId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
     }
 
     @Override

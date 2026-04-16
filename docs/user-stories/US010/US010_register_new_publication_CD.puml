@@ -57,8 +57,8 @@ package "domain"{
     }
 }
     package "persistence"  {
-       package "memo" {
-          class MemoPublicationRepo{
+       package "mem" {
+          class MemPublicationRepo{
           }
        }
     }
@@ -74,6 +74,13 @@ package "domain"{
           containsOfIdentity(id: ID) : boolean
           }
 
+       interface AggregateRoot <ID >{
+                }
+        interface DomainEntity<ID, T> <<Interface>> {
+                       +identity() : ID
+                       +sameAs(object:Object) : boolean
+               }
+
   }
 
 '==== relations ====
@@ -82,19 +89,21 @@ RegisterPublicationUI "1" ..> "1" RegisterNewPublicationController : invokes
 RegisterNewPublicationController "1" ..> "1" IPublicationRepo: <<use>>
 RegisterNewPublicationController "1" ..> "*" Publication : <<use>>
 
-MemoPublicationRepo .|> IPublicationRepo
-MemoPublicationRepo "1" ---> "1" PublicationFactory : invokes
-MemoPublicationRepo "1" -----> "*" Publication : persists
+MemPublicationRepo .|> IPublicationRepo
+MemPublicationRepo "1" ---> "1" PublicationFactory : invokes
+MemPublicationRepo "1" -----> "*" Publication : persists
 
 PublicationFactory "1" ..> "*" Publication : <<create>>
 
 
 Publication "1" --> "1" PublicationId: has
-Publication "1" ..> "1" AuthorId : references
+Publication "*" ..> "1" AuthorId : references
 Publication "*" --> "1" Title : has
 Publication "*" ..> "1" GenreId : references
 
 IPublicationRepo --|> IRepository
 
+AggregateRoot -|> DomainEntity
+Publication .|> AggregateRoot
 
 @enduml
