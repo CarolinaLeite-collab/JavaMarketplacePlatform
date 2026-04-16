@@ -2,6 +2,10 @@ package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
 
+/**
+ * Number identifying the {@link TOPSECRET.domain.edition.Edition} (e.g., first edition, second edition)
+ */
+
 public class EditionNumber implements ValueObject {
     private final int value;
 

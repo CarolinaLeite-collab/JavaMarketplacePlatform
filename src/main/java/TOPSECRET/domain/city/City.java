@@ -8,7 +8,7 @@ import TOPSECRET.domain.valueobject.CountryId;
 import java.util.Objects;
 
 /**
- * An {@code City} represents a geographical and administrative unit within a {@link Country}.
+ * A {@code City} represents a geographical and administrative unit within a {@link Country}.
  * <p>
  * It is modeled as an {@link AggregateRoot} and is uniquely identified by a {@link CityId}.
  */

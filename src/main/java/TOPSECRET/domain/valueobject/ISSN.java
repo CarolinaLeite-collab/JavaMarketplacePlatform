@@ -3,7 +3,7 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.ValueObject;
 
 /**
- * Represents an ISSN (International Standard Serial Number) for a publication.
+ * Represents an ISSN (International Standard Serial Number) for a magazine.
  * <p>
  * ensures that the ISSN follows the standard
  * format (four digits, a hyphen, three digits, and a check digit which may be 'X').

@@ -14,11 +14,11 @@ import java.util.Objects;
 /**
  * A bid is a monetary offer ('offerPrice') place by a 'bidder' during an 'auction'
  * A 'Bid' contains:
- * - The 'bidder' (User who placed the bid)
- * - The 'offerPrice', which is the amount of money offered
- * - The 'bidDate', timestamp when the bid was placed
+ * - 'bidder': user who placed the `bid`
+ * - 'offerPrice': the amount of money offered in a single `bid` for the item
+ * - 'bidDate': timestamp of when the bid was placed
  *
- *  This class is immutable - once a bid is placed, it cannot be modified.
+ *  A `bid` is immutable; once a bid is placed, it cannot be modified.
  */
 
 public class Bid implements DomainEntity<BidId> {
