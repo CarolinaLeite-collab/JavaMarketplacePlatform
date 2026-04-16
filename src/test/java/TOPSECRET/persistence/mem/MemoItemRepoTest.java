@@ -352,6 +352,33 @@ class MemoItemRepoTest {
         assertEquals(Optional.of(itemDouble), sut.ofIdentity(itemIdDouble));
     }
 
+    @Test
+    void addItemShouldThrowWhenItemAlreadyExists() {
+        // Arrange
+        EditionId editionId = mock(EditionId.class);
+        Condition condition = mock(Condition.class);
+        Description description = mock(Description.class);
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+
+        Item item = mock(Item.class);
+        ItemId itemId = mock(ItemId.class);
+
+        when(factoryDouble.createItem(editionId, condition, description)).thenReturn(item);
+        when(item.identity()).thenReturn(itemId);
+
+        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+
+        repo.save(item);
+
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> repo.addItem(editionId, condition, description)
+        );
+
+        assertEquals("Item already exists", exception.getMessage());
+    }
+
     // ------------------------------------------------------------
     // getDifferentOf
     // ------------------------------------------------------------
