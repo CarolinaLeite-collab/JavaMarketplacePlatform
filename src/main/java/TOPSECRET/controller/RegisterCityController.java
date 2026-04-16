@@ -9,9 +9,6 @@ import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RegisterCityController {
 
     private final ICityRepo _iCityRepo;
