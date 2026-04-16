@@ -6,43 +6,59 @@ import TOPSECRET.domain.repository.ILibraryRepo;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.UserId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller responsible for handling the addition of publications to a user's library.
+ * Controller responsible for managing the addition of publications (items) to a user's library.
  * <p>
- * This controller interacts with the {@link IItemRepo} and {@link ILibraryRepo}
- * to retrieve available publications and to add selected publications to a user's library.
+ * This controller coordinates between the {@link IItemRepo} and {@link ILibraryRepo} to:
+ * <ul>
+ *     <li>Retrieve all available items that are not yet present in any library</li>
+ *     <li>Allow a user to add a selected item to their library, if it is not already assigned</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * It enforces the business rule that an item can only belong to a single library at a time.
  * </p>
  */
 
 public class AddPublicationOnLibraryController {
     private final ILibraryRepo _iLibraryRepo;
-    private final Library _library;
     private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, Library library, IItemRepo iItemRepo, UserId userId) {
+    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = ilibraryRepo;
-        _library = library;
         _iItemRepo = iItemRepo;
     }
 
-    public Library getMyLibrary(UserId userId) {
-        return _iLibraryRepo.findLibraryByUserId(userId);
+    public List<ItemId> getListOfAvailableItemIds(){
+
+        List<ItemId> itemsList = _iItemRepo.findAllKeys();
+        List<ItemId> availableItemIds = new ArrayList<>();
+
+        for (ItemId itemId : itemsList){
+
+            if (!_iLibraryRepo.existsItemIdInAnyLibrary(itemId)){
+                availableItemIds.add(itemId);
+            }
+
+        }
+
+        return availableItemIds;
+
     }
 
-    public List<ItemId> getAllItems() {
-        return _library.getItemsIdInLibrary();
+    public boolean addItemIdToLibrary(ItemId itemId, UserId userId){
+
+        if (_iLibraryRepo.existsItemIdInAnyLibrary(itemId)) return false;
+
+        Library myLibrary = _iLibraryRepo.findLibraryByUserId(userId);
+
+        return myLibrary.addItemIdToLibrary(itemId);
+
     }
 
-    public List<ItemId> getListOfAvailableItems(UserId userId) {
-        Library myLibrary = getMyLibrary(userId);
-        List<ItemId> existentItemIds = myLibrary.getItemsIdInLibrary();
-        return _iItemRepo.getDifferentOf(existentItemIds);
-    }
 
-    public boolean addItemToLibrary(ItemId selectedItemId, UserId userId) {
-        Library myLibrary = getMyLibrary(userId);
-        return myLibrary.addItemIdToLibrary(selectedItemId);
-    }
 }

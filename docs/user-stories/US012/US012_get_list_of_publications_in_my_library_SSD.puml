@@ -29,9 +29,9 @@ title US012 – "As a User, I want to get the list (title, author, type \nand IS
 actor User
 participant ":Mitelovers" as SYSTEM
 
-User -> SYSTEM : Display list of Publications\n in my library
+User -> SYSTEM : Display list of information\n of Items in my library
 activate SYSTEM
-SYSTEM --> User : Publications list displayed\n with details
+SYSTEM --> User : Items details displayed!
 deactivate SYSTEM
 
 
