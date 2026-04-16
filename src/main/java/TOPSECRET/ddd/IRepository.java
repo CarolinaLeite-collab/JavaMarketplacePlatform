@@ -1,10 +1,13 @@
 package TOPSECRET.ddd;
 
+import java.util.List;
 import java.util.Optional;
 
 public abstract interface IRepository<ID extends DomainId, T extends AggregateRoot<ID>> {
 
     public T save(T entity);
+
+    public Iterable<ID> findAllKeys();
 
     public Iterable<T> findAll();
 

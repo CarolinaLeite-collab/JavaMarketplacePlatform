@@ -11,8 +11,6 @@ import java.util.List;
 
 public interface ILibraryRepo extends IRepository<LibraryId, Library> {
 
-    ArrayList<LibraryId> findAllKeys();
-
     Library addLibrary(UserId userId);
 
     Library findLibraryByUserId(UserId userId);

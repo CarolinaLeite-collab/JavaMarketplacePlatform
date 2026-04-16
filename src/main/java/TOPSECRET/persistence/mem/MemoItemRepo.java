@@ -1,10 +1,8 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.repository.IItemRepo;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.item.ItemFactory;
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.domain.valueobject.Description;
 import TOPSECRET.domain.valueobject.EditionId;
@@ -56,12 +54,11 @@ public class MemoItemRepo implements IItemRepo {
         return DATA.containsKey(id);
     }
 
-
+    @Override
     public List<ItemId> findAllKeys(){
 
-        List<ItemId> itemIds = new ArrayList<>(DATA.keySet());
+        return new ArrayList<>(DATA.keySet());
 
-        return itemIds;
     }
 
     @Override

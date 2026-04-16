@@ -490,7 +490,7 @@ class MemoListOfItemsRepoTest {
         MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
 
         // Act
-        ArrayList<ListOfItemsId> keys = repo.findAllKeys();
+        List<ListOfItemsId> keys = repo.findAllKeys();
 
         // Assert
         assertNotNull(keys);
@@ -514,7 +514,7 @@ class MemoListOfItemsRepoTest {
         repo.save(list2);
 
         // Act
-        ArrayList<ListOfItemsId> keys = repo.findAllKeys();
+        List<ListOfItemsId> keys = repo.findAllKeys();
 
         // Assert
         assertAll(
@@ -536,7 +536,7 @@ class MemoListOfItemsRepoTest {
         repo.save(list);
 
         // Act
-        ArrayList<ListOfItemsId> keys = repo.findAllKeys();
+        List<ListOfItemsId> keys = repo.findAllKeys();
         keys.clear(); // modify returned list
 
         // Assert
@@ -560,7 +560,7 @@ class MemoListOfItemsRepoTest {
         repo.save(list2);
 
         // Act
-        ArrayList<ListOfItemsId> keys = repo.findAllKeys();
+        List<ListOfItemsId> keys = repo.findAllKeys();
 
         // Assert
         assertAll(

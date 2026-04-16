@@ -4,6 +4,8 @@ import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.valueobject.GenreId;
 
+import java.util.List;
+
 /**
  * Repository interface for managing {@link Genre} aggregate roots.
  * <p>

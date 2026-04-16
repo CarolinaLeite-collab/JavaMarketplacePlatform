@@ -40,8 +40,8 @@ public class MemoAuctionRepo implements IAuctionRepo {
         return DATA.values();
     }
 
-
-    public ArrayList<AuctionId> findAllKeys() {
+    @Override
+    public List<AuctionId> findAllKeys() {
 
         return new ArrayList<>(DATA.keySet());
     }

@@ -52,7 +52,7 @@ public class MemoLibraryRepo implements ILibraryRepo {
     }
 
     @Override
-    public ArrayList<LibraryId> findAllKeys() {
+    public List<LibraryId> findAllKeys() {
 
         return new ArrayList<>(DATA.keySet());
 

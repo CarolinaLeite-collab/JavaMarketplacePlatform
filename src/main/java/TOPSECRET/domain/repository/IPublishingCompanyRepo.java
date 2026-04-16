@@ -4,6 +4,8 @@ import TOPSECRET.ddd.IRepository;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.PublishingCompanyId;
 
+import java.util.List;
+
 /**
  * Repository interface for managing {@link PublishingCompany} aggregate roots.
  * <p>
