@@ -25,7 +25,7 @@ public class GetAuctionItemsByPublishingCompanyController {
     private final IAuctionRepo _iAuctionRepo;
     private final IItemRepo _iItemRepo;
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
-    public final IEditionRepo _iEditionRepo;
+    private final IEditionRepo _iEditionRepo;
 
     public GetAuctionItemsByPublishingCompanyController(IPublishingCompanyRepo pcr, IItemRepo ir, IEditionRepo er, IAuctionRepo auctionRepo, UserId buyerId) {
         _iPublishingCompanyRepo = pcr;
