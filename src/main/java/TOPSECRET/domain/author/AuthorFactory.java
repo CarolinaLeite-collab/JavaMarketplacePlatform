@@ -1,7 +1,5 @@
 package TOPSECRET.domain.author;
 
-import TOPSECRET.domain.valueobject.AuthorId;
-
 /**
  * Factory responsible for creating {@link Author} instances.
  * <p>

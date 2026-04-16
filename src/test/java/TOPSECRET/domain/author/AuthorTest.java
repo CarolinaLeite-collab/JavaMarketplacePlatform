@@ -2,8 +2,8 @@ package TOPSECRET.domain.author;
 
 import TOPSECRET.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 
 public class AuthorTest {

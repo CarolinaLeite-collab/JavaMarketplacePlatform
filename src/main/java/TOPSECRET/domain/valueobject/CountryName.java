@@ -1,6 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.ValueObject;
+
 import java.util.Locale;
 import java.util.Objects;
 

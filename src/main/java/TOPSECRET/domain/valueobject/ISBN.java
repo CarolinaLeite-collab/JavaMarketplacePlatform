@@ -3,7 +3,7 @@ package TOPSECRET.domain.valueobject;
 import TOPSECRET.ddd.ValueObject;
 
 /**
- * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each published book edition.
+ * International Standard Book Number: an identifier for a book, consisting of a unique numerical code assigned to each book edition published since 1970.
  * There are two types of ISBN:
  * a 10-digit code for books published since 1970
  * and a 13-digit code for books published after 2007.

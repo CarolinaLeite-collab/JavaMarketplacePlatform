@@ -1,7 +1,6 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.publication.Publication;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class GetItemsOnAuctionOfAGivenAuthorControllerTest {

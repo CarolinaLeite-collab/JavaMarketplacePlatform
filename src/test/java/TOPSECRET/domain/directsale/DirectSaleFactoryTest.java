@@ -1,6 +1,5 @@
 package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 
 class DirectSaleFactoryTest {
 

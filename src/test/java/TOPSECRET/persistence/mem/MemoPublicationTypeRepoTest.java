@@ -2,9 +2,7 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.publicationtype.PublicationTypeFactory;
-import TOPSECRET.domain.publishingcompany.PublishingCompany;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
-import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

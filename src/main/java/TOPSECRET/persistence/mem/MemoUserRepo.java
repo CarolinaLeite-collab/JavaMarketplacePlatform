@@ -1,8 +1,8 @@
 package TOPSECRET.persistence.mem;
 
 
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.IUserRepo;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.user.UserFactory;
 import TOPSECRET.domain.valueobject.*;
 

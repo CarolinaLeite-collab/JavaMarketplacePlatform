@@ -1,6 +1,9 @@
 package TOPSECRET.domain.auction;
 
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AuctionTest {
     private List<ItemId> _itemsId;

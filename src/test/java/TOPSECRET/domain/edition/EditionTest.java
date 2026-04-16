@@ -1,6 +1,5 @@
 package TOPSECRET.domain.edition;
 
-import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -4,8 +4,6 @@ import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.List;
-
 /**
  * Controller responsible for retrieving the list of all publication types.
  * <p>

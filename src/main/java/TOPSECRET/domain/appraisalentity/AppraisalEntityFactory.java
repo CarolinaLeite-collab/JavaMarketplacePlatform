@@ -3,6 +3,7 @@ package TOPSECRET.domain.appraisalentity;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;
 import TOPSECRET.domain.valueobject.PublicationTypeId;
+
 import java.util.List;
 
 /**

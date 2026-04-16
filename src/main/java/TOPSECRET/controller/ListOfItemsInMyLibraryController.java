@@ -7,7 +7,8 @@ import TOPSECRET.domain.library.Library;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.*;
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.UserId;
 import TOPSECRET.dto.ItemDetailsDTO;
 import TOPSECRET.mapper.ItemDetailsMapper;
 

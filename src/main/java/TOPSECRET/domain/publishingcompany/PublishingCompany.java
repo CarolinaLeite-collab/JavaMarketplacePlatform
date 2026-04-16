@@ -3,8 +3,6 @@ package TOPSECRET.domain.publishingcompany;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.PublishingCompanyId;
 
-import java.util.Objects;
-
 /**
  * Represents the organization or company that formally releases the work of one edition.
  *

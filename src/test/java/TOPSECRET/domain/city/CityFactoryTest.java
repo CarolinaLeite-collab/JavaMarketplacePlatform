@@ -1,6 +1,5 @@
 package TOPSECRET.domain.city;
 
-import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

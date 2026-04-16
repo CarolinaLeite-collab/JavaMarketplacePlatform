@@ -1,6 +1,7 @@
 package TOPSECRET.domain.publication;
 
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.AuthorId;
+import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Title;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;

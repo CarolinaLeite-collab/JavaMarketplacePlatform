@@ -1,6 +1,5 @@
 package TOPSECRET.domain.item;
 
-import TOPSECRET.domain.valueobject.Condition;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.*;
 

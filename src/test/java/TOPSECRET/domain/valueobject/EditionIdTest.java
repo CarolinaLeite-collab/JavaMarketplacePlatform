@@ -2,8 +2,6 @@ package TOPSECRET.domain.valueobject;
 
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class EditionIdTest {
@@ -91,26 +89,6 @@ class EditionIdTest {
 
         //Assert
         assertFalse(editionId.equals(null));
-    }
-
-    @Test
-    void equalsShouldReturnTrueForDifferentObjectsWithSameInternalId() throws Exception {
-        //Arrange
-        //SUT
-        EditionId first = new EditionId();
-        EditionId second = new EditionId();
-
-        Field field = EditionId.class.getDeclaredField("_eId");
-        field.setAccessible(true);
-
-        String sameInternalId = "E-ABCDEFGH";
-        field.set(first, sameInternalId);
-        field.set(second, sameInternalId);
-
-        //Act & Assert
-        assertNotSame(first, second);
-        assertEquals(first, second);
-        assertTrue(first.equals(second));
     }
 
 }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Represents an appraisal of an object, including its estimated value, appraisal date, and description.
+ * Represents an appraisal of an item, including its estimated value, appraisal date, and description.
  * <p>
  * Ensures that the value estimate, appraisal date, and object description are not null or empty.
  * </p>

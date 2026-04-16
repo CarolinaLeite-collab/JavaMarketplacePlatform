@@ -1,11 +1,7 @@
 package TOPSECRET.domain.publication;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.valueobject.PublicationTypeId;
-import TOPSECRET.domain.valueobject.GenreId;
-import TOPSECRET.domain.valueobject.AuthorId;
-import TOPSECRET.domain.valueobject.PublicationId;
-import TOPSECRET.domain.valueobject.Title;
+import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
 import java.util.Objects;

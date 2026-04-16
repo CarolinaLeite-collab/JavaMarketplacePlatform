@@ -1,9 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-import TOPSECRET.domain.auction.Auction;
-import TOPSECRET.domain.directsale.DirectSale;
-import TOPSECRET.domain.publication.Publication;
 
 /**
  * Represents the unique identifier of an {@link TOPSECRET.domain.item.Item}.

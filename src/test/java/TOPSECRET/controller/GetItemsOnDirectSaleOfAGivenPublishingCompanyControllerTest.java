@@ -3,8 +3,14 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.item.Item;
-import TOPSECRET.domain.repository.*;
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IEditionRepo;
+import TOPSECRET.domain.repository.IItemRepo;
+import TOPSECRET.domain.repository.IPublishingCompanyRepo;
+import TOPSECRET.domain.valueobject.EditionId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
+import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -3,10 +3,8 @@ package TOPSECRET.domain.genre;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.GenreId;
 
-import java.util.Objects;
-
 /**
- * Represents a genre in the MiteLovers domain.
+ * Defines the style or category of a `Publication` (e.g., Fiction, Non-Fiction, Sci-Fi).
  * <p>
  * A {@code Genre} is an Aggregate Root that classifies publications based on
  * shared characteristics like style, form, or content.

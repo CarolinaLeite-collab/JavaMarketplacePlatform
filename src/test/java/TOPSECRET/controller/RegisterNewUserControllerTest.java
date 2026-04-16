@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.*;
 import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

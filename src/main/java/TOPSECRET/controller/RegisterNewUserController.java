@@ -1,8 +1,8 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.repository.IUserRepo;
-import TOPSECRET.domain.valueobject.*;
 import TOPSECRET.domain.user.User;
+import TOPSECRET.domain.valueobject.*;
 
 /**
  * Controller responsible for handling the registration of a {@link User}.

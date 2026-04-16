@@ -3,7 +3,9 @@ package TOPSECRET.domain.directsale;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.author.Author;
 import TOPSECRET.domain.item.Item;
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.DirectSaleId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.Price;
 
 import java.time.Period;
 import java.util.List;

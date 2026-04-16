@@ -1,9 +1,7 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
-import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
@@ -16,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-        import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.*;
 
 class MemoDirectSaleRepoTest {
 

@@ -4,23 +4,28 @@ ___
 ## Table of contents
 
 - [Activity History](#activity-history)
+- [Address](#address)
+- [Appraisal](#appraisal)
 - [Appraisal Entity](#appraisal-entity)
 - [Auction](#auction)
 - [Author](#author)
 - [Bid](#bid)
 - [Bidder](#bidder)
+- [Binding](#binding)
 - [Book](#book)
 - [Buyer](#buyer)
 - [City](#city)
-- [Country](#country)
 - [Community Member](#community-member)
+- [Condition](#condition)
+- [Country](#country)
 - [Direct Sale](#direct-sale)
 - [Edition](#edition)
 - [Genre](#genre)
+- [ISBN](#isbn)
+- [ISSN](#issn)
 - [Item](#item)
 - [Library](#library)
 - [List of Items](#list-of-items)
-- [Listing](#listing)
 - [Logistic Service](#logistic-service)
 - [Magazine](#magazine)
 - [Outright Price](#outright-price)
@@ -35,8 +40,8 @@ ___
 - [Shopping Cart](#shopping-cart)
 - [Social Network](#social-network)
 - [Support Service](#support-service)
-- [Transaction](#transaction)
 - [Title](#title)
+- [Transaction](#transaction)
 - [User](#user)
 - [User Rating](#user-rating)
 - [User Role](#user-role)
@@ -50,28 +55,40 @@ The `Activity History` tracks and saves a `user`'s past actions or transactions 
 
 ___
 
+#### Address
+
+Represents a physical `Address` with details such as street, door number, building type, `City`, district/state, `Country`, and postal code.
+___
+
+#### Appraisal
+
+The `Appraisal` of an `Item`, including its estimated value, appraisal date, and description.
+
+___
+
+
 #### Appraisal Entity
 
-An `appraisal entity` is a registered `user` that is responsible for evaluating the condition, authenticity, or value of an `item` before it is put up for sale.
-Contains the appraisal entity's `name`, the list of `publication type Id's` it can appraise, and the list of `genre Id's` it specializes in.
+A registered `user` that is responsible for evaluating the condition, authenticity, or value of an `item` before it is put up for sale.
+Contains the appraisal entity's `Name`, the list of `PublicationTypeId`s it can appraise, and the list of `GenreId`s it specializes in.
 
 ___
 
 #### Auction
 
- Represents a time-bounded selling mechanism where one or more Items is sold via competitive bidding. 
+ Represents a time-bounded selling mechanism where one or more `Item`(s) (via their `ItemId`(s)) are listed for sale via competitive bidding. 
  An auction is active only within its configured time window: `auctionStartDate` to `auctionEndDate`.
  `Bids` placed during the active period determine the `final sale price` and winning `buyer`.
 
 The `seller` defines the following attributes for an `auction`:
 
-- a `startingPrice`, which is the minimum price required for the first valid bid.
-- a `reservePrice`, which is the minimum acceptable price for the item to be sold; bids below this price do not result in a sale.
-- an `outrightPrice`, which is a `buy now` price that allows immediate purchase without waiting for the auction to end.
-- an `auctionStartDate`, which is the date and time when the auction becomes active.
-- an `auctionEndDate`, which is the date and time when the auction closes.
+- `startingPrice`: minimum price required for the first valid bid
+- `reservePrice`: minimum acceptable price for the Item to be sold; bids below this price do not result in a sale
+- `outrightPrice` (optional): a _buy now_ price that allows immediate purchase without waiting for the auction to end
+- `auctionStartDate`: date and time when the auction becomes active
+- `auctionEndDate`: date and time when the auction closes
 
-Items **cannot** be simultaneously on direct sale (via `shoppingCart`) and on `auction`.
+Items **cannot** be simultaneously on `DirectSale` (e.g., in a `shopping cart`) and on `Auction`.
 
 ___
 
@@ -83,114 +100,148 @@ ___
 
 #### Bid
 
-A `bid` is a monetary offer (`offerPrice`) placed by a `bidder` during an `auction`.
+A monetary offer (`offerPrice`) placed by a `bidder` during an `auction`.
 
 A `Bid` contains:
-- the `bidder`, which is the `user` who placed the bid.
-- the `offerPrice`, which is the amount of money offered in a single `bid` for the item.
-- the `bidDate`, which is the timestamp when the bid was placed
+- `bidder`: the `user` who placed the bid
+- `offerPrice`: the amount of money offered in a single `bid` for the item
+- `bidDate`: timestamp of when the bid was placed
 
-A `bid` is immutable - once a bid is placed, it cannot be modified.
+A `bid` is immutable; once a bid is placed, it cannot be modified.
 
 ___
 
 #### Bidder
 
-A `user` who places `bids` in `auctions`.
+A `user` who places one or more `bid`(s) in an `auction`(s).
+
+___
+
+#### Binding
+
+Represents the way in which an `Edition` is fastened or held together (e.g., Hardcover binding).
 
 ___
 
 #### Book
 
-Is a `publication type` representing a book as a physical item.
+A `PublicationType` representing a `BOOK` as a physical item.
 
-When the publication type is `BOOK`, an `Edition identifier` must be an `ISBN`.
+When the `PublicationType` is `BOOK` and was published during or after 1970, the `BOOK`'s `Edition` `Identifier` will be an `ISBN`. All `Edition`s, regardless of publication date, have a general `EditionId`. 
 
 ___
 
 #### Buyer
 
-A `buyer` is a `user` who purchases items on the platform.
+A `Buyer` is a `User` who purchases `Item`(s) on the platform.
 
-A `buyer` can  provide a `rating` to a `seller` after a confirmed `transaction` between both parts.
+A `Buyer` can  provide a `Rating` to a `Seller` after a confirmed `Transaction` between both parts.
 
 ___
 
 #### City
 
-A `city` represents a geographical and administrative unit within a `country`.
-
-___
-
-#### Country
-
-A `country` represents geographical country identified by its name.
+A `City` represents a geographical and administrative unit within a `Country`.
 
 ___
 
 #### Community Member
 
-Any `user` who participates in community-related activities.
+Any `User` who participates in community-related activities.
 
-`Community members` might engage in forum posts, blog posts or `book` and `magazine` reviews.
+`CommunityMembers` might engage in forum posts, blog posts or `BOOK` and `MAGAZINE` reviews.
 
 ___
 
+#### Condition
+
+Represents the physical condition of a `BOOK` or `MAGAZINE` (e.g., `GOOD`, `POOR`).
+
+___
+
+#### Country
+
+A `Country` represents geographical country identified by its name.
+
+---
+
 #### Direct Sale
 
-Represents a `direct sale` of an `item` with a specified `price` and optional time limit.
+Represents a `DirectSale` of an `Item` with a specified `Price` and optional time limit.
 
 ___
 
 #### Edition
 
-An `edition` models a specific released version of a publication such as a book or magazine, identified by its publication metadata.
+An `Edition` models a specific released version of a `Publication` such as a `BOOK` or `MAGAZINE`, identified by its `Publication` metadata.
 
 It includes both mandatory and optional fields.
 
 Mandatory fields:
-- `publication`, that is the catalog-level metadata capturing the immutable attributes of a publication.
-- `identifier`, that can be `ISBN` (for books) or `ISSN` (for magazines).
-- `publishing company` is the publishing house (i.e. the label) that released the publication.
-- `publishing year`, that is the year in which the edition was published.
-- `language` is the language in which the publication is written. 
+- `PublicationTypeId`: identifies the type of `Publication`(e.g., `BOOK`, `MAGAZINE`)
+- `PublicationId`: identifies the catalog-level metadata capturing the immutable attributes of a `Publication`
+- `Identifier`: may be an `ISBN` (for `BOOK`s published during or after 1970) or an `ISSN` (for `MAGAZINE`s)
+- `PublishingCompanyId`: identifies the `PublishingCompany` that released the `Edition`
+- `Year`: year in which the edition was published
+- `Language`: language in which the publication is written
+- `EditionId`: `Edition`'s automatically generated identity
 
 Optional fields:
-- `dimensions` are the physical dimensions (height, width, and thickness) of a `book` or `magazine`.
-- `weight` is the physical weight of a `book` or `magazine`.
-- `numberOfPages` is the total number of pages of a `book` or `magazine`.
-- `edition number`, the number identifying the edition (e.g., first edition, second edition).
-- `binding` is the type of binding (e.g. hardcover, paperback).
+- `Dimension`: physical dimensions (height, width, and thickness) of a `BOOK` or `MAGAZINE`
+- `Weight`: physical weight of a `BOOK` or `MAGAZINE`
+- `NumberOfPages`: total number of pages of a `BOOK` or `MAGAZINE`
+- `EditionNumber`: number identifying the `Edition` (e.g., first edition, second edition)
+- `Binding`: the type of binding (e.g. hardcover, paperback)
 
 ___
 
 #### Genre
 
-Represents a `genre` in the MiteLovers domain.
+Defines the style or category of a `Publication` (e.g., Fiction, Non-Fiction, Sci-Fi).
+
+___
+
+#### ISBN
+
+International Standard Book Number: an `Identifier` for a `BOOK`, consisting of a unique numerical code assigned to each `BOOK` `Edition` published since 1970.
+* There are two types of ISBN:
+  * a 10-digit code for books published _since_ 1970 
+  * a 13-digit code for books published _after_ 2007
+
+---
+
+#### ISSN
+
+International Standard Serial Number: an `Identifier` for a `MAGAZINE`, consisting of a unique numerical code assigned to each `MAGAZINE` `Edition`.
+
+---
+
+#### Item
+
+`Item` represents a physical or digital unit of a `Publication` available in the system.
+
+It is identified by an `EditionId` and describes a specific instance of a `Publication`through its `Condition` and `Description`. It also maintains its current `SaleStatus` representing its lifecycle within the selling process.
+
+An `Item` can transition between different sale states (e.g., not on sale, on auction, on direct sale, or sold), but it _cannot_ be simultaneously in multiple sale states.
 
 ___
 
 #### Library
 
-A `library` is an entity that groups publications and is owned by a `user`. 
+A `Library` is an entity that holds `Item`(s) (represented by `ItemId`s) owned by a `User`. 
 
-Each `user` can only have one `library`.
-
-___
-
-#### Item
-
-`Item` is an abstract placeholder representing a single sellable physical object, ensuring a listing contains exactly one book or one magazine.
+Each `User` can only have one `Library`.
 
 ___
 
 #### List of Items
 
-A `list of items` represents a list of `items` created by a `user`.
+A `ListOfItems` represents a list of `Items` created by a `User`.
 
-A `user` can create several lists. Each list has a `name`, a `genre`.
-A `user` can only add to a list items that they have in their own `library`.
-By default, all lists are `private`, but they can be made `public`.
+A `User` can create several `ListOfItems`s. Each list has a `Name`, `Genre`, and associated `User`.
+
+A `User` can only add to a `ListOfItems` `Items` that they have in their own `Library`.
+By default, all lists are private, but they can be made public.
 
 ___
 
@@ -198,143 +249,137 @@ ___
 
 An external entity responsible for handling shipment and delivery of sold items.
 
-The `logistic service` might: 
+The `LogisticService` might: 
 
-- generate a `shipping label` for a `transaction` after the `paymentProcessing` is done.
-- It will collect a `package` (the physical `item` prepared for shipping) from a `seller`and deliver it to the `buyer`.
+- generate a `ShippingLabel` for a `Transaction` after the `PaymentProcessing` is done
+- collect a `Package` (of the `Item` prepared for shipping) from a `Seller` and deliver it to the `Buyer`
 
 ___
 
 #### Magazine
 
-Is a `publication type` representing a magazine as a physical item.
+A `PublicationType` representing a `MAGAZINE` as a physical item.
 
-When the publication type is `MAGAZINE`, an `Edition identifier` must be an `ISSN`.
+When the `PublicationType` is `MAGAZINE` its `Edition` `Identifier` will be an `ISSN`. It will also have a general `EditionId`.
 
 ___
 
 #### Outright Price
 
-The `outright price` is a `buy now` price that allows immediate purchase without waiting for the `auction` to end.
+A _buy now_ price that allows immediate purchase without waiting for an `Auction` to end.
 
 ___
 
 #### Payment Processing
 
-A process responsible for handling and confirming monetary exchanges between the `buyer` and the `seller` in `transactions`.
+A process responsible for handling and confirming monetary exchanges between the `Buyer` and the `Seller` in a `Transaction`.
 
 ___
 
 #### Phone Prefix
 
-Represents a phone prefix of a given country.
+Represents a phone prefix of a given country/area.
 
 ___
 
 #### Post
 
-A `post` is an essential part of the `social network`. It is added by a registered `user`.
-A `post` must include a set of `tags` and may include text, photos, videos, or references to specific `publications` shared in a `public list`. 
-A `post` may be open or closed for comments.
+A `Post` is an essential part of the `SocialNetwork`. It is added by a registered `User`.
+
+A `Post` must include a set of `Tags` and may include text, photos, videos, or references to specific `Publication`s shared in a public list.
+
+A `Post` may be open or closed for comments.
 
 ___
 
 #### Price
 
-Represents a monetary price with a specific `value` and a `currency`.
+Represents a monetary price with a specific value and `Currency`.
 
 ___
 
 #### Publication
 
-Catalog-level metadata capturing the immutable attributes of a publication independently of any physical copy.
+Catalog-level metadata capturing the immutable attributes of a `Publication` independent of any physical copy.
 
 `Publication` contains the following attributes:
 
-- `title` is the title of the publication.
-- `author` is the author or main contributor of a publication.
-- `release year` is the year the publication was released.
-- `genre` corresponds to the literary or editorial genre.
+- `PublicationId`: the `Publication`'s identity
+- `Title`: the title of the `Publication`
+- `AuthorId`: identity of the author or main contributor of a publication
+- `Year`: the year the `Publication` was released
+- `GenreId`: identity of the `Publication`'s genre
 
 ___
 
 #### Publication Type
 
-A classification that represents the type of publication (e.g. BOOK, MAGAZINE), used to classify and organize `publications`.
+A classification that represents the type of publication (e.g. `BOOK`, `MAGAZINE`), used to classify and organize `Publication`s.
 
 ___
 
 #### Publishing Company
 
-Represents the organization or company that formally releases one `edition`.
+Represents the organization or company that formally releases an `Edition`.
 
-___
-
-#### User Role
-
-A classification that defines the permissions and responsibilities assigned to a user within the platform. A user may hold one or more roles simultaneously.
-
-`Roles` may include:
-- `USER`, the default role assigned to every user during registration.
-- `ADMIN`, a user with elevated privileges.
-
-___
+---
 
 #### Seller
 
-A `seller` is a `user` who sells `items`.
+A `Seller` is a `User` who sells an `Item`(s).
 
 ___
 
 #### Shopping Cart
 
-A `shopping cart` is a container owned by a `buyer`, used for direct purchases **before checkout**.
+A `ShoppingCart` is a container owned by a `Buyer`, used for direct purchases **before checkout**.
 
-A shopping cart is not binding. The `buyer` might add or remove `listings` at will before proceeding to a purchase (i.e, a `transaction`).
+A `ShoppingCart` is not binding. The `Buyer` might add or remove `Item`(s) at will before proceeding to a purchase (i.e, a `Transaction`).
 
-One `shopping cart` will contain:
+One `shopping cart` may contain:
 
-- one, or several `listings`, that represent all the `items` a `buyer` intends to buy;
-- totalPrice – The total cost of all listings currently in the cart.
+- one or more `item`s a `buyer` intends to buy
+- `TotalPrice`: the total cost of all items currently in the `ShoppingCart`.
 
 ___
 
 #### Social Network
 
-The `social network` is a platform component aiming to enable interaction between registered `users` through content sharing and discussion.
-Only `authors`and `publishing companies`can register to post.
+The `SocialNetwork` is a platform component aiming to enable interaction between registered `Users` through content sharing and discussion.
+
+Only `Author`s and `PublishingCompany` entities can register to post.
 
 ___
 
 #### Support Service
 
-A role played by a `user`, responsible for assisting `buyers`, `sellers` or `bidders` and handling exceptional cases.
+A role played by a `User`, responsible for assisting `Buyer`s, `Seller`s and `Bidder`s and handling exceptional cases.
 
-A `support service` may include:
+A `SupportService` may include:
 
-- `customerSupport`, that handles user inquiries and issues.
-- `disputeMediation`, that manages conflicts between buyers and sellers.
-- `appraisalService`, that provides appraisals upon request. 
-
-___
-
-#### Transaction
-
-A **completed** commercial exchange between `buyer` and `seller`.
-
-A `transaction` may contain a:
-
-- `date` – Date the transaction was finalized.
-- `finalPrice` is the final total price.
-- `shippingLabel`, is composed of shipping documentation (e.g. shipping adress, tracking number, etc.) used by a `logistic service`.
-- `paymentProcessing`, indicates that payment has been handled.
-- `auctionTransactionLimit` represents a constraint related to auction-based transactions.
+- `CustomerSupport`: handles `User` inquiries and issues.
+- `DisputeMediation`: manages conflicts between `Buyers` and `Sellers`
+- `AppraisalService`: provides `Appraisal`s upon request. 
 
 ___
 
 #### Title
 
-Title of a publication.
+Title of a `Publication`.
+
+___
+
+#### Transaction
+
+A **completed** commercial exchange between a `Buyer` and a `Seller`.
+
+A `Transaction` may contain a:
+
+- `Date`: when the transaction was finalized
+- `FinalPrice`: the final total `Price`
+- `ShippingLabel`: composed of shipping documentation (e.g. `ShippingAddress`, `TrackingNumber`, etc.) used by a `LogisticService`
+- `PaymentProcessing`: indicates that payment has been handled
+- `AuctionTransactionLimit`: represents a constraint related to `Auction`-based `Transaction`s
 
 ___
 
@@ -342,26 +387,36 @@ ___
 
 Represents a registered entity (e.g., a person or a company) on the platform that may assume one or more roles.
 
-A user may have the following attributes:
+A `User` may have the following attributes:
 
-- `name`, the full name of the user.
-- `address`, the physical address.
-- `email`, the contact email.
-- `phone`, the contact phone number.
-- `role`, the role or set of roles assigned to the user.
+- `Name`: their full name
+- `Address`: their physical `Address`
+- `Email`: their contact `Email`
+- `Phone`: their contact `Phone` number
+- `Role`: the `Role` or set of `Role`s assigned to the `User`.
 
-A `user` has an `activityHistory`, which records purchases and interactions performed on the platform, and a `rating`, which represents a reputation score based on feedback from `buyers` and `sellers`.
+A `User` has an `ActivityHistory`, which records purchases and interactions performed on the platform, as well as a `Rating`, which represents a reputation score based on feedback from `Buyer`s and `Seller`s.
 
 ___
 
 #### User Rating
 
-Represents a user's rating using a star-based system from one to five stars.
+Represents a `User`'s rating using a star-based system from one to five stars.
+
+___
+
+#### User Role
+
+A classification that defines the permissions and responsibilities assigned to a `User` within the platform. A `User` may hold one or more roles simultaneously.
+
+`Role`s may include:
+- `USER`: the default `Role` assigned to every `User` during registration
+- `ADMIN`: a `User` with elevated privileges
 
 ___
 
 #### Weight
 
-Represents the weight of an object along with an unit of measurement (`WeightUnit`).
+Represents the `Weight` of an object along with its unit of measurement (`WeightUnit`).
 
 ___
