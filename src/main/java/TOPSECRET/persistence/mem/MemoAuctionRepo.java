@@ -24,10 +24,6 @@ public class MemoAuctionRepo implements IAuctionRepo {
     private final Map<AuctionId, Auction> DATA;
     private final AuctionFactory _auctionFactory;
 
-    public MemoAuctionRepo() {
-        this(new AuctionFactory());
-    }
-
     MemoAuctionRepo(AuctionFactory auctionFactory) {
         DATA = new HashMap<>();
         _auctionFactory = auctionFactory;
@@ -42,6 +38,12 @@ public class MemoAuctionRepo implements IAuctionRepo {
     @Override
     public Iterable<Auction> findAll() {
         return DATA.values();
+    }
+
+
+    public ArrayList<AuctionId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
     }
 
     @Override
