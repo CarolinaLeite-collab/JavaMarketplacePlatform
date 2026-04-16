@@ -238,4 +238,21 @@ class AuthorIdTest {
 
     }
 
+    @Test
+    void equalsShouldReturnTrueForSameIdValue() throws Exception {
+        // Arrange
+        AuthorId id1 = new AuthorId("Lev Nikoláievitch Tolstói");
+        AuthorId id2 = new AuthorId("Lev Nikoláievitch Tolstói");
+
+        // Reflection used to force equal _id values, since UUID generation prevents
+        // two instances from sharing the same id through the public API.
+        java.lang.reflect.Field field = AuthorId.class.getDeclaredField("_id");
+        field.setAccessible(true);
+        field.set(id2, field.get(id1));
+
+        // Assert
+        assertTrue(id1.equals(id2));
+    }
+
+
 }
