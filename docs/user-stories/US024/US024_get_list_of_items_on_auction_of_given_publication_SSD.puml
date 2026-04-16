@@ -24,9 +24,9 @@ participant ":Mitelovers" as System
 ' --- System dialog ---
 Buyer -> System: I want the list of items on auction of a given publication
 activate "System"
-System --> Buyer: Which publication?
+System --> Buyer: Select publicationId
 deactivate "System"
-Buyer -> System: publication
+Buyer -> System: publicationId
 activate "System"
 System --> Buyer: Here's the list! done!
 deactivate "System"

@@ -20,55 +20,81 @@ autoactivate off
 actor Buyer
 participant ":GetAuctionItemsByPublicationUI" as UI
 participant ":GetAuctionItemsByPublicationController" as CTL
-participant "_mar:MemoAuctionRepo" as mAR
-participant "auction:Auction" as AU
-participant "item:Item" as IT
+participant ":IPublicationRepo" as PR
+participant ":IAuctionRepo" as AUR
+participant "auction:Auction" as Auction
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
 
 
-
-' --- Dialog ---
-Buyer -> UI: I want the list of items on auction of a given publication
+Buyer -> UI: I want the list of items %n() on auction of a given publication
 activate UI
-UI --> Buyer: Which publication?
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> PR : findAllKeys()
+activate PR
+
+PR --> CTL : publicationIds
+deactivate PR
+
+CTL --> UI : publicationIds
+deactivate CTL
+UI --> Buyer: Select publicationId
 deactivate UI
 Buyer -> UI: publicationId
 activate UI
-UI -> CTL: getAuctionItemsByPublicationId(publicationId)
+
+
+UI -> CTL: getAuctionItemsBy %n() PublicationId(publicationId)
 activate CTL
-CTL -> mAR: getAuctionItemsByPublicationId(publicationId)
-activate mAR
 
-create "listOfAuctionItemsByPublicationId: List<ItemId>" as List
-mAR -> List: <<Create>>()
+CTL -> AUR: findAll()
+activate AUR
 
-loop for each auction in _mar
-    mAR -> AU: isByPublicationId(publicationId)
-    activate AU
-    AU -> IT: isByPublicationId(publicationId)
-    activate IT
-    IT --> AU: true
-    deactivate IT
-    AU --> mAR: true
-    deactivate AU
+AUR --> CTL: auctions
+deactivate AUR
 
+create "listOfItemsOnAuction %n() ByPublication:List<ItemId>" as List
+CTL -->> List : <<Create>>
 
+loop for auction : auctions
+CTL -> Auction : getItemIds()
+activate Auction
+Auction --> CTL : itemIds
+deactivate Auction
 
-    opt isByPublicationId == true
-        mAR -> List: add(auction.getItemId())
-        activate List
-        List --> mAR: true
-        deactivate List
-    end
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+
+CTL -> Edition : hasPublicationId = isByPublicationId(publicationId)
+
+opt hasPublicationId
+CTL -> List : add(itemId)
+activate List
+List --> CTL : true
+deactivate List
+end
+end
 end
 
-create "copyOfListOfAuctionItemsByPublicationId: List<ItemId>" as Copy
-mAR -> Copy: List.copyOf(ListOfAuctionItemsByPublicationId)
 
-
-mAR --> CTL: copyOfListOfAuctionItemsByPublicationId
-deactivate mAR
-CTL --> UI: copyOfListOfAuctionItemsByPublicationId
+CTL --> UI: listOfItemsOnAuctionByPublication
 deactivate CTL
+
 UI --> Buyer: Here's the list! done!
 deactivate UI
 
