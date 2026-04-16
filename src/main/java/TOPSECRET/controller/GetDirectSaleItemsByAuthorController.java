@@ -1,8 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IDirectSaleRepo;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.directsale.DirectSale;
+import TOPSECRET.domain.edition.Edition;
+import TOPSECRET.domain.item.Item;
+import TOPSECRET.domain.publication.Publication;
+import TOPSECRET.domain.repository.*;
+import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.persistence.mem.MemoAuthorRepo;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -15,12 +22,53 @@ import TOPSECRET.domain.valueobject.UserId;
 
 public class GetDirectSaleItemsByAuthorController {
 
-    private IDirectSaleRepo _iDirectSaleRepo;
+    private final IDirectSaleRepo _iDirectSaleRepo;
+    private IItemRepo _iItemRepo;
+    private IAuthorRepo _iAuthorRepo;
+    public IEditionRepo _iEditionRepo;
+    public IPublicationRepo _iPublicationRepo;
 
-    public GetDirectSaleItemsByAuthorController(IDirectSaleRepo dsr, UserId buyerId){
+    public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr, UserId buyerId){
 
+        _iAuthorRepo = ar;
+        _iItemRepo = ir;
+        _iPublicationRepo = pr;
+        _iEditionRepo = er;
         _iDirectSaleRepo = dsr;
 
+    }
+
+    public Iterable<AuthorId> findAllKeys(){
+        Iterable<AuthorId> authorIds = _iAuthorRepo.findAllKeys();
+
+        return authorIds;
+    }
+
+    public List<ItemId> getDirectSaleItemsByAuthorId(AuthorId authorId) {
+
+        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+        List<ItemId> listOfItemsOnDirectSaleByAuthor = new ArrayList<>();
+
+        for(DirectSale directSale: directSales){
+            List<ItemId> itemIds = directSale.getItemsId();
+
+            for(ItemId itemId: itemIds) {
+                Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalStateException("Item not found"));
+
+                EditionId editionId = item.getEditionId();
+
+                Edition edition = _iEditionRepo.ofIdentity(editionId).orElseThrow(() -> new IllegalStateException("Edition not found"));
+
+                PublicationId publicationId = edition.getPublicationId();
+
+                Publication publication = _iPublicationRepo.ofIdentity(publicationId).orElseThrow(() -> new IllegalStateException("Publication not found"));
+
+                if (publication.isByAuthorId(authorId)) {
+                    listOfItemsOnDirectSaleByAuthor.add(itemId);
+                }
+            }
+        }
+        return listOfItemsOnDirectSaleByAuthor;
     }
 
 }
