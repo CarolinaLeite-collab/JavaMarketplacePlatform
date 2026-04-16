@@ -45,8 +45,7 @@ public class City implements AggregateRoot<CityId> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof City other)) return false;
-        return _cityId.equals(other._cityId) &&
-                _countryId.equals(other._countryId);
+        return _cityId.equals(other._cityId);
     }
 
     @Override
