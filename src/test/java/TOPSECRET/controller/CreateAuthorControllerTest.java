@@ -49,27 +49,10 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
 
         // Act
-        Author result = controller.createAuthor("Tolstói", _adminDouble);
+        Author result = controller.createAuthor("Tolstói");
 
         // Assert
         assertEquals(_authorDouble, result);
-
-    }
-
-    @Test
-    void shouldThrowExceptionWhenUserIsNotAdmin() {
-
-        // Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
-
-        // Act
-        Executable action = () -> controller.createAuthor("Tolstói", _adminDouble);
-
-        // Assert
-        assertThrows(SecurityException.class, action);
 
     }
 
@@ -84,28 +67,12 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
 
         // Act
-        controller.createAuthor("   Tolstói   ", _adminDouble);
+        controller.createAuthor("   Tolstói   ");
 
         // Assert
         verify(_iAuthorRepoDouble).addAuthor("Tolstói");
 
     }
 
-    @Test
-    void shouldNotCallRepoWhenUserIsNotAdmin() {
-
-        // Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
-
-        // Act
-        Executable action = () -> controller.createAuthor("Tolstói", _adminDouble);
-
-        // Assert
-        assertThrows(SecurityException.class, action);
-
-    }
 
 }

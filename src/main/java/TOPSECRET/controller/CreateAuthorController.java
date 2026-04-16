@@ -24,11 +24,8 @@ public class CreateAuthorController {
 
     }
 
-    public Author createAuthor (String authorName, User admin){
+    public Author createAuthor (String authorName){
 
-        if (!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not authorized to register authors");
-        }
 
         return _iAuthorRepo.addAuthor(authorName.trim());
 
