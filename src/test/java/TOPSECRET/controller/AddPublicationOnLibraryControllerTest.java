@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class AddPublicationOnLibraryControllerTest {
 
@@ -122,5 +121,27 @@ class AddPublicationOnLibraryControllerTest {
         //Assert
         assertFalse(result);
 
+    }
+
+    @Test
+    void shouldReturnFalseWhenItemAlreadyInLibrary() {
+        // Arrange
+        ItemId itemId = mock(ItemId.class);
+        UserId userId = mock(UserId.class);
+        Library library = mock(Library.class);
+
+        when(_libraryRepoDouble.existsItemIdInAnyLibrary(itemId)).thenReturn(false);
+        when(_libraryRepoDouble.findLibraryByUserId(userId)).thenReturn(library);
+        when(library.addItemIdToLibrary(itemId)).thenReturn(false);
+
+        AddPublicationOnLibraryController ctl =
+                new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userId);
+
+        // Act
+        boolean result = ctl.addItemIdToLibrary(itemId, userId);
+
+        // Assert
+        assertFalse(result);
+        verify(library).addItemIdToLibrary(itemId);
     }
 }

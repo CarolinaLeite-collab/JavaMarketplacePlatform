@@ -1,6 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US027 - As a Buyer, I want to get the list of items on direct sale of a given publisher - CD
+
+title US027 "As a Buyer, I want to get the list of items on direct sale of a given publishing company" - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -14,24 +15,82 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class GetItemsOnDirectSaleOfAGivenPublisherUI {
+class GetDirectSaleItemsByPublishingCompanyUI{}
+
+package "controller" {
+    class GetDirectSaleItemsByPublishingCompanyController {
+        +getDirectSaleItemsByPublishingCompanyId(publishingCompanyId: PublishingCompanyId): List<ItemId>
+        +findAllKeys() : List<PublishingCompanyId>
+    }
+}
+
+package "ddd" {
+    interface IRepository<ID, T> <<Interface>>
+}
+
+package "domain" {
+    package "repository" {
+        interface IPublishingCompanyRepo <<Interface>> {
+            +findAllKeys() : List<PublishingCompanyId>
+        }
+        interface IDirectSaleRepo <<Interface>> {
+            +findAll() : Iterable<DirectSale>
+        }
+        interface IItemRepo <<Interface>> {
+            +ofIdentity(id : ItemId) : Optional<Item>
+        }
+        interface IEditionRepo <<Interface>> {
+            +ofIdentity(id : EditionId) : Optional<Edition>
+        }
+
+    }
+
+    package "valueobject" {
+        class PublishingCompanyId <<Value Object>>
+        class ItemId <<Value Object>>
+        class EditionId <<Value Object>>
+    }
+
+    package "directsale" #b0c4d4 {
+        class DirectSale <<Root>> <<Entity>> {
+            getItemsId() : List<ItemId>
+        }
+    }
+
+    package "item" {
+        class Item <<Root>> <<Entity>> {
+            +getEditionId() : EditionId
+        }
+    }
+
+    package "edition" {
+        class Edition <<Root>> <<Entity>> {
+            +isByPublishingCompanyId(publishingCompanyId : publishingCompanyId) : boolean
+        }
+    }
 
 }
 
-class GetItemsOnDirectSaleOfAGivenPublisherCtl {
-- _dsr : DirectSaleRepo
-+ getDirectSaleItemsByPublisher(publisherName) : List<Item>
-}
+GetDirectSaleItemsByPublishingCompanyUI "1".>"1" GetDirectSaleItemsByPublishingCompanyController : invokes
 
-class DirectSaleRepo {
-+ getDirectSaleItemsByPublisher(publisherName) : List<Item>
-}
+GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IDirectSaleRepo : <<use>>
+GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IItemRepo : <<use>>
+GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IEditionRepo : <<use>>
+GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : <<use>>
 
-class DirectSale {
-+isByPublisher(publisherName) : boolean
-}
+IDirectSaleRepo --|> IRepository
+IItemRepo --|> IRepository
+IEditionRepo --|> IRepository
+IPublishingCompanyRepo --|> IRepository
 
-GetItemsOnDirectSaleOfAGivenPublisherUI "1" ..> "1" GetItemsOnDirectSaleOfAGivenPublisherCtl : invokes
-GetItemsOnDirectSaleOfAGivenPublisherCtl "1" ..> "1" DirectSaleRepo : calls
-DirectSaleRepo "1" --> "*" DirectSale : contains
+IDirectSaleRepo "1" --> "*" DirectSale : manages
+IItemRepo "1" --> "*" Item : manages
+IEditionRepo "1" --> "*" Edition : manages
+
+DirectSale "1" o-- "1..*" ItemId : aggregates
+Item "1" --> "1" EditionId : has
+Item "1" --> "1" ItemId : has
+Edition "1" --> "1" EditionId : has
+Edition "1" --> "1" PublishingCompanyId : has
+
 @enduml

@@ -171,4 +171,46 @@ class PublicationInLibraryForDirectSaleControllerTest {
         // Assert
         verify(_itemDouble).markAsDirectSale();
     }
+
+    @Test
+    void shouldThrowExceptionWhenItemNotFound() {
+        // Arrange
+        ItemId itemId = mock(ItemId.class);
+        List<ItemId> items = List.of(itemId);
+
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
+
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.putItemIdOnDirectSale(items, _priceDouble, _timeLimitDouble)
+        );
+
+        assertTrue(exception.getMessage().contains("Item not found"));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenItemAlreadyOnSale() {
+        // Arrange
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(
+                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+        // Act + Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> controller.putItemIdOnDirectSale(
+                        _itemsId, _priceDouble, _timeLimitDouble)
+        );
+
+        assertTrue(exception.getMessage().contains("already on sale"));
+
+        verify(_iDirectSaleRepoDouble, never()).addDirectSale(any(), any(), any());
+    }
 }

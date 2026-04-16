@@ -23,43 +23,92 @@ autoactivate off
 ' --- Actor and participants ---'
 
 actor Buyer
-participant ": GetAuctionItemsByUI" as UI
-participant "ctl:GetAuctionItemsByGenreController" as Ctl
-participant "ar: MemoAuctionRepo" as AuctionRepo
-participant "auction:Auction" as auction
+participant "UI1: GetAuctionItemsByGenreUI" as UI
+participant "ctl: GetAuctionItemsByGenreController" as CTL
+participant "IGenreRepo" as GR
+participant "ar: IAuctionRepo" as AuctionRepo
+participant "auction: Auction" as Auction
+participant "IItemRepo" as IR
+participant "item: Item" as Item
+participant "IEditionRepo" as ER
+participant "edition: Edition" as Edition
+participant "IPublicationRepo" as PR
+participant "publication: Publication" as Pub
 
-Buyer -> UI: Display list on auction\n items by genre
+Buyer -> UI: I want the list of items %n()on auction of a given genre
 activate UI
-UI --> Buyer: Which genre?
+UI -> CTL:findAllKeys()
+activate CTL
+CTL -> GR:findAllKeys()
+activate GR
+
+GR --> CTL:genreIds
+deactivate GR
+
+CTL --> UI:genreIds
+deactivate CTL
+UI --> Buyer: Select genreId
 deactivate UI
 
-Buyer -> UI: genre
+Buyer -> UI: genreId
 activate UI
 
-UI -> Ctl: getAuctionItemsByGenreId(genreId)
-activate Ctl
+UI -> CTL: getAuctionItemsByGenreId(genreId)
+activate CTL
 
-Ctl -> AuctionRepo: getAuctionItemsByGenreId(genreId)
+CTL -> AuctionRepo: findAll()
 activate AuctionRepo
 
+AuctionRepo --> CTL: auctions
+deactivate AuctionRepo
 
-create "listOfAuction\nItemsByGenreId: List<ItemId>" as List
-AuctionRepo -->> List : <<Create>>
-loop for each Auction in AuctionRepo
-     AuctionRepo -> auction: isByGenreId(genreId)
-    opt isByGenreId == true
-        AuctionRepo -> List: add(auction.getItemId())
-        List --> AuctionRepo :true
+create "listOfItemsOnAuctionByGenre : List<ItemId>" as List
+CTL -->> List : <<Create>>
+
+loop for auction : auctions
+CTL -> Auction : getItemsId()
+activate Auction
+Auction --> CTL : itemsId
+deactivate Auction
+
+loop for itemId : itemsId
+     CTL -> IR: ofIdentity(itemsId)
+     activate IR
+     IR --> CTL : item
+     deactivate IR
+     CTL -> Item : getEditionId()
+     activate Item
+     Item --> CTL : editionId
+     deactivate Item
+
+     CTL -> ER : ofIdentity(editionId)
+     activate ER
+     ER --> CTL : edition
+     deactivate ER
+     CTL -> Edition : getPublicationId()
+     activate Edition
+     Edition --> CTL : publicationId
+     deactivate Edition
+
+     CTL -> PR : ofIdentity(publicationId)
+     activate PR
+     PR --> CTL : publication
+     deactivate PR
+
+     CTL -> Pub : hasGenreId = isByGenreId(genreId)
+
+    opt hasGenreId
+        CTL -> List : add(itemId)
+        activate List
+        List --> CTL : true
+        deactivate List
+        end
     end
 end
 
-create "copyOfListOfAuction\nItemsByGenreId: List<ItemId>" as Copy
-AuctionRepo -> Copy:List.copyOf(listOfAuctionItemsByGenreId)
+CTL --> UI: listOfItemsOnAuctionByGenre
+deactivate CTL
 
-AuctionRepo --> Ctl : copyOfListOfAuctionItemsByGenreId
-deactivate AuctionRepo
-Ctl --> UI: copyOfListOfAuctionItemsByGenreId
-deactivate Ctl
 UI --> Buyer: Here's your list!
 deactivate UI
 

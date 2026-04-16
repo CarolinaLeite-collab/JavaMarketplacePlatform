@@ -3,6 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.directsale.DirectSaleFactory;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
 import TOPSECRET.domain.valueobject.DirectSaleId;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
@@ -55,6 +56,67 @@ class MemoDirectSaleRepoTest {
 
         // Assert
         assertNotNull(dsr);
+    }
+
+    @Test
+    void addDirectSaleShouldWork(){
+        // arrange
+        Price priceDouble = mock(Price.class);
+        when(_factoryDouble.createDirectSale(_itemsId1, priceDouble, _periodDouble)).thenReturn(_ds1Double);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        // act
+        DirectSale result = dsr.addDirectSale(_itemsId1, priceDouble, _periodDouble);
+
+        // assert
+        assertNotNull(result);
+        assertEquals(_ds1Double, result);
+        assertTrue(dsr.containsOfIdentity(_dsIdDouble));
+    }
+
+    @Test
+    void addDirectSaleShouldThrowWhenDirectSaleAlreadyExists(){
+        // arrange
+        Price priceDouble = mock(Price.class);
+        when(_factoryDouble.createDirectSale(_itemsId1, priceDouble, _periodDouble)).thenReturn(_ds1Double);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+
+        //act
+        dsr.save(_ds1Double);
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> dsr.addDirectSale(_itemsId1, priceDouble, _periodDouble)
+        );
+
+        // assert
+        assertEquals("Direct sale already exists!", ex.getMessage());
+    }
+
+    @Test
+    void findAllKeysShouldCorrectlyReturnIds(){
+        //arrange
+        Price priceDouble = mock(Price.class);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+        DirectSaleId dsIdDouble2 = mock(DirectSaleId.class);
+        when(_ds2Double.identity()).thenReturn(dsIdDouble2);
+
+        //SUT
+        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        //act
+        dsr.save(_ds1Double);
+        dsr.save(_ds2Double);
+        List<DirectSaleId> ids = dsr.findAllKeys();
+
+        //assert
+        assertEquals(2, ids.size());
+        assertTrue(ids.contains(_dsIdDouble));
+        assertTrue(ids.contains(dsIdDouble2));
     }
 
     @Test

@@ -34,11 +34,11 @@ hidefootbox
 
 User -> ": Mitelovers" : I want to get the list of items on auction of a given publisher
 activate ": Mitelovers"
-": Mitelovers" --> User : What is the publisher
+": Mitelovers" --> User : Select publishingCompanyId
 deactivate ": Mitelovers"
-User -> ": Mitelovers" : publisher
+User -> ": Mitelovers" : publishingCompanyId
 activate ": Mitelovers"
-": Mitelovers" --> User : Here's the list of items!
+": Mitelovers" --> User : Here's the list of items! Done!
 deactivate ": Mitelovers"
 
 

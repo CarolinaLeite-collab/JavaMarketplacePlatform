@@ -1,79 +1,107 @@
 @startuml
-title US025 – "As a Buyer, I want to get the list of items on direct sale of a given author" - Level 4 SD
+title US025 – "As a Buyer, I want to get the list of items on direct sale of a given author" - SD
 hidefootbox
 
-'==== basic style ====
-skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
-skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ActivationBackgroundColor black
 
 autonumber
 autoactivate off
 
-' --- Actor and participants ---
 actor Buyer
 participant ":GetDirectSaleItemsByAuthorUI" as UI
 participant ":GetDirectSaleItemsByAuthorController" as CTL
-participant "dsr:MemoDirectSaleRepo" as DSR
-participant "directSale:DirectSale" as DS
-participant "item:Item" as IT
-participant "publication:Publication" as PUB
+participant ":IAuthorRepo" as AR
+participant ":IDirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DirectSale
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+participant ":IPublicationRepo" as PR
+participant "publication:Publication" as Publication
 
 
-
-' --- Dialog ---
-Buyer -> UI: I want the list of items on direct sale of a given author
+Buyer -> UI: I want the list of items \non direct sale of a given author
 activate UI
-UI --> Buyer: What is the author's name?
-deactivate UI
-Buyer -> UI: authorName
-activate UI
-UI -> CTL: getDirectSaleItemsByAuthor(authorName)
+UI -> CTL : findAllKeys()
 activate CTL
-CTL -> DSR: getDirectSaleItemsByAuthor(authorName)
+CTL -> AR : findAllKeys()
+activate AR
+
+AR --> CTL : authorIds
+deactivate AR
+
+CTL --> UI : authorIds
+deactivate CTL
+UI --> Buyer: Select authorId
+deactivate UI
+Buyer -> UI: authorId
+activate UI
+
+
+UI -> CTL: getDirectSaleItemsByAuthorId(authorId)
+activate CTL
+
+CTL -> DSR: findAll()
 activate DSR
 
-create "listOfDirectSaleItemsByAuthor: List<Item>" as List
-DSR -->> List: <<Create>>
+DSR --> CTL: directSales
+deactivate DSR
 
-loop for each directSale in dsr
-    DSR -> DS: isByAuthor(authorName)
-    activate DS
-    DS -> IT: isByAuthor(authorName)
-    activate IT
-    IT -> PUB: isByAuthor(authorName)
-    activate PUB
-    PUB --> IT: true
-    deactivate PUB
-    IT --> DS: true
-    deactivate IT
-    DS --> DSR: true
-    deactivate DS
-    DSR -> List: add(directSale.getItem())
-    activate List
-    List --> DSR: true
-    deactivate List
+create "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
+CTL -->> "listOfItemsOnDirectSaleByAuthor:List<ItemId>" : <<Create>>
+
+loop for directSale : directSales
+CTL -> DirectSale : getItemIds()
+activate DirectSale
+DirectSale --> CTL : itemIds
+deactivate DirectSale
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+CTL -> Edition : getPublicationId()
+activate Edition
+Edition --> CTL : publicationId
+deactivate Edition
+
+CTL -> PR : ofIdentity(publicationId)
+activate PR
+PR --> CTL : publication
+deactivate PR
+
+CTL -> Publication : hasAuthorId = isByAuthorId(authorId)
+
+opt hasAuthorId
+CTL -> "listOfItemsOnDirectSaleByAuthor:List<ItemId>" : add(itemId)
+activate "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
+"listOfItemsOnDirectSaleByAuthor:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
+end
+end
 end
 
 
-
-create "copyOfListOfDirectSaleItemsByAuthor: List<Item>" as Copy
-DSR -> Copy: List.copyOf(listOfDirectSaleItemsByAuthor)
-
-'participant "author:Author" as AUT
-
-
-DSR --> CTL: copyOfListOfDirectSaleItemsByAuthor
-deactivate DSR
-CTL --> UI: copyOfListOfDirectSaleItemsByAuthor
+CTL --> UI: listOfItemsOnDirectSaleByAuthor
 deactivate CTL
-UI --> Buyer: Here's the list! done!
+
+UI --> Buyer: Here's the list! Done!
 deactivate UI
 
 @enduml

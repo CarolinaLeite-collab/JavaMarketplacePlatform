@@ -34,9 +34,9 @@ hidefootbox
 
 User -> ": Mitelovers" : I want the list of items on auction of a given genre
 activate ": Mitelovers"
-": Mitelovers" --> User : Which genre?
+": Mitelovers" --> User : Select genreId
 deactivate ": Mitelovers"
-User -> ": Mitelovers" : genreName
+User -> ": Mitelovers" : genreId
 activate ": Mitelovers"
 ": Mitelovers" --> User : Here's the list!
 deactivate ": Mitelovers"

@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MemoAuctionRepoTest {
     private MemoAuctionRepo _repo;
@@ -22,7 +23,9 @@ class MemoAuctionRepoTest {
     private Auction _auctionDouble1;
     private Auction _auctionDouble2;
     private Auction _auctionDouble3;
-    private AuctionId _idDouble;
+    private AuctionId _idDouble1;
+    private AuctionId _idDouble2;
+    private List<AuctionId> _auctionIds;
     private ItemId _itemIdDouble1;
     private ItemId _itemIdDouble2;
     private ItemId _itemIdDouble3;
@@ -49,17 +52,20 @@ class MemoAuctionRepoTest {
         _itemsId3 = new ArrayList<>();
         _itemsId3.add(_itemIdDouble3);
 
+        _idDouble1 = mock(AuctionId.class);
+        _auctionIds = new ArrayList<>();
+        _auctionIds.add(_idDouble1);
+
+        _idDouble2 = mock(AuctionId.class);
+
         _auctionDouble1 = mock(Auction.class);
         when(_auctionDouble1.getItemsId()).thenReturn(_itemsId1);
-        when(_auctionDouble1.identity()).thenReturn(new AuctionId("AU-12345678"));
+        when(_auctionDouble1.identity()).thenReturn(_idDouble1);
         _auctionDouble2 = mock(Auction.class);
         when(_auctionDouble2.getItemsId()).thenReturn(_itemsId2);
-        when(_auctionDouble2.identity()).thenReturn(new AuctionId("AU-12345679"));
+        when(_auctionDouble2.identity()).thenReturn(_idDouble2);
         _auctionDouble3 = mock(Auction.class);
         when(_auctionDouble3.getItemsId()).thenReturn(_itemsId3);
-
-        _idDouble = mock(AuctionId.class);
-        when(_auctionDouble1.identity()).thenReturn(_idDouble);
 
         _startingPriceDouble = mock(Price.class);
         _outrightPriceDouble = mock(Price.class);
@@ -78,94 +84,163 @@ class MemoAuctionRepoTest {
     }
 
     @Test
+    void shouldConstructRepo() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+    }
+
+    @Test
     void saveStoresAndReturnsAuction() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         Auction result = _repo.save(_auctionDouble1);
 
-        // Assert
+        //Assert
         assertSame(_auctionDouble1, result);
-        assertTrue(_repo.containsOfIdentity(_idDouble));
+        assertTrue(_repo.containsOfIdentity(_idDouble1));
+    }
+
+    @Test
+    void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _auctionIds = _repo.findAllKeys();
+
+        //Assert
+        assertTrue(_auctionIds.isEmpty());
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllKeys() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _repo.save(_auctionDouble1);
+        _repo.save(_auctionDouble2);
+
+        _auctionIds = _repo.findAllKeys();
+
+        //Assert
+        assertEquals(2, _auctionIds.size());
+        assertTrue(_auctionIds.contains(_idDouble1));
+        assertTrue(_auctionIds.contains(_idDouble2));
+    }
+
+    @Test
+    void findAllKeysShouldReturnCopyNotAffectingRepo() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+
+        //Act
+        _repo.save(_auctionDouble1);
+
+        _auctionIds = _repo.findAllKeys();
+        _auctionIds.clear();
+
+        //Assert
+        assertTrue(_repo.containsOfIdentity(_idDouble1));
+    }
+
+    @Test
+    void findAllKeysOrderShouldNotBeGuaranteed() {
+        //SUT
+        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+
+        _repo.save(_auctionDouble1);
+        _repo.save(_auctionDouble2);
+
+        //Act
+        _auctionIds = _repo.findAllKeys();
+
+        //Assert
+        assertEquals(2, _auctionIds.size());
+        assertTrue(_auctionIds.contains(_idDouble1));
+        assertTrue(_auctionIds.contains(_idDouble2));
+
     }
 
     @Test
     void ofIdentityReturnsOptionalWithAuctionIfPresent() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         _repo.save(_auctionDouble1);
-        Optional<Auction> result = _repo.ofIdentity(_idDouble);
 
-        // Assert
+        Optional<Auction> result = _repo.ofIdentity(_idDouble1);
+
+        //Assert
         assertTrue(result.isPresent());
         assertSame(_auctionDouble1, result.get());
     }
 
     @Test
     void ofIdentityReturnsEmptyOptionalIfNotPresent() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         Optional<Auction> result = _repo.ofIdentity(mock(AuctionId.class));
 
-        // Assert
+        //Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void containsOfIdentityReturnsTrueWhenPresent() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         _repo.save(_auctionDouble1);
 
-        // Assert
-        assertTrue(_repo.containsOfIdentity(_idDouble));
+        //Assert
+        assertTrue(_repo.containsOfIdentity(_idDouble1));
     }
 
     @Test
     void containsOfIdentityReturnsFalseWhenNotPresent() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         _repo.save(_auctionDouble1);
         AuctionId unknownId = mock(AuctionId.class);
 
-        // Assert
+        //Assert
         assertFalse(_repo.containsOfIdentity(unknownId));
     }
 
     @Test
     void addAuctionWithoutOutrightStoresAuction() {
-        // Arrange
+        //Arrange
         when(_auctionFactoryDouble.createAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble,
                 null, _startDate, _endDate)).thenReturn(_auctionDouble1);
 
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         Auction created = _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
 
-        // Assert
+        //Assert
         assertSame(_auctionDouble1, created);
     }
 
     @Test
     void addAuctionShouldStoreAuctionInRepository() {
-        // SUT
+        //SUT
         _repo = new MemoAuctionRepo(_auctionFactoryDouble);
 
-        // Act
+        //Act
         _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
-        // Assert
+        //Assert
         assertTrue(_repo.findAll().iterator().hasNext());
     }
 }

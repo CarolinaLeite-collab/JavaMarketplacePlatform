@@ -20,16 +20,16 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant "MiteLovers" as System
+participant ":MiteLovers" as System
 
 ' --- System dialog ---
-Buyer -> System: I want to get a list of items on direct sale of a publication
+Buyer -> System: I want to get a list of items on direct sale of a given publication
 activate "System"
-System --> Buyer: Which publication?
+System --> Buyer: Select publicationId
 deactivate "System"
 
-Buyer -> System: publication
+Buyer -> System: publicationId
 activate "System"
-System --> Buyer: List of items of a publication on direct sale displayed
+System --> Buyer: Here's the list! Done!
 deactivate "System"
 @enduml

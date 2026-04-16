@@ -1,63 +1,97 @@
-@@startuml
- title US027 - "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SD
- hidefootbox
+@startuml
+title US027 - "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SD
+hidefootbox
 
- '==== basic style ====
- skinparam monochrome false
- skinparam shadowing false
- skinparam defaultFontName Futura
- skinparam objectFontSize 20
- skinparam backgroundColor CornSilk
- skinparam objectBackgroundColor WhiteSmoke
- skinparam noteBackgroundColor #FFFFE0
- skinparam ArrowFontColor #3B4953
- skinparam ActivationBackgroundColor black
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
 
- autonumber
- autoactivate off
+autonumber
+autoactivate off
 
- ' --- Actor and participants ---
- actor Buyer
- participant ":GetItemsOnDirectSaleOfAGivenPublisherUI" as UI
- participant ":GetItemsOnDirectSaleOfAGivenPublisherCtl" as Ctl
- participant "dsr:DirectSaleRepo" as DirectSaleRepo
- participant "directSale:DirectSale" as DirectSale
+actor Buyer
+participant ":GetDirectSaleItemsByPublishingCompanyUI" as UI
+participant ":GetDirectSaleItemsByPublishingCompanyController" as CTL
+participant ":IPublishingCompanyRepo" as PCR
+participant ":IDirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DirectSale
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
 
- ' --- System dialog ---
- Buyer -> UI: I want a list of items on direct sale of a given publisher
- activate UI
- UI --> Buyer: What is the publisher's name?
- deactivate UI
 
- Buyer -> UI: publisherName
- activate UI
- UI -> Ctl: getDirectSaleItemsByPublisher(publisherName)
- activate Ctl
- Ctl -> DirectSaleRepo: getDirectSaleItemsByPublisher(publisherName)
- activate DirectSaleRepo
+Buyer -> UI: I want the list of items \non direct sale of a given publishing company
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> PCR : findAllKeys()
+activate PCR
 
- create "listOfItemsOnDirectSaleByPublisher:List<Item>" as List
- DirectSaleRepo -> List: create()
+PCR --> CTL : publishingCompanyIds
+deactivate PCR
 
- ' --- Run through each direct sale and check the publisher associated with the corresponding Item ---
- loop for each directSale in dsr
-     DirectSaleRepo -> DirectSale: isByPublisher(publisherName)
-     opt isByPublisher == true
-         DirectSaleRepo -> List: add(directSale.getItem())
-         activate List
-         List -> DirectSaleRepo: true
-         deactivate List
-     end
- end
+CTL --> UI : publishingCompanyIds
+deactivate CTL
+UI --> Buyer: Select publishingCompanyId
+deactivate UI
+Buyer -> UI: publishingCompanyId
+activate UI
 
- create "CopyOfListOfDirectSaleItemsByPublisher: List<Item>" as ListCopy
- DirectSaleRepo -> ListCopy: List.copyOf(listOfItemsOnDirectSaleByPublisher)
- DirectSaleRepo --> Ctl: copyOfListOfItemsOnDirectSaleByPublisher
- deactivate DirectSaleRepo
 
- Ctl --> UI: copyOfListOfItemsOnDirectSaleByPublisher
- deactivate Ctl
- UI --> Buyer: Here it is!
- deactivate UI
+UI -> CTL: getDirectSaleItemsByPublishingCompanyId(publishingCompanyId)
+activate CTL
 
- @enduml
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: directSales
+deactivate DSR
+
+create "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
+CTL -->> "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" : <<Create>>
+
+loop for directSale : directSales
+CTL -> DirectSale : getItemIds()
+activate DirectSale
+DirectSale --> CTL : itemIds
+deactivate DirectSale
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+
+
+CTL -> Edition : hasPublishingCompanyId = isByPublishingCompanyId(publishingCompanyId)
+
+opt hasPublishingCompanyId
+CTL -> "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" : add(itemId)
+activate "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
+"listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
+end
+end
+end
+
+
+CTL --> UI: listOfItemsOnDirectSaleByPublishingCompany
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
+deactivate UI
+
+@enduml

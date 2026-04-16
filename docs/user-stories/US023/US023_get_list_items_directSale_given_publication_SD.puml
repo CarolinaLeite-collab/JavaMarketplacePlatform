@@ -1,73 +1,96 @@
 @startuml
-title "US023 - As a Buyer, I want to get the list of items on direct sale of a given publication" - SD
+title US023 – "As a Buyer, I want to get the list of items on direct sale of a given publication" - SD
 hidefootbox
 
-'==== basic style ====
-skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
-skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #57595BAA
-skinparam ActivationBackgroundColor WhiteSmoke
-
 
 autonumber
 autoactivate off
 
-' --- Actor and participants ---
 actor Buyer
-participant ":GetDirectSaleItems\nByPublicationsUI" as UI
-participant ":GetDirectSaleItems\nByPublicationsController" as Ctl
-participant "_dsRepo:MemoDirectSaleRepo" as dsr
-participant "_ds:DirectSale" as ds
-participant ":Item" as item
-participant ":Publication" as pub
+participant ":GetDirectSaleItemsByPublicationUI" as UI
+participant ":GetDirectSaleItemsByPublicationController" as CTL
+participant ":IPublicationRepo" as PR
+participant ":IDirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DirectSale
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
 
-Buyer -> UI: I want to get a list of items on \ndirect sale of a publication
+
+Buyer -> UI: I want the list of items \non direct sale of a given publication
 activate UI
-UI --> Buyer: Which publication?
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> PR : findAllKeys()
+activate PR
+
+PR --> CTL : publicationIds
+deactivate PR
+
+CTL --> UI : publicationIds
+deactivate CTL
+UI --> Buyer: Select publicationId
 deactivate UI
-
-'publication object
-Buyer -> UI: publication
+Buyer -> UI: publicationId
 activate UI
-UI -> Ctl: getDirectSaleItems\nByPublication(publication)
-activate Ctl
-Ctl -> dsr: getDirectSaleItems\nByPublication(publication)
-activate dsr
-create "listOfDirectSaleItems\nByPublication: List<Item>" as list
 
-dsr -->> list: <<Create>>
-loop for each _ds in _dsRepo
-        dsr -> ds: isByPublication(publication)
-        activate ds
-        ds -> item: isByPublication(publication)
-        activate item
-        item -> pub: equals()
-        activate pub
-        pub --> item: true
-        deactivate pub
-        item --> ds: true
-        deactivate item
-        ds --> dsr: true
-        deactivate ds
-        dsr -> list: add(_ds.getItem())
-        activate list
-        list --> dsr: true
-        deactivate list
 
+UI -> CTL: getDirectSaleItemsByPublicationId(publicationId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: directSales
+deactivate DSR
+
+create "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+CTL -->> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : <<Create>>
+
+loop for directSale : directSales
+CTL -> DirectSale : getItemIds()
+activate DirectSale
+DirectSale --> CTL : itemIds
+deactivate DirectSale
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+
+
+CTL -> Edition : hasPublicationId = isByPublicationId(publicationId)
+
+opt hasPublicationId
+CTL -> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : add(itemId)
+activate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+"listOfItemsOnDirectSaleByPublication:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+end
+end
 end
 
-create "copyOfListOfDirectSale\nItemsByPublication: List<Item>" as copy
-dsr -> copy: List.copyof(listOfDirectSaleItemsByPublication)
-dsr --> Ctl: List.copyOfListOf\nDirectSaleItemsByPublication
-deactivate dsr
-Ctl --> UI: List.copyOfListOf\nDirectSaleItemsByPublication
-deactivate Ctl
-UI --> Buyer: Here is a list of items on \ndirect sale of publication
+
+CTL --> UI: listOfItemsOnDirectSaleByPublication
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
 deactivate UI
+
 @enduml

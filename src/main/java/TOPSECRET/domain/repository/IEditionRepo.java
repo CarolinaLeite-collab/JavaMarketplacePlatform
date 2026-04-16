@@ -5,6 +5,7 @@ import TOPSECRET.domain.edition.Edition;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
+import java.util.List;
 
 public interface IEditionRepo extends IRepository<EditionId, Edition> {
 

@@ -1,5 +1,5 @@
 @startuml
-title US020 - As a user, I want to get a list (name and user) \n of the publicly published lists of a given genre
+title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre - SD
 hidefootbox
 
 '==== basic style ====
@@ -19,55 +19,60 @@ autoactivate off
 
 actor User as U
 participant "UI:GetPublicListsByGenreControllerUI" as UI
-participant "Ctl:GetPublicListsByGenreController" as C
-participant ":IListOfPublicationsRepo" as R
-participant ":ListOfPublications" as lop
+participant "Ctl:GetPublicListsByGenreController" as CTL
+participant "IGenreRepo" as IGR
+participant ":IListOfItemsRepo" as R
+participant ":ListOfItems" as loi
 
 
 U -> UI: I want to get a list (name and user) of the \npublicly published lists of a given genre
 activate UI
-UI --> U: What genre?
+UI -> CTL:findAllKeys()
+activate CTL
+CTL -> IGR:findAllKeys()
+activate IGR
+IGR --> CTL:genreIds
+deactivate IGR
+
+CTL --> UI:genreIds
+deactivate CTL
+
+UI --> U: Select genreId
 deactivate UI
 
-U -> UI: Genre
+U -> UI: genreId
 activate UI
 
-UI -> C: getPublicListsByGenre\n(Genre)
-activate C
+UI -> CTL: getPublicListsByGenreId(GenreId)
+activate CTL
 
-C -> R: findPublicListsByGenre\n(Genre)
+CTL -> R: findAll()
 activate R
 
-create " publicLists : List <ListOfPublications>" as List
-R -> List: <<create>>
-
-
-loop for each _lop in _lopr
-    R -> lop: isPrivate()
-    activate lop
-    R -> lop: getGenre()
-    opt !isPrivate && getGenre(genre)==true
-
-        R -> List : add
-        activate List
-        List --> R : true
-        deactivate List
-
-    end
-end
-deactivate lop
-
-
-
-create "copyOfPublicLists: List<ListOfPublications> <<Create>>" as Copy
-R -> Copy: List.copyOf(publicList)
-R --> C: copyOfPublicLists
+R --> CTL: listOfItemsRepo
 deactivate R
 
-C --> UI: copyOfPublicLists
-deactivate C
+create " publicListOfItemsByGenreId : List <ItemId>" as List
+CTL -> List: <<create>>
 
-UI --> U: shows list (name, user)
+
+loop for listOfItems : allList
+    CTL -> loi: publicList = isPrivate()
+    CTL -> loi: genreId = getGenreId()
+
+    opt publicList && genreId
+        CTL -> List : add
+        activate List
+        List --> CTL : true
+        deactivate List
+    end
+end
+deactivate loi
+
+CTL --> UI: publicListOfItemsByGenreId
+deactivate CTL
+
+UI --> U: Here's your list!
 deactivate UI
 
 @enduml

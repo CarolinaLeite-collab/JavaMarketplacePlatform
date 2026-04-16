@@ -15,44 +15,38 @@ skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
 
-package DOMAIN {
+package domain {
 
-    package AUCTION #b0c4d4 {
+    package auction #b0c4d4 {
 
         class Auction <<Entity>> <<Root>> {
             -ZonedDateTime _auctionStartDate;
             -ZonedDateTime _auctionEndDate;
-            +identity() : AuctionId
-            +sameAs(Object) : boolean
-            +placeBid (userId : UserId, offerPrice : Price) : Bid
-            +getHighestBid() : Bid
+            +getItemsId() : List<ItemId>
+            +getBids() : List<Bid>
+            +getStartingPrice() : Price
+            +getOutrightPrice() : Price
             +finalizeAuction() : void
-            +getItemsId() : ItemId
-            +getBid() : Bid
-            +getStartingPrice()
-            +getOutrightPrice()
-            +isByGenreId(genreId : GenreId) : boolean
-            +isByAuthorId(authorId : AuthorId) : boolean
-            +isByPublicationId(publicationId : PublicationId) : boolean
-            +isByPublishingCompanyId(publisherId : PublishingCompanyId) : boolean
-            -isAuctionStartDateValid(date : ZoneDateTime) : boolean
-            -isAuctionEndDateValid(date : ZoneDateTime) : boolean
-            -isOutrightPriceValid(price : Price) : boolean
+            -isAuctionStartDateValid(auctionStartDate : ZoneDateTime) : boolean
+            -isOutrightPriceValid(outrightPrice : Price) : boolean
             -isReservePriceValid(reservePrice : Price) : boolean
             -isReserveMet (price : Price) : boolean
+            -isAuctionEndDateValid(auctionEndDate : ZoneDateTime) : boolean
+            +placeBid (userId : UserId, offerPrice : Price) : Bid
+            +getHighestBid() : Bid
         }
 
         class Bid <<Entity>> {
             -Instant _BidDate
-            +getBidder()
-            +getOfferPrice()
-            +getBidDate()
-            -validateBidder(UserId)
-            -validateOfferPrice(UserId)
+            +getUserId() : UserId
+            +getOfferPrice() : Price
+            +getBidDate() : Instant
+            -validateBidder(UserId) : void
+            -validateOfferPrice(UserId) : void
         }
 
         class BidFactory <<Factory>> {
-            + createBid(bidderId : UserId, offerPrice : Price) : Bid
+            + createBid(userId : UserId, offerPrice : Price) : Bid
         }
 
         class AuctionFactory <<Factory>> {
@@ -62,19 +56,15 @@ package DOMAIN {
 
     }
 
-    package REPOSITORY {
+    package repository {
 
         interface IAuctionRepo {
             addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
             addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
-            getAuctionItemsByGenreId(genreId : GenreId) :  List<ItemId>
-            getAuctionItemsByAuthorId(authorId : AuthorId) :  List<ItemId>
-            getAuctionItemsByPublicationId(publicationId : PublicationId):  List<ItemId>
-            getAuctionItemsByPublishingCompanyId(publisherId : PublishingCompanyId ):  List<ItemId>
         }
     }
 
-    package VALUEOBJECT {
+    package valueobject {
         class AuctionId <<ValueObject>> #LightPink {
             _id : String
         }
@@ -84,51 +74,50 @@ package DOMAIN {
         class Price <<ValueObject>>
         class ItemId <<ValueObject>>
         class UserId <<ValueObject>>
-        class GenreId <<ValueObject>>
-        class AuthorId <<ValueObject>>
-        class PublicationId <<ValueObject>>
-        class PublishingCompanyId <<ValueObject>>
-
     }
 }
 
-package PERSISTENCE {
+package persistence {
 
-    package MEM {
+    package memo {
         class MemoAuctionRepo <<Repo>>
     }
 }
 
-package DDD {
+package ddd {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity : T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional <T>
+        +containsOfIdentity(id : ID) : boolean
     }
+
+    interface AggregateRoot<ID, T> <<Interface>>
 
     interface DomainEntity<ID> <<Interface>>{
         +identity() : T
         +sameAs(object : Object) : boolean
+    }
 }
 
 MemoAuctionRepo ..|> IAuctionRepo
+MemoAuctionRepo "1" --> "*" AuctionFactory : invokes
 IAuctionRepo "1" --> "*" Auction : manages
 IAuctionRepo --|> IRepository
+AggregateRoot --|> DomainEntity
 AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction "1" *---- "*" Bid : aggregates
-BidFactory "1" ...> "*" Bid : <<create>>
+Auction --|> AggregateRoot
+BidFactory "1" ..> "*" Bid : <<create>>
 MemoAuctionRepo "1" --> "*" Auction : persists
 Auction "1" --> "1" AuctionId : has
-Auction "*" --> "1" UserId : has
-Auction "*" o-- "1..*" ItemId : has
+Auction "*" ..> "1" UserId : references
+Auction "1" o-- "1..*" ItemId : has
 Auction "*" --> "1" Price : has
-Auction "*" .> "1..*" GenreId : references
-Auction "*" .> "*" AuthorId : references
-Auction "*" .> "1..*" PublicationId : references
-Auction "*" .> "1..*" PublishingCompanyId : references
-Bid "*" ...> "1" Price : references
-Bid "*" ....> "1" UserId : references
+Auction ..> BidFactory : <<use>>
+Bid "*" --> "1" Price : has
+Bid "*" ..> "1" UserId : references
 Bid -|> DomainEntity
 Bid "1" --> "1" BidId : has
 
