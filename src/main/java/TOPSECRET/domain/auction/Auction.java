@@ -95,6 +95,23 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     @Override
     public boolean sameAs(Object object) {
+        if (object instanceof Auction) {
+            Auction other = (Auction) object;
+
+            if (Objects.equals(_itemsId, other._itemsId) &&
+                    Objects.equals(_startingPrice, other._startingPrice) &&
+                    Objects.equals(_reservePrice, other._reservePrice) &&
+                    Objects.equals(_outrightPrice, other._outrightPrice) &&
+                    Objects.equals(_auctionStartDate, other._auctionStartDate) &&
+                    Objects.equals(_auctionEndDate, other._auctionEndDate)
+            )
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object object) {
         if (!(object instanceof Auction other)) return false;
         return _auctionId.equals(other._auctionId);
     }
@@ -113,6 +130,14 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     public Price getOutrightPrice() {
         return _outrightPrice;
+    }
+
+    public UserId getUserId() {
+        return _userId;
+    }
+
+    public Price getFinalPrice() {
+        return _finalPrice;
     }
 
     public void finalizeAuction() {

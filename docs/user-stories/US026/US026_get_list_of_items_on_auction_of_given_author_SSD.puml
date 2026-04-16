@@ -23,11 +23,11 @@ participant "MiteLovers" as System
 ' --- System dialog ---
 Buyer -> System: I want a list of Items on auction of a given author
 activate "System"
-System --> Buyer: What's the name of the author?
+System --> Buyer: Select authorId
 deactivate "System"
-Buyer -> System: authorName
+Buyer -> System: authorId
 activate "System"
-System --> Buyer: Here's the list!
+System --> Buyer: Here's the list! Done!
 deactivate "System"
 
 

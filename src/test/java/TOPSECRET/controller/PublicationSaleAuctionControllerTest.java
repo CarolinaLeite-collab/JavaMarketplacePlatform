@@ -35,7 +35,6 @@ class PublicationSaleAuctionControllerTest {
     private Library _libraryDouble2;
     private List<ItemId> _itemsId;
     private ItemId _itemIdDouble;
-    private PublicationSaleAuctionController _controller;
     private Auction _auctionDouble;
     private UserId _userIdDouble;
     private Item _itemDouble;
@@ -157,5 +156,63 @@ class PublicationSaleAuctionControllerTest {
         assertNotNull(result);
         assertSame(_auctionDouble, result);
         verify(_iAuctionRepoDouble).addAuction(_itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+        verify(_itemDouble).markAsAuction();
+    }
+
+    @Test
+    void testPutItemOnAuctionWhenItemDoesNotExist() {
+        // Arrange
+        Price startPrice = mock(Price.class);
+        Price outrightPrice = mock(Price.class);
+        Price reservePrice = mock(Price.class);
+
+        ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
+
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.empty());
+
+        // SUT
+        PublicationSaleAuctionController controller =
+                new PublicationSaleAuctionController(
+                        _iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.putItemOnAuction(
+                        _iItemRepoDouble, _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+        );
+
+        assertTrue(exception.getMessage().contains("Item not found"));
+        verify(_iAuctionRepoDouble, never()).addAuction(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void testPutItemOnAuctionWhenItemIsAlreadyOnSale() {
+        // Arrange
+        Price startPrice = mock(Price.class);
+        Price outrightPrice = mock(Price.class);
+        Price reservePrice = mock(Price.class);
+
+        ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
+        ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
+
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+
+        PublicationSaleAuctionController controller =
+                new PublicationSaleAuctionController(
+                        _iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble
+                );
+
+        // Act + Assert
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> controller.putItemOnAuction(
+                        _iItemRepoDouble, _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+        );
+
+        assertTrue(exception.getMessage().contains("already on sale"));
+        verify(_iAuctionRepoDouble, never()).addAuction(any(), any(), any(), any(), any(), any());
     }
 }

@@ -8,6 +8,7 @@ import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -482,4 +483,91 @@ class MemoListOfItemsRepoTest {
         // Assert
         assertNull(result);
     }
+
+    @Test
+    void findAllKeysShouldReturnEmptyListWhenRepoIsEmpty() {
+        // Arrange
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+
+        // Act
+        List<ListOfItemsId> keys = repo.findAllKeys();
+
+        // Assert
+        assertNotNull(keys);
+        assertTrue(keys.isEmpty());
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllKeysInRepo() {
+        // Arrange
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+
+        ListOfItemsId id1 = mock(ListOfItemsId.class);
+        ListOfItemsId id2 = mock(ListOfItemsId.class);
+
+        when(list1.identity()).thenReturn(id1);
+        when(list2.identity()).thenReturn(id2);
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(list1);
+        repo.save(list2);
+
+        // Act
+        List<ListOfItemsId> keys = repo.findAllKeys();
+
+        // Assert
+        assertAll(
+                () -> assertEquals(2, keys.size()),
+                () -> assertTrue(keys.contains(id1)),
+                () -> assertTrue(keys.contains(id2))
+        );
+    }
+
+    @Test
+    void findAllKeysShouldReturnIndependentList() {
+        // Arrange
+        ListOfItems list = mock(ListOfItems.class);
+        ListOfItemsId id = mock(ListOfItemsId.class);
+
+        when(list.identity()).thenReturn(id);
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(list);
+
+        // Act
+        List<ListOfItemsId> keys = repo.findAllKeys();
+        keys.clear(); // modify returned list
+
+        // Assert
+        assertEquals(1, repo.findAllKeys().size());
+    }
+
+    @Test
+    void findAllKeysShouldMatchStoredIdentitiesExactly() {
+        // Arrange
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+
+        ListOfItemsId id1 = mock(ListOfItemsId.class);
+        ListOfItemsId id2 = mock(ListOfItemsId.class);
+
+        when(list1.identity()).thenReturn(id1);
+        when(list2.identity()).thenReturn(id2);
+
+        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        repo.save(list1);
+        repo.save(list2);
+
+        // Act
+        List<ListOfItemsId> keys = repo.findAllKeys();
+
+        // Assert
+        assertAll(
+                () -> assertEquals(2, keys.size()),
+                () -> assertTrue(keys.contains(id1)),
+                () -> assertTrue(keys.contains(id2))
+        );
+    }
+
 }

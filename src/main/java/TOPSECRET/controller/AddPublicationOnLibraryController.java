@@ -35,7 +35,7 @@ public class AddPublicationOnLibraryController {
 
     public List<ItemId> getListOfAvailableItemIds(){
 
-        List<ItemId> itemsList = _iItemRepo.findAllKeys();
+        Iterable<ItemId> itemsList = _iItemRepo.findAllKeys();
         List<ItemId> availableItemIds = new ArrayList<>();
 
         for (ItemId itemId : itemsList){

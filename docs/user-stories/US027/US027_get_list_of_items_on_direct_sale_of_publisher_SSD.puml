@@ -18,14 +18,14 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor Buyer
-participant "Mitelovers" as System
+participant ":Mitelovers" as System
 
 ' --- System dialog ---
-Buyer -> System: I want to get a list of items on direct sale of given publisher
+Buyer -> System: I want to get a list of items on direct sale of given publishing company
 activate "System"
-System --> Buyer: What is the publisher name
-Buyer -> System: Porto Editora
-System --> Buyer: Done!
+System --> Buyer: Select publishingCompanyId
+Buyer -> System: publishingCompanyId
+System --> Buyer: Here's the list! Done!
 deactivate "System"
 
 @enduml

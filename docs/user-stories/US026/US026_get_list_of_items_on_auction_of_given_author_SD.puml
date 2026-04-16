@@ -1,64 +1,107 @@
 @startuml
-title US026 - "As a Buyer, I want to get the list of items on auction %n() of a given author" - Level 2 SD
+title US026 – "As a Buyer, I want to get the list of items on auction of a given author" - SD
 hidefootbox
 
-'==== basic style ====
-skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
-skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ActivationBackgroundColor black
 
 autonumber
 autoactivate off
 
-' --- Actor and participants ---
 actor Buyer
-participant ":GetItemsOnAuction\nOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuction\nOfAGivenAuthorController" as Ctl
-participant "mAR:MemoAuctionRepo" as AuctionRepo
+participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
+participant ":GetItemsOnAuctionOfAGivenAuthorController" as CTL
+participant ":IAuthorRepo" as AR
+participant ":IAuctionRepo" as DSR
 participant "auction:Auction" as Auction
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+participant ":IPublicationRepo" as PR
+participant "publication:Publication" as Publication
 
-' --- System dialog ---
-Buyer -> UI: I want a list of Items \non auction of a given author
-activate "UI"
-UI --> Buyer: What is the author's name?
-deactivate "UI"
-Buyer -> UI: authorID
-activate "UI"
-UI -> Ctl: getAuctionItems\nByAuthor(authorID)
-activate Ctl
-Ctl -> AuctionRepo: getAuctionItems\nByAuthor(authorID)
-activate "AuctionRepo"
-create "listOfItemsOnAuctionByAuthor:List<Item>" as List
-AuctionRepo -->> List: <<create>>
 
-' --- To run through each auction available and check the name of the author associated with the corresponding Item ---
-loop for each auction in mAR
-    AuctionRepo -> Auction: isByAuthor(authorID)
-'    activate Auction
-'    Auction -> AuctionRepo: true
-'    deactivate Auction
-    opt isByAuthor == true
-        AuctionRepo -> List: add(auction.getItem())
-        activate List
-        List -> AuctionRepo: true
-        deactivate List
-    end
+Buyer -> UI: I want the list of items \non auction of a given author
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> AR : findAllKeys()
+activate AR
+
+AR --> CTL : authorIds
+deactivate AR
+
+CTL --> UI : authorIds
+deactivate CTL
+UI --> Buyer: Select authorId
+deactivate UI
+Buyer -> UI: authorId
+activate UI
+
+
+UI -> CTL: getAuctionItemsByAuthorId(authorId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: auction
+deactivate DSR
+
+create "listOfItemsOnAuctionByAuthor:List<ItemId>"
+CTL -->> "listOfItemsOnAuctionByAuthor:List<ItemId>" : <<Create>>
+
+loop for auction : auctions
+CTL -> Auction : getItemIds()
+activate Auction
+Auction --> CTL : itemIds
+deactivate Auction
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+CTL -> Edition : getPublicationId()
+activate Edition
+Edition --> CTL : publicationId
+deactivate Edition
+
+CTL -> PR : ofIdentity(publicationId)
+activate PR
+PR --> CTL : publication
+deactivate PR
+
+CTL -> Publication : hasAuthorId = isByAuthorId(authorId)
+
+opt hasAuthorId
+CTL -> "listOfItemsOnAuctionByAuthor:List<ItemId>" : add(itemId)
+activate "listOfItemsOnAuctionByAuthor:List<ItemId>"
+"listOfItemsOnAuctionByAuthor:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnAuctionByAuthor:List<ItemId>"
+end
+end
 end
 
-create "copyOfItemsOnAuctionByAuthor: List<Item>" as ListCopy
-AuctionRepo -> ListCopy: List.copyOf(ListOfItemsOnAuctionByAuthor)
-AuctionRepo --> Ctl: copyOf\nListOfItemsOnAuctionByAuthor
-deactivate AuctionRepo
-Ctl --> UI: copyOf\nListOfItemsOnAuctionByAuthor
-deactivate Ctl
-UI --> Buyer: Here's the list!
-deactivate UI
 
+CTL --> UI: listOfItemsOnAuctionByAuthor
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
+deactivate UI
 
 @enduml

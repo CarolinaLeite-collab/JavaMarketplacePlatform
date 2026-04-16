@@ -4,6 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.*;
 
 import java.time.Year;
+import java.util.Objects;
 
 /**
  * Represents a specific released version of a {@link PublicationId},
@@ -219,4 +220,11 @@ public class Edition implements AggregateRoot<EditionId> {
         return _weight;
     }
 
+    public boolean isByPublishingCompanyId(PublishingCompanyId publishingCompanyId) {
+        return Objects.equals(_publishingCompanyId, publishingCompanyId);
+    }
+
+    public boolean isByPublicationId(PublicationId publicationId) {
+        return Objects.equals(_publicationId, publicationId);
+    }
 }

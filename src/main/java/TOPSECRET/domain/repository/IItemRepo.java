@@ -15,5 +15,4 @@ public interface IItemRepo extends IRepository<ItemId, Item> {
 
     List<ItemId> getDifferentOf(List<ItemId> existentItemIds);
 
-    List<ItemId> findAllKeys();
 }

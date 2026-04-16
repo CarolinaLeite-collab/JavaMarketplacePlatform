@@ -1,7 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-
-title US028 "As a Buyer, I want to get the list of items on auction of a given publishing company" - CD
+title US024 - "As a Buyer, I want to get the list of items on auction of a given publication" - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -15,12 +14,13 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class GetAuctionItemsByPublishingCompanyUI{}
+
+class GetAuctionItemsByPublicationUI{}
 
 package "controller" {
-    class GetAuctionItemsByPublishingCompanyController {
-        +getAuctionItemsByPublishingCompanyId(publishingCompanyId: PublishingCompanyId): List<ItemId>
-        +findAllKeys() : List<PublishingCompanyId>
+    class GetAuctionItemsByPublicationController {
+        +getAuctionItemsByPublicationId(publicationId : PublicationId) : List<ItemId>
+        +findAllKeys() : List<PublicationId>
     }
 }
 
@@ -30,8 +30,8 @@ package "ddd" {
 
 package "domain" {
     package "repository" {
-        interface IPublishingCompanyRepo <<Interface>> {
-            +findAllKeys() : List<PublishingCompanyId>
+        interface IPublicationRepo <<Interface>> {
+            +findAllKeys() : List<PublicationId>
         }
         interface IAuctionRepo <<Interface>> {
             +findAll() : Iterable<Auction>
@@ -42,13 +42,12 @@ package "domain" {
         interface IEditionRepo <<Interface>> {
             +ofIdentity(id : EditionId) : Optional<Edition>
         }
-
     }
 
     package "valueobject" {
-        class PublishingCompanyId <<Value Object>>
         class ItemId <<Value Object>>
         class EditionId <<Value Object>>
+        class PublicationId <<Value Object>>
     }
 
     package "auction" #b0c4d4 {
@@ -65,23 +64,22 @@ package "domain" {
 
     package "edition" {
         class Edition <<Root>> <<Entity>> {
-            +isByPublishingCompanyId(publishingCompanyId : publishingCompanyId) : boolean
+            +isByPublicationId() : boolean
         }
     }
-
 }
 
-GetAuctionItemsByPublishingCompanyUI "1".>"1" GetAuctionItemsByPublishingCompanyController : invokes
+GetAuctionItemsByPublicationUI "1".>"1" GetAuctionItemsByPublicationController : invokes
 
-GetAuctionItemsByPublishingCompanyController "1" ..> "1" IAuctionRepo : <<use>>
-GetAuctionItemsByPublishingCompanyController "1" ..> "1" IItemRepo : <<use>>
-GetAuctionItemsByPublishingCompanyController "1" ..> "1" IEditionRepo : <<use>>
-GetAuctionItemsByPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : <<use>>
+GetAuctionItemsByPublicationController "1" ..> "1" IAuctionRepo : <<use>>
+GetAuctionItemsByPublicationController "1" ..> "1" IItemRepo : <<use>>
+GetAuctionItemsByPublicationController "1" ..> "1" IEditionRepo : <<use>>
+GetAuctionItemsByPublicationController "1" ..> "1" IPublicationRepo : <<use>>
 
-IAuctionRepo --|> IRepository
-IItemRepo --|> IRepository
-IEditionRepo --|> IRepository
-IPublishingCompanyRepo --|> IRepository
+IAuctionRepo ---|> IRepository
+IItemRepo ---|> IRepository
+IEditionRepo ---|> IRepository
+IPublicationRepo ---|> IRepository
 
 IAuctionRepo "1" --> "*" Auction : manages
 IItemRepo "1" --> "*" Item : manages
@@ -90,7 +88,8 @@ IEditionRepo "1" --> "*" Edition : manages
 Auction "1" o-- "1..*" ItemId : aggregates
 Item "1" --> "1" EditionId : has
 Item "1" --> "1" ItemId : has
+Edition "1" --> "1" PublicationId : has
 Edition "1" --> "1" EditionId : has
-Edition "1" --> "1" PublishingCompanyId : has
+
 
 @enduml

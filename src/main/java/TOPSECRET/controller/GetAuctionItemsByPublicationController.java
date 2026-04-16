@@ -1,7 +1,13 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IAuctionRepo;
-import TOPSECRET.domain.valueobject.UserId;
+import TOPSECRET.domain.auction.Auction;
+import TOPSECRET.domain.edition.Edition;
+import TOPSECRET.domain.item.Item;
+import TOPSECRET.domain.repository.*;
+import TOPSECRET.domain.valueobject.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller responsible for retrieving auction items filtered by publication.
@@ -12,9 +18,43 @@ import TOPSECRET.domain.valueobject.UserId;
 
 public class GetAuctionItemsByPublicationController {
     private final IAuctionRepo _iAuctionRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final IItemRepo _iItemRepo;
+    private final IEditionRepo _iEditionRepo;
 
-    public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, UserId buyerId){
+    public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, IPublicationRepo iPublicationRepo,
+                                                  IItemRepo iItemRepo, IEditionRepo iEditionRepo, UserId buyerId){
 
         _iAuctionRepo = iAuctionRepo;
+        _iPublicationRepo = iPublicationRepo;
+        _iItemRepo = iItemRepo;
+        _iEditionRepo = iEditionRepo;
+    }
+
+    public Iterable<PublicationId> findAllKeys() {
+        Iterable<PublicationId> publicationIds = _iPublicationRepo.findAllKeys();
+
+        return publicationIds;
+    }
+    public List<ItemId> getAuctionItemsByPublicationId (PublicationId publicationId) {
+        Iterable<Auction> auctions = _iAuctionRepo.findAll();
+        List<ItemId> listOfItemsOnAuctionByPublication = new ArrayList<>();
+
+        for(Auction auction: auctions){
+            List<ItemId> itemIds = auction.getItemsId();
+
+            for(ItemId itemId: itemIds) {
+                Item item = _iItemRepo.ofIdentity(itemId).orElseThrow( () -> new IllegalStateException("Item not found"));
+
+                EditionId editionId = item.getEditionId();
+
+                Edition edition = _iEditionRepo.ofIdentity(editionId).orElseThrow( () -> new IllegalStateException("Edition not found"));
+
+                if (edition.isByPublicationId(publicationId)) {
+                    listOfItemsOnAuctionByPublication.add(itemId);
+                }
+            }
+        }
+        return listOfItemsOnAuctionByPublication;
     }
 }

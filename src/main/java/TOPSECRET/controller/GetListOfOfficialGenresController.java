@@ -1,8 +1,14 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.genre.Genre;
+import TOPSECRET.domain.listofitems.ListOfItems;
 import TOPSECRET.domain.repository.IGenreRepo;
+import TOPSECRET.domain.repository.IListOfItemsRepo;
+import TOPSECRET.domain.valueobject.GenreId;
+import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.UserId;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller responsible for retrieving the list of official genres.
@@ -15,20 +21,36 @@ import TOPSECRET.domain.valueobject.UserId;
 
 public class GetListOfOfficialGenresController {
 
-    private IGenreRepo _iGenreRepo;
+    private final IGenreRepo _iGenreRepo;
+    private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetListOfOfficialGenresController(IGenreRepo igr, UserId userId) {
 
-        _iGenreRepo = igr;
+    public GetListOfOfficialGenresController(IGenreRepo iGenreRepo, IListOfItemsRepo iListOfItemsRepo, UserId userId) {
 
-    }
-
-    public Iterable<Genre> getListOfOfficialGenres(){
-
-        Iterable<Genre> listOfOfficialGenres = _iGenreRepo.findAll();
-
-        return listOfOfficialGenres;
+        _iGenreRepo = iGenreRepo;
+        _iListOfItemsRepo = iListOfItemsRepo;
 
     }
 
+    public Iterable<GenreId> findAllKeys() {
+        Iterable<GenreId> genreIds = _iGenreRepo.findAllKeys();
+
+        return genreIds;
+    }
+
+    public List<ItemId> getPublicListsByGenreId(GenreId genreId) {
+        Iterable<ListOfItems> allList = _iListOfItemsRepo.findAll();
+        List<ItemId> publicListOfItemsByGenreId = new ArrayList<>();
+
+        for(ListOfItems listOfItems: allList) {
+            boolean publicList = !listOfItems.isPrivate();
+            boolean sameGenre = listOfItems.getGenreId().equals(genreId);
+
+            if (publicList && sameGenre) {
+                publicListOfItemsByGenreId.addAll(listOfItems.getItemIds());
+            }
+        }
+
+        return publicListOfItemsByGenreId;
+    }
 }

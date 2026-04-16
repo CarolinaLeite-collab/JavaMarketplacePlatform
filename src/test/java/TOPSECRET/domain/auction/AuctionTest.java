@@ -4,7 +4,6 @@ import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -45,24 +44,16 @@ class AuctionTest {
     void shouldCreateAuctionWithoutOutrightPrice() {
         // Act
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd);
-
-        // Assert
-        assertNotNull(auction);
-        assertEquals(_itemsId, auction.getItemsId());
     }
 
     @Test
     void shouldCreateAuctionWithOutrightPrice() {
         // Act
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
-
-        // Assert
-        assertNotNull(auction);
-        assertEquals(_itemsId, auction.getItemsId());
     }
 
     @Test
-    void shouldThrowExceptionWhenReservePriceEquals_startingPrice() {
+    void shouldCreateAuctionWhenReservePriceEqualsStartingPrice() {
         // Arrange
         when(_reservePriceDouble.getValue()).thenReturn(10.0);
 
@@ -74,7 +65,19 @@ class AuctionTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenReservePriceIsLowerThan_startingPrice() {
+    void shouldCreateAuctionWhenReservePriceHigherStartingPrice() {
+        // Arrange
+        when(_reservePriceDouble.getValue()).thenReturn(50.0);
+
+        // Act
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd);
+
+        // Assert
+        assertNotNull(auction);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenReservePriceIsLowerThanStartingPrice() {
         // Arrange
         when(_reservePriceDouble.getValue()).thenReturn(5.0);
 
@@ -84,7 +87,7 @@ class AuctionTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenEndDateIsBefore_startDate() {
+    void shouldThrowExceptionWhenEndDateIsBeforeStartDate() {
         // Arrange
         ZonedDateTime endBefore_start = ZonedDateTime.of(2026, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
 
@@ -114,7 +117,7 @@ class AuctionTest {
     }
 
     @Test
-    void shouldReturnAuctionId() {
+    void identityShouldReturnAuctionId() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
@@ -127,20 +130,49 @@ class AuctionTest {
     }
 
     @Test
-    void shouldReturnFalseWhenIdsAreDifferent() {
+    void sameAsShouldReturnTrueWhenAllFieldsAreEqual() {
+        // Arrange
+        Auction auction1 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction2 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
+
+        assertTrue(auction1.sameAs(auction2));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenStartingPriceIsDifferent() {
+        // Arrange
+        Price otherPrice = mock(Price.class);
+
+        Auction auction1 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
+        Auction auction2 = new Auction(_itemsId, otherPrice, _reservePriceDouble, _start, _end);
+
+        assertFalse(auction1.sameAs(auction2));
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenSameInstance() {
+        // Arrange
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
+
+        // Act & Assert
+        assertTrue(auction.equals(auction));
+    }
+
+    @Test
+    void equalsShouldReturnFalseWhenIdsAreDifferent() {
         // Arrange
         Auction auction1 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
         Auction auction2 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Act
-        boolean result = auction1.sameAs(auction2);
+        boolean result = auction1.equals(auction2);
 
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void shouldReturnFalseWhenObjectIsNull() {
+    void equalsShouldReturnFalseWhenObjectIsNull() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
@@ -149,16 +181,28 @@ class AuctionTest {
     }
 
     @Test
-    void shouldReturnFalseWhenObjectIsDifferentType() {
+    void equalsShouldReturnFalseWhenObjectIsDifferentType() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end);
 
         // Assert
-        assertFalse(auction.sameAs("not an auction"));
+        assertFalse(auction.equals("not an auction"));
     }
 
     @Test
-    void shouldReturnStartingPrice() {
+    void getShouldReturnItemIdList() {
+        // Arrange
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd);
+
+        // Act
+        List<ItemId> result = auction.getItemsId();
+
+        // Assert
+        assertEquals(_itemsId, result);
+    }
+
+    @Test
+    void getShouldReturnStartingPrice() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _auctionStart, _auctionEnd);
 
@@ -170,7 +214,7 @@ class AuctionTest {
     }
 
     @Test
-    void shouldReturnOutrightPriceWhenDefined() {
+    void getShouldReturnOutrightPriceWhenDefined() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _auctionStart, _auctionEnd);
 
@@ -182,7 +226,7 @@ class AuctionTest {
     }
 
     @Test
-    void shouldReturnNullOutrightPriceWhenNotDefined() {
+    void getOutrightPriceShouldReturnNullOutrightPriceWhenNotDefined() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, null, _auctionStart, _auctionEnd);
 
@@ -360,5 +404,27 @@ class AuctionTest {
         // Assert
         Bid highest = auction.getHighestBid();
         assertEquals(60.0, highest.getOfferPrice().getValue());
+    }
+
+    @Test
+    void finalizeAuctionShouldSetWinnerWhenReserveIsMet() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+        Price bidPrice = mock(Price.class);
+        when(bidPrice.getValue()).thenReturn(100.0);
+        when(bidPrice.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
+
+        auction.placeBid(user, bidPrice);
+
+        // Act
+        auction.finalizeAuction();
+
+        // Assert
+        assertEquals(user, auction.getUserId());
+        assertEquals(bidPrice, auction.getFinalPrice());
     }
 }

@@ -1,5 +1,6 @@
 package TOPSECRET.domain.edition;
 
+import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1060,5 +1061,80 @@ class EditionTest {
         assertNotNull(edition1.identity());
         assertNotNull(edition2.identity());
         assertNotEquals(edition1.identity(), edition2.identity());
+    }
+
+    @Test
+    void isByPublicationIdSamePublicationReturnsTrue() {
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublicationId(_publicationIdDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+    @Test
+    void isByPublicationIdDifferentPublicationReturnsFalse() {
+        // Arrange
+        PublicationId otherPublicationIdDouble = mock(PublicationId.class);
+
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublicationId(otherPublicationIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByPublicationIdNullReturnsFalse() {
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublicationId(null);
+
+        // Assert
+        assertFalse(result);
+    }
+    @Test
+    void isByPublishingCompanyIdSamePublishingCompanyReturnsTrue() {
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublishingCompanyId(_publishingCompanyIdDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+    @Test
+    void isByPublishingCompanyIdDifferentPublishingCompanyReturnsFalse() {
+        // Arrange
+        PublishingCompanyId otherPublishingCompanyIdDouble = mock(PublishingCompanyId.class);
+
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublishingCompanyId(otherPublishingCompanyIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isByPublishingCompanyIdNullReturnsFalse() {
+        // SUT
+        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+
+        // Act
+        boolean result = e.isByPublishingCompanyId(null);
+
+        // Assert
+        assertFalse(result);
     }
 }
