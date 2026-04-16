@@ -16,9 +16,9 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "COUNTRY" <<Folder>> #b0c4d4 {
+    Package "country" <<Folder>> #b0c4d4 {
         class Country <<Entity>> <<Root>> {
             +identity() : CountryId
             +name() : CountryName
@@ -30,7 +30,7 @@ Package "DOMAIN" {
         }
     }
 
-    Package "VALUEOBJECT" <<Folder>> {
+    Package "valueobject" <<Folder>> {
         class CountryId <<ValueObject>> #LightPink {
         }
 
@@ -38,29 +38,38 @@ Package "DOMAIN" {
         }
     }
 
-    Package "REPOSITORY" <<Folder>> {
+    Package "repository" <<Folder>> {
         interface ICountryRepo <<Interface>> {
             +addCountry(String) : Country
         }
     }
 
     ' Layout adjustments
-    COUNTRY -[hidden]right- REPOSITORY
-    VALUEOBJECT -[hidden]right- REPOSITORY
-    COUNTRY -[hidden]down- VALUEOBJECT
+    country -[hidden]right- REPOSITORY
+    valueobject -[hidden]right- repository
+    country -[hidden]down- valueobject
 }
 
 Package "ddd" {
     interface "IRepository<ID, T>" as IRepository <<Interface>> {
-        +save(T) : T
+        +save(entity: T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface AggregateRoot <ID >{
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
     }
 }
 
-Package "PERSISTENCE" {
-    package "MEM" {
+Package "persistence" {
+    package "mem" {
         class MemoCountryRepo <<Repo>> {
         }
     }
@@ -69,13 +78,17 @@ Package "PERSISTENCE" {
 ' ===== Relations =====
 
 CountryFactory "1" <-- "1" MemoCountryRepo : invokes
-Country "1" --> "1" CountryId : has
-Country "1" *-- "1" CountryName : has
+Country "1" ..> "1" CountryId : references
+Country "1" --> "1" CountryName : has
 
 ICountryRepo -|> IRepository
 MemoCountryRepo ..|> ICountryRepo
 Country "*" <- "1" MemoCountryRepo : persists
 
 CountryFactory ..> Country : <<create>>
+
+AggregateRoot -|> DomainEntity
+Country .|> AggregateRoot
+
 
 @enduml
