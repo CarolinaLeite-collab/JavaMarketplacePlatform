@@ -136,8 +136,8 @@ package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
         findAll() : Iterable<T>
-        ofIdentity(ID) : Optional<T>
-        containsOfIdentity(ID) : boolean
+        ofIdentity(id: ID) : Optional<T>
+        containsOfIdentity(id : ID) : boolean
     }
 
 }

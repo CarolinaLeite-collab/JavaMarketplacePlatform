@@ -92,15 +92,15 @@ package "persistence"  {
 Package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
-    save(T) : T
+    save(entity : T) : T
     findAll() : Iterable<T>
     findAllKeys() : Iterable<ID>
-    ofIdentity(ID) : Optional <T>
-    containsOfIdentity(ID) : boolean
+    ofIdentity(id : ID) : Optional <T>
+    containsOfIdentity(id : ID) : boolean
     }
     interface DomainEntity<ID> <<Interface>>{
     +identity() : ID
-    +sameAs(Object) : boolean
+    +sameAs(object : Object) : boolean
     }
     interface AggregateRoot<ID> <<Interface>>{}
 

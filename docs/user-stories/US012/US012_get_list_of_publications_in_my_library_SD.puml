@@ -61,7 +61,7 @@ Ctl -> ItRepo: ofIdentity(itemId)
 activate ItRepo
 ItRepo --> Ctl : item
 deactivate ItRepo
-Ctl -> EdRepo : ofIdentity(item.get_editionId())
+Ctl -> EdRepo : ofIdentity(item.getEditionId())
 activate EdRepo
 EdRepo --> Ctl : edition
 deactivate EdRepo
