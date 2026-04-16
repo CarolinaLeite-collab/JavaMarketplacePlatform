@@ -31,10 +31,10 @@ import java.util.List;
 
 
 public class GetDirectSaleItemsByPublicationsController {
-    private IItemRepo _iItemRepo;
-    private IPublicationRepo _iPublicationRepo;
-    private IEditionRepo  _iEditionRepo;
-    private IDirectSaleRepo _iDirectSaleRepo;
+    private final IItemRepo _iItemRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final IEditionRepo  _iEditionRepo;
+    private final IDirectSaleRepo _iDirectSaleRepo;
 
     public GetDirectSaleItemsByPublicationsController(IPublicationRepo pr, IItemRepo ir, IEditionRepo er, IDirectSaleRepo dsr, UserId buyerId){
         _iPublicationRepo = pr;

@@ -24,9 +24,9 @@ import java.util.List;
 public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
-    private IItemRepo _iItemRepo;
-    private IPublishingCompanyRepo _iPublishingCompanyRepo;
-    public IEditionRepo _iEditionRepo;
+    private final IItemRepo _iItemRepo;
+    private final IPublishingCompanyRepo _iPublishingCompanyRepo;
+    public final IEditionRepo _iEditionRepo;
 
     public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IPublishingCompanyRepo pcr, IItemRepo ir, IEditionRepo er, IDirectSaleRepo directSaleRepo, UserId buyerId) {
         _iPublishingCompanyRepo = pcr;
