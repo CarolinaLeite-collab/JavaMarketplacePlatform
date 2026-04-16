@@ -25,8 +25,8 @@ public class GetDirectSaleItemsByAuthorController {
     private final IDirectSaleRepo _iDirectSaleRepo;
     private final IItemRepo _iItemRepo;
     private final IAuthorRepo _iAuthorRepo;
-    public final IEditionRepo _iEditionRepo;
-    public final IPublicationRepo _iPublicationRepo;
+    private final IEditionRepo _iEditionRepo;
+    private final IPublicationRepo _iPublicationRepo;
 
     public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr, UserId buyerId){
 
