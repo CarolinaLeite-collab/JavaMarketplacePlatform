@@ -60,7 +60,7 @@ package "domain" {
 }
 
 package "persistence"  {
-    package "mem" {
+    package "memo" {
 
         class MemoGenreRepo {
         }
@@ -72,8 +72,16 @@ package ddd {
      interface IRepository<ID, T> <<Interface>> {
         save(entity:T) : T
         findAll() : Iterable<T>
+        findAllKeys () : List <ID>
         ofIdentity(id: ID) : Optional <T>
         containsOfIdentity(id: ID) : boolean
+        }
+
+        interface AggregateRoot <ID >{
+         }
+        interface DomainEntity<ID, T> <<Interface>> {
+                +identity() : ID
+                +sameAs(object:Object) : boolean
         }
 
 }
@@ -91,5 +99,8 @@ GenreFactory "1" ..> "*" Genre : <<create>>
 Genre "1" ---> "1" GenreId: has
 
 IGenreRepo --|> IRepository
+
+AggregateRoot -|> DomainEntity
+Genre .|> AggregateRoot
 
 @enduml

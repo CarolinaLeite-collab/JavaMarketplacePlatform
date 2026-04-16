@@ -11,8 +11,6 @@ import TOPSECRET.domain.valueobject.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +22,7 @@ class RegisterCityControllerTest {
     private ICityRepo _iCityRepoDouble;
     private ICountryRepo _iCountryRepoDouble;
     private CityFactory _cityFactoryDouble;
-    private Country _countryDouble;
+    private CountryId _countryIdDouble;
     private City _cityDouble;
     private User _adminDouble;
     private User _nonAdminDouble;
@@ -34,7 +32,7 @@ class RegisterCityControllerTest {
         _iCityRepoDouble = mock(ICityRepo.class);
         _iCountryRepoDouble = mock(ICountryRepo.class);
         _cityFactoryDouble = mock(CityFactory.class);
-        _countryDouble = mock(Country.class);
+        _countryIdDouble = mock(CountryId.class);
         _cityDouble = mock(City.class);
         _adminDouble = mock(User.class);
         _nonAdminDouble = mock(User.class);
@@ -45,41 +43,50 @@ class RegisterCityControllerTest {
 
     @Test
     void shouldConstructController() {
+        //SUT
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
+        //Assert
         assertNotNull(controller);
     }
 
     @Test
     void constructorWithRepositoriesDoesNotThrow() {
+        //Act & Assert
         assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble));
     }
 
     @Test
     void shouldAllowAdminToCreateController() {
+        //Act & Assert
         assertDoesNotThrow(() -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble));
     }
 
     @Test
     void shouldRejectNonAdminUser() {
+        //Act & Assert
         assertThrows(SecurityException.class,
                 () -> new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _nonAdminDouble));
     }
 
     @Test
     void registerCityCallsRepoAndReturnsCreatedCity() {
-        CountryId countryId = new CountryId("PT");
-        when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        doReturn(_cityDouble).when(_iCityRepoDouble).addCity(any(City.class));
+        //Arrange
+        Country countryDoble = mock(Country.class);
+        when(_cityFactoryDouble.createCity("Porto", _countryIdDouble)).thenReturn(_cityDouble);
+        when(_iCityRepoDouble.addCity(any(City.class))).thenReturn(_cityDouble);
+        when(_iCountryRepoDouble.ofIdentity(_countryIdDouble)).thenReturn(Optional.of(countryDoble));
 
+        //SUT
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
-        City result = controller.registerCity("Porto", countryId);
+        //Act
+        City result = controller.registerCity("Porto", _countryIdDouble);
 
+        //Assert
         assertSame(_cityDouble, result);
-        verify(_iCountryRepoDouble).ofIdentity(countryId);
-        verify(_cityFactoryDouble).createCity("Porto", _countryDouble);
+        verify(_iCountryRepoDouble).ofIdentity(_countryIdDouble);
+        verify(_cityFactoryDouble).createCity("Porto", _countryIdDouble);
         verify(_iCityRepoDouble).addCity(_cityDouble);
     }
 
@@ -96,30 +103,14 @@ class RegisterCityControllerTest {
 
     @Test
     void registerCityShouldThrowWhenCityAlreadyExists() {
-        CountryId countryId = new CountryId("PT");
-        when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
+        when(_cityFactoryDouble.createCity("Porto", _countryIdDouble)).thenReturn(_cityDouble);
         when(_iCityRepoDouble.addCity(any(City.class)))
                 .thenThrow(new IllegalStateException("City already exists for this country"));
 
         RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
 
-        assertThrows(IllegalStateException.class,
-                () -> controller.registerCity("Porto", countryId));
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerCity("Porto", _countryIdDouble));
     }
 
-    @Test
-    void registerCityWithCountryObjectDelegatesToCountryId() {
-        CountryId countryId = new CountryId("PT");
-        when(_countryDouble.identity()).thenReturn(countryId);
-        when(_iCountryRepoDouble.ofIdentity(countryId)).thenReturn(Optional.of(_countryDouble));
-        when(_cityFactoryDouble.createCity("Porto", _countryDouble)).thenReturn(_cityDouble);
-        doReturn(_cityDouble).when(_iCityRepoDouble).addCity(any(City.class));
-
-        RegisterCityController controller = new RegisterCityController(_iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminDouble);
-
-        City result = controller.registerCity("Porto", _countryDouble);
-
-        assertSame(_cityDouble, result);
-    }
 }

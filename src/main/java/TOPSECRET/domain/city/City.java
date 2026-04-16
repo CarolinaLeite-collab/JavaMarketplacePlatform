@@ -3,30 +3,37 @@ package TOPSECRET.domain.city;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CityId;
+import TOPSECRET.domain.valueobject.CountryId;
 
 import java.util.Objects;
+
+/**
+ * An {@code City} represents a geographical and administrative unit within a {@link Country}.
+ * <p>
+ * It is modeled as an {@link AggregateRoot} and is uniquely identified by a {@link CityId}.
+ */
 
 public class City implements AggregateRoot<CityId> {
 
     private final String _name;
-    private final Country _country;
+    private final CountryId _countryId;
     private final CityId _cityId;
 
-    City(String name, Country country) {
+    City(String name, CountryId countryId) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("City name cannot be null or blank");
         }
-        _country = Objects.requireNonNull(country, "Country cannot be null");
+        _countryId = Objects.requireNonNull(countryId, "CountryId cannot be null");
         _name = name.trim().replaceAll("\\s+", " ");
-        _cityId = new CityId(_name, country.identity());
+        _cityId = new CityId(_name, _countryId);
     }
 
     public String getName() {
         return _name;
     }
 
-    public Country getCountry() {
-        return _country;
+    public CountryId getCountryId() {
+        return _countryId;
     }
 
     @Override
@@ -34,6 +41,7 @@ public class City implements AggregateRoot<CityId> {
         return _cityId;
     }
 
+    //Field-base equality
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof City other)) return false;
@@ -54,6 +62,6 @@ public class City implements AggregateRoot<CityId> {
 
     @Override
     public String toString() {
-        return _name + ", " + _country.getCountryName();
+        return _name + ", " + _countryId.toString();
     }
 }

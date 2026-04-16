@@ -20,7 +20,7 @@
     actor Administrator
     participant ":AddGenreUI" as UI
     participant ":AddGenreController" as Ctl
-    participant ":MemoGenreRepo" as gr
+    participant ":MemGenreRepo" as gr
     participant ":GenreFactory" as gf
 
     Administrator -> UI: I want to add a publication genre
@@ -43,7 +43,8 @@
     gf --> gr : genreName
     deactivate gf
 
-    opt containsOfIdentity(genreName.identity()) == false
+    gr -> gr : isRepeated = containsOfIdentity(genreName.identity())
+    opt !isRepeated
             gr -> gr: save(genreName)
     end
 

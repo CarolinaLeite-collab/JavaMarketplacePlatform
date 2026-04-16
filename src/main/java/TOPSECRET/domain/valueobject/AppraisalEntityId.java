@@ -1,7 +1,7 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.appraisalentity.AppraisalEntity;
 
 
 /**

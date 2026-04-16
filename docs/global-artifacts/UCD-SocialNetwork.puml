@@ -1,0 +1,77 @@
+@startuml
+
+'==== Title ====
+title MiteLovers – Social Network - UCD
+left to right direction
+
+'==== basic style ====
+
+'hides unwanted text
+hide stereotype
+
+skinparam monochrome false
+
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor #D5E8D4
+skinparam rectangle {
+    backgroundColor CornSilk
+}
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+'undefined objects
+skinparam object {
+  BackgroundColor<<highlight>> 91C6BCAA
+  BorderColor<<highlight>> 4B9DA9AA
+  FontColor<<highlight>> 547792AA
+}
+skinparam shadowing<<highlight>> false
+
+
+'==== entities ====
+actor "Moderator" as Mod
+actor "SocialNetworkUser" as User
+
+actor "Author" as Author
+actor "Publishing Company" as Publisher
+Author --|> User
+Publisher --|> User
+
+
+rectangle "Moderator" {
+
+'==== Administrator ====
+usecase "Remove a post" as UC_Mod1
+usecase "Remove a comment" as UC_Mod2
+usecase "Ban a user" as UC_Mod3
+
+
+'==== User ====
+usecase "Register in the system" as UC_User1
+usecase "Create a Post" as UC_User2
+usecase "Comment on posts" as UC_User3
+usecase "Denounce a post" as UC_User4
+usecase "Denounce a comment" as UC_User5
+
+
+' ==================================================
+
+
+Mod --> UC_Mod1
+Mod --> UC_Mod2
+Mod --> UC_Mod3
+
+
+User --> UC_User1
+User --> UC_User2
+User --> UC_User3
+User --> UC_User4
+User --> UC_User5
+
+}
+@enduml
+

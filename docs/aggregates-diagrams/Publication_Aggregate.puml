@@ -73,28 +73,36 @@ Package "ddd" {
         +ofIdentity(id : ID) : Optional<T>
         +containsOfIdentity(id : ID) : boolean
     }
+    interface AggregateRoot <ID >{
+             }
+    interface DomainEntity<ID, T> <<Interface>> {
+              +identity() : ID
+              +sameAs(object:Object) : boolean
+    }
 }
 
 ' ===== Persistence =====
 Package "persistence" {
-     package "memo"  {
-     class MemoPublicationRepo <<Repo>>
+     package "mem"  {
+     class MemPublicationRepo <<Repo>>
     }
 }
 
 ' ===== Relations =====
 Publication "1" --> "ID 1" PublicationId : has
 Publication "*"-> "1" Title : has
-Publication "1"..> "1" AuthorId : references
+Publication "*"..> "1" AuthorId : references
 Publication "*"..> "1" GenreId : references
 
 PublicationId "*" --> "1" Title : uses
 PublicationId "*" -> "1" AuthorId : uses
 
 IPublicationRepo -|> IRepository
-MemoPublicationRepo ..|> IPublicationRepo
-Publication "*" <-- "1" MemoPublicationRepo : persists
-PublicationFactory "1"<-- "1" MemoPublicationRepo : invokes
+MemPublicationRepo ..|> IPublicationRepo
+Publication "*" <-- "1" MemPublicationRepo : persists
+PublicationFactory "1"<-- "1" MemPublicationRepo : invokes
 PublicationFactory ..> Publication : <<create>>
 
+AggregateRoot -|> DomainEntity
+Publication .|> AggregateRoot
 @enduml

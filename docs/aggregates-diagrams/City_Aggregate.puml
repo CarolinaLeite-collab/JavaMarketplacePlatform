@@ -1,7 +1,7 @@
 @startuml
 
 '==== Title ====
-title City Aggregate
+title city Aggregate
 top to bottom direction
 
 '==== basic style ====
@@ -17,29 +17,23 @@ skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
 ' ===== Persistence =====
-Package "PERSISTENCE" {
+Package "persistence" {
+    package "mem"  {
+
     class MemoCityRepo <<Repo>> {
-        - DATA : Map<CityId, City>
-        + save(City) : City
-        + addCity(City) : City
-        + findAll() : Iterable<City>
-        + ofIdentity(CityId) : Optional<City>
-        + containsOfIdentity(CityId) : boolean
+}
     }
 }
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "CITY" <<Folder>> #b0c4d4 {
+    Package "city" <<Folder>> #b0c4d4  {
 
         class City <<Entity>> <<Root>> #lightgrey {
             - _name : String
-            + identity() : CityId
-            + sameAs(Object) : boolean
             + getName() : String
             + getCountry() : Country
-            + toString() : String
         }
 
         class CityFactory <<Factory>> {
@@ -48,7 +42,7 @@ Package "DOMAIN" {
 
     }
 
-    Package "VALUEOBJECT" {
+    Package "valueObject" {
 
         class CityId <<DomainId>> #LightPink {
             - _normalizedName : String
@@ -59,7 +53,7 @@ Package "DOMAIN" {
             + toString() : String
         }
 
-        class CountryId <<DomainId>> #LightPink {
+        class CountryId <<DomainId>>  {
             - _code : String
             + equals(Object) : boolean
             + hashCode() : int
@@ -68,29 +62,45 @@ Package "DOMAIN" {
 
     }
 
-    Package "REPOSITORY" <<Folder>> #d4c4b0 {
+    Package "repository" <<Folder>> {
         interface ICityRepo <<Interface>>  {
             + addCity(City) : City
         }
     }
+    }
+
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity: T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface AggregateRoot <ID >{
+    }
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
+    }
+
 
 }
 
-' ===== Cross-aggregate reference =====
-class Country <<AggregateRoot>> #LightGray {
-    + identity() : CountryId
-    + getCountryName() : String
-}
 
 ' ===== Relations =====
 City "1" --> "ID 1" CityId : has
-CityId "1" --> "1" CountryId : identified by
 
-City ..> Country : references
+City "*" ..> "1" CountryId : references
 
 ICityRepo "1" --> "*" City : manages
 MemoCityRepo ..|> ICityRepo
+ICityRepo -|> IRepository
 
 CityFactory ..> City : <<create>>
+
+AggregateRoot -|> DomainEntity
+City .|> AggregateRoot
 
 @enduml

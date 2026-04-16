@@ -6,7 +6,7 @@ import TOPSECRET.domain.valueobject.PublishingCompanyId;
 import java.util.Objects;
 
 /**
- * Represents the organization or company that formally releases the work (publication).
+ * Represents the organization or company that formally releases the work of one edition.
  *
  * <p>
  * A {@code PublishingCompany} is an aggregate root identified by a

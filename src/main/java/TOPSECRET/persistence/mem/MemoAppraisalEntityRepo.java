@@ -1,8 +1,8 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
-import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
-import TOPSECRET.domain.appraisalEntity.AppraisalEntityFactory;
+import TOPSECRET.domain.appraisalentity.AppraisalEntity;
+import TOPSECRET.domain.appraisalentity.AppraisalEntityFactory;
 import TOPSECRET.domain.valueobject.*;
 import java.util.*;
 

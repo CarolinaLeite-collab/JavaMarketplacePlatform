@@ -52,4 +52,10 @@ public class MemoCountryRepo implements ICountryRepo {
 
         return save(country);
     }
+
+    public List<CountryId> findAllKeys() {
+
+        return new ArrayList<>(DATA.keySet());
+
+    }
 }

@@ -1,7 +1,7 @@
 package TOPSECRET.domain.repository;
 
 import TOPSECRET.ddd.IRepository;
-import TOPSECRET.domain.appraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.appraisalentity.AppraisalEntity;
 import TOPSECRET.domain.valueobject.AppraisalEntityId;
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;

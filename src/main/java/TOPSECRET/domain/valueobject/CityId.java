@@ -16,8 +16,8 @@ public class CityId implements DomainId {
         if (countryId == null) {
             throw new IllegalArgumentException("CountryId cannot be null");
         }
-        _normalizedName = cityName.trim().toLowerCase();
         _countryId = countryId;
+        _normalizedName = countryId.toString() + cityName.trim().toLowerCase();
     }
 
     public String getNormalizedName() {

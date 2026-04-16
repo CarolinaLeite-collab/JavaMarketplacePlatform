@@ -17,24 +17,19 @@ skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
 ' ===== Persistence =====
-Package "PERSISTENCE" {
+Package "Persistence" {
+    package "mem"  {
     class MemoUserRepo <<Repo>> {
-        - DATA : Map<UserId, User>
-        + save(User) : User
-        + addUser(User) : User
-        + findAll() : Iterable<User>
-        + ofIdentity(UserId) : Optional<User>
-        + containsOfIdentity(UserId) : boolean
     }
+   }
 }
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "USER" <<Folder>> #b0c4d4 {
+    Package "user" <<Folder>> #b0c4d4 {
 
         class User <<Entity>> <<Root>> #lightgrey {
-            + sameAs(Object) : boolean
             + hasEmail(Email) : boolean
             + hasRole(Role) : boolean
             + addRole(Role) : void
@@ -51,7 +46,7 @@ Package "DOMAIN" {
 
     }
 
-    Package "VALUEOBJECT" {
+    Package "valueobject" {
 
         class UserId <<DomainId>> #LightPink {
             + getEmail() : Email
@@ -60,50 +55,76 @@ Package "DOMAIN" {
             + toString() : String
         }
 
-        class Email <<ValueObject>> #LightYellow {
+        class Email <<ValueObject>> {
             - _email : String
             + getValue() : String
             + toString() : String
         }
 
-        class Name <<ValueObject>> #LightYellow {
+        class Name <<ValueObject>>{
             - _name : String
             + get_Name() : String
             + toString() : String
         }
 
-        class Address <<ValueObject>> #LightYellow {
+        class Address <<ValueObject>> {
         }
 
-        class Phone <<ValueObject>> #LightYellow {
+        class Phone <<ValueObject>> {
         }
 
-        enum Role <<ValueObject>> #LightYellow {
+        enum Role <<ValueObject>> {
             ADMIN
             USER
         }
     }
 
-    Package "REPOSITORY" <<Folder>> #d4c4b0 {
+    Package "repository" <<Folder>> {
         interface IUserRepo <<Interface>> {
             + addUser(User) : User
         }
     }
 
+ }
+
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity: T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface AggregateRoot <ID >{
+    }
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
+    }
 }
+
+
+
 
 ' ===== Relations =====
 User "1" --> "ID 1" UserId : has
-UserId "1" --> "1" Email : identified by
+User "1" --> "1" Email : has
 
-User *-- Name : has
-User *-- Role : has
-User o-- Address : has
-User o-- Phone : has
+User --> Name : has
+User --> Role : has
+User --> Address : has
+User --> Phone : has
 
 IUserRepo "1" --> "*" User : manages
 MemoUserRepo ..|> IUserRepo
 
 UserFactory ..> User : <<create>>
+
+AggregateRoot -|> DomainEntity
+User .|> AggregateRoot
+
+IUserRepo -|> IRepository
+
 
 @enduml
