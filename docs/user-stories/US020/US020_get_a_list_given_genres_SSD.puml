@@ -1,5 +1,5 @@
 @startuml
-title US020 - "As a User, I want to get a list of the publicly published lists of a given genre" - SSD
+title US020 - "As a User, I want to get a list of the publicly \npublished lists of a given genre" - SSD
 hidefootbox
 
 '==== basic style ====
@@ -20,7 +20,8 @@ actor User
 participant "MiteLovers" as System
 
 User -> System: I want to get a list (name and user) of the \npublicly published lists of a given genre
-System --> User: Done!
-
+System --> User: Select genreId
+User -> System: genreId
+System --> User: Here's your list!
 
 @enduml
