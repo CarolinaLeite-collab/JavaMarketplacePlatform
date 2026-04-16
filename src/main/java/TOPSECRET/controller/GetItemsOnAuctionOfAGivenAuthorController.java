@@ -23,10 +23,10 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
 
 
     private final IAuctionRepo _iAuctionRepo;
-    private IItemRepo _iItemRepo;
-    private IAuthorRepo _iAuthorRepo;
-    public IEditionRepo _iEditionRepo;
-    public IPublicationRepo _iPublicationRepo;
+    private final IItemRepo _iItemRepo;
+    private final IAuthorRepo _iAuthorRepo;
+    public final IEditionRepo _iEditionRepo;
+    public final IPublicationRepo _iPublicationRepo;
 
     public GetItemsOnAuctionOfAGivenAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IAuctionRepo auctionRepo, UserId buyerId){
 
