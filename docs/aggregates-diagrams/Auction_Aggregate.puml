@@ -38,15 +38,15 @@ package domain {
 
         class Bid <<Entity>> {
             -Instant _BidDate
-            +getBidder()
-            +getOfferPrice()
-            +getBidDate()
-            -validateBidder(UserId)
-            -validateOfferPrice(UserId)
+            +getUserId() : UserId
+            +getOfferPrice() : Price
+            +getBidDate() : Instant
+            -validateBidder(UserId) : void
+            -validateOfferPrice(UserId) : void
         }
 
         class BidFactory <<Factory>> {
-            + createBid(bidderId : UserId, offerPrice : Price) : Bid
+            + createBid(userId : UserId, offerPrice : Price) : Bid
         }
 
         class AuctionFactory <<Factory>> {
