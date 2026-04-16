@@ -7,10 +7,7 @@ import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +58,11 @@ public class MemoListOfItemsRepo implements IListOfItemsRepo {
     @Override
     public Iterable<ListOfItems> findAll() {
         return List.copyOf(_data.values());
+    }
+
+    public ArrayList<ListOfItemsId> findAllKeys() {
+
+        return new ArrayList<>(_data.keySet());
     }
 
     @Override
