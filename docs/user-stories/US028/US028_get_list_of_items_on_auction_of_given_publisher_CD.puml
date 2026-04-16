@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-title US028 "As a Buyer, I want to get the list of items\non auction of a given publisher" - CD
+title US028 "As a Buyer, I want to get the list of items on auction of a given publishing company" - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -15,48 +15,82 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class getAuctionItemsByPublisherUI{}
+class GetAuctionItemsByPublishingCompanyUI{}
 
-class GetAuctionItemsByPublishingCompanyController {
--_iAuctionRepo : IAuctionRepo
-+getAuctionItemsIdByPublishingCompany(publisherID : PublisherID) : List<ItemId>
+package "controller" {
+    class GetAuctionItemsByPublishingCompanyController {
+        +getAuctionItemsByPublishingCompanyId(publishingCompanyId: PublishingCompanyId): List<ItemId>
+        +findAllKeys() : List<PublishingCompanyId>
+    }
 }
 
-Interface IAuctionRepo {
--_auctionList : List<AuctionId>
-+getAuctionItemsIdByPublishingCompanyId(publisherId : PublisherId) : List<ItemId>
+package "ddd" {
+    interface IRepository<ID, T> <<Interface>>
 }
 
-class MemoAuctionRepo {
--_auctionList : List<AuctionId>
+package "domain" {
+    package "repository" {
+        interface IPublishingCompanyRepo <<Interface>> {
+            +findAllKeys() : List<PublishingCompanyId>
+        }
+        interface IAuctionRepo <<Interface>> {
+            +findAll() : Iterable<Auction>
+        }
+        interface IItemRepo <<Interface>> {
+            +ofIdentity(id : ItemId) : Optional<Item>
+        }
+        interface IEditionRepo <<Interface>> {
+            +ofIdentity(id : EditionId) : Optional<Edition>
+        }
+
+    }
+
+    package "valueobject" {
+        class PublishingCompanyId <<Value Object>>
+        class ItemId <<Value Object>>
+        class EditionId <<Value Object>>
+    }
+
+    package "auction" #b0c4d4 {
+        class Auction <<Root>> <<Entity>> {
+            getItemsId() : List<ItemId>
+        }
+    }
+
+    package "item" {
+        class Item <<Root>> <<Entity>> {
+            +getEditionId() : EditionId
+        }
+    }
+
+    package "edition" {
+        class Edition <<Root>> <<Entity>> {
+            +isByPublishingCompanyId(publishingCompanyId : publishingCompanyId) : boolean
+        }
+    }
+
 }
 
-class Auction {
-+ isByPublisherId(publisherID : PublisherID) : boolean
-+ getItemId(): ItemId
-}
+GetAuctionItemsByPublishingCompanyUI "1".>"1" GetAuctionItemsByPublishingCompanyController : invokes
 
-class Item {
-+ isByPublisherId(publisherID : PublisherID) : boolean
-}
+GetAuctionItemsByPublishingCompanyController "1" ..> "1" IAuctionRepo : <<use>>
+GetAuctionItemsByPublishingCompanyController "1" ..> "1" IItemRepo : <<use>>
+GetAuctionItemsByPublishingCompanyController "1" ..> "1" IEditionRepo : <<use>>
+GetAuctionItemsByPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : <<use>>
 
-class Publication {
-+ isByPublisherId(publisherID : PublisherID) : boolean
-}
+IAuctionRepo --|> IRepository
+IItemRepo --|> IRepository
+IEditionRepo --|> IRepository
+IPublishingCompanyRepo --|> IRepository
 
-class Publisher {
-- publisherID : PublisherID
-}
+IAuctionRepo "1" --> "*" Auction : manages
+IItemRepo "1" --> "*" Item : manages
+IEditionRepo "1" --> "*" Edition : manages
 
-'--- Interactions ---'
-
-getAuctionItemsByPublisherUI "1"..>"1" GetAuctionItemsByPublishingCompanyController: invokes
-GetAuctionItemsByPublishingCompanyController "1"..> "1" IAuctionRepo : uses
-MemoAuctionRepo "1" ..|> "1" IAuctionRepo: relies on
-MemoAuctionRepo "1" --> "*" Auction : accesses
-Auction "1" --> "1" Item : contains
-Item "1" --> "1" Publication : has
-Publication "1" --> "1" Publisher : has
-
+Auction "1" o-- "1..*" ItemId : aggregates
+Item "1" --> "1" EditionId : has
+Item "1" --> "1" ItemId : has
+Edition "1" --> "1" EditionId : has
+Edition "1" --> "1" PublishingCompanyId : has
 
 @enduml
