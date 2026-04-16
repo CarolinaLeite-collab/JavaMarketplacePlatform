@@ -47,8 +47,6 @@ package "domain" {
     package "publishingcompany" #b0c4d4 {
 
         class PublishingCompany <<Root>> <<Entity>> {
-        + isSamePublishingCompany (publishingCompanyName : String) : boolean
-        + getName() : String
         }
 
         class PublishingCompanyFactory <<Factory>> {
@@ -73,7 +71,7 @@ Package "ddd" {
     }
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
-        +sameAs(Object) : boolean
+        +sameAs(object : Object) : boolean
     }
 }
 

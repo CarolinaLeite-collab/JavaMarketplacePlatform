@@ -71,7 +71,7 @@ Package "ddd" {
 
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
-        +sameAs(Object) : boolean
+        +sameAs(object : Object) : boolean
     }
 }
 
