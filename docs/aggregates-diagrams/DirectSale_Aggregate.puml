@@ -18,21 +18,17 @@ skinparam classAttributeIconSize 0
 
 
 ' ===== Domain =====
-Package "DOMAIN" {
+Package "domain" {
 
-    Package "DIRECTSALE" #b0c4d4 {
+    Package "directsale" #b0c4d4 {
         class DirectSale <<Entity>> <<Root>> {
             _timeLimit : Period
-            +getItems() : List<ItemId>
+            +getItemIds() : List<ItemId>
             +getPrice() : Price
             +getTimeLimit() : Period
-            +isByAuthor(author : AuthorId) : boolean
-            +isByPublication(publication : PublicationId) : boolean
-            +isByPublisher(publishingCompany : PublishingCompanyId) : boolean
-            +isByGenre(genre : GenreId) : boolean
             +sameAs(object : Object) : boolean
             +identity() : DirectSaleId
-            -requiresItemAndPrice(items : List<ItemId>, price : Price)
+            -requiresItemIdsAndPrice(itemIds : List<ItemId>, price : Price)
             -timeLimitMustBeValid(timeLimit : Period)
             }
 
@@ -40,72 +36,66 @@ Package "DOMAIN" {
             + createDirectSale(item : ItemId, price : Price, timeLimit : Period) : DirectSale
             }
 }
-Package "REPOSITORY" {
-interface IDirectSaleRepo{
-addDirectSale(item : ItemId, price : Price, timeLimit : Period) : DirectSale
-getDirectSaleItemsByAuthor(author : AuthorId) : List<ItemId>
-getDirectSaleItemsByGenre(genre : GenreId) : List<ItemId>
-getDirectSaleItemsByPublication(publication : PublicationId) : List<ItemId>
-getDirectSaleItemsByPublisher(publishingCompany : PublishingCompanyId) : List<ItemId>
-}
-
-}
-
-Package "VALUEOBJECT" {
-'== Value Objects (Ids) ==
-class DirectSaleId <<ValueObject>> #LightPink{
-_directSaleId : String
-}
-
-
-' ===== Value Objects =====
-class Price <<ValueObject>>
-class ItemId <<ValueObject>>
-
-'==== Cross-aggregate ID references ====
-class AuthorId <<ValueObject>>
-class GenreId <<ValueObject>>
-class PublishingCompanyId <<ValueObject>>
-class PublicationId <<ValueObject>>
-}
-}
-
-Package "PERSISTENCE" {
-Package "MEM"{
-class MemoDirectSaleRepo{
-}
-}
-}
-
-Package "DDD" {
-
-    interface IRepository<ID, T> <<Interface>> {
-    save(T) : T
-    findAll() : Iterable<T>
-    ofIdentity(ID) : Optional <T>
-    containsOfIdentity(ID) : boolean
+    Package "repository" {
+        interface IDirectSaleRepo{
+        addDirectSale(item : ItemId, price : Price, timeLimit : Period) : DirectSale
+        }
     }
 
+    Package "valueobject" {
+    '== Value Objects (Ids) ==
+        class DirectSaleId <<ValueObject>> #LightPink{
+        _directSaleId : String
+        }
+    ' ===== Value Objects =====
+        class Price <<ValueObject>>
+        class ItemId <<ValueObject>>
+    }
 }
+
+Package "persistence" {
+    Package "mem"{
+        class MemoDirectSaleRepoo{
+        }
+    }
+}
+
+Package "ddd" {
+
+    interface IRepository<ID, T> <<Interface>> {
+    save(entity : T) : T
+    findAll() : Iterable<T>
+    ofIdentity(id : ID) : Optional <T>
+    containsOfIdentity(id : ID) : boolean
+    findAllKeys() : List<DirectSaleId>
+    }
+
+    interface AggregateRoot <<Interface>> {
+    }
+
+    interface DomainEntity <<Interface>>{
+    +identity(): T
+    +sameAs(object : Object): boolean
+    }
+}
+
+
 DirectSale "1" --> "ID 1" DirectSaleId : has
 
 MemoDirectSaleRepo "1" --> "*" DirectSaleFactory : invokes
 MemoDirectSaleRepo "1" --> "*" DirectSale : persists
 
 DirectSale "*" --> "1" Price : has
-DirectSale "*" o--  "1..*" ItemId : aggregates
-DirectSale "*" ..> "1..*" AuthorId : references
-DirectSale "*" ..> "1..*" GenreId : references
-DirectSale "*" ..> "1..*" PublicationId : references
-DirectSale "*" ..> "1..*" PublishingCompanyId : references
+DirectSale "1" o--  "1..*" ItemId : aggregates
 
 ' ===== Factory =====
-DirectSaleFactory ..> DirectSale : <<create>>
+DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
 
 ' ===== Repository =====
-
+AggregateRoot ..|> DomainEntity
 IDirectSaleRepo --|> IRepository
-IDirectSaleRepo <|.. MemoDirectSaleRepo
+MemoDirectSaleRepo ..|> IDirectSaleRepo
+DirectSale ..|> AggregateRoot
 
 @enduml
