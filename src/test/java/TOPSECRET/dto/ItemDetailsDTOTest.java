@@ -8,7 +8,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testItemDetailsDTOConstructor() {
-
+//Arrange
         //SUT
         new ItemDetailsDTO("title","author","type","identifier");
 
@@ -16,7 +16,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testGetTitle() {
-
+//Arrange
         //SUT
         ItemDetailsDTO dto = new ItemDetailsDTO("title","author","type","identifier");
 
@@ -30,7 +30,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testGetAuthorName() {
-
+//Arrange
         //SUT
         ItemDetailsDTO dto = new ItemDetailsDTO("title","author","type","identifier");
 
@@ -44,7 +44,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testGetPublicationType() {
-
+//Arrange
         //SUT
         ItemDetailsDTO dto = new ItemDetailsDTO("title","author","type","identifier");
 
@@ -58,7 +58,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testGetIdentifier() {
-
+//Arrange
         //SUT
         ItemDetailsDTO dto = new ItemDetailsDTO("title","author","type","identifier");
 
@@ -72,7 +72,7 @@ class ItemDetailsDTOTest {
 
     @Test
     void testToString() {
-
+//Arrange
         //SUT
         ItemDetailsDTO dto = new ItemDetailsDTO("Lord Of The Rings","J.R.R. Tolkien","Book","978-0544003415");
 

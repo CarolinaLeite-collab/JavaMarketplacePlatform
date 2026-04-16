@@ -119,7 +119,7 @@ class GetDirectSaleItemsByGenreControllerTest {
                 _buyerIdDouble);
 
 
-        // Act + Assert
+        //Act + Assert
         assertThrows(IllegalStateException.class,
                 () -> ctl.getDirectSaleItemsByGenre(genreIdDouble));
     }

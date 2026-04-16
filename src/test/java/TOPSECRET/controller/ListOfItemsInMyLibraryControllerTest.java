@@ -42,7 +42,7 @@ class ListOfItemsInMyLibraryControllerTest {
 
     @Test
     void testListOfItemsInMyLibraryController(){
-        // act & SUT
+        //Act + SUT
         new ListOfItemsInMyLibraryController(_iLibraryRepoDouble,
                 _iItemRepoDouble,
                 _iEditionRepoDouble,

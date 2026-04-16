@@ -19,7 +19,7 @@ class ItemDetailsMapperTest {
 
     @Test
     void testItemDetailsMapperConstructor() {
-
+//Act
         //SUT
         new ItemDetailsMapper();
 

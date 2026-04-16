@@ -45,7 +45,7 @@ class AddPublicationOnLibraryControllerTest {
         //Act
         List<ItemId> result = ctl.getListOfAvailableItemIds();
 
-        //assert
+        //Assert
         assertEquals(1, result.size());
 
     }
