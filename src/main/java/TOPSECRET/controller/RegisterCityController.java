@@ -32,11 +32,8 @@ public class RegisterCityController {
         Country country = _iCountryRepo.ofIdentity(countryId)
                 .orElseThrow(() -> new IllegalArgumentException("Country not found"));
 
-        City city = _cityFactory.createCity(cityName, country);
+        City city = _cityFactory.createCity(cityName, countryId);
         return _iCityRepo.addCity(city);
     }
 
-    public City registerCity(String cityName, Country country) {
-        return registerCity(cityName, country.identity());
-    }
 }

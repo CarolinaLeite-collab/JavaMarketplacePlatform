@@ -1,11 +1,12 @@
 package TOPSECRET.domain.city;
 
 import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.valueobject.CountryId;
 
 public class CityFactory {
 
-    public City createCity(String cityName, Country country)  {
+    public City createCity(String cityName, CountryId countryId)  {
 
-        return new City(cityName, country);
+        return new City(cityName, countryId);
     }
 }

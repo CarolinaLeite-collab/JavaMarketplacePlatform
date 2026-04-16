@@ -1,6 +1,7 @@
 package TOPSECRET.domain.city;
 
 import TOPSECRET.domain.country.Country;
+import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -11,9 +12,9 @@ class CityFactoryTest {
 
     @Test
     void shouldSuccessfullyCreateCity() {
-        // arrange
+        //Arrange
         String cityName = "Porto";
-        Country countryDouble = mock(Country.class);
+        CountryId countryIdDouble = mock(CountryId.class);
 
         //SUT
         CityFactory factory = new CityFactory();
@@ -24,8 +25,8 @@ class CityFactoryTest {
                                  when(mock.getName())
                                          .thenReturn("Porto");
                              })) {
-            // act
-            City newCity = factory.createCity(cityName, countryDouble);
+            //Act
+            City newCity = factory.createCity(cityName, countryIdDouble);
             //assert
             assertEquals(cityName, newCity.getName());
         }
