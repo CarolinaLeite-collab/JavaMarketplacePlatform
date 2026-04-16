@@ -1,4 +1,4 @@
-package TOPSECRET.domain.appraisalEntity;
+package TOPSECRET.domain.appraisalentity;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.user.User;
