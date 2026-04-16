@@ -1,33 +1,45 @@
 # MiteLovers - Domain Model Glossary
 
 ___
-
 ## Table of contents
 
 - [Activity History](#activity-history)
 - [Appraisal Entity](#appraisal-entity)
 - [Auction](#auction)
+- [Author](#author)
 - [Bid](#bid)
 - [Bidder](#bidder)
 - [Book](#book)
 - [Buyer](#buyer)
+- [City](#city)
+- [Country](#country)
 - [Community Member](#community-member)
+- [Direct Sale](#direct-sale)
+- [Edition](#edition)
+- [Genre](#genre)
 - [Item](#item)
+- [Library](#library)
+- [List of Items](#list-of-items)
 - [Listing](#listing)
 - [Logistic Service](#logistic-service)
 - [Magazine](#magazine)
 - [Outright Price](#outright-price)
 - [Payment Processing](#payment-processing)
-- [Publication Info](#publication-info)
-- [Publishing Company](#publishing-company)
+- [Phone Prefix](#phone-prefix)
+- [Post](#post)
+- [Price](#price)
+- [Publication](#publication)
 - [Publication Type](#publication-type)
+- [Publishing Company](#publishing-company)
 - [Seller](#seller)
 - [Shopping Cart](#shopping-cart)
+- [Social Network](#social-network)
 - [Support Service](#support-service)
 - [Transaction](#transaction)
+- [Title](#title)
 - [User](#user)
 - [User Rating](#user-rating)
-- [Title](#title)
+- [User Role](#user-role)
 - [Weight](#weight)
 
 ___
@@ -40,33 +52,32 @@ ___
 
 #### Appraisal Entity
 
-An `appraisal entity` is a registered `user` that is responsible for evaluating the condition, authenticity, or value of an item before listing or sale.
-
-___
-
-#### Appraisal Service
-
-A `support service` role responsible for coordinating item appraisals.
+An `appraisal entity` is a registered `user` that is responsible for evaluating the condition, authenticity, or value of an `item` before it is put up for sale.
+Contains the appraisal entity's `name`, the list of `publication type Id's` it can appraise, and the list of `genre Id's` it specializes in.
 
 ___
 
 #### Auction
 
-A selling mechanism where a listing is sold through competitive bidding within a defined time window. 
-
-`Bids` determine the final sale price. 
+ Represents a time-bounded selling mechanism where one or more Items is sold via competitive bidding. 
+ An auction is active only within its configured time window: `auctionStartDate` to `auctionEndDate`.
+ `Bids` placed during the active period determine the `final sale price` and winning `buyer`.
 
 The `seller` defines the following attributes for an `auction`:
 
-- a `minPrice`, which is the starting price for the auction; 
-- a `reservePrice`, which is the minimum acceptable price for the seller. If not reached, the item may not be sold and might be relisted;
-- an `outrightPrice` which is a price set in advance by the seller that allows
-  a ‘buyer to purchase the item immediately, without waiting for the auction
-  to end and without any further bidding;
-- an `auctionStartDate`, which is the date and time when the auction becomes active;
-- an `auctionEndDate`, the date and time when the auction closes.
+- a `startingPrice`, which is the minimum price required for the first valid bid.
+- a `reservePrice`, which is the minimum acceptable price for the item to be sold; bids below this price do not result in a sale.
+- an `outrightPrice`, which is a `buy now` price that allows immediate purchase without waiting for the auction to end.
+- an `auctionStartDate`, which is the date and time when the auction becomes active.
+- an `auctionEndDate`, which is the date and time when the auction closes.
 
 Items **cannot** be simultaneously on direct sale (via `shoppingCart`) and on `auction`.
+
+___
+
+#### Author
+
+Author is the person who originates, creates, and writes a `publication`.
 
 ___
 
@@ -75,43 +86,95 @@ ___
 A `bid` is a monetary offer (`offerPrice`) placed by a `bidder` during an `auction`.
 
 A `Bid` contains:
-
+- the `bidder`, which is the `user` who placed the bid.
 - the `offerPrice`, which is the amount of money offered in a single `bid` for the item.
+- the `bidDate`, which is the timestamp when the bid was placed
+
+A `bid` is immutable - once a bid is placed, it cannot be modified.
 
 ___
 
 #### Bidder
 
-A role played by a `user` who can place `bids` in `auctions`.
+A `user` who places `bids` in `auctions`.
 
 ___
 
 #### Book
 
-A type of publication representing a book as a physical item.
+Is a `publication type` representing a book as a physical item.
 
-The `book` can be defined by:
-
-- `publicationInfo` describes it's general attributes;
-- `condition` represents the physical state of the book (e.g. new, good, poor).
+When the publication type is `BOOK`, an `Edition identifier` must be an `ISBN`.
 
 ___
 
 #### Buyer
 
-A role played by a `user` who purchases items on the platform.
+A `buyer` is a `user` who purchases items on the platform.
 
-A `buyer` has an `activityHistory`, which is the record of purchases and interactions made by the buyer.
+A `buyer` can  provide a `rating` to a `seller` after a confirmed `transaction` between both parts.
 
-A `buyer` can also provide a `rating` to a `seller` after a confirmed `transaction` between both parts.
+___
+
+#### City
+
+A `city` represents a geographical and administrative unit within a `country`.
+
+___
+
+#### Country
+
+A `country` represents geographical country identified by its name.
 
 ___
 
 #### Community Member
 
-A role played by a `user`, participating in community-related activities.
+Any `user` who participates in community-related activities.
 
 `Community members` might engage in forum posts, blog posts or `book` and `magazine` reviews.
+
+___
+
+#### Direct Sale
+
+Represents a `direct sale` of an `item` with a specified `price` and optional time limit.
+
+___
+
+#### Edition
+
+An `edition` models a specific released version of a publication such as a book or magazine, identified by its publication metadata.
+
+It includes both mandatory and optional fields.
+
+Mandatory fields:
+- `publication`, that is the catalog-level metadata capturing the immutable attributes of a publication.
+- `identifier`, that can be `ISBN` (for books) or `ISSN` (for magazines).
+- `publishing company` is the publishing house (i.e. the label) that released the publication.
+- `publishing year`, that is the year in which the edition was published.
+- `language` is the language in which the publication is written. 
+
+Optional fields:
+- `dimensions` are the physical dimensions (height, width, and thickness) of a `book` or `magazine`.
+- `weight` is the physical weight of a `book` or `magazine`.
+- `numberOfPages` is the total number of pages of a `book` or `magazine`.
+- `edition number`, the number identifying the edition (e.g., first edition, second edition).
+- `binding` is the type of binding (e.g. hardcover, paperback).
+
+___
+
+#### Genre
+
+Represents a `genre` in the MiteLovers domain.
+
+___
+
+#### Library
+
+A `library` is an entity that groups publications and is owned by a `user`. 
+
+Each `user` can only have one `library`.
 
 ___
 
@@ -121,15 +184,13 @@ ___
 
 ___
 
-#### Listing
+#### List of Items
 
-An offer created by a `seller` to sell an `item`, either via `auction` or direct sale (via `shoppingCart`).
+A `list of items` represents a list of `items` created by a `user`.
 
-The `listing` can have:
-
-- `date`, which is the date when the listing was created.
-- `price`, which is the fixed price used for direct sales (via `shoppingCart`).
-- `auction`, in which the winning `bid` will determine the final sale price.
+A `user` can create several lists. Each list has a `name`, a `genre`.
+A `user` can only add to a list items that they have in their own `library`.
+By default, all lists are `private`, but they can be made `public`.
 
 ___
 
@@ -146,18 +207,15 @@ ___
 
 #### Magazine
 
-A type of publication representing a magazine as a physical item.
+Is a `publication type` representing a magazine as a physical item.
 
-The `magazine` can be defined by:
-
-- `publicationInfo` describes it's general attributes;
-- `condition` represents the physical state of the magazine (e.g. new, good, poor).
+When the publication type is `MAGAZINE`, an `Edition identifier` must be an `ISSN`.
 
 ___
 
 #### Outright Price
 
-The `outright price` is a `price` set in advance by the `seller` that allows a `buyer` to purchase the `item` immediately, without waiting for the `auction` to end and without any further bidding.
+The `outright price` is a `buy now` price that allows immediate purchase without waiting for the `auction` to end.
 
 ___
 
@@ -167,40 +225,48 @@ A process responsible for handling and confirming monetary exchanges between the
 
 ___
 
-#### Publication Info
+#### Phone Prefix
 
-Catalog-level metadata describing a publication independently of any physical copy.
+Represents a phone prefix of a given country.
 
-`PublicationInfo` might contain the following attributes:
+___
+
+#### Post
+
+A `post` is an essential part of the `social network`. It is added by a registered `user`.
+A `post` must include a set of `tags` and may include text, photos, videos, or references to specific `publications` shared in a `public list`. 
+A `post` may be open or closed for comments.
+
+___
+
+#### Price
+
+Represents a monetary price with a specific `value` and a `currency`.
+
+___
+
+#### Publication
+
+Catalog-level metadata capturing the immutable attributes of a publication independently of any physical copy.
+
+`Publication` contains the following attributes:
 
 - `title` is the title of the publication.
-- `publicationDate` is the date the publication was released.
+- `author` is the author or main contributor of a publication.
+- `release year` is the year the publication was released.
 - `genre` corresponds to the literary or editorial genre.
-- `binding` is the type of binding (e.g. hardcover, paperback).
-- `ISBN` stands for *International Standard Book Number* (for books).
-- `ISSN` stands for *International Standard Serial Number* (for magazines).
-- `author` is the author or main contributor of a `book`.
-- `contributors` is the list of individuals who contributed to a `magazine`.
-- `language` is the language in which the publication is written.
-- `editor` is the person or entity responsible for the editorial content.
-- `publisher` is the publishing house (i.e. the label) that released the publication.
-- `editionBook` corresponds to a specific printing or release (e.g. 1st editionBook, 2nd editionBook).
-- `numberOfPages` is the total number of pages of a `book` or `magazine`.
-- `dimensions3D` are the physical dimensions (height, width, and thickness) of a `book` or `magazine`.
-- `weight` is the physical weight of a `book` or `magazine`.
-- `description` is a short text describing the contents of a `book` or `magazine`.
 
 ___
 
 #### Publication Type
 
-A classification that defines the category of a publication (e.g. book, magazine) and allows the system to classify and organize publications.
+A classification that represents the type of publication (e.g. BOOK, MAGAZINE), used to classify and organize `publications`.
 
 ___
 
 #### Publishing Company
 
-Represents the organization or company that formally releases the work (`publication`).
+Represents the organization or company that formally releases one `edition`.
 
 ___
 
@@ -216,13 +282,7 @@ ___
 
 #### Seller
 
-A role played by a `user` who creates `listings` to sell `items`.
-
-A `seller` may have :
-
-- `listings`, each with one `item`;
-- `activityHistory`, which is the record of all `listings` and `transactions` performed by the seller;
-- `rating`, which corresponds to a reputation score based on `buyer` feedback.
+A `seller` is a `user` who sells `items`.
 
 ___
 
@@ -236,6 +296,13 @@ One `shopping cart` will contain:
 
 - one, or several `listings`, that represent all the `items` a `buyer` intends to buy;
 - totalPrice – The total cost of all listings currently in the cart.
+
+___
+
+#### Social Network
+
+The `social network` is a platform component aiming to enable interaction between registered `users` through content sharing and discussion.
+Only `authors`and `publishing companies`can register to post.
 
 ___
 
@@ -273,14 +340,17 @@ ___
 
 #### User
 
-A registered entity (may be a person, company, or even an AI agent) on the platform who may play one or more roles.
+Represents a registered entity (e.g., a person or a company) on the platform that may assume one or more roles.
 
-Users may have attributes such as:
+A user may have the following attributes:
 
-- `name`, full name of the user.
-- `address`, physical address.
-- `email`, contact email.
-- `phoneNumber`, contact phone number.
+- `name`, the full name of the user.
+- `address`, the physical address.
+- `email`, the contact email.
+- `phone`, the contact phone number.
+- `role`, the role or set of roles assigned to the user.
+
+A `user` has an `activityHistory`, which records purchases and interactions performed on the platform, and a `rating`, which represents a reputation score based on feedback from `buyers` and `sellers`.
 
 ___
 

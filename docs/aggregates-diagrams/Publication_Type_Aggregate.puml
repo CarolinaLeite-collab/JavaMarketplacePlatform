@@ -16,9 +16,9 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-package "PERSISTENCE" {
+package "persistence" {
 
-    package "MEM" {
+    package "mem" {
 
         class MemoPublicationTypeRepo <<Repo>> {
 
@@ -27,9 +27,9 @@ package "PERSISTENCE" {
     }
 }
 
-package "DOMAIN" {
+package "domain" {
 
-    package "REPOSITORY" {
+    package "repository" {
 
         interface IPublicationTypeRepo <<Interface>> {
         + addPublicationType(publicationTypeName : String) : PublicationType
@@ -37,15 +37,13 @@ package "DOMAIN" {
 
     }
 
-    package "VALUE OBJECT" {
-
+    package "valueobject" {
         class PublicationTypeId <<Value Object>> #LightPink {
         - _id : String
         }
-
     }
 
-    package "PUBLICATIONTYPE" #b0c4d4 {
+    package "publicationtype" #b0c4d4 {
 
         class PublicationType <<Root>> <<Entity>> {
         }
@@ -59,16 +57,22 @@ package "DOMAIN" {
 
 }
 
-package "DDD" {
-
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-    save(entity : T) : T
-    findAll() : Iterable<T>
-    ofIdentity(id : ID) : Optional <T>
-    containsOfIdentity(id : ID) : boolean
-
+        +save(entity: T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
     }
 
+    interface AggregateRoot <ID >{
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(object : Object) : boolean
+    }
 }
 
 
@@ -81,5 +85,7 @@ MemoPublicationTypeRepo "1" --> "*" PublicationType : persists
 PublicationType "1" --> "1" PublicationTypeId: has
 
 PublicationTypeFactory "1" ..> "*" PublicationType: <<create>>
+AggregateRoot -|> DomainEntity
+PublicationType .|> AggregateRoot
 
 @enduml

@@ -20,13 +20,11 @@ skinparam classAttributeIconSize 0
 ' ===== Domain =====
 Package "domain" {
 
-    Package "appraisalEntity" <<Folder>> #c0d8d8 {
+    Package "appraisalEntity" <<Folder>> #b0c4d4 {
         class AppraisalEntity <<Root>> <<Entity>>  {
             -_publicationTypeIds : List<PublicationTypeId>
             -_genreIds : List<GenreId>
 
-            +identity() : AppraisalEntityId
-            +sameAs(Object) : boolean
             +getName() : Name
             +getGenreIds () : List<GenreId>
             +getPublicationTypeIds() : List<PublicationTypeId>
@@ -79,19 +77,26 @@ package "persistence" <<Folder>> {
 
 Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity: T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
     }
 
+    interface AggregateRoot <ID >{
+    }
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
+    }
 }
 
 ' ===== Interactions =====
 AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
-AppraisalEntity "1" --> "1..*" GenreId : references
-AppraisalEntity "1" --> "1..*" PublicationTypeId : references
-AppraisalEntity "1" *-- "1" Name : has
+AppraisalEntity "1" ..> "1..*" GenreId : references
+AppraisalEntity "1" ..> "1..*" PublicationTypeId : references
+AppraisalEntity "1" --> "1" Name : has
 AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
 
 AppraisalEntityFactory ..> AppraisalEntity : <<create>>
@@ -99,5 +104,8 @@ AppraisalEntityFactory "1"<- "1" MemoAppraisalEntityRepo : invokes
 
 IAppraisalEntityRepo <|. MemoAppraisalEntityRepo
 IAppraisalEntityRepo -|> IRepository
+AggregateRoot -|> DomainEntity
+AppraisalEntity .|> AggregateRoot
+
 
 @enduml

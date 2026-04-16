@@ -1,4 +1,4 @@
-package TOPSECRET.domain.appraisalEntity;
+package TOPSECRET.domain.appraisalentity;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.user.User;
@@ -10,8 +10,7 @@ import java.util.List;
 
 /**
  * An {@link AppraisalEntity} is a registered {@link User} that is responsible for evaluating
- * the condition, authenticity, or value of a Publication before listing or sale, as defined
- * in the MiteLovers domain model.
+ * the condition, authenticity, or value of an Item before it is put up for sale.
  * <p>
  * Contains the appraisal entity's {@link Name}, the list of {@link PublicationTypeId}s it can
  * appraise, and the list of {@link GenreId}s it specializes in.

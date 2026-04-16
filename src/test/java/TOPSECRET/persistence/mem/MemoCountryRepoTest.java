@@ -191,4 +191,44 @@ class MemoCountryRepoTest {
         // Assert
         assertFalse(result.iterator().hasNext());
     }
+    @Test
+    void findAllKeysReturnsStoredIds() {
+        // Arrange
+        CountryId countryId1Double = mock(CountryId.class);
+        Country country1Double = mock(Country.class);
+        when(country1Double.identity()).thenReturn(countryId1Double);
+
+        CountryId countryId2Double = mock(CountryId.class);
+        Country country2Double = mock(Country.class);
+        when(country2Double.identity()).thenReturn(countryId2Double);
+
+        // SUT
+        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        repo.save(country1Double);
+        repo.save(country2Double);
+
+        // Act
+        List<CountryId> result = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, result.size(), "Should contain exactly 2 keys");
+        assertTrue(result.contains(countryId1Double), "Should contain the first country ID");
+        assertTrue(result.contains(countryId2Double), "Should contain the second country ID");
+    }
+
+    @Test
+    void findAllKeysEmptyRepoReturnsEmptyList() {
+        // Arrange
+        // (Nothing to arrange specifically for an empty repo)
+
+        // SUT
+        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+
+        // Act
+        List<CountryId> result = repo.findAllKeys();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty(), "List should be empty when no countries are saved");
+    }
 }

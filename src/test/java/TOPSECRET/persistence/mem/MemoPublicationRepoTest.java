@@ -99,10 +99,11 @@ class MemoPublicationRepoTest {
         Publication publicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
         when(publicationDouble.identity()).thenReturn(publicationIdDouble);
-        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
-        repo.save(publicationDouble);
 
         // SUT
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+        repo.save(publicationDouble);
         var result = repo.ofIdentity(publicationIdDouble);
 
         // Assert
@@ -114,9 +115,11 @@ class MemoPublicationRepoTest {
     void ofIdentityNonExistingPublicationIdReturnsEmpty() {
         // Arrange
         PublicationId publicationIdDouble = mock(PublicationId.class);
-        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
 
         // SUT
+        MemoPublicationRepo repo = new MemoPublicationRepo(_publicationFactoryDouble);
+
+
         var result = repo.ofIdentity(publicationIdDouble);
 
         // Assert
@@ -156,6 +159,8 @@ class MemoPublicationRepoTest {
         assertFalse(result);
     }
 
+
+
     @Test
     void findAllReturnsTwoStoredPublications() {
         // Arrange
@@ -190,6 +195,29 @@ class MemoPublicationRepoTest {
 
         // Assert
         assertFalse(result.iterator().hasNext());
+    }
+
+    @Test
+    void findAllKeysTwoPublicationsReturnsTwoKeys() {
+        // Arrange
+        PublicationFactory _factoryDouble = mock(PublicationFactory.class);
+        Publication _pub1Double = mock(Publication.class);
+        Publication _pub2Double = mock(Publication.class);
+        PublicationId _id1Double = mock(PublicationId.class);
+        PublicationId _id2Double = mock(PublicationId.class);
+
+        when(_pub1Double.identity()).thenReturn(_id1Double);
+        when(_pub2Double.identity()).thenReturn(_id2Double);
+
+        // SUT
+        MemoPublicationRepo repo = new MemoPublicationRepo(_factoryDouble);
+        repo.save(_pub1Double);
+        repo.save(_pub2Double);
+
+        List<PublicationId> result = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, result.size());
     }
 
 

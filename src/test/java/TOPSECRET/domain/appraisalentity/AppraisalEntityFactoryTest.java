@@ -1,4 +1,4 @@
-package TOPSECRET.domain.appraisalEntity;
+package TOPSECRET.domain.appraisalentity;
 
 import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.Name;

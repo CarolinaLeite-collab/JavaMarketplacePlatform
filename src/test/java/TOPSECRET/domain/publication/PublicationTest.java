@@ -99,12 +99,25 @@ class PublicationTest {
     }
 
     @Test
+    void equalsSameInstanceReturnsTrue() {
+
+        // SUT
+        Publication publication = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        // Act
+        boolean result = publication.equals(publication);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
     void equalsDifferentTitleReturnsFalse() {
         // Arrange
         Title otherTitleDouble = mock(Title.class);
-        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // SUT
+        Publication p1 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
         Publication p2 = new Publication(otherTitleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
@@ -335,9 +348,10 @@ class PublicationTest {
         when(_authorIdDouble.toString()).thenReturn("Herbert F.-ABC123");
         when(_yearDouble.toString()).thenReturn("1965");
         when(_genreIdDouble.toString()).thenReturn("SCIENCE FICTION");
-        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // SUT
+        Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
         String result = p.toString();
 
         // Assert

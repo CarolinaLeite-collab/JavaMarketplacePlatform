@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Year;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PublicationIdTest {
 
@@ -113,9 +114,11 @@ class PublicationIdTest {
         // Arrange
         Title titleDouble = mock(Title.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
-        PublicationId id = new PublicationId(titleDouble, authorIdDouble, Year.of(2020));
 
         // SUT
+        PublicationId id = new PublicationId(titleDouble, authorIdDouble, Year.of(2020));
+
+        // Act
         boolean result = id.equals(null);
 
         // Assert
@@ -133,8 +136,27 @@ class PublicationIdTest {
         PublicationId id1 = new PublicationId(titleDouble, authorIdDouble, releaseYear);
         PublicationId id2 = new PublicationId(titleDouble, authorIdDouble, releaseYear);
 
-        // Assert
+        // Act & Assert
         assertEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void toStringValidFieldsContainsExpectedValues() {
+        // Arrange
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
+
+        when(titleDouble.toString()).thenReturn("Dune");
+        when(authorIdDouble.toString()).thenReturn("author-123");
+
+        // SUT & Act
+        String result = new PublicationId(titleDouble, authorIdDouble, releaseYear).toString();
+
+        // Assert
+        assertTrue(result.contains("Dune"));
+        assertTrue(result.contains("author-123"));
+        assertTrue(result.contains("2020"));
     }
 
 }

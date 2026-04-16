@@ -5,7 +5,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.AuthorId;
 
 /**
- * Author is the person who originates, creates, and writes a literary work.
+ * Author is the person who originates, creates, and writes a `publication`.
  * The same name can mean different authors.
  */
 

@@ -1,187 +1,227 @@
 package TOPSECRET.domain.city;
 
-import TOPSECRET.domain.country.Country;
 import TOPSECRET.domain.valueobject.CityId;
 import TOPSECRET.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+
 
 class CityTest {
-
-    private Country _countryDouble;
-    private Country _countryDouble2;
     private CountryId _countryIdPT;
-    private CountryId _countryIdES;
 
     @BeforeEach
     void setUp() {
         _countryIdPT = new CountryId("PT");
-        _countryIdES = new CountryId("ES");
-
-        _countryDouble = mock(Country.class);
-        _countryDouble2 = mock(Country.class);
-
-        when(_countryDouble.identity()).thenReturn(_countryIdPT);
-        when(_countryDouble.getCountryName()).thenReturn("Portugal");
-        when(_countryDouble2.identity()).thenReturn(_countryIdES);
-        when(_countryDouble2.getCountryName()).thenReturn("Spain");
     }
 
     @Test
     void shouldConstructCity() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertNotNull(city);
     }
 
     @Test
     void shouldThrowWhenNameIsNull() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City(null, _countryDouble));
+                () -> new City(null, _countryIdPT));
     }
 
     @Test
     void shouldThrowWhenNameIsBlank() {
+        //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new City("   ", _countryDouble));
+                () -> new City("   ", _countryIdPT));
     }
 
     @Test
     void shouldThrowWhenCountryIsNull() {
+        //Act & Assert
         assertThrows(NullPointerException.class,
                 () -> new City("Porto", null));
     }
 
     @Test
     void shouldReturnName() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertEquals("Porto", city.getName());
     }
 
     @Test
     void shouldReturnCountry() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
-        assertSame(_countryDouble, city.getCountry());
+        //Assert
+        assertSame(_countryIdPT, city.getCountryId());
     }
 
     @Test
     void shouldReturnIdentity() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
-        assertNotNull(city.identity());
+        //Assert
         assertEquals(new CityId("Porto", _countryIdPT), city.identity());
     }
 
     @Test
     void shouldBeEqualWhenSameNameAndCountry() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Porto", _countryDouble);
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Porto", _countryIdPT);
 
+        //Assert
         assertEquals(city1, city2);
     }
 
     @Test
     void shouldBeEqualWhenSameNameDifferentCase() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("PORTO", _countryDouble);
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("PORTO", _countryIdPT);
 
+        //Assert
         assertEquals(city1, city2);
     }
 
     @Test
     void shouldNotBeEqualWhenDifferentName() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Lisboa", _countryDouble);
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Lisboa", _countryIdPT);
 
+        //Assert
         assertNotEquals(city1, city2);
     }
 
     @Test
     void shouldNotBeEqualWhenDifferentCountry() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Porto", _countryDouble2);
+        //Arrange
+        CountryId countryIdES = new CountryId("ES");
 
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Porto", countryIdES);
+
+        //Assert
         assertNotEquals(city1, city2);
     }
 
     @Test
     void shouldNotBeEqualToNull() {
-        City city = new City("Porto", _countryDouble);
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertNotEquals(null, city);
     }
 
     @Test
     void shouldNotBeEqualToDifferentType() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertNotEquals("Porto", city);
     }
 
     @Test
     void shouldHaveSameHashCodeWhenEqual() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Porto", _countryIdPT);
 
+        //Assert
         assertEquals(city1.hashCode(), city2.hashCode());
     }
 
     @Test
     void shouldHaveDifferentHashCodeWhenNotEqual() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Lisboa", _countryDouble);
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Lisboa", _countryIdPT);
 
+        //Assert
         assertNotEquals(city1.hashCode(), city2.hashCode());
     }
 
     @Test
     void sameAsShouldReturnTrueWhenSameCityId() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Porto", _countryIdPT);
 
+        //Assert
         assertTrue(city1.sameAs(city2));
     }
 
     @Test
     void sameAsShouldReturnFalseWhenDifferentCityId() {
-        City city1 = new City("Porto", _countryDouble);
-        City city2 = new City("Lisboa", _countryDouble);
+        //Act
+        //SUT
+        City city1 = new City("Porto", _countryIdPT);
+        City city2 = new City("Lisboa", _countryIdPT);
 
+        //Assert
         assertFalse(city1.sameAs(city2));
     }
 
     @Test
     void sameAsShouldReturnFalseWhenNotCity() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertFalse(city.sameAs("Porto"));
     }
 
     @Test
     void toStringShouldReturnNameAndCountryName() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
-        assertEquals("Porto, Portugal", city.toString());
+        //Assert
+        assertEquals("Porto, PT", city.toString());
     }
 
     @Test
     void equalsShouldReturnTrueForSameReference() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
 
+        //Assert
         assertTrue(city.equals(city));
     }
 
     @Test
     void equalsShouldReturnFalseForNonCityObject() {
-        City city = new City("Porto", _countryDouble);
+        //Act
+        //SUT
+        City city = new City("Porto", _countryIdPT);
         String notACity = "Porto";
 
+        //Assert
         assertFalse(city.equals(notACity));
     }
     

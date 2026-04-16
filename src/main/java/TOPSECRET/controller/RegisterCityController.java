@@ -9,9 +9,6 @@ import TOPSECRET.domain.valueobject.CountryId;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RegisterCityController {
 
     private final ICityRepo _iCityRepo;
@@ -32,11 +29,8 @@ public class RegisterCityController {
         Country country = _iCountryRepo.ofIdentity(countryId)
                 .orElseThrow(() -> new IllegalArgumentException("Country not found"));
 
-        City city = _cityFactory.createCity(cityName, country);
+        City city = _cityFactory.createCity(cityName, countryId);
         return _iCityRepo.addCity(city);
     }
 
-    public City registerCity(String cityName, Country country) {
-        return registerCity(cityName, country.identity());
-    }
 }

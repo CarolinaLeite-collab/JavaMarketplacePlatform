@@ -6,6 +6,7 @@ import TOPSECRET.domain.valueobject.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -99,7 +100,9 @@ class MemoGenreRepoTest {
     @Test
     void saveValidGenreReturnsGenre() {
         // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
         Genre genreDouble = mock(Genre.class);
+        when(genreDouble.identity()).thenReturn(genreIdDouble);
 
         // SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
@@ -114,12 +117,16 @@ class MemoGenreRepoTest {
     @Test
     void findAllReturnsAllStoredGenres() {
         // Arrange
-        Genre genreDouble1 = mock(Genre.class);
-        Genre genreDouble2 = mock(Genre.class);
+        GenreId id1Double = mock(GenreId.class);
+        GenreId id2Double = mock(GenreId.class);
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
+        when(genre1Double.identity()).thenReturn(id1Double);
+        when(genre2Double.identity()).thenReturn(id2Double);
 
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
-        repo.save(genreDouble1);
-        repo.save(genreDouble2);
+        repo.save(genre1Double);
+        repo.save(genre2Double);
 
         // Act
         Iterable<Genre> result = repo.findAll();
@@ -131,7 +138,7 @@ class MemoGenreRepoTest {
 
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
-        // SUT
+        // Arrange & SUT
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
@@ -140,6 +147,44 @@ class MemoGenreRepoTest {
         // Assert
         assertFalse(result.iterator().hasNext());
     }
+
+    @Test
+    void findAllKeysReturnsAllStoredKeys() {
+        // Arrange
+        GenreId id1Double = mock(GenreId.class);
+        GenreId id2Double = mock(GenreId.class);
+        Genre genre1Double = mock(Genre.class);
+        Genre genre2Double = mock(Genre.class);
+        when(genre1Double.identity()).thenReturn(id1Double);
+        when(genre2Double.identity()).thenReturn(id2Double);
+
+        // SUT
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+
+        // Act
+        repo.save(genre1Double);
+        repo.save(genre2Double);
+
+
+        List<GenreId> result = repo.findAllKeys();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(id1Double));
+        assertTrue(result.contains(id2Double));
+    }
+
+    @Test
+    void findAllKeysEmptyRepoReturnsEmptyList() {
+        // Arrange & SUT
+        MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
+
+        List<GenreId> result = repo.findAllKeys();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
     @Test
     void ofIdentityExistingGenreIdReturnsGenre() {
         // Arrange
@@ -152,7 +197,7 @@ class MemoGenreRepoTest {
         repo.save(genreDouble);
 
         // Act
-        Optional<Genre> result = repo.ofIdentity(genreIdDouble); // SUT
+        Optional<Genre> result = repo.ofIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -168,7 +213,7 @@ class MemoGenreRepoTest {
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        Optional<Genre> result = repo.ofIdentity(genreIdDouble); // SUT
+        Optional<Genre> result = repo.ofIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -186,7 +231,7 @@ class MemoGenreRepoTest {
         repo.save(genreDouble);
 
         // Act
-        boolean result = repo.containsOfIdentity(genreIdDouble); // SUT
+        boolean result = repo.containsOfIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result);
@@ -201,7 +246,7 @@ class MemoGenreRepoTest {
         MemoGenreRepo repo = new MemoGenreRepo(_genreFactoryDouble);
 
         // Act
-        boolean result = repo.containsOfIdentity(genreIdDouble); // SUT
+        boolean result = repo.containsOfIdentity(genreIdDouble);
 
         // Assert
         assertFalse(result);
