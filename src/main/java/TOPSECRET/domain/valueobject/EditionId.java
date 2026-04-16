@@ -1,7 +1,6 @@
 package TOPSECRET.domain.valueobject;
 
 import TOPSECRET.ddd.DomainId;
-import TOPSECRET.ddd.ValueObject;
 
 import java.util.UUID;
 

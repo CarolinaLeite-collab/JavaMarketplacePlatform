@@ -6,7 +6,6 @@ import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.publication.Publication;
 import TOPSECRET.domain.repository.*;
 import TOPSECRET.domain.valueobject.*;
-import TOPSECRET.persistence.mem.MemoAuthorRepo;
 
 import java.util.ArrayList;
 import java.util.List;

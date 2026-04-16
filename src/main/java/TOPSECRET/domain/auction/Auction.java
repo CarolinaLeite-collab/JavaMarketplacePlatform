@@ -1,7 +1,10 @@
 package TOPSECRET.domain.auction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.AuctionId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.Price;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;

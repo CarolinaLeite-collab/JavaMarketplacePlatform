@@ -6,7 +6,6 @@ import TOPSECRET.domain.valueobject.GenreId;
 import TOPSECRET.domain.valueobject.ListOfItemsId;
 import TOPSECRET.domain.valueobject.UserId;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

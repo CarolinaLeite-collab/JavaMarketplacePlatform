@@ -1,6 +1,9 @@
 package TOPSECRET.domain.user;
 
-import TOPSECRET.domain.valueobject.*;
+import TOPSECRET.domain.valueobject.Address;
+import TOPSECRET.domain.valueobject.Email;
+import TOPSECRET.domain.valueobject.Name;
+import TOPSECRET.domain.valueobject.Phone;
 
 /**
  * Factory responsible for creating {@link User} instances.

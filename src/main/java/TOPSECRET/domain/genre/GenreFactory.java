@@ -1,7 +1,5 @@
 package TOPSECRET.domain.genre;
 
-import TOPSECRET.domain.valueobject.GenreId;
-
 /**
  * Factory responsible for creating {@link Genre} instances.
  * <p>

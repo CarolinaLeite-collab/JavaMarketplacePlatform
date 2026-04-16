@@ -1,9 +1,7 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.repository.IPublishingCompanyRepo;
-import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

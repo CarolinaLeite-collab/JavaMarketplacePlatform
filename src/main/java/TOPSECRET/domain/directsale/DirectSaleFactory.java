@@ -1,6 +1,5 @@
 package TOPSECRET.domain.directsale;
 
-import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.valueobject.ItemId;
 import TOPSECRET.domain.valueobject.Price;
 

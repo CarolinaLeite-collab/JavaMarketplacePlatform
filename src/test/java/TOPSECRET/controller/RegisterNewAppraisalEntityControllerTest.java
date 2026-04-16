@@ -1,12 +1,12 @@
 package TOPSECRET.controller;
 
 import TOPSECRET.domain.appraisalentity.AppraisalEntity;
+import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.publicationtype.PublicationType;
 import TOPSECRET.domain.repository.IAppraisalEntityRepo;
-import TOPSECRET.domain.user.User;
-import TOPSECRET.domain.genre.Genre;
 import TOPSECRET.domain.repository.IGenreRepo;
 import TOPSECRET.domain.repository.IPublicationTypeRepo;
+import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

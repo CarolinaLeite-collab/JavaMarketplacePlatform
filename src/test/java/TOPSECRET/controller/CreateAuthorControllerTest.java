@@ -1,16 +1,15 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.author.Author;
+import TOPSECRET.domain.repository.IAuthorRepo;
 import TOPSECRET.domain.user.User;
 import TOPSECRET.domain.valueobject.Role;
 import TOPSECRET.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
 
 class CreateAuthorControllerTest {
 

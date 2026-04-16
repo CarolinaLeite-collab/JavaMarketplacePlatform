@@ -2,12 +2,16 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.directsale.DirectSale;
 import TOPSECRET.domain.edition.Edition;
-import TOPSECRET.domain.publication.Publication;
-import TOPSECRET.domain.repository.*;
 import TOPSECRET.domain.item.Item;
 import TOPSECRET.domain.publishingcompany.PublishingCompany;
-import TOPSECRET.domain.valueobject.*;
-import TOPSECRET.persistence.mem.MemoPublishingCompanyRepo;
+import TOPSECRET.domain.repository.IDirectSaleRepo;
+import TOPSECRET.domain.repository.IEditionRepo;
+import TOPSECRET.domain.repository.IItemRepo;
+import TOPSECRET.domain.repository.IPublishingCompanyRepo;
+import TOPSECRET.domain.valueobject.EditionId;
+import TOPSECRET.domain.valueobject.ItemId;
+import TOPSECRET.domain.valueobject.PublishingCompanyId;
+import TOPSECRET.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;

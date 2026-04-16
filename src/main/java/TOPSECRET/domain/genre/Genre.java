@@ -3,8 +3,6 @@ package TOPSECRET.domain.genre;
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.valueobject.GenreId;
 
-import java.util.Objects;
-
 /**
  * Defines the style or category of a `Publication` (e.g., Fiction, Non-Fiction, Sci-Fi).
  * <p>
