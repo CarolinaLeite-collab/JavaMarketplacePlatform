@@ -6,7 +6,7 @@ import MITELOVERS.domain.valueobject.CityId;
 
 import java.util.*;
 
-public class MemoCityRepo implements ICityRepo {
+public class MemCityRepo implements ICityRepo {
 
     private final Map<CityId, City> DATA = new HashMap<>();
 

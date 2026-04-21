@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoCityRepoTest {
+class MemCityRepoTest {
 
     private City _cityDouble;
     private City _cityDouble2;
@@ -40,14 +40,14 @@ class MemoCityRepoTest {
 
     @Test
     void shouldConstructRepoSuccessfully() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         assertNotNull(repo);
     }
 
     @Test
     void saveShouldReturnCityForNewCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         City result = repo.save(_cityDouble);
 
@@ -56,7 +56,7 @@ class MemoCityRepoTest {
 
     @Test
     void saveShouldAddCityToRepo() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         repo.save(_cityDouble);
 
@@ -65,7 +65,7 @@ class MemoCityRepoTest {
 
     @Test
     void saveShouldAllowMultipleDistinctCities() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         repo.save(_cityDouble);
         repo.save(_cityDouble2);
@@ -75,7 +75,7 @@ class MemoCityRepoTest {
 
     @Test
     void addCityShouldReturnCityForNewCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         City result = repo.addCity(_cityDouble);
 
@@ -84,7 +84,7 @@ class MemoCityRepoTest {
 
     @Test
     void addCityShouldThrowForDuplicateCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.addCity(_cityDouble);
 
         assertThrows(IllegalStateException.class, () -> repo.addCity(_cityDouble));
@@ -92,7 +92,7 @@ class MemoCityRepoTest {
 
     @Test
     void addCityShouldNotAddDuplicateCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.addCity(_cityDouble);
 
         assertThrows(IllegalStateException.class, () -> repo.addCity(_cityDouble));
@@ -102,7 +102,7 @@ class MemoCityRepoTest {
 
     @Test
     void addCityShouldThrowCorrectMessage() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.addCity(_cityDouble);
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
@@ -113,7 +113,7 @@ class MemoCityRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnTrueIfCityExists() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.save(_cityDouble);
 
         assertTrue(repo.containsOfIdentity(_cityId1));
@@ -121,14 +121,14 @@ class MemoCityRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnFalseIfCityDoesNotExist() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         assertFalse(repo.containsOfIdentity(_cityId1));
     }
 
     @Test
     void findAllShouldReturnUnmodifiableCollection() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.save(_cityDouble);
 
         Iterable<City> result = repo.findAll();
@@ -139,14 +139,14 @@ class MemoCityRepoTest {
 
     @Test
     void findAllShouldReturnEmptyWhenNoCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         assertEquals(0, count(repo.findAll()));
     }
 
     @Test
     void ofIdentityShouldReturnCityIfExists() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.save(_cityDouble);
 
         Optional<City> result = repo.ofIdentity(_cityId1);
@@ -157,7 +157,7 @@ class MemoCityRepoTest {
 
     @Test
     void ofIdentityShouldReturnEmptyIfCityDoesNotExist() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         Optional<City> result = repo.ofIdentity(_cityId1);
 
@@ -166,14 +166,14 @@ class MemoCityRepoTest {
 
     @Test
     void findAllKeysShouldReturnEmptyWhenNoCity() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
 
         assertTrue(repo.findAllKeys().isEmpty());
     }
 
     @Test
     void findAllKeysShouldReturnAllKeys() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.save(_cityDouble);
         repo.save(_cityDouble2);
 
@@ -186,7 +186,7 @@ class MemoCityRepoTest {
 
     @Test
     void findAllKeysShouldReturnMutableList() {
-        MemoCityRepo repo = new MemoCityRepo();
+        MemCityRepo repo = new MemCityRepo();
         repo.save(_cityDouble);
 
         List<CityId> keys = repo.findAllKeys();
