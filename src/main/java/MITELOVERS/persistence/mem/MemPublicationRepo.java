@@ -20,12 +20,12 @@ import java.util.*;
  *  * </p>
  */
 
-public class MemoPublicationRepo implements IPublicationRepo {
+public class MemPublicationRepo implements IPublicationRepo {
 
     private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
     private final PublicationFactory _publicationFactory;
 
-    public MemoPublicationRepo(PublicationFactory publicationFactory) {
+    public MemPublicationRepo(PublicationFactory publicationFactory) {
         _publicationFactory = publicationFactory;
     }
 
