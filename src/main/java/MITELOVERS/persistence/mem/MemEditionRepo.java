@@ -17,12 +17,12 @@ import java.util.*;
  * <p>
  */
 
-public class MemoEditionRepo implements IEditionRepo {
+public class MemEditionRepo implements IEditionRepo {
 
     private final Map<EditionId, Edition> DATA = new HashMap<EditionId, Edition>();
     private final EditionFactory _editionFactory;
 
-    public MemoEditionRepo(EditionFactory editionFactory) {
+    public MemEditionRepo(EditionFactory editionFactory) {
         _editionFactory = editionFactory;
     }
 

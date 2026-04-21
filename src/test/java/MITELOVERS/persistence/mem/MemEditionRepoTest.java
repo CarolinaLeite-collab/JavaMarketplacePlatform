@@ -14,7 +14,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MemoEditionRepoTest {
+class MemEditionRepoTest {
 
     private EditionFactory _editionFactoryDouble;
     private Edition _editionDouble;
@@ -61,7 +61,7 @@ class MemoEditionRepoTest {
     void saveShouldStoreEditionAndReturnIt() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
 
         // Act
         Edition result = memoRepo.save(_editionDouble);
@@ -74,7 +74,7 @@ class MemoEditionRepoTest {
     void findAllShouldReturnSavedEditions() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
 
         Edition anotherEditionDouble = mock(Edition.class);
         EditionId anotherEditionIdDouble = mock(EditionId.class);
@@ -99,7 +99,7 @@ class MemoEditionRepoTest {
     void ofIdentityShouldReturnEditionWhenItExists() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         memoRepo.save(_editionDouble);
 
         // Act
@@ -114,7 +114,7 @@ class MemoEditionRepoTest {
     void ofIdentityShouldReturnEmptyWhenEditionDoesNotExist() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
 
         // Act
         Optional<Edition> result = memoRepo.ofIdentity(_editionIdDouble);
@@ -127,7 +127,7 @@ class MemoEditionRepoTest {
     void containsOfIdentityShouldReturnTrueWhenEditionExists() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         memoRepo.save(_editionDouble);
 
         // Act
@@ -141,7 +141,7 @@ class MemoEditionRepoTest {
     void containsOfIdentityShouldReturnFalseWhenEditionDoesNotExist() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
 
         // Act
         boolean result = memoRepo.containsOfIdentity(_editionIdDouble);
@@ -154,7 +154,7 @@ class MemoEditionRepoTest {
     void addEditionShouldCreateSaveAndReturnEditionWhenItDoesNotExist() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         when(_editionFactoryDouble.createEdition(
@@ -194,7 +194,7 @@ class MemoEditionRepoTest {
     void addEditionShouldThrowExceptionWhenIdentifierAlreadyExists() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         Edition existingEditionDouble = mock(Edition.class);
@@ -244,7 +244,7 @@ class MemoEditionRepoTest {
     void addEditionShouldThrowExceptionWhenEquivalentEditionAlreadyExistsAndIdentifierIsNull() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(1960);
 
         Edition existingEditionDouble = mock(Edition.class);
@@ -295,7 +295,7 @@ class MemoEditionRepoTest {
     void addEditionShouldSaveAndReturnEditionWhenEquivalentEditionDoesNotExistAndIdentifierIsNull() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(1960);
 
         Edition existingEditionDouble = mock(Edition.class);
@@ -344,7 +344,7 @@ class MemoEditionRepoTest {
     void addEditionShouldThrowWhenExistingEditionHasSameTypeAndSameIdentifier() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         Edition existingEditionDouble = mock(Edition.class);
@@ -394,7 +394,7 @@ class MemoEditionRepoTest {
     void addEditionShouldNotThrowWhenExistingEditionHasDifferentTypeButSameIdentifier() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         PublicationTypeId otherTypeIdDouble = mock(PublicationTypeId.class);
@@ -444,7 +444,7 @@ class MemoEditionRepoTest {
     void addEditionShouldEvaluateIdentifierComparisonWhenBothIdentifiersAreNotNull() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         Identifier existingIdentifier = mock(Identifier.class);
@@ -499,7 +499,7 @@ class MemoEditionRepoTest {
 
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
 
         Edition edition1 = mock(Edition.class);
         EditionId id1 = mock(EditionId.class);
@@ -525,7 +525,7 @@ class MemoEditionRepoTest {
     void addEditionShouldSkipIdentifierComparisonWhenNewIdentifierIsNull() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(1960);
 
         Edition existingEdition = mock(Edition.class);
@@ -574,7 +574,7 @@ class MemoEditionRepoTest {
     void addEditionShouldSkipIdentifierComparisonWhenExistingIdentifierIsNull() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         Edition existingEdition = mock(Edition.class);
@@ -623,7 +623,7 @@ class MemoEditionRepoTest {
     void addEditionShouldNotThrowWhenExistingEditionHasSameTypeButDifferentIdentifier() {
         // Arrange
         // SUT
-        MemoEditionRepo memoRepo = new MemoEditionRepo(_editionFactoryDouble);
+        MemEditionRepo memoRepo = new MemEditionRepo(_editionFactoryDouble);
         Year publishingYear = Year.of(2020);
 
         Identifier otherIdentifierDouble = mock(Identifier.class);
