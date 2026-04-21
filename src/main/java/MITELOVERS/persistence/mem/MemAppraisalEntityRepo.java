@@ -24,13 +24,13 @@ import java.util.*;
  * </p>
  */
 
-public class MemoAppraisalEntityRepo implements IAppraisalEntityRepo {
+public class MemAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
     private AppraisalEntityFactory _appraisalEntityFactory;
 
 
-    public MemoAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
+    public MemAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
 
         _appraisalEntityFactory = appraisalEntityFactory;
 
