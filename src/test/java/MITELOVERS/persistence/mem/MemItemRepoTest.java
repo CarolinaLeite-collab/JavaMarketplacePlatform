@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MemoItemRepoTest {
+class MemItemRepoTest {
 
     // ------------------------------------------------------------
     // save
@@ -30,7 +30,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         Item result = sut.save(itemDouble);
@@ -48,7 +48,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         sut.save(itemDouble);
@@ -69,7 +69,7 @@ class MemoItemRepoTest {
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         Iterable<Item> result = sut.findAll();
@@ -92,7 +92,7 @@ class MemoItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -120,7 +120,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
@@ -138,7 +138,7 @@ class MemoItemRepoTest {
         ItemId unknownIdDouble = mock(ItemId.class);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         Optional<Item> result = sut.ofIdentity(unknownIdDouble);
@@ -153,7 +153,7 @@ class MemoItemRepoTest {
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         Optional<Item> result = sut.ofIdentity(null);
@@ -176,7 +176,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
@@ -193,7 +193,7 @@ class MemoItemRepoTest {
         ItemId unknownIdDouble = mock(ItemId.class);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         boolean result = sut.containsOfIdentity(unknownIdDouble);
@@ -212,7 +212,7 @@ class MemoItemRepoTest {
         ItemFactory factoryDouble = mock(ItemFactory.class);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         List<ItemId> result = sut.findAllKeys();
@@ -236,7 +236,7 @@ class MemoItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -259,7 +259,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
@@ -292,7 +292,7 @@ class MemoItemRepoTest {
                 .thenReturn(itemDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
@@ -317,7 +317,7 @@ class MemoItemRepoTest {
                 .thenReturn(itemDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         ItemId result = sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
@@ -342,7 +342,7 @@ class MemoItemRepoTest {
                 .thenReturn(itemDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
 
         // Act
         sut.addItem(editionIdDouble, conditionDouble, descriptionDouble);
@@ -366,7 +366,7 @@ class MemoItemRepoTest {
         when(factoryDouble.createItem(editionId, condition, description)).thenReturn(item);
         when(item.identity()).thenReturn(itemId);
 
-        MemoItemRepo repo = new MemoItemRepo(factoryDouble);
+        MemItemRepo repo = new MemItemRepo(factoryDouble);
 
         repo.save(item);
 
@@ -397,7 +397,7 @@ class MemoItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -420,7 +420,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
@@ -441,7 +441,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
@@ -466,7 +466,7 @@ class MemoItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -488,7 +488,7 @@ class MemoItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemoItemRepo sut = new MemoItemRepo(factoryDouble);
+        MemItemRepo sut = new MemItemRepo(factoryDouble);
         sut.save(itemDouble);
 
         // Act
