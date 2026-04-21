@@ -18,16 +18,16 @@ import java.util.stream.Collectors;
  * </p>
  */
 
-public class MemoListOfItemsRepo implements IListOfItemsRepo {
+public class MemListOfItemsRepo implements IListOfItemsRepo {
 
     private final Map<ListOfItemsId, ListOfItems> _data;
     private final ListOfItemsFactory _factory;
 
-    public MemoListOfItemsRepo() {
+    public MemListOfItemsRepo() {
         this(new ListOfItemsFactory());
     }
 
-    public MemoListOfItemsRepo(ListOfItemsFactory factory) {
+    public MemListOfItemsRepo(ListOfItemsFactory factory) {
         _data = new HashMap<>();
         _factory = factory;
     }

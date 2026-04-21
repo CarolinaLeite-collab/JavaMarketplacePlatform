@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for {@link MemoListOfItemsRepo}.
+ * Unit tests for {@link MemListOfItemsRepo}.
  *
  * <p>The following Mockito doubles are used:
  * <ul>
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
  * </ul>
  */
 
-class MemoListOfItemsRepoTest {
+class MemListOfItemsRepoTest {
 
     private ListOfItemsFactory _factoryDouble;
 
@@ -49,7 +49,7 @@ class MemoListOfItemsRepoTest {
 
     @Test
     void shouldCreateEmptyRepository() {
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo();
+        MemListOfItemsRepo repo = new MemListOfItemsRepo();
         assertNotNull(repo);
         assertEquals(0, repo.findAll().spliterator().getExactSizeIfKnown());
     }
@@ -67,7 +67,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "My List", _genreIdDouble))
                 .thenReturn(created);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         ListOfItems result = repo.addListOfItems(_userId1Double, "My List", _genreIdDouble);
@@ -89,7 +89,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "My List", _genreIdDouble))
                 .thenReturn(created);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "My List", _genreIdDouble);
@@ -109,7 +109,7 @@ class MemoListOfItemsRepoTest {
         when(first.identity()).thenReturn(_listIdDouble);
         when(second.identity()).thenReturn(_listIdDouble);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.save(first);
@@ -125,7 +125,7 @@ class MemoListOfItemsRepoTest {
         ListOfItems item = mock(ListOfItems.class);
         when(item.identity()).thenReturn(mock(ListOfItemsId.class));
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         ListOfItems result = repo.save(item);
 
@@ -138,7 +138,7 @@ class MemoListOfItemsRepoTest {
         ListOfItems created = mock(ListOfItems.class);
         when(created.identity()).thenReturn(_listIdDouble);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(created);
 
         // Act
@@ -154,7 +154,7 @@ class MemoListOfItemsRepoTest {
         ListOfItems created = mock(ListOfItems.class);
         when(created.identity()).thenReturn(_listIdDouble);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(created);
 
         assertTrue(repo.containsOfIdentity(_listIdDouble));
@@ -162,7 +162,7 @@ class MemoListOfItemsRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnFalseWhenNotExists() {
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         assertFalse(repo.containsOfIdentity(_listIdDouble));
     }
 
@@ -181,7 +181,7 @@ class MemoListOfItemsRepoTest {
         when(pub.isPrivate()).thenReturn(false);
         when(priv.isPrivate()).thenReturn(true);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(pub);
         repo.save(priv);
 
@@ -204,7 +204,7 @@ class MemoListOfItemsRepoTest {
         when(list1.getUserId()).thenReturn(_userId1Double);
         when(list2.getUserId()).thenReturn(_userId2Double);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(list1);
         repo.save(list2);
 
@@ -223,7 +223,7 @@ class MemoListOfItemsRepoTest {
         when(item.getGenreId()).thenReturn(_genreIdDouble);
         when(item.getName()).thenReturn("My List");
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
@@ -239,7 +239,7 @@ class MemoListOfItemsRepoTest {
         when(item.getName()).thenReturn("My List");
         when(item.getGenreId()).thenReturn(_genreIdDouble);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
@@ -255,7 +255,7 @@ class MemoListOfItemsRepoTest {
         when(item.getName()).thenReturn("Other Name"); // wrong name
         when(item.getGenreId()).thenReturn(_genreIdDouble);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
@@ -271,7 +271,7 @@ class MemoListOfItemsRepoTest {
         when(item.getName()).thenReturn("My List");
         when(item.getGenreId()).thenReturn(_genreId2Double); // wrong genre
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         ListOfItems result = repo.findByOwnerNameAndGenre(_userId1Double, "My List", _genreIdDouble);
@@ -287,7 +287,7 @@ class MemoListOfItemsRepoTest {
         when(item.identity()).thenReturn(id);
         when(item.getName()).thenReturn("My List");
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         Map<ListOfItemsId, String> map = repo.getIdNameMap();
@@ -304,7 +304,7 @@ class MemoListOfItemsRepoTest {
         when(item.identity()).thenReturn(id);
         when(item.getName()).thenReturn("My List");
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(item);
 
         Map<ListOfItemsId, String> map = repo.getIdNameMap();
@@ -328,7 +328,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "List A", _genreIdDouble)).thenReturn(_listPubDouble);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "List A", _genreIdDouble);
@@ -362,7 +362,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId2Double, "U2 List", _genreIdDouble)).thenReturn(_listPubDouble2);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "U1 List", _genreIdDouble);
@@ -390,7 +390,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "My List", _genreIdDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "My List", _genreIdDouble);
@@ -413,7 +413,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "My List", _genreIdDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "My List", _genreIdDouble);
@@ -436,7 +436,7 @@ class MemoListOfItemsRepoTest {
         when(_factoryDouble.createListOfItems(_userId1Double, "My List", _genreIdDouble)).thenReturn(_createdDouble);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId1Double, "My List", _genreIdDouble);
@@ -451,7 +451,7 @@ class MemoListOfItemsRepoTest {
     void findByOwnerNameAndGenreReturnsNullWhenListDoesNotExist() {
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         ListOfItems found = repo.findByOwnerNameAndGenre(_userId1Double, "Unknown", _genreIdDouble);
@@ -473,7 +473,7 @@ class MemoListOfItemsRepoTest {
                 .thenReturn(list);
 
         // SUT
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         repo.addListOfItems(_userId2Double, "Other List", _genreIdDouble);
@@ -486,7 +486,7 @@ class MemoListOfItemsRepoTest {
     @Test
     void findAllKeysShouldReturnEmptyListWhenRepoIsEmpty() {
         // Arrange
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
 
         // Act
         List<ListOfItemsId> keys = repo.findAllKeys();
@@ -508,7 +508,7 @@ class MemoListOfItemsRepoTest {
         when(list1.identity()).thenReturn(id1);
         when(list2.identity()).thenReturn(id2);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(list1);
         repo.save(list2);
 
@@ -531,7 +531,7 @@ class MemoListOfItemsRepoTest {
 
         when(list.identity()).thenReturn(id);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(list);
 
         // Act
@@ -554,7 +554,7 @@ class MemoListOfItemsRepoTest {
         when(list1.identity()).thenReturn(id1);
         when(list2.identity()).thenReturn(id2);
 
-        MemoListOfItemsRepo repo = new MemoListOfItemsRepo(_factoryDouble);
+        MemListOfItemsRepo repo = new MemListOfItemsRepo(_factoryDouble);
         repo.save(list1);
         repo.save(list2);
 
