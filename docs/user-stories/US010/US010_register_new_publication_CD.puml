@@ -38,8 +38,6 @@ package "domain"{
 
     package "repository" {
         interface IPublicationRepo <<Interface>> {
-            + addPublication(Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
-            + getDifferentOf(List<Publication> existentPublications) : List<Publication>
          }
     }
 
@@ -90,7 +88,7 @@ RegisterNewPublicationController "1" ..> "1" IPublicationRepo: <<use>>
 RegisterNewPublicationController "1" ..> "*" Publication : <<use>>
 
 MemPublicationRepo .|> IPublicationRepo
-MemPublicationRepo "1" ---> "1" PublicationFactory : invokes
+RegisterNewPublicationController "1" ---> "1" PublicationFactory : invokes
 MemPublicationRepo "1" -----> "*" Publication : persists
 
 PublicationFactory "1" ..> "*" Publication : <<create>>
