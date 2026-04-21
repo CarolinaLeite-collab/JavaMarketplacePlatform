@@ -50,6 +50,9 @@ public class Edition implements AggregateRoot<EditionId> {
             EditionNumber editionNumber,
             Binding binding) {
 
+        if (identifier == null)
+            throw new IllegalArgumentException("Identifier is required");
+
         if (typeId == null)
             throw new IllegalArgumentException("Publication Type Id is required");
 
@@ -124,10 +127,10 @@ public class Edition implements AggregateRoot<EditionId> {
         if (object instanceof Edition) {
             Edition otherEdition = (Edition) object;
 
-            // Only compare identifier if same publication type
+            // Only compare identifier if same publication type and none are Type NoIdentifier
             if (_typeId.equals(otherEdition._typeId) &&
-                    _identifier != null &&
-                    otherEdition._identifier != null) {
+                    !(_identifier instanceof NoIdentifier) &&
+                    !(otherEdition._identifier instanceof NoIdentifier)) {
                 return _identifier.equals(otherEdition._identifier);
             }
 
@@ -159,18 +162,19 @@ public class Edition implements AggregateRoot<EditionId> {
     }
 
     private boolean isValidIdentifier(PublicationTypeId typeId, Identifier identifier, Year year) {
+
         if (typeId.isBook()) {
             if (year.isAfter(Year.of(1970))) {
                 return identifier instanceof ISBN;
             }
-            return true;
+            return identifier instanceof NoIdentifier;
         }
 
         if (typeId.isMagazine()) {
-            if (year.isAfter(Year.of(1975))) {
+            if (year.isAfter(Year.of(1976))) {
                 return identifier instanceof ISSN;
             }
-            return true;
+            return identifier instanceof NoIdentifier;
         }
 
         return false;

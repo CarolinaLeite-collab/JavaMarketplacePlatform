@@ -17,6 +17,7 @@ class EditionTest {
 
     private Identifier _bookIdentifier;
     private Identifier _magazineIdentifier;
+    private Identifier _noIdentifier;
 
     private PublicationId _publicationIdDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
@@ -35,6 +36,7 @@ class EditionTest {
     private static final String expectedMessageYear = "Publishing Year is required";
     private static final String expectedMessageLanguage = "Language is required";
     private static final String expectedMessageInvalidIdentifier = "Invalid identifier for given type and year";
+    private static final String expectedMessageIdentifier = "Identifier is required";
 
     @BeforeEach
     void setUp() {
@@ -46,6 +48,7 @@ class EditionTest {
 
         _bookIdentifier = mock(ISBN.class);
         _magazineIdentifier = mock(ISSN.class);
+        _noIdentifier = mock(NoIdentifier.class);
 
         _publicationIdDouble = mock(PublicationId.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
@@ -301,12 +304,12 @@ class EditionTest {
     }
 
     @Test
-    void shouldCreateBookEditionWhenYearIsBefore1970AndIdentifierIsNull() {
+    void shouldCreateBookEditionWhenYearIsBefore1970() {
 
         //SUT
         new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1969),
@@ -320,22 +323,28 @@ class EditionTest {
     }
 
     @Test
-    void shouldCreateBookEditionWhenYearIs1970AndIdentifierIsNotIsbn() {
+    void shouldThrowWhenBookYearIsBefore1970AndIdentifierIsNull() {
 
         //SUT
-        new Edition(
-                _bookTypeId,
-                _magazineIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                Year.of(1970),
-                _languageDouble,
-                _dimensionDouble,
-                _weightDouble,
-                _pagesDouble,
-                _editionNumberDouble,
-                _bindingDouble
-        );
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () ->
+                        new Edition(
+                                _bookTypeId,
+                                null,
+                                _publicationIdDouble,
+                                _publishingCompanyIdDouble,
+                                Year.of(1969),
+                                _languageDouble,
+                                _dimensionDouble,
+                                _weightDouble,
+                                _pagesDouble,
+                                _editionNumberDouble,
+                                _bindingDouble
+                        )
+                );
+
+        //Assert
+        assertEquals(expectedMessageIdentifier, exception.getMessage());
 
     }
 
@@ -381,11 +390,11 @@ class EditionTest {
     }
 
     @Test
-    void shouldCreateMagazineEditionWhenYearIsBefore1975AndIdentifierIsNull() {
+    void shouldCreateMagazineEditionWhenYearIsBefore1975() {
         //SUT
         new Edition(
                 _magazineTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1974),
@@ -399,11 +408,11 @@ class EditionTest {
     }
 
     @Test
-    void shouldCreateMagazineEditionWhenYearIs1975AndIdentifierIsNotIssn() {
+    void shouldCreateMagazineEditionWhenYearIs1975AndIdentifierIsNoIdentifier() {
         //SUT
         new Edition(
                 _magazineTypeId,
-                _bookIdentifier,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1975),
@@ -616,15 +625,15 @@ class EditionTest {
     }
 
     @Test
-    void sameAsShouldReturnTrueWhenIdentifiersAreNullAndBusinessFieldsAreEqual() {
+    void sameAsShouldReturnTrueWhenIdentifiersAreNoIdentifierAndBusinessFieldsAreEqual() {
 
         //Arrange
         //SUT
-        Year oldYear = Year.of(1970);
+        Year oldYear = Year.of(1969);
 
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -633,7 +642,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -648,16 +657,16 @@ class EditionTest {
     }
 
     @Test
-    void sameAsShouldReturnFalseWhenIdentifiersAreNullAndPublicationIsDifferent() {
+    void sameAsShouldReturnFalseWhenIdentifiersAreNoIdentifierAndPublicationIsDifferent() {
 
         //Arrange
         //SUT
-        Year oldYear = Year.of(1970);
+        Year oldYear = Year.of(1969);
         PublicationId otherPublicationId = mock(PublicationId.class);
 
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -666,7 +675,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 otherPublicationId,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -685,12 +694,12 @@ class EditionTest {
 
         //Arrange
         //SUT
-        Year oldBookYear = Year.of(1970);
+        Year oldBookYear = Year.of(1969);
         Year oldMagazineYear = Year.of(1975);
 
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldBookYear,
@@ -699,7 +708,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _magazineTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldMagazineYear,
@@ -713,81 +722,17 @@ class EditionTest {
         assertFalse(result);
     }
 
-    @Test
-    void sameAsShouldReturnTrueWhenOneIdentifierIsNullAndBusinessFieldsAreEqual() {
-
-        //Arrange
-        Year oldYear = Year.of(1970);
-
-        //SUT
-        Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        Edition edition2 = new Edition(
-                _bookTypeId,
-                null,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        //Act
-        boolean result = edition1.sameAs(edition2);
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void sameAsShouldReturnFalseWhenOneIdentifierIsNullAndBusinessFieldsAreDifferent() {
-
-        //Arrange
-        //SUT
-        Year oldYear = Year.of(1970);
-        PublicationId otherPublicationId = mock(PublicationId.class);
-
-        Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        Edition edition2 = new Edition(
-                _bookTypeId,
-                null,
-                otherPublicationId,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        //Act
-        boolean result = edition1.sameAs(edition2);
-
-        //Assert
-        assertFalse(result);
-    }
 
     @Test
     void sameAsShouldReturnTrueWhenBusinessFieldsMatch() {
 
         //Arrange
         //SUT
-        Year oldYear = Year.of(1970);
+        Year oldYear = Year.of(1969);
 
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -796,7 +741,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -814,13 +759,13 @@ class EditionTest {
     void sameAsShouldReturnFalseWhenPublishingCompanyDiffers() {
 
         //Arrange
-        Year oldYear = Year.of(1970);
+        Year oldYear = Year.of(1969);
         PublishingCompanyId otherCompany = mock(PublishingCompanyId.class);
 
         //SUT
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -829,7 +774,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 otherCompany,
                 oldYear,
@@ -852,7 +797,7 @@ class EditionTest {
         //SUT
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -861,7 +806,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1959),
@@ -879,13 +824,13 @@ class EditionTest {
     void sameAsShouldReturnFalseWhenLanguageDiffers() {
 
         //Arrange
-        Year oldYear = Year.of(1970);
+        Year oldYear = Year.of(1969);
         Language otherLanguage = mock(Language.class);
 
         //SUT
         Edition edition1 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -894,7 +839,7 @@ class EditionTest {
 
         Edition edition2 = new Edition(
                 _bookTypeId,
-                null,
+                _noIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -1073,6 +1018,7 @@ class EditionTest {
         // Assert
         assertTrue(result);
     }
+
     @Test
     void isByPublicationIdDifferentPublicationReturnsFalse() {
         // Arrange
@@ -1099,6 +1045,7 @@ class EditionTest {
         // Assert
         assertFalse(result);
     }
+
     @Test
     void isByPublishingCompanyIdSamePublishingCompanyReturnsTrue() {
         // SUT
@@ -1110,6 +1057,7 @@ class EditionTest {
         // Assert
         assertTrue(result);
     }
+
     @Test
     void isByPublishingCompanyIdDifferentPublishingCompanyReturnsFalse() {
         // Arrange
@@ -1136,4 +1084,5 @@ class EditionTest {
         // Assert
         assertFalse(result);
     }
+
 }
