@@ -19,12 +19,12 @@ import java.util.*;
  * </p>
  */
 
-public class MemoAuthorRepo implements IAuthorRepo {
+public class MemAuthorRepo implements IAuthorRepo {
 
     private Map<AuthorId, Author> DATA = new HashMap<AuthorId, Author>();
     private final AuthorFactory _authorFactory;
 
-    public MemoAuthorRepo(AuthorFactory authorFactory) {
+    public MemAuthorRepo(AuthorFactory authorFactory) {
 
         _authorFactory = authorFactory;
 
