@@ -1,0 +1,86 @@
+@startuml
+
+title MiteLovers - Social Network - OOA-G1
+
+skinparam monochrome false
+
+skinparam shadowing true
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+
+object RegisteredUser {
+
+}
+
+object Author <<external>> {
+
+}
+
+object PublishingCompany <<external>> {
+
+}
+
+object Moderator {
+
+}
+
+object Post {
+
+}
+
+object PostContent {
+
+}
+
+object Tag {
+
+}
+
+object PublicationRef <<external>> {
+
+}
+
+
+object Comment {
+
+}
+
+object Denunciation {
+
+}
+
+object Ban {
+
+}
+
+
+
+Author --|> RegisteredUser : is a
+PublishingCompany --|> RegisteredUser : is a
+Moderator --|> RegisteredUser : is a
+
+RegisteredUser "1" --> "1..*" Post : creates
+Post "1" *-- "1" PostContent : includes
+Post "1" --> "1..*" Tag : has
+PostContent "1" --> "0..*" PublicationRef : references
+
+Post "1" --> "0..*" Comment : has
+RegisteredUser "1" --> "0..*" Comment : writes
+
+RegisteredUser "1" --> "0..*" Denunciation : denounces
+Denunciation "1" --> "1" Post : targets
+Denunciation "1" --> "0..1" Comment : targets
+
+Moderator "1" --> "0..*" Ban : issues
+Ban "1" --> "1" RegisteredUser : applied to
+
+Moderator ..> Post : removes
+Moderator ..> Comment : removes
+
+@enduml
