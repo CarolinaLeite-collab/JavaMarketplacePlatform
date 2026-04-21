@@ -26,13 +26,13 @@ import java.util.*;
  * </p>
  */
 
-public class MemoLibraryRepo implements ILibraryRepo {
+public class MemLibraryRepo implements ILibraryRepo {
 
     private final Map<LibraryId, Library> DATA = new HashMap<LibraryId, Library>();
     private LibraryFactory _libraryFactory;
 
 
-    public MemoLibraryRepo(LibraryFactory libraryFactory) {
+    public MemLibraryRepo(LibraryFactory libraryFactory) {
         _libraryFactory = libraryFactory;
     }
 

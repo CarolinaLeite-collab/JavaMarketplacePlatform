@@ -20,7 +20,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-class MemoLibraryRepoTest {
+class MemLibraryRepoTest {
 
     private Email _emailDouble;
     private UserId _userIdDouble;
@@ -46,7 +46,7 @@ class MemoLibraryRepoTest {
         when(libraryDouble.identity()).thenReturn(libraryIdDouble);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         Library result = repo.save(libraryDouble);
@@ -69,7 +69,7 @@ class MemoLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -96,7 +96,7 @@ class MemoLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -121,7 +121,7 @@ class MemoLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -143,7 +143,7 @@ class MemoLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -170,7 +170,7 @@ class MemoLibraryRepoTest {
         when(library3Double.identity()).thenReturn(libraryId3Double);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -195,7 +195,7 @@ class MemoLibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
 
         // SUT
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
+        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         Library mylibrary = libraryRepo.addLibrary(_userIdDouble);
@@ -214,7 +214,7 @@ class MemoLibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
 
         // SUT
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
+        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         libraryRepo.addLibrary(_userIdDouble);
@@ -234,7 +234,7 @@ class MemoLibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
 
         // SUT
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
+        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
         libraryRepo.addLibrary(_userIdDouble);
 
         // Act
@@ -263,7 +263,7 @@ class MemoLibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(otherUserIdDouble)).thenReturn(otherLibraryDouble);
 
         // SUT
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble);
+        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
         libraryRepo.addLibrary(otherUserIdDouble);
 
         // Act
@@ -277,7 +277,7 @@ class MemoLibraryRepoTest {
     void findLibraryByUserShouldThrowExceptionWhenLibraryDoesNotExist() {
 
         // Arrange
-        ILibraryRepo libraryRepo = new MemoLibraryRepo(_libraryFactoryDouble); // SUT
+        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble); // SUT
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
@@ -296,7 +296,7 @@ class MemoLibraryRepoTest {
         when(libraryDouble.getItemsIdInLibrary()).thenReturn(Arrays.asList(itemIdInLibrary1, itemIdInLibrary2));
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -322,7 +322,7 @@ class MemoLibraryRepoTest {
         when(otherUserIdDouble.getEmail()).thenReturn(otherEmailDouble);
 
         // SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
 
         // Act
         repo.save(libraryDouble);
@@ -353,7 +353,7 @@ class MemoLibraryRepoTest {
         when(_libraryFactoryDouble.createLibrary(userId2Double)).thenReturn(library2Double);
 
         //SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
         repo.addLibrary(_userIdDouble);
         repo.addLibrary(userId2Double);
 
@@ -377,7 +377,7 @@ class MemoLibraryRepoTest {
         when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(itemIdInLibrary1Double));
 
         //SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
         repo.addLibrary(_userIdDouble);
 
 
@@ -402,7 +402,7 @@ class MemoLibraryRepoTest {
         when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(itemIdInLibrary1Double));
 
         //SUT
-        MemoLibraryRepo repo = new MemoLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
         repo.addLibrary(_userIdDouble);
 
 
