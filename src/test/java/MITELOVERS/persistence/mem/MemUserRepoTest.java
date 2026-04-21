@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoUserRepoTest {
+class MemUserRepoTest {
 
     private User _user1Double;
     private User _user2Double;
@@ -49,7 +49,7 @@ class MemoUserRepoTest {
 
     @Test
     void saveShouldReturnUserForNewUser() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         User result = repo.save(_user1Double);
 
@@ -58,7 +58,7 @@ class MemoUserRepoTest {
 
     @Test
     void saveShouldAddUserToRepo() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         repo.save(_user1Double);
 
@@ -67,7 +67,7 @@ class MemoUserRepoTest {
 
     @Test
     void saveShouldAllowMultipleDistinctUsers() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         repo.save(_user1Double);
         repo.save(_user2Double);
@@ -81,7 +81,7 @@ class MemoUserRepoTest {
                 .thenReturn(_user1Double);
         when(_user1Double.identity()).thenReturn(_userId1Double);
 
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         User result = repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
@@ -94,7 +94,7 @@ class MemoUserRepoTest {
                 .thenReturn(_user1Double);
         when(_user1Double.identity()).thenReturn(_userId1Double);
 
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
         assertThrows(IllegalStateException.class,
@@ -107,7 +107,7 @@ class MemoUserRepoTest {
                 .thenReturn(_user1Double);
         when(_user1Double.identity()).thenReturn(_userId1Double);
 
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
         assertThrows(IllegalStateException.class,
@@ -122,7 +122,7 @@ class MemoUserRepoTest {
                 .thenReturn(_user1Double);
         when(_user1Double.identity()).thenReturn(_userId1Double);
 
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.addUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
         IllegalStateException ex = assertThrows(IllegalStateException.class,
@@ -133,7 +133,7 @@ class MemoUserRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnTrueIfUserExists() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         assertTrue(repo.containsOfIdentity(_userId1Double));
@@ -141,14 +141,14 @@ class MemoUserRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnFalseIfUserDoesNotExist() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         assertFalse(repo.containsOfIdentity(_userId1Double));
     }
 
     @Test
     void findAllShouldReturnUnmodifiableCollection() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         Iterable<User> result = repo.findAll();
@@ -159,7 +159,7 @@ class MemoUserRepoTest {
 
     @Test
     void ofIdentityShouldReturnUserIfExists() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         Optional<User> result = repo.ofIdentity(_userId1Double);
@@ -170,7 +170,7 @@ class MemoUserRepoTest {
 
     @Test
     void ofIdentityShouldReturnEmptyIfUserDoesNotExist() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         Optional<User> result = repo.ofIdentity(_userId1Double);
 
@@ -179,14 +179,14 @@ class MemoUserRepoTest {
 
     @Test
     void findAllKeysShouldReturnEmptyWhenNoUser() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
 
         assertTrue(repo.findAllKeys().isEmpty());
     }
 
     @Test
     void findAllKeysShouldReturnAllKeys() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
         repo.save(_user2Double);
 
@@ -199,7 +199,7 @@ class MemoUserRepoTest {
 
     @Test
     void findAllKeysShouldReturnMutableList() {
-        MemoUserRepo repo = new MemoUserRepo(_userFactoryDouble);
+        MemUserRepo repo = new MemUserRepo(_userFactoryDouble);
         repo.save(_user1Double);
 
         List<UserId> keys = repo.findAllKeys();

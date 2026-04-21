@@ -11,13 +11,13 @@ import java.util.*;
 /**
  * Repository responsible for managing {@link User} entities.
  */
-public class MemoUserRepo implements IUserRepo {
+public class MemUserRepo implements IUserRepo {
 
     private final UserFactory _userFactory;
     private final Map<UserId, User> DATA = new HashMap<UserId, User>();
 
 
-    public MemoUserRepo(UserFactory userFactory){
+    public MemUserRepo(UserFactory userFactory){
         _userFactory = userFactory;
     }
 
