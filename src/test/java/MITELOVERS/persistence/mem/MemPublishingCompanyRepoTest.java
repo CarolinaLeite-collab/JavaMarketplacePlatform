@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoPublishingCompanyRepoTest {
+class MemPublishingCompanyRepoTest {
 
     private PublishingCompanyFactory _pcfDouble;
 
@@ -29,7 +29,7 @@ class MemoPublishingCompanyRepoTest {
     void constructorShouldCreateNonNullPublishingCompanyRepo() {
 
         //SUT + Act
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         //Assert
         assertNotNull(repo);
@@ -45,7 +45,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         //Act
         PublishingCompany pubCoResult = repo.registerPublishingCompany(pubCoName);
@@ -65,7 +65,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
 
         // SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(pubCoName);
@@ -91,7 +91,7 @@ class MemoPublishingCompanyRepoTest {
         when(pubCoDouble2.sameAs(pubCoName)).thenReturn(true);
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(pubCoName);
@@ -115,7 +115,7 @@ class MemoPublishingCompanyRepoTest {
         when(pubCoDouble2.sameAs(pubCoName)).thenReturn(true);
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(pubCoName);
@@ -151,7 +151,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName3)).thenReturn(pubCoDouble3);
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(pubCoName);
@@ -179,7 +179,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
         repo.registerPublishingCompany(pubCoName);
 
         //Act
@@ -195,7 +195,7 @@ class MemoPublishingCompanyRepoTest {
     void ofIdentityShouldReturnEmptyOptionalWhenIdNotPresent(){
 
         //SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         PublishingCompanyId notSavedIdDouble = mock(PublishingCompanyId.class);
 
@@ -227,7 +227,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
 
         // SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         // Act
         repo.registerPublishingCompany(pubCoName1);
@@ -260,7 +260,7 @@ class MemoPublishingCompanyRepoTest {
         when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
 
         // SUT
-        MemoPublishingCompanyRepo repo = new MemoPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
 
         repo.registerPublishingCompany(pubCoName1);
         repo.registerPublishingCompany(pubCoName2);

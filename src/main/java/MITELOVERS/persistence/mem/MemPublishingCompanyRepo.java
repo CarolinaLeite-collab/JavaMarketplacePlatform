@@ -15,12 +15,12 @@ import java.util.*;
  * publishing companies as an unmodifiable list.
  */
 
-public class MemoPublishingCompanyRepo implements IPublishingCompanyRepo {
+public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     private final Map<PublishingCompanyId, PublishingCompany> DATA = new HashMap<PublishingCompanyId, PublishingCompany>();
     private final PublishingCompanyFactory _publishingCompanyFactory;
 
-    public MemoPublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
+    public MemPublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
 
         _publishingCompanyFactory = publishingCompanyFactory;
 
