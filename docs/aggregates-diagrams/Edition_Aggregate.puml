@@ -63,6 +63,7 @@ Package "edition" {
         class Language <<ValueObject>>
         class ISBN <<ValueObject>>
         class ISSN <<ValueObject>>
+        class NoIdentifier <<ValueObject>>
 
         class Dimension <<ValueObject>>
         class Weight <<ValueObject>>
@@ -117,6 +118,7 @@ Edition "*" --> "1" Language : has
 Edition "1" --> "1" Identifier : has
 Identifier <|.. ISBN
 Identifier <|.. ISSN
+Identifier <|.. NoIdentifier
 
 ' optional atributes
 Edition "*" --> "0..1" Dimension : has
