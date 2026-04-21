@@ -33,19 +33,11 @@ public class ItemDetailsMapper {
             PublicationType publicationType,
             Author author) {
 
-        String identifier = "no identifier";
-
-        if (edition.getIdentifier() instanceof ISBN || edition.getIdentifier() instanceof ISSN) {
-
-            identifier = edition.getIdentifier().toString();
-
-        }
-
         return new ItemDetailsDTO(
                 publication.getTitle().toString(),
                 author.getName(),
                 publicationType.toString(),
-                identifier
+                edition.getIdentifier().toString()
         );
     }
 }

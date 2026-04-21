@@ -6,6 +6,7 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.valueobject.ISBN;
 import MITELOVERS.domain.valueobject.ISSN;
+import MITELOVERS.domain.valueobject.NoIdentifier;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.ItemDetailsDTO;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,11 @@ class ItemDetailsMapperTest {
         Title titleDouble = mock(Title.class);
         when(titleDouble.toString()).thenReturn("titleDouble");
 
+        NoIdentifier noIdentifier = mock(NoIdentifier.class);
+        when(noIdentifier.toString()).thenReturn("no identifier");
+
         Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getIdentifier()).thenReturn(noIdentifier);
         Publication publicationDouble = mock(Publication.class);
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
         PublicationType publicationTypeDouble = mock(PublicationType.class);
