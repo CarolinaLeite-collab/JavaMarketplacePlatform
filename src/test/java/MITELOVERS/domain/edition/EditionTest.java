@@ -1075,14 +1075,93 @@ class EditionTest {
 
     @Test
     void isByPublishingCompanyIdNullReturnsFalse() {
-        // SUT
+        //SUT
         Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
-        // Act
+        //Act
         boolean result = e.isByPublishingCompanyId(null);
 
-        // Assert
+        //Assert
         assertFalse(result);
     }
 
+    @Test
+    void sameAsShouldEnterIdentifierComparisonBranch() {
+        //Arrange
+        Identifier sameIdentifier = mock(ISBN.class);
+
+        Edition edition1 = new Edition(
+                _bookTypeId,
+                sameIdentifier,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                Year.of(2020),
+                _languageDouble
+        );
+
+        Edition edition2 = new Edition(
+                _bookTypeId, // same type instance
+                sameIdentifier, // same real identifier object
+                mock(PublicationId.class),
+                mock(PublishingCompanyId.class),
+                Year.of(2021),
+                mock(Language.class)
+        );
+
+        // Act
+        boolean result = edition1.sameAs(edition2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldThrowWhenBookYearIsBefore1970AndIdentifierIsIsbn() {
+        //Act
+        //SUT
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () ->
+                        new Edition(
+                                _bookTypeId,
+                                _bookIdentifier,
+                                _publicationIdDouble,
+                                _publishingCompanyIdDouble,
+                                Year.of(1969),
+                                _languageDouble,
+                                _dimensionDouble,
+                                _weightDouble,
+                                _pagesDouble,
+                                _editionNumberDouble,
+                                _bindingDouble
+                        )
+                );
+
+        //Arrange
+        assertEquals(expectedMessageInvalidIdentifier, exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenMagazineYearIsBeforeOrEqualTo1976AndIdentifierIsIssn() {
+        //Act
+        //SUT
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () ->
+                        new Edition(
+                                _magazineTypeId,
+                                _magazineIdentifier,
+                                _publicationIdDouble,
+                                _publishingCompanyIdDouble,
+                                Year.of(1975),
+                                _languageDouble,
+                                _dimensionDouble,
+                                _weightDouble,
+                                _pagesDouble,
+                                _editionNumberDouble,
+                                _bindingDouble
+                        )
+                );
+
+        //Arrange
+        assertEquals(expectedMessageInvalidIdentifier, exception.getMessage());
+    }
 }
