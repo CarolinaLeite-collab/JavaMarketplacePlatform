@@ -29,6 +29,7 @@ package "controller" {
         + registerNewAppraisalEntity(name : Name, publicationTypeIds : List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
         + getPublicationTypes() : Iterable<PublicationType>
         + getGenres() : Iterable<Genre>
+        + addAppraisalEntity(name : Name, publicationTypeIds: List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
 
     }
 
@@ -38,7 +39,7 @@ package "persistence" {
 
     package "mem" {
 
-        class MemoAppraisalEntityRepo {
+        class MemAppraisalEntityRepo {
 
         }
 
@@ -58,7 +59,6 @@ package "domain" {
     package "repository" {
 
         interface IAppraisalEntityRepo <<Interface>> {
-        + addAppraisalEntity(name : Name, \npublicationTypeIds: List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
 
         }
 
@@ -137,7 +137,7 @@ RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : calls
 RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : calls
 RegisterNewAppraisalEntityController "1" ....> "*" AppraisalEntity : <<use>>
 
-MemoAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : invokes
+MemAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : invokes
 
 AppraisalEntityFactory "1" ..> "*" AppraisalEntity : <<create>>
 
@@ -145,9 +145,9 @@ AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
 AppraisalEntity "1" --> "1..*" GenreId : references
 AppraisalEntity "1" --> "1..*" PublicationTypeId : references
 AppraisalEntity "1" *-- "1" Name : has
-AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
+AppraisalEntity "*" <- "1" MemAppraisalEntityRepo : persists
 
-IAppraisalEntityRepo <|.. MemoAppraisalEntityRepo
+IAppraisalEntityRepo <|.. MemAppraisalEntityRepo
 MemoGenreRepo ..|> IGenreRepo
 MemoPublicationTypeRepo ..|> IPublicationTypeRepo
 
