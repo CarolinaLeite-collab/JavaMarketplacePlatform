@@ -19,12 +19,12 @@ import java.util.*;
  * </p>
  */
 
-public class MemoAuctionRepo implements IAuctionRepo {
+public class MemAuctionRepo implements IAuctionRepo {
 
     private final Map<AuctionId, Auction> DATA;
     private final AuctionFactory _auctionFactory;
 
-    MemoAuctionRepo(AuctionFactory auctionFactory) {
+    MemAuctionRepo(AuctionFactory auctionFactory) {
         DATA = new HashMap<>();
         _auctionFactory = auctionFactory;
     }

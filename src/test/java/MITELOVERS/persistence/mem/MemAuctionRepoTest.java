@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoAuctionRepoTest {
-    private MemoAuctionRepo _repo;
+class MemAuctionRepoTest {
+    private MemAuctionRepo _repo;
     private AuctionFactory _auctionFactoryDouble;
     private Auction _auctionDouble1;
     private Auction _auctionDouble2;
@@ -86,13 +86,13 @@ class MemoAuctionRepoTest {
     @Test
     void shouldConstructRepo() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
     }
 
     @Test
     void saveStoresAndReturnsAuction() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         Auction result = _repo.save(_auctionDouble1);
@@ -105,7 +105,7 @@ class MemoAuctionRepoTest {
     @Test
     void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _auctionIds = _repo.findAllKeys();
@@ -117,7 +117,7 @@ class MemoAuctionRepoTest {
     @Test
     void findAllKeysShouldReturnAllKeys() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.save(_auctionDouble1);
@@ -134,7 +134,7 @@ class MemoAuctionRepoTest {
     @Test
     void findAllKeysShouldReturnCopyNotAffectingRepo() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.save(_auctionDouble1);
@@ -149,7 +149,7 @@ class MemoAuctionRepoTest {
     @Test
     void findAllKeysOrderShouldNotBeGuaranteed() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         _repo.save(_auctionDouble1);
         _repo.save(_auctionDouble2);
@@ -167,7 +167,7 @@ class MemoAuctionRepoTest {
     @Test
     void ofIdentityReturnsOptionalWithAuctionIfPresent() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.save(_auctionDouble1);
@@ -182,7 +182,7 @@ class MemoAuctionRepoTest {
     @Test
     void ofIdentityReturnsEmptyOptionalIfNotPresent() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         Optional<Auction> result = _repo.ofIdentity(mock(AuctionId.class));
@@ -194,7 +194,7 @@ class MemoAuctionRepoTest {
     @Test
     void containsOfIdentityReturnsTrueWhenPresent() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.save(_auctionDouble1);
@@ -206,7 +206,7 @@ class MemoAuctionRepoTest {
     @Test
     void containsOfIdentityReturnsFalseWhenNotPresent() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.save(_auctionDouble1);
@@ -223,7 +223,7 @@ class MemoAuctionRepoTest {
                 null, _startDate, _endDate)).thenReturn(_auctionDouble1);
 
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         Auction created = _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
@@ -235,7 +235,7 @@ class MemoAuctionRepoTest {
     @Test
     void addAuctionShouldStoreAuctionInRepository() {
         //SUT
-        _repo = new MemoAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo(_auctionFactoryDouble);
 
         //Act
         _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
