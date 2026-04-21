@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
@@ -20,7 +21,7 @@ class RegisterNewPublicationControllerTest {
 
     @Test
     void registerPublicationCallsRepoWithCorrectArguments() {
-        //arrange
+        //Arrange
         IPublicationRepo iPublicationRepo = mock(IPublicationRepo.class);
         Year yearDouble = mock(Year.class);
         Title titleDouble = mock(Title.class);
@@ -28,40 +29,53 @@ class RegisterNewPublicationControllerTest {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication publicationDouble = mock(Publication.class);
         UserId userIdDouble = mock(UserId.class);
+        PublicationFactory publicationFactory = mock(PublicationFactory.class);
 
-        when(iPublicationRepo.addPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
+        when(publicationFactory.createPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
+                .thenReturn(publicationDouble);
+        when(iPublicationRepo.containsOfIdentity(publicationDouble.identity()))
+                .thenReturn(false);
+        when(iPublicationRepo.save(publicationDouble))
                 .thenReturn(publicationDouble);
 
+
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepo, userIdDouble);
+        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepo, publicationFactory, userIdDouble);
 
-        //act
-        Publication result = controller.registerPublication( titleDouble, authorIdDouble, yearDouble, genreIdDouble);
+        //Act
+        Publication result = controller.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble);
 
-        //assert
+        //Assert
         assertSame(publicationDouble, result);
     }
 
     @Test
     void registerPublicationThrowsWhenRepoThrows() {
-        //arrange
+        //Arrange
         UserId userIdDouble = mock(UserId.class);
-
+        PublicationFactory publicationFactory = mock(PublicationFactory.class);
         IPublicationRepo iPublicationRepoDouble = mock(IPublicationRepo.class);
-        when(iPublicationRepoDouble.addPublication(any(), any(), any(), any()))
+
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        Year yearDouble = mock(Year.class);
+        GenreId genreIdDouble = mock(GenreId.class);
+        Publication publicationDouble = mock(Publication.class);
+
+        when(publicationFactory.createPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
+                .thenReturn(publicationDouble);
+        when(iPublicationRepoDouble.containsOfIdentity(any()))
+                .thenReturn(false);
+        when(iPublicationRepoDouble.save(publicationDouble))
                 .thenThrow(new IllegalArgumentException("Duplicate"));
 
         //SUT
-        RegisterNewPublicationController controller = new RegisterNewPublicationController(iPublicationRepoDouble, userIdDouble);
+        RegisterNewPublicationController controller =
+                new RegisterNewPublicationController(iPublicationRepoDouble, publicationFactory, userIdDouble);
 
-        //act and assert
+        //Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                controller.registerPublication(
-                        mock(Title.class),
-                        mock(AuthorId.class),
-                        mock(Year.class),
-                        mock(GenreId.class)
-                )
+                controller.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble)
         );
     }
 
@@ -69,10 +83,11 @@ class RegisterNewPublicationControllerTest {
     void constructorThrowsWhenRepoIsNull() {
         //Arrange
         UserId userIdDouble = mock(UserId.class);
+        PublicationFactory publicationFactory = mock(PublicationFactory.class);
 
         //assert
         assertThrows(NullPointerException.class, () ->
-                new RegisterNewPublicationController(null, userIdDouble)
+                new RegisterNewPublicationController(null, publicationFactory, userIdDouble)
         );
     }
 
