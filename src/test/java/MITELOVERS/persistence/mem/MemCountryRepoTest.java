@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoCountryRepoTest {
+class MemCountryRepoTest {
     private CountryFactory _countryFactoryDouble;
 
     @BeforeEach
@@ -26,10 +26,10 @@ class MemoCountryRepoTest {
     @Test
     void shouldConstructRepoSuccessfully() {
         // SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo memCountryRepo = new MemCountryRepo(_countryFactoryDouble);
 
         // Assert
-        assertNotNull(memoCountryRepo);
+        assertNotNull(memCountryRepo);
     }
 
     @Test
@@ -41,10 +41,10 @@ class MemoCountryRepoTest {
         when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
 
         // SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo memCountryRepo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
-        Country result = memoCountryRepo.addCountry("Portugal");
+        Country result = memCountryRepo.addCountry("Portugal");
 
         // Assert
         assertNotNull(result);
@@ -60,14 +60,14 @@ class MemoCountryRepoTest {
         when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
 
         // SUT
-        MemoCountryRepo memoCountryRepo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo memCountryRepo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
-        memoCountryRepo.addCountry("Portugal");
+        memCountryRepo.addCountry("Portugal");
 
         // Assert
         IllegalArgumentException result = assertThrows(IllegalArgumentException.class,
-                () -> memoCountryRepo.addCountry("Portugal"));
+                () -> memCountryRepo.addCountry("Portugal"));
         assertEquals("Country already exists in the repository", result.getMessage());
     }
 
@@ -79,7 +79,7 @@ class MemoCountryRepoTest {
         when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         Country result = repo.save(countryDouble);
@@ -96,7 +96,7 @@ class MemoCountryRepoTest {
         when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         repo.save(countryDouble);
@@ -113,7 +113,7 @@ class MemoCountryRepoTest {
         CountryId countryIdDouble = mock(CountryId.class);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         Optional<Country> result = repo.ofIdentity(countryIdDouble);
@@ -130,7 +130,7 @@ class MemoCountryRepoTest {
         when(countryDouble.identity()).thenReturn(countryIdDouble);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         repo.save(countryDouble);
@@ -146,7 +146,7 @@ class MemoCountryRepoTest {
         CountryId countryIdDouble = mock(CountryId.class);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         boolean result = repo.containsOfIdentity(countryIdDouble);
@@ -167,7 +167,7 @@ class MemoCountryRepoTest {
         when(country2Double.identity()).thenReturn(countryId2Double);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         repo.save(country1Double);
@@ -183,7 +183,7 @@ class MemoCountryRepoTest {
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         Iterable<Country> result = repo.findAll();
@@ -203,7 +203,7 @@ class MemoCountryRepoTest {
         when(country2Double.identity()).thenReturn(countryId2Double);
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
         repo.save(country1Double);
         repo.save(country2Double);
 
@@ -222,7 +222,7 @@ class MemoCountryRepoTest {
         // (Nothing to arrange specifically for an empty repo)
 
         // SUT
-        MemoCountryRepo repo = new MemoCountryRepo(_countryFactoryDouble);
+        MemCountryRepo repo = new MemCountryRepo(_countryFactoryDouble);
 
         // Act
         List<CountryId> result = repo.findAllKeys();

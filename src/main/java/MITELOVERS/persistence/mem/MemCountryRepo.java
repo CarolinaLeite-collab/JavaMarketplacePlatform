@@ -10,11 +10,11 @@ import java.util.*;
 /**
  * In-memory repository for Country aggregates.
  */
-public class MemoCountryRepo implements ICountryRepo {
+public class MemCountryRepo implements ICountryRepo {
     private final Map<CountryId, Country> DATA = new HashMap<CountryId, Country>();
     private final CountryFactory _countryFactory;
 
-    public MemoCountryRepo(CountryFactory countryFactory) {
+    public MemCountryRepo(CountryFactory countryFactory) {
         _countryFactory = countryFactory;
     }
 
