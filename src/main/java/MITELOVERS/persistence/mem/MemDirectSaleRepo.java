@@ -22,12 +22,12 @@ import java.util.*;
  * </p>
  */
 
-public class MemoDirectSaleRepo implements IDirectSaleRepo {
+public class MemDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
     private final DirectSaleFactory _factory;
 
-    public MemoDirectSaleRepo(DirectSaleFactory factory) {
+    public MemDirectSaleRepo(DirectSaleFactory factory) {
         _factory = factory;
     }
 

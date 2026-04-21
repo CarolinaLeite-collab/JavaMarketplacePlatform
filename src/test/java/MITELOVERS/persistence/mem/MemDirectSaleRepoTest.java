@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class MemoDirectSaleRepoTest {
+class MemDirectSaleRepoTest {
 
     private DirectSaleFactory _factoryDouble;
     private DirectSale _ds1Double;
@@ -50,7 +50,7 @@ class MemoDirectSaleRepoTest {
     void constructorShouldBuildDirectSaleRepo() {
 
         // Act & SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         // Assert
         assertNotNull(dsr);
@@ -64,7 +64,7 @@ class MemoDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         // act
         DirectSale result = dsr.addDirectSale(_itemsId1, priceDouble, _periodDouble);
@@ -83,7 +83,7 @@ class MemoDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         dsr.save(_ds1Double);
@@ -105,7 +105,7 @@ class MemoDirectSaleRepoTest {
         when(_ds2Double.identity()).thenReturn(dsIdDouble2);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
         //act
         dsr.save(_ds1Double);
         dsr.save(_ds2Double);
@@ -126,7 +126,7 @@ class MemoDirectSaleRepoTest {
                 .thenThrow(new IllegalStateException("boom"));
 
         // SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         // Act & Assert
         assertThrows(IllegalStateException.class, () -> dsr.addDirectSale(_itemsId1, priceDouble, null));
@@ -136,7 +136,7 @@ class MemoDirectSaleRepoTest {
     @Test
     void shouldSaveDirectSale(){
         // SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         DirectSale ds = dsr.save(_ds1Double);
@@ -151,7 +151,7 @@ class MemoDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         dsr.save(_ds1Double);
@@ -166,7 +166,7 @@ class MemoDirectSaleRepoTest {
     @Test
     void shouldReturnEmptyWhenDSNotPresent(){
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble);
@@ -181,7 +181,7 @@ class MemoDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         dsr.save(_ds1Double);
@@ -197,7 +197,7 @@ class MemoDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         dsr.save(_ds1Double);
@@ -215,7 +215,7 @@ class MemoDirectSaleRepoTest {
         when(_ds2Double.identity()).thenReturn(dsIdDouble);
 
         //SUT
-        MemoDirectSaleRepo dsr = new MemoDirectSaleRepo(_factoryDouble);
+        MemDirectSaleRepo dsr = new MemDirectSaleRepo(_factoryDouble);
 
         //act
         dsr.save(_ds1Double);
