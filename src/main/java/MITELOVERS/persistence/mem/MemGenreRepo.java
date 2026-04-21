@@ -15,11 +15,11 @@ import java.util.*;
  * </p>
  */
 
-public class MemoGenreRepo implements IGenreRepo {
+public class MemGenreRepo implements IGenreRepo {
     private final Map<GenreId, Genre> DATA = new HashMap<>();
     private final GenreFactory _genreFactory;
 
-    public MemoGenreRepo(GenreFactory genreFactory) {
+    public MemGenreRepo(GenreFactory genreFactory) {
         _genreFactory = genreFactory;
     }
 
