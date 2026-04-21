@@ -16,12 +16,12 @@ import java.util.*;
  * </p>
  */
 
-public class MemoPublicationTypeRepo implements IPublicationTypeRepo {
+public class MemPublicationTypeRepo implements IPublicationTypeRepo {
 
     private final Map<PublicationTypeId, PublicationType> DATA = new HashMap<PublicationTypeId, PublicationType>();
     private final PublicationTypeFactory _publicationTypeFactory;
 
-    public MemoPublicationTypeRepo(PublicationTypeFactory publicationTypeFactory){
+    public MemPublicationTypeRepo(PublicationTypeFactory publicationTypeFactory){
 
         _publicationTypeFactory = publicationTypeFactory;
 

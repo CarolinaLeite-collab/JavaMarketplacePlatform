@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MemoPublicationTypeRepoTest {
+class MemPublicationTypeRepoTest {
 
     @Test
     void constructorShouldCreateNonNullPublicationTypeRepo() {
@@ -20,7 +20,7 @@ class MemoPublicationTypeRepoTest {
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
 
         //SUT + Act
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         //Assert
         assertNotNull(repo);
@@ -38,7 +38,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationType1Double);
 
         // SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         // Act
         PublicationType pubTypeResult = repo.addPublicationType(pubTypeName);
@@ -57,7 +57,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType("BOOK")).thenReturn(publicationType1Double);
 
         // SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         // Act
         repo.addPublicationType(pubTypeName);
@@ -88,7 +88,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType(pubTypeName)).thenReturn(firstPublicationTypeDouble).thenReturn(secondPublicationTypeDouble);
 
         // SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         //Act
         repo.addPublicationType(pubTypeName);
@@ -123,7 +123,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType("POKEMON CARD")).thenReturn(publicationType3Double);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         //Act
         repo.addPublicationType(pubTypeName1);
@@ -154,7 +154,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType(pubTypeName)).thenReturn(firstPublicationTypeDouble).thenReturn(secondPublicationTypeDouble);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         // Act
         repo.addPublicationType(pubTypeName);
@@ -172,7 +172,7 @@ class MemoPublicationTypeRepoTest {
         PublicationTypeFactory ptfDouble = mock(PublicationTypeFactory.class);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         //This id was never saved in MemoRepo
         PublicationTypeId notSavedIdDouble = mock(PublicationTypeId.class);
@@ -198,7 +198,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType(pubTypeName)).thenReturn(publicationTypeDouble);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
         repo.addPublicationType(pubTypeName);
 
         // Act
@@ -236,7 +236,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType(pubTypeName3)).thenReturn(publicationType3Double);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
         //Act
         repo.addPublicationType(pubTypeName1);
@@ -279,7 +279,7 @@ class MemoPublicationTypeRepoTest {
         when(ptfDouble.createPublicationType(pubTypeName3)).thenReturn(publicationType3Double);
 
         //SUT
-        MemoPublicationTypeRepo repo = new MemoPublicationTypeRepo(ptfDouble);
+        MemPublicationTypeRepo repo = new MemPublicationTypeRepo(ptfDouble);
 
 
         repo.addPublicationType(pubTypeName1);
