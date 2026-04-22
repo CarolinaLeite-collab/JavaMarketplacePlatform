@@ -129,15 +129,13 @@ Package "ddd" {
 
 
 '==== Interactions ====
-
 RegisterNewAppraisalEntityUI "1" ..> "1" RegisterNewAppraisalEntityController : invokes
 
 RegisterNewAppraisalEntityController "1" ..> "1" IGenreRepo : calls
 RegisterNewAppraisalEntityController "1" ..> "1" IPublicationTypeRepo : calls
 RegisterNewAppraisalEntityController "1" ..> "1" IAppraisalEntityRepo : calls
 RegisterNewAppraisalEntityController "1" ....> "*" AppraisalEntity : <<use>>
-
-MemAppraisalEntityRepo "1" --> "1" AppraisalEntityFactory : invokes
+RegisterNewAppraisalEntityController "1" --> "1" AppraisalEntityFactory : invokes
 
 AppraisalEntityFactory "1" ..> "*" AppraisalEntity : <<create>>
 
@@ -154,6 +152,5 @@ MemoPublicationTypeRepo ..|> IPublicationTypeRepo
 IAppraisalEntityRepo ----|> IRepository
 IPublicationTypeRepo -|> IRepository
 IGenreRepo -|> IRepository
-
 
 @enduml
