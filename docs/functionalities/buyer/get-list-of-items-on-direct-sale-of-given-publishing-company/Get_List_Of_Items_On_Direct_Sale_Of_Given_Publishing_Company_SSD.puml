@@ -1,5 +1,5 @@
 @startuml
-title US027 – "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SSD
+title "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SSD
 hidefootbox
 
 '==== basic style ====
