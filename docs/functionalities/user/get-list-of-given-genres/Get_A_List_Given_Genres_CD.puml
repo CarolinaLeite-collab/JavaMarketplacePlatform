@@ -1,5 +1,5 @@
 @startuml
-title US020 - As a user, I want to get a list (name and user) \n of the publicly published lists of a given genre - CD
+title As a user, I want to get a list (name and user) \n of the publicly published lists of a given genre - CD
 
 skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk

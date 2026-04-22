@@ -1,5 +1,5 @@
 @startuml
-title US020 - "As a User, I want to get a list of the publicly \npublished lists of a given genre" - SSD
+title "As a User, I want to get a list of the publicly \npublished lists of a given genre" - SSD
 hidefootbox
 
 '==== basic style ====

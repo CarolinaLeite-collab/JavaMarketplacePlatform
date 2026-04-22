@@ -1,5 +1,5 @@
 @startuml
-title US020 - As a user, I want to get a list (name and user) of the publicly published lists of a given genre - SD
+title As a user, I want to get a list (name and user) of the publicly published lists of a given genre - SD
 hidefootbox
 
 '==== basic style ====
