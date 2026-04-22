@@ -15,7 +15,6 @@ import MITELOVERS.mapper.ItemDetailsMapper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Controller responsible for retrieving detailed information about the items

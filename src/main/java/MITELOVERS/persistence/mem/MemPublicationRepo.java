@@ -4,12 +4,8 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IPublicationRepo;
-import MITELOVERS.domain.valueobject.AuthorId;
-import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.PublicationId;
-import MITELOVERS.domain.valueobject.Title;
 
-import java.time.Year;
 import java.util.*;
 
 /**
