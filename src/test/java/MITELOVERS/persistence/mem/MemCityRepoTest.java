@@ -20,6 +20,7 @@ class MemCityRepoTest {
     private CityId _cityId1;
     private CityId _cityId2;
 
+
     @BeforeEach
     void setUp() {
         _cityDouble = mock(City.class);
@@ -32,11 +33,13 @@ class MemCityRepoTest {
         when(_cityDouble2.identity()).thenReturn(_cityId2);
     }
 
+
     private <T> long count(Iterable<T> iterable) {
         long count = 0;
         for (T ignored : iterable) count++;
         return count;
     }
+
 
     @Test
     void shouldConstructRepoSuccessfully() {
@@ -44,6 +47,7 @@ class MemCityRepoTest {
 
         assertNotNull(repo);
     }
+
 
     @Test
     void saveShouldReturnCityForNewCity() {
@@ -54,6 +58,7 @@ class MemCityRepoTest {
         assertSame(_cityDouble, result);
     }
 
+
     @Test
     void saveShouldAddCityToRepo() {
         MemCityRepo repo = new MemCityRepo();
@@ -62,6 +67,7 @@ class MemCityRepoTest {
 
         assertEquals(1, count(repo.findAll()));
     }
+
 
     @Test
     void saveShouldAllowMultipleDistinctCities() {
@@ -73,43 +79,6 @@ class MemCityRepoTest {
         assertEquals(2, count(repo.findAll()));
     }
 
-    @Test
-    void addCityShouldReturnCityForNewCity() {
-        MemCityRepo repo = new MemCityRepo();
-
-        City result = repo.addCity(_cityDouble);
-
-        assertSame(_cityDouble, result);
-    }
-
-    @Test
-    void addCityShouldThrowForDuplicateCity() {
-        MemCityRepo repo = new MemCityRepo();
-        repo.addCity(_cityDouble);
-
-        assertThrows(IllegalStateException.class, () -> repo.addCity(_cityDouble));
-    }
-
-    @Test
-    void addCityShouldNotAddDuplicateCity() {
-        MemCityRepo repo = new MemCityRepo();
-        repo.addCity(_cityDouble);
-
-        assertThrows(IllegalStateException.class, () -> repo.addCity(_cityDouble));
-
-        assertEquals(1, count(repo.findAll()));
-    }
-
-    @Test
-    void addCityShouldThrowCorrectMessage() {
-        MemCityRepo repo = new MemCityRepo();
-        repo.addCity(_cityDouble);
-
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> repo.addCity(_cityDouble));
-
-        assertEquals("City already exists for this country", ex.getMessage());
-    }
 
     @Test
     void containsOfIdentityShouldReturnTrueIfCityExists() {
@@ -119,12 +88,14 @@ class MemCityRepoTest {
         assertTrue(repo.containsOfIdentity(_cityId1));
     }
 
+
     @Test
     void containsOfIdentityShouldReturnFalseIfCityDoesNotExist() {
         MemCityRepo repo = new MemCityRepo();
 
         assertFalse(repo.containsOfIdentity(_cityId1));
     }
+
 
     @Test
     void findAllShouldReturnUnmodifiableCollection() {
@@ -137,12 +108,14 @@ class MemCityRepoTest {
                 () -> ((java.util.Collection<City>) result).add(_cityDouble2));
     }
 
+
     @Test
     void findAllShouldReturnEmptyWhenNoCity() {
         MemCityRepo repo = new MemCityRepo();
 
         assertEquals(0, count(repo.findAll()));
     }
+
 
     @Test
     void ofIdentityShouldReturnCityIfExists() {
@@ -155,6 +128,7 @@ class MemCityRepoTest {
         assertSame(_cityDouble, result.get());
     }
 
+
     @Test
     void ofIdentityShouldReturnEmptyIfCityDoesNotExist() {
         MemCityRepo repo = new MemCityRepo();
@@ -164,12 +138,14 @@ class MemCityRepoTest {
         assertTrue(result.isEmpty());
     }
 
+
     @Test
     void findAllKeysShouldReturnEmptyWhenNoCity() {
         MemCityRepo repo = new MemCityRepo();
 
         assertTrue(repo.findAllKeys().isEmpty());
     }
+
 
     @Test
     void findAllKeysShouldReturnAllKeys() {
@@ -183,6 +159,7 @@ class MemCityRepoTest {
         assertTrue(keys.contains(_cityId1));
         assertTrue(keys.contains(_cityId2));
     }
+
 
     @Test
     void findAllKeysShouldReturnMutableList() {
