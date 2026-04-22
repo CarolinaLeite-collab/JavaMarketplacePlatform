@@ -6,6 +6,7 @@ import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.List;
@@ -33,7 +34,12 @@ public class AddItemToListController {
     }
 
     public List<ItemId> getItemsInMyLibrary(UserId userId) {
-        Library lib = _iLibraryRepo.findLibraryByUserId(userId);
+
+        LibraryId libraryID = LibraryId.fromUserId(userId);
+
+        Library lib = _iLibraryRepo.ofIdentity(libraryID)
+                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
+
         return lib.getItemsIdInLibrary();
     }
 
