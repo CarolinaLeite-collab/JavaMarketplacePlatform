@@ -88,16 +88,16 @@ Package "ddd" {
 
 ' ===== Interactions =====
 Author "1" --> "ID 1" AuthorId : has
-Author "*" <- "1" MemoAuthorRepo : persists
+Author "*" <--- "1" MemoAuthorRepo : persists
 Author "1" --> "1" Name : has
 
 AuthorFactory ..> Author : <<create>>
-AuthorFactory "1"<-- "1" MemoAuthorRepo : invokes
+
 
 IAuthorRepo <|. MemoAuthorRepo
-IAuthorRepo -|> IRepository
+IAuthorRepo --|> IRepository
 
 AggregateRoot -|> DomainEntity
-Author .|> AggregateRoot
+Author ....|> AggregateRoot
 
 @enduml
