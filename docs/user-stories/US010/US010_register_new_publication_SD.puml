@@ -44,7 +44,7 @@ PF --> Ctl: newPublication
 deactivate PF
 
 ' --- Duplication check ---
-Ctl -> PR : containsOfIdentity(newPublication.identity())
+Ctl -> PR : isRepeated = containsOfIdentity(newPublication.identity())
     opt !isRepeated == true
             Ctl -> PR: save(newPublication)
 PR --> Ctl: newPublication
