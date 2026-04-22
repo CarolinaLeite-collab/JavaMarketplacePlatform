@@ -91,41 +91,6 @@ class RegisterNewUserControllerTest {
 
 
     @Test
-    void registerNewUserNonAdminRoleThrowsSecurityException() {
-        // Arrange
-        User nonAdmin = mock(User.class);
-        when(nonAdmin.hasRole(Role.ADMIN)).thenReturn(false);
-
-        RegisterNewUserController controller =
-                new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
-
-        // Act & Assert
-        assertThrows(SecurityException.class,
-                () -> controller.registerNewUser(
-                        nonAdmin, _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
-    }
-
-
-    @Test
-    void registerNewUserNonAdminShouldNeverCallFactory() {
-        // Arrange
-        User nonAdmin = mock(User.class);
-        when(nonAdmin.hasRole(Role.ADMIN)).thenReturn(false);
-
-        RegisterNewUserController controller =
-                new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble, _adminIdDouble);
-
-        // Act
-        assertThrows(SecurityException.class,
-                () -> controller.registerNewUser(
-                        nonAdmin, _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
-
-        // Assert
-        verify(_userFactoryDouble, never()).createUser(any(), any(), any(), any());
-    }
-
-
-    @Test
     void registerNewUserShouldThrowWhenUserAlreadyExists() {
         // Arrange
         when(_userFactoryDouble.createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble))

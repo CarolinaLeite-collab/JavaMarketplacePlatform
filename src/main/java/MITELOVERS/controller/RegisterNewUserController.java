@@ -24,9 +24,6 @@ public class RegisterNewUserController {
 
     public User registerNewUser(User admin, Name name, Address address,
                                 Email email, Phone phone) {
-        if (!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not authorized to register users");
-        }
 
         User newUser = _userFactory.createUser(name, address, email, phone);
 
