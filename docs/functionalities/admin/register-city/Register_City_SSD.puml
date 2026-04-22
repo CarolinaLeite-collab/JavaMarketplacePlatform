@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US008 - "As an Administrator, I want to register a new city in the system. %n() A city must be in a country." - SSD
+title "As an Administrator, I want to register a new city in the system. %n() A city must be in a country." SSD
 
 '==== basic style ====
 skinparam monochrome false

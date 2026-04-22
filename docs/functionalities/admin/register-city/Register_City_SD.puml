@@ -1,5 +1,5 @@
 @startuml
-title US008 - "As an Administrator, I want to register a new city in the system" - SD
+title "As an Administrator, I want to register a new city in the system" SD
 
 '==== basic style ====
 skinparam monochrome false

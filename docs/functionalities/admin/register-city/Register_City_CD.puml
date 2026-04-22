@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US008 – "As an Administrator, I want to register a new city in the system" – CD
+title "As an Administrator, I want to register a new city in the system" CD
 
 '==== basic style ====
 skinparam monochrome false
