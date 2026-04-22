@@ -26,6 +26,7 @@ package "controller" {
 
     class CreateAuthorController {
         +createAuthor(authorName : String) : Author
+        + addAuthor(authorName : String) : Auhtor
 
     }
 
@@ -48,7 +49,6 @@ package "domain" {
     package "repository" {
 
         interface IAuthorRepo <<Interface>> {
-        + addAuthor(authorName : String) : Auhtor
 
         }
 
@@ -102,8 +102,7 @@ CreateAuthorUI "1" ..> "1" CreateAuthorController : invokes
 
 CreateAuthorController "1" ..> "1" IAuthorRepo : calls
 CreateAuthorController "1" .> "*" Author : <<use>>
-
-MemoAuthorRepo "1" --> "1" AuthorFactory : invokes
+CreateAuthorController "1" --> "1" AuthorFactory : invokes
 
 AuthorFactory "1" ..> "*" Author : <<create>>
 

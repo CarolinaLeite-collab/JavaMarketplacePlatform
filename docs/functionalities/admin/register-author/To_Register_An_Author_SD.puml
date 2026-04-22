@@ -35,21 +35,21 @@ activate ":CreateAuthorUI"
 ":CreateAuthorUI" -> ":CreateAuthorController": createAuthor(authorName)
 
 activate ":CreateAuthorController"
-":CreateAuthorController"-> ":MemoAuthorRepo": addAuthor(authorName)
+":CreateAuthorController"-> ":CreateAuthorController": addAuthor(authorName)
 
-activate ":MemoAuthorRepo"
-":MemoAuthorRepo" -> ":AuthorFactory": createAuthor(authorName)
+":CreateAuthorController" -> ":AuthorFactory": createAuthor(authorName)
 
 activate ":AuthorFactory"
 create "author:Author"
 ":AuthorFactory" -->> "author:Author": <<create>>
-":AuthorFactory" --> ":MemoAuthorRepo": author
+":AuthorFactory" --> ":CreateAuthorController": author
 deactivate ":AuthorFactory"
-":MemoAuthorRepo" -> ":MemoAuthorRepo": save(author)
 
+":CreateAuthorController" -> ":MemAuthorRepo": save(author)
+activate ":MemAuthorRepo"
 
-":MemoAuthorRepo" --> ":CreateAuthorController": author
-deactivate ":MemoAuthorRepo"
+":MemAuthorRepo" --> ":CreateAuthorController": author
+deactivate ":MemAuthorRepo"
 
 ":CreateAuthorController" --> ":CreateAuthorUI": author
 deactivate ":CreateAuthorController"
