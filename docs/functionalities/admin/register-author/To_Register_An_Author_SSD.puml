@@ -1,5 +1,5 @@
 @startuml
-title US005 - "As an Administrator, I want to register an Author in the system, \n so that publications of that Author can be added" - SSD
+title "As an Administrator, I want to register an Author in the system, \n so that publications of that Author can be added" - SSD
 hidefootbox
 
 '==== basic style ====

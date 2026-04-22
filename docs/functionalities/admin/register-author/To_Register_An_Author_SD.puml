@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US005 - "As an Administrator, I want to register an Author in the system, so that publications of that author can be added." - SD
+title "As an Administrator, I want to register an Author in the system, so that publications of that author can be added." - SD
 
 
 '==== basic style ====
