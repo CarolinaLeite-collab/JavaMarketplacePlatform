@@ -1,5 +1,5 @@
 @startuml
-title US009 - "As a user, I want to create my library" - Level 2 SD
+title "As a user, I want to create my library" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -20,8 +20,9 @@ autoactivate off
 actor User
 participant ":CreateLibraryUI" as UI
 participant ":CreateLibraryController" as CTL
-participant ":MemoLibraryRepo" as LR
-participant ":LibraryFactory" as LF
+participant "_lr:LibraryRepo" as LR
+participant "library:Library" as LIB
+
 
 ' --- UI interaction ---
 User -> UI: I want to create my library
@@ -29,34 +30,38 @@ activate UI
 
 
 ' --- Use case execution ---
-UI -> CTL: createLibrary(userId)
+UI -> CTL: createMyLibrary(user)
 activate CTL
-
-CTL -> LR: addLibrary(userId)
+CTL -> LR: createMyLibrary(user)
 activate LR
 
+    loop for each library in _lr
+        LR -> LIB : myLibraryExists(user)
+                note right of LIB: Checks if Library exists for user
 
-LR -> LF: createLibrary(userId)
-activate LF
+        activate LIB
+        LIB -> LIB : getUser()
+        LIB --> LR : false
+        deactivate LIB
+        end
+
 create "myLibrary:Library"
-LF -->> "myLibrary:Library": <<create>>
-LF --> LR: myLibrary
-deactivate LF
-LR -> LR : hasId = containsOfIdentity(libraryId)
-
-    opt !hasId
-    LR -> LR: save(myLibrary)
-    end
+LR -> "myLibrary:Library": create(user)
+LR -> LR: add(myLibrary)
 
 
 
+'activate "myLibrary:Library"
+'"myLibrary:Library" --> "_lr:LibraryRepo": myLibrary
+'deactivate "myLibrary:Library"
 LR --> CTL: myLibrary
 deactivate LR
-
-CTL --> UI: true
+CTL --> UI: myLibrary
 deactivate CTL
-
 UI --> User: done!
 deactivate UI
+
+participant "user:User" as USR
+
 
 @enduml

@@ -1,5 +1,5 @@
 @startuml
-title US009 – "As a user, I want to create my library" - SSD
+title "As a user, I want to create my library" - SSD
 hidefootbox
 
 '==== basic style ====
