@@ -1,5 +1,5 @@
 @startuml
-title US010 - "As a User, I want to register %n()a new publication in the system" %n()SSD
+title "As a User, I want to register %n()a new publication in the system" SSD
 
 '==== basic style ====
 skinparam monochrome false

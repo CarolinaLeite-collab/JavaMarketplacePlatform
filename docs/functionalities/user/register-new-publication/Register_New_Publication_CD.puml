@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US010 - "As a User, I want to register a new publication in the system" - CD
+title "As a User, I want to register a new publication in the system" CD
 
 '==== basic style ====
 skinparam monochrome false
