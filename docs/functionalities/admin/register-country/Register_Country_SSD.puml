@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US007 - "As an Administrator, I want to register a new country in the system" - SSD
+title "As an Administrator, I want to register a new country in the system" - SSD
 
 '==== basic style ====
 skinparam monochrome false

@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US007 – "As an Administrator, I want to register a new country in the system" - CD DDD
+title "As an Administrator, I want to register a new country in the system" CD DDD
 
 '==== basic style ====
 skinparam monochrome false

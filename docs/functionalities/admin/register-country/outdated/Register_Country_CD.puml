@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US007 - "As an Administrator, I want to register a new country in the system" - CD
+title "As an Administrator, I want to register a new country in the system" CD
 top to bottom direction
 
 '==== basic style ====
