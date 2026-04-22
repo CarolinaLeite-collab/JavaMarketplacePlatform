@@ -22,7 +22,6 @@ actor User
 participant ":AddPublicationUI" as UI
 participant ":AddPublicationOnLibraryCtl" as CTL
 participant ":IItemRepo" as ITEMREPO
-
 participant ":ILibraryRepo" as LIBREPO
 participant "myLibrary:Library" as LIB
 
@@ -34,14 +33,21 @@ CTL -> ITEMREPO : findAllKeys()
 activate ITEMREPO
 ITEMREPO --> CTL : itemIds
 deactivate ITEMREPO
-
+CTL -> LIBREPO : findAll()
+activate LIBREPO
+LIBREPO --> CTL : libraries
+deactivate LIBREPO
 create "availableItemIds:List<ItemIds>"
 CTL -->> "availableItemIds:List<ItemIds>" : <<create>>
 
+
     loop  for each itemId in itemIds
-    CTL -> LIBREPO : existsInAnyLibrary = existsItemIdInAnyLibrary(itemId)
+    CTL -> LIBREPO : existsInAnyLibrary = isItemAlreadyInAnyLibrary(selectedItemId)
     opt !existsInAnyLibrary
     CTL -> "availableItemIds:List<ItemIds>" : add
+    activate "availableItemIds:List<ItemIds>"
+    "availableItemIds:List<ItemIds>" -> CTL : true
+    deactivate "availableItemIds:List<ItemIds>"
     end
     end
 
@@ -54,11 +60,17 @@ User -> UI : selectedItemId
 activate UI
 UI -> CTL : addItemIdToLibrary(selectedItemId, userId)
 activate CTL
-CTL -> LIBREPO : existsInAnyLibrary = existsItemIdInAnyLibrary(selectedItemId)
+CTL -> LIBREPO : findAll()
+activate LIBREPO
+LIBREPO --> CTL : libraries
+deactivate LIBREPO
+CTL -> LIBREPO : existsInAnyLibrary = isItemAlreadyInAnyLibrary(selectedItemId)
 
     opt !existsInAnyLibrary
 
-        CTL -> LIBREPO : findLibraryByUserId(userId)
+        create "libraryId:LibraryId"
+        CTL -->> "libraryId:LibraryId" : LibraryId.fromUserId(userId)
+        CTL -> LIBREPO : ofIdentity(libraryId)
         activate LIBREPO
         LIBREPO --> CTL : myLibrary
         deactivate LIBREPO
