@@ -1,5 +1,5 @@
 @startuml
-title US013 - "As a user, I want to get the list of official genres" - Level 1 SD
+title "As a user, I want to get the list of official genres" - Level 2 SD
 hidefootbox
 
 '==== basic style ====
@@ -31,13 +31,12 @@ activate UI
 UI -> CTL: getListOfOfficialGenres()
 activate CTL
 CTL -> GR: getListOfOfficialGenres()
-note right of GR
-Creates an immutable copy
-of the internal genre list
-end note
 activate GR
-
-
+note right of GR
+Uses internal attribute List<Genre> _genres
+end note
+create "listOfOfficialGenres:List<Genre>" as List
+GR -> List: List.copyOf(_genres)
 GR --> CTL: listOfOfficialGenres
 deactivate GR
 CTL --> UI: listOfOfficialGenres
