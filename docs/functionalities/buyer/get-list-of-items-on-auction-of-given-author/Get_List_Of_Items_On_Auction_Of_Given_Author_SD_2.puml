@@ -1,5 +1,5 @@
 @startuml
-title US026 – "As a Buyer, I want to get the list of items on auction \nof a given author" - Level 3 SD
+title "As a Buyer, I want to get the list of items on auction \nof a given author" - Level 3 SD
 hidefootbox
 
 '==== basic style ====
