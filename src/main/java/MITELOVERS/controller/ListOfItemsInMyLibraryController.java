@@ -8,12 +8,14 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.ItemDetailsDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Controller responsible for retrieving detailed information about the items
@@ -60,7 +62,13 @@ public class ListOfItemsInMyLibraryController {
 
     public List<ItemDetailsDTO> getListOfItemInfoInMyLibrary(UserId userId) {
 
-        List<ItemId> listOfItemIds = _iLibraryRepo.getItemsInLibraryByUserId(userId);
+        LibraryId libraryId = LibraryId.fromUserId(userId);
+
+        List<ItemId> listOfItemIds =
+                _iLibraryRepo.ofIdentity(libraryId)
+                        .orElseThrow(() -> new IllegalStateException("Library not found for user!"))
+                        .getItemsIdInLibrary();
+
         List<ItemDetailsDTO> listOfItemDetailsDTOs = new ArrayList<>();
 
         for  (ItemId itemId : listOfItemIds) {
