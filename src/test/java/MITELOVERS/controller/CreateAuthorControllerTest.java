@@ -1,9 +1,8 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
-import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Role;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,17 +13,24 @@ import static org.mockito.Mockito.*;
 class CreateAuthorControllerTest {
 
     private IAuthorRepo _iAuthorRepoDouble;
-    private User _adminDouble;
     private Author _authorDouble;
     private UserId _userIdDouble;
+    private AuthorFactory _authorFactoryDouble;
+    private String _authorName;
 
     @BeforeEach
     void setUp() {
 
+        _authorFactoryDouble = mock(AuthorFactory.class);
+
         _iAuthorRepoDouble = mock(IAuthorRepo.class);
-        _adminDouble = mock(User.class);
         _authorDouble = mock(Author.class);
         _userIdDouble = mock(UserId.class);
+
+        _authorName = "Seneca";
+
+        when(_authorFactoryDouble.createAuthor(_authorName)).thenReturn(_authorDouble);
+        when(_iAuthorRepoDouble.save(_authorDouble)).thenReturn(_authorDouble);
 
     }
 
@@ -33,22 +39,18 @@ class CreateAuthorControllerTest {
     void testCreateAuthorControllerConstructor() {
 
         // SUT & Act
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
     }
 
     @Test
-    void shouldCreateAuthorWhenUserIsAdmin() {
-
-        // Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iAuthorRepoDouble.addAuthor("Tolstói")).thenReturn(_authorDouble);
+    void shouldCreateAuthorSuccessfully() {
 
         // SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        Author result = controller.createAuthor("Tolstói");
+        Author result = controller.createAuthor("Seneca");
 
         // Assert
         assertEquals(_authorDouble, result);
@@ -58,20 +60,45 @@ class CreateAuthorControllerTest {
     @Test
     void shouldTrimAuthorNameBeforeSaving() {
 
-        // Arrange
-        when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iAuthorRepoDouble.addAuthor("Tolstói")).thenReturn(_authorDouble);
-
-        // SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _userIdDouble);
+        // Arrange & SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
         controller.createAuthor("   Tolstói   ");
 
         // Assert
-        verify(_iAuthorRepoDouble).addAuthor("Tolstói");
+        verify(_authorFactoryDouble).createAuthor("Tolstói");
 
     }
 
+    @Test
+    void addAuthorShouldCreateAndSaveAuthor() {
+
+        // Arrange & SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
+
+        // Act
+        Author result = controller.addAuthor(_authorName);
+
+        // Assert
+        assertEquals(_authorDouble, result);
+        verify(_authorFactoryDouble).createAuthor(_authorName);
+        verify(_iAuthorRepoDouble).save(_authorDouble);
+
+    }
+
+    @Test
+    void addAuthorShouldCallAuthorFactoryWithCorrectName() {
+
+        // SUT
+        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
+
+        // Act
+        controller.addAuthor(_authorName);
+
+        // Assert
+        verify(_authorFactoryDouble).createAuthor(_authorName);
+
+    }
 
 }

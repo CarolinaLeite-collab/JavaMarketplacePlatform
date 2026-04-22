@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 
@@ -14,19 +13,15 @@ import java.util.*;
  * It is intended for testing, prototyping, or scenarios where persistence is not required.
  * </p>
  * <p>
- * It provides basic repository operations such as saving, retrieving, checking existence,
- * and creating new {@link Author} instances through an injected {@link AuthorFactory}.
+ * It provides basic repository operations such as saving, retrieving, checking existence.
  * </p>
  */
 
 public class MemAuthorRepo implements IAuthorRepo {
 
     private Map<AuthorId, Author> DATA = new HashMap<AuthorId, Author>();
-    private final AuthorFactory _authorFactory;
 
-    public MemAuthorRepo(AuthorFactory authorFactory) {
-
-        _authorFactory = authorFactory;
+    public MemAuthorRepo() {
 
     }
 
@@ -73,15 +68,6 @@ public class MemAuthorRepo implements IAuthorRepo {
     public boolean containsOfIdentity(AuthorId id) {
 
         return DATA.containsKey(id);
-
-    }
-
-    @Override
-    public Author addAuthor(String authorName) {
-
-        Author newAuthor = _authorFactory.createAuthor(authorName);
-
-        return save (newAuthor);
 
     }
 
