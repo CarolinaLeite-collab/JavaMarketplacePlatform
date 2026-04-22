@@ -1,5 +1,5 @@
 @startuml
-title US006 – "As an Administrator, I want to register a Publishing Company in the system" %n() SD
+title "As an Administrator, I want to register a Publishing Company in the system" SD
 hide footbox
 
 '==== basic style ====
