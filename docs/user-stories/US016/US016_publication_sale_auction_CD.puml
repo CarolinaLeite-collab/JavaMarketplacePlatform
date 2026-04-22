@@ -1,5 +1,4 @@
 @startuml
-'https://plantuml.com/class-diagram
 title US016 – "As a User, I want to put for sale a publication in my library in an auction" CD
 
 '==== basic style ====
@@ -21,13 +20,14 @@ class PublicationSaleAuctionUI {
 class PublicationSaleAuctionController {
   - _iLibraryRepo: ILibraryRepo
   - _iAuctionRepo: IAuctionRepo
-  - _library: Library
+  - _auctionFactory: AuctionFactory
   --
   + getLibraryItemsIdList(userId: UserId): List<ItemId>
-  + putItemIdOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  + putItemIdOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,
+    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
-Interface ILibraryRepo {
+interface ILibraryRepo {
   + addLibrary(userId: UserId): Library
   + findLibraryByUserId(userId: UserId): Library
   + getItemsInLibraryByUserId(userId: UserId): List<ItemId>
@@ -48,21 +48,20 @@ class Library {
 }
 
 class ItemId {
-- _itemId : ItemId
-
+  - _itemId : ItemId
 }
 
-Interface IAuctionRepo {
-  + addAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+interface IAuctionRepo {
+
 }
 
 class MemoAuctionRepo {
   - DATA: Map<AuctionId, Auction>
-  - _auctionFactory: AuctionFactory
 }
 
 class AuctionFactory {
-  + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,\n    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
+  + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,
+    outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
 }
 
 class Auction {
@@ -76,27 +75,20 @@ class Auction {
 }
 
 '=== Relationships ===
-' UI → Controller
 PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : invokes
 
-' Controller → Interfaces
 PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : uses
 PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : uses
+PublicationSaleAuctionController "1" ..> "1" AuctionFactory : uses
 
-' Interfaces → Repos
 ILibraryRepo "1" <|.. "1" MemoLibraryRepo : implements
 IAuctionRepo "1" <|.. "1" MemoAuctionRepo : implements
 
-' Library chain
 MemoLibraryRepo "1" --> "*" Library : manages
 Library "1" --> "*" ItemId : stores
 
-
-' ItemId links to Auction after creation
 ItemId "1" --> "0..1" Auction : references
 
-' Auction creation chain
-MemoAuctionRepo "1" --> "1" AuctionFactory : uses
 AuctionFactory "1" ..> "*" Auction : creates
 
 @enduml
