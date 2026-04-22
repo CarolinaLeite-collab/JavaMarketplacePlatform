@@ -9,16 +9,10 @@ import MITELOVERS.domain.valueobject.CountryId;
 import MITELOVERS.domain.valueobject.UserId;
 
 /**
- * Controller responsible for handling the registration of a new {@link City} in the system.
- * <p>
- * This controller acts as an application layer entry point that delegates the creation
- * and persistence of a {@link City} to the {@link ICityRepo}.
- * </p>
+ * Controller responsible for handling the registration of a new {@link City} (US008).
  *
- * <p>
- * It ensures that a city can be registered under a given {@link CountryId}, coordinating
- * the request between the domain and persistence layers.
- * </p>
+ * <p>Orchestrates: country existence check → aggregate creation via factory
+ * → duplicate check → persistence via repository.</p>
  */
 
 public class RegisterCityController {
@@ -27,8 +21,11 @@ public class RegisterCityController {
     private final ICountryRepo _iCountryRepo;
     private final CityFactory _cityFactory;
 
-    public RegisterCityController(ICityRepo iCityRepo, ICountryRepo iCountryRepo, CityFactory cityFactory, UserId adminId) {
 
+    public RegisterCityController(ICityRepo iCityRepo,
+                                  ICountryRepo iCountryRepo,
+                                  CityFactory cityFactory,
+                                  UserId adminId) {
         _iCityRepo = iCityRepo;
         _iCountryRepo = iCountryRepo;
         _cityFactory = cityFactory;
@@ -36,11 +33,16 @@ public class RegisterCityController {
 
 
     public City registerCity(String cityName, CountryId countryId) {
-        Country country = _iCountryRepo.ofIdentity(countryId)
+        _iCountryRepo.ofIdentity(countryId)
                 .orElseThrow(() -> new IllegalArgumentException("Country not found"));
 
         City city = _cityFactory.createCity(cityName, countryId);
-        return _iCityRepo.addCity(city);
+
+        if (_iCityRepo.containsOfIdentity(city.identity())) {
+            throw new IllegalStateException("City already exists for this country");
+        }
+
+        return _iCityRepo.save(city);
     }
 
 }
