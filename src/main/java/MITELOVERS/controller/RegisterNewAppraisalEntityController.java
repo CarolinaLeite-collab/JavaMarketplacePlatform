@@ -1,12 +1,12 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
+import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 
 import java.util.List;
@@ -25,14 +25,17 @@ import java.util.List;
 
 public class RegisterNewAppraisalEntityController {
     private IAppraisalEntityRepo _iAppraisalEntityRepo;
+    private AppraisalEntityFactory _appraisalEntityFactory;
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, IGenreRepo iGenreRepo, UserId adminId) {
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, AppraisalEntityFactory appraisalEntityFactory, IGenreRepo iGenreRepo, UserId adminId) {
 
         _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
         _iGenreRepo = iGenreRepo;
+        _appraisalEntityFactory = appraisalEntityFactory;
+
     }
 
     public Iterable<PublicationType> getPublicationTypes(){
@@ -45,12 +48,24 @@ public class RegisterNewAppraisalEntityController {
         return _iGenreRepo.findAll();
     }
 
-    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds, User admin){
+    public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds){
 
-        if (!admin.hasRole(Role.ADMIN)) {
-            throw new SecurityException("User is not authorized to register appraisal entities");
+        return addAppraisalEntity(name, publicationTypeIds, genreIds);
+
+    }
+
+    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
+
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
+
+        if (_iAppraisalEntityRepo.containsOfIdentity(appraisalEntity.identity())) {
+
+            throw new IllegalStateException("Appraisal entity already exists!");
+
         }
-        return _iAppraisalEntityRepo.addAppraisalEntity(name, publicationTypeIds, genreIds);
+
+        return _iAppraisalEntityRepo.save (appraisalEntity);
+
     }
 
 }

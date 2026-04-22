@@ -1,5 +1,5 @@
 @startuml
-title US0010 - "As a User, I want to register a new publication in the system" - SD
+title "As a User, I want to register a new publication in the system" - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -18,7 +18,7 @@ autonumber
 actor User
 participant ":RegisterPublicationUI" as UI
 participant ":RegisterNew\nPublicationController" as Ctl
-participant ":MemoPublicationRepo" as PR
+participant ":MemPublicationRepo" as PR
 participant ":PublicationFactory" as PF
 
 ' --- UI interaction ---
@@ -33,29 +33,25 @@ activate UI
 ' --- Use case execution ---
 UI -> Ctl: registerPublication(title, authorId, \nreleaseYear, genreId)
 activate Ctl
-Ctl -> PR: addPublication(title, authorId, \nreleaseYear, genreId)
-activate PR
+
 
 ' --- Creation  ---
-PR -> PF: createPublication(title, authorId, releaseYear, genreId)
+Ctl -> PF: createPublication\n(title, authorId, releaseYear, genreId)
 activate PF
 create "newPublication:Publication"
 PF -->> "newPublication:Publication": <<create>>
-PF --> PR: newPublication
+PF --> Ctl: newPublication
 deactivate PF
 
 ' --- Duplication check ---
-PR -> PR : isRepeated = containsOfIdentity(newPublication.identity())
-    opt !isRepeated
-            PR -> PR: save(newPublication)
+Ctl -> PR : isRepeated = containsOfIdentity(newPublication.identity())
+    opt !isRepeated == true
+            Ctl -> PR: save(newPublication)
+PR --> Ctl: newPublication
     end
 
-
-
-' --- Storage ---
-
-PR --> Ctl: newPublication
 deactivate PR
+
 Ctl --> UI: newPublication
 deactivate Ctl
 

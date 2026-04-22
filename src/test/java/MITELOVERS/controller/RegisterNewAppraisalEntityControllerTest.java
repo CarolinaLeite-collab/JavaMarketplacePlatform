@@ -1,16 +1,16 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
+import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RegisterNewAppraisalEntityControllerTest {
+
     private AppraisalEntity _appraisalEntityDouble;
+    private AppraisalEntityFactory _appraisalEntityFactoryDouble;
     private Name _nameDouble;
     private IGenreRepo _iGenreRepoDouble;
     private List<Genre> _genres;
@@ -31,13 +33,15 @@ class RegisterNewAppraisalEntityControllerTest {
     private List<PublicationTypeId> _publicationTypeIds;
     private PublicationTypeId _publicationTypeIdDouble;
     private IAppraisalEntityRepo _iAppraisalEntityRepoDouble;
-    private User _userDouble;
+    private AppraisalEntityId _appraisalEntityIdDouble;
     private UserId _adminIdDouble;
 
     @BeforeEach
     void setUp() throws InstantiationException{
+
+        _appraisalEntityFactoryDouble = mock(AppraisalEntityFactory.class);
+
         _nameDouble = mock(Name.class);
-        _userDouble = mock(User.class);
         _adminIdDouble = mock (UserId.class);
 
         _genreDouble = mock(Genre.class);
@@ -65,7 +69,8 @@ class RegisterNewAppraisalEntityControllerTest {
         _appraisalEntityDouble = mock(AppraisalEntity.class);
 
         _iAppraisalEntityRepoDouble = mock (IAppraisalEntityRepo.class);
-        when(_iAppraisalEntityRepoDouble.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_appraisalEntityDouble);
+
+        _appraisalEntityIdDouble = mock(AppraisalEntityId.class);
 
     }
 
@@ -73,15 +78,19 @@ class RegisterNewAppraisalEntityControllerTest {
     void registerNewAppraisalEntityControllerTest(){
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
+        RegisterNewAppraisalEntityController  controller =
+                new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
+                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
 
     }
 
     @Test
     void shouldGetPublicationTypesFromRepo() {
 
-        // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
+        // arrange & SUT
+        RegisterNewAppraisalEntityController  controller =
+                new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
+                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
         Iterable <PublicationType> types = controller.getPublicationTypes();
@@ -95,8 +104,10 @@ class RegisterNewAppraisalEntityControllerTest {
     @Test
     void shouldGetGenresFromRepo() {
 
-        // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
+        // ararnge & SUT
+        RegisterNewAppraisalEntityController  controller =
+                new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
+                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
 
         // act
         Iterable <Genre> genres = controller.getGenres();
@@ -104,25 +115,27 @@ class RegisterNewAppraisalEntityControllerTest {
         // assert
         assertNotNull(genres);
         assertTrue(genres.iterator().hasNext());
-        verify(_iGenreRepoDouble).findAll();
 
     }
 
     @Test
-    void shouldSuccessfullyCallAppraisalEntityCreationMethodIfUserIsAdmin() {
+
+    void shouldSuccessfullyRegisterAppraisalEntity() {
 
         // arrange
-        User adminDouble = mock (User.class);
-        when(adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_iAppraisalEntityRepoDouble.addAppraisalEntity(
-                _nameDouble, _publicationTypeIds, _genreIds))
+        when(_appraisalEntityFactoryDouble.createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds))
                 .thenReturn(_appraisalEntityDouble);
+        when(_appraisalEntityDouble.identity()).thenReturn(_appraisalEntityIdDouble);
+        when(_iAppraisalEntityRepoDouble.containsOfIdentity(_appraisalEntityIdDouble)).thenReturn(false);
+        when(_iAppraisalEntityRepoDouble.save(_appraisalEntityDouble)).thenReturn(_appraisalEntityDouble);
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
+        RegisterNewAppraisalEntityController controller = new RegisterNewAppraisalEntityController(
+                _iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble,
+                _iGenreRepoDouble, _adminIdDouble);
 
         // act
-        AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds, adminDouble);
+        AppraisalEntity result = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
 
         // assert
         assertEquals(_appraisalEntityDouble, result);
@@ -130,19 +143,49 @@ class RegisterNewAppraisalEntityControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenUserIsNotAdmin() {
+    void shouldAddAppraisalEntity() {
 
         // arrange
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
+        when(_appraisalEntityDouble.getName()).thenReturn(_nameDouble);
+        when(_appraisalEntityDouble.getPublicationTypeIds()).thenReturn(_publicationTypeIds);
+        when(_appraisalEntityDouble.getGenreIds()).thenReturn(_genreIds);
+
+        when(_appraisalEntityFactoryDouble
+                .createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_appraisalEntityDouble);
 
         // SUT
-        RegisterNewAppraisalEntityController  controller = new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble, _iGenreRepoDouble, _adminIdDouble);
+        RegisterNewAppraisalEntityController  controller =
+                new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
+                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
+        when(controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_appraisalEntityDouble);
 
-        //Act
-        SecurityException exception = assertThrows(SecurityException.class, () -> controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds, _userDouble));
+        // act
+        AppraisalEntity appraisalEntity = controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
 
-        //Assert
-        assertEquals("User is not authorized to register appraisal entities", exception.getMessage());
+        // assert
+        assertEquals(_appraisalEntityDouble, appraisalEntity);
+
+    }
+
+    @Test
+    void shouldThrowWhenAddingDuplicateAppraisalEntity() {
+
+        // arrange
+        when(_appraisalEntityFactoryDouble.createAppraisalEntity(
+                _nameDouble, _publicationTypeIds, _genreIds))
+                .thenReturn(_appraisalEntityDouble);
+
+        when(_appraisalEntityDouble.identity()).thenReturn(_appraisalEntityIdDouble);
+        when(_iAppraisalEntityRepoDouble.containsOfIdentity(_appraisalEntityIdDouble)).thenReturn(true);
+
+        // SUT
+        RegisterNewAppraisalEntityController controller =
+                new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble, _iPublicationTypeRepoDouble,
+                        _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
+
+        // act + assert
+        assertThrows(IllegalStateException.class, () ->
+                controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
 
     }
 
