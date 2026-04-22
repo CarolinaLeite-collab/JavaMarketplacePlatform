@@ -36,17 +36,6 @@ public class MemPublicationRepo implements IPublicationRepo {
     }
 
     @Override
-    public Publication addPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId) {
-
-        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
-
-        if (containsOfIdentity(newPublication.identity())){
-            throw new IllegalArgumentException("Publication already exists in the repository");
-        }
-        return save(newPublication);
-    }
-
-    @Override
     public Optional<Publication> ofIdentity(PublicationId publicationId) {
         if (!containsOfIdentity(publicationId)) {
             return Optional.empty();
@@ -72,15 +61,5 @@ public class MemPublicationRepo implements IPublicationRepo {
     }
 
 
-    // TODO: move to Service layer
-    @Override
-    public List<Publication> getDifferentOf(List<Publication> existentPublications) {
-        List<Publication> result = new ArrayList<>();
-        for (Publication publication : DATA.values()){
-            if (!existentPublications.contains(publication)){
-                result.add(publication);
-            }
-        }
-        return List.copyOf(result);
-    }
+
 }

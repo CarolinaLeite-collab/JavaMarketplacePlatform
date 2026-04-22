@@ -1,11 +1,11 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
-import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.valueobject.AppraisalEntityId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 class MemAppraisalEntityRepoTest {
 
-    private AppraisalEntityFactory _AppraisalEntityFactoryDouble;
     private AppraisalEntity _AppraisalEntityDouble;
     private AppraisalEntityId _AppraisalEntityIdDouble;
     private Name _nameDouble;
@@ -30,8 +29,6 @@ class MemAppraisalEntityRepoTest {
 
     @BeforeEach
     void setUp() {
-
-        _AppraisalEntityFactoryDouble = mock(AppraisalEntityFactory.class);
 
         _AppraisalEntityDouble = mock(AppraisalEntity.class);
         _AppraisalEntityIdDouble = mock(AppraisalEntityId.class);
@@ -47,7 +44,7 @@ class MemAppraisalEntityRepoTest {
     void shouldConstructRepo() {
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
     }
 
@@ -58,7 +55,7 @@ class MemAppraisalEntityRepoTest {
         when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         //Act
         AppraisalEntity result = repo.save(_AppraisalEntityDouble);
@@ -77,7 +74,7 @@ class MemAppraisalEntityRepoTest {
                 .thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(_AppraisalEntityDouble);
 
         //Act
@@ -97,7 +94,7 @@ class MemAppraisalEntityRepoTest {
         when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(_AppraisalEntityDouble);
 
         //Act
@@ -120,7 +117,7 @@ class MemAppraisalEntityRepoTest {
         when(appraisalEntityDouble2.identity()).thenReturn(appraisalEntityIdDouble2);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(appraisalEntityDouble2);
 
         //Act
@@ -138,7 +135,7 @@ class MemAppraisalEntityRepoTest {
         when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(_AppraisalEntityDouble);
 
         //Act
@@ -160,7 +157,7 @@ class MemAppraisalEntityRepoTest {
         when(appraisalEntityDouble2.identity()).thenReturn(appraisalEntityIdDouble2);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(appraisalEntityDouble2);
 
         //Act
@@ -168,48 +165,6 @@ class MemAppraisalEntityRepoTest {
 
         //Assert
         assertFalse(result);
-
-    }
-
-    @Test
-    void shouldAddAppraisalEntity() {
-
-        //Arrange
-        when(_AppraisalEntityDouble.getName()).thenReturn(_nameDouble);
-        when(_AppraisalEntityDouble.getPublicationTypeIds()).thenReturn(_publicationTypeIds);
-        when(_AppraisalEntityDouble.getGenreIds()).thenReturn(_genreIds);
-
-        when(_AppraisalEntityFactoryDouble
-                .createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_AppraisalEntityDouble);
-
-        //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        //Act
-        AppraisalEntity appraisalEntity = repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
-
-        //Assert
-        assertEquals(_AppraisalEntityDouble, appraisalEntity);
-
-    }
-
-    @Test
-    void shouldThrowWhenAddingDuplicateAppraisalEntity() {
-
-        // Arrange
-        when(_AppraisalEntityFactoryDouble.createAppraisalEntity(
-                _nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_AppraisalEntityDouble);
-
-        when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
-
-        //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
-
-        repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
-
-        // Act + Assert
-        assertThrows(IllegalStateException.class, () ->
-                repo.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
 
     }
 
@@ -223,7 +178,7 @@ class MemAppraisalEntityRepoTest {
         when(other.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         //SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         repo.save(_AppraisalEntityDouble);
@@ -238,7 +193,7 @@ class MemAppraisalEntityRepoTest {
     void findAllShouldReturnEmptyWhenRepoIsEmpty() {
 
         // Arrange & SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         List<AppraisalEntity> list = new ArrayList<>();
@@ -253,7 +208,7 @@ class MemAppraisalEntityRepoTest {
     void ofIdentityShouldReturnEmptyForNull() {
 
         // Arrange & SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         Optional<AppraisalEntity> result = repo.ofIdentity(null);
@@ -267,7 +222,7 @@ class MemAppraisalEntityRepoTest {
     void containsOfIdentityShouldReturnFalseForNull() {
 
         // Arrange & SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         boolean result = repo.containsOfIdentity(null);
@@ -281,7 +236,7 @@ class MemAppraisalEntityRepoTest {
     void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
 
         // Arrange & SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         List<AppraisalEntityId> keys = repo.findAllKeys();
@@ -302,7 +257,7 @@ class MemAppraisalEntityRepoTest {
         when(entity2.identity()).thenReturn(id2);
 
         // SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         repo.save(_AppraisalEntityDouble);
         repo.save(entity2);
@@ -324,7 +279,7 @@ class MemAppraisalEntityRepoTest {
         when(_AppraisalEntityDouble.identity()).thenReturn(_AppraisalEntityIdDouble);
 
         // SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
         repo.save(_AppraisalEntityDouble);
 
         // Act
@@ -340,7 +295,7 @@ class MemAppraisalEntityRepoTest {
     void saveShouldThrowWhenEntityIsNull() {
 
         // Arrange & SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         // Act
         Executable action = () -> repo.save(null);
@@ -360,7 +315,7 @@ class MemAppraisalEntityRepoTest {
         when(entity2.identity()).thenReturn(id2);
 
         // SUT
-        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo(_AppraisalEntityFactoryDouble);
+        MemAppraisalEntityRepo repo = new MemAppraisalEntityRepo();
 
         repo.save(_AppraisalEntityDouble);
         repo.save(entity2);

@@ -1,13 +1,8 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
-import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.valueobject.AppraisalEntityId;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.PublicationTypeId;
-
 import java.util.*;
 
 /**
@@ -27,12 +22,9 @@ import java.util.*;
 public class MemAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
-    private AppraisalEntityFactory _appraisalEntityFactory;
 
 
-    public MemAppraisalEntityRepo(AppraisalEntityFactory appraisalEntityFactory) {
-
-        _appraisalEntityFactory = appraisalEntityFactory;
+    public MemAppraisalEntityRepo() {
 
     }
 
@@ -78,21 +70,6 @@ public class MemAppraisalEntityRepo implements IAppraisalEntityRepo {
     public boolean containsOfIdentity(AppraisalEntityId id) {
 
         return DATA.containsKey(id);
-
-    }
-
-    @Override
-    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
-
-        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
-
-        if (containsOfIdentity(appraisalEntity.identity())) {
-
-            throw new IllegalStateException("Appraisal entity already exists!");
-
-        }
-
-        return save (appraisalEntity);
 
     }
 

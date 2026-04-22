@@ -20,10 +20,10 @@ autonumber
 ' ==== Actor and participants ====
 actor Administrator
 participant ":RegisterNewAppraisalEntityUI" as UI
-participant ":RegisterNew\nAppraisalEntityController" as CTL
+participant ":RegisterNewAppraisalEntityController" as CTL
 participant ":IPublicationTypeRepo" as PTR
 participant ":IGenreRepo" as grRepo
-participant ":MemoAppraisalEntityRepo" as aeRepo
+participant ":MemAppraisalEntityRepo" as aeRepo
 participant ":AppraisalEntityFactory" as Factory
 
 
@@ -66,27 +66,30 @@ Administrator -> UI: genresId
 activate UI
 UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
 activate CTL
-CTL -> aeRepo: addAppraisalEntity(name, publicationTypeIds, genreIds)
-activate aeRepo
 
-aeRepo -> Factory: createAppraisalEntity(\nname, publicationTypeIds, genreIds)
+CTL -> CTL: addAppraisalEntity(name, \npublicationTypeIds, genreIds)
+
+CTL -> Factory: createAppraisalEntity(name, publicationTypeIds, genreIds)
 create "appraisalEntity:AppraisalEntity"
 
 activate Factory
 Factory -->> "appraisalEntity:AppraisalEntity": <<create>>
-Factory -> aeRepo: appraisalEntity
+Factory --> CTL: appraisalEntity
 deactivate Factory
 
-aeRepo -> aeRepo : isRepeated = containsOfIdentity(appraisalEntity.identity())
+deactivate aeRepo
 
-opt !isRepeated
+CTL -> aeRepo : isRepeated = containsOfIdentity(appraisalEntity.identity())
 
-        aeRepo -> aeRepo : save(appraisalEntity)
+opt !isRepeated == true
+
+        CTL -> aeRepo : save(appraisalEntity)
+        activate aeRepo
+        CTL <-- aeRepo : appraisalEntity
+        deactivate aeRepo
 
     end
 
-aeRepo --> CTL: appraisalEntity
-deactivate aeRepo
 CTL --> UI: appraisalEntity
 deactivate CTL
 UI --> Administrator: Done!

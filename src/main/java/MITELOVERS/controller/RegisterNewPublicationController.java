@@ -9,7 +9,11 @@ import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static javax.swing.text.html.HTML.Attribute.DATA;
 
 /**
  * Controller responsible for registering new publications in the system.
@@ -23,13 +27,20 @@ import java.util.Objects;
 public class RegisterNewPublicationController {
 
     private IPublicationRepo _iPublicationRepo;
+    private PublicationFactory _publicationFactory;
 
-    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, UserId userId) {
-        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo");
+    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, PublicationFactory publicationFactory, UserId userId) {
+        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo is required");
+        _publicationFactory = Objects.requireNonNull(publicationFactory, "publicationFactory is required");
     }
 
     public Publication registerPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId) {
 
-        return _iPublicationRepo.addPublication(title, authorId, releaseYear,  genreId);
+        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
+
+        if (_iPublicationRepo.containsOfIdentity(newPublication.identity())){
+            throw new IllegalArgumentException("Publication already exists in the repository");
+        }
+        return _iPublicationRepo.save(newPublication);
     }
 }

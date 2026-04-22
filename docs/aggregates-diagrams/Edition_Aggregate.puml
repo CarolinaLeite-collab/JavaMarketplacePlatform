@@ -75,7 +75,6 @@ Package "edition" {
 
     Package "repository" <<Folder>> {
         interface IEditionRepo <<Interface>>{
-        +addEdition(): Edition
                 }
     }
 

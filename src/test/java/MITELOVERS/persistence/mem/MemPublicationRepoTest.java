@@ -39,44 +39,7 @@ class MemPublicationRepoTest {
         MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
     }
 
-    @Test
-    void addPublicationStoresPublicationReturnedByFactory() {
-        //Arrange
-        Publication publicationDouble = mock(Publication.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
 
-        when(publicationDouble.identity()).thenReturn(publicationIdDouble);
-        when(_publicationFactoryDouble.createPublication(_titleDouble, _authorIdDouble, _yearDouble,  _genreIdDouble)).thenReturn(publicationDouble);
-
-        //SUT
-        MemPublicationRepo memPublicationRepo = new MemPublicationRepo(_publicationFactoryDouble);
-
-        //Act
-        Publication result = memPublicationRepo.addPublication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
-
-        //Assert
-        assertSame(publicationDouble, result);
-    }
-
-    @Test
-    void addPublicationThrowsWhenPublicationAlreadyExists() {
-        // Arrange
-        Publication publicationDouble = mock(Publication.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-
-        when(publicationDouble.identity())
-                .thenReturn(publicationIdDouble);
-        when(_publicationFactoryDouble.createPublication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble))
-                .thenReturn(publicationDouble);
-
-        // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
-        repo.addPublication(_titleDouble,_authorIdDouble,_yearDouble, _genreIdDouble);
-
-        // Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                repo.addPublication(_titleDouble,_authorIdDouble,_yearDouble, _genreIdDouble));
-    }
 
     @Test
     void saveValidPublicationReturnsPublication() {
@@ -217,59 +180,6 @@ class MemPublicationRepoTest {
         repo.save(_pub2Double);
 
         List<PublicationId> result = repo.findAllKeys();
-
-        // Assert
-        assertEquals(2, result.size());
-    }
-
-
-
-    @Test
-    void getDifferentOfReturnsPublicationsNotInProvidedList() {
-        // Arrange
-        Publication publication1Double = mock(Publication.class);
-        Publication publication2Double = mock(Publication.class);
-        Publication publication3Double = mock(Publication.class);
-        PublicationId publicationId1Double = mock(PublicationId.class);
-        PublicationId publicationId2Double = mock(PublicationId.class);
-        PublicationId publicationId3Double = mock(PublicationId.class);
-        when(publication1Double.identity()).thenReturn(publicationId1Double);
-        when(publication2Double.identity()).thenReturn(publicationId2Double);
-        when(publication3Double.identity()).thenReturn(publicationId3Double);
-
-        // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
-        repo.save(publication1Double);
-        repo.save(publication2Double);
-        repo.save(publication3Double);
-
-
-        List<Publication> existing = List.of(publication1Double, publication3Double);
-
-        // SUT
-        List<Publication> result = repo.getDifferentOf(existing);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertSame(publication2Double, result.get(0));
-    }
-
-    @Test
-    void getDifferentOfEmptyListReturnsAllPublications() {
-        // Arrange
-        Publication _publication1Double = mock(Publication.class);
-        Publication _publication2Double = mock(Publication.class);
-        PublicationId _publicationId1Double = mock(PublicationId.class);
-        PublicationId _publicationId2Double = mock(PublicationId.class);
-        when(_publication1Double.identity()).thenReturn(_publicationId1Double);
-        when(_publication2Double.identity()).thenReturn(_publicationId2Double);
-
-        // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
-        repo.save(_publication1Double);
-        repo.save(_publication2Double);
-
-        List<Publication> result = repo.getDifferentOf(List.of());
 
         // Assert
         assertEquals(2, result.size());
