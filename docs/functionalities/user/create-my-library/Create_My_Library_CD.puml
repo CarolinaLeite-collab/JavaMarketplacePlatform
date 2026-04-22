@@ -32,7 +32,6 @@ package "domain" {
 package "repository" {
 
     interface ILibraryRepo <<Interface>> {
-        +addLibrary(userId : UserId) : Library
     }
 
 }
@@ -91,9 +90,10 @@ CreateLibraryUI "1" .> "1" CreateLibraryController : invokes
 CreateLibraryController "1" ..> "1" ILibraryRepo : calls
 CreateLibraryController "1" ..> "*" Library : <<use>>
 CreateLibraryController "1" ..> "*" UserId : <<use>>
+CreateLibraryController "1" -> "1" LibraryFactory : <<use>>
 
 MemoLibraryRepo ..|> ILibraryRepo
-MemoLibraryRepo "1" -> "1" LibraryFactory : <<use>>
+
 MemoLibraryRepo "1" -> "*" Library: persists
 
 LibraryFactory "1" ..> "*" Library : <<create>>
