@@ -1,5 +1,5 @@
 @startuml
-title Class Diagram - US015 - "As a User, I want to put for sale a publication %n() in my library in a direct sale"
+title "As a User, I want to put for sale a publication %n() in my library in a direct sale" CD
 
 skinparam monochrome false
 skinparam shadowing false
