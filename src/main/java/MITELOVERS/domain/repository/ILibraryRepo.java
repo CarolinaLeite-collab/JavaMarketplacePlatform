@@ -10,11 +10,4 @@ import java.util.List;
 
 public interface ILibraryRepo extends IRepository<LibraryId, Library> {
 
-    Library addLibrary(UserId userId);
-
-    Library findLibraryByUserId(UserId userId);
-
-    List<ItemId> getItemsInLibraryByUserId(UserId userId);
-
-    boolean existsItemIdInAnyLibrary(ItemId itemId);
 }

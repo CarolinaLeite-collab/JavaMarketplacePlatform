@@ -29,12 +29,6 @@ import java.util.*;
 public class MemLibraryRepo implements ILibraryRepo {
 
     private final Map<LibraryId, Library> DATA = new HashMap<LibraryId, Library>();
-    private LibraryFactory _libraryFactory;
-
-
-    public MemLibraryRepo(LibraryFactory libraryFactory) {
-        _libraryFactory = libraryFactory;
-    }
 
     @Override
     public Library save(Library myLibrary) {
@@ -78,59 +72,6 @@ public class MemLibraryRepo implements ILibraryRepo {
 
         return DATA.containsKey(id);
 
-    }
-
-    @Override
-    public Library addLibrary(UserId userId){
-
-        Library myLibrary = _libraryFactory.createLibrary(userId);
-
-        if (containsOfIdentity(myLibrary.identity())) {
-
-            throw new IllegalStateException("User already has a library!");
-
-        }
-
-        return save(myLibrary);
-
-    }
-
-    @Override
-    public Library findLibraryByUserId(UserId userId) {
-
-        LibraryId libraryID = LibraryId.fromUserId(userId);
-
-        return ofIdentity(libraryID)
-                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
-
-    }
-
-    @Override
-    public List<ItemId> getItemsInLibraryByUserId(UserId userId) {
-
-        LibraryId libraryID = LibraryId.fromUserId(userId);
-
-        if (!containsOfIdentity(libraryID)) {
-
-            throw new IllegalStateException("Library not found for user!");
-
-        }
-
-        return (DATA.get(libraryID)).getItemsIdInLibrary();
-
-    }
-
-    @Override
-    public boolean existsItemIdInAnyLibrary(ItemId itemId) {
-
-        for (Library library : findAll()) {
-
-            if (library.getItemsIdInLibrary().contains(itemId)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
 }
