@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US017 - "As a User, I want to create a private list of my publications, give it a name and a set a genre" - SSD
+title "As a User, I want to create a private list of my publications, give it a name and a set a genre" - SSD
 
 '==== basic style ====
 skinparam monochrome false

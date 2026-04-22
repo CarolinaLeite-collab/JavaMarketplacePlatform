@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title US017 - "As a User, I want to create a private list of my publications, give it a name and set a genre" - CD
+title "As a User, I want to create a private list of my publications, give it a name and set a genre" CD
 top to bottom direction
 
 '==== basic style ====
