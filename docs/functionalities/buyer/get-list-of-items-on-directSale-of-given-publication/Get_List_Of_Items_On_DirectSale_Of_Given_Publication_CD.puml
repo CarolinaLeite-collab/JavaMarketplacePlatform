@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US023 - "As a Buyer, I want to get the list of items on direct sale of a given publication" - CD
+title "As a Buyer, I want to get the list of items on direct sale of a given publication" CD
 
 '==== basic style ====
 skinparam monochrome false
