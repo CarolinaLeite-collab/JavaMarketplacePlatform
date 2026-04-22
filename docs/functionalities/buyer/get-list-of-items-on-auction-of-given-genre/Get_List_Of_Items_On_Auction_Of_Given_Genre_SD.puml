@@ -2,7 +2,7 @@
 'https://plantuml.com/sequence-diagram
 
 autonumber
-title US022 "As a Buyer, I want to get the list of items on auction of a given genre" - SD
+title "As a Buyer, I want to get the list of items on auction of a given genre" - SD
 
 hidefootbox
 
