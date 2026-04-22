@@ -1,6 +1,6 @@
 @startuml
 
-title US014 - "As a User, I want to get the list of official publication types" - CD
+title "As a User, I want to get the list of official publication types" CD
 
 skinparam monochrome false
 skinparam shadowing false

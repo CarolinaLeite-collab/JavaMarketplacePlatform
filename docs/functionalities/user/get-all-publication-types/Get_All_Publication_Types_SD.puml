@@ -1,5 +1,5 @@
 @startuml
-title US014 - "As a User, I want to get the list of official publication types" %n() SD
+title "As a User, I want to get the list of official publication types" %n() SD
 
 '==== basic style ====
 skinparam monochrome false
