@@ -1,5 +1,5 @@
 @startuml
-title US016 – "As a User, I want to put for sale a %n()publication in my library in an auction" %n() SSD
+title "As a User, I want to put for sale a %n()publication in my library in an auction" %n() SSD
 hidefootbox
 
 '==== basic style ====

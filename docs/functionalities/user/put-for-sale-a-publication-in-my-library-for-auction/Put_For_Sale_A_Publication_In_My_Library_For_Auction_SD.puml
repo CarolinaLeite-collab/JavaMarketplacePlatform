@@ -1,5 +1,5 @@
 @startuml
-title US016 - "As a User, I want to put for sale a publication %n() in my library in an auction" - SD
+title "As a User, I want to put for sale a publication %n() in my library in an auction" - SD
 hide footbox
 
 skinparam monochrome false
