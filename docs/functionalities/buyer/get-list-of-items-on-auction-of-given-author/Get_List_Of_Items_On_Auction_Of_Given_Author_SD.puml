@@ -1,0 +1,107 @@
+@startuml
+title "As a Buyer, I want to get the list of items on auction of a given author" - SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
+participant ":GetItemsOnAuctionOfAGivenAuthorController" as CTL
+participant ":IAuthorRepo" as AR
+participant ":IAuctionRepo" as DSR
+participant "auction:Auction" as Auction
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+participant ":IPublicationRepo" as PR
+participant "publication:Publication" as Publication
+
+
+Buyer -> UI: I want the list of items \non auction of a given author
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> AR : findAllKeys()
+activate AR
+
+AR --> CTL : authorIds
+deactivate AR
+
+CTL --> UI : authorIds
+deactivate CTL
+UI --> Buyer: Select authorId
+deactivate UI
+Buyer -> UI: authorId
+activate UI
+
+
+UI -> CTL: getAuctionItemsByAuthorId(authorId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: auction
+deactivate DSR
+
+create "listOfItemsOnAuctionByAuthor:List<ItemId>"
+CTL -->> "listOfItemsOnAuctionByAuthor:List<ItemId>" : <<Create>>
+
+loop for auction : auctions
+CTL -> Auction : getItemIds()
+activate Auction
+Auction --> CTL : itemIds
+deactivate Auction
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+CTL -> Edition : getPublicationId()
+activate Edition
+Edition --> CTL : publicationId
+deactivate Edition
+
+CTL -> PR : ofIdentity(publicationId)
+activate PR
+PR --> CTL : publication
+deactivate PR
+
+CTL -> Publication : hasAuthorId = isByAuthorId(authorId)
+
+opt hasAuthorId
+CTL -> "listOfItemsOnAuctionByAuthor:List<ItemId>" : add(itemId)
+activate "listOfItemsOnAuctionByAuthor:List<ItemId>"
+"listOfItemsOnAuctionByAuthor:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnAuctionByAuthor:List<ItemId>"
+end
+end
+end
+
+
+CTL --> UI: listOfItemsOnAuctionByAuthor
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
+deactivate UI
+
+@enduml

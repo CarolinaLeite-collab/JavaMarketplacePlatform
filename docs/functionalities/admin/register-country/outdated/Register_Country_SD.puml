@@ -1,0 +1,59 @@
+@startuml
+'==== Title ====
+title "As an Administrator, I want to register a new country in the system" - SD
+
+'==== basic style ====
+skinparam monochrome false
+
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+hidefootbox
+autonumber
+autoactivate off
+
+' ==== Actor and participants ====
+actor Administrator as ADM
+participant ":RegisterCountryUI" as UI
+participant ":RegisterCountryController" as CTL
+participant ":MemoCountryRepo" as CR
+participant ":CountryFactory" as FACTORY
+
+
+'==== UI interaction ====
+ADM -> UI: I want to register a country
+activate UI
+UI --> ADM: What is the country's name?
+deactivate UI
+ADM -> UI: countryName
+activate UI
+UI -> UI: Validate field
+
+
+'==== Use case execution ====
+UI -> CTL: registerCountry (countryName)
+activate CTL
+CTL -> CR: registerCountry (countryName)
+activate CR
+
+CR -> FACTORY: createFactory (countryName)
+create "c1:Country"
+FACTORY -->> "c1:Country": <<Create>>
+FACTORY --> CR :c1
+
+opt existsCountry (country) == false
+        CR -> CR: add(c1)
+end
+
+CR --> CTL: c1
+deactivate CR
+CTL --> UI: c1
+deactivate CTL
+UI --> ADM : Country registered successfully!
+deactivate UI
+@enduml

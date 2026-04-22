@@ -1,0 +1,33 @@
+@startuml
+title "As an administrator, I want to add a %n()publication type to the official type list, so that %n()new publications can be of this type" SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor "Administrator" as Admin
+participant ":MiteLovers" as System
+
+' --- System dialog ---
+Admin -> System: I want to add a new %n()publication type.
+activate "System"
+System --> Admin: What type would you %n()like to add?
+deactivate "System"
+Admin -> System: publicationTypeName
+activate "System"
+System --> Admin: publicationTypeName %n()was successfully added %n()to the official type list.
+deactivate "System"
+
+@enduml

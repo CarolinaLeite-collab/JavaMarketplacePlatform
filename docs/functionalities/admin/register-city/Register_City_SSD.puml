@@ -1,0 +1,36 @@
+@startuml
+'==== Title ====
+title "As an Administrator, I want to register a new city in the system. %n() A city must be in a country." SSD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+hidefootbox
+
+' ==== Actor and participants ====
+actor "Administrator" as Admin
+participant ":MiteLovers" as System
+
+'==== UI interaction ====
+Admin -> System: I want to register a new city.
+activate System
+
+System --> Admin: Please choose a country and provide the city name.
+deactivate System
+
+Admin -> System: country, cityName
+activate System
+
+System --> Admin: City successfully registered!
+deactivate System
+
+@enduml

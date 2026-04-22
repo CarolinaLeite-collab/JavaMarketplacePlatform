@@ -1,0 +1,35 @@
+@startuml
+'==== Title ====
+title "As an Administrator, I want to register a new country in the system" - SSD
+
+'==== basic style ====
+skinparam monochrome false
+
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+hidefootbox
+autonumber
+autoactivate off
+
+' ==== Actor and participants ====
+actor Administrator as Adm
+participant ":MiteLovers" as UI
+
+'==== System dialog ====
+Adm -> UI: I want to register a country
+activate UI
+UI --> Adm: What is the country's name?
+deactivate UI
+
+Adm -> UI: countryName
+activate UI
+
+UI --> Adm : Country registered successfully!
+deactivate UI
+@enduml

@@ -1,0 +1,86 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+hide footbox
+title "As a User, I want to add one of my publications to a list of mine" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+'==== Actor and Participants ===='
+actor User
+
+participant ":AddItemToListUI" as UI
+participant ":AddItemToList\nController" as Ctl
+participant ":ILibraryRepo" as ILibraryRepo
+participant "library:Library" as library
+participant ":IListOfItemsRepo" as IListRepo
+participant "lop:ListOfItems" as ListOfItems
+
+'==== Interactions ===='
+
+'==== User selects the item ===='
+User -> UI : I want to add one of my items\nto a list of mine
+activate UI
+UI -> Ctl : getItemsInMyLibrary(userId)
+activate Ctl
+Ctl -> ILibraryRepo : findLibraryByUser(userId)
+activate ILibraryRepo
+ILibraryRepo -> Ctl : libraryId
+deactivate ILibraryRepo
+Ctl -> ILibraryRepo: getItemsInLibrary(libraryId)
+activate ILibraryRepo
+ILibraryRepo -> library : getItemsInLibrary()
+activate library
+library --> ILibraryRepo : Map<ItemId, ItemSummary>
+deactivate library
+ILibraryRepo --> Ctl : Map<ItemId, ItemSummary>
+deactivate ILibraryRepo
+Ctl --> UI : Map<ItemId, ItemSummary>
+deactivate Ctl
+UI --> User : Select which Item\nyou wish to add
+deactivate UI
+User -> UI: itemId
+activate UI
+
+'==== User selects the destination list ===='
+UI -> Ctl : getMyLists(userId)
+activate Ctl
+Ctl -> IListRepo : findListsByUser(userId)
+activate IListRepo
+IListRepo --> Ctl : Map<ListOfItemsId, String>
+deactivate IListRepo
+Ctl --> UI : Map<ListOfItemsId, String>
+deactivate Ctl
+UI --> User : Select which list\nyou wish to add it to
+deactivate UI
+User -> UI : listOfItemsId
+activate UI
+
+'==== Use Case execution ===='
+UI -> Ctl : addItemToList\n(itemId, listOfItemsId)
+activate Ctl
+Ctl  -> IListRepo : addItemToList\n(itemId, listOfItemsId)
+activate IListRepo
+IListRepo -> IListRepo: findListById(listOfItemsId)
+IListRepo -> ListOfItems : addItem(itemId)
+IListRepo -> IListRepo: save(listOfItems)
+IListRepo --> Ctl: true
+deactivate IListRepo
+Ctl --> UI : true
+deactivate Ctl
+UI --> User : Done!
+deactivate UI
+
+
+@enduml

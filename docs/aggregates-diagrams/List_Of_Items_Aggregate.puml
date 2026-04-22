@@ -18,9 +18,9 @@ skinparam classAttributeIconSize 0
 
 ' === Classes === '
 
-Package "Domain" {
-    Package ListOfItems #B0C4DE {
-        Class "ListOfItems" as ListOfItemsRoot <<Root>> {
+Package "domain" {
+    Package listofitems #B0C4DE {
+        Class "ListOfItems" as ListOfItemsRoot <<Root>> <<Entity>> {
             - _name: String
             - _isPrivate : boolean
             - _itemsID : List<ItemID>
@@ -37,7 +37,7 @@ Package "Domain" {
         + createPublicListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
         }
     }
-    Package Repository {
+    Package repository {
     Interface "IListOfItemsRepo" as IRepo <<Interface>> {
     addListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
     getListOfListOfItems() : List<ListOfItemsID>
@@ -46,45 +46,53 @@ Package "Domain" {
     findByOwnerNameAndGenre(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
     }
     }
-    Package ValueObject {
-    Class "ItemID" as Item <<ValueObject>> {}
-    Class "UserID" as User <<ValueObject>> {}
-    Class "GenreID" as Genre <<ValueObject>> {}
-    Class "ListOfItemsID" as ID <<ValueObject>> #LightPink {}
+    Package valueobject {
+    Class "ItemId" as ItemId <<ValueObject>> {}
+    Class "UserId" as UserId <<ValueObject>> {}
+    Class "GenreId" as GenreId <<ValueObject>> {}
+    Class "ListOfItemsID" as Id <<ValueObject>> #LightPink {}
     }
 }
 
-Package "Persistence" {
-    Package "MEM" {
-        Class "MemoListOfItemsRepo" as MemoRepo <<Repo>> {
+Package "persistence" {
+    Package "mem" {
+        Class "MemListOfItemsRepo" as MemRepo <<Repo>> {
         }
     }
 }
 
-package DDD {
+package ddd {
     interface IRepository<ID, T> <<Interface>> {
         +save(T) : T
         +findAll() : Iterable<T>
         +ofIdentity(ID) : Optional<T>
         +containsOfIdentity(ID) : boolean
     }
+    interface DomainEntity<ID> <<Interface>>{
+        +identity() : ID
+        +sameAs(object : Object) : boolean
+        }
+        interface AggregateRoot<ID> <<Interface>>{}
+
 }
 
 
 ' === Interactions === '
 
 ListOfItemsFactory ..> ListOfItemsRoot : creates
-ListOfItemsRoot "*" o... "1..*" Item : aggregates
-ListOfItemsRoot "*" --> "1" User : references
-ListOfItemsRoot "*" --> "1" Genre : references
-ListOfItemsRoot "1" --> "1" ID : has
+ListOfItemsRoot "*" o-- "1..*" ItemId : aggregates
+ListOfItemsRoot "*" ..> "1" UserId : references
+ListOfItemsRoot "*" ..> "1" GenreId : references
+ListOfItemsRoot "1" --> "1" Id : has
 
-MemoRepo "1" ---> "1" ListOfItemsFactory :invokes
-MemoRepo "1" --> "*" ListOfItemsRoot :persistes
+MemRepo "1" ---> "1" ListOfItemsFactory :invokes
+MemRepo "1" --> "*" ListOfItemsRoot :persistes
 
-IRepo "1" <|.. "1" MemoRepo
+IRepo "1" <|.. "1" MemRepo
+IRepo ---|> IRepository
 
-IRepo --|> IRepository
+AggregateRoot --|> DomainEntity
+AggregateRoot ..|> ListOfItemsRoot
 
 
 @enduml

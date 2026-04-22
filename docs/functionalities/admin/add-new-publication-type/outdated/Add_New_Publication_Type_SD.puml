@@ -1,0 +1,56 @@
+@startuml
+title "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" Level 2 SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor "Administrator" as Admin
+participant "UI1:AddPublicationTypeUI" as UI
+participant "Ctl1:AddPublicationTypeCtl" as Ctl
+participant "mptr:MemoPublicationTypeRepo" as REPO
+participant "ptf:PublicationTypeFactory" as FACTORY
+
+' --- System dialog ---
+Admin -> UI: I want to add a new publication type!
+activate "UI"
+UI --> Admin: What type would you like to add?
+deactivate "UI"
+Admin -> UI: publicationTypeName
+activate "UI"
+UI -> Ctl: addPublicationType %n() (publicationTypeName)
+activate "Ctl"
+Ctl -> REPO: addPublicationType %n() (publicationTypeName)
+
+    opt publicationTypeExists (publicationTypeName) == false
+
+        activate "REPO"
+        REPO -> FACTORY: createPublicationType %n() (publicationTypeName)
+        activate FACTORY
+        create "publicationTypeName: %n() PublicationType" as instance
+        FACTORY -->> instance: <<Create>>
+        FACTORY --> REPO: publicationTypeName
+        deactivate FACTORY
+        REPO -> REPO: add(publicationTypeName)
+    end
+
+REPO --> Ctl: publicationTypeName
+deactivate "REPO"
+Ctl --> UI: publicationTypeName
+deactivate "Ctl"
+UI --> Admin: Publication Type successfully %n() added to the official type list!
+deactivate "UI"
+
+
+@enduml

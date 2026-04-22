@@ -1,0 +1,30 @@
+@startuml
+title "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+' --- Actor and participants ---
+actor Buyer
+participant ":MiteLovers" as System
+
+' --- System dialog ---
+Buyer -> System: I want the list of items on direct sale of a given genre
+activate System
+System --> Buyer: select genre
+deactivate System
+Buyer -> System: genreId
+activate System
+System --> Buyer: Here is the list!
+deactivate System
+
+@enduml
