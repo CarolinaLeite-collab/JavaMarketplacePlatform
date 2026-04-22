@@ -1,5 +1,5 @@
 @startuml
-title "US003 - As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre - CD"
+title " As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" CD
 
 '==== basic style ====
 skinparam monochrome false
