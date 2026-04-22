@@ -6,12 +6,10 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.SaleStatus;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.time.Period;
 import java.util.ArrayList;
@@ -53,164 +51,216 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void testConstructorPublicationInLibraryForDirectSaleController() {
+    void testPublicationInLibraryForDirectSaleControllerWhenLibraryExists() {
+
         //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble));
-    }
+                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble));
 
-    @Test
-    void testGetItemsIdInLibraryForUserWithoutLibraryByUser() {
-        //Arrange
-        UserId _userIdDouble2 = mock(UserId.class);
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble2))
-                .thenThrow(new IllegalStateException("Library not found for user"));
-
-        //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
-
-        //Act + Assert
-        assertThrows(IllegalStateException.class, () ->
-                controller.getItemsInLibraryByUser(_userIdDouble2));
     }
 
     @Test
     void testGetItemsIdInLibraryForUserWithEmptyLibraryByUser() {
         //Arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
+        LibraryId _libraryIdDouble = mock(LibraryId.class);
 
-        //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
 
-        //Act
-        List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
+            when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
 
-        //Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+            //SUT
+            PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            //Act
+            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+
+            //Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+
+        }
     }
 
     @Test
     void testGetItemsInLibraryForUserWithItemsIdInLibraryByUser() {
         //Arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
+        LibraryId _libraryIdDouble = mock(LibraryId.class);
 
-        //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
 
-        //Act
-        List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
+            when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
 
-        //Assert
-        assertEquals(1, result.size());
-        assertEquals(_itemIdDouble, result.get(0));
+            //SUT
+            PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            //Act
+            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+
+            //Assert
+            assertEquals(1, result.size());
+            assertEquals(_itemIdDouble, result.get(0));
+
+        }
     }
 
     @Test
     void testGetItemsIdInLibraryByUserListIsImmutable() {
         //Arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
+        LibraryId _libraryIdDouble = mock(LibraryId.class);
 
-        //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
 
-        //Act
-        List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
+            when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
 
-        //Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(_itemIdDouble));
+            //SUT
+            PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            //Act
+            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+
+            //Assert
+            assertThrows(UnsupportedOperationException.class, () -> result.add(_itemIdDouble));
+        }
     }
 
     @Test
     void testPutItemIdOnDirectSaleSuccess() {
         // Arrange
         DirectSale directSaleDouble = mock(DirectSale.class);
+        LibraryId _libraryIdDouble = mock(LibraryId.class);
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
-                .thenReturn(directSaleDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
 
-        // SUT
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
+            when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+            when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+            when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
+                    .thenReturn(directSaleDouble);
 
-        // Act
-        DirectSale result = controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
+            // SUT
+            PublicationInLibraryForDirectSaleController controller =
+                    new PublicationInLibraryForDirectSaleController(
+                            _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
-        // Assert
-        assertNotNull(result);
-        assertSame(directSaleDouble, result);
-        verify(_iDirectSaleRepoDouble).addDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
-        verify(_itemDouble).markAsDirectSale();
+            // Act
+            DirectSale result = controller.putItemIdOnDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
+
+            // Assert
+            assertNotNull(result);
+            assertSame(directSaleDouble, result);
+            verify(_iDirectSaleRepoDouble).addDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
+            verify(_itemDouble).markAsDirectSale();
+        }
     }
 
     @Test
     void testPutItemIdOnDirectSaleMarksItemAsDirectSale() {
         // Arrange
         DirectSale directSaleDouble = mock(DirectSale.class);
+        LibraryId _libraryIdDouble = mock(LibraryId.class);
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
-                .thenReturn(directSaleDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(_libraryIdDouble);
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
+            when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+            when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+            when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
+                    .thenReturn(directSaleDouble);
 
-        // Act
-        controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
+            PublicationInLibraryForDirectSaleController controller =
+                    new PublicationInLibraryForDirectSaleController(
+                            _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
-        // Assert
-        verify(_itemDouble).markAsDirectSale();
+            // Act
+            controller.putItemIdOnDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
+
+            // Assert
+            verify(_itemDouble).markAsDirectSale();
+        }
     }
 
     @Test
     void shouldThrowExceptionWhenItemNotFound() {
+
         // Arrange
         ItemId itemId = mock(ItemId.class);
         List<ItemId> items = List.of(itemId);
+        LibraryId libraryId = mock(LibraryId.class);
 
-        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
 
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.putItemIdOnDirectSale(items, _priceDouble, _timeLimitDouble)
-        );
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(mock(Library.class)));
 
-        assertTrue(exception.getMessage().contains("Item not found"));
+            when(_iItemRepoDouble.ofIdentity(itemId))
+                    .thenReturn(Optional.empty());
+
+            // SUT
+            PublicationInLibraryForDirectSaleController controller =
+                    new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act + Assert
+            IllegalArgumentException exception = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> controller.putItemIdOnDirectSale(items, _priceDouble, _timeLimitDouble)
+            );
+
+            assertTrue(exception.getMessage().contains("Item not found"));
+        }
     }
 
     @Test
     void shouldThrowExceptionWhenItemAlreadyOnSale() {
+
         // Arrange
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        LibraryId libraryId = mock(LibraryId.class);
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        // Act + Assert
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> controller.putItemIdOnDirectSale(
-                        _itemsId, _priceDouble, _timeLimitDouble)
-        );
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
 
-        assertTrue(exception.getMessage().contains("already on sale"));
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(_libraryDouble));
 
-        verify(_iDirectSaleRepoDouble, never()).addDirectSale(any(), any(), any());
+            when(_iItemRepoDouble.ofIdentity(_itemIdDouble))
+                    .thenReturn(Optional.of(_itemDouble));
+
+            when(_itemDouble.getSaleStatus())
+                    .thenReturn(SaleStatus.OnAuction);
+
+            // SUT
+            PublicationInLibraryForDirectSaleController controller =
+                    new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act + Assert
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class,
+                    () -> controller.putItemIdOnDirectSale(
+                            _itemsId, _priceDouble, _timeLimitDouble)
+            );
+
+            // Assert
+            assertTrue(exception.getMessage().contains("already on sale"));
+
+            verify(_iDirectSaleRepoDouble, never())
+                    .addDirectSale(any(), any(), any());
+        }
     }
 }
