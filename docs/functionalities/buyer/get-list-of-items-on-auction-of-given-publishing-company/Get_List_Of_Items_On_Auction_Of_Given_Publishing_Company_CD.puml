@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-title US028 "As a Buyer, I want to get the list of items on auction of a given publishing company" - CD
+title "As a Buyer, I want to get the list of items on auction of a given publishing company" CD
 
 '==== basic style ====
 skinparam monochrome false

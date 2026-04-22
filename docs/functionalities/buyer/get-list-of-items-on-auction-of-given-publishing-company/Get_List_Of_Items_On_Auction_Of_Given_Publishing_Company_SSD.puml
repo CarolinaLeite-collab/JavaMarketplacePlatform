@@ -25,7 +25,7 @@ skinparam object {
 skinparam shadowing<<highlight>> false
 
 
-title US028 "As a Buyer, I want to get the list of items on auction of a given publisher" - SSD
+title "As a Buyer, I want to get the list of items on auction of a given publisher" - SSD
 
 actor User
 participant ": Mitelovers"
