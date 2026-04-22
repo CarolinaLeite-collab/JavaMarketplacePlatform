@@ -50,22 +50,21 @@ activate UI
 UI -> Ctl: putItemIdOnAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
 activate Ctl
 
-Ctl -> AuctionRepo: addAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
-activate AuctionRepo
-
-AuctionRepo -> AuctionFactory: createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
+Ctl -> AuctionFactory : createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
 activate AuctionFactory
 create auction
 AuctionFactory -->> auction: <<create>>
-AuctionFactory --> AuctionRepo: auction
+"AuctionFactory" --> Ctl : auction
 deactivate AuctionFactory
 
-AuctionRepo -> AuctionRepo: add(auction)
+Ctl -> AuctionRepo: add(auction)
+activate AuctionRepo
 AuctionRepo --> Ctl: true
 deactivate AuctionRepo
 
 Ctl --> UI: true
 deactivate Ctl
+
 UI --> User: Your item was\nsuccessfully put up for auction!
 deactivate UI
 
