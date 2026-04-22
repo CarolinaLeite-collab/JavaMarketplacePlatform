@@ -42,7 +42,7 @@ Package "domain" {
 
     Package "repository" <<Folder>> {
         interface IGenreRepo <<Interface>> {
-            +addGenre(name : String) : Genre
+
         }
     }
 }
@@ -72,7 +72,7 @@ Package "persistence" {
     }
 }
 
-GenreFactory "1" <--- "1" MemGenreRepo : invokes
+
 Genre "1" --> "1" GenreId : has
 IGenreRepo -|> IRepository
 MemGenreRepo .|> IGenreRepo
