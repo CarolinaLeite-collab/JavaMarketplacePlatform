@@ -59,9 +59,7 @@ package domain {
     package repository {
 
         interface IAuctionRepo {
-            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
-        }
+       }
     }
 
     package valueobject {
