@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 hide footbox
-title US019 - to publicly share a List of mine.
+title To publicly share a List of mine.
 
 '==== basic style ====
 skinparam monochrome false
