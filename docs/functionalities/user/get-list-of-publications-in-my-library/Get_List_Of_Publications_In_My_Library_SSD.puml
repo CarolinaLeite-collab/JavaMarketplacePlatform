@@ -24,7 +24,7 @@ skinparam object {
 skinparam shadowing<<highlight>> false
 hide footbox
 
-title US012 – "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - SSD
+title "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - SSD
 
 actor User
 participant ":Mitelovers" as SYSTEM

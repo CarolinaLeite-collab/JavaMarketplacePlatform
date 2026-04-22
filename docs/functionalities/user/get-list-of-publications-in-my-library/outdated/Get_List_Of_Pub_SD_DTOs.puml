@@ -26,7 +26,7 @@ skinparam shadowing<<highlight>> false
 
 autonumber
 
-title US012 - "As a User, I want to get the list (title, author, type and ISBN/ISSN) of publications in my library" - SD
+title "As a User, I want to get the list (title, author, type and ISBN/ISSN) of publications in my library" - SD
 
 
 ' --- Actor and participants ---'

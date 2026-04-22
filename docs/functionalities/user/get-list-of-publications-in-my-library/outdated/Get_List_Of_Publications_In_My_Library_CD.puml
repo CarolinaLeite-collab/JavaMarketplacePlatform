@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US012 – "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" - CD
+title "As a User, I want to get the list (title, author, type \nand ISBN/ISSN) of publications in my library" CD
 
 
 '==== basic style ====
