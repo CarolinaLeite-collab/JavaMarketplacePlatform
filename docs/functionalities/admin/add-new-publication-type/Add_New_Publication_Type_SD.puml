@@ -1,5 +1,5 @@
 @startuml
-title US002 - "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" %n()SD
+title "As an administrator, I want to add a publication type to the official type list, %n() so that new publications can be of this type" SD
 hidefootbox
 
 '==== basic style ====
