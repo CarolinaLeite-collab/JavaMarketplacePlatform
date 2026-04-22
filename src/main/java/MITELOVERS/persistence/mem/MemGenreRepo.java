@@ -30,17 +30,6 @@ public class MemGenreRepo implements IGenreRepo {
     }
 
     @Override
-    public Genre addGenre(String genreName) {
-
-        Genre newGenre =  _genreFactory.createGenre(genreName);
-
-        if (containsOfIdentity(newGenre.identity())) {
-            throw new IllegalArgumentException("Genre already exists in the repository");
-        }
-        return save(newGenre);
-    }
-
-    @Override
     public Iterable<Genre> findAll() {
         return DATA.values();
     }
