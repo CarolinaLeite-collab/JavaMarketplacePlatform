@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/sequence-diagram
 hide footbox
-title US011 - to add a publication to my library.
+title  To add a publication to my library.
 
 '==== basic style ====
 skinparam monochrome false

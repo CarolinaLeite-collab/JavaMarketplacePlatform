@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title US011 – "As a user, I want to add a publication to my library" - CD
+title "As a user, I want to add a publication to my library" CD
 
 '==== basic style ====
 skinparam monochrome false
