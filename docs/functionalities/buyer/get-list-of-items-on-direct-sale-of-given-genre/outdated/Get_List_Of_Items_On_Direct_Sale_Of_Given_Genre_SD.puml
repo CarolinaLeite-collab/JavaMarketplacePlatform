@@ -1,5 +1,5 @@
 @startuml
-title US021 – "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" - Level 2 SD
+title "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" - Level 2 SD
 hidefootbox
 
 '==== basic style ====

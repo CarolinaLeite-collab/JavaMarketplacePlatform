@@ -1,5 +1,5 @@
 @startuml
-title US021 – "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" - SSD
+title "As a Buyer, I want to get the list of items on direct sale %n() of a given genre" SSD
 hidefootbox
 
 '==== basic style ====

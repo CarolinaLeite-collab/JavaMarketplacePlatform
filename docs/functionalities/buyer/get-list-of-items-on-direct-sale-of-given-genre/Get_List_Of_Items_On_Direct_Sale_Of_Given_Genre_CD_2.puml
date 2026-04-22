@@ -1,5 +1,5 @@
 @startuml
-title US025 – "As a Buyer, I want to get the list of items on direct sale of a given genre" - CD
+title "As a Buyer, I want to get the list of items on direct sale of a given genre" CD
 
 skinparam shadowing false
 skinparam defaultFontName Futura
