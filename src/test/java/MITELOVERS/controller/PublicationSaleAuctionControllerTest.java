@@ -6,12 +6,10 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.SaleStatus;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -65,7 +63,8 @@ class PublicationSaleAuctionControllerTest {
     void getLibraryItemsIdListForUserWithoutLibrary() {
         // Arrange
         UserId _userIdDouble2 = mock(UserId.class);
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble2)).thenThrow(new IllegalStateException("Library not found for user"));
+        LibraryId _libraryIdDouble2 = mock(LibraryId.class);
+        when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble2)).thenThrow(new IllegalStateException("Library not found for user"));
 
         // SUT
         PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
@@ -78,52 +77,92 @@ class PublicationSaleAuctionControllerTest {
 
     @Test
     void testGetLibraryItemsIdListForUserWithEmptyLibrary() {
-        // Arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
-        when(_userLibraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
 
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
-        // Act
-        List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
+
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(library));
+
+            when(library.getItemsIdInLibrary())
+                    .thenReturn(List.of());
+
+            // SUT
+            PublicationSaleAuctionController controller =
+                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act
+            List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+
+            // Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
     }
 
     @Test
     void testGetLibraryItemsIdListIsImmutable() {
-        //Arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
-        when(_userLibraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        //Act
-        List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
 
-        //Assert
-        assertThrows(UnsupportedOperationException.class, () -> result.add(_itemIdDouble));
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(library));
+
+            when(library.getItemsIdInLibrary())
+                    .thenReturn(List.of(_itemIdDouble));
+
+            // SUT
+            PublicationSaleAuctionController controller =
+                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act
+            List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+
+            // Assert
+            assertThrows(UnsupportedOperationException.class,
+                    () -> result.add(_itemIdDouble));
+        }
     }
 
     @Test
     void shouldReturnItemIdsFromUserLibrary() {
-        //arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
-        when(_userLibraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
+        // Arrange
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        //act
-        List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
 
-        //assert
-        assertEquals(1, result.size());
-        assertEquals(_itemIdDouble, result.get(0));
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(library));
+
+            when(library.getItemsIdInLibrary())
+                    .thenReturn(List.of(_itemIdDouble));
+
+            // SUT
+            PublicationSaleAuctionController controller =
+                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act
+            List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
+
+            // Assert
+            assertEquals(1, result.size());
+            assertEquals(_itemIdDouble, result.get(0));
+        }
     }
 
     @Test
@@ -136,27 +175,43 @@ class PublicationSaleAuctionControllerTest {
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
 
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_userLibraryDouble);
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_libraryDouble2.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
-        when(_iAuctionRepoDouble.addAuction(_itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate))
-                .thenReturn(_auctionDouble);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
-        // SUT
-        PublicationSaleAuctionController controller =
-                new PublicationSaleAuctionController(
-                        _iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        // Act
-        Auction result = controller.putItemOnAuction(
-                _iItemRepoDouble, _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryId);
 
-        // Assert
-        assertNotNull(result);
-        assertSame(_auctionDouble, result);
-        verify(_iAuctionRepoDouble).addAuction(_itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
-        verify(_itemDouble).markAsAuction();
+            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+                    .thenReturn(Optional.of(library));
+
+            when(_iItemRepoDouble.ofIdentity(_itemIdDouble))
+                    .thenReturn(Optional.of(_itemDouble));
+
+            when(_itemDouble.getSaleStatus())
+                    .thenReturn(SaleStatus.NotOnSale);
+
+            when(_iAuctionRepoDouble.addAuction(
+                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate))
+                    .thenReturn(_auctionDouble);
+
+            // SUT
+            PublicationSaleAuctionController controller =
+                    new PublicationSaleAuctionController(
+                            _iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+
+            // Act
+            Auction result = controller.putItemOnAuction(
+                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+
+            // Assert
+            assertNotNull(result);
+            assertSame(_auctionDouble, result);
+            verify(_iAuctionRepoDouble).addAuction(
+                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+            verify(_itemDouble).markAsAuction();
+        }
     }
 
     @Test
@@ -180,7 +235,7 @@ class PublicationSaleAuctionControllerTest {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> controller.putItemOnAuction(
-                        _iItemRepoDouble, _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+                        _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
         );
 
         assertTrue(exception.getMessage().contains("Item not found"));
@@ -209,7 +264,7 @@ class PublicationSaleAuctionControllerTest {
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> controller.putItemOnAuction(
-                        _iItemRepoDouble, _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+                        _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));
