@@ -1,7 +1,7 @@
 @startuml
 
 '==== Title ====
-title US004 - "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" - CD
+title "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" CD
 top to bottom direction
 
 
