@@ -1,5 +1,5 @@
 @startuml
-title US001 – "As an Administrator, I want to register a user in the system" - SSD
+title **"As an Administrator, I want to register a user in the system"** SSD
 hidefootbox
 
 '==== basic style ====

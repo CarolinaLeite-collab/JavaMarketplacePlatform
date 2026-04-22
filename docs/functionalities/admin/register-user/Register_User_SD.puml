@@ -1,5 +1,5 @@
 @startuml
-title US001 – "As an Administrator, I want to register a user in the system" %n() SD
+title **"As an Administrator, I want to register a user in the system"**  SD
 hide footbox
 
 skinparam monochrome false
