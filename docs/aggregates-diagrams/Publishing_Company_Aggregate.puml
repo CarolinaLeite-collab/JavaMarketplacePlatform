@@ -18,9 +18,9 @@ top to bottom direction
 
 package "persistence" {
 
-    package "memo" {
+    package "mem" {
 
-        class MemoPublishingCompanyRepo <<Repo>> {
+        class MemPublishingCompanyRepo <<Repo>> {
         }
 
     }
@@ -31,7 +31,6 @@ package "domain" {
     package "repository" {
 
         interface IPublishingCompanyRepo <<Interface>> {
-        + registerPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
         }
 
     }
@@ -67,7 +66,7 @@ Package "ddd" {
         +findAllKeys() : List<ID>
     }
 
-    interface AggregateRoot <ID >{
+    interface AggregateRoot <ID> <<Interface>> {
     }
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
@@ -76,11 +75,9 @@ Package "ddd" {
 }
 
 
-MemoPublishingCompanyRepo ..|> IPublishingCompanyRepo
-IPublishingCompanyRepo ..|> IRepository
-MemoPublishingCompanyRepo "1" --> "1" PublishingCompanyFactory : invokes
-
-MemoPublishingCompanyRepo "1" --> "*" PublishingCompany : persists
+MemPublishingCompanyRepo ..|> IPublishingCompanyRepo
+IPublishingCompanyRepo --|> IRepository
+MemPublishingCompanyRepo "1" --> "*" PublishingCompany : persists
 
 PublishingCompany "1" --> "1" PublishingCompanyId: has
 
