@@ -26,7 +26,7 @@ public class PublicationSaleAuctionController {
     private final ILibraryRepo _iLibraryRepo;
     private IAuctionRepo _iAuctionRepo;
     private AuctionFactory _auctionFactory;
-    private Library _library;
+    //private Library _library;
     private IItemRepo _iItemRepo;
 
     public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, AuctionFactory auctionFactory,

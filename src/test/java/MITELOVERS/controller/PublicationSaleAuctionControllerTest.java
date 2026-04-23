@@ -27,8 +27,6 @@ class PublicationSaleAuctionControllerTest {
     private IAuctionRepo _iAuctionRepoDouble;
     private AuctionFactory _auctionFactoryDouble;
     private IItemRepo _iItemRepoDouble;
-    private Library _userLibraryDouble;
-    private Library _libraryDouble2;
     private List<ItemId> _itemsId;
     private ItemId _itemIdDouble;
     private Price _startingPriceDouble;
@@ -47,8 +45,6 @@ class PublicationSaleAuctionControllerTest {
         _auctionFactoryDouble = mock(AuctionFactory.class);
         _iItemRepoDouble = mock(IItemRepo.class);
         _userIdDouble = mock(UserId.class);
-        _userLibraryDouble = mock(Library.class);
-        _libraryDouble2 = mock(Library.class);
         _itemIdDouble = mock(ItemId.class);
         _itemsId = new ArrayList<>();
         _itemsId.add(_itemIdDouble);
@@ -104,8 +100,8 @@ class PublicationSaleAuctionControllerTest {
                     .thenReturn(List.of());
 
             // SUT
-            PublicationSaleAuctionController controller =
-                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+            PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
+                    _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
 
             // Act
             List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
@@ -134,8 +130,8 @@ class PublicationSaleAuctionControllerTest {
                     .thenReturn(List.of(_itemIdDouble));
 
             // SUT
-            PublicationSaleAuctionController controller =
-                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+            PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
+                    _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
 
             // Act
             List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
@@ -164,8 +160,8 @@ class PublicationSaleAuctionControllerTest {
                     .thenReturn(List.of(_itemIdDouble));
 
             // SUT
-            PublicationSaleAuctionController controller =
-                    new PublicationSaleAuctionController(_iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
+            PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
+                    _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
 
             // Act
             List<ItemId> result = controller.getLibraryItemsIdList(_userIdDouble);
@@ -214,35 +210,9 @@ class PublicationSaleAuctionControllerTest {
             when(_itemDouble.getSaleStatus())
                     .thenReturn(SaleStatus.NotOnSale);
 
-            when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null,
+            when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,
                     _startDate, _endDate)).thenReturn(_auctionDouble);
 
-            when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
-
-            // SUT
-            PublicationSaleAuctionController controller =
-                    new PublicationSaleAuctionController(
-                            _iLibraryRepoDouble, _iAuctionRepoDouble, _iItemRepoDouble, _userIdDouble);
-
-            // Act
-            Auction result = controller.putItemOnAuction(
-                    _itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
-
-            // Assert
-            assertSame(_auctionDouble, result);
-            verify(_auctionFactoryDouble).createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
-            verify(_iAuctionRepoDouble).save(_auctionDouble);
-            verify(_itemDouble).markAsAuction();
-        }
-    }
-
-        @Test
-        void testPutItemIdOnAuctionWithoutOutrightPriceSuccess() {
-            // Arrange
-            when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-            when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-            when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null,
-                    _startDate, _endDate)).thenReturn(_auctionDouble);
             when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
 
             // SUT
@@ -251,14 +221,59 @@ class PublicationSaleAuctionControllerTest {
 
             // Act
             Auction result = controller.putItemOnAuction(
-                    _itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
+                    _itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
             // Assert
-            assertNotNull(result);
             assertSame(_auctionDouble, result);
-            verify(_auctionFactoryDouble).createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null, _startDate, _endDate);
+            verify(_auctionFactoryDouble).createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble,
+                    _outrightPriceDouble, _startDate, _endDate);
             verify(_iAuctionRepoDouble).save(_auctionDouble);
             verify(_itemDouble).markAsAuction();
+        }
+    }
+
+        @Test
+        void testPutItemIdOnAuctionWithoutOutrightPriceSuccess() {
+            // Arrange
+            LibraryId libraryIdDouble = mock(LibraryId.class);
+            Library libraryDouble = mock(Library.class);
+
+            try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+
+                mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                        .thenReturn(libraryIdDouble);
+
+                when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                        .thenReturn(Optional.of(libraryDouble));
+
+                when(_iItemRepoDouble.ofIdentity(_itemIdDouble))
+                        .thenReturn(Optional.of(_itemDouble));
+
+                when(_itemDouble.getSaleStatus())
+                        .thenReturn(SaleStatus.NotOnSale);
+
+                when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null,
+                        _startDate, _endDate)).thenReturn(_auctionDouble);
+
+                when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
+
+
+                // SUT
+                PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
+                        _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
+
+                // Act
+                Auction result = controller.putItemOnAuction(
+                        _itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
+
+                // Assert
+                assertNotNull(result);
+                assertSame(_auctionDouble, result);
+                verify(_auctionFactoryDouble).createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble,
+                        null, _startDate, _endDate);
+                verify(_iAuctionRepoDouble).save(_auctionDouble);
+                verify(_itemDouble).markAsAuction();
+            }
         }
 
     @Test
