@@ -19,9 +19,8 @@ actor User
 participant ":PublicationInLibrary\nForDirectSaleUI" as UI
 participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
 participant ":ILibraryRepo" as LibraryRepo
-'participant "userLibrary:Library" as userLibrary
-participant ":MemoDirectSaleRepo" as DirectSaleRepo
 participant ":DirectSaleFactory" as DirectSaleFactory
+participant ":MemDirectSaleRepo" as DirectSaleRepo
 participant "directSale:DirectSale" as directSale
 
 User -> UI: I want to put for direct sale\nan item in my library!
@@ -37,10 +36,10 @@ deactivate LibraryRepo
 
 Ctl --> UI: ListOfUserLibraryItemsId
 deactivate Ctl
-UI --> User: Which item\nwould you like to sell?
+UI --> User: Which items\nwould you like to sell?
 deactivate UI
 
-User -> UI: item
+User -> UI: itemsId
 activate UI
 
 UI --> User: What is the price \nand time limit for this sale?
@@ -48,24 +47,25 @@ deactivate UI
 User -> UI: price, time limit
 activate UI
 
-UI -> Ctl: putItemIdOnDirectSale\n(itemID, price, timeLimit)
+UI -> Ctl: putItemIdOnDirectSale\n(itemsId, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleRepo: addDirectSale\n(itemID, price, timeLimit)
-activate DirectSaleRepo
-
-DirectSaleRepo -> DirectSaleFactory: createDirectSale\n(itemID, price, timeLimit)
+Ctl -> DirectSaleFactory: createDirectSale\n(itemsId, price, timeLimit)
 activate DirectSaleFactory
 create directSale
 DirectSaleFactory -->> directSale: <<create>>
-DirectSaleFactory --> DirectSaleRepo: directSale
+DirectSaleFactory --> Ctl: directSale
 deactivate DirectSaleFactory
+Ctl -> DirectSaleRepo: exists = containsOfIdentity(directSale.identity())
+activate DirectSaleRepo
 
-DirectSaleRepo -> DirectSaleRepo: add(directSale)
-DirectSaleRepo --> Ctl: true
+opt exists == false
+Ctl -> DirectSaleRepo: save(directSale)
+DirectSaleRepo --> Ctl: directSale
 deactivate DirectSaleRepo
+end
 
-Ctl --> UI: true
+Ctl --> UI: directSale
 deactivate Ctl
 UI --> User: Your item was\nsuccessfully put up on a direct sale!
 deactivate UI
