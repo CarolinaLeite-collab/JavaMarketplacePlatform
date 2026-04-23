@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
+import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 
 /**
@@ -11,16 +12,26 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 public class RegisterPublishingCompanyController {
 
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
+    private final PublishingCompanyFactory _publishingCompanyFactory;
 
-    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo) {
+    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo,  PublishingCompanyFactory publishingCompanyFactory) {
 
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
+        _publishingCompanyFactory = publishingCompanyFactory;
 
     }
 
     public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
 
-        return _iPublishingCompanyRepo.registerPublishingCompany(publishingCompanyName);
+        PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyName);
+
+        if (_iPublishingCompanyRepo.containsOfIdentity(newPublishingCompany.identity())) {
+
+            throw new IllegalArgumentException("Publishing Company with name " + publishingCompanyName + " already exists");
+
+        }
+
+        return _iPublishingCompanyRepo.save(newPublishingCompany);
 
     }
 
