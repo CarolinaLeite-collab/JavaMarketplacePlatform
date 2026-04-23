@@ -7,11 +7,14 @@ import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -21,6 +24,7 @@ class AddItemToListControllerTest {
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private ILibraryRepo _iLibraryRepoDouble;
     private UserId _userIdDouble;
+    private LibraryId _libraryIdDouble;
     private GenreId _genreIdDouble;
     private ItemId _itemIdDouble;
     private Library _libraryDouble;
@@ -35,6 +39,7 @@ class AddItemToListControllerTest {
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
         _listDouble = mock(ListOfItems.class);
+        _libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
     }
 
     @Test
@@ -55,32 +60,56 @@ class AddItemToListControllerTest {
 
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
-        //arrange
-        when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
+        //Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
 
-        //SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        //act
-        List<ItemId> result = _controllerSUT.getItemsInMyLibrary(_userIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryIdDouble);
 
-        //assert
-        assertEquals(1, result.size());
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.of(_libraryDouble));
+
+            when(_libraryDouble.getItemsIdInLibrary())
+                    .thenReturn(List.of(_itemIdDouble));
+
+            // SUT
+            AddItemToListController controller =
+                    new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+            // Act
+            List<ItemId> result = controller.getItemsInMyLibrary(_userIdDouble);
+
+            // Assert
+            assertEquals(1, result.size());
+            assertEquals(_itemIdDouble, result.get(0));
+        }
     }
 
     @Test
     void getItemsInMyLibraryShouldThrowWhenUserLibraryNotFound() {
-        //arrange
-        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble))
-                .thenThrow(new IllegalStateException("Library not found"));
 
-        //SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
 
-        //assert
-        assertThrows(IllegalStateException.class,
-                () -> _controllerSUT.getItemsInMyLibrary(_userIdDouble));
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+
+            // Arrange: control static mapping
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryIdDouble);
+
+            // Arrange: repo returns empty (NOT throws)
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.empty());
+
+            // SUT (constructor likely triggers lookup)
+            AddItemToListController controller =
+                    new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+            // Act + Assert (constructor OR method depending on design)
+            assertThrows(IllegalStateException.class, () ->
+                    controller.getItemsInMyLibrary(_userIdDouble));
+        }
     }
 
     @Test
