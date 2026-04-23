@@ -43,7 +43,7 @@ public class AddPublicationOnLibraryController {
 
         for (ItemId itemId : itemIds){
 
-            if(!isItemAlreadyInAnyLibrary(itemId, libraries)){
+            if(!isItemIdAlreadyInAnyLibrary(itemId, libraries)){
                 availableItemIds.add(itemId);
             }
 
@@ -56,7 +56,7 @@ public class AddPublicationOnLibraryController {
     public boolean addItemIdToLibrary(ItemId selectedItemId, UserId userId){
 
         Iterable<Library> libraries = _iLibraryRepo.findAll();
-        if (isItemAlreadyInAnyLibrary(selectedItemId, libraries)) return false;
+        if (isItemIdAlreadyInAnyLibrary(selectedItemId, libraries)) return false;
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
 
@@ -67,7 +67,7 @@ public class AddPublicationOnLibraryController {
 
     }
 
-    private boolean isItemAlreadyInAnyLibrary(ItemId itemId, Iterable<Library> libraries) {
+    private boolean isItemIdAlreadyInAnyLibrary(ItemId itemId, Iterable<Library> libraries) {
 
         for (Library library : libraries) {
             if (library.getItemsIdInLibrary().contains(itemId)) {
