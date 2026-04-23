@@ -61,14 +61,14 @@ class AddItemToListControllerTest {
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
         //Arrange
-        LibraryId libraryId = mock(LibraryId.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
                     .thenReturn(Optional.of(_libraryDouble));
 
             when(_libraryDouble.getItemsIdInLibrary())
@@ -90,16 +90,16 @@ class AddItemToListControllerTest {
     @Test
     void getItemsInMyLibraryShouldThrowWhenUserLibraryNotFound() {
 
-        LibraryId libraryId = mock(LibraryId.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             // Arrange: control static mapping
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
             // Arrange: repo returns empty (NOT throws)
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
                     .thenReturn(Optional.empty());
 
             // SUT (constructor likely triggers lookup)

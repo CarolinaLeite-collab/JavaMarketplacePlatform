@@ -78,18 +78,18 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testGetLibraryItemsIdListForUserWithEmptyLibrary() {
 
-        LibraryId libraryId = mock(LibraryId.class);
-        Library library = mock(Library.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
-                    .thenReturn(Optional.of(library));
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.of(libraryDouble));
 
-            when(library.getItemsIdInLibrary())
+            when(libraryDouble.getItemsIdInLibrary())
                     .thenReturn(List.of());
 
             // SUT
@@ -108,18 +108,18 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testGetLibraryItemsIdListIsImmutable() {
         // Arrange
-        LibraryId libraryId = mock(LibraryId.class);
-        Library library = mock(Library.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
-                    .thenReturn(Optional.of(library));
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.of(libraryDouble));
 
-            when(library.getItemsIdInLibrary())
+            when(libraryDouble.getItemsIdInLibrary())
                     .thenReturn(List.of(_itemIdDouble));
 
             // SUT
@@ -138,18 +138,18 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void shouldReturnItemIdsFromUserLibrary() {
         // Arrange
-        LibraryId libraryId = mock(LibraryId.class);
-        Library library = mock(Library.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
-                    .thenReturn(Optional.of(library));
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.of(libraryDouble));
 
-            when(library.getItemsIdInLibrary())
+            when(libraryDouble.getItemsIdInLibrary())
                     .thenReturn(List.of(_itemIdDouble));
 
             // SUT
@@ -168,23 +168,23 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testPutItemIdOnAuctionSuccess() {
         // Arrange
-        Price startPrice = mock(Price.class);
-        Price outrightPrice = mock(Price.class);
-        Price reservePrice = mock(Price.class);
+        Price startPriceDouble = mock(Price.class);
+        Price outrightPriceDouble = mock(Price.class);
+        Price reservePriceDouble = mock(Price.class);
 
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
 
-        LibraryId libraryId = mock(LibraryId.class);
-        Library library = mock(Library.class);
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryId);
+                    .thenReturn(libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryId))
-                    .thenReturn(Optional.of(library));
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
+                    .thenReturn(Optional.of(libraryDouble));
 
             when(_iItemRepoDouble.ofIdentity(_itemIdDouble))
                     .thenReturn(Optional.of(_itemDouble));
@@ -193,7 +193,7 @@ class PublicationSaleAuctionControllerTest {
                     .thenReturn(SaleStatus.NotOnSale);
 
             when(_iAuctionRepoDouble.addAuction(
-                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate))
+                    _itemsId, startPriceDouble, reservePriceDouble, outrightPriceDouble, startDate, endDate))
                     .thenReturn(_auctionDouble);
 
             // SUT
@@ -203,13 +203,13 @@ class PublicationSaleAuctionControllerTest {
 
             // Act
             Auction result = controller.putItemOnAuction(
-                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+                    _itemsId, startPriceDouble, reservePriceDouble, outrightPriceDouble, startDate, endDate);
 
             // Assert
             assertNotNull(result);
             assertSame(_auctionDouble, result);
             verify(_iAuctionRepoDouble).addAuction(
-                    _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+                    _itemsId, startPriceDouble, reservePriceDouble, outrightPriceDouble, startDate, endDate);
             verify(_itemDouble).markAsAuction();
         }
     }
@@ -217,9 +217,9 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testPutItemOnAuctionWhenItemDoesNotExist() {
         // Arrange
-        Price startPrice = mock(Price.class);
-        Price outrightPrice = mock(Price.class);
-        Price reservePrice = mock(Price.class);
+        Price startPriceDouble = mock(Price.class);
+        Price outrightPriceDouble = mock(Price.class);
+        Price reservePriceDouble = mock(Price.class);
 
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
@@ -235,7 +235,7 @@ class PublicationSaleAuctionControllerTest {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> controller.putItemOnAuction(
-                        _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+                        _itemsId, startPriceDouble, reservePriceDouble, outrightPriceDouble, startDate, endDate)
         );
 
         assertTrue(exception.getMessage().contains("Item not found"));
@@ -245,9 +245,9 @@ class PublicationSaleAuctionControllerTest {
     @Test
     void testPutItemOnAuctionWhenItemIsAlreadyOnSale() {
         // Arrange
-        Price startPrice = mock(Price.class);
-        Price outrightPrice = mock(Price.class);
-        Price reservePrice = mock(Price.class);
+        Price startPriceDouble = mock(Price.class);
+        Price outrightPriceDouble = mock(Price.class);
+        Price reservePriceDouble = mock(Price.class);
 
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(8);
@@ -264,7 +264,7 @@ class PublicationSaleAuctionControllerTest {
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> controller.putItemOnAuction(
-                        _itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate)
+                        _itemsId, startPriceDouble, reservePriceDouble, outrightPriceDouble, startDate, endDate)
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));

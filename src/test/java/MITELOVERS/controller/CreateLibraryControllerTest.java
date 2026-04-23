@@ -17,14 +17,14 @@ class CreateLibraryControllerTest {
 
     private UserId _userIdDouble;
     private ILibraryRepo _iLibraryRepoDouble;
-    private LibraryFactory _libraryFactory;
+    private LibraryFactory _libraryFactoryDouble;
 
     @BeforeEach
     void setUp() {
 
         _userIdDouble = mock(UserId.class);
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _libraryFactory = mock(LibraryFactory.class);
+        _libraryFactoryDouble = mock(LibraryFactory.class);
 
     }
 
@@ -32,7 +32,7 @@ class CreateLibraryControllerTest {
     void testCreateLibraryController() {
 
         // SUT
-        new CreateLibraryController(_iLibraryRepoDouble, _libraryFactory, _userIdDouble);
+        new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
 
     }
 
@@ -42,7 +42,7 @@ class CreateLibraryControllerTest {
         // Arrange
         Library libraryDouble = mock(Library.class);
 
-        when(_libraryFactory.createLibrary(_userIdDouble))
+        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
                 .thenReturn(libraryDouble);
 
         when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
@@ -50,7 +50,7 @@ class CreateLibraryControllerTest {
 
         // SUT
         CreateLibraryController ctl =
-                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactory, _userIdDouble);
+                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
 
         // Act
         boolean result = ctl.createLibrary(_userIdDouble);
@@ -65,7 +65,7 @@ class CreateLibraryControllerTest {
         // Arrange
         Library libraryDouble = mock(Library.class);
 
-        when(_libraryFactory.createLibrary(_userIdDouble))
+        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
                 .thenReturn(libraryDouble);
 
         when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
@@ -73,7 +73,7 @@ class CreateLibraryControllerTest {
 
         // SUT
         CreateLibraryController ctl =
-                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactory, _userIdDouble);
+                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
 
         // Act + Assert
         assertThrows(IllegalStateException.class,
