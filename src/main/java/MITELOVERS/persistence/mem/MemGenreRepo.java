@@ -17,10 +17,9 @@ import java.util.*;
 
 public class MemGenreRepo implements IGenreRepo {
     private final Map<GenreId, Genre> DATA = new HashMap<>();
-    private final GenreFactory _genreFactory;
 
-    public MemGenreRepo(GenreFactory genreFactory) {
-        _genreFactory = genreFactory;
+    public MemGenreRepo() {
+
     }
 
     @Override
