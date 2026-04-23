@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
@@ -21,14 +22,16 @@ public class PublicationInLibraryForDirectSaleController {
 
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
-    private Library _library;
+    private final Library _library;
     private final IItemRepo _iItemRepo;
+    private final DirectSaleFactory _directSaleFactory;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
+    public PublicationInLibraryForDirectSaleController(DirectSaleFactory directSaleFactory, ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
         _iItemRepo = iItemRepo;
         _library = libraryRepo.findLibraryByUserId(userId);
+        _directSaleFactory = directSaleFactory;
     }
 
     public List<ItemId> getItemsInLibraryByUser(UserId userId) {
@@ -52,7 +55,7 @@ public class PublicationInLibraryForDirectSaleController {
             }
         }
 
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(
+        DirectSale directSale = addDirectSale(
                 itemsId, price, timeLimit
         );
 
@@ -63,5 +66,18 @@ public class PublicationInLibraryForDirectSaleController {
         }
 
         return directSale;
+    }
+
+    private DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
+
+        DirectSale directSale = _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+
+        if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
+
+            throw new IllegalStateException("Direct sale already exists!");
+
+        }
+
+        return _iDirectSaleRepo.save(directSale);
     }
 }
