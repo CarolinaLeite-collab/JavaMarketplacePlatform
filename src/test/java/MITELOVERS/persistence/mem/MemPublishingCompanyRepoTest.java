@@ -1,9 +1,7 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
-import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
