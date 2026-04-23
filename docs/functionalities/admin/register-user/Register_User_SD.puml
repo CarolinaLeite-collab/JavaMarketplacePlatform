@@ -1,0 +1,62 @@
+@startuml
+title **"As an Administrator, I want to register a user in the system"**  SD
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+actor "Admin" as Administrator
+participant ":RegisterNewUserUI" as UI
+participant ":RegisterNewUserController" as Ctl
+participant ":MemoUserRepo" as Repo
+participant ":UserFactory" as Factory
+
+Administrator -> "UI": I want to register a user in the system.
+activate "UI"
+"UI" --> Administrator: What is the name and the email?
+Administrator -> "UI": name, email
+"UI" -> "Ctl": registerNewUser(name, email)
+activate "Ctl"
+"Ctl" -> "Repo" : registerNewUser(name, email)
+
+
+activate "Repo"
+
+create "newEmail:Email"
+"Repo" -->> "newEmail:Email": <<Create>>
+
+opt userExists(email) == false
+    create "newName:Name"
+    "Repo" -->> "newName:Name": <<Create>>
+
+
+
+    "Repo" -> "Factory": createUser(newName, newEmail)
+    activate "Factory"
+    create "newUser:User"
+    "Factory" -->> "newUser:User": <<Create>>
+    "Factory" --> "Repo": newUser
+    deactivate "Factory"
+
+    "Repo" -> "Repo": add(newUser)
+end
+
+"Repo" --> "Ctl": newUser
+deactivate "Repo"
+"Ctl" --> "UI": newUser
+
+deactivate "Ctl"
+"UI" --> Administrator: Registered successfully!
+deactivate "UI"
+
+@enduml

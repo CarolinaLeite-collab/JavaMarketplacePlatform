@@ -1,0 +1,165 @@
+@startuml
+title "As a Buyer, I want to get the list of items on auction of a given publisher" - SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetAuctionItemsByPublishingCompanyUI" as UI
+participant ":GetAuctionItemsByPublishingCompanyController" as CTL
+participant ":IPublishingCompanyRepo" as PCR
+participant ":IAuctionRepo" as DSR
+participant "auction:Auction" as Auction
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+
+
+Buyer -> UI: I want the list of items \non auction of a given publishing company
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> PCR : findAllKeys()
+activate PCR
+
+PCR --> CTL : publishingCompanyIds
+deactivate PCR
+
+CTL --> UI : publishingCompanyIds
+deactivate CTL
+UI --> Buyer: Select publishingCompanyId
+deactivate UI
+Buyer -> UI: publishingCompanyId
+activate UI
+
+
+UI -> CTL: getAuctionItemsByPublishingCompanyId(publishingCompanyId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: auctions
+deactivate DSR
+
+create "listOfItemsOnAuctionByPublishingCompany:List<ItemId>"
+CTL -->> "listOfItemsOnAuctionByPublishingCompany:List<ItemId>" : <<Create>>
+
+loop for auction : auctions
+CTL -> Auction : getItemIds()
+activate Auction
+Auction --> CTL : itemIds
+deactivate Auction
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+deactivate ER
+
+
+CTL -> Edition : hasPublishingCompanyId = isByPublishingCompanyId(publishingCompanyId)
+
+opt hasPublishingCompanyId
+CTL -> "listOfItemsOnAuctionByPublishingCompany:List<ItemId>" : add(itemId)
+activate "listOfItemsOnAuctionByPublishingCompany:List<ItemId>"
+"listOfItemsOnAuctionByPublishingCompany:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnAuctionByPublishingCompany:List<ItemId>"
+end
+end
+end
+
+
+CTL --> UI: listOfItemsOnAuctionByPublishingCompany
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
+deactivate UI
+
+@enduml@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+title US028 "As a Buyer, I want to get the list of items on auction of a given publisher" - SD
+
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---'
+actor Buyer
+participant ":GetAuctionItems\nByPublisherUI" as UI
+participant ":GetAuctionItems\nByPublisherController" as Ctl
+participant ":MemoAuctionRepo" as MemoRepo
+participant "_auction:Auction" as auction
+
+' --- Initial UI interaction ---'
+Buyer -> UI:  I want to get the list of items\n on auction of a given publisher
+activate UI
+UI --> Buyer: What is the publisher?
+deactivate UI
+Buyer -> UI: publisherId
+activate UI
+
+' --- Get auction items ---'
+UI -> Ctl: getAuctionItems\nByPublisherId(publisherId)
+activate Ctl
+Ctl -> MemoRepo: getAuctionItems\nByPublisherId(publisherId)
+activate MemoRepo
+
+'--- Loop through items and select by Publisher ---'
+create "listOfAuctionItemsId\nByPublisherId: List<ItemId>" as List
+MemoRepo -->> List : <<create>>
+loop for each Auction in MemoAuctionRepo
+     MemoRepo -> auction: isByPublisherId(publisherId)
+    opt isByPublisher == true
+        MemoRepo -> List: add(auction.getItemId\())
+        activate List
+        List --> MemoRepo :true
+        Deactivate List
+    end
+end
+
+'--- Make a copy of the list of selected items ---'
+create "copyListOfAuctionItemsId\nByPublisherId: List<ItemId>" as Copy
+MemoRepo -->> Copy : <<create>>
+MemoRepo --> Ctl : copyListOfAuctionItems\nByPublisherId
+deactivate MemoRepo
+Ctl --> UI: copyListOfAuctionItems\nByPublisherId
+deactivate Ctl
+
+'--- Response ---'
+UI --> Buyer: Here's the list!
+deactivate UI
+
+@enduml

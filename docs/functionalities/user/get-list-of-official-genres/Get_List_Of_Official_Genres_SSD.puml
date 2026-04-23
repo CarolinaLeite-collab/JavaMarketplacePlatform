@@ -1,0 +1,29 @@
+@startuml
+title "As a user, I want to get the list of official genres" - SSD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor User
+participant ":Mitelovers" as System
+
+' --- System dialog ---
+User -> System: I want to get the list of official genres
+activate "System"
+System --> User: Here's the list! Done!
+deactivate "System"
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml
+title "As a Buyer, I want to get the list of items on direct sale of a given publication" - SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetDirectSaleItemsByPublicationUI" as UI
+participant ":GetDirectSaleItemsByPublicationController" as CTL
+participant ":IPublicationRepo" as PR
+participant ":IDirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DirectSale
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+
+
+Buyer -> UI: I want the list of items \non direct sale of a given publication
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> PR : findAllKeys()
+activate PR
+
+PR --> CTL : publicationIds
+deactivate PR
+
+CTL --> UI : publicationIds
+deactivate CTL
+UI --> Buyer: Select publicationId
+deactivate UI
+Buyer -> UI: publicationId
+activate UI
+
+
+UI -> CTL: getDirectSaleItemsByPublicationId(publicationId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: directSales
+deactivate DSR
+
+create "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+CTL -->> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : <<Create>>
+
+loop for directSale : directSales
+CTL -> DirectSale : getItemIds()
+activate DirectSale
+DirectSale --> CTL : itemIds
+deactivate DirectSale
+
+loop for itemId : itemIds
+CTL -> IR : ofIdentity(itemId)
+activate IR
+IR --> CTL : item
+deactivate IR
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+CTL -> ER : ofIdentity(editionId)
+activate ER
+ER --> CTL : edition
+
+
+CTL -> Edition : hasPublicationId = isByPublicationId(publicationId)
+
+opt hasPublicationId
+CTL -> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : add(itemId)
+activate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+"listOfItemsOnDirectSaleByPublication:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
+end
+end
+end
+
+
+CTL --> UI: listOfItemsOnDirectSaleByPublication
+deactivate CTL
+
+UI --> Buyer: Here's the list! Done!
+deactivate UI
+
+@enduml

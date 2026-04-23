@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ListOfItemsTest {
 
@@ -199,8 +200,10 @@ class ListOfItemsTest {
 
     @Test
     void equalsShouldReturnFalseForDifferentId() {
-        ListOfItems list1 = new ListOfItems(ListOfItemsId.newId(), _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(ListOfItemsId.newId(), _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItemsId id2 = mock(ListOfItemsId.class);
+
+        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "My List", _genre1IdDouble);
 
         assertNotEquals(list1, list2);
     }
@@ -232,9 +235,38 @@ class ListOfItemsTest {
 
     @Test
     void hashCodeShouldReturnDifferentValuesForDifferentIds() {
-        ListOfItems list1 = new ListOfItems(ListOfItemsId.newId(), _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(ListOfItemsId.newId(), _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItemsId id2 = mock(ListOfItemsId.class);
+
+        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "My List", _genre1IdDouble);
 
         assertNotEquals(list1.hashCode(), list2.hashCode());
     }
+
+    @Test
+    void sameAsShouldReturnTrueForSameInstance() {
+        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+
+        assertTrue(list.sameAs(list));
+    }
+
+    @Test
+    void sameAsShouldReturnTrueForDifferentInstancesWithSameId() {
+
+        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "A", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_listIdDouble, _user2IdDouble, "B", _genre2IdDouble);
+
+        assertTrue(list1.sameAs(list2));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseForDifferentIds() {
+        ListOfItemsId id2 = mock(ListOfItemsId.class);
+
+        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "A", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "A", _genre1IdDouble);
+
+        assertFalse(list1.sameAs(list2));
+    }
+
 }

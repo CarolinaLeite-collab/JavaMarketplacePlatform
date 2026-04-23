@@ -51,20 +51,17 @@ class CreatePrivateListOfItemsControllerTest {
     @Test
     void shouldCreateListSuccessfully() {
         // Arrange
-        ListOfItems listDouble = mock(ListOfItems.class);
-        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble)).thenReturn(listDouble);
+        when(_iListOfItemsRepoDouble.addListOfItems(_userIdDouble, "My List", _genreIdDouble))
+                .thenReturn(mock(ListOfItems.class));
 
-        //SUT
-        CreatePrivateListOfItemsController controller = new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act
-        ListOfItems result = controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        boolean result = controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
 
         // Assert
-        assertAll(
-                () -> assertNotNull(result),
-                () -> assertEquals(listDouble, result)
-        );
+        assertTrue(result);
         verify(_iListOfItemsRepoDouble).addListOfItems(_userIdDouble, "My List", _genreIdDouble);
     }
 
@@ -75,8 +72,7 @@ class CreatePrivateListOfItemsControllerTest {
                 .thenThrow(new IllegalArgumentException("List already exists"));
 
         CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
+                new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _userIdDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->

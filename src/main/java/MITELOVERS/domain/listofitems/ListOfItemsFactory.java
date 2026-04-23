@@ -13,7 +13,7 @@ public class ListOfItemsFactory {
 
     public ListOfItems createListOfItems(UserId userId, String name, GenreId genreId) {
 
-        ListOfItemsId listOfItemsId = ListOfItemsId.newId();
+        ListOfItemsId listOfItemsId = ListOfItemsId.newId(genreId);
 
         return new ListOfItems(listOfItemsId, userId, name, genreId);
     }

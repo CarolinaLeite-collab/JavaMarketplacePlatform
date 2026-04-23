@@ -1,0 +1,141 @@
+@startuml
+title "As a Buyer, I want to get the list of items on direct sale of a given genre" CD
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+class GetDirectSaleItemsByGenreUI
+
+
+package "controller" {
+
+    class GetDirectSaleItemsByGenreController {
+        +findAllGenreIds() : List<GenreId>
+        +getDirectSaleItemsByGenreId(genreId : GenreId) : List<ItemId>
+    }
+}
+
+
+package "domain" {
+
+    package "repository" {
+
+        interface IGenreRepo <<Interface>>
+        interface IDirectSaleRepo <<Interface>>
+        interface IItemRepo <<Interface>>
+        interface IEditionRepo <<Interface>>
+        interface IPublicationRepo <<Interface>>
+    }
+
+    package "valueobject" {
+
+        class GenreId <<Value Object>>
+        class ItemId <<Value Object>>
+        class EditionId <<Value Object>>
+        class PublicationId <<Value Object>>
+    }
+
+    package "directsale" #b0c4d4 {
+
+        class DirectSale <<Root>> <<Entity>> {
+            +getItemIds() : List<ItemId>
+        }
+    }
+
+    package "item" #b0c4d4 {
+
+        class Item <<Root>> <<Entity>> {
+            +getEditionId() : EditionId
+        }
+    }
+
+    package "edition" #b0c4d4 {
+
+        class Edition <<Root>> <<Entity>> {
+            +getPublicationId() : PublicationId
+        }
+    }
+
+    package "publication" #b0c4d4 {
+
+        class Publication <<Root>> <<Entity>> {
+            +isByGenreId(genreId : GenreId) : boolean
+        }
+    }
+}
+
+
+package "ddd" {
+
+    interface IRepository<ID, T> <<Interface>> {
+        findAll() : Iterable<T>
+        ofIdentity(id : ID) : Optional<T>
+        containsOfIdentity(id : ID) : boolean
+    }
+}
+
+
+'package "persistence" {
+'
+'    package "mem" {
+'
+'        class MemoGenreRepo
+'        class MemoDirectSaleRepo
+'        class MemoItemRepo
+'        class MemoEditionRepo
+'        class MemoPublicationRepo
+'    }
+'}
+
+
+GetDirectSaleItemsByGenreUI .> GetDirectSaleItemsByGenreController
+
+GetDirectSaleItemsByGenreController ..> IGenreRepo : calls
+GetDirectSaleItemsByGenreController ..> IDirectSaleRepo : calls
+GetDirectSaleItemsByGenreController ..> IItemRepo : calls
+GetDirectSaleItemsByGenreController ..> IEditionRepo : calls
+GetDirectSaleItemsByGenreController ..> IPublicationRepo : calls
+
+GetDirectSaleItemsByGenreController "1" ..> "*" GenreId : <<use>>
+GetDirectSaleItemsByGenreController "1" ..> "*" ItemId : <<use>>
+GetDirectSaleItemsByGenreController "1" ..> "*" EditionId : <<use>>
+GetDirectSaleItemsByGenreController "1" ..> "*" PublicationId : <<use>>
+
+
+IGenreRepo -|> IRepository
+IDirectSaleRepo -|> IRepository
+IItemRepo -|> IRepository
+IEditionRepo -|> IRepository
+IPublicationRepo -|> IRepository
+
+
+'MemoGenreRepo ..|> IGenreRepo
+'MemoDirectSaleRepo ..|> IDirectSaleRepo
+'MemoDirectSaleRepo --> DirectSale
+'MemoItemRepo ..|> IItemRepo
+'MemoItemRepo --> Item
+'MemoEditionRepo ..|> IEditionRepo
+'MemoEditionRepo --> Edition
+'MemoPublicationRepo ..|> IPublicationRepo
+'MemoPublicationRepo --> Publication
+
+IDirectSaleRepo "1" --> "*" DirectSale : manages
+IItemRepo "1" --> "*" Item : manages
+IPublicationRepo "1" --> "*" Publication : manages
+IEditionRepo "1" --> "*" Edition : manages
+
+
+DirectSale "1" o-- "*" ItemId : aggregates
+Item "1" --> "1" EditionId : references
+Item "1" --> "1" ItemId : has
+Edition "1" --> "1" PublicationId : references
+Publication "1" --> "1" GenreId : references
+Edition "1" --> "1" EditionId : has
+
+@enduml

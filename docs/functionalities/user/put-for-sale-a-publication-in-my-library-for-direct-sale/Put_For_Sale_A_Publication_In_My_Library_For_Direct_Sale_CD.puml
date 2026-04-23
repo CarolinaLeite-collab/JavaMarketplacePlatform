@@ -1,0 +1,83 @@
+@startuml
+title "As a User, I want to put for sale a publication %n() in my library in a direct sale" CD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+class PublicationInLibraryForDirectSaleUI {
+}
+
+class PublicationInLibraryForDirectSaleController {
+  - libraryRepo: ILibraryRepo
+  - directSaleRepo: IdirectSaleRepo
+  + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
+  + putItemIdOnDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
+}
+
+interface ILibraryRepo {
+  + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
+}
+
+class Library {
+  - _userId: UserId
+  - _itemsId: List<ItemId>
+  + getItemsIdInLibrary(): List<ItemId>
+}
+
+class MemoLibraryRepo{
+    - _librariesId: Map<LibraryId>
+}
+
+class ItemId {
+- _itemId : ItemId
+}
+
+interface IdirectSaleRepo{
++ addDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
+}
+
+class MemoDirectSaleRepo {
+  - _directSales: List<DirectSale>
+  - _factory: DirectSaleFactory
+}
+
+class DirectSaleFactory {
+  + createDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
+}
+
+class DirectSale {
+  - itemId: ItemId
+  - price: Price
+  - timeLimit: Period
+'  + DirectSale(item: Item, price: Price, timeLimit: Period)
+}
+
+PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
+PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
+PublicationInLibraryForDirectSaleController "1" ..> "1" IdirectSaleRepo : calls
+
+MemoLibraryRepo "1" --> "*" Library : manages
+Library "1" --> "*" ItemId : has
+MemoLibraryRepo "1" ..|> "1" ILibraryRepo : implements
+
+MemoDirectSaleRepo "1     " ..|> "1" IdirectSaleRepo : implements
+MemoDirectSaleRepo "1" --> "1    " DirectSaleFactory : uses
+DirectSaleFactory "1" -.> "*" DirectSale : creates
+
+ItemId "*" --> "1" DirectSale : references
+
+'DirectSale "1" --> "1" Item : sells
+
+
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+title "As a Buyer, I want to get the list of items on auction of a given publication" - Level 1 SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetAuctionItemsByPublicationUI" as UI
+participant ":GetAuctionItemsByPublicationController" as CTL
+participant "_mar:MemoAuctionRepo" as mAR
+
+Buyer -> UI: I want the list of items on auction of a given publication
+activate UI
+UI --> Buyer: Which publication?
+deactivate UI
+Buyer -> UI: publicationID
+activate UI
+
+
+UI -> CTL: getAuctionItemsByPublicationId(publicationID)
+activate CTL
+
+CTL -> mAR: getAuctionItemsByPublicationId(publicationID)
+activate mAR
+
+mAR --> CTL: copyOfListOfAuctionItemsByPublicationId
+deactivate mAR
+
+CTL --> UI: copyOfListOfAuctionItemsByPublicationId
+deactivate CTL
+
+UI --> Buyer: Here's the list! done!
+deactivate UI
+
+@enduml

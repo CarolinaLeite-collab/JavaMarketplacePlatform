@@ -1,0 +1,54 @@
+@startuml
+title "As an Administrator, I want to register a Publishing Company in the system" SD
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+actor "Admin" as Administrator
+participant ":RegisterPublishing%n()CompanyUI" as UI
+participant ":RegisterPublishing%n()CompanyCtl" as Ctl
+participant ":MemoPublishing%n()CompanyRepo" as Repo
+participant ":PublishingCompany%n()Factory" as Factory
+
+' --- SD (Happy Path only)---
+
+Administrator -> "UI": I want to register %n()a publishing company.
+activate "UI"
+"UI" --> Administrator:Name of the %n()publishing company?
+Administrator -> "UI": publishingCompanyName
+"UI" -> "Ctl": registerPublishingCompany%n()(publishingCompanyName)
+activate "Ctl"
+"Ctl" -> "Repo": registerPublishingCompany%n()(publishingCompanyName)
+activate "Repo"
+"Repo" -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
+activate "Factory"
+create "newPublishingCompany:%n()PublishingCompany"
+"Factory" -->> "newPublishingCompany:%n()PublishingCompany": <<create>>
+"Factory" --> "Repo": newPublishingCompany
+deactivate "Factory"
+note right of Repo
+    assuming happy path:
+    containsOfIdentity(PublishingCompanyId) == false
+end note
+"Repo" -> "Repo": save(newPublishingCompany);
+"Repo" --> "Ctl": newPublishingCompany
+deactivate "Repo"
+"Ctl" --> "UI": newPublishingCompany
+deactivate "Ctl"
+"UI" --> Administrator: Registered successfully!
+deactivate "UI"
+
+@enduml

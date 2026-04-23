@@ -33,7 +33,10 @@ public class CreatePrivateListOfItemsController {
         return _iGenreRepo.findAll();
     }
 
-    public ListOfItems createListOfItems(UserId userId, String name, GenreId genreId) {
-        return _iListOfItemsRepo.addListOfItems(userId, name, genreId);
+    public boolean createListOfItems(UserId userId, String name, GenreId genreId) {
+
+        _iListOfItemsRepo.addListOfItems(userId, name, genreId);
+
+        return true;
     }
 }

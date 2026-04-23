@@ -1,0 +1,71 @@
+@startuml
+title "As a User, I want to put for sale a publication %n() in my library in an auction" - SD
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+actor User
+participant ":PublicationSaleAuction\nUI" as UI
+participant ":PublicationSaleAuction\nController" as Ctl
+participant ":ILibraryRepo" as LibraryRepo
+participant ":MemoAuctionRepo" as AuctionRepo
+participant ":AuctionFactory" as AuctionFactory
+participant "auction:Auction" as auction
+
+User -> UI: I want to put for auction\nan item in my library!
+activate UI
+
+UI -> Ctl: getLibraryItemsIdList\n(userId)
+activate Ctl
+
+Ctl -> LibraryRepo: getItemsIdInLibraryByUserId\n(userId)
+activate LibraryRepo
+LibraryRepo --> Ctl: ListOfUserLibraryItemsId
+deactivate LibraryRepo
+
+Ctl --> UI: ListOfUserLibraryItemsId
+deactivate Ctl
+UI --> User: Which item\nwould you like to auction?
+deactivate UI
+
+User -> UI: item
+activate UI
+
+UI --> User: What are the starting price, reserve price,\noutright price, start date and end date?
+deactivate UI
+User -> UI: startingPrice, reservePrice, outrightPrice, startDate, endDate
+activate UI
+
+UI -> Ctl: putItemIdOnAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
+activate Ctl
+
+Ctl -> AuctionFactory : createAuction\n(itemId, startingPrice, reservePrice, outrightPrice, startDate, endDate)
+activate AuctionFactory
+create auction
+AuctionFactory -->> auction: <<create>>
+"AuctionFactory" --> Ctl : auction
+deactivate AuctionFactory
+
+Ctl -> AuctionRepo: add(auction)
+activate AuctionRepo
+AuctionRepo --> Ctl: true
+deactivate AuctionRepo
+
+Ctl --> UI: true
+deactivate Ctl
+
+UI --> User: Your item was\nsuccessfully put up for auction!
+deactivate UI
+
+@enduml
