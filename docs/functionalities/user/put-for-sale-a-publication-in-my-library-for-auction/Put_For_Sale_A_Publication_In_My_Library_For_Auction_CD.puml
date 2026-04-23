@@ -82,10 +82,10 @@ PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : uses
 PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : uses
 PublicationSaleAuctionController "1" ..> "1" AuctionFactory : uses
 
-ILibraryRepo "1" <|.. "1" MemoLibraryRepo : implements
-IAuctionRepo "1" <|.. "1" MemoAuctionRepo : implements
+ILibraryRepo "1" <|.. "1" MemLibraryRepo : implements
+IAuctionRepo "1" <|.. "1" MemAuctionRepo : implements
 
-MemoLibraryRepo "1" --> "*" Library : manages
+MemLibraryRepo "1" --> "*" Library : manages
 Library "1" --> "*" ItemId : stores
 
 ItemId "1" --> "0..1" Auction : references
