@@ -76,7 +76,7 @@ package "persistence"  {
 
     package "mem" {
 
-        class MemoLibraryRepo {
+        class MemLibraryRepo {
         }
 
         class MemoItemRepo {
