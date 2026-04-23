@@ -62,7 +62,7 @@ package "persistence"  {
 
     package "mem" {
 
-        class MemoLibraryRepo {
+        class MemLibraryRepo {
         }
 
     }
@@ -92,9 +92,9 @@ CreateLibraryController "1" ..> "*" Library : <<use>>
 CreateLibraryController "1" ..> "*" UserId : <<use>>
 CreateLibraryController "1" -> "1" LibraryFactory : <<use>>
 
-MemoLibraryRepo ..|> ILibraryRepo
+MemLibraryRepo ..|> ILibraryRepo
 
-MemoLibraryRepo "1" -> "*" Library: persists
+MemLibraryRepo "1" -> "*" Library: persists
 
 LibraryFactory "1" ..> "*" Library : <<create>>
 

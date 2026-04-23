@@ -42,7 +42,7 @@ CTL -->> "availableItemIds:List<ItemIds>" : <<create>>
 
 
     loop  for each itemId in itemIds
-    CTL -> LIBREPO : existsInAnyLibrary = isItemAlreadyInAnyLibrary(selectedItemId)
+    CTL -> LIBREPO : existsInAnyLibrary = isItemIdAlreadyInAnyLibrary(selectedItemId)
     opt !existsInAnyLibrary
     CTL -> "availableItemIds:List<ItemIds>" : add
     activate "availableItemIds:List<ItemIds>"
@@ -64,7 +64,7 @@ CTL -> LIBREPO : findAll()
 activate LIBREPO
 LIBREPO --> CTL : libraries
 deactivate LIBREPO
-CTL -> LIBREPO : existsInAnyLibrary = isItemAlreadyInAnyLibrary(selectedItemId)
+CTL -> LIBREPO : existsInAnyLibrary = isItemIdAlreadyInAnyLibrary(selectedItemId)
 
     opt !existsInAnyLibrary
 

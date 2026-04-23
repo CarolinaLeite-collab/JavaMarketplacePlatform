@@ -55,7 +55,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble));
+                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble));    // SUT
 
     }
 

@@ -21,7 +21,7 @@ actor User
 participant ":CreateLibraryUI" as UI
 participant ":CreateLibraryController" as CTL
 participant ":LibraryFactory" as LF
-participant ":MemoLibraryRepo" as LR
+participant ":MemLibraryRepo" as LR
 
 User -> UI: I want to create my library
 activate UI

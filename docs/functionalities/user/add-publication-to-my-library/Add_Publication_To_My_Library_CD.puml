@@ -24,7 +24,7 @@ package "controller" {
     class AddPublicationOnLibraryController {
       + getListOfAvailableItemsId() : List<ItemId>
       + addItemIdToLibrary(selectedItemId : ItemId, userId : UserId) : boolean
-      - isItemAlreadyInAnyLibrary(itemId : ItemId, libraries : Iterable<Library>) : boolean
+      - isItemIdAlreadyInAnyLibrary(itemId : ItemId, libraries : Iterable<Library>) : boolean
     }
 
 }
@@ -111,9 +111,9 @@ AddPublicationOnLibraryController "1"..> "*" UserId : <<use>>
 AddPublicationOnLibraryController "1"..> "1" ItemId : <<use>>
 AddPublicationOnLibraryController "1"..> "1" Item : <<use>>
 
-MemoLibraryRepo ..|> ILibraryRepo
-MemoLibraryRepo "1" -> "*" Library: persists
-MemoItemRepo "1" -> "*" Item : persists
+MemLibraryRepo ..|> ILibraryRepo
+MemLibraryRepo "1" -> "*" Library: persists
+MemItemRepo "1" -> "*" Item : persists
 
 Library "1" --> "1" LibraryId: has
 LibraryId "1" .> "1" UserId: <<use>>
@@ -121,7 +121,7 @@ Library "1" o-- "*" ItemId : aggregates
 
 ILibraryRepo --|> IRepository
 IItemRepo --|> IRepository
-MemoItemRepo ..|> IItemRepo
+MemItemRepo ..|> IItemRepo
 
 Item "1" --> "1" ItemId : has
 Library ..|> AggregateRoot
