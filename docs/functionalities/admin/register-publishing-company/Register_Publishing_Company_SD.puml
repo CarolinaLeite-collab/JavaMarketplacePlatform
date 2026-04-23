@@ -21,7 +21,7 @@ actor "Admin" as Administrator
 participant ":RegisterPublishing%n()CompanyUI" as UI
 participant ":RegisterPublishing%n()CompanyCtl" as Ctl
 participant ":PublishingCompany%n()Factory" as Factory
-participant ":MemoPublishing%n()CompanyRepo" as Repo
+participant ":MemPublishing%n()CompanyRepo" as Repo
 
 ' --- SD (Happy Path only)---
 
