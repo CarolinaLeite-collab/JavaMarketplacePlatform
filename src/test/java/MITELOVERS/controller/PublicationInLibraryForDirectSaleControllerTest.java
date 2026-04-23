@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
@@ -33,9 +34,11 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private Price _priceDouble;
     private Period _timeLimitDouble;
     private Item _itemDouble;
+    private DirectSaleFactory _directSaleFactory;
 
     @BeforeEach
     void setUp() {
+        _directSaleFactory = mock(DirectSaleFactory.class);
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
         _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
         _iItemRepoDouble = mock(IItemRepo.class);
@@ -56,7 +59,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
     void testConstructorPublicationInLibraryForDirectSaleController() {
         //Act + Assert
         assertDoesNotThrow(() ->
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble));
+                new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble));
     }
 
     @Test
@@ -67,7 +70,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
                 .thenThrow(new IllegalStateException("Library not found for user"));
 
         //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         //Act + Assert
         assertThrows(IllegalStateException.class, () ->
@@ -81,7 +84,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
 
         //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         //Act
         List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
@@ -98,7 +101,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
 
         //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         //Act
         List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
@@ -115,7 +118,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
 
         //SUT
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         //Act
         List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
@@ -132,13 +135,12 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
+        when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
                 .thenReturn(directSaleDouble);
+        when(_iDirectSaleRepoDouble.save(directSaleDouble)).thenReturn(directSaleDouble);
 
         // SUT
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         // Act
         DirectSale result = controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
@@ -146,7 +148,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         // Assert
         assertNotNull(result);
         assertSame(directSaleDouble, result);
-        verify(_iDirectSaleRepoDouble).addDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
+        verify(_directSaleFactory).createDirectSale(_itemsId, _priceDouble, _timeLimitDouble);
         verify(_itemDouble).markAsDirectSale();
     }
 
@@ -158,12 +160,10 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(_iDirectSaleRepoDouble.addDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
+        when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
                 .thenReturn(directSaleDouble);
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         // Act
         controller.putItemIdOnDirectSale (_itemsId, _priceDouble, _timeLimitDouble);
@@ -180,8 +180,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(_iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         // Act + Assert
         IllegalArgumentException exception = assertThrows(
@@ -193,14 +192,12 @@ class PublicationInLibraryForDirectSaleControllerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenItemAlreadyOnSale() {
+    void shouldThrowExceptionWhenItemAlreadyOnAuction() {
         // Arrange
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
 
         // Act + Assert
         IllegalStateException exception = assertThrows(
@@ -210,7 +207,27 @@ class PublicationInLibraryForDirectSaleControllerTest {
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));
+    }
 
-        verify(_iDirectSaleRepoDouble, never()).addDirectSale(any(), any(), any());
+    @Test
+    void putItemIdOnDirectSaleShouldThrowIfDirectSaleAlreadyExists() {
+        // Arrange
+        DirectSale directSaleDouble = mock(DirectSale.class);
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble)).thenReturn(directSaleDouble);
+        when(_iDirectSaleRepoDouble.containsOfIdentity(directSaleDouble.identity())).thenReturn(true);
+
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(
+                        _directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,
+                        _iItemRepoDouble, _userIdDouble);
+
+        // Act + Assert
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> controller.putItemIdOnDirectSale(_itemsId, _priceDouble, _timeLimitDouble)
+        );
+        assertTrue(ex.getMessage().contains("Direct sale already exists"));
     }
 }
