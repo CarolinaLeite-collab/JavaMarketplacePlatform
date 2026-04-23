@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,53 +17,67 @@ class CreateLibraryControllerTest {
 
     private UserId _userIdDouble;
     private ILibraryRepo _iLibraryRepoDouble;
+    private LibraryFactory _libraryFactoryDouble;
 
     @BeforeEach
     void setUp() {
 
         _userIdDouble = mock(UserId.class);
         _iLibraryRepoDouble = mock(ILibraryRepo.class);
+        _libraryFactoryDouble = mock(LibraryFactory.class);
+
     }
 
     @Test
-    void testCreateLibraryController(){
+    void testCreateLibraryController() {
 
         // SUT
-        new CreateLibraryController(_iLibraryRepoDouble, _userIdDouble);
+        new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
+
     }
 
-
     @Test
-    void createLibraryShouldReturnLibrary() {
+    void shouldCreateLibrarySuccessfully() {
 
         // Arrange
         Library libraryDouble = mock(Library.class);
-        when(_iLibraryRepoDouble.addLibrary(_userIdDouble)).thenReturn(libraryDouble);
+
+        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
+                .thenReturn(libraryDouble);
+
+        when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
+                .thenReturn(false);
 
         // SUT
-        CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userIdDouble);
+        CreateLibraryController ctl =
+                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
 
-        //Act
-        boolean result = createLibraryController.createLibrary(_userIdDouble);
+        // Act
+        boolean result = ctl.createLibrary(_userIdDouble);
 
         // Assert
         assertTrue(result);
-
     }
 
     @Test
-    void createLibraryShouldThrowWhenLibraryAlreadyExist(){
+    void shouldThrowWhenLibraryAlreadyExists() {
 
         // Arrange
-       when(_iLibraryRepoDouble.addLibrary(_userIdDouble)).thenThrow(new IllegalStateException());
+        Library libraryDouble = mock(Library.class);
 
-       // SUT
-       CreateLibraryController createLibraryController = new CreateLibraryController(_iLibraryRepoDouble, _userIdDouble);
+        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
+                .thenReturn(libraryDouble);
 
+        when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
+                .thenReturn(true);
 
-        // Act & Assert
+        // SUT
+        CreateLibraryController ctl =
+                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
+
+        // Act + Assert
         assertThrows(IllegalStateException.class,
-                ()-> createLibraryController.createLibrary(_userIdDouble));
-        }
-
+                () -> ctl.createLibrary(_userIdDouble));
     }
+}
+

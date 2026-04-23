@@ -7,7 +7,10 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.PublicationTypeId;
+import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.List;
 
