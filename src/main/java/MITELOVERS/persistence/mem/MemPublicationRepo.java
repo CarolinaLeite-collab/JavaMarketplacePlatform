@@ -23,10 +23,8 @@ import java.util.*;
 public class MemPublicationRepo implements IPublicationRepo {
 
     private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
-    private final PublicationFactory _publicationFactory;
 
-    public MemPublicationRepo(PublicationFactory publicationFactory) {
-        _publicationFactory = publicationFactory;
+    public MemPublicationRepo() {
     }
 
     @Override
@@ -59,7 +57,5 @@ public class MemPublicationRepo implements IPublicationRepo {
 
         return new ArrayList<>(DATA.keySet());
     }
-
-
 
 }
