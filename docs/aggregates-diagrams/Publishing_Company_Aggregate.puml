@@ -37,7 +37,7 @@ package "domain" {
 
     package "valueobject" {
 
-        class PublishingCompanyId <<valueobject>> #LightPink {
+        class PublishingCompanyId <<Value Object>> #LightPink {
         - _id : String
         }
 
