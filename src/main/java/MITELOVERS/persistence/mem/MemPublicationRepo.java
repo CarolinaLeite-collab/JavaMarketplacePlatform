@@ -24,9 +24,6 @@ public class MemPublicationRepo implements IPublicationRepo {
 
     private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
 
-    public MemPublicationRepo() {
-    }
-
     @Override
     public Publication save(Publication publication){
         DATA.put(publication.identity(), publication);
