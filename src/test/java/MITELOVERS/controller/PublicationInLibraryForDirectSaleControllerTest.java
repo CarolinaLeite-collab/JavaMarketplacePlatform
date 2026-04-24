@@ -175,35 +175,48 @@ class PublicationInLibraryForDirectSaleControllerTest {
     @Test
     void shouldThrowExceptionWhenItemNotFound() {
         // Arrange
-        ItemId itemId = mock(ItemId.class);
-        List<ItemId> items = List.of(itemId);
+        DirectSale directSaleDouble = mock(DirectSale.class);
 
-        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
+        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble)).thenReturn(_libraryDouble);
 
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble)).thenReturn(directSaleDouble);
+        when(directSaleDouble.identity()).thenReturn(mock(MITELOVERS.domain.valueobject.DirectSaleId.class));
+        when(_iDirectSaleRepoDouble.containsOfIdentity(any())).thenReturn(false);
 
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.putItemIdOnDirectSale(items, _priceDouble, _timeLimitDouble)
-        );
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.empty());
 
+        PublicationInLibraryForDirectSaleController controller =
+                new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble
+                );
+
+        // Act
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.putItemIdOnDirectSale(_itemsId, _priceDouble, _timeLimitDouble));
+
+        // Assert
         assertTrue(exception.getMessage().contains("Item not found"));
     }
-
     @Test
     void shouldThrowExceptionWhenItemAlreadyOnAuction() {
         // Arrange
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
 
-        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,_iItemRepoDouble, _userIdDouble);
+        // Also stub these to avoid NPE *before* the sale-status check:
+        DirectSale directSaleMock = mock(DirectSale.class);
+        when(_directSaleFactory.createDirectSale(any(), any(), any()))
+                .thenReturn(directSaleMock);
+        when(_iDirectSaleRepoDouble.containsOfIdentity(any())).thenReturn(false);
+
+        when(_iLibraryRepoDouble.findLibraryByUserId(_userIdDouble))
+                .thenReturn(mock(Library.class));
+
+        //SUT
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
         // Act + Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> controller.putItemIdOnDirectSale(
-                        _itemsId, _priceDouble, _timeLimitDouble)
+                () -> controller.putItemIdOnDirectSale(_itemsId, _priceDouble, _timeLimitDouble)
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));
@@ -218,10 +231,8 @@ class PublicationInLibraryForDirectSaleControllerTest {
         when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble)).thenReturn(directSaleDouble);
         when(_iDirectSaleRepoDouble.containsOfIdentity(directSaleDouble.identity())).thenReturn(true);
 
-        PublicationInLibraryForDirectSaleController controller =
-                new PublicationInLibraryForDirectSaleController(
-                        _directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble,
-                        _iItemRepoDouble, _userIdDouble);
+        //SUT
+        PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
         // Act + Assert
         IllegalStateException ex = assertThrows(
