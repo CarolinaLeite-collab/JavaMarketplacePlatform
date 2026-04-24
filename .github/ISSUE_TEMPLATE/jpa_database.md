@@ -10,28 +10,26 @@ Implements persistence for the <AggregateName> aggregate using JPA, replacing th
 ### Tasks
 
 - [ ] Annotate MemGenreRepo as Spring repository with mem profile
-- 
-- [ ] Update <Class> constructor to add a new constructor taking all the arguments from the existing one plus the <Class>Id
 
-- [ ] create **Jpa<Class>Repo**
-    - create `Jpa<Class>Repo` in `persistence/jpa` and tests
+- [ ] Create **Jpa<Class>Repo**
+    - create `Jpa<Class>Repo` in `persistence/repository/jpa` and tests
     - implements `I<Class>Repo`
     - injects `I<Class>SpringDataRepo` and `<Class>Assembler`
     - delegates all persistence to `I<Class>SpringDataRepo`
     - delegates all mapping to `<Class>Assembler`
 
-- [ ] create **<Class>DataModel**
+- [ ] Create **<Class>DataModel**
     - create `<Class>DataModel` in `persistence/jpa/dataModel`
     - `@Entity`, `@Table(name = "<Class>s")`
     - add Lombok annotations: `@Getter`, `@NoArgsConstructor`, `@AllArgsConstructor`
     - `@Id` on the identity field
 
-- [ ] create **<Class>Assembler**
+- [ ] Create **<Class>Assembler**
     - create `<Class>Assembler` in `ersistence/jpa/assembler`
     - method `DM2Domain()` and `domain2DM()`
     - delegates reconstruction to `<Class>Factory`
 
-- [ ] create **I<Class>SpringDataRepo**
+- [ ] Create **I<Class>SpringDataRepo**
     - create `I<Class>SpringDataRepo` in `persistence/springdata` 
     - extends `JpaRepository<<Class>DataModel, String>`
   
