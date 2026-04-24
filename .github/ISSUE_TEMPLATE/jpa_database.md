@@ -9,17 +9,13 @@ Implements persistence for the <AggregateName> aggregate using JPA, replacing th
 
 ### Tasks
 
+- [ ] <AggregateName> Design
+  - Update diagrams to reflect the repository implementation
+  
 - [ ] Annotate MemGenreRepo as Spring repository with mem profile
 
-- [ ] Create **Jpa<Class>Repo**
-    - create `Jpa<Class>Repo` in `persistence/repository/jpa` and tests
-    - implements `I<Class>Repo`
-    - injects `I<Class>SpringDataRepo` and `<Class>Assembler`
-    - delegates all persistence to `I<Class>SpringDataRepo`
-    - delegates all mapping to `<Class>Assembler`
-
 - [ ] Create **<Class>DataModel**
-    - create `<Class>DataModel` in `persistence/jpa/dataModel`
+    - create `<Class>DataModel` in `persistence/jpa/datamodel`
     - `@Entity`, `@Table(name = "<Class>s")`
     - add Lombok annotations: `@Getter`, `@NoArgsConstructor`, `@AllArgsConstructor`
     - `@Id` on the identity field
@@ -28,7 +24,15 @@ Implements persistence for the <AggregateName> aggregate using JPA, replacing th
     - create `<Class>Assembler` in `ersistence/jpa/assembler`
     - method `DM2Domain()` and `domain2DM()`
     - delegates reconstruction to `<Class>Factory`
+  
+- [ ] Create **Jpa<Class>Repo**
+    - create `Jpa<Class>Repo` in `persistence/repository/jpa` and tests
+    - implements `I<Class>Repo`
+    - injects `I<Class>SpringDataRepo` and `<Class>Assembler`
+    - delegates all persistence to `I<Class>SpringDataRepo`
+    - delegates all mapping to `<Class>Assembler`
 
+    
 - [ ] Create **I<Class>SpringDataRepo**
     - create `I<Class>SpringDataRepo` in `persistence/springdata` 
     - extends `JpaRepository<<Class>DataModel, String>`
