@@ -9,6 +9,8 @@ Implements persistence for the <AggregateName> aggregate using JPA, replacing th
 
 ### Tasks
 
+- [ ] Annotate MemGenreRepo as Spring repository with mem profile
+- 
 - [ ] Update <Class> constructor to add a new constructor taking all the arguments from the existing one plus the <Class>Id
 
 - [ ] create **Jpa<Class>Repo**
@@ -19,13 +21,13 @@ Implements persistence for the <AggregateName> aggregate using JPA, replacing th
     - delegates all mapping to `<Class>Assembler`
 
 - [ ] create **<Class>DataModel**
-    - create `<Class>DataModel` in `dataModel`
+    - create `<Class>DataModel` in `persistence/jpa/dataModel`
     - `@Entity`, `@Table(name = "<Class>s")`
     - add Lombok annotations: `@Getter`, `@NoArgsConstructor`, `@AllArgsConstructor`
     - `@Id` on the identity field
 
 - [ ] create **<Class>Assembler**
-    - create `<Class>Assembler` in `assembler`
+    - create `<Class>Assembler` in `ersistence/jpa/assembler`
     - method `DM2Domain()` and `domain2DM()`
     - delegates reconstruction to `<Class>Factory`
 
