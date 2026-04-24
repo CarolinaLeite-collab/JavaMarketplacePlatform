@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MemUserRepoTest {
 
@@ -26,8 +27,8 @@ class MemUserRepoTest {
         _userId1Double = mock(UserId.class);
         _userId2Double = mock(UserId.class);
 
-        org.mockito.Mockito.when(_user1Double.identity()).thenReturn(_userId1Double);
-        org.mockito.Mockito.when(_user2Double.identity()).thenReturn(_userId2Double);
+        when(_user1Double.identity()).thenReturn(_userId1Double);
+        when(_user2Double.identity()).thenReturn(_userId2Double);
     }
 
 
@@ -46,11 +47,10 @@ class MemUserRepoTest {
         MemUserRepo repo = new MemUserRepo();
         repo.save(_user1Double);
 
-        long count = 0;
+        int count = 0;
         for (User ignored : repo.findAll()) count++;
         assertEquals(1, count);
     }
-
 
     @Test
     void saveShouldAllowMultipleDistinctUsers() {
@@ -59,11 +59,10 @@ class MemUserRepoTest {
         repo.save(_user1Double);
         repo.save(_user2Double);
 
-        long count = 0;
+        int count = 0;
         for (User ignored : repo.findAll()) count++;
         assertEquals(2, count);
     }
-
 
     @Test
     void saveShouldReplaceOnDuplicateIdentity() {
@@ -72,7 +71,7 @@ class MemUserRepoTest {
         repo.save(_user1Double);
         repo.save(_user1Double);
 
-        long count = 0;
+        int count = 0;
         for (User ignored : repo.findAll()) count++;
         assertEquals(1, count);
     }
