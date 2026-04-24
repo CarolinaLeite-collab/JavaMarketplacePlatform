@@ -45,25 +45,19 @@ public class PublicationInLibraryForDirectSaleController {
 
     public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        for (ItemId itemId : itemsId) {
+        DirectSale directSale = addDirectSale(itemsId, price, timeLimit);
 
-            Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+        for (ItemId itemId : itemsId) {
+            Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
-        }
 
-        DirectSale directSale = addDirectSale(
-                itemsId, price, timeLimit
-        );
-
-        for (ItemId itemId : itemsId) {
-
-            Item item = _iItemRepo.ofIdentity(itemId).get();
             item.markAsDirectSale();
         }
+
+        _iDirectSaleRepo.save(directSale);
 
         return directSale;
     }
@@ -78,6 +72,6 @@ public class PublicationInLibraryForDirectSaleController {
 
         }
 
-        return _iDirectSaleRepo.save(directSale);
+        return directSale;
     }
 }
