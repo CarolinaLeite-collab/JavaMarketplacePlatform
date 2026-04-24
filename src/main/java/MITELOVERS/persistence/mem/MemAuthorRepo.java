@@ -21,11 +21,6 @@ public class MemAuthorRepo implements IAuthorRepo {
 
     private Map<AuthorId, Author> DATA = new HashMap<AuthorId, Author>();
 
-    public MemAuthorRepo() {
-
-    }
-
-
     @Override
     public Author save(Author author) {
 
