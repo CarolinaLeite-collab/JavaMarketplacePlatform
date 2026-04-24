@@ -68,8 +68,6 @@ activate UI
 UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
 activate CTL
 
-CTL -> CTL: addAppraisalEntity(name, \npublicationTypeIds, genreIds)
-
 CTL -> Factory: createAppraisalEntity(name, publicationTypeIds, genreIds)
 create "appraisalEntity:AppraisalEntity"
 

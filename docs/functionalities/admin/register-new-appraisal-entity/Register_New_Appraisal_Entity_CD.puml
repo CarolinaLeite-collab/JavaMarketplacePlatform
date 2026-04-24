@@ -29,7 +29,6 @@ package "controller" {
         + registerNewAppraisalEntity(name : Name, publicationTypeIds : List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
         + getPublicationTypes() : Iterable<PublicationType>
         + getGenres() : Iterable<Genre>
-        + addAppraisalEntity(name : Name, publicationTypeIds: List<PublicationTypeId>, \ngenreIds : List<GenreId>) : AppraisalEntity
 
     }
 
@@ -43,11 +42,11 @@ package "persistence" {
 
         }
 
-        class MemoGenreRepo {
+        class MemGenreRepo {
 
         }
 
-        class MemoPublicationTypeRepo {
+        class MemPublicationTypeRepo {
 
         }
 
@@ -146,8 +145,8 @@ AppraisalEntity "1" *-- "1" Name : has
 AppraisalEntity "*" <- "1" MemAppraisalEntityRepo : persists
 
 IAppraisalEntityRepo <|.. MemAppraisalEntityRepo
-MemoGenreRepo ..|> IGenreRepo
-MemoPublicationTypeRepo ..|> IPublicationTypeRepo
+MemGenreRepo ..|> IGenreRepo
+MemPublicationTypeRepo ..|> IPublicationTypeRepo
 
 IAppraisalEntityRepo ----|> IRepository
 IPublicationTypeRepo -|> IRepository
