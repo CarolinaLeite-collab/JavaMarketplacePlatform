@@ -79,15 +79,17 @@ class RegisterPublishingCompanyControllerTest {
         //SUT
         RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _publishingCompanyFactoryDouble);
 
-        //Act + Assert
+        //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(publishingCompanyName));
 
         //Assert
-        assertEquals(exception.getMessage(), "Publishing Company with name " + publishingCompanyName + " already exists");
+        assertEquals("Publishing Company with name " + publishingCompanyName + " already exists", exception.getMessage());
     }
 
     @Test
     void shouldNotSaveWhenPublishingCompanyAlreadyExists() {
+
+        //Arrange
         String publishingCompanyName = "Pendant Publishing";
         PublishingCompany pcDouble = mock(PublishingCompany.class);
         PublishingCompanyId pcIdDouble = mock(PublishingCompanyId.class);

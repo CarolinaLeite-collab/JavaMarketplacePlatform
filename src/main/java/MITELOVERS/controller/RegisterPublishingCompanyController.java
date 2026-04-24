@@ -5,8 +5,10 @@ import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 
 /**
- * Controller responsible for handling the registration of a {@link PublishingCompany}.
- * Delegates the operation to {@link IPublishingCompanyRepo}.
+ * Controller responsible for handling the registration of a new {@link PublishingCompany}.
+ * Delegates the creation to {@link PublishingCompanyFactory} and storage to
+ * {@link IPublishingCompanyRepo}.
+ * Validates uniqueness.
  */
 
 public class RegisterPublishingCompanyController {
@@ -14,7 +16,7 @@ public class RegisterPublishingCompanyController {
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
     private final PublishingCompanyFactory _publishingCompanyFactory;
 
-    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo,  PublishingCompanyFactory publishingCompanyFactory) {
+    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo, PublishingCompanyFactory publishingCompanyFactory) {
 
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
         _publishingCompanyFactory = publishingCompanyFactory;
