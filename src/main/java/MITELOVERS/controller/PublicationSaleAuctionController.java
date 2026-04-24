@@ -26,7 +26,6 @@ public class PublicationSaleAuctionController {
     private final ILibraryRepo _iLibraryRepo;
     private IAuctionRepo _iAuctionRepo;
     private AuctionFactory _auctionFactory;
-    //private Library _library;
     private IItemRepo _iItemRepo;
 
     public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, AuctionFactory auctionFactory,
@@ -50,27 +49,12 @@ public class PublicationSaleAuctionController {
         return List.copyOf(itemIds);
     }
 
-    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                              Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-
-        Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
-                outrightPrice, auctionStartDate, auctionEndDate);
-
-        return _iAuctionRepo.save(auction);
-    }
-
-    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                              ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-
-        return addAuction(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
-    }
-
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         for (ItemId itemId : itemsId) {
 
             Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+                    .orElseThrow(() -> new IllegalStateException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
@@ -93,5 +77,21 @@ public class PublicationSaleAuctionController {
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice,
                                     ZonedDateTime startDate, ZonedDateTime endDate) {
         return putItemOnAuction(itemsId, startPrice, reservePrice, null, startDate, endDate);
+    }
+
+
+    private Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
+                               Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+
+        Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
+                outrightPrice, auctionStartDate, auctionEndDate);
+
+        if (_iAuctionRepo.containsOfIdentity(auction.identity())) {
+
+            throw new IllegalStateException("Auction already exists!");
+
+        }
+
+        return _iAuctionRepo.save(auction);
     }
 }

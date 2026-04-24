@@ -173,24 +173,6 @@ class PublicationSaleAuctionControllerTest {
     }
 
     @Test
-    void addAuctionWithoutOutrightStoresAuction() {
-        //Arrange
-        when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble,
-                null, _startDate, _endDate)).thenReturn(_auctionDouble);
-        when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
-
-        // SUT
-        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
-                _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
-
-        //Act
-        Auction created = controller.addAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
-
-        //Assert
-        assertSame(_auctionDouble, created);
-    }
-
-    @Test
     void testPutItemIdOnAuctionSuccess() {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
@@ -213,7 +195,7 @@ class PublicationSaleAuctionControllerTest {
             when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,
                     _startDate, _endDate)).thenReturn(_auctionDouble);
 
-            when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
+            when(_iAuctionRepoDouble.save(any())).thenReturn(_auctionDouble);
 
             // SUT
             PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
@@ -224,6 +206,7 @@ class PublicationSaleAuctionControllerTest {
                     _itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
 
             // Assert
+            assertNotNull(result);
             assertSame(_auctionDouble, result);
             verify(_auctionFactoryDouble).createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble,
                     _outrightPriceDouble, _startDate, _endDate);
@@ -255,8 +238,7 @@ class PublicationSaleAuctionControllerTest {
                 when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null,
                         _startDate, _endDate)).thenReturn(_auctionDouble);
 
-                when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
-
+                when(_iAuctionRepoDouble.save(any())).thenReturn(_auctionDouble);
 
                 // SUT
                 PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
@@ -286,8 +268,8 @@ class PublicationSaleAuctionControllerTest {
                 _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
 
         // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
                 () -> controller.putItemOnAuction(
                         _itemsId, _startingPriceDouble, _reservePriceDouble,
                         _outrightPriceDouble, _startDate, _endDate)
@@ -317,5 +299,27 @@ class PublicationSaleAuctionControllerTest {
 
         assertTrue(exception.getMessage().contains("already on sale"));
         verify(_auctionFactoryDouble, never()).createAuction(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void shouldThrowWhenAuctionAlreadyExists() {
+        // Arrange
+        when(_iAuctionRepoDouble.containsOfIdentity(any())).thenReturn(true);
+
+        // SUT
+        PublicationSaleAuctionController controller = new PublicationSaleAuctionController(_iLibraryRepoDouble,
+                _iAuctionRepoDouble, _auctionFactoryDouble, _iItemRepoDouble, _userIdDouble);
+
+        // Assert + Act
+        assertThrows(IllegalStateException.class, () ->
+                controller.putItemOnAuction(
+                        _itemsId,
+                        _startingPriceDouble,
+                        _reservePriceDouble,
+                        _outrightPriceDouble,
+                        _startDate,
+                        _endDate));
+
+        verify(_iAuctionRepoDouble, never()).save(any());
     }
 }
