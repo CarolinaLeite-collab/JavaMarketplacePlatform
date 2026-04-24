@@ -15,9 +15,6 @@ import java.util.*;
 public class MemCountryRepo implements ICountryRepo {
     private final Map<CountryId, Country> DATA = new HashMap<>();
 
-    public MemCountryRepo() {
-    }
-
     @Override
     public Country save(Country entity) {
         DATA.put(entity.identity(), entity);
