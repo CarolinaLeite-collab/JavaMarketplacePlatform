@@ -21,10 +21,6 @@ public class MemPublicationTypeRepo implements IPublicationTypeRepo {
 
     private final Map<PublicationTypeId, PublicationType> DATA = new HashMap<PublicationTypeId, PublicationType>();
 
-    public MemPublicationTypeRepo(){
-
-    }
-
     @Override
     public PublicationType save(PublicationType publicationType) {
 
