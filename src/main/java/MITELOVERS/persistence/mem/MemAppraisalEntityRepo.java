@@ -3,6 +3,8 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.valueobject.AppraisalEntityId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -20,10 +22,11 @@ import java.util.*;
  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
-
 
     public MemAppraisalEntityRepo() {
 
