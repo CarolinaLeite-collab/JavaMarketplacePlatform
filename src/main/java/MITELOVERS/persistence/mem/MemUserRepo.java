@@ -15,8 +15,6 @@ public class MemUserRepo implements IUserRepo {
     private final Map<UserId, User> DATA = new HashMap<UserId, User>();
 
 
-    public MemUserRepo(){
-    }
 
     @Override
     public User save(User user) {
