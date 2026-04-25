@@ -260,4 +260,57 @@ class AddItemToListControllerTest {
 
         assertNull(result);
     }
+
+    @Test
+    void findByOwnerNameAndGenreShouldReturnNullWhenNameDiffers() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn("Other Name");
+        when(list.getGenreId()).thenReturn(_genreIdDouble);
+
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertNull(controller.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble));
+    }
+
+    @Test
+    void addItemToListShouldThrowWhenListNameIsNull() {
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.addItemToList(_userIdDouble, null, _genreIdDouble, _itemIdDouble));
+    }
+
+    @Test
+    void addItemToListShouldThrowWhenListNotFound() {
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of()); // no lists
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalStateException.class,
+                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble));
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldThrowWhenUserIdIsNull() {
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findByOwnerNameAndGenre(null, "My List", _genreIdDouble));
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldThrowWhenNameIsNull() {
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findByOwnerNameAndGenre(_userIdDouble, null, _genreIdDouble));
+    }
 }

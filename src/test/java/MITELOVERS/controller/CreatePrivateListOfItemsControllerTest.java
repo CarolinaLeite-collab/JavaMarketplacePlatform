@@ -23,7 +23,6 @@ class CreatePrivateListOfItemsControllerTest {
     private IGenreRepo _iGenreRepoDouble;
     private UserId _userIdDouble;
     private GenreId _genreIdDouble;
-    private GenreId _genreId2Double;
     private Genre _genreDouble;
     private Genre  _genre2Double;
     private ListOfItems _listOfItemsDouble;
@@ -36,7 +35,6 @@ class CreatePrivateListOfItemsControllerTest {
         _iGenreRepoDouble = mock(IGenreRepo.class);
         _userIdDouble = mock(UserId.class);
         _genreIdDouble = mock(GenreId.class);
-        _genreId2Double = mock(GenreId.class);
         _genreDouble = mock(Genre.class);
         _genre2Double = mock(Genre.class);
         _listOfItemsDouble = mock(ListOfItems.class);
@@ -128,6 +126,25 @@ class CreatePrivateListOfItemsControllerTest {
 
         assertTrue(resultList.contains(_genreDouble));
         assertTrue(resultList.contains(_genre2Double));
+    }
+
+    @Test
+    void addListOfItemsShouldReturnNewListWhenNotDuplicate() {
+        ListOfItems newList = mock(ListOfItems.class);
+        ListOfItemsId id = mock(ListOfItemsId.class);
+
+        when(newList.identity()).thenReturn(id);
+        when(_factoryDouble.createListOfItems(_userIdDouble, "My List", _genreIdDouble))
+                .thenReturn(newList);
+
+        when(_iListOfItemsRepoDouble.containsOfIdentity(id)).thenReturn(false);
+
+        CreatePrivateListOfItemsController controller =
+                new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
+
+        ListOfItems result = controller.addListOfItems(_userIdDouble, "My List", _genreIdDouble);
+
+        assertSame(newList, result);   // ⭐ THIS KILLS THE MUTANT
     }
 
 }
