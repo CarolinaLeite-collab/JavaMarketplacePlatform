@@ -18,8 +18,8 @@ autonumber
 actor User
 participant ":RegisterPublicationUI" as UI
 participant ":RegisterNew\nPublicationController" as Ctl
-participant ":MemPublicationRepo" as PR
 participant ":PublicationFactory" as PF
+participant ":MemPublicationRepo" as PR
 
 ' --- UI interaction ---
 User -> UI: I want to register \na new publication
@@ -45,6 +45,7 @@ deactivate PF
 
 ' --- Duplication check ---
 Ctl -> PR : isRepeated = containsOfIdentity(newPublication.identity())
+activate PR
     opt !isRepeated == true
             Ctl -> PR: save(newPublication)
 PR --> Ctl: newPublication

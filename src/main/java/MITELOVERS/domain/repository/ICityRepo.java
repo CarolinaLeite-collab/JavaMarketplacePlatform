@@ -6,6 +6,6 @@ import MITELOVERS.domain.valueobject.CityId;
 
 
 public interface ICityRepo extends IRepository<CityId, City> {
-    City addCity(City city);
+
 
 }

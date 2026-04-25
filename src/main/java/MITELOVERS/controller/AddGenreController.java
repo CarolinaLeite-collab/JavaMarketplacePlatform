@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.genre.Genre;
+import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.UserId;
 
@@ -14,16 +15,21 @@ import MITELOVERS.domain.valueobject.UserId;
 
 public class AddGenreController {
     private final IGenreRepo _iGenreRepo;
+    private final GenreFactory _genreFactory;
 
-    public AddGenreController(IGenreRepo iGenreRepo, UserId adminId) {
+    public AddGenreController(IGenreRepo iGenreRepo, GenreFactory genreFactory, UserId adminId) {
 
         _iGenreRepo = iGenreRepo;
+        _genreFactory = genreFactory;
     }
 
     public Genre addGenre(String genreName){
 
-        Genre genre = _iGenreRepo.addGenre(genreName);
+        Genre newGenre =  _genreFactory.createGenre(genreName);
 
-        return genre;
-    }
+            if (_iGenreRepo.containsOfIdentity(newGenre.identity())) {
+                throw new IllegalArgumentException("Genre already exists in the repository");
+            }
+            return _iGenreRepo.save(newGenre);
+        }
 }

@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.UserId;
 
@@ -15,17 +16,27 @@ import MITELOVERS.domain.valueobject.UserId;
 public class CreateAuthorController {
 
     private IAuthorRepo _iAuthorRepo;
+    private AuthorFactory _authorFactory;
 
-    public CreateAuthorController(IAuthorRepo ar, UserId adminId) {
+    public CreateAuthorController(IAuthorRepo iAuthorRepo,AuthorFactory authorFactory, UserId adminId) {
 
-        _iAuthorRepo = ar;
+        _iAuthorRepo = iAuthorRepo;
+        _authorFactory = authorFactory;
 
     }
 
     public Author createAuthor (String authorName){
 
 
-        return _iAuthorRepo.addAuthor(authorName.trim());
+        return addAuthor(authorName.trim());
+
+    }
+
+    public Author addAuthor(String authorName) {
+
+        Author newAuthor = _authorFactory.createAuthor(authorName);
+
+        return _iAuthorRepo.save (newAuthor);
 
     }
 

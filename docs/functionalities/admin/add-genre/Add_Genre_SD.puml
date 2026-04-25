@@ -1,6 +1,6 @@
     @startuml
 
-    title "US003 - As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" - SD
+    title  "As an Administrator, I want to add a publication genre to the official \ngenre list, so that new publications can be of this genre" - SD
 
     '==== basic style ====
     skinparam monochrome false
@@ -20,8 +20,9 @@
     actor Administrator
     participant ":AddGenreUI" as UI
     participant ":AddGenreController" as Ctl
-    participant ":MemGenreRepo" as gr
     participant ":GenreFactory" as gf
+    participant ":MemGenreRepo" as gr
+
 
     Administrator -> UI: I want to add a publication genre
     activate UI
@@ -32,25 +33,24 @@
 
     UI -> Ctl: addGenre(genreName)
     activate Ctl
-    Ctl -> gr: addGenre(genreName)
-    activate gr
+    Ctl -> gf: createGenre(genreName)
 
-    gr -> gf : createGenre(genreName)
     activate gf
     create "genreName:Genre"
     gf -->> "genreName:Genre": <<Create>>
 
-    gf --> gr : genreName
+    gf --> Ctl : genreName
     deactivate gf
 
-    gr -> gr : isRepeated = containsOfIdentity(genreName.identity())
+
+    Ctl -> gr : isRepeated = containsOfIdentity(genreName.identity())
+    activate gr
     opt !isRepeated
-            gr -> gr: save(genreName)
+    Ctl -> gr: save(genreName)
+    gr --> Ctl: genreName
+     deactivate gr
     end
 
-
-    gr --> Ctl: genreName
-    deactivate gr
 
     Ctl --> UI: genreName
     deactivate Ctl

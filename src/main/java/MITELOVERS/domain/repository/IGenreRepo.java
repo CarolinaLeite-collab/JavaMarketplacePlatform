@@ -14,5 +14,4 @@ import MITELOVERS.domain.valueobject.GenreId;
 
 public interface IGenreRepo extends IRepository<GenreId, Genre> {
 
-    Genre addGenre(String name);
 }

@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 class MemPublicationRepoTest {
 
-    private PublicationFactory _publicationFactoryDouble;
     private Year _yearDouble;
     private Title _titleDouble;
     private AuthorId _authorIdDouble;
@@ -26,7 +25,6 @@ class MemPublicationRepoTest {
 
     @BeforeEach
     void setUp() {
-        _publicationFactoryDouble = mock(PublicationFactory.class);
         _titleDouble = mock(Title.class);
         _authorIdDouble = mock(AuthorId.class);
         _yearDouble = mock(Year.class);
@@ -36,7 +34,7 @@ class MemPublicationRepoTest {
     @Test
     void constructorValidFactoryCreatesMemoPublicationRepo() {
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
     }
 
 
@@ -49,7 +47,7 @@ class MemPublicationRepoTest {
         when(publicationDouble.identity()).thenReturn(publicationIdDouble);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
 
 
         Publication result = repo.save(publicationDouble);
@@ -66,7 +64,7 @@ class MemPublicationRepoTest {
         when(publicationDouble.identity()).thenReturn(publicationIdDouble);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
 
         repo.save(publicationDouble);
         var result = repo.ofIdentity(publicationIdDouble);
@@ -82,7 +80,7 @@ class MemPublicationRepoTest {
         PublicationId publicationIdDouble = mock(PublicationId.class);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
 
 
         var result = repo.ofIdentity(publicationIdDouble);
@@ -99,7 +97,7 @@ class MemPublicationRepoTest {
         when(publicationDouble.identity()).thenReturn(publicationIdDouble);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
         repo.save(publicationDouble);
 
         // Act
@@ -115,7 +113,7 @@ class MemPublicationRepoTest {
         PublicationId publicationIdDouble = mock(PublicationId.class);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
 
         // Act
         boolean result = repo.containsOfIdentity(publicationIdDouble);
@@ -137,7 +135,7 @@ class MemPublicationRepoTest {
         when(_publication2Double.identity()).thenReturn(_publicationId2Double);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
         repo.save(_publication1Double);
         repo.save(_publication2Double);
 
@@ -153,7 +151,7 @@ class MemPublicationRepoTest {
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
         // Arrange & SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_publicationFactoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
 
         // Act
         Iterable<Publication> result = repo.findAll();
@@ -175,7 +173,7 @@ class MemPublicationRepoTest {
         when(_pub2Double.identity()).thenReturn(_id2Double);
 
         // SUT
-        MemPublicationRepo repo = new MemPublicationRepo(_factoryDouble);
+        MemPublicationRepo repo = new MemPublicationRepo();
         repo.save(_pub1Double);
         repo.save(_pub2Double);
 

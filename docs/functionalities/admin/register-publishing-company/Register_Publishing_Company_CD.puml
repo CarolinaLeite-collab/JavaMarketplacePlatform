@@ -19,9 +19,8 @@ class RegisterPublishingCompanyUI {
 }
 
 package "persistence" {
-    package "memo" {
-        class MemoPublishingCompanyRepo {
-        + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
+    package "mem" {
+        class MemPublishingCompanyRepo {
         }
     }
 }
@@ -42,7 +41,7 @@ package "domain" {
 
     }
     package "repository" {
-        interface IPublishingCompanyRepo {
+        interface IPublishingCompanyRepo <<Interface>> {
         }
     }
 
@@ -56,19 +55,27 @@ package "domain" {
 package "ddd" {
     interface IRepository <ID, T> <<Interface>> {
         save(entity : T) : T
-        findAll() : Iterable<T>
-        ofIdentity(id : ID) : Optional <T>
         containsOfIdentity(id : ID) : boolean
+    }
+
+    interface AggregateRoot <ID> <<Interface>> {
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+       +identity() : ID
     }
 }
 
 RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
 RegisterPublishingCompanyController "1" --> "1" IPublishingCompanyRepo: calls
-MemoPublishingCompanyRepo ..|> IPublishingCompanyRepo
+RegisterPublishingCompanyController "1" --> "1" PublishingCompanyFactory : invokes
+RegisterPublishingCompanyController "1" ..> "1" PublishingCompany : <<use>>
+MemPublishingCompanyRepo ..|> IPublishingCompanyRepo
 IPublishingCompanyRepo --|> IRepository
-MemoPublishingCompanyRepo "1" --> "1" PublishingCompanyFactory: <<use>>
-PublishingCompanyFactory "1" ..> "*" PublishingCompany: <<create>>
-MemoPublishingCompanyRepo "1" --> "*" PublishingCompany: persists
+PublishingCompanyFactory "1" ..> "1" PublishingCompany: <<create>>
+MemPublishingCompanyRepo "1" --> "1" PublishingCompany: persists
 PublishingCompany "1" --> "1" PublishingCompanyId: has
+AggregateRoot -|> DomainEntity
+PublishingCompany .|> AggregateRoot
 
 @enduml

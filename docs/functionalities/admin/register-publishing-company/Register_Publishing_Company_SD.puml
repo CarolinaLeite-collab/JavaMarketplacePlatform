@@ -20,8 +20,8 @@ autoactivate off
 actor "Admin" as Administrator
 participant ":RegisterPublishing%n()CompanyUI" as UI
 participant ":RegisterPublishing%n()CompanyCtl" as Ctl
-participant ":MemoPublishing%n()CompanyRepo" as Repo
 participant ":PublishingCompany%n()Factory" as Factory
+participant ":MemPublishing%n()CompanyRepo" as Repo
 
 ' --- SD (Happy Path only)---
 
@@ -31,20 +31,17 @@ activate "UI"
 Administrator -> "UI": publishingCompanyName
 "UI" -> "Ctl": registerPublishingCompany%n()(publishingCompanyName)
 activate "Ctl"
-"Ctl" -> "Repo": registerPublishingCompany%n()(publishingCompanyName)
-activate "Repo"
-"Repo" -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
+"Ctl" -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
 activate "Factory"
 create "newPublishingCompany:%n()PublishingCompany"
 "Factory" -->> "newPublishingCompany:%n()PublishingCompany": <<create>>
-"Factory" --> "Repo": newPublishingCompany
+"Factory" --> "Ctl": newPublishingCompany
 deactivate "Factory"
-note right of Repo
+note right of Ctl
     assuming happy path:
-    containsOfIdentity(PublishingCompanyId) == false
+    containsOfIdentity(newPublishingCompany.identity()) == false
 end note
-"Repo" -> "Repo": save(newPublishingCompany);
-"Repo" --> "Ctl": newPublishingCompany
+"Ctl" -> "Repo": save(newPublishingCompany);
 deactivate "Repo"
 "Ctl" --> "UI": newPublishingCompany
 deactivate "Ctl"
