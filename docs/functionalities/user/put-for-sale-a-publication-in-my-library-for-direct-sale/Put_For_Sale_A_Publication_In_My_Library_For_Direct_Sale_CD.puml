@@ -23,7 +23,6 @@ class PublicationInLibraryForDirectSaleController {
   - directSaleRepo: IdirectSaleRepo
   + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
   + putItemIdOnDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
-  - addDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
 }
 }
 
