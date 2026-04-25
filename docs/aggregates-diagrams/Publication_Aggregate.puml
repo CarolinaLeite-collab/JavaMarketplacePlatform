@@ -100,7 +100,6 @@ PublicationId "*" -> "1" AuthorId : uses
 IPublicationRepo -|> IRepository
 MemPublicationRepo ..|> IPublicationRepo
 Publication "*" <-- "1" MemPublicationRepo : persists
-PublicationFactory "1"<-- "1" MemPublicationRepo : invokes
 PublicationFactory ..> Publication : <<create>>
 
 AggregateRoot -|> DomainEntity

@@ -1,13 +1,9 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.auction.Auction;
-import MITELOVERS.domain.auction.AuctionFactory;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.valueobject.AuctionId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
 /**
@@ -21,13 +17,8 @@ import java.util.*;
 
 public class MemAuctionRepo implements IAuctionRepo {
 
-    private final Map<AuctionId, Auction> DATA;
-    private final AuctionFactory _auctionFactory;
+    private final Map<AuctionId, Auction> DATA = new HashMap<>();
 
-    MemAuctionRepo(AuctionFactory auctionFactory) {
-        DATA = new HashMap<>();
-        _auctionFactory = auctionFactory;
-    }
 
     @Override
     public Auction save(Auction auction) {
@@ -58,19 +49,5 @@ public class MemAuctionRepo implements IAuctionRepo {
     @Override
     public boolean containsOfIdentity(AuctionId id) {
         return DATA.containsKey(id);
-    }
-
-    @Override
-    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                              Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
-                outrightPrice, auctionStartDate, auctionEndDate);
-        return save(auction);
-    }
-
-    @Override
-    public Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                              ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return addAuction(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 }

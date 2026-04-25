@@ -38,7 +38,7 @@ Package "domain" {
 
     package "repository" <<Folder>> {
         interface IAppraisalEntityRepo <<Interface>> {
-            +addAppraisalEntity(name : Name, genreIds : List<GenreId> \npublicationTypeIds : List<PublicationTypeId>) : AppraisalEntity
+
         }
     }
 
@@ -67,7 +67,7 @@ Package "domain" {
 package "persistence" <<Folder>> {
 
     package "mem" {
-        class MemoAppraisalEntityRepo {
+        class MemAppraisalEntityRepo {
 
         }
 
@@ -97,13 +97,13 @@ AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
 AppraisalEntity "1" ..> "1..*" GenreId : references
 AppraisalEntity "1" ..> "1..*" PublicationTypeId : references
 AppraisalEntity "1" --> "1" Name : has
-AppraisalEntity "*" <- "1" MemoAppraisalEntityRepo : persists
+AppraisalEntity "*" <- "1" MemAppraisalEntityRepo : persists
 
 AppraisalEntityFactory ..> AppraisalEntity : <<create>>
-AppraisalEntityFactory "1"<- "1" MemoAppraisalEntityRepo : invokes
 
-IAppraisalEntityRepo <|. MemoAppraisalEntityRepo
-IAppraisalEntityRepo -|> IRepository
+
+IAppraisalEntityRepo <|. MemAppraisalEntityRepo
+IAppraisalEntityRepo ---|> IRepository
 AggregateRoot -|> DomainEntity
 AppraisalEntity .|> AggregateRoot
 

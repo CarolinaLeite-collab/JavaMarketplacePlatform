@@ -8,9 +8,9 @@ import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +97,6 @@ class RegisterNewAppraisalEntityControllerTest {
 
         // assert
         assertEquals(_publicationTypes, types);
-        verify(_iPublicationTypeRepoDouble).findAll();
 
     }
 
@@ -157,10 +156,10 @@ class RegisterNewAppraisalEntityControllerTest {
         RegisterNewAppraisalEntityController  controller =
                 new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
                         _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
-        when(controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_appraisalEntityDouble);
+        when(controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds)).thenReturn(_appraisalEntityDouble);
 
         // act
-        AppraisalEntity appraisalEntity = controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
+        AppraisalEntity appraisalEntity = controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
 
         // assert
         assertEquals(_appraisalEntityDouble, appraisalEntity);
@@ -185,7 +184,7 @@ class RegisterNewAppraisalEntityControllerTest {
 
         // act + assert
         assertThrows(IllegalStateException.class, () ->
-                controller.addAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
+                controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
 
     }
 

@@ -4,6 +4,7 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
@@ -35,12 +36,14 @@ public class AddPublicationOnLibraryController {
 
     public List<ItemId> getListOfAvailableItemIds(){
 
-        Iterable<ItemId> itemsList = _iItemRepo.findAllKeys();
+        Iterable<ItemId> itemIds = _iItemRepo.findAllKeys();
+        Iterable<Library> libraries = _iLibraryRepo.findAll();
         List<ItemId> availableItemIds = new ArrayList<>();
 
-        for (ItemId itemId : itemsList){
 
-            if (!_iLibraryRepo.existsItemIdInAnyLibrary(itemId)){
+        for (ItemId itemId : itemIds){
+
+            if(!isItemIdAlreadyInAnyLibrary(itemId, libraries)){
                 availableItemIds.add(itemId);
             }
 
@@ -50,14 +53,29 @@ public class AddPublicationOnLibraryController {
 
     }
 
-    public boolean addItemIdToLibrary(ItemId itemId, UserId userId){
+    public boolean addItemIdToLibrary(ItemId selectedItemId, UserId userId){
 
-        if (_iLibraryRepo.existsItemIdInAnyLibrary(itemId)) return false;
+        Iterable<Library> libraries = _iLibraryRepo.findAll();
+        if (isItemIdAlreadyInAnyLibrary(selectedItemId, libraries)) return false;
 
-        Library myLibrary = _iLibraryRepo.findLibraryByUserId(userId);
+        LibraryId libraryID = LibraryId.fromUserId(userId);
 
-        return myLibrary.addItemIdToLibrary(itemId);
+        Library myLibrary = _iLibraryRepo.ofIdentity(libraryID)
+                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
 
+        return myLibrary.addItemIdToLibrary(selectedItemId);
+
+    }
+
+    private boolean isItemIdAlreadyInAnyLibrary(ItemId itemId, Iterable<Library> libraries) {
+
+        for (Library library : libraries) {
+            if (library.getItemsIdInLibrary().contains(itemId)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

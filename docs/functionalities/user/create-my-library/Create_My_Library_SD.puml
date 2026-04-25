@@ -20,38 +20,28 @@ autoactivate off
 actor User
 participant ":CreateLibraryUI" as UI
 participant ":CreateLibraryController" as CTL
-participant ":MemoLibraryRepo" as LR
 participant ":LibraryFactory" as LF
+participant ":MemLibraryRepo" as LR
 
-' --- UI interaction ---
 User -> UI: I want to create my library
 activate UI
 
-
-' --- Use case execution ---
 UI -> CTL: createLibrary(userId)
 activate CTL
 
-CTL -> LR: addLibrary(userId)
-activate LR
-
-
-LR -> LF: createLibrary(userId)
+CTL -> LF: createLibrary(userId)
 activate LF
 create "myLibrary:Library"
 LF -->> "myLibrary:Library": <<create>>
-LF --> LR: myLibrary
+LF --> CTL: myLibrary
 deactivate LF
-LR -> LR : hasId = containsOfIdentity(libraryId)
+
+CTL -> LR : hasId = containsOfIdentity(myLibrary.identity())
 
     opt !hasId
-    LR -> LR: save(myLibrary)
+    CTL -> LR: save(myLibrary)
+
     end
-
-
-
-LR --> CTL: myLibrary
-deactivate LR
 
 CTL --> UI: true
 deactivate CTL

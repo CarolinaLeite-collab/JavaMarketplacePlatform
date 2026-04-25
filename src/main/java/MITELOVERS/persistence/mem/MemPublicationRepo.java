@@ -4,12 +4,8 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IPublicationRepo;
-import MITELOVERS.domain.valueobject.AuthorId;
-import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.PublicationId;
-import MITELOVERS.domain.valueobject.Title;
 
-import java.time.Year;
 import java.util.*;
 
 /**
@@ -23,11 +19,6 @@ import java.util.*;
 public class MemPublicationRepo implements IPublicationRepo {
 
     private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();
-    private final PublicationFactory _publicationFactory;
-
-    public MemPublicationRepo(PublicationFactory publicationFactory) {
-        _publicationFactory = publicationFactory;
-    }
 
     @Override
     public Publication save(Publication publication){
@@ -59,7 +50,5 @@ public class MemPublicationRepo implements IPublicationRepo {
 
         return new ArrayList<>(DATA.keySet());
     }
-
-
 
 }

@@ -40,7 +40,6 @@ package "domain" {
     package "repository" {
 
              interface IGenreRepo <<Interface>>{
-                 + addGenre(genreName : String) : Genre
              }
          }
 
@@ -60,9 +59,9 @@ package "domain" {
 }
 
 package "persistence"  {
-    package "memo" {
+    package "mem" {
 
-        class MemoGenreRepo {
+        class MemGenreRepo {
         }
     }
 }
@@ -92,9 +91,9 @@ AddGenreController "1" .> "1" IGenreRepo : <<use>>
 AddGenreController  "1".....> "*" Genre : <<use>>
 
 
-MemoGenreRepo .|> IGenreRepo
-MemoGenreRepo "1" ---> " 1" GenreFactory : invokes
-MemoGenreRepo "1" --> "*" Genre : persists
+MemGenreRepo .|> IGenreRepo
+AddGenreController "1" -> " 1" GenreFactory : invokes
+MemGenreRepo "1" --> "*" Genre : persists
 GenreFactory "1" ..> "*" Genre : <<create>>
 Genre "1" ---> "1" GenreId: has
 

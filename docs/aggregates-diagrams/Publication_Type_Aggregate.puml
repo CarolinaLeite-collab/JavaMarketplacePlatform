@@ -20,7 +20,7 @@ package "persistence" {
 
     package "mem" {
 
-        class MemoPublicationTypeRepo <<Repo>> {
+        class MemPublicationTypeRepo <<Repo>> {
 
         }
 
@@ -32,7 +32,6 @@ package "domain" {
     package "repository" {
 
         interface IPublicationTypeRepo <<Interface>> {
-        + addPublicationType(publicationTypeName : String) : PublicationType
         }
 
     }
@@ -66,7 +65,7 @@ Package "ddd" {
         +findAllKeys() : List<ID>
     }
 
-    interface AggregateRoot <ID >{
+    interface AggregateRoot <ID> <<Interface>>{
     }
 
     interface DomainEntity<ID, T> <<Interface>> {
@@ -76,11 +75,9 @@ Package "ddd" {
 }
 
 
-MemoPublicationTypeRepo ..|> IPublicationTypeRepo
+MemPublicationTypeRepo ..|> IPublicationTypeRepo
 IPublicationTypeRepo --|> IRepository
-MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory : invokes
-
-MemoPublicationTypeRepo "1" --> "*" PublicationType : persists
+MemPublicationTypeRepo "1" --> "*" PublicationType : persists
 
 PublicationType "1" --> "1" PublicationTypeId: has
 

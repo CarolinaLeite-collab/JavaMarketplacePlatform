@@ -7,7 +7,10 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.PublicationTypeId;
+import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.List;
 
@@ -50,13 +53,7 @@ public class RegisterNewAppraisalEntityController {
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds){
 
-        return addAppraisalEntity(name, publicationTypeIds, genreIds);
-
-    }
-
-    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
-
-        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genreIds);
 
         if (_iAppraisalEntityRepo.containsOfIdentity(appraisalEntity.identity())) {
 

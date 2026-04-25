@@ -16,18 +16,12 @@ public class MemCityRepo implements ICityRepo {
         return city;
     }
 
-    @Override
-    public City addCity(City city) {
-        if (containsOfIdentity(city.identity())) {
-            throw new IllegalStateException("City already exists for this country");
-        }
-        return save(city);
-    }
 
     @Override
     public Iterable<City> findAll() {
         return DATA.values();
     }
+
 
     @Override
     public List<CityId> findAllKeys() {
@@ -35,6 +29,7 @@ public class MemCityRepo implements ICityRepo {
         return new ArrayList<>(DATA.keySet());
 
     }
+
 
     @Override
     public Optional<City> ofIdentity(CityId cityId) {
@@ -45,8 +40,10 @@ public class MemCityRepo implements ICityRepo {
         }
     }
 
+
     @Override
     public boolean containsOfIdentity(CityId cityId) {
         return DATA.containsKey(cityId);
     }
+
 }

@@ -17,24 +17,35 @@ skinparam ActivationBackgroundColor black
 
 
 actor User
-participant "UI1:ShareListPubliclyUI"
-participant "Ctl:ShareListPubliclyController"
-participant ":IListOfPublicationsRepo"
-participant "selectedList:ListOfPublications"
+participant ":ShareListPubliclyUI" as UI
+participant ":ShareListPublicly\nController" as Ctl
+participant ":IListOfItems\nRepo" as IListsRepo
+participant ":MemoListOfItems\nRepo" as MemListsRepo
+participant "selectedList:ListOfItems" as list
 
 
-User -> "UI1:ShareListPubliclyUI" : I want to publicly share one List of mine.
-"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : findListsByUser()
-"Ctl:ShareListPubliclyController" -> ":MemoListOfPublicationsRepo" : findListsByUser()
-":MemoListOfPublicationsRepo" -> ":MemoListOfPublicationsRepo" : copy
-":MemoListOfPublicationsRepo" --> "Ctl:ShareListPubliclyController" : listOfLists
-"Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : listOfLists
-"UI1:ShareListPubliclyUI" --> User : What List do you want to share?
-User -> "UI1:ShareListPubliclyUI" : Selected List
-"UI1:ShareListPubliclyUI" -> "Ctl:ShareListPubliclyController" : shareListPublicly(selectedList)
-"Ctl:ShareListPubliclyController" -> "selectedList:ListOfPublications" : switchVisibility()
-"Ctl:ShareListPubliclyController" --> "UI1:ShareListPubliclyUI" : true
-"UI1:ShareListPubliclyUI" --> User : List is now public
+User -> UI : I want to publicly share one List of mine.
+activate UI
+UI -> Ctl : findListsByUser(userId)
+activate Ctl
+Ctl -> MemListsRepo : findListsByUser(userId)
+activate MemListsRepo
+MemListsRepo -> MemListsRepo : copy
+MemListsRepo --> Ctl : copyListOfLists
+deactivate MemListsRepo
+Ctl --> UI : copyListOfLists
+deactivate Ctl
+UI --> User : What List do you want to share?
+deactivate UI
+User -> UI : listsOfItemsId
+activate UI
+UI -> Ctl : shareListPublicly\n(listsOfItemsId)
+activate Ctl
+Ctl -> list: switchVisibility()
+Ctl --> UI : true
+deactivate Ctl
+UI --> User : List is now public
+deactivate UI
 
 
 

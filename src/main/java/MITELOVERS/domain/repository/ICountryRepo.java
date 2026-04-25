@@ -7,12 +7,11 @@ import MITELOVERS.domain.valueobject.CountryId;
 /**
  * Repository interface for {@link Country} aggregates.
  * <p>
- * Extends {@link IRepository} with a domain-specific query by name.
+ * This abstraction is responsible only for persistence operations
+ * exposed by {@link IRepository}.
  * </p>
  */
 
 public interface ICountryRepo extends IRepository<CountryId, Country> {
-
-    Country addCountry(String countryName);
 
 }

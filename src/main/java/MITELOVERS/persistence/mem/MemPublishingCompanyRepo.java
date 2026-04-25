@@ -8,23 +8,18 @@ import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import java.util.*;
 
 /**
- * Repository responsible for storing and managing {@link PublishingCompany} entities.
+ * In-Memory Repository implementation of {@link IPublishingCompanyRepo} for storing and managing {@link PublishingCompany}
+ * aggregates during runtime (they are lost when the application stops).
  * <p>
- * Provides methods to check if a publication company already exists, delegates creation to
- * {@link PublishingCompanyFactory}, stores new publishing companies, and retrieves all stored
- * publishing companies as an unmodifiable list.
+ * Provides methods to save new publishing companies, list all stored publishing companies,
+ * retrieves stored publishing companies by their {@link PublishingCompanyId}, and check
+ * if a publishing company already exists for a given identity
+ *
  */
 
 public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     private final Map<PublishingCompanyId, PublishingCompany> DATA = new HashMap<PublishingCompanyId, PublishingCompany>();
-    private final PublishingCompanyFactory _publishingCompanyFactory;
-
-    public MemPublishingCompanyRepo(PublishingCompanyFactory publishingCompanyFactory) {
-
-        _publishingCompanyFactory = publishingCompanyFactory;
-
-    }
 
     @Override
     public PublishingCompany save(PublishingCompany publishingCompany) {
@@ -66,21 +61,6 @@ public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
     public List<PublishingCompanyId> findAllKeys() {
 
         return new ArrayList<>(DATA.keySet());
-
-    }
-
-    @Override
-    public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
-
-        PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyName);
-
-        if (containsOfIdentity(newPublishingCompany.identity())) {
-
-            throw new IllegalArgumentException("This publishing company is already registered.");
-
-        }
-
-        return save(newPublishingCompany);
 
     }
 

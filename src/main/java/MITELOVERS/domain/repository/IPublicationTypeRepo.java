@@ -14,6 +14,4 @@ import MITELOVERS.domain.valueobject.PublicationTypeId;
 
 public interface IPublicationTypeRepo extends IRepository<PublicationTypeId, PublicationType> {
 
-    PublicationType addPublicationType(String publicationTypeName);
-
 }

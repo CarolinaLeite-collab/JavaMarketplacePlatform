@@ -136,6 +136,5 @@ AggregateRoot -|> DomainEntity
 EditionFactory ..> Edition : <<create>>
 
 Edition "*" <- "1" MemoEditionRepo : persists
-EditionFactory "1" <-- "1" MemoEditionRepo : invokes
 
 @enduml

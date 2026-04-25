@@ -14,6 +14,4 @@ import MITELOVERS.domain.valueobject.PublishingCompanyId;
 
 public interface IPublishingCompanyRepo extends IRepository<PublishingCompanyId, PublishingCompany>{
 
-    PublishingCompany registerPublishingCompany(String publishingCompanyName);
-
 }
