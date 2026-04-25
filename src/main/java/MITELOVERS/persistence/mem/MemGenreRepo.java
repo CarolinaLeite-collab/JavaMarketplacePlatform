@@ -18,10 +18,6 @@ import java.util.*;
 public class MemGenreRepo implements IGenreRepo {
     private final Map<GenreId, Genre> DATA = new HashMap<>();
 
-    public MemGenreRepo() {
-
-    }
-
     @Override
     public Genre save(Genre genre) {
         DATA.put(genre.identity(), genre);
