@@ -157,27 +157,6 @@ class MemListOfItemsRepoTest {
     }
 
     @Test
-    void findListsByUserIdShouldReturnCorrectLists() {
-        ListOfItems list1 = mock(ListOfItems.class);
-        ListOfItems list2 = mock(ListOfItems.class);
-
-        when(list1.identity()).thenReturn(mock(ListOfItemsId.class));
-        when(list2.identity()).thenReturn(mock(ListOfItemsId.class));
-
-        when(list1.getUserId()).thenReturn(_userId1Double);
-        when(list2.getUserId()).thenReturn(_userId2Double);
-
-        MemListOfItemsRepo repo = new MemListOfItemsRepo();
-        repo.save(list1);
-        repo.save(list2);
-
-        List<ListOfItems> result = repo.findListsByUserId(_userId1Double);
-
-        assertEquals(1, result.size());
-        assertEquals(list1, result.get(0));
-    }
-
-    @Test
     void findByOwnerNameAndGenreShouldReturnCorrectItem() {
         ListOfItems item = mock(ListOfItems.class);
 

@@ -64,14 +64,6 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
     // ------------------------
 
     @Override
-    public List<ListOfItems> findListsByUserId(UserId userId) {
-
-        return _data.values().stream()
-                .filter(l -> l.getUserId().equals(userId))
-                .toList();
-    }
-
-    @Override
     public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId) {
 
         String normalizedName = name.trim();
