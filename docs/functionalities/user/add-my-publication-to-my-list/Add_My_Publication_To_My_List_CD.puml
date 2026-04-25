@@ -24,10 +24,11 @@ class AddItemToListController {
     + getItemsInMyLibrary(userId : UserId) : Map<ItemId, ItemSummary>
     + addItemToList(itemId : ItemId, listOfItemsId : ListOfItemsId) : boolean
     + findListsByUser(userId : UserId) : Map<ListOfItemsId, String>
+    + findByOwnerNameAndGenre(userId : UserId, name : String, genreId : GenreId) : Map<ListOfItemsId, String>
 }
 
 interface IListOfItemsRepo {
-    + findListById(listOfItemsId : ListOfItemsId) : ListOfItems
+    + findAll(listOfItemsId : ListOfItemsId) : ListOfItems
     + save(list : ListOfItems) : void
 }
 
