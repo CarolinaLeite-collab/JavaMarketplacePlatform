@@ -23,8 +23,9 @@ participant ":RegisterNewAppraisalEntityUI" as UI
 participant ":RegisterNewAppraisalEntityController" as CTL
 participant ":IPublicationTypeRepo" as PTR
 participant ":IGenreRepo" as grRepo
-participant ":MemAppraisalEntityRepo" as aeRepo
 participant ":AppraisalEntityFactory" as Factory
+participant ":MemAppraisalEntityRepo" as aeRepo
+
 
 
 '==== UI interaction ====
@@ -67,8 +68,6 @@ activate UI
 UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
 activate CTL
 
-CTL -> CTL: addAppraisalEntity(name, \npublicationTypeIds, genreIds)
-
 CTL -> Factory: createAppraisalEntity(name, publicationTypeIds, genreIds)
 create "appraisalEntity:AppraisalEntity"
 
@@ -81,10 +80,10 @@ deactivate aeRepo
 
 CTL -> aeRepo : isRepeated = containsOfIdentity(appraisalEntity.identity())
 
+activate aeRepo
 opt !isRepeated == true
 
         CTL -> aeRepo : save(appraisalEntity)
-        activate aeRepo
         CTL <-- aeRepo : appraisalEntity
         deactivate aeRepo
 

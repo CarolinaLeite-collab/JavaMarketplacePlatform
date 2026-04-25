@@ -1,13 +1,12 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
-import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -15,40 +14,29 @@ import static org.mockito.Mockito.when;
 
 class MemPublishingCompanyRepoTest {
 
-    private PublishingCompanyFactory _pcfDouble;
-
-    @BeforeEach
-    void setUp() throws InstantiationException {
-
-        //Arrange
-        _pcfDouble = mock(PublishingCompanyFactory.class);
-
-    }
-
     @Test
-    void constructorShouldCreateNonNullPublishingCompanyRepo() {
+    void constructorShouldCreatePublishingCompanyRepo() {
 
         //SUT + Act
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
 
         //Assert
         assertNotNull(repo);
     }
 
     @Test
-    void registerPublishingCompanyShouldReturnPublishingCompany() {
+    void saveNewPublishingCompanyShouldReturnPublishingCompany() {
 
         //Arrange
-        String pubCoName = "Pendant Publishing";
-
+        PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
         PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
+        when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
 
         //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
 
         //Act
-        PublishingCompany pubCoResult = repo.registerPublishingCompany(pubCoName);
+        PublishingCompany pubCoResult = repo.save(pubCoDouble1);
 
         //Assert
         assertEquals(pubCoDouble1, pubCoResult);
@@ -56,113 +44,46 @@ class MemPublishingCompanyRepoTest {
     }
 
     @Test
-    void shouldAddPublishingCompanySuccessfullyAndListNotEmpty() {
+    void findAllShouldReturnAllSavedPublishingCompanies() {
 
         // Arrange
-        String pubCoName = "Pendant Publishing";
-
-        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
-
-        // SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
-
-        // Act
-        repo.registerPublishingCompany(pubCoName);
-
-        List<PublishingCompany> result = new ArrayList<>();
-        repo.findAll().forEach(result::add);
-
-        // Assert
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void shouldNotAllowDuplicatePublishingCompanies() {
-
-        // Arrange
-        String pubCoName = "Penguin Random House";
-
-        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
-        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
-
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1, pubCoDouble2);
-        when(pubCoDouble1.sameAs(pubCoName)).thenReturn(true);
-        when(pubCoDouble2.sameAs(pubCoName)).thenReturn(true);
-
-        //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
-
-        // Act
-        repo.registerPublishingCompany(pubCoName);
-
-        // Assert
-        assertThrows(IllegalArgumentException.class, () -> repo.registerPublishingCompany(pubCoName));
-
-    }
-
-    @Test
-    void shouldThrowCorrectMessageOnDuplicatePublishingCompanies() {
-
-        // Arrange
-        String pubCoName = "Penguin Random House";
-
-        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
-        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
-
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1, pubCoDouble2);
-        when(pubCoDouble1.sameAs(pubCoName)).thenReturn(true);
-        when(pubCoDouble2.sameAs(pubCoName)).thenReturn(true);
-
-        //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
-
-        // Act
-        repo.registerPublishingCompany(pubCoName);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> repo.registerPublishingCompany(pubCoName));
-
-        // Assert
-        assertEquals("This publishing company is already registered.", exception.getMessage());
-    }
-
-    @Test
-    void shouldAllowRegisteringDifferentPublishingCompanies() {
-
-        // Arrange
-        String pubCoName = "Penguin Random House";
-        String pubCoName2 = "Pendant Publishing";
-        String pubCoName3 = "Simon & Schuster";
-
-        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
-        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
-        PublishingCompany pubCoDouble3 = mock(PublishingCompany.class);
-
         PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
         PublishingCompanyId pubCoIdDouble2 = mock(PublishingCompanyId.class);
-        PublishingCompanyId pubCoIdDouble3 = mock(PublishingCompanyId.class);
+
+        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
+        PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
 
         when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
         when(pubCoDouble2.identity()).thenReturn(pubCoIdDouble2);
-        when(pubCoDouble3.identity()).thenReturn(pubCoIdDouble3);
 
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
-        when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
-        when(_pcfDouble.createPublishingCompany(pubCoName3)).thenReturn(pubCoDouble3);
+        // SUT
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
 
-        //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        repo.save(pubCoDouble1);
+        repo.save(pubCoDouble2);
 
         // Act
-        repo.registerPublishingCompany(pubCoName);
-        repo.registerPublishingCompany(pubCoName2);
-        repo.registerPublishingCompany(pubCoName3);
-
         List<PublishingCompany> result = new ArrayList<>();
         repo.findAll().forEach(result::add);
 
         // Assert
-       assertEquals(3, result.size());
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pubCoDouble1));
+        assertTrue(result.contains(pubCoDouble2));
+    }
+
+    @Test
+    void findAllOnEmptyRepoShouldReturnEmptyIterable() {
+
+        //SUT + Arrange
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
+
+        // Act
+        List<PublishingCompany> result = new ArrayList<>();
+        repo.findAll().forEach(result::add);
+
+        //Assert
+        assertTrue(result.isEmpty());
 
     }
 
@@ -170,20 +91,17 @@ class MemPublishingCompanyRepoTest {
     void ofIdentityShouldReturnPublishingCompanyWhenIdPresent(){
 
         //Arrange
-        String pubCoName = "Penguin Random House";
-
         PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
         PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
 
         when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
-        when(_pcfDouble.createPublishingCompany(pubCoName)).thenReturn(pubCoDouble1);
 
         //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
-        repo.registerPublishingCompany(pubCoName);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
+        repo.save(pubCoDouble1);
 
         //Act
-        var result = repo.ofIdentity(pubCoIdDouble1);
+        Optional<PublishingCompany> result = repo.ofIdentity(pubCoIdDouble1);
 
         //Assert
         assertTrue(result.isPresent());
@@ -194,13 +112,13 @@ class MemPublishingCompanyRepoTest {
     @Test
     void ofIdentityShouldReturnEmptyOptionalWhenIdNotPresent(){
 
-        //SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        //SUT + Arrange
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
 
         PublishingCompanyId notSavedIdDouble = mock(PublishingCompanyId.class);
 
         //Act
-        var result = repo.ofIdentity(notSavedIdDouble);
+        Optional<PublishingCompany> result = repo.ofIdentity(notSavedIdDouble);
 
         //Assert
         assertTrue(result.isEmpty());
@@ -208,12 +126,45 @@ class MemPublishingCompanyRepoTest {
     }
 
     @Test
+    void containsOfIdentityShouldReturnTrueWhenIdPresent() {
+
+        //Arrange
+        PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
+        PublishingCompanyId pubCoIdDouble1 = mock(PublishingCompanyId.class);
+        when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
+
+        //SUT
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
+        repo.save(pubCoDouble1);
+
+        //Act
+        boolean contains = repo.containsOfIdentity(pubCoIdDouble1);
+
+        //Assert
+        assertTrue(contains);
+
+    }
+
+    @Test
+    void containsOfIdentityShouldReturnFalseWhenIdNotPresent() {
+
+        //SUT
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
+
+        PublishingCompanyId notSavedIdDouble = mock(PublishingCompanyId.class);
+
+        //Act
+        boolean contains = repo.containsOfIdentity(notSavedIdDouble);
+
+        //Assert
+        assertFalse(contains);
+
+    }
+
+    @Test
     void findAllKeysShouldReturnListOfIds() {
 
         // Arrange
-        String pubCoName1 = "Penguin Random House";
-        String pubCoName2 = "Pendant Publishing";
-
         PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
         PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
 
@@ -223,15 +174,13 @@ class MemPublishingCompanyRepoTest {
         when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
         when(pubCoDouble2.identity()).thenReturn(pubCoIdDouble2);
 
-        when(_pcfDouble.createPublishingCompany(pubCoName1)).thenReturn(pubCoDouble1);
-        when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
-
         // SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
+
+        repo.save(pubCoDouble1);
+        repo.save(pubCoDouble2);
 
         // Act
-        repo.registerPublishingCompany(pubCoName1);
-        repo.registerPublishingCompany(pubCoName2);
         List<PublishingCompanyId> result = repo.findAllKeys();
 
         // Assert
@@ -244,9 +193,6 @@ class MemPublishingCompanyRepoTest {
     void findAllKeysShouldReturnDefensiveCopy() {
 
         // Arrange
-        String pubCoName1 = "Penguin Random House";
-        String pubCoName2 = "Pendant Publishing";
-
         PublishingCompany pubCoDouble1 = mock(PublishingCompany.class);
         PublishingCompany pubCoDouble2 = mock(PublishingCompany.class);
 
@@ -256,14 +202,11 @@ class MemPublishingCompanyRepoTest {
         when(pubCoDouble1.identity()).thenReturn(pubCoIdDouble1);
         when(pubCoDouble2.identity()).thenReturn(pubCoIdDouble2);
 
-        when(_pcfDouble.createPublishingCompany(pubCoName1)).thenReturn(pubCoDouble1);
-        when(_pcfDouble.createPublishingCompany(pubCoName2)).thenReturn(pubCoDouble2);
-
         // SUT
-        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo(_pcfDouble);
+        MemPublishingCompanyRepo repo = new MemPublishingCompanyRepo();
 
-        repo.registerPublishingCompany(pubCoName1);
-        repo.registerPublishingCompany(pubCoName2);
+        repo.save(pubCoDouble1);
+        repo.save(pubCoDouble2);
 
         // Act
         List<PublishingCompanyId> result = repo.findAllKeys();

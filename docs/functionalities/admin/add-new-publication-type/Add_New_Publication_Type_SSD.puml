@@ -27,7 +27,7 @@ System --> Admin: What type would you %n()like to add?
 deactivate "System"
 Admin -> System: publicationTypeName
 activate "System"
-System --> Admin: publicationTypeName %n()was successfully added %n()to the official type list.
+System --> Admin: Added successfully!
 deactivate "System"
 
 @enduml
