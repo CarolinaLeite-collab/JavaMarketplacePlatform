@@ -53,12 +53,7 @@ Package "domain" {
     }
 }
 
-Package "persistence" {
-    Package "mem"{
-        class MemoDirectSaleRepoo{
-        }
-    }
-}
+
 
 Package "ddd" {
 
@@ -82,8 +77,6 @@ Package "ddd" {
 
 DirectSale "1" --> "ID 1" DirectSaleId : has
 
-MemoDirectSaleRepo "1" --> "*" DirectSaleFactory : invokes
-MemoDirectSaleRepo "1" --> "*" DirectSale : persists
 
 DirectSale "*" --> "1" Price : has
 DirectSale "1" o--  "1..*" ItemId : aggregates
@@ -95,7 +88,6 @@ DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 ' ===== Repository =====
 AggregateRoot ..|> DomainEntity
 IDirectSaleRepo --|> IRepository
-MemoDirectSaleRepo ..|> IDirectSaleRepo
 DirectSale ..|> AggregateRoot
 
 @enduml

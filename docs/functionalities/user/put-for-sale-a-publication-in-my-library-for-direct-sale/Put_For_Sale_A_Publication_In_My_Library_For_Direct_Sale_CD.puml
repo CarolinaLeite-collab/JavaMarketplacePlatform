@@ -34,9 +34,6 @@ class Library {
   + getItemsIdInLibrary(): List<ItemId>
 }
 
-class MemoLibraryRepo{
-    - _librariesId: Map<LibraryId>
-}
 
 class ItemId {
 - _itemId : ItemId
@@ -44,11 +41,6 @@ class ItemId {
 
 interface IdirectSaleRepo{
 + addDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
-}
-
-class MemoDirectSaleRepo {
-  - _directSales: List<DirectSale>
-  - _factory: DirectSaleFactory
 }
 
 class DirectSaleFactory {
@@ -59,19 +51,15 @@ class DirectSale {
   - itemId: ItemId
   - price: Price
   - timeLimit: Period
-'  + DirectSale(item: Item, price: Price, timeLimit: Period)
 }
 
 PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
 PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
 PublicationInLibraryForDirectSaleController "1" ..> "1" IdirectSaleRepo : calls
 
-MemoLibraryRepo "1" --> "*" Library : manages
 Library "1" --> "*" ItemId : has
-MemoLibraryRepo "1" ..|> "1" ILibraryRepo : implements
 
-MemoDirectSaleRepo "1     " ..|> "1" IdirectSaleRepo : implements
-MemoDirectSaleRepo "1" --> "1    " DirectSaleFactory : uses
+PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : uses
 DirectSaleFactory "1" -.> "*" DirectSale : creates
 
 ItemId "*" --> "1" DirectSale : references

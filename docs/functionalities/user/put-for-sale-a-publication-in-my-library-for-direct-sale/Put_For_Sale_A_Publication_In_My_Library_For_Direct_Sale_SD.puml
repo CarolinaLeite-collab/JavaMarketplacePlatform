@@ -20,7 +20,7 @@ participant ":PublicationInLibrary\nForDirectSaleUI" as UI
 participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
 participant ":ILibraryRepo" as LibraryRepo
 'participant "userLibrary:Library" as userLibrary
-participant ":MemoDirectSaleRepo" as DirectSaleRepo
+participant ":IDirectSaleRepo" as DirectSaleRepo
 participant ":DirectSaleFactory" as DirectSaleFactory
 participant "directSale:DirectSale" as directSale
 
