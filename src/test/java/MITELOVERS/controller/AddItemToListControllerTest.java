@@ -24,7 +24,6 @@ class AddItemToListControllerTest {
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private ILibraryRepo _iLibraryRepoDouble;
     private UserId _userIdDouble;
-    private LibraryId _libraryIdDouble;
     private GenreId _genreIdDouble;
     private ItemId _itemIdDouble;
     private Library _libraryDouble;
@@ -39,24 +38,64 @@ class AddItemToListControllerTest {
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
         _listDouble = mock(ListOfItems.class);
-        _libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
+    }
+
+
+    // -------------------------------
+    // getMyLists / findListsByUserId
+    // -------------------------------
+
+    @Test
+    void getMyListsShouldReturnOnlyListsBelongingToUser() {
+        // Arrange
+        UserId otherUser = mock(UserId.class);
+
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+
+        when(list1.getUserId()).thenReturn(_userIdDouble);
+        when(list2.getUserId()).thenReturn(otherUser);
+
+        when(_iListOfItemsRepoDouble.findAll())
+                .thenReturn(List.of(list1, list2));
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act
+        List<ListOfItems> result = controller.getMyLists(_userIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(list1, result.get(0));
+        verify(_iListOfItemsRepoDouble).findAll();
     }
 
     @Test
-    void getMyListsShouldReturnsListsFromRepo() {
-        //arrange
-        List<ListOfItems> expected = List.of(_listDouble);
-        when(_iListOfItemsRepoDouble.findListsByUserId(_userIdDouble)).thenReturn(expected);
+    void findListsByUserIdShouldThrowWhenUserIdIsNull() {
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
-        //SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        //act
-        List<ListOfItems> result = _controllerSUT.getMyLists(_userIdDouble);
-
-        //assert
-        assertSame(expected, result);
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findListsByUserId(null));
     }
+
+    @Test
+    void getMyListsShouldReturnEmptyListWhenUserHasNoLists() {
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        List<ListOfItems> result = controller.getMyLists(_userIdDouble);
+
+        assertTrue(result.isEmpty());
+        verify(_iListOfItemsRepoDouble).findAll();
+    }
+
+    // --------------------
+    // getItemsInMyLibrary
+    // --------------------
 
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
@@ -111,6 +150,10 @@ class AddItemToListControllerTest {
                     controller.getItemsInMyLibrary(_userIdDouble));
         }
     }
+
+    // --------------
+    // addItemToList
+    // --------------
 
     @Test
     void addItemToList_throwsWhenListNameIsBlank() {

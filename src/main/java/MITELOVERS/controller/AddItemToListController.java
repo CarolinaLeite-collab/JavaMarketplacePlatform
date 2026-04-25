@@ -9,6 +9,7 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,15 +31,15 @@ public class AddItemToListController {
     }
 
     public List<ListOfItems> getMyLists(UserId userId) {
-        return _iListOfItemsRepo.findListsByUserId(userId);
+        return findListsByUserId(userId);
     }
 
     public List<ItemId> getItemsInMyLibrary(UserId userId) {
 
-        LibraryId libraryID = LibraryId.fromUserId(userId);
+        LibraryId libraryId = LibraryId.fromUserId(userId);
 
-        Library lib = _iLibraryRepo.ofIdentity(libraryID)
-                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
+        Library lib = _iLibraryRepo.ofIdentity(libraryId)
+                .orElseThrow(() -> new IllegalStateException("Library Not Found for user!"));
 
         return lib.getItemsIdInLibrary();
     }
@@ -51,4 +52,24 @@ public class AddItemToListController {
 
         myList.addItem(itemId);
     }
+
+    // This method should be moved to the future service layer and adapted accordingly.
+    public List<ListOfItems> findListsByUserId(UserId userId) {
+
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId is mandatory");
+        }
+
+        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
+
+        List<ListOfItems> result = new ArrayList<>();
+        for (ListOfItems list : all) {
+            if (userId.equals(list.getUserId())) {
+                result.add(list);
+            }
+        }
+
+        return result;
+    }
+
 }
