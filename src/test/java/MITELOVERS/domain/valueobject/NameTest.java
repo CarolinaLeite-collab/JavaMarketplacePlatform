@@ -28,7 +28,7 @@ class NameTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(expectedNormalized, name.get_Name()),
+                () -> assertEquals(expectedNormalized, name.getName()),
                 () -> assertEquals(expectedNormalized, name.toString())
         );
     }

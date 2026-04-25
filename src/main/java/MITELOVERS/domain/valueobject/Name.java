@@ -36,7 +36,7 @@ public class Name implements ValueObject {
         _name = normalized;
     }
 
-    public String get_Name() {
+    public String getName() {
             return _name;
         }
 
