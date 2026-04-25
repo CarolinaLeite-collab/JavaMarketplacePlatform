@@ -37,10 +37,20 @@ class AppraisalEntityTest {
     }
 
     @Test
-    void testConstructor() {
+    void testConstructorWithoutId() {
 
         //SUT
         AppraisalEntity appraisalEntity = new AppraisalEntity(_nameDouble,
+                List.of(_publicationTypeIdDouble1, _publicationTypeIdDouble2),
+                List.of(_genreIdDouble1, _genreIdDouble2));
+
+    }
+
+    @Test
+    void testConstructorWithId() {
+
+        //SUT
+        AppraisalEntity appraisalEntity = new AppraisalEntity(_appraisalEntityIdDouble, _nameDouble,
                 List.of(_publicationTypeIdDouble1, _publicationTypeIdDouble2),
                 List.of(_genreIdDouble1, _genreIdDouble2));
 
