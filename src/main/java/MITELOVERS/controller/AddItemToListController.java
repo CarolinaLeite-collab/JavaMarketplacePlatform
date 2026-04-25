@@ -48,12 +48,19 @@ public class AddItemToListController {
 
         if (listName == null || listName.isBlank()) throw new IllegalArgumentException("List name is mandatory");
 
-        ListOfItems myList = _iListOfItemsRepo.findByOwnerNameAndGenre(userId, listName, genreId);
+        ListOfItems myList = findByOwnerNameAndGenre(userId, listName, genreId);
+
+        if (myList == null) {
+            throw new IllegalStateException("List not found");
+        }
 
         myList.addItem(itemId);
     }
 
-    // This method should be moved to the future service layer and adapted accordingly.
+    //----------------------------------------------------------------------------------
+    // Method to be moved to the future service layer and modified/adapted accordingly
+    //----------------------------------------------------------------------------------
+
     public List<ListOfItems> findListsByUserId(UserId userId) {
 
         if (userId == null) {
@@ -70,6 +77,34 @@ public class AddItemToListController {
         }
 
         return result;
+    }
+
+    public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId) {
+
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId is mandatory");
+        }
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("List name is mandatory");
+        }
+        if (genreId == null) {
+            throw new IllegalArgumentException("GenreId is mandatory");
+        }
+
+        String normalizedName = name.trim();
+
+        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
+
+        for (ListOfItems list : all) {
+            boolean sameUser = userId.equals(list.getUserId());
+            boolean sameName = list.getName().equalsIgnoreCase(normalizedName);
+            boolean sameGenre = genreId.equals(list.getGenreId());
+
+            if (sameUser && sameName && sameGenre) {
+                return list;
+            }
+        }
+        return null;
     }
 
 }

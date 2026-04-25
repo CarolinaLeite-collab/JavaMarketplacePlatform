@@ -167,24 +167,97 @@ class AddItemToListControllerTest {
 
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
-        //arrange
-        when(_iListOfItemsRepoDouble.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble))
-                .thenReturn(_listDouble);
+        // Arrange
+        ListOfItems matchingList = mock(ListOfItems.class);
 
+        when(matchingList.getUserId()).thenReturn(_userIdDouble);
+        when(matchingList.getName()).thenReturn("My List");
+        when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
+
+        // repo now returns ALL lists, controller filters
+        when(_iListOfItemsRepoDouble.findAll())
+                .thenReturn(List.of(matchingList));
+
+        // simulate domain rule violation
         doThrow(new IllegalStateException("Item already in list"))
-                .when(_listDouble)
+                .when(matchingList)
                 .addItem(_itemIdDouble);
 
-        //SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
-        //assert
+        // Act + Assert
         IllegalStateException ex = assertThrows(
                 IllegalStateException.class,
-                () -> _controllerSUT.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble)
+                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble)
         );
 
         assertEquals("Item already in list", ex.getMessage());
     }
 
+    @Test
+    void addItemToListShouldThrowWhenListDoesNotExist() {
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalStateException.class,
+                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble));
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldIgnoreCase() {
+        ListOfItems list = mock(ListOfItems.class);
+
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn("My List");
+        when(list.getGenreId()).thenReturn(_genreIdDouble);
+
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "my list", _genreIdDouble);
+
+        assertSame(list, result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldTrimName() {
+        ListOfItems list = mock(ListOfItems.class);
+
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn("My List");
+        when(list.getGenreId()).thenReturn(_genreIdDouble);
+
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "  My List  ", _genreIdDouble);
+
+        assertSame(list, result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldReturnNullWhenGenreDiffers() {
+        GenreId otherGenre = mock(GenreId.class);
+
+        ListOfItems list = mock(ListOfItems.class);
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn("My List");
+        when(list.getGenreId()).thenReturn(otherGenre);
+
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble);
+
+        assertNull(result);
+    }
 }
