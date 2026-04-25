@@ -1,6 +1,7 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
@@ -19,11 +20,13 @@ public class PublicationInLibraryForDirectSaleController {
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
     private final IItemRepo _iItemRepo;
+    private final DirectSaleFactory _directSaleFactory;
 
-    public PublicationInLibraryForDirectSaleController(ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
+    public PublicationInLibraryForDirectSaleController(DirectSaleFactory directSaleFactory, ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
         _iItemRepo = iItemRepo;
+        _directSaleFactory = directSaleFactory;
 
     }
 
@@ -41,26 +44,28 @@ public class PublicationInLibraryForDirectSaleController {
 
     public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        for (ItemId itemId : itemsId) {
 
-            Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+        DirectSale directSale =  _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+
+        if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
+
+            throw new IllegalStateException("Direct sale already exists!");
+
+        }
+
+        for (ItemId itemId : itemsId) {
+            Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
-        }
 
-        DirectSale directSale = _iDirectSaleRepo.addDirectSale(
-                itemsId, price, timeLimit
-        );
-
-        for (ItemId itemId : itemsId) {
-
-            Item item = _iItemRepo.ofIdentity(itemId).get();
             item.markAsDirectSale();
         }
 
+        _iDirectSaleRepo.save(directSale);
+
         return directSale;
     }
+
 }

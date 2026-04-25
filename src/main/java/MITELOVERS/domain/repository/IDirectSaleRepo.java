@@ -11,6 +11,4 @@ import java.util.List;
 
 public interface IDirectSaleRepo extends IRepository<DirectSaleId, DirectSale> {
 
-    DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit);
-
 }
