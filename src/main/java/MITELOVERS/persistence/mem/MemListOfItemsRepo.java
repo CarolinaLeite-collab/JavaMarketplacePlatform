@@ -59,20 +59,4 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
         return _data.containsKey(id);
     }
 
-    // ------------------------
-    // Domain-specific queries
-    // ------------------------
-
-    @Override
-    public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId) {
-
-        String normalizedName = name.trim();
-
-        return _data.values().stream()
-                .filter(l -> l.getUserId().equals(userId))
-                .filter(l -> l.getName().equalsIgnoreCase(normalizedName))
-                .filter(l -> l.getGenreId().equals(genreId))
-                .findFirst()
-                .orElse(null);
-    }
 }

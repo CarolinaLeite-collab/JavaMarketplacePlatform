@@ -11,7 +11,5 @@ import java.util.Map;
 
 public interface IListOfItemsRepo extends IRepository<ListOfItemsId, ListOfItems> {
 
-    ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId);
-
 }
 
