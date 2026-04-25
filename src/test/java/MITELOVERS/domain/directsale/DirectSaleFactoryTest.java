@@ -1,5 +1,6 @@
 package MITELOVERS.domain.directsale;
 
+import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
@@ -10,14 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.*;
 
 class DirectSaleFactoryTest {
 
     @Test
     void shouldCreateDirectSale() {
-        // Arrange
+        //Arrange
         List<ItemId> itemsId = new ArrayList<>();
         ItemId itemIdDouble = mock(ItemId.class);
         itemsId.add(itemIdDouble);
@@ -27,16 +27,16 @@ class DirectSaleFactoryTest {
 
         List<List<Object>> capturedArguments = new ArrayList<>();
 
-        // SUT
+        //SUT
         DirectSaleFactory directSaleFactory = new DirectSaleFactory();
 
         try (MockedConstruction<DirectSale> mockedConstruction = mockConstruction(DirectSale.class,
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
-            // Act
+            //Act
             DirectSale directSaleResult = directSaleFactory.createDirectSale(itemsId, priceDouble, timeLimit);
 
-            // Assert
+            //Assert
             assertNotNull(directSaleResult);
             List<Object> params = capturedArguments.get(0);
             assertSame(itemsId, params.get(0));
@@ -48,4 +48,30 @@ class DirectSaleFactoryTest {
 
     }
 
+    @Test
+    void shouldRecreateDirectSaleWithDirectSaleIdAsArgument() {
+        //Arrange
+        DirectSaleId id = mock(DirectSaleId.class);
+        List<ItemId> itemsId = mock(List.class);
+        Price price = mock(Price.class);
+        Period timeLimit = mock(Period.class);
+
+        //SUT
+        DirectSaleFactory factory = new DirectSaleFactory();
+
+        try (MockedConstruction<DirectSale> mocked =
+                     mockConstruction(DirectSale.class,
+                             (mock, context) -> {
+                                 when(mock.identity())
+                                         .thenReturn(id);
+                             })) {
+
+            //Act
+            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, price, timeLimit);
+
+            //Assert
+            assertEquals(id, newDirectSale.identity());
+
+        }
+    }
 }
