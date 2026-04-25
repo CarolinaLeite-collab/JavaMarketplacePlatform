@@ -18,57 +18,42 @@ skinparam PackageBorderColor #black
 skinparam classAttributeIconSize 0
 
 ' ===== Domain =====
-Package "domain" {
+package "domain" {
 
-    Package "author" <<Folder>> #b0c4d4 {
+    package "author" #b0c4d4 {
         class Author <<Root>> <<Entity>> {
             -_name : String
-            +identity() : AuthorId
-            +sameAs(Object) : boolean
-            +getName() : Name
-            +getLowerCaseName() : Name
+            +getName() : String
+            +getLowerCaseName() : String
         }
 
         class AuthorFactory <<Factory>> {
             +createAuthor(authorName : String) : Author
+            +createAuthor(id : AuthorId, authorName : String) : Author
         }
     }
 
-    package "repository" <<Folder>>  {
-        interface IAuthorRepo <<Interface>> {
-        +addAuthor(authorName : String) : Author
-
-        }
+    package "repository"  {
+        interface IAuthorRepo <<Interface>>
     }
 
-    Package "valueobject"  {
-        '== Value Objects (Ids) ==
+    package "valueobject"  {
         class AuthorId <<ValueObject>> #LightPink {
         -_id : String
-
         }
-
-        ' ===== Value Objects =====
-        class Name <<ValueObject>> {
-
-        }
-
     }
-
 }
 
 ' ===== Repository =====
-package "persistence" <<Folder>> {
-
-    package "mem"  {
-        class MemoAuthorRepo {
-
-        }
-    }
-}
+'package "persistence" {
+'
+'   package "mem"  {
+'        class MemAuthorRepo
+'    }
+'}
 
 
-Package "ddd" {
+package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(entity: T) : T
         +findAll() : Iterable<T>
@@ -77,8 +62,8 @@ Package "ddd" {
         +findAllKeys() : List<ID>
     }
 
-    interface AggregateRoot <ID >{
-    }
+    interface AggregateRoot <ID >
+
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
         +sameAs(Object) : boolean
@@ -87,14 +72,13 @@ Package "ddd" {
 
 
 ' ===== Interactions =====
-Author "1" --> "ID 1" AuthorId : has
-Author "*" <--- "1" MemoAuthorRepo : persists
-Author "1" --> "1" Name : has
+Author "1" --> "1" AuthorId : has
+Author "*" <--- "1" IAuthorRepo : persists
 
 AuthorFactory ..> Author : <<create>>
 
 
-IAuthorRepo <|. MemoAuthorRepo
+'IAuthorRepo <|. MemAuthorRepo
 IAuthorRepo --|> IRepository
 
 AggregateRoot -|> DomainEntity
