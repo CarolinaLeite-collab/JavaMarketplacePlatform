@@ -44,7 +44,14 @@ public class PublicationInLibraryForDirectSaleController {
 
     public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Period timeLimit) {
 
-        DirectSale directSale = addDirectSale(itemsId, price, timeLimit);
+
+        DirectSale directSale =  _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+
+        if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
+
+            throw new IllegalStateException("Direct sale already exists!");
+
+        }
 
         for (ItemId itemId : itemsId) {
             Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
@@ -61,16 +68,4 @@ public class PublicationInLibraryForDirectSaleController {
         return directSale;
     }
 
-    private DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
-
-        DirectSale directSale = _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
-
-        if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
-
-            throw new IllegalStateException("Direct sale already exists!");
-
-        }
-
-        return directSale;
-    }
 }
