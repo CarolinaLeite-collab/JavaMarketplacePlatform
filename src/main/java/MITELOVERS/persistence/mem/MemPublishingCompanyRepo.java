@@ -21,10 +21,6 @@ public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     private final Map<PublishingCompanyId, PublishingCompany> DATA = new HashMap<PublishingCompanyId, PublishingCompany>();
 
-    public MemPublishingCompanyRepo() {
-
-    }
-
     @Override
     public PublishingCompany save(PublishingCompany publishingCompany) {
 
