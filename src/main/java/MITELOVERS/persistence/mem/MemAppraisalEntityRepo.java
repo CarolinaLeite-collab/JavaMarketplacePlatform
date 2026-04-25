@@ -28,10 +28,6 @@ public class MemAppraisalEntityRepo implements IAppraisalEntityRepo {
 
     private final Map<AppraisalEntityId, AppraisalEntity> DATA = new HashMap<AppraisalEntityId, AppraisalEntity>();
 
-    public MemAppraisalEntityRepo() {
-
-    }
-
     @Override
     public AppraisalEntity save(AppraisalEntity appraisalEntity) {
 
