@@ -6,6 +6,8 @@ import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.time.Period;
 import java.util.*;
@@ -21,7 +23,8 @@ import java.util.*;
  * layers from persistence concerns.
  * </p>
  */
-
+@Repository
+@Profile("mem")
 public class MemDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
