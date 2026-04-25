@@ -64,14 +64,6 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
     // ------------------------
 
     @Override
-    public List<ListOfItems> findPublicListsByGenre(GenreId genreId) {
-
-        return _data.values().stream()
-                .filter(l -> !l.isPrivate() && l.getGenreId().equals(genreId))
-                .toList();
-    }
-
-    @Override
     public List<ListOfItems> findListsByUserId(UserId userId) {
 
         return _data.values().stream()

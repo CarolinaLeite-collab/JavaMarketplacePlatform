@@ -157,33 +157,6 @@ class MemListOfItemsRepoTest {
     }
 
     @Test
-    void findPublicListsByGenreShouldReturnOnlyPublicLists() {
-        // Arrange
-        ListOfItems pub = mock(ListOfItems.class);
-        ListOfItems priv = mock(ListOfItems.class);
-
-        when(pub.identity()).thenReturn(mock(ListOfItemsId.class));
-        when(priv.identity()).thenReturn(mock(ListOfItemsId.class));
-
-        when(pub.getGenreId()).thenReturn(_genreIdDouble);
-        when(priv.getGenreId()).thenReturn(_genreIdDouble);
-
-        when(pub.isPrivate()).thenReturn(false);
-        when(priv.isPrivate()).thenReturn(true);
-
-        MemListOfItemsRepo repo = new MemListOfItemsRepo();
-        repo.save(pub);
-        repo.save(priv);
-
-        // Act
-        List<ListOfItems> result = repo.findPublicListsByGenre(_genreIdDouble);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertFalse(result.get(0).isPrivate());
-    }
-
-    @Test
     void findListsByUserIdShouldReturnCorrectLists() {
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
