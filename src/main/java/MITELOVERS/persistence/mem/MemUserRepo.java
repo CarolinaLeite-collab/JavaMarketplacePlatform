@@ -1,19 +1,25 @@
 package MITELOVERS.persistence.mem;
 
-
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 /**
- * Repository responsible for managing {@link User} entities.
+ * In-memory implementation of {@link IUserRepo} for storing {@link User} instances.
+ * <p>
+ * Active only when the {@code mem} Spring profile is enabled.
+ * </p>
  */
+
+@Repository
+@Profile("mem")
 public class MemUserRepo implements IUserRepo {
 
     private final Map<UserId, User> DATA = new HashMap<UserId, User>();
-
 
 
     @Override
@@ -44,7 +50,6 @@ public class MemUserRepo implements IUserRepo {
             return Optional.of(DATA.get(userId));
         }
     }
-
 
     @Override
     public boolean containsOfIdentity(UserId userId) {
