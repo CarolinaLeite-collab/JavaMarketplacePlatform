@@ -32,6 +32,18 @@ class DirectSaleTest {
     }
 
     @Test
+    void constructorShouldRebuildDirectSaleWithDirectSaleID() {
+
+        // Act
+        DirectSale directSale = new DirectSale(_dsId, _itemsId, _priceDouble, _period); // SUT
+
+        // Assert
+        assertEquals(_dsId, directSale.identity());
+        assertEquals(_itemsId, directSale.getItemsId());
+        assertEquals(_priceDouble, directSale.getPrice());
+        assertEquals(_period, directSale.getTimeLimit());
+    }
+    @Test
     void constructorShouldBuildDirectSaleWithTimeLimit() {
 
         // Act

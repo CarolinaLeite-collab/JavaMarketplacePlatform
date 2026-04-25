@@ -43,6 +43,11 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     }
 
+    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Period timeLimit) {
+        this(itemsId, price, timeLimit);
+        _directSaleId = directSaleId;
+    }
+
     public List<ItemId> getItemsId() { return _itemsId; }
     public Price getPrice() { return _price; }
     public Period getTimeLimit() { return _timeLimit; }
