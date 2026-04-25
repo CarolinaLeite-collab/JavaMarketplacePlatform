@@ -26,7 +26,6 @@ class RegisterCityControllerTest {
     private City _cityDouble;
     private UserId _adminIdDouble;
 
-
     @BeforeEach
     void setUp() {
         _iCityRepoDouble = mock(ICityRepo.class);
@@ -40,20 +39,12 @@ class RegisterCityControllerTest {
         when(_cityDouble.identity()).thenReturn(_cityIdDouble);
     }
 
-
     @Test
     void shouldConstructController() {
-        new RegisterCityController(
-                _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
-    }
-
-
-    @Test
-    void constructorWithRepositoriesDoesNotThrow() {
+        // SUT & Act & Assert
         assertDoesNotThrow(() -> new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble));
     }
-
 
     @Test
     void registerCityShouldCreateAndReturnCity() {
@@ -63,11 +54,10 @@ class RegisterCityControllerTest {
                 .thenReturn(Optional.of(countryDouble));
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
-        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble))
-                .thenReturn(false);
-        when(_iCityRepoDouble.save(_cityDouble))
-                .thenReturn(_cityDouble);
+        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble)).thenReturn(false);
+        when(_iCityRepoDouble.save(_cityDouble)).thenReturn(_cityDouble);
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -80,7 +70,6 @@ class RegisterCityControllerTest {
         verify(_iCityRepoDouble).save(_cityDouble);
     }
 
-
     @Test
     void registerCityShouldCallSaveOnRepository() {
         // Arrange
@@ -89,9 +78,9 @@ class RegisterCityControllerTest {
                 .thenReturn(Optional.of(countryDouble));
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
-        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble))
-                .thenReturn(false);
+        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble)).thenReturn(false);
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -102,13 +91,12 @@ class RegisterCityControllerTest {
         verify(_iCityRepoDouble).save(_cityDouble);
     }
 
-
     @Test
     void registerCityShouldThrowWhenCountryNotFound() {
         // Arrange
-        when(_iCountryRepoDouble.ofIdentity(_countryIdDouble))
-                .thenReturn(Optional.empty());
+        when(_iCountryRepoDouble.ofIdentity(_countryIdDouble)).thenReturn(Optional.empty());
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -117,13 +105,12 @@ class RegisterCityControllerTest {
                 () -> controller.registerCity("Porto", _countryIdDouble));
     }
 
-
     @Test
     void registerCityCountryNotFoundShouldNeverCallFactory() {
         // Arrange
-        when(_iCountryRepoDouble.ofIdentity(_countryIdDouble))
-                .thenReturn(Optional.empty());
+        when(_iCountryRepoDouble.ofIdentity(_countryIdDouble)).thenReturn(Optional.empty());
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -135,7 +122,6 @@ class RegisterCityControllerTest {
         verify(_cityFactoryDouble, never()).createCity(any(), any());
     }
 
-
     @Test
     void registerCityShouldThrowWhenCityAlreadyExists() {
         // Arrange
@@ -144,9 +130,9 @@ class RegisterCityControllerTest {
                 .thenReturn(Optional.of(countryDouble));
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
-        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble))
-                .thenReturn(true); // já existe
+        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble)).thenReturn(true);
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -154,7 +140,6 @@ class RegisterCityControllerTest {
         assertThrows(IllegalStateException.class,
                 () -> controller.registerCity("Porto", _countryIdDouble));
     }
-
 
     @Test
     void registerCityShouldThrowCorrectMessageWhenCityAlreadyExists() {
@@ -164,9 +149,9 @@ class RegisterCityControllerTest {
                 .thenReturn(Optional.of(countryDouble));
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
-        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble))
-                .thenReturn(true);
+        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble)).thenReturn(true);
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -178,7 +163,6 @@ class RegisterCityControllerTest {
         assertEquals("City already exists for this country", ex.getMessage());
     }
 
-
     @Test
     void registerCityDuplicateShouldNeverCallSave() {
         // Arrange
@@ -187,9 +171,9 @@ class RegisterCityControllerTest {
                 .thenReturn(Optional.of(countryDouble));
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
-        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble))
-                .thenReturn(true);
+        when(_iCityRepoDouble.containsOfIdentity(_cityIdDouble)).thenReturn(true);
 
+        // SUT
         RegisterCityController controller = new RegisterCityController(
                 _iCityRepoDouble, _iCountryRepoDouble, _cityFactoryDouble, _adminIdDouble);
 
@@ -200,5 +184,4 @@ class RegisterCityControllerTest {
         // Assert
         verify(_iCityRepoDouble, never()).save(any());
     }
-
 }
