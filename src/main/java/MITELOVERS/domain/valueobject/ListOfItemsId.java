@@ -10,17 +10,17 @@ public class ListOfItemsId implements DomainId {
     private final String _loiId;
 
     public ListOfItemsId(String value) {
+        if (value == null || value.isBlank())
+            throw new IllegalArgumentException("ListOfItemsId cannot be null or empty");
+
         this._loiId = value;
     }
 
-    public static ListOfItemsId newId(GenreId genreId) {
-        if (genreId == null)
-            throw new IllegalArgumentException("GenreId cannot be null");
+    public static ListOfItemsId newId() {
 
-        String genrePart = genreId.toString(); // already uppercase
         String uuidPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        return new ListOfItemsId("LOI-" + genrePart + "-" + uuidPart);
+        return new ListOfItemsId("LOI-" + uuidPart);
     }
 
     public String getValue() {
