@@ -10,18 +10,17 @@ class ListOfItemsIdTest {
 
     @Test
     void newIdShouldGenerateIdWithCorrectPrefix() {
-        GenreId genreId = new GenreId("Fantasy");
-        ListOfItemsId id = ListOfItemsId.newId(genreId);
 
-        assertTrue(id.getValue().startsWith("LOI-FANTASY-"));
+        ListOfItemsId id = ListOfItemsId.newId();
+
+        assertTrue(id.getValue().startsWith("LOI-"));
     }
 
     @Test
     void newIdShouldGenerateUniqueIds() {
-        GenreId genreId = new GenreId("Rock");
 
-        ListOfItemsId id1 = ListOfItemsId.newId(genreId);
-        ListOfItemsId id2 = ListOfItemsId.newId(genreId);
+        ListOfItemsId id1 = ListOfItemsId.newId();
+        ListOfItemsId id2 = ListOfItemsId.newId();
 
         assertNotEquals(id1, id2);
         assertNotEquals(id1.getValue(), id2.getValue());
@@ -29,9 +28,8 @@ class ListOfItemsIdTest {
 
     @Test
     void equalsShouldReturnTrueForSameStringValue() {
-        GenreId genreId = new GenreId("Jazz");
 
-        String value = "LOI-JAZZ-ABCDEF12";
+        String value = "LOI-ABCDEF12";
         ListOfItemsId id1 = new ListOfItemsId(value);
         ListOfItemsId id2 = new ListOfItemsId(value);
 
@@ -41,29 +39,29 @@ class ListOfItemsIdTest {
 
     @Test
     void equalsShouldReturnFalseForDifferentValues() {
-        ListOfItemsId id1 = new ListOfItemsId("LOI-POP-AAAA1111");
-        ListOfItemsId id2 = new ListOfItemsId("LOI-POP-BBBB2222");
+        ListOfItemsId id1 = new ListOfItemsId("LOI-AAAA1111");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-BBBB2222");
 
         assertNotEquals(id1, id2);
     }
 
     @Test
     void equalsShouldReturnFalseForNull() {
-        ListOfItemsId id = new ListOfItemsId("LOI-ROCK-12345678");
+        ListOfItemsId id = new ListOfItemsId("LOI-12345678");
 
         assertNotEquals(id, null);
     }
 
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
-        ListOfItemsId id = new ListOfItemsId("LOI-ROCK-12345678");
+        ListOfItemsId id = new ListOfItemsId("LOI-12345678");
 
         assertNotEquals(id, "not an ID");
     }
 
     @Test
     void toStringShouldReturnInternalValue() {
-        String value = "LOI-METAL-CAFEBABE";
+        String value = "LOI-CAFEBABE";
         ListOfItemsId id = new ListOfItemsId(value);
 
         assertEquals(value, id.toString());
@@ -71,23 +69,18 @@ class ListOfItemsIdTest {
 
     @Test
     void hashCodeShouldDependOnValue() {
-        ListOfItemsId id1 = new ListOfItemsId("LOI-ROCK-AAAA1111");
-        ListOfItemsId id2 = new ListOfItemsId("LOI-ROCK-BBBB2222");
+        ListOfItemsId id1 = new ListOfItemsId("LOI-AAAA1111");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-BBBB2222");
 
         assertNotEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
     void hashCodeShouldBeEqualForEqualIds() {
-        ListOfItemsId id1 = new ListOfItemsId("LOI-JAZZ-ABCDEF12");
-        ListOfItemsId id2 = new ListOfItemsId("LOI-JAZZ-ABCDEF12");
+        ListOfItemsId id1 = new ListOfItemsId("LOI-ABCDEF12");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-ABCDEF12");
 
         assertEquals(id1.hashCode(), id2.hashCode());
-    }
-
-    @Test
-    void newIdShouldThrowWhenGenreIdIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> ListOfItemsId.newId(null));
     }
 
 }

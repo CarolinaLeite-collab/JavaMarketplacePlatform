@@ -59,9 +59,7 @@ package domain {
     package repository {
 
         interface IAuctionRepo {
-            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, %n() outrightPrice : Price, auctionStartDate : ZonedDateTime, auctionEndDate : ZonedDateTime) : Auction
-            addAuction(itemId : ItemId , startingPrice : Price, reservePrice : Price, auctionStartDate : ZonedDateTime, %n() auctionEndDate : ZonedDateTime) : Auction
-        }
+       }
     }
 
     package valueobject {
@@ -79,8 +77,8 @@ package domain {
 
 package persistence {
 
-    package memo {
-        class MemoAuctionRepo <<Repo>>
+    package mem {
+        class MemAuctionRepo <<Repo>>
     }
 }
 
@@ -101,8 +99,7 @@ package ddd {
     }
 }
 
-MemoAuctionRepo ..|> IAuctionRepo
-MemoAuctionRepo "1" --> "*" AuctionFactory : invokes
+MemAuctionRepo ..|> IAuctionRepo
 IAuctionRepo "1" --> "*" Auction : manages
 IAuctionRepo --|> IRepository
 AggregateRoot --|> DomainEntity
@@ -110,7 +107,7 @@ AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction "1" *---- "*" Bid : aggregates
 Auction --|> AggregateRoot
 BidFactory "1" ..> "*" Bid : <<create>>
-MemoAuctionRepo "1" --> "*" Auction : persists
+MemAuctionRepo "1" --> "*" Auction : persists
 Auction "1" --> "1" AuctionId : has
 Auction "*" ..> "1" UserId : references
 Auction "1" o-- "1..*" ItemId : has

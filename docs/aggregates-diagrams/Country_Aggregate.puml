@@ -40,12 +40,10 @@ Package "domain" {
 
     Package "repository" <<Folder>> {
         interface ICountryRepo <<Interface>> {
-            +addCountry(String) : Country
         }
     }
 
     ' Layout adjustments
-    country -[hidden]right- REPOSITORY
     valueobject -[hidden]right- repository
     country -[hidden]down- valueobject
 }
@@ -77,7 +75,6 @@ Package "persistence" {
 
 ' ===== Relations =====
 
-CountryFactory "1" <-- "1" MemoCountryRepo : invokes
 Country "1" ..> "1" CountryId : references
 Country "1" --> "1" CountryName : has
 

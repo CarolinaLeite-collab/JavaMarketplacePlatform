@@ -53,13 +53,7 @@ public class RegisterNewAppraisalEntityController {
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds){
 
-        return addAppraisalEntity(name, publicationTypeIds, genreIds);
-
-    }
-
-    public AppraisalEntity addAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genresIds) {
-
-        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genresIds);
+        AppraisalEntity appraisalEntity = _appraisalEntityFactory.createAppraisalEntity(name, publicationTypeIds, genreIds);
 
         if (_iAppraisalEntityRepo.containsOfIdentity(appraisalEntity.identity())) {
 

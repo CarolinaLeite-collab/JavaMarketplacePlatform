@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.country.Country;
-import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
 
@@ -9,14 +8,12 @@ import java.util.*;
 
 /**
  * In-memory repository for Country aggregates.
+ * <p>
+ * This repository is strictly responsible for persistence concerns.
+ * </p>
  */
 public class MemCountryRepo implements ICountryRepo {
-    private final Map<CountryId, Country> DATA = new HashMap<CountryId, Country>();
-    private final CountryFactory _countryFactory;
-
-    public MemCountryRepo(CountryFactory countryFactory) {
-        _countryFactory = countryFactory;
-    }
+    private final Map<CountryId, Country> DATA = new HashMap<>();
 
     @Override
     public Country save(Country entity) {
@@ -31,8 +28,7 @@ public class MemCountryRepo implements ICountryRepo {
 
     @Override
     public Optional<Country> ofIdentity(CountryId id) {
-        if (!containsOfIdentity(id))
-        {
+        if (!containsOfIdentity(id)) {
             return Optional.empty();
         } else {
             return Optional.of(DATA.get(id));
@@ -43,16 +39,6 @@ public class MemCountryRepo implements ICountryRepo {
     public boolean containsOfIdentity(CountryId id) {
         return DATA.containsKey(id);
     }
-
-    @Override
-    public Country addCountry(String countryName) {
-        Country country = _countryFactory.createCountry(countryName);
-        if (containsOfIdentity(country.identity()))
-            throw new IllegalArgumentException("Country already exists in the repository");
-
-        return save(country);
-    }
-
     @Override
     public List<CountryId> findAllKeys() {
 

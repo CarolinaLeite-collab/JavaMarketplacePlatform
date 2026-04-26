@@ -1,6 +1,5 @@
 @startuml
-'https://plantuml.com/class-diagram
-title "As an Administrator, I want to register a new country in the system" CD DDD
+title As an Administrator, I want to register a new country in the system - CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -20,15 +19,15 @@ top to bottom direction
 class RegisterCountryUI {
 }
 
-package "CONTROLLER" {
+package "controller" {
     class RegisterCountryController {
-      + registerCountry(userId : UserId, countryName : String) : Country
+      + registerCountry(countryName : String) : Country
     }
 }
 
-package "DOMAIN" {
+package "domain" {
 
-    package "COUNTRY" #b0c4d4 {
+    package "country" #b0c4d4 {
         class Country <<Root>> <<Entity>> {
           + identity() : CountryId
           + name() : CountryName
@@ -41,55 +40,53 @@ package "DOMAIN" {
         }
     }
 
-    package "VALUE OBJECT" {
+    package "valueobject" {
         class CountryId <<Value Object>> #lightpink {
             - _code : String
         }
         class CountryName <<Value Object>> {
             - _value : String
         }
-        class UserId <<Value Object>> {
-        }
     }
 
-    package "REPOSITORY" {
+    package "repository" {
         interface ICountryRepo <<Interface>> {
-            + addCountry(countryName : String) : Country
         }
     }
 }
 
-package "PERSISTENCE" {
-    package "MEM" {
+package "persistence" {
+    package "mem" {
         class MemoCountryRepo <<Repo>> {
         }
     }
 }
 
-package "DDD" {
-    interface IRepository<ID, T> <<Interface>> {
+package "ddd" {
+    interface "IRepository<ID, T>" as IRepository <<Interface>> {
         + save(T) : T
         + findAll() : Iterable<T>
         + ofIdentity(ID) : Optional<T>
         + containsOfIdentity(ID) : boolean
+        + findAllKeys() : List<ID>
     }
 }
 
-'==== Visual Layout Alignment (Hidden links to force grouping) ====
-RegisterCountryUI -[hidden]down- CONTROLLER
-CONTROLLER -[hidden]down- DOMAIN
-COUNTRY -[hidden]right- "VALUE OBJECT"
-"VALUE OBJECT" -[hidden]right- REPOSITORY
-DOMAIN -[hidden]down- PERSISTENCE
+'==== Visual Layout Alignment ====
+RegisterCountryUI -[hidden]down- controller
+controller -[hidden]down- domain
+country -[hidden]right- valueobject
+valueobject -[hidden]right- repository
+domain -[hidden]down- persistence
 
 '==== Connections ====
 RegisterCountryUI "1" .> "1" RegisterCountryController : invokes
-RegisterCountryController "1" ..> "1" ICountryRepo : calls
-RegisterCountryController "1" ..> "*" Country : <<use>>
-RegisterCountryController "1" ..> "1" UserId : <<use>>
+
+RegisterCountryController "1" --> "1" ICountryRepo : uses
+RegisterCountryController "1" --> "1" CountryFactory : uses
+RegisterCountryController "1" ..> "*" Country : <<manages>>
 
 MemoCountryRepo ..|> ICountryRepo
-MemoCountryRepo "1" --> "1" CountryFactory : <<use>>
 MemoCountryRepo "1" --> "*" Country : persists
 
 CountryFactory "1" ..> "*" Country : <<create>>

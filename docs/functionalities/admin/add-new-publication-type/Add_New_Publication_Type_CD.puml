@@ -15,22 +15,21 @@ skinparam classAttributeIconSize 0
 
 class AddPublicationTypeUI
 
-package "PERSISTENCE" {
-            package "MEM" {
-                class MemoPublicationTypeRepo {
-                  + addPublicationType(publicationTypeName : String) : PublicationType
+package "persistence" {
+            package "mem" {
+                class MemPublicationTypeRepo {
                 }
             }
 }
 
-package "CONTROLLER" {
+package "controller" {
     class AddPublicationTypeController {
       + addPublicationType(publicationTypeName : String) : PublicationType
     }
 }
 
-package "DOMAIN" {
-    package "PUBLICATIONTYPE" #b0c4d4 {
+package "domain" {
+    package "publicationtype" #b0c4d4 {
         class PublicationType <<Root>> <<Entity>> {
         }
 
@@ -40,36 +39,45 @@ package "DOMAIN" {
         }
 }
 
-    package "REPOSITORY" {
+    package "repository" {
             interface IPublicationTypeRepo <<Interface>>
     }
 
 
-     package "VALUE OBJECT" {
+     package "valueobject" {
              class PublicationTypeId <<Value Object>> #lightpink
 
      }
 
 }
 
-package "DDD" {
+package "ddd" {
     interface IRepository <ID, T> <<Interface>> {
         save(T) : T
-        findAll() : Iterable<T>
-        ofIdentity(ID) : Optional <T>
         containsOfIdentity(ID) : boolean
     }
+
+    interface AggregateRoot <ID> <<Interface>> {
+        }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+       +identity() : ID
+    }
+
 }
 
 
 ' ===== RELATIONSHIPS =====
 AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
 AddPublicationTypeController "1" --> "1" IPublicationTypeRepo: calls
-MemoPublicationTypeRepo ..|> IPublicationTypeRepo
+AddPublicationTypeController "1" --> "1" PublicationTypeFactory : invokes
+AddPublicationTypeController "1" .> "1" PublicationType : <<use>>
+MemPublicationTypeRepo ..|> IPublicationTypeRepo
 IPublicationTypeRepo --|> IRepository
-MemoPublicationTypeRepo "1" --> "1" PublicationTypeFactory: <<use>>
-PublicationTypeFactory "1" ..> "*" PublicationType: <<create>>
-MemoPublicationTypeRepo "1"--> "*" PublicationType: persists
+PublicationTypeFactory "1" ..> "1" PublicationType: <<create>>
+MemPublicationTypeRepo "1"--> "1" PublicationType: persists
 PublicationType "1" --> "1" PublicationTypeId: has
+AggregateRoot -|> DomainEntity
+PublicationType .|> AggregateRoot
 
 @enduml

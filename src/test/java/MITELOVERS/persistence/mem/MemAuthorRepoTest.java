@@ -15,21 +15,17 @@ import static org.mockito.Mockito.*;
 
 public class MemAuthorRepoTest {
 
-    private AuthorFactory _authorFactoryDouble;
+
     private Author _authorDouble;
     private AuthorId _authorIdDouble;
-    private String _authorName;
 
     @BeforeEach
     void setUp() {
-        _authorFactoryDouble = mock(AuthorFactory.class);
 
-        _authorName = "Seneca";
         _authorDouble = mock(Author.class);
         _authorIdDouble = mock(AuthorId.class);
 
         when(_authorDouble.identity()).thenReturn(_authorIdDouble);
-        when(_authorFactoryDouble.createAuthor(_authorName)).thenReturn(_authorDouble);
 
     }
 
@@ -38,7 +34,7 @@ public class MemAuthorRepoTest {
     void testConstructor() {
 
         // SUT
-        MemAuthorRepo authorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo authorRepo = new MemAuthorRepo();
 
     }
 
@@ -46,7 +42,7 @@ public class MemAuthorRepoTest {
     void saveShouldStoreAuthorAndReturnIt() {
 
         // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
         
         // Act
         Author result = memAuthorRepo.save(_authorDouble);
@@ -61,7 +57,7 @@ public class MemAuthorRepoTest {
     void saveShouldOverwriteExistingAuthorWithSameId() {
 
         // Arrange
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
         memAuthorRepo.save(_authorDouble);
 
         Author anotherAuthorWithSameId = mock(Author.class);
@@ -84,7 +80,7 @@ public class MemAuthorRepoTest {
         when(author2.identity()).thenReturn(author2Id);
 
         //SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         memAuthorRepo.save(_authorDouble);
         memAuthorRepo.save(author2);
@@ -102,7 +98,7 @@ public class MemAuthorRepoTest {
     void findAllShouldReturnEmptyIfNoAuthorsSaved() {
 
         // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         // Act
         Iterable<Author> allAuthors = memAuthorRepo.findAll();
@@ -116,7 +112,7 @@ public class MemAuthorRepoTest {
     void containsOfIdentityShouldReturnTrueIfAuthorExists() {
 
         // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
         memAuthorRepo.save(_authorDouble);
 
         // Act
@@ -131,7 +127,7 @@ public class MemAuthorRepoTest {
     void containsOfIdentityShouldReturnFalseIfAuthorDoesNotExist() {
 
         //Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         // Act
         boolean exists = memAuthorRepo.containsOfIdentity(_authorIdDouble);
@@ -145,7 +141,7 @@ public class MemAuthorRepoTest {
     void ofIdentityShouldReturnAuthorIfExists() {
 
         // Arrange
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
         memAuthorRepo.save(_authorDouble);
 
         // Act
@@ -161,7 +157,7 @@ public class MemAuthorRepoTest {
     void ofIdentityShouldReturnEmptyIfAuthorDoesNotExist() {
 
         // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         // Act
         Optional<Author> result = memAuthorRepo.ofIdentity(_authorIdDouble);
@@ -172,39 +168,10 @@ public class MemAuthorRepoTest {
     }
 
     @Test
-    void addAuthorShouldCreateAndSaveAuthor() {
-
-        // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
-
-        // Act
-        Author result = memAuthorRepo.addAuthor(_authorName);
-
-        // Assert
-        assertEquals(_authorDouble, result);
-        assertTrue(memAuthorRepo.containsOfIdentity(_authorIdDouble));
-
-    }
-
-    @Test
-    void addAuthorShouldCallAuthorFactoryWithCorrectName() {
-
-        // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
-
-        // Act
-        memAuthorRepo.addAuthor(_authorName);
-
-        // Assert
-        verify(_authorFactoryDouble).createAuthor(_authorName);
-
-    }
-
-    @Test
     void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
 
         // Arrange & SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         // Act
         List<AuthorId> keys = memAuthorRepo.findAllKeys();
@@ -225,7 +192,7 @@ public class MemAuthorRepoTest {
         when(author2.identity()).thenReturn(author2Id);
 
         // SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
 
         memAuthorRepo.save(_authorDouble);
         memAuthorRepo.save(author2);
@@ -247,7 +214,7 @@ public class MemAuthorRepoTest {
         when(_authorDouble.identity()).thenReturn(_authorIdDouble);
 
         // SUT
-        MemAuthorRepo memAuthorRepo = new MemAuthorRepo(_authorFactoryDouble);
+        MemAuthorRepo memAuthorRepo = new MemAuthorRepo();
         memAuthorRepo.save(_authorDouble);
 
         // Act

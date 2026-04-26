@@ -17,27 +17,11 @@ import java.util.*;
 
 public class MemGenreRepo implements IGenreRepo {
     private final Map<GenreId, Genre> DATA = new HashMap<>();
-    private final GenreFactory _genreFactory;
-
-    public MemGenreRepo(GenreFactory genreFactory) {
-        _genreFactory = genreFactory;
-    }
 
     @Override
     public Genre save(Genre genre) {
         DATA.put(genre.identity(), genre);
         return genre;
-    }
-
-    @Override
-    public Genre addGenre(String genreName) {
-
-        Genre newGenre =  _genreFactory.createGenre(genreName);
-
-        if (containsOfIdentity(newGenre.identity())) {
-            throw new IllegalArgumentException("Genre already exists in the repository");
-        }
-        return save(newGenre);
     }
 
     @Override
