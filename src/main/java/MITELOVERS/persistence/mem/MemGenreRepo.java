@@ -1,4 +1,4 @@
-package MITELOVERS.persistence;
+package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;

@@ -1,4 +1,4 @@
-package MITELOVERS.persistence;
+package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.edition.EditionFactory;

@@ -1,4 +1,4 @@
-package MITELOVERS.persistence;
+package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;

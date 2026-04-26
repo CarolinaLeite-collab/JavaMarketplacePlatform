@@ -1,4 +1,4 @@
-package MITELOVERS.persistence;
+package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;

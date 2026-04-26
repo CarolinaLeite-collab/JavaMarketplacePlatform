@@ -1,4 +1,4 @@
-package MITELOVERS.persistence;
+package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
