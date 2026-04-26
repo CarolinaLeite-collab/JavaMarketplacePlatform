@@ -47,17 +47,17 @@ activate UI
 
 UI -> Ctl: getListOfItemInfoInMyLibrary(userId)
 activate Ctl
-
-Ctl -> LibRepo: getItemsInLibraryByUserId(userId)
+create "libraryId:LibraryId"
+Ctl -->> "libraryId:LibraryId": LibraryId.fromUserId(userId)
+Ctl -> LibRepo : ofIdentity(libraryId)
 activate LibRepo
-LibRepo --> Ctl: listOfItemIds
+LibRepo --> Ctl : listOfItemIds
 deactivate LibRepo
 create "listOfItemDetailsDTOs: List<ItemDetailsDTO>" as listOfDTO
 Ctl -->> listOfDTO: <<create>>
 
 loop for each itemId in listOfItemIds
-
-Ctl -> ItRepo: ofIdentity(itemId)
+Ctl -> ItRepo : ofIdentity(itemId)
 activate ItRepo
 ItRepo --> Ctl : item
 deactivate ItRepo

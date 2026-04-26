@@ -7,37 +7,40 @@ import java.util.UUID;
 
 public class ListOfItemsId implements DomainId {
 
-    private final UUID _value;
+    private final String _loiId;
 
-    public ListOfItemsId(UUID value) {
-        if (value == null) {
-            throw new IllegalArgumentException("ListOfItemsId cannot be null");
-        }
-        _value = value;
+    public ListOfItemsId(String value) {
+        if (value == null || value.isBlank())
+            throw new IllegalArgumentException("ListOfItemsId cannot be null or empty");
+
+        this._loiId = value;
     }
 
     public static ListOfItemsId newId() {
-        return new ListOfItemsId(UUID.randomUUID());
+
+        String uuidPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+
+        return new ListOfItemsId("LOI-" + uuidPart);
     }
 
-    public UUID getValue() {
-        return _value;
+    public String getValue() {
+        return _loiId;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ListOfItemsId other)) return false;
-        return Objects.equals(_value, other._value);
+        if (!(o instanceof ListOfItemsId that)) return false;
+        return Objects.equals(_loiId, that._loiId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_value);
+        return Objects.hashCode(_loiId);
     }
 
     @Override
     public String toString() {
-        return _value.toString();
+        return _loiId;
     }
+
 }

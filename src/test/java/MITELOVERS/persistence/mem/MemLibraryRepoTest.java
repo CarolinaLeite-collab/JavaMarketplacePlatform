@@ -2,13 +2,13 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.library.LibraryFactory;
-import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 class MemLibraryRepoTest {
@@ -46,7 +45,7 @@ class MemLibraryRepoTest {
         when(libraryDouble.identity()).thenReturn(libraryIdDouble);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         Library result = repo.save(libraryDouble);
@@ -69,7 +68,7 @@ class MemLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         repo.save(libraryDouble);
@@ -77,6 +76,32 @@ class MemLibraryRepoTest {
 
         List<Library> list = new ArrayList<>();
         Iterable<Library> result = repo.findAll();
+
+        result.forEach(list::add);
+
+        // Assert
+        assertEquals(2, list.size());
+    }
+
+    @Test
+    void findAllKeysShouldReturnAllStoredLibraryIds(){
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        LibraryId libraryId2Double = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
+        Library library2Double = mock(Library.class);
+        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
+        when(library2Double.identity()).thenReturn(libraryId2Double);
+
+        // SUT
+        MemLibraryRepo repo = new MemLibraryRepo();
+
+        // Act
+        repo.save(libraryDouble);
+        repo.save(library2Double);
+
+        List<LibraryId> list = new ArrayList<>();
+        Iterable<LibraryId> result = repo.findAllKeys();
 
         result.forEach(list::add);
 
@@ -96,7 +121,7 @@ class MemLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         repo.save(libraryDouble);
@@ -121,7 +146,7 @@ class MemLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         repo.save(libraryDouble);
@@ -143,7 +168,7 @@ class MemLibraryRepoTest {
         when(library2Double.identity()).thenReturn(libraryId2Double);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         repo.save(libraryDouble);
@@ -170,7 +195,7 @@ class MemLibraryRepoTest {
         when(library3Double.identity()).thenReturn(libraryId3Double);
 
         // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
+        MemLibraryRepo repo = new MemLibraryRepo();
 
         // Act
         repo.save(libraryDouble);
@@ -182,234 +207,37 @@ class MemLibraryRepoTest {
         assertFalse(result);
     }
 
-
-
-    @Test
-    void addLibraryShouldReturnLibrary() {
-
-        // Arrange
-        Library libraryDouble = mock(Library.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-
-        when(libraryDouble.sameAs(libraryIdDouble)).thenReturn(true);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-
-        // SUT
-        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
-
-        // Act
-        Library mylibrary = libraryRepo.addLibrary(_userIdDouble);
-
-        // Assert
-        assertEquals(libraryDouble, mylibrary);
-    }
-
-    @Test
-    void addLibraryShouldThrowAnExceptionWhenLibraryAlreadyExists() {
-
-        // Arrange
-        Library libraryDouble = mock(Library.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-
-        // SUT
-        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
-
-        // Act
-        libraryRepo.addLibrary(_userIdDouble);
-
-        // Assert
-        assertThrows(IllegalStateException.class, () -> libraryRepo.addLibrary(_userIdDouble));
-    }
-
-    @Test
-    void findLibraryByUserShouldReturnLibraryWhenExists() {
-
-        // Arrange
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-
-        // SUT
-        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
-        libraryRepo.addLibrary(_userIdDouble);
-
-        // Act
-        Library result = libraryRepo.findLibraryByUserId(_userIdDouble);
-
-        // Assert
-        assertEquals(libraryDouble, result);
-    }
-
-    @Test
-    void addLibraryShouldSucceedWhenOtherUserAlreadyHasLibrary() {
-        // Arrange
-        UserId otherUserIdDouble = mock(UserId.class);
-        Email otherEmailDouble = mock(Email.class);
-        when(otherUserIdDouble.getEmail()).thenReturn(otherEmailDouble);
-
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-        LibraryId otherLibraryIdDouble = LibraryId.fromUserId(otherUserIdDouble);
-
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-
-        Library otherLibraryDouble = mock(Library.class);
-        when(otherLibraryDouble.identity()).thenReturn(otherLibraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(otherUserIdDouble)).thenReturn(otherLibraryDouble);
-
-        // SUT
-        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble);
-        libraryRepo.addLibrary(otherUserIdDouble);
-
-        // Act
-        Library result = libraryRepo.addLibrary(_userIdDouble);
-
-        // Assert
-        assertEquals(libraryDouble, result);
-    }
-
-    @Test
-    void findLibraryByUserShouldThrowExceptionWhenLibraryDoesNotExist() {
-
-        // Arrange
-        ILibraryRepo libraryRepo = new MemLibraryRepo(_libraryFactoryDouble); // SUT
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class,
-                () -> libraryRepo.findLibraryByUserId(_userIdDouble));
-    }
-
     @Test
     void getItemsInLibraryShouldReturnListOfItemIds() {
-
         // Arrange
-        ItemId itemIdInLibrary1 = mock(ItemId.class);
-        ItemId itemIdInLibrary2 = mock(ItemId.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(libraryDouble.getItemsIdInLibrary()).thenReturn(Arrays.asList(itemIdInLibrary1, itemIdInLibrary2));
-
-        // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
-
-        // Act
-        repo.save(libraryDouble);
-        List<ItemId> result = repo.getItemsInLibraryByUserId(_userIdDouble);
-
-        // Assert
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void getItemsInLibraryShouldThrowWhenLibraryNotFoundForUser() {
-
-        // Arrange
-        ItemId itemIdInLibrary1 = mock(ItemId.class);
-        ItemId itemIdInLibrary2 = mock(ItemId.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(libraryDouble.getItemsIdInLibrary()).thenReturn(Arrays.asList(itemIdInLibrary1, itemIdInLibrary2));
-
-        UserId otherUserIdDouble = mock(UserId.class);
-        Email otherEmailDouble = mock(Email.class);
-        when(otherUserIdDouble.getEmail()).thenReturn(otherEmailDouble);
-
-        // SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
-
-        // Act
-        repo.save(libraryDouble);
-
-        // Assert
-        assertThrows(IllegalStateException.class,
-                () -> repo.getItemsInLibraryByUserId(otherUserIdDouble));
-    }
-
-    @Test
-    void findAllKeysShouldReturnListOfIds() {
-
-        //Arrange
-        Email email2Double = mock(Email.class);
-        UserId userId2Double = mock(UserId.class);
-        when(userId2Double.getEmail()).thenReturn(email2Double);
-
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-        LibraryId libraryId2Double = LibraryId.fromUserId(userId2Double);
-
-
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-
-        Library library2Double = mock(Library.class);
-        when(library2Double.identity()).thenReturn(libraryId2Double);
-        when(_libraryFactoryDouble.createLibrary(userId2Double)).thenReturn(library2Double);
-
-        //SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
-        repo.addLibrary(_userIdDouble);
-        repo.addLibrary(userId2Double);
-
-        //Act
-        List<LibraryId> result = repo.findAllKeys();
-
-        //Assert
-        assertEquals(2, result.size());
-    }
-
-    @Test
-    void ifItemIdExistInLibraryReturnTrue() {
-
-        //Arrange
-        ItemId itemIdInLibrary1Double = mock(ItemId.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
-
-        Library libraryDouble = mock(Library.class);
-        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(itemIdInLibrary1Double));
-
-        //SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
-        repo.addLibrary(_userIdDouble);
-
-
-        //Act
-        boolean result = repo.existsItemIdInAnyLibrary(itemIdInLibrary1Double);
-
-        //Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void ifItemIdDoNotExistInLibraryReturnFalse() {
-
-        //Arrange
         ItemId itemIdInLibrary1Double = mock(ItemId.class);
         ItemId itemIdInLibrary2Double = mock(ItemId.class);
-        LibraryId libraryIdDouble = LibraryId.fromUserId(_userIdDouble);
 
+        LibraryId libraryIdDouble = mock(LibraryId.class);
         Library libraryDouble = mock(Library.class);
+
         when(libraryDouble.identity()).thenReturn(libraryIdDouble);
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble)).thenReturn(libraryDouble);
-        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(itemIdInLibrary1Double));
+        when(libraryDouble.getItemsIdInLibrary())
+                .thenReturn(Arrays.asList(itemIdInLibrary1Double, itemIdInLibrary2Double));
 
-        //SUT
-        MemLibraryRepo repo = new MemLibraryRepo(_libraryFactoryDouble);
-        repo.addLibrary(_userIdDouble);
+        // SUT
+        MemLibraryRepo repo = new MemLibraryRepo();
 
+        // Act
+        try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-        //Act
-        boolean result = repo.existsItemIdInAnyLibrary(itemIdInLibrary2Double);
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
+                    .thenReturn(libraryIdDouble);
 
-        //Assert
-        assertFalse(result);
+            repo.save(libraryDouble);
+            Optional<Library> savedLibrary = repo.ofIdentity(libraryIdDouble);
+
+            List<ItemId> result = savedLibrary.get().getItemsIdInLibrary();
+
+            // Assert
+            assertEquals(2, result.size());
+            assertTrue(result.contains(itemIdInLibrary1Double));
+            assertTrue(result.contains(itemIdInLibrary2Double));
+        }
     }
 }

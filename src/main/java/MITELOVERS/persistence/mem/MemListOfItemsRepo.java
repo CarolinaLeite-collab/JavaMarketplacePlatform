@@ -1,14 +1,11 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
-import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.UserId;
+
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Repository responsible for managing {@link ListOfItems} instances.
@@ -21,27 +18,9 @@ import java.util.stream.Collectors;
 public class MemListOfItemsRepo implements IListOfItemsRepo {
 
     private final Map<ListOfItemsId, ListOfItems> _data;
-    private final ListOfItemsFactory _factory;
 
     public MemListOfItemsRepo() {
-        this(new ListOfItemsFactory());
-    }
-
-    public MemListOfItemsRepo(ListOfItemsFactory factory) {
         _data = new HashMap<>();
-        _factory = factory;
-    }
-
-    @Override
-    public ListOfItems addListOfItems(UserId userId, String name, GenreId genreId) {
-        ListOfItems newList = _factory.createListOfItems(userId, name, genreId);
-        ListOfItemsId _id = newList.identity();
-
-        if (_data.containsKey(_id))
-            return null;
-
-        _data.put(_id, newList);
-        return newList;
     }
 
     // ------------------------
@@ -57,6 +36,7 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
 
     @Override
     public Iterable<ListOfItems> findAll() {
+
         return List.copyOf(_data.values());
     }
 
@@ -68,58 +48,14 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
 
     @Override
     public Optional<ListOfItems> ofIdentity(ListOfItemsId id) {
+
         return Optional.ofNullable(_data.get(id));
     }
 
     @Override
     public boolean containsOfIdentity(ListOfItemsId id) {
+
         return _data.containsKey(id);
-    }
-
-    // ------------------------
-    // Domain-specific queries
-    // ------------------------
-
-    @Override
-    public List<ListOfItems> findPublicListsByGenre(GenreId genreId) {
-
-        return _data.values().stream()
-                .filter(l -> !l.isPrivate() && l.getGenreId().equals(genreId))
-                .toList();
-    }
-
-    @Override
-    public List<ListOfItems> findListsByUserId(UserId userId) {
-
-        return _data.values().stream()
-                .filter(l -> l.getUserId().equals(userId))
-                .toList();
-    }
-
-    @Override
-    public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId) {
-
-        String normalizedName = name.trim();
-
-        return _data.values().stream()
-                .filter(l -> l.getUserId().equals(userId))
-                .filter(l -> l.getName().equalsIgnoreCase(normalizedName))
-                .filter(l -> l.getGenreId().equals(genreId))
-                .findFirst()
-                .orElse(null);
-    }
-
-    // -----------------------------------------------------------------
-    // Temporary solution for US requirements before DTO implementation
-    // -----------------------------------------------------------------
-
-    @Override
-    public Map<ListOfItemsId, String> getIdNameMap() {
-        return _data.values().stream()
-                .collect(Collectors.toUnmodifiableMap(
-                        ListOfItems::identity,
-                        ListOfItems::getName
-                ));
     }
 
 }

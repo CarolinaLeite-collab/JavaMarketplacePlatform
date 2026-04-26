@@ -9,11 +9,7 @@ import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.time.Year;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import static javax.swing.text.html.HTML.Attribute.DATA;
 
 /**
  * Controller responsible for registering new publications in the system.

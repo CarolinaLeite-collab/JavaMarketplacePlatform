@@ -44,10 +44,6 @@ package "DOMAIN" {
 
   package "REPOSITORY" {
     interface IItemRepo <<Interface>> {
-'      +getAll() : List<ItemID>
-      +getDifferentOf(existentItems : List<ItemID>) : List<ItemID>
-      +add(itemID : ItemID) : boolean
-'      +exists(itemID : ItemID) : boolean
     }
   }
 

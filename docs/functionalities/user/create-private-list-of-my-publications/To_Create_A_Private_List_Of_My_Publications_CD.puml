@@ -23,12 +23,13 @@ interface IListOfItemsRepo {
 class MemoListOfItemsRepo {
     - _listsOfItems: List<ListOfItems>
 
-    + addListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+
 }
 
 class CreatePrivateListOfItemsController {
 	+ getAllGenres() : Map<GenreId, String>
 	+ createListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+	+ addListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
 }
 
 class ListOfItemsFactory {
@@ -36,11 +37,11 @@ class ListOfItemsFactory {
 }
 
 interface IGenreRepo {
-    + getMapOfOfficialGenres(): Map<GenreId, String>
+    + getListOfOfficialGenres(): Map<GenreId, String>
 }
 
 class MemoGenreRepo {
-    + getMapOfOfficialGenres(): Map<GenreId, String>
+    + getListOfOfficialGenres(): Map<GenreId, String>
 }
 
 class ListOfItemsId {
