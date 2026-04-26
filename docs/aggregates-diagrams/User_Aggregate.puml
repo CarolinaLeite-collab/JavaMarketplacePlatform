@@ -27,6 +27,7 @@ Package "domain" {
             +getEmail() : String
             +getAddress() : Address
             +getPhone() : Phone
+            +getRoles() : Set< Role >
             +sameAs(Object) : boolean
             +equals(Object) : boolean
             +hashCode() : int
@@ -35,6 +36,7 @@ Package "domain" {
 
         class UserFactory <<Factory>> {
             +createUser(name : Name, address : Address, email : Email, phone : Phone) : User
+            +createUser(userId : UserId, name : Name, address : Address, email : Email, phone : Phone) : User
         }
     }
 
@@ -42,6 +44,12 @@ Package "domain" {
         class UserId <<ValueObject>> #LightPink {
             -_id : Email
         }
+        class Name <<ValueObject>>{}
+         class Address <<ValueObject>>{}
+          class Phone <<ValueObject>>{}
+          class Email <<ValueObject>>{}
+           Enum Role <<ValueObject>>{}
+
     }
 
     Package "repository" <<Folder>> {
@@ -65,19 +73,17 @@ Package "ddd" {
     }
 }
 
-Package "persistence" {
-    package "mem" {
-        class MemUserRepo <<Repo>> {
-        }
-    }
-}
-
 User "1" --> "1" UserId : has
+User "1" --> "1" Name : has
+User "1" --> "0..1" Address : has
+User "1" --> "1" Email : has
+User "1" --> "0..1" Phone : has
+User "1" --> "1" Role : has
 
-IUserRepo -|> IRepository
-MemUserRepo .|> IUserRepo
-User "*" <-- "1" MemUserRepo : persists
 
+User "*" <- "1" IUserRepo : persists
+
+IUserRepo --|> IRepository
 UserFactory ..> User : <<create>>
 
 AggregateRoot -|> DomainEntity

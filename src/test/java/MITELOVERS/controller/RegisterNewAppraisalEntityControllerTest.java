@@ -8,9 +8,9 @@ import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 

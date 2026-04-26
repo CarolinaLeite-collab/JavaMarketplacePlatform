@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ListOfItemsFactoryTest {
 
@@ -54,6 +55,7 @@ class ListOfItemsFactoryTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         GenreId genreIdDouble = mock(GenreId.class);
+
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
         // Act

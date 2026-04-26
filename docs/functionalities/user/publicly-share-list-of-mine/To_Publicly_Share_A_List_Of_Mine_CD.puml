@@ -18,17 +18,17 @@ class ShareListPubliclyUI
 
 class ShareListPubliclyController {
     - _listOfPublicationsRepo : IListOfPublicationsRepo
-    + findListsByUser(user : User) : List<ListOfPublications>
-    + shareListPublicly(list : ListOfPublications) : boolean
+    + findListsByUser(userId : UserId) : List<ListOfPublications>
+    + shareListPublicly(myList : ListOfPublications) : boolean
 }
 
 interface IListOfPublicationsRepo {
-    + findListsByUser(user : User) : List<ListOfPublications>
+
 }
 
 class MemoListOfPublicationsRepo {
     - _listsOfListOfPublications : List<ListOfPublications>
-    + findListsByUser(user : User) : List<ListOfPublications>
+
 }
 
 class ListOfPublications {

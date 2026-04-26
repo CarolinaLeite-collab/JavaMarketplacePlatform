@@ -8,35 +8,68 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShareListPubliclyControllerTest {
 
-    private ListOfItems _listOfItemsDouble;
     private IListOfItemsRepo _iListOfItemsRepoDouble;
     private UserId _userIdDouble;
 
     @BeforeEach
     void setUp() {
-        _listOfItemsDouble = mock(ListOfItems.class);
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
         _userIdDouble = mock(UserId.class);
     }
 
     @Test
     void returnListFromRepo() {
-        //arrange
-        when(_iListOfItemsRepoDouble.findListsByUserId(_userIdDouble)).thenReturn(List.of(_listOfItemsDouble));
+        // Arrange
+        UserId otherUser = mock(UserId.class);
 
-        //SUT
-        ShareListPubliclyController _controller = new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
 
-        //act
-        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
+        when(list1.getUserId()).thenReturn(_userIdDouble);
+        when(list2.getUserId()).thenReturn(otherUser);
 
-        //assert
+        when(_iListOfItemsRepoDouble.findAll())
+                .thenReturn(List.of(list1, list2));
+
+        ShareListPubliclyController controller =
+                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+
+        // Act
+        List<ListOfItems> result = controller.getListOfLists(_userIdDouble);
+
+        // Assert
         assertEquals(1, result.size());
+        assertSame(list1, result.get(0));
     }
+
+    @Test
+    void findListsByUserIdShouldThrowWhenUserIdIsNull() {
+        ShareListPubliclyController controller =
+                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findListsByUserId(null));
+    }
+
+    @Test
+    void returnEmptyListWhenUserHasNoLists() {
+        // Arrange
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
+
+        ShareListPubliclyController controller =
+                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+
+        // Act
+        List<ListOfItems> result = controller.getListOfLists(_userIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
 }

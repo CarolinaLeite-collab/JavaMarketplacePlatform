@@ -17,54 +17,81 @@ top to bottom direction
 class PublicationInLibraryForDirectSaleUI {
 }
 
+package "controller"{
 class PublicationInLibraryForDirectSaleController {
   - libraryRepo: ILibraryRepo
   - directSaleRepo: IdirectSaleRepo
   + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
   + putItemIdOnDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
 }
-
-interface ILibraryRepo {
-  + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
 }
 
-class Library {
-  - _userId: UserId
-  - _itemsId: List<ItemId>
-  + getItemsIdInLibrary(): List<ItemId>
+package "ddd"{
+    interface IRepository<ID, T> <<Interface>>
 }
 
+package "domain"{
+    package "repository"{
+        interface ILibraryRepo {
+          + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
+        }
+        interface IDirectSaleRepo{
+        }
+    }
+    package "library"{
+        class Library {
+          - _userId: UserId
+          - _itemsId: List<ItemId>
+          + getItemsIdInLibrary(): List<ItemId>
+        }
+    }
 
-class ItemId {
-- _itemId : ItemId
+    package "directsale"{
+        class DirectSaleFactory {
+          + createDirectSale(itemsId: List<ItemId>, price: Price, timeLimit: Period): DirectSale
+        }
+
+        class DirectSale {
+          - itemId: ItemId
+          - price: Price
+          - timeLimit: Period
+        }
+    }
+
+   package "valueobject"{
+       class ItemId {
+       - _itemId : ItemId
+       }
+   }
 }
 
-interface IdirectSaleRepo{
-+ addDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
-}
-
-class DirectSaleFactory {
-  + createDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
-}
-
-class DirectSale {
-  - itemId: ItemId
-  - price: Price
-  - timeLimit: Period
+package "persistence"{
+    package "mem"{
+        class MemDirectSaleRepo{
+         +save(directSale : DirectSale) : DirectSale
+        }
+        class MemLibraryRepo{
+        }
+    }
 }
 
 PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
 PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
-PublicationInLibraryForDirectSaleController "1" ..> "1" IdirectSaleRepo : calls
+PublicationInLibraryForDirectSaleController "1" ..> "1" IDirectSaleRepo : calls
 
 Library "1" --> "*" ItemId : has
+ILibraryRepo "1" ..|> "1" IRepository
 
-PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : uses
-DirectSaleFactory "1" -.> "*" DirectSale : creates
+IDirectSaleRepo "1     " ..|> "1" IRepository
+PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : <<use>>
+DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
+
+MemDirectSaleRepo "1" --> "*" DirectSale : persists
+MemDirectSaleRepo "1" ..|> IDirectSaleRepo
+MemLibraryRepo "1" ...|> ILibraryRepo
+MemLibraryRepo "1" ----> "*" Library : manages
 
 ItemId "*" --> "1" DirectSale : references
-
-'DirectSale "1" --> "1" Item : sells
 
 
 

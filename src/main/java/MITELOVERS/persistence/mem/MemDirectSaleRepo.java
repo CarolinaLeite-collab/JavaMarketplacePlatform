@@ -28,11 +28,6 @@ import java.util.*;
 public class MemDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
-    private final DirectSaleFactory _factory;
-
-    public MemDirectSaleRepo(DirectSaleFactory factory) {
-        _factory = factory;
-    }
 
     @Override
     public List<DirectSaleId> findAllKeys() {
@@ -73,18 +68,4 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
         return DATA.containsKey(id);
     }
 
-    @Override
-    public DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
-
-        DirectSale directSale = _factory.createDirectSale(itemsId, price, timeLimit);
-
-        if (containsOfIdentity(directSale.identity())) {
-
-            throw new IllegalStateException("Direct sale already exists!");
-
-        }
-
-        return save(directSale);
-
-    }
 }
