@@ -34,13 +34,13 @@ deactivate UI
 "User" -> UI: name
 activate UI
 
-UI -> CTL: getMapOfOfficialGenres()
+UI -> CTL: getListOfOfficialGenres()
 activate CTL
-CTL -> IGenreRepo: getMapOfOfficialGenres()
+CTL -> IGenreRepo: getListOfOfficialGenres()
 activate IGenreRepo
-CTL <-- IGenreRepo: copyMapOfOfficialGenres
+CTL <-- IGenreRepo: copyListOfOfficialGenres
 deactivate IGenreRepo
-UI <-- CTL: copyMapOfOfficialGenres
+UI <-- CTL: copyListOfOfficialGenres
 deactivate CTL
 
 "User" <-- UI: What genre?
@@ -49,35 +49,27 @@ deactivate UI
 activate UI
 
 '==== Use case execution ===='
-UI -> CTL: addListOfItems\n(userId, name, genreId)
+UI -> CTL: createListOfItems\n(userId, name, genreId)
 activate CTL
-CTL -> IRepo: addListOfItems\n(userId, name, genreId)
+CTL -> Factory: createListOfItems\n(userId, name, genreId)
+activate Factory
+create "listOfItems:ListOfItems" as listOfItems
+Factory -->> listOfItems: <<create>>
+Factory --> CTL : newList
+deactivate Factory
+
+' Orchestration of duplicate check and persistence
+CTL -> IRepo : isRepeated = containsOfIdentity(newList.identity())
 activate IRepo
 
-
-    opt existsListOfItems (listOfItems) == false
-
-        IRepo -> Factory: createListOfItems\n(userId, name, genreId)
-        activate Factory
-
-        create "listOfItems:ListOfItems" as listOfItems
-        Factory -->> listOfItems: <<create>>
-        note right of listOfItems
-                  The private attribute
-                  (_isPrivate = true)
-                  is set by default
-                  in the constructor
-              end note
-        Factory --> IRepo: listOfItems
-        deactivate Factory
-        IRepo --> IRepo: save(listOfItems)
-
-    end
+opt !isRepeated
+    CTL -> IRepo: save(newList)
+    IRepo --> CTL: newList
+    deactivate IRepo
+end
 
 
-IRepo --> CTL: listOfItems
-deactivate IRepo
-UI <-- CTL: listOfItems
+UI <-- CTL: true
 deactivate CTL
 "User" <-- UI: Private list successfully created!
 deactivate UI

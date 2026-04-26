@@ -19,19 +19,14 @@ import static org.mockito.Mockito.when;
 
 class MemAuctionRepoTest {
     private MemAuctionRepo _repo;
-    private AuctionFactory _auctionFactoryDouble;
     private Auction _auctionDouble1;
-    private Auction _auctionDouble2;
-    private Auction _auctionDouble3;
     private AuctionId _idDouble1;
     private AuctionId _idDouble2;
     private List<AuctionId> _auctionIds;
     private ItemId _itemIdDouble1;
     private ItemId _itemIdDouble2;
-    private ItemId _itemIdDouble3;
     private List<ItemId> _itemsId1;
     private List<ItemId> _itemsId2;
-    private List<ItemId> _itemsId3;
     private Price _startingPriceDouble;
     private Price _outrightPriceDouble;
     private Price _reservePriceDouble;
@@ -48,10 +43,6 @@ class MemAuctionRepoTest {
         _itemsId2 = new ArrayList<>();
         _itemsId2.add(_itemIdDouble2);
 
-        _itemIdDouble3 = mock(ItemId.class);
-        _itemsId3 = new ArrayList<>();
-        _itemsId3.add(_itemIdDouble3);
-
         _idDouble1 = mock(AuctionId.class);
         _auctionIds = new ArrayList<>();
         _auctionIds.add(_idDouble1);
@@ -61,11 +52,7 @@ class MemAuctionRepoTest {
         _auctionDouble1 = mock(Auction.class);
         when(_auctionDouble1.getItemsId()).thenReturn(_itemsId1);
         when(_auctionDouble1.identity()).thenReturn(_idDouble1);
-        _auctionDouble2 = mock(Auction.class);
-        when(_auctionDouble2.getItemsId()).thenReturn(_itemsId2);
-        when(_auctionDouble2.identity()).thenReturn(_idDouble2);
-        _auctionDouble3 = mock(Auction.class);
-        when(_auctionDouble3.getItemsId()).thenReturn(_itemsId3);
+
 
         _startingPriceDouble = mock(Price.class);
         _outrightPriceDouble = mock(Price.class);
@@ -73,26 +60,18 @@ class MemAuctionRepoTest {
 
         _startDate = ZonedDateTime.now().plusDays(1);
         _endDate = ZonedDateTime.now().plusDays(2);
-
-        _auctionFactoryDouble = mock(AuctionFactory.class);
-        when(_auctionFactoryDouble.createAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate))
-                .thenReturn(_auctionDouble1);
-        when(_auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate))
-                .thenReturn(_auctionDouble2);
-        when(_auctionFactoryDouble.createAuction(_itemsId3, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate))
-                .thenReturn(_auctionDouble3);
     }
 
     @Test
     void shouldConstructRepo() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
     }
 
     @Test
     void saveStoresAndReturnsAuction() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         Auction result = _repo.save(_auctionDouble1);
@@ -103,9 +82,39 @@ class MemAuctionRepoTest {
     }
 
     @Test
+    void findAllShouldReturnStoredAuctions() {
+        //Arrange
+        Auction auctionDouble2 = mock(Auction.class);
+        AuctionFactory auctionFactoryDouble = mock(AuctionFactory.class);
+        when(auctionDouble2.getItemsId()).thenReturn(_itemsId2);
+        when(auctionDouble2.identity()).thenReturn(_idDouble2);
+
+        when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
+                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+
+        //SUT
+        _repo = new MemAuctionRepo();
+
+        // Act
+        _repo.save(_auctionDouble1);
+        _repo.save(auctionDouble2);
+
+        Iterable<Auction> result = _repo.findAll();
+
+        List<Auction> list = new ArrayList<>();
+        result.forEach(list::add);
+
+        // Assert
+        assertEquals(2, list.size());
+        assertTrue(list.contains(_auctionDouble1));
+        assertTrue(list.contains(auctionDouble2));
+
+    }
+
+    @Test
     void findAllKeysShouldReturnEmptyWhenRepoIsEmpty() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _auctionIds = _repo.findAllKeys();
@@ -116,12 +125,21 @@ class MemAuctionRepoTest {
 
     @Test
     void findAllKeysShouldReturnAllKeys() {
+        //Arrange
+        Auction auctionDouble2 = mock(Auction.class);
+        AuctionFactory auctionFactoryDouble = mock(AuctionFactory.class);
+        when(auctionDouble2.getItemsId()).thenReturn(_itemsId2);
+        when(auctionDouble2.identity()).thenReturn(_idDouble2);
+
+        when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
+                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _repo.save(_auctionDouble1);
-        _repo.save(_auctionDouble2);
+        _repo.save(auctionDouble2);
 
         _auctionIds = _repo.findAllKeys();
 
@@ -134,7 +152,7 @@ class MemAuctionRepoTest {
     @Test
     void findAllKeysShouldReturnCopyNotAffectingRepo() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _repo.save(_auctionDouble1);
@@ -148,11 +166,20 @@ class MemAuctionRepoTest {
 
     @Test
     void findAllKeysOrderShouldNotBeGuaranteed() {
+        //Arrange
+        Auction auctionDouble2 = mock(Auction.class);
+        AuctionFactory auctionFactoryDouble = mock(AuctionFactory.class);
+        when(auctionDouble2.getItemsId()).thenReturn(_itemsId2);
+        when(auctionDouble2.identity()).thenReturn(_idDouble2);
+
+        when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
+                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         _repo.save(_auctionDouble1);
-        _repo.save(_auctionDouble2);
+        _repo.save(auctionDouble2);
 
         //Act
         _auctionIds = _repo.findAllKeys();
@@ -167,7 +194,7 @@ class MemAuctionRepoTest {
     @Test
     void ofIdentityReturnsOptionalWithAuctionIfPresent() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _repo.save(_auctionDouble1);
@@ -182,7 +209,7 @@ class MemAuctionRepoTest {
     @Test
     void ofIdentityReturnsEmptyOptionalIfNotPresent() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         Optional<Auction> result = _repo.ofIdentity(mock(AuctionId.class));
@@ -194,7 +221,7 @@ class MemAuctionRepoTest {
     @Test
     void containsOfIdentityReturnsTrueWhenPresent() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _repo.save(_auctionDouble1);
@@ -206,7 +233,7 @@ class MemAuctionRepoTest {
     @Test
     void containsOfIdentityReturnsFalseWhenNotPresent() {
         //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
+        _repo = new MemAuctionRepo();
 
         //Act
         _repo.save(_auctionDouble1);
@@ -214,33 +241,5 @@ class MemAuctionRepoTest {
 
         //Assert
         assertFalse(_repo.containsOfIdentity(unknownId));
-    }
-
-    @Test
-    void addAuctionWithoutOutrightStoresAuction() {
-        //Arrange
-        when(_auctionFactoryDouble.createAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble,
-                null, _startDate, _endDate)).thenReturn(_auctionDouble1);
-
-        //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
-
-        //Act
-        Auction created = _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
-
-        //Assert
-        assertSame(_auctionDouble1, created);
-    }
-
-    @Test
-    void addAuctionShouldStoreAuctionInRepository() {
-        //SUT
-        _repo = new MemAuctionRepo(_auctionFactoryDouble);
-
-        //Act
-        _repo.addAuction(_itemsId1, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
-
-        //Assert
-        assertTrue(_repo.findAll().iterator().hasNext());
     }
 }

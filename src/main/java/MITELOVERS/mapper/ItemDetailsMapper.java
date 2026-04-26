@@ -4,8 +4,6 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.valueobject.ISBN;
-import MITELOVERS.domain.valueobject.ISSN;
 import MITELOVERS.dto.ItemDetailsDTO;
 
 /**

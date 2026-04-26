@@ -19,10 +19,12 @@ actor User
 participant ":PublicationInLibrary\nForDirectSaleUI" as UI
 participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
 participant ":ILibraryRepo" as LibraryRepo
-'participant "userLibrary:Library" as userLibrary
-participant ":MemoDirectSaleRepo" as DirectSaleRepo
+participant "listOfItemsId:List<ItemId>" as listOfItemsId
 participant ":DirectSaleFactory" as DirectSaleFactory
 participant "directSale:DirectSale" as directSale
+participant ":IDirectSaleRepo" as DirectSaleRepo
+participant ":IItemRepo" as itemRepo
+participant "item:Item" as item
 
 User -> UI: I want to put for direct sale\nan item in my library!
 activate UI
@@ -32,15 +34,17 @@ activate Ctl
 
 Ctl -> LibraryRepo: getItemsIdInLibraryByUserId\n(userId)
 activate LibraryRepo
-LibraryRepo --> Ctl: ListOfUserLibraryItemsId
+create listOfItemsId
+LibraryRepo --> listOfItemsId : <<create>>
+LibraryRepo --> Ctl: listOfItemsId
 deactivate LibraryRepo
 
-Ctl --> UI: ListOfUserLibraryItemsId
+Ctl --> UI: listOfItemIds
 deactivate Ctl
-UI --> User: Which item\nwould you like to sell?
+UI --> User: Which items\nwould you like to sell?
 deactivate UI
 
-User -> UI: item
+User -> UI: itemsId
 activate UI
 
 UI --> User: What is the price \nand time limit for this sale?
@@ -48,24 +52,38 @@ deactivate UI
 User -> UI: price, time limit
 activate UI
 
-UI -> Ctl: putItemIdOnDirectSale\n(itemID, price, timeLimit)
+UI -> Ctl: putItemIdOnDirectSale\n(listOfItemsId, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleRepo: addDirectSale\n(itemID, price, timeLimit)
-activate DirectSaleRepo
-
-DirectSaleRepo -> DirectSaleFactory: createDirectSale\n(itemID, price, timeLimit)
+Ctl -> DirectSaleFactory: createDirectSale\n(listOfItemsId, price, timeLimit)
 activate DirectSaleFactory
 create directSale
 DirectSaleFactory -->> directSale: <<create>>
-DirectSaleFactory --> DirectSaleRepo: directSale
+DirectSaleFactory --> Ctl: directSale
 deactivate DirectSaleFactory
 
-DirectSaleRepo -> DirectSaleRepo: add(directSale)
-DirectSaleRepo --> Ctl: true
-deactivate DirectSaleRepo
+Ctl -> DirectSaleRepo : exists = containsOfIdentity(directSale.identity())
 
-Ctl --> UI: true
+opt !exists
+
+loop itemId : listOfItemsId
+    Ctl -> itemRepo : ofIdentity(itemId)
+    activate itemRepo
+    itemRepo --> Ctl : item
+    deactivate itemRepo
+    Ctl -> item: notOnSale = getSaleStatus()
+    opt notOnSale
+        Ctl -> item : markAsDirectSale()
+    end
+end
+
+
+Ctl -> DirectSaleRepo : save(directSale)
+activate DirectSaleRepo
+DirectSaleRepo --> Ctl : directSale
+deactivate DirectSaleRepo
+end
+Ctl --> UI: directSale
 deactivate Ctl
 UI --> User: Your item was\nsuccessfully put up on a direct sale!
 deactivate UI

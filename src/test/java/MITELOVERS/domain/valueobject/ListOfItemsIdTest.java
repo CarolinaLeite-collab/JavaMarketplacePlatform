@@ -9,20 +9,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class ListOfItemsIdTest {
 
     @Test
-    void constructorShouldStoreUUID() {
-        UUID uuid = UUID.randomUUID();
-        ListOfItemsId id = new ListOfItemsId(uuid);
+    void newIdShouldGenerateIdWithCorrectPrefix() {
 
-        assertEquals(uuid, id.getValue());
-    }
+        ListOfItemsId id = ListOfItemsId.newId();
 
-    @Test
-    void constructorShouldThrowWhenUUIDIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> new ListOfItemsId(null));
+        assertTrue(id.getValue().startsWith("LOI-"));
     }
 
     @Test
     void newIdShouldGenerateUniqueIds() {
+
         ListOfItemsId id1 = ListOfItemsId.newId();
         ListOfItemsId id2 = ListOfItemsId.newId();
 
@@ -31,44 +27,60 @@ class ListOfItemsIdTest {
     }
 
     @Test
-    void equalsShouldReturnTrueForSameUUID() {
-        UUID uuid = UUID.randomUUID();
+    void equalsShouldReturnTrueForSameStringValue() {
 
-        ListOfItemsId id1 = new ListOfItemsId(uuid);
-        ListOfItemsId id2 = new ListOfItemsId(uuid);
+        String value = "LOI-ABCDEF12";
+        ListOfItemsId id1 = new ListOfItemsId(value);
+        ListOfItemsId id2 = new ListOfItemsId(value);
 
         assertEquals(id1, id2);
         assertEquals(id1.hashCode(), id2.hashCode());
     }
 
     @Test
-    void equalsShouldReturnFalseForDifferentUUIDs() {
-        ListOfItemsId id1 = new ListOfItemsId(UUID.randomUUID());
-        ListOfItemsId id2 = new ListOfItemsId(UUID.randomUUID());
+    void equalsShouldReturnFalseForDifferentValues() {
+        ListOfItemsId id1 = new ListOfItemsId("LOI-AAAA1111");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-BBBB2222");
 
         assertNotEquals(id1, id2);
     }
 
     @Test
     void equalsShouldReturnFalseForNull() {
-        ListOfItemsId id = new ListOfItemsId(UUID.randomUUID());
+        ListOfItemsId id = new ListOfItemsId("LOI-12345678");
 
         assertNotEquals(id, null);
     }
 
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
-        ListOfItemsId id = new ListOfItemsId(UUID.randomUUID());
+        ListOfItemsId id = new ListOfItemsId("LOI-12345678");
 
         assertNotEquals(id, "not an ID");
     }
 
     @Test
-    void toStringShouldReturnUUIDString() {
-        UUID uuid = UUID.randomUUID();
-        ListOfItemsId id = new ListOfItemsId(uuid);
+    void toStringShouldReturnInternalValue() {
+        String value = "LOI-CAFEBABE";
+        ListOfItemsId id = new ListOfItemsId(value);
 
-        assertEquals(uuid.toString(), id.toString());
+        assertEquals(value, id.toString());
+    }
+
+    @Test
+    void hashCodeShouldDependOnValue() {
+        ListOfItemsId id1 = new ListOfItemsId("LOI-AAAA1111");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-BBBB2222");
+
+        assertNotEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void hashCodeShouldBeEqualForEqualIds() {
+        ListOfItemsId id1 = new ListOfItemsId("LOI-ABCDEF12");
+        ListOfItemsId id2 = new ListOfItemsId("LOI-ABCDEF12");
+
+        assertEquals(id1.hashCode(), id2.hashCode());
     }
 
 }

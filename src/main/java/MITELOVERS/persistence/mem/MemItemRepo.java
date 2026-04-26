@@ -23,10 +23,9 @@ import java.util.*;
 public class MemItemRepo implements IItemRepo {
 
     private final Map<ItemId, Item> DATA = new HashMap<ItemId, Item>();
-    private  final ItemFactory _itemFactory;
 
-    public MemItemRepo(ItemFactory itemFactory) {
-        _itemFactory = itemFactory;
+    public MemItemRepo() {
+
     }
 
     @Override
@@ -59,33 +58,5 @@ public class MemItemRepo implements IItemRepo {
 
         return new ArrayList<>(DATA.keySet());
 
-    }
-
-    @Override
-    public ItemId addItem(EditionId editionId, Condition condition, Description description) {
-
-        Item item = _itemFactory.createItem(editionId, condition, description);
-
-        if (containsOfIdentity(item.identity())) {
-            throw new IllegalArgumentException("Item already exists");
-        }
-
-        return save(item).identity();
-    }
-
-    @Override
-    public List<ItemId> getDifferentOf(List<ItemId> existentItemIds) {
-
-        if (existentItemIds == null) {
-            return List.copyOf(DATA.keySet());
-        }
-
-        List<ItemId> result = new ArrayList<>();
-        for (ItemId itemId : DATA.keySet()) {
-            if (!existentItemIds.contains(itemId)) {
-                result.add(itemId);
-            }
-        }
-        return List.copyOf(result);
     }
 }

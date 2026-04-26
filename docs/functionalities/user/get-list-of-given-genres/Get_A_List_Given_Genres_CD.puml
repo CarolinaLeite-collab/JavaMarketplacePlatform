@@ -13,6 +13,7 @@ package "controller" {
     class GetPublicListsByGenreController {
         +findAllKeys() : List<GenreId>
         +getPublicListsByGenreId(genreId: GenreId): List<ItemId>
+        +findPublicListsByGenre(genreId: GenreId): List<ItemId>
     }
 }
 
