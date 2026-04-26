@@ -3,6 +3,7 @@ package MITELOVERS.persistence.jpa.datamodel;
 import MITELOVERS.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
  * allowing its persistence in a database.
  */
 
+@Generated
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
