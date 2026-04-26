@@ -1,10 +1,11 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.valueobject.GenreId;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,14 +17,28 @@ import static org.mockito.Mockito.when;
 class MemGenreRepoTest {
 
     @Test
+    @Tag("unit")
     void constructorOfGenreRepoShouldCreateGenreRepo() {
 
-        //SUT
+        // SUT
         new MemGenreRepo();
-
     }
 
     @Test
+    @Tag("unit")
+    void classShouldBeAnnotatedWithRepositoryAndMemProfile() {
+        // Arrange + Act
+        Repository repository = MemGenreRepo.class.getAnnotation(Repository.class);
+        Profile profile = MemGenreRepo.class.getAnnotation(Profile.class);
+
+        // Assert
+        assertNotNull(repository);
+        assertNotNull(profile);
+        assertArrayEquals(new String[]{"mem"}, profile.value());
+    }
+
+    @Test
+    @Tag("unit")
     void saveValidGenreReturnsGenre() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -41,6 +56,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void findAllReturnsAllStoredGenres() {
         // Arrange
         GenreId id1Double = mock(GenreId.class);
@@ -64,6 +80,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void findAllEmptyRepoReturnsEmptyIterable() {
         // Arrange & SUT
         MemGenreRepo repo = new MemGenreRepo();
@@ -76,6 +93,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void findAllKeysReturnsAllStoredKeys() {
         // Arrange
         GenreId id1Double = mock(GenreId.class);
@@ -92,7 +110,6 @@ class MemGenreRepoTest {
         repo.save(genre1Double);
         repo.save(genre2Double);
 
-
         List<GenreId> result = repo.findAllKeys();
 
         // Assert
@@ -102,10 +119,12 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void findAllKeysEmptyRepoReturnsEmptyList() {
         // Arrange & SUT
         MemGenreRepo repo = new MemGenreRepo();
 
+        // Act
         List<GenreId> result = repo.findAllKeys();
 
         // Assert
@@ -113,6 +132,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void ofIdentityExistingGenreIdReturnsGenre() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -132,6 +152,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void ofIdentityNonExistingGenreIdReturnsEmpty() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -147,6 +168,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void containsOfIdentityExistingGenreIdReturnsTrue() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -165,6 +187,7 @@ class MemGenreRepoTest {
     }
 
     @Test
+    @Tag("unit")
     void containsOfIdentityNonExistingGenreIdReturnsFalse() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);

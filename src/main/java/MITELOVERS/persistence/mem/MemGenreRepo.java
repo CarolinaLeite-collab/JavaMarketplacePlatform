@@ -1,9 +1,10 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -15,6 +16,8 @@ import java.util.*;
  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemGenreRepo implements IGenreRepo {
     private final Map<GenreId, Genre> DATA = new HashMap<>();
 
@@ -49,4 +52,3 @@ public class MemGenreRepo implements IGenreRepo {
         return DATA.containsKey(genreId);
     }
 }
-
