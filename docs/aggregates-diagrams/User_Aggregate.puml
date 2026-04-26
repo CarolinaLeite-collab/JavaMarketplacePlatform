@@ -27,6 +27,7 @@ Package "domain" {
             +getEmail() : String
             +getAddress() : Address
             +getPhone() : Phone
+            +getRoles() : Set< Role >
             +sameAs(Object) : boolean
             +equals(Object) : boolean
             +hashCode() : int
