@@ -9,12 +9,16 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Period;
 
+@Component
 public class DirectSaleAssembler {
+    @Autowired
     private final DirectSaleFactory factory;
 
     public DirectSaleAssembler(DirectSaleFactory factory){
@@ -40,7 +44,7 @@ public class DirectSaleAssembler {
                 new DirectSaleId(dm.getDirectSaleId()),
                 mapStringToItems(dm.getItemsId()),
                 new Price(
-                        dm.getPrice().getValue(),
+                        dm.getPrice().getNumericValue(),
                         Currency.valueOf(dm.getPrice().getCurrency())),
                 Period.parse(dm.getTimeLimit())
         );
