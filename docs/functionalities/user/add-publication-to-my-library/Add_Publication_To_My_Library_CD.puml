@@ -89,11 +89,11 @@ package "persistence"  {
 Package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
-    save(entity : T) : T
+'    save(entity : T) : T
     findAll() : Iterable<T>
     findAllKeys() : Iterable<ID>
     ofIdentity(id : ID) : Optional <T>
-    containsOfIdentity(id : ID) : boolean
+'    containsOfIdentity(id : ID) : boolean
     }
     interface DomainEntity<ID> <<Interface>>{
     +identity() : ID
