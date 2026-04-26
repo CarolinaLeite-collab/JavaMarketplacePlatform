@@ -69,7 +69,7 @@ class DirectSaleAssemblerTest {
         DirectSale expected = mock(DirectSale.class);
 
         PriceDataModel priceDM = mock(PriceDataModel.class);
-        when(priceDM.getValue()).thenReturn(10.0);
+        when(priceDM.getNumericValue()).thenReturn(10.0);
         when(priceDM.getCurrency()).thenReturn("EUR");
 
         DirectSaleDataModel dm = mock(DirectSaleDataModel.class);

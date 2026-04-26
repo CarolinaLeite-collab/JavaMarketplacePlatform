@@ -13,12 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class PriceDataModel {
-    private double value;
+    private double numericValue;
     private String currency;
 
-    public PriceDataModel(double value, String currency){
-        this.value = value;
+    public PriceDataModel(double numericValue, String currency){
+        this.numericValue = numericValue;
         this.currency = currency;
     }
-
 }
