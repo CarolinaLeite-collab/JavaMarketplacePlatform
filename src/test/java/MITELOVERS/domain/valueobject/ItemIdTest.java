@@ -112,4 +112,20 @@ class ItemIdTest {
         // Assert
         assertEquals(sut.getSku().toString(), result);
     }
+
+
+    @Test
+    void shouldCreateItemIdFromValidSku() {
+        //Arrange
+        String skuValue = "ABC123DEF0";
+
+        //SUT
+        ItemId itemId = new ItemId(skuValue);
+
+        //Act
+        boolean result = itemId.getSku().toString().equals(skuValue);
+
+        //Assert
+        assertTrue(result);
+    }
 }

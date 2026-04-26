@@ -34,6 +34,11 @@ public final class ItemId implements DomainId {
         _sku = new SKU();
     }
 
+    //needed for rebuilding an DirectSale object from persisted data
+    public ItemId(String sku) {
+        _sku = new SKU(sku);
+    }
+
     public SKU getSku() { return _sku; }
 
     @Override
