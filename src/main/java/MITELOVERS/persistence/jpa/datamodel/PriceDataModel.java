@@ -1,6 +1,6 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
-import jakarta.persistence.Embedded;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,12 +11,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-@Embedded
+@Embeddable
 public class PriceDataModel {
-    private String value;
+    private double value;
     private String currency;
 
-    public PriceDataModel(String value, String currency){
+    public PriceDataModel(double value, String currency){
         this.value = value;
         this.currency = currency;
     }
