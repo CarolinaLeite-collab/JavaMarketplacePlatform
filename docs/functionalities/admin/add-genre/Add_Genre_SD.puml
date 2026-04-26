@@ -21,8 +21,9 @@
     participant ":AddGenreUI" as UI
     participant ":AddGenreController" as Ctl
     participant ":GenreFactory" as gf
-    participant ":MemGenreRepo" as gr
-
+    participant ":JpaGenreRepo" as gr
+    participant ":GenreAssembler" as ass
+    participant ":IGenreSpringDataRepo" as sd
 
     Administrator -> UI: I want to add a publication genre
     activate UI
@@ -33,29 +34,53 @@
 
     UI -> Ctl: addGenre(genreName)
     activate Ctl
+
     Ctl -> gf: createGenre(genreName)
-
     activate gf
-    create "genreName:Genre"
-    gf -->> "genreName:Genre": <<Create>>
-
-    gf --> Ctl : genreName
+    create "newGenre:Genre" as g
+    gf -->> g: <<Create>>
+    gf --> Ctl : newGenre
     deactivate gf
 
-
-    Ctl -> gr : isRepeated = containsOfIdentity(genreName.identity())
+    Ctl -> gr : containsOfIdentity(newGenre.identity())
     activate gr
-    opt !isRepeated
-    Ctl -> gr: save(genreName)
-    gr --> Ctl: genreName
-     deactivate gr
+    gr -> sd : existsById(idString)
+    activate sd
+    sd --> gr : exists
+    deactivate sd
+    gr --> Ctl : exists
+    deactivate gr
+
+    opt !exists
+        Ctl -> gr: save(newGenre)
+        activate gr
+
+        gr -> ass : domain2DM(newGenre)
+        activate ass
+        create "dm:GenreDataModel" as dm
+        ass -->> dm : <<Create>>
+        ass --> gr : dm
+        deactivate ass
+
+        gr -> sd : save(dm)
+        activate sd
+        sd --> gr : savedDm
+        deactivate sd
+
+        gr -> ass : DM2Domain(savedDm)
+        activate ass
+        ass -> gf : createGenre(name)
+        ass --> gr : savedGenre
+        deactivate ass
+
+        gr --> Ctl: savedGenre
+        deactivate gr
     end
 
-
-    Ctl --> UI: genreName
+    Ctl --> UI: savedGenre
     deactivate Ctl
 
-    UI --> Administrator: genreName added successfully \nto the official genre list!
+    UI --> Administrator: Genre added successfully!
     deactivate UI
 
     @enduml

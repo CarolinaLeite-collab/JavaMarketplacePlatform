@@ -1,6 +1,6 @@
 @startuml
 
-title Genre Aggregate
+title Genre Aggregate - Persistence Refactoring
 
 skinparam monochrome false
 skinparam shadowing false
@@ -16,21 +16,13 @@ skinparam classAttributeIconSize 0
 top to bottom direction
 
 Package "domain" {
-
     Package "genre" <<Folder>> #b0c4d4 {
         class Genre <<Entity>> <<Root>>  {
             -_genre : String
-            +getGenre() : String
             +identity() : GenreId
-            +sameAs(Object) : boolean
-            +equals(Object) : boolean
-            +hashCode() : int
-            +toString() : String
         }
-
         class GenreFactory <<Factory>> {
             +createGenre(name : String) : Genre
-            '+createGenre(genreID: GenreID , name : String) : Genre'
         }
     }
 
@@ -41,46 +33,60 @@ Package "domain" {
     }
 
     Package "repository" <<Folder>> {
-        interface IGenreRepo <<Interface>> {
+        interface IGenreRepo <<Interface>>
+    }
+}
 
+Package "persistence" {
+    package "mem" {
+        class MemGenreRepo <<Repo>> #GhostWhite
+    }
+
+    package "jpa" #GhostWhite {
+        class JpaGenreRepo <<Repo>> {
+            -_iGenreSpringDataRepo : IGenreSpringDataRepo
+            -_genreAssembler : GenreAssembler
+        }
+
+        package "datamodel" {
+            class GenreDataModel <<Entity>> {
+                -id : String
+                -name : String
+            }
+        }
+
+        package "assembler" {
+            class GenreAssembler <<Component>> {
+                +domain2DM(Genre) : GenreDataModel
+                +DM2Domain(GenreDataModel) : Genre
+            }
+        }
+
+        package "springdata" {
+            interface IGenreSpringDataRepo <<Interface>> {
+            }
         }
     }
 }
 
 Package "ddd" {
-    interface IRepository<ID, T> <<Interface>> {
-        +save(entity: T) : T
-        +findAll() : Iterable<T>
-        +findAllKeys () : List <ID>
-        +ofIdentity(id :ID) : Optional<T>
-        +containsOfIdentity(id :ID) : boolean
-    }
-    interface AggregateRoot <ID >{
-             }
-    interface DomainEntity<ID, T> <<Interface>> {
-                    +identity() : ID
-                    +sameAs(object:Object) : boolean
-            }
-
-
+    interface IRepository<ID, T>
+    interface AggregateRoot<ID>
 }
 
-Package "persistence" {
-    package "mem" {
-        class MemGenreRepo <<Repo>> {
-        }
-    }
-}
-
-
+' Relationships
 Genre "1" --> "1" GenreId : has
 IGenreRepo -|> IRepository
 MemGenreRepo .|> IGenreRepo
-Genre "*" <-- "1" MemGenreRepo : persists
+JpaGenreRepo .|> IGenreRepo
+
+' The JPA Bridge
+JpaGenreRepo --> IGenreSpringDataRepo : uses
+JpaGenreRepo --> GenreAssembler : uses
+GenreAssembler ..> GenreDataModel : maps
+GenreAssembler --> GenreFactory : uses
 
 GenreFactory ..> Genre : <<create>>
-
-AggregateRoot -|> DomainEntity
 Genre .|> AggregateRoot
 
 @enduml
