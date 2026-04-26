@@ -6,10 +6,8 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.Role;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +55,26 @@ class UserAssemblerTest {
         assertEquals("Pedro", result.getName());
     }
 
+    @Test
+    void domain2DMShouldMapEmailCorrectly() {
+        // Arrange
+        UserFactory factoryDouble = mock(UserFactory.class);
 
+        // SUT
+        UserAssembler assembler = new UserAssembler(factoryDouble);
+
+        User userDouble = mock(User.class);
+        UserId userId = new UserId(new Email("pedro@mitelovers.com"));
+        when(userDouble.identity()).thenReturn(userId);
+        when(userDouble.getName()).thenReturn(new Name("Pedro"));
+        when(userDouble.getEmail()).thenReturn("pedro@mitelovers.com");
+
+        // Act
+        UserDataModel result = assembler.domain2DM(userDouble);
+
+        // Assert
+        assertEquals("pedro@mitelovers.com", result.getEmail());
+    }
 
     @Test
     void domain2DMShouldThrowWhenUserIsNull() {
