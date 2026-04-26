@@ -1,4 +1,4 @@
-package MITELOVERS.persistence.mem;
+package MITELOVERS.persistence;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;

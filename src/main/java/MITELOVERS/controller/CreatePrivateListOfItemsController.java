@@ -8,7 +8,6 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.persistence.mem.MemListOfItemsRepo;
 
 /**
  * Controller responsible for handling the creation of private lists of items for a user.

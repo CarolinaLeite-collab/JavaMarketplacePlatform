@@ -1,4 +1,4 @@
-package MITELOVERS.persistence.mem;
+package MITELOVERS.persistence;
 
 
 import MITELOVERS.domain.repository.IUserRepo;

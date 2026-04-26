@@ -1,4 +1,4 @@
-package MITELOVERS.persistence.mem;
+package MITELOVERS.persistence;
 
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.AuctionFactory;

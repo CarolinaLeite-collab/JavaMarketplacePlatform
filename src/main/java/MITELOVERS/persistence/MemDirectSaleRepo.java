@@ -1,4 +1,4 @@
-package MITELOVERS.persistence.mem;
+package MITELOVERS.persistence;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
