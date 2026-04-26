@@ -84,6 +84,32 @@ class MemLibraryRepoTest {
     }
 
     @Test
+    void findAllKeysShouldReturnAllStoredLibraryIds(){
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        LibraryId libraryId2Double = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
+        Library library2Double = mock(Library.class);
+        when(libraryDouble.identity()).thenReturn(libraryIdDouble);
+        when(library2Double.identity()).thenReturn(libraryId2Double);
+
+        // SUT
+        MemLibraryRepo repo = new MemLibraryRepo();
+
+        // Act
+        repo.save(libraryDouble);
+        repo.save(library2Double);
+
+        List<LibraryId> list = new ArrayList<>();
+        Iterable<LibraryId> result = repo.findAllKeys();
+
+        result.forEach(list::add);
+
+        // Assert
+        assertEquals(2, list.size());
+    }
+
+    @Test
     void ofIdentityShouldReturnLibraryIfPresent(){
 
         // Arrange
