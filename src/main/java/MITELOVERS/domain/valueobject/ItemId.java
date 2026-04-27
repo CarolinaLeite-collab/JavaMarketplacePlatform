@@ -34,11 +34,9 @@ public final class ItemId implements DomainId {
         _sku = new SKU();
     }
 
-    public ItemId(String skuValue) {
-        if (skuValue == null || skuValue.isBlank()) {
-            throw new IllegalArgumentException("ItemId cannot be null or blank.");
-        }
-        _sku = new SKU(skuValue);
+    //needed for rebuilding an DirectSale object from persisted data
+    public ItemId(String sku) {
+        _sku = new SKU(sku);
     }
 
     public SKU getSku() { return _sku; }

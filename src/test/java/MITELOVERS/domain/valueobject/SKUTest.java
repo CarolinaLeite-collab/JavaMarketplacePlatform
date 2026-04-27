@@ -194,4 +194,48 @@ class SKUTest {
         // Assert
         assertEquals(firstHash, secondHash);
     }
+
+    @Test
+    void shouldCreateSkuFromValidValue() {
+        //Arrange
+        String value = "ABC123DEF0";
+
+        //SUT
+        SKU sku = new SKU(value);
+
+        //Act
+        boolean result = value.equals(sku.toString());
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenValueIsNull() {
+        //Arrange
+        String value = null;
+
+        //Act
+        //SUT
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> new SKU(value));
+
+        //Assert
+        assertEquals("Invalid SKU format", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSKUInvalid(){
+        //Arrange
+        String value = "23";
+
+        //Act
+        //SUT
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> new SKU(value));
+
+        //Assert
+        assertEquals("Invalid SKU format", exception.getMessage());
+    }
 }
+
