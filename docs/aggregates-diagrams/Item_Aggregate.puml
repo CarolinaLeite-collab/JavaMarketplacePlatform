@@ -33,12 +33,6 @@ skinparam interface {
   ArrowColor #666666
 }
 
-package "PERSISTENCE" {
-  package "MEM" {
-    class MemoItemRepo <<Repo>> {
-    }
-  }
-}
 
 package "DOMAIN" {
 
@@ -50,19 +44,19 @@ package "DOMAIN" {
   package "ITEM" #AFC4D6 {
 
     class ItemFactory <<Factory>> {
-      +createItem(editionID : EditionID, condition : Condition, description : Description, userID : UserID, sku : ItemID) : Item
+      +createItem(editionID : EditionID, condition : %n()Condition, description : Description) : Item
+      +createItem(itemId : ItemId, editionID : EditionID, %n()condition : Condition, description : Description, saleStatus : %n()SaleStatus) : Item
     }
 
     class Item <<Root>> <<Entity>> {
-
+      +markAsAuction() : void
+      +markAsDirectSale() : void
+      +markAsSold() : void
+      -ensureNotOnSale() : void
       +getEditionID() : EditionID
       +getCondition() : Condition
+      +getSaleStatus() : SaleStatus
       +getDescription() : Description
-      +getUserID() : UserID
-      +getSKU() : SKU
-      +belongsToUser(userID : UserID) : boolean
-      +hasEdition(editionID : EditionID) : boolean
-      +hasSKU(sku : SKU) : boolean
     }
   }
 
@@ -76,32 +70,36 @@ package "DOMAIN" {
     }
     class SaleStatus <<ValueObject>>
 
-    class UserID <<ValueObject>> {
-    }
   }
 }
 
 package DDD {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity : T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
     }
+    interface AggregateRoot <ID >{
+        }
+    interface DomainEntity<ID, T> <<Interface>> {
+         +identity() : ID
+         +sameAs(object : Object) : boolean
+        }
 }
 
-MemoItemRepo ..|> IItemRepo
-MemoItemRepo "1" --> "1" ItemFactory : invokes
-MemoItemRepo "1" --> "*" Item : persists
+
 ItemFactory "1" ..> "*" Item : <<create>>
 
 Item "*" --> "1" Condition : has
 Item "1" --> "1" Description : has
 Item "1" --> "1" EditionID : references
-Item "*" --> "1" UserID : references
 Item "1" --> "1" ItemID : has
 Item "1" --> "1" SaleStatus : has
 
 IItemRepo --|> IRepository
+IItemRepo "1" --> "*" Item : persists
+AggregateRoot -|> DomainEntity
+Item .|> AggregateRoot
 
 @enduml
