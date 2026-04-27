@@ -7,7 +7,8 @@ import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
 
-import java.time.Period;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -22,10 +23,11 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     private final List<ItemId> _itemsId;
     private final Price _price;
-    private final Period _timeLimit; // optional
+    private final Duration _timeLimit; // optional
     private DirectSaleId _directSaleId;
+    private Instant _creationDate;
 
-    DirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
+    DirectSale(List<ItemId> itemsId, Price price, Duration timeLimit) {
 
         requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
@@ -40,12 +42,22 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
+        _creationDate = Instant.now();
+
+    }
+
+    // rehydration
+    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Duration timeLimit,Instant creationDate) {
+        this(itemsId, price, timeLimit);
+        _directSaleId = directSaleId;
+        _creationDate = creationDate;
 
     }
 
     public List<ItemId> getItemsId() { return _itemsId; }
     public Price getPrice() { return _price; }
-    public Period getTimeLimit() { return _timeLimit; }
+    public Duration getTimeLimit() { return _timeLimit; }
+    public Instant getCreationDate(){ return _creationDate;}
 
     private static void requiresItemAndPrice(List<ItemId> itemsId, Price price) {
         if (itemsId == null) {
@@ -55,7 +67,8 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
             throw new IllegalArgumentException("Price is required for a direct sale");
         }
     }
-    private static void timeLimitMustBeValid(Period timeLimit) {
+
+    private static void timeLimitMustBeValid(Duration timeLimit) {
         if (timeLimit != null && timeLimit.isNegative()) {
             throw new IllegalArgumentException("Time limit cannot be negative");
         }
@@ -85,4 +98,5 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
         return false;
     }
+
 }
