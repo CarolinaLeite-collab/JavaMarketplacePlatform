@@ -25,7 +25,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void constructorValidArgumentsCreatesItemWithAssignedValues() {
+    void constructorValidArgumentsCreatesNewItemWithAssignedValues() {
         // Arrange
 
         // Act
@@ -35,6 +35,22 @@ class ItemTest {
         assertSame(_editionIdDouble, sut.getEditionId());
         assertEquals(_conditionDouble, sut.getCondition());
         assertSame(_descriptionDouble, sut.getDescription());
+    }
+
+    @Test
+    void reconstructionConstructorValidArgumentsCreatesItemWithGivenIdentity() {
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+
+        // Act
+        Item sut = new Item(itemIdDouble, _editionIdDouble, _conditionDouble, _descriptionDouble, SaleStatus.OnDirectSale);
+
+        // Assert
+        assertSame(itemIdDouble, sut.identity());
+        assertSame(_editionIdDouble, sut.getEditionId());
+        assertEquals(_conditionDouble, sut.getCondition());
+        assertSame(_descriptionDouble, sut.getDescription());
+        assertEquals(SaleStatus.OnDirectSale, sut.getSaleStatus());
     }
 
     @Test
@@ -279,6 +295,18 @@ class ItemTest {
 
         // Assert
         assertNotNull(result);
+    }
+    @Test
+    void identityCalledTwiceReturnsSameItemIdInstance() {
+        // Arrange
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+
+        // Act
+        ItemId first = sut.identity();
+        ItemId second = sut.identity();
+
+        // Assert
+        assertSame(first, second);
     }
 
     // ------------------------------------------------------------

@@ -1,8 +1,6 @@
 package MITELOVERS.domain.item;
 
-import MITELOVERS.domain.valueobject.Condition;
-import MITELOVERS.domain.valueobject.Description;
-import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.*;
 
 /**
  * Factory responsible for creating {@link Item} instances.
@@ -17,4 +15,12 @@ public class ItemFactory {
     public Item createItem(EditionId editionId, Condition condition, Description description) {
         return new Item(editionId, condition, description);
     }
+
+    public Item createItem(ItemId itemId, EditionId editionId, Condition condition,
+                           Description description, SaleStatus saleStatus) {
+
+        return new Item(itemId, editionId, condition, description, saleStatus);
+
+    }
+
 }
