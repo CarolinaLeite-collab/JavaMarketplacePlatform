@@ -2,9 +2,7 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.*;
 

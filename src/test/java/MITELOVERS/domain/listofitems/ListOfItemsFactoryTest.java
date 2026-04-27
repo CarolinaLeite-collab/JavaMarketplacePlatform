@@ -55,7 +55,6 @@ class ListOfItemsFactoryTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         GenreId genreIdDouble = mock(GenreId.class);
-        when(genreIdDouble.toString()).thenReturn("ROCK");
 
         ListOfItemsFactory factory = new ListOfItemsFactory();
 

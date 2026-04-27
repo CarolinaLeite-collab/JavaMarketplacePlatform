@@ -4,6 +4,7 @@ import MITELOVERS.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 
 public class AuthorTest {
@@ -15,7 +16,19 @@ public class AuthorTest {
         String name = "Eça de Queirós";
 
         // Act & SUT
-        AuthorId authorId = new AuthorId(name);
+        new Author(name);
+
+    }
+
+    @Test
+    void testConstructorWithId() {
+
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
+        String name = "Eça de Queirós";
+
+        // Act & SUT
+        new Author(authorId, name);
 
     }
 
@@ -30,6 +43,22 @@ public class AuthorTest {
 
         // Assert
         assertEquals("Eça de Queirós", a.getName());
+
+    }
+
+    @Test
+    void validNameAuthorWithId() {
+
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
+        String name = "Eça de Queirós";
+
+        // Act & SUT
+        Author a = new Author(authorId, name);
+
+        // Assert
+        assertEquals("Eça de Queirós", a.getName());
+        assertNotNull(a.identity());
 
     }
 
@@ -83,6 +112,17 @@ public class AuthorTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenNameIsEmptyWithAuthorId() {
+
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new Author(authorId, "   "));
+    }
+
+    @Test
     void rejectNullNameAuthor() {
 
         // Act & Assert
@@ -90,17 +130,14 @@ public class AuthorTest {
     }
 
     @Test
-    void testEqualsWithDifferentObjectTypes() {
+    void shouldThrowNullPointerExceptionWhenNameIsNull() {
 
-        // Arrange & SUT
-        Author a = new Author("Seneca");
-        String b = "Seneca";
-        Author b2 = null;
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
 
         // Act & Assert
-        assertFalse(a.equals(b));
-        assertFalse(a.equals(b2));
-
+        assertThrows(NullPointerException.class,
+                () -> new Author(authorId, null));
     }
 
 
@@ -116,35 +153,63 @@ public class AuthorTest {
     }
 
     @Test
-    void testEqualsWithDifferentAuthorObjectsSameName() {
+    void equalsShouldReturnFalseWhenNull() {
 
         // Arrange & SUT
         Author a = new Author("Seneca");
-        Author b = new Author("SeNeca");
 
         // Act & Assert
-        assertFalse(a.equals(b));
-
+        assertFalse(a.equals(null));
     }
 
     @Test
-    void testEqualsWithDifferentAuthorObjectsDifferentName() {
+    void equalsShouldReturnFalseWhenDifferentType() {
 
         // Arrange & SUT
         Author a = new Author("Seneca");
-        Author b = new Author("Justinian");
 
         // Act & Assert
-        assertFalse(a.equals(b));
-
+        assertFalse(a.equals("string"));
     }
 
     @Test
-    void test_equal_hash_code() {
+    void equalsShouldReturnTrueForSameAuthorId() {
+
+        // Arrange
+        AuthorId id = mock(AuthorId.class);
 
         // Arrange & SUT
-        Author a = new Author("Seneca");
-        Author a2 = new Author("SeneCA");
+        Author a1 = new Author(id, "Seneca");
+        Author a2 = new Author(id, "Seneca");
+
+        // Act & Assert
+        assertTrue(a1.equals(a2));
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentAuthorIds() {
+
+        // Arrange
+        AuthorId id1 = mock(AuthorId.class);
+        AuthorId id2 = mock(AuthorId.class);
+
+        // Arrange & SUT
+        Author a1 = new Author(id1, "Seneca");
+        Author a2 = new Author(id2, "Seneca");
+
+        // Act & Assert
+        assertFalse(a1.equals(a2));
+    }
+
+    @Test
+    void testEqualHashCodeWhenSameAuthorId() {
+
+        // Arrange
+        AuthorId id = mock(AuthorId.class);
+
+        // Arrange & SUT
+        Author a = new Author(id, "Seneca");
+        Author a2 = new Author(id, "SeneCA");
 
         // Act & Assert
         assertEquals(a.hashCode(), a2.hashCode());
@@ -152,11 +217,15 @@ public class AuthorTest {
     }
 
     @Test
-    void test_non_equal_hash_code() {
+    void testNonEqualHashCodeWhenDifferentAuthorId() {
+
+        // Arrange
+        AuthorId id1 = mock(AuthorId.class);
+        AuthorId id2 = mock(AuthorId.class);
 
         // Arrange & SUT
-        Author a = new Author("Seneca");
-        Author a2 = new Author("SeneCAR");
+        Author a = new Author(id1, "Seneca");
+        Author a2 = new Author(id2, "SeneCAR");
 
         // Act & Assert
         assertNotEquals(a.hashCode(), a2.hashCode());
@@ -198,31 +267,6 @@ public class AuthorTest {
 
         // Act & Assert
         assertNotEquals(a1.identity(), a2.identity());
-
-    }
-
-    @Test
-    void equalsShouldReturnFalseForDifferentAuthorObjectsWithSameName() {
-
-        // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Seneca");
-
-        // Act & Assert
-        assertFalse(a1.equals(a2));
-
-    }
-
-    @Test
-    void equalsShouldDependOnAuthorIdNotObjectReference() {
-
-        // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Seneca");
-
-        // Act & Assert
-        assertNotSame(a1, a2);
-        assertFalse(a1.equals(a2));
 
     }
 
@@ -297,14 +341,4 @@ public class AuthorTest {
         assertTrue(result);
 
     }
-
-    @Test
-    void equalsShouldBeFalseForDifferentInstancesEvenSameName() {
-
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Seneca");
-
-        assertFalse(a1.equals(a2));
-    }
-
 }

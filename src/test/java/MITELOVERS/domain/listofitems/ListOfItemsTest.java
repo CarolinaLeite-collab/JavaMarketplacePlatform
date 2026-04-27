@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ListOfItemsTest {
 
@@ -32,7 +31,7 @@ class ListOfItemsTest {
     @Test
     void constructsListSuccessfully() {
         // Arrange & Act
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble,"My favorite books", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble,"My favorite books", _genre1IdDouble);
 
         // Assert
         assertNotNull(list);
@@ -44,33 +43,23 @@ class ListOfItemsTest {
     void throwsExceptionWhenListNameIsNull() {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(_listIdDouble, _user1IdDouble, null, _genre1IdDouble));
+                () -> new ListOfItems(_user1IdDouble, null, _genre1IdDouble));
     }
 
     @Test
-    void sameAsShouldReturnTrueForSameArguments() {
+    void sameAsShouldReturnFalseForDifferentInstances() {
         //Arrange
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
 
         // Act & Assert
-        assertTrue(list1.sameAs(list2));
-    }
-
-    @Test
-    void hashCodeShouldReturnTrueForSameArguments() {
-        // Arrange
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-
-        // Act & Assert
-        assertEquals(list1.hashCode(), list2.hashCode());
+        assertFalse(list1.sameAs(list2));
     }
 
     @Test
     void equalsShouldReturnFalseForNull() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
 
         // Act & Assert
         assertNotEquals(list, null);
@@ -79,7 +68,7 @@ class ListOfItemsTest {
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
         String notAList = "not a ListOfItems";
 
         // Act & Assert
@@ -89,7 +78,7 @@ class ListOfItemsTest {
     @Test
     void listShouldBePrivateByDefault() {
         // Arrange & Act
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
 
         // Assert
         assertTrue(list.isPrivate());
@@ -98,7 +87,7 @@ class ListOfItemsTest {
     @Test
     void makePublicShouldMakeListPublic() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
 
         // Act
         list.makePublic();
@@ -110,7 +99,7 @@ class ListOfItemsTest {
     @Test
     void makePublicShouldBeIdempotent() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
 
         // Act
         list.makePublic();
@@ -123,7 +112,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldAddSuccessfully() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
 
         // Act
@@ -137,7 +126,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldThrowWhenNull() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> list.addItem(null));
@@ -146,7 +135,7 @@ class ListOfItemsTest {
     @Test
     void addItemShouldThrowWhenDuplicate() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
 
         list.addItem(_itemIdDouble);
@@ -162,7 +151,7 @@ class ListOfItemsTest {
     @Test
     void getItemIdsShouldReturnImmutableCopy() {
         // Arrange
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
         list.addItem(_itemIdDouble);
 
@@ -174,36 +163,29 @@ class ListOfItemsTest {
     }
 
     @Test
-    void getListOfItemsIDShouldReturnCorrectId() {
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-
-        assertEquals(_listIdDouble, list.identity());
-    }
-
-    @Test
-    void constructorShouldThrowWhenListIdIsNull() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(null, _user1IdDouble, "My List", _genre1IdDouble));
+    void identityShouldReturnNonNullId() {
+        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        assertNotNull(list.identity());
     }
 
     @Test
     void constructorShouldThrowWhenUserIdIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(_listIdDouble, null, "My List", _genre1IdDouble));
+                () -> new ListOfItems(null, "My List", _genre1IdDouble));
     }
 
     @Test
     void constructorShouldThrowWhenGenreIdIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(_listIdDouble, _user1IdDouble, "My List", null));
+                () -> new ListOfItems(_user1IdDouble, "My List", null));
     }
 
     @Test
-    void equalsShouldReturnFalseForDifferentId() {
+    void equalsShouldReturnFalseForDifferentInstances() {
         ListOfItemsId id2 = mock(ListOfItemsId.class);
 
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
 
         assertNotEquals(list1, list2);
     }
@@ -211,7 +193,7 @@ class ListOfItemsTest {
     @Test
     void modifyingReturnedListShouldNotAffectInternalState() {
 
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
         list.addItem(_itemIdDouble);
 
@@ -224,7 +206,7 @@ class ListOfItemsTest {
 
     @Test
     void makePublicShouldNotChangeOtherFields() {
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
 
         list.makePublic();
 
@@ -234,37 +216,26 @@ class ListOfItemsTest {
     }
 
     @Test
-    void hashCodeShouldReturnDifferentValuesForDifferentIds() {
-        ListOfItemsId id2 = mock(ListOfItemsId.class);
-
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "My List", _genre1IdDouble);
+    void hashCodeShouldDependOnIdObject() {
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
 
         assertNotEquals(list1.hashCode(), list2.hashCode());
     }
 
     @Test
     void sameAsShouldReturnTrueForSameInstance() {
-        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
 
         assertTrue(list.sameAs(list));
-    }
-
-    @Test
-    void sameAsShouldReturnTrueForDifferentInstancesWithSameId() {
-
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "A", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_listIdDouble, _user2IdDouble, "B", _genre2IdDouble);
-
-        assertTrue(list1.sameAs(list2));
     }
 
     @Test
     void sameAsShouldReturnFalseForDifferentIds() {
         ListOfItemsId id2 = mock(ListOfItemsId.class);
 
-        ListOfItems list1 = new ListOfItems(_listIdDouble, _user1IdDouble, "A", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(id2, _user1IdDouble, "A", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, "A", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, "A", _genre1IdDouble);
 
         assertFalse(list1.sameAs(list2));
     }
