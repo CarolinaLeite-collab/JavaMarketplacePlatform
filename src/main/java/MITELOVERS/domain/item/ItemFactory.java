@@ -1,6 +1,7 @@
 package MITELOVERS.domain.item;
 
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Component;
 
 /**
  * Factory responsible for creating {@link Item} instances.
@@ -11,6 +12,7 @@ import MITELOVERS.domain.valueobject.*;
  * into an {@link InstantiationException}.
  */
 
+@Component
 public class ItemFactory {
     public Item createItem(EditionId editionId, Condition condition, Description description) {
         return new Item(editionId, condition, description);
