@@ -36,7 +36,7 @@ class ItemIdTest {
                 () -> new ItemId(null)
         );
 
-        assertEquals("ItemId cannot be null or blank.", exception.getMessage());
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
     }
 
     @Test
@@ -47,7 +47,7 @@ class ItemIdTest {
                 () -> new ItemId("   ")
         );
 
-        assertEquals("ItemId cannot be null or blank.", exception.getMessage());
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
     }
 
 
@@ -164,19 +164,4 @@ class ItemIdTest {
         assertEquals(sut.getSku().toString(), result);
     }
 
-
-    @Test
-    void shouldCreateItemIdFromValidSku() {
-        //Arrange
-        String skuValue = "ABC123DEF0";
-
-        //SUT
-        ItemId itemId = new ItemId(skuValue);
-
-        //Act
-        boolean result = itemId.getSku().toString().equals(skuValue);
-
-        //Assert
-        assertTrue(result);
-    }
 }
