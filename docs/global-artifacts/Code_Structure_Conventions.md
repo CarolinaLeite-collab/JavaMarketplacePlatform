@@ -41,7 +41,7 @@ The goal of these rules is to maintain consistency and efficient collaboration d
 - package names inside docs -> lowercase and hyphens  
 ![Screenshot 2026-04-20_103002.png](img/Screenshot%202026-04-20_103002.png)
 
-- diagrams files (.puml) -> `Description_Of_Funcionality_TYPEDIAGRAM.puml`  
+- diagrams files (.puml) -> `Description_Of_Functionality_TYPEDIAGRAM.puml`  
 ![diagram_name.png](img/diagram_name.png)
 
 - java class files -> camelCase  

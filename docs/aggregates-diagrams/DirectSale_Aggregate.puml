@@ -55,7 +55,7 @@ Package "domain" {
 
 Package "persistence" {
     Package "mem"{
-        class MemoDirectSaleRepoo{
+        class MemDirectSaleRepo{
         }
     }
 }
@@ -82,8 +82,8 @@ Package "ddd" {
 
 DirectSale "1" --> "ID 1" DirectSaleId : has
 
-MemoDirectSaleRepo "1" --> "*" DirectSaleFactory : invokes
-MemoDirectSaleRepo "1" --> "*" DirectSale : persists
+MemDirectSaleRepo "1" --> "*" DirectSaleFactory : invokes
+MemDirectSaleRepo "1" --> "*" DirectSale : persists
 
 DirectSale "*" --> "1" Price : has
 DirectSale "1" o--  "1..*" ItemId : aggregates

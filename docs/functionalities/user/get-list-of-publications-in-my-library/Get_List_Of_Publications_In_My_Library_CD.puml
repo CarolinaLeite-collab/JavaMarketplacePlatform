@@ -32,7 +32,6 @@ package "domain" {
 package "repository" {
 
     interface ILibraryRepo <<Interface>> {
-    +getItemsInLibraryByUserId(userId : UserId) : List<ItemId>
     }
     interface IItemRepo <<Interface>>
     interface IEditionRepo <<Interface>>

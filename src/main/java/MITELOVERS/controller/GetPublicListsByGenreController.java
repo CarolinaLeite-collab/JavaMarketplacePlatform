@@ -6,6 +6,7 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.UserId;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +28,22 @@ public class GetPublicListsByGenreController {
         if (genreId == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
-        return _iListOfItemsRepo.findPublicListsByGenre(genreId);
+        return findPublicListsByGenre(genreId);
+    }
+
+    public List<ListOfItems> findPublicListsByGenre(GenreId genreId) {
+
+        // 1. Get all lists from the repo
+        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
+
+        // 2. Filter them in the controller
+        List<ListOfItems> result = new ArrayList<>();
+        for (ListOfItems list : all) {
+            if (!list.isPrivate() && genreId.equals(list.getGenreId())) {
+                result.add(list);
+            }
+        }
+
+        return result;
     }
 }
