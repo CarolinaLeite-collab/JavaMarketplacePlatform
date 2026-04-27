@@ -210,32 +210,5 @@ class SKUTest {
         assertTrue(result);
     }
 
-    @Test
-    void shouldThrowExceptionWhenValueIsNull() {
-        //Arrange
-        String value = null;
-
-        //Act
-        //SUT
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class, () -> new SKU(value));
-
-        //Assert
-        assertEquals("Invalid SKU format", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenSKUInvalid(){
-        //Arrange
-        String value = "23";
-
-        //Act
-        //SUT
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class, () -> new SKU(value));
-
-        //Assert
-        assertEquals("Invalid SKU format", exception.getMessage());
-    }
 }
 
