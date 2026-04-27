@@ -1,6 +1,4 @@
 @startuml
-'https://plantuml.com/class-diagram
-
 title ListOfItems Aggregate - CD - DDD
 
 skinparam monochrome false
@@ -14,85 +12,75 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-
-
-' === Classes === '
-
 Package "domain" {
+
     Package listofitems #B0C4DE {
         Class "ListOfItems" as ListOfItemsRoot <<Root>> <<Entity>> {
             - _name: String
             - _isPrivate : boolean
-            - _itemsID : List<ItemID>
-            + getUserID() : UserID
+            - _itemIds : List<ItemId>
+            + getUserId() : UserId
             + getName() : String
-            + getGenreID() : GenreID
+            + getGenreId() : GenreId
             + isPrivate() : boolean
             + makePublic() : void
-            + getItemsID() : List<ItemID>
-            + addItem(ItemID itemID) : void
+            + getItemIds() : List<ItemId>
+            + addItem(itemId : ItemId) : void
         }
-        Class ListOfItemsFactory {
-        + createListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
-        + createPublicListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
+        Class ListOfItemsFactory <<Factory>> {
+            + createListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+            + createListOfItems(listOfItemsId : ListOfItemsId, userId : UserId, name : String, genreId : GenreId) : ListOfItems
+            + createPublicListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
         }
     }
+
     Package repository {
-    Interface "IListOfItemsRepo" as IRepo <<Interface>> {
-    addListOfItems(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
-    getListOfListOfItems() : List<ListOfItemsID>
-    findPublicListsByGenre(GenreID genreID) : List<ListOfItemsID>
-    findListsByUser(UserID userID) : List<ListOfItemsID>
-    findByOwnerNameAndGenre(UserID userID, String name, GenreID genreID) : List<ListOfItemsID>
+        Interface "IListOfItemsRepo" as IRepo <<Interface>> {
+        }
     }
-    }
+
     Package valueobject {
-    Class "ItemId" as ItemId <<ValueObject>> {}
-    Class "UserId" as UserId <<ValueObject>> {}
-    Class "GenreId" as GenreId <<ValueObject>> {}
-    Class "ListOfItemsID" as Id <<ValueObject>> #LightPink {}
+        Class "ItemId" as ItemId <<ValueObject>> {}
+        Class "UserId" as UserId <<ValueObject>> {}
+        Class "GenreId" as GenreId <<ValueObject>> {}
+        Class "ListOfItemsId" as Id <<ValueObject>> #LightPink {}
     }
 }
 
 Package "persistence" {
+
     Package "mem" {
         Class "MemListOfItemsRepo" as MemRepo <<Repo>> {
         }
     }
 }
 
-package ddd {
+Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-        +save(T) : T
+        +save(entity : T) : T
         +findAll() : Iterable<T>
-        +ofIdentity(ID) : Optional<T>
-        +containsOfIdentity(ID) : boolean
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
     }
-    interface DomainEntity<ID> <<Interface>>{
+    interface DomainEntity<ID> <<Interface>> {
         +identity() : ID
         +sameAs(object : Object) : boolean
-        }
-        interface AggregateRoot<ID> <<Interface>>{}
-
+    }
+    interface AggregateRoot<ID> <<Interface>> {}
 }
-
 
 ' === Interactions === '
 
-ListOfItemsFactory ..> ListOfItemsRoot : creates
-ListOfItemsRoot "*" o-- "1..*" ItemId : aggregates
+ListOfItemsFactory ..> ListOfItemsRoot : <<create>>
+ListOfItemsRoot "1" o-- "*" ItemId : aggregates
+ListOfItemsRoot "1" --> "1" Id : has
 ListOfItemsRoot "*" ..> "1" UserId : references
 ListOfItemsRoot "*" ..> "1" GenreId : references
-ListOfItemsRoot "1" --> "1" Id : has
 
-MemRepo "1" ---> "1" ListOfItemsFactory :invokes
-MemRepo "1" --> "*" ListOfItemsRoot :persistes
-
-IRepo "1" <|.. "1" MemRepo
+MemRepo .|> IRepo
 IRepo ---|> IRepository
 
 AggregateRoot --|> DomainEntity
 AggregateRoot ..|> ListOfItemsRoot
-
 
 @enduml
