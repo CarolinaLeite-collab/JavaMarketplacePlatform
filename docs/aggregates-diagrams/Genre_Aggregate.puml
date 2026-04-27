@@ -2,6 +2,7 @@
 
 title Genre Aggregate - Persistence Refactoring
 
+'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -39,10 +40,10 @@ Package "domain" {
 
 Package "persistence" {
     package "mem" {
-        class MemGenreRepo <<Repo>> #GhostWhite
+        class MemGenreRepo <<Repo>>
     }
 
-    package "jpa" #GhostWhite {
+    package "jpa" {
         class JpaGenreRepo <<Repo>> {
             -_iGenreSpringDataRepo : IGenreSpringDataRepo
             -_genreAssembler : GenreAssembler
