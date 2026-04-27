@@ -2,7 +2,7 @@ package MITELOVERS.persistence.jpa.assembler;
 
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
-import MITELOVERS.persistence.jpa.datamodel.CountryDM;
+import MITELOVERS.persistence.jpa.datamodel.CountryDataModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,23 +20,23 @@ class CountryAssemblerTest {
         CountryAssembler countryAssembler = new CountryAssembler();
 
         // Act
-        CountryDM countryDM = countryAssembler.domain2dm(country);
+        CountryDataModel countryDataModel = countryAssembler.domain2dm(country);
 
         // Assert
-        assertEquals("PT", countryDM.getCountryId());
-        assertEquals("PORTUGAL", countryDM.getCountryName());
+        assertEquals("PT", countryDataModel.getCountryId());
+        assertEquals("PORTUGAL", countryDataModel.getCountryName());
     }
 
     @Test
     void dm2domainReturnsMappedCountry() {
         // Arrange
-        CountryDM countryDM = new CountryDM("PT", "PORTUGAL");
+        CountryDataModel countryDataModel = new CountryDataModel("PT", "PORTUGAL");
 
         // SUT
         CountryAssembler countryAssembler = new CountryAssembler();
 
         // Act
-        Country country = countryAssembler.dm2domain(countryDM);
+        Country country = countryAssembler.dm2domain(countryDataModel);
 
         // Assert
         assertEquals("PT", country.identity().toString());
@@ -55,7 +55,7 @@ class CountryAssemblerTest {
         CountryAssembler countryAssembler = new CountryAssembler();
 
         // Act
-        List<CountryDM> result = countryAssembler.domainList2dmList(countries);
+        List<CountryDataModel> result = countryAssembler.domainList2dmList(countries);
 
         // Assert
         assertEquals(2, result.size());
@@ -69,7 +69,7 @@ class CountryAssemblerTest {
         CountryAssembler countryAssembler = new CountryAssembler();
 
         // Act
-        List<CountryDM> result = countryAssembler.domainList2dmList(List.of());
+        List<CountryDataModel> result = countryAssembler.domainList2dmList(List.of());
 
         // Assert
         assertTrue(result.isEmpty());
@@ -78,15 +78,15 @@ class CountryAssemblerTest {
     @Test
     void dmList2DomainListReturnsMappedList() {
         // Arrange
-        List<CountryDM> dms = List.of(
-                new CountryDM("PT", "PORTUGAL"),
-                new CountryDM("ES", "SPAIN"));
+        List<CountryDataModel> countryDataModels = List.of(
+                new CountryDataModel("PT", "PORTUGAL"),
+                new CountryDataModel("ES", "SPAIN"));
 
         // SUT
         CountryAssembler countryAssembler = new CountryAssembler();
 
         // Act
-        List<Country> result = countryAssembler.dmList2DomainList(dms);
+        List<Country> result = countryAssembler.dmList2DomainList(countryDataModels);
 
         // Assert
         assertEquals(2, result.size());
