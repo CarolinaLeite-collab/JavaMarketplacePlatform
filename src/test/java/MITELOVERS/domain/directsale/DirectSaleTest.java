@@ -248,5 +248,4 @@ class DirectSaleTest {
         //Assert
         assertFalse(result);
     }
-
 }
