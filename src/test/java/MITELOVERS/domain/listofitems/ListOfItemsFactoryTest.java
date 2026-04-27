@@ -1,6 +1,7 @@
 package MITELOVERS.domain.listofitems;
 
 import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 
@@ -65,4 +66,44 @@ class ListOfItemsFactoryTest {
         // Assert
         assertNotEquals(list1.identity(), list2.identity());
     }
+
+    @Test
+    void shouldSuccessfullyCreateListWithExistingId() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        GenreId genreIdDouble = mock(GenreId.class);
+        ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
+
+        // SUT
+        ListOfItemsFactory factory = new ListOfItemsFactory();
+
+        // Act
+        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble, "My List", genreIdDouble);
+
+        // Assert
+        assertNotNull(list);
+        assertEquals(listOfItemsId, list.identity());
+        assertEquals(userIdDouble, list.getUserId());
+        assertEquals("My List", list.getName());
+        assertEquals(genreIdDouble, list.getGenreId());
+        assertTrue(list.isPrivate());
+    }
+
+    @Test
+    void shouldPreserveProvidedListOfItemsId() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        GenreId genreIdDouble = mock(GenreId.class);
+        ListOfItemsId listOfItemsId = ListOfItemsId.newId();
+
+        // SUT
+        ListOfItemsFactory factory = new ListOfItemsFactory();
+
+        // Act
+        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble, "My List", genreIdDouble);
+
+        // Assert
+        assertEquals(listOfItemsId, list.identity());
+    }
+
 }

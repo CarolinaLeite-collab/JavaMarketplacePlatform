@@ -130,4 +130,49 @@ class SKUTest {
         // Assert
         assertEquals(firstHash, secondHash);
     }
+
+    @Test
+    void constructorWithStringShouldCreateSKUSuccessfully() {
+        // Arrange
+        String validSku = "ABCDEF1234";
+
+        // SUT & Act
+        SKU sut = new SKU(validSku);
+
+        // Assert
+        assertNotNull(sut);
+        assertEquals(validSku, sut.getValue());
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenNull() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU(null));
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenInvalidFormat() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU("INVALID!!!"));
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenTooShort() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU("ABC123"));
+    }
+
+    @Test
+    void skuCreatedFromStringShouldEqualSkuWithSameValue() {
+        // Arrange
+        String value = "ABCDEF1234";
+
+        // SUT
+        SKU sku1 = new SKU(value);
+        SKU sku2 = new SKU(value);
+
+        // Assert
+        assertEquals(sku1, sku2);
+    }
+
 }

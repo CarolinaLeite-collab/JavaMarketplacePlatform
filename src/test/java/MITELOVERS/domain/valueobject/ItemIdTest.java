@@ -112,4 +112,43 @@ class ItemIdTest {
         // Assert
         assertEquals(sut.getSku().toString(), result);
     }
+
+    @Test
+    void constructorWithStringShouldCreateItemIdSuccessfully() {
+        // Arrange
+        String validSku = "ABCDEF1234";
+
+        // SUT & Act
+        ItemId sut = new ItemId(validSku);
+
+        // Assert
+        assertNotNull(sut);
+        assertEquals(validSku, sut.toString());
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenInvalidSku() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new ItemId("INVALID!!!"));
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenNull() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new ItemId(null));
+    }
+
+    @Test
+    void itemIdsWithSameSkuStringShouldBeEqual() {
+        // Arrange
+        String validSku = "ABCDEF1234";
+
+        // SUT
+        ItemId id1 = new ItemId(validSku);
+        ItemId id2 = new ItemId(validSku);
+
+        // Assert
+        assertEquals(id1, id2);
+    }
+
 }

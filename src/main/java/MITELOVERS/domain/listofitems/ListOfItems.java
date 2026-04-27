@@ -12,13 +12,7 @@ import java.util.Objects;
 
 /**
  * Represents a list of items created by a user.
- * <p>
- * Each list has a name, a genre, and an associated user.
- * By default, all lists are private. Two lists are considered equal
- * if they belong to the same user and have the same name and genre.
- * </p>
  */
-
 public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     private final ListOfItemsId _listOfItemsId;
@@ -28,19 +22,28 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     private boolean _isPrivate;
     private List<ItemId> _itemIds;
 
-    ListOfItems(UserId userId, String name, GenreId genreId) {
+    // Used by the controller — generates a new ID
+    public ListOfItems(UserId userId, String name, GenreId genreId) {
+        if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
+        if (name == null) throw new IllegalArgumentException("List name cannot be null");
+        if (genreId == null) throw new IllegalArgumentException("GenreID cannot be null");
 
-        if (userId == null) {
-            throw new IllegalArgumentException("UserID cannot be null");
-        }
-        if (name == null) {
-            throw new IllegalArgumentException("List name cannot be null");
-        }
-        if (genreId == null) {
-            throw new IllegalArgumentException("GenreID cannot be null");
-        }
+        _listOfItemsId = ListOfItemsId.newId();
+        _userId = userId;
+        _name = name;
+        _genreId = genreId;
+        _isPrivate = true;
+        _itemIds = new ArrayList<>();
+    }
 
-        _listOfItemsId = ListOfItemsId.newId();  //created here instead of in the factory as before
+    // Used by the assembler — reconstructs from an existing ID
+    public ListOfItems(ListOfItemsId listOfItemsId, UserId userId, String name, GenreId genreId) {
+        if (listOfItemsId == null) throw new IllegalArgumentException("ListOfItemsId cannot be null");
+        if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
+        if (name == null) throw new IllegalArgumentException("List name cannot be null");
+        if (genreId == null) throw new IllegalArgumentException("GenreID cannot be null");
+
+        _listOfItemsId = listOfItemsId;
         _userId = userId;
         _name = name;
         _genreId = genreId;
@@ -49,44 +52,23 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     }
 
     @Override
-    public ListOfItemsId identity() {
-        return _listOfItemsId;
-    }
+    public ListOfItemsId identity() { return _listOfItemsId; }
 
-    public UserId getUserId() {
-        return _userId;
-    }
+    public UserId getUserId() { return _userId; }
 
-    public String getName() {
-        return _name;
-    }
+    public String getName() { return _name; }
 
-    public GenreId getGenreId() {
-        return _genreId;
-    }
+    public GenreId getGenreId() { return _genreId; }
 
-    public boolean isPrivate() {
-        return _isPrivate;
-    }
+    public boolean isPrivate() { return _isPrivate; }
 
-    public void makePublic() {
-        _isPrivate = false;
-    }
+    public void makePublic() { _isPrivate = false; }
 
-    public List<ItemId> getItemIds() {
-        return List.copyOf(_itemIds);
-    }
-
+    public List<ItemId> getItemIds() { return List.copyOf(_itemIds); }
 
     public void addItem(ItemId itemId) {
-        if (itemId == null) {
-            throw new IllegalArgumentException("Item is mandatory");
-        }
-
-        if (_itemIds.contains(itemId)) {
-            throw new IllegalStateException("Item already in list");
-        }
-
+        if (itemId == null) throw new IllegalArgumentException("Item is mandatory");
+        if (_itemIds.contains(itemId)) throw new IllegalStateException("Item already in list");
         _itemIds.add(itemId);
     }
 
@@ -98,8 +80,5 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(_listOfItemsId);
-    }
+    public int hashCode() { return Objects.hash(_listOfItemsId); }
 }
-

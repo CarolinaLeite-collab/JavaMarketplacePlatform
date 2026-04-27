@@ -240,4 +240,56 @@ class ListOfItemsTest {
         assertFalse(list1.sameAs(list2));
     }
 
+    @Test
+    void constructorWithListOfItemsIdShouldConstructSuccessfully() {
+        // Arrange
+        ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
+
+        // SUT & Act
+        ListOfItems list = new ListOfItems(listOfItemsId, _user1IdDouble, "My List", _genre1IdDouble);
+
+        // Assert
+        assertNotNull(list);
+        assertEquals(listOfItemsId, list.identity());
+        assertTrue(list.isPrivate());
+        assertTrue(list.getItemIds().isEmpty());
+    }
+
+    @Test
+    void constructorWithListOfItemsIdShouldThrowWhenListOfItemsIdIsNull() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(null, _user1IdDouble, "My List", _genre1IdDouble));
+    }
+
+    @Test
+    void constructorWithListOfItemsIdShouldThrowWhenUserIdIsNull() {
+        // Arrange
+        ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(listOfItemsId, null, "My List", _genre1IdDouble));
+    }
+
+    @Test
+    void constructorWithListOfItemsIdShouldThrowWhenNameIsNull() {
+        // Arrange
+        ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(listOfItemsId, _user1IdDouble, null, _genre1IdDouble));
+    }
+
+    @Test
+    void constructorWithListOfItemsIdShouldThrowWhenGenreIdIsNull() {
+        // Arrange
+        ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(listOfItemsId, _user1IdDouble, "My List", null));
+    }
+
 }
