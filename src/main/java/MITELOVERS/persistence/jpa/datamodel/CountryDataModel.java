@@ -12,15 +12,15 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "Countries")
-public class CountryDM {
+public class CountryDataModel {
 
     @Id
     private String countryId;
     private String countryName;
 
-    protected CountryDM() {}
+    protected CountryDataModel() {}
 
-    public CountryDM(String countryId, String countryName) {
+    public CountryDataModel(String countryId, String countryName) {
         this.countryId = countryId;
         this.countryName = countryName;
     }
