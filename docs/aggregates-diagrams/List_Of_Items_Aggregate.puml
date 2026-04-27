@@ -24,7 +24,7 @@ Package "domain" {
             + getGenreId() : GenreId
             + isPrivate() : boolean
             + makePublic() : void
-            + getItemIds() : List<ItemId>
+            + getItemId() : List<ItemId>
             + addItem(itemId : ItemId) : void
         }
         Class ListOfItemsFactory <<Factory>> {
