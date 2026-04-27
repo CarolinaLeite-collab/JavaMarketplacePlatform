@@ -12,6 +12,7 @@ import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.Period;
@@ -33,7 +34,8 @@ public class DirectSaleAssembler {
                 new PriceDataModel(
                         directSale.getPrice().getValue(),
                         directSale.getPrice().getCurrency().toString()),
-                directSale.getTimeLimit().toString());
+                directSale.getTimeLimit().toDays(),
+                directSale.getCreationDate());
 
         return dm;
     }
@@ -46,7 +48,9 @@ public class DirectSaleAssembler {
                 new Price(
                         dm.getPrice().getNumericValue(),
                         Currency.valueOf(dm.getPrice().getCurrency())),
-                Period.parse(dm.getTimeLimit())
+                Duration.ofDays(dm.getTimeLimit()),
+                dm.getCreationDate()
+
         );
 
         return directSale;

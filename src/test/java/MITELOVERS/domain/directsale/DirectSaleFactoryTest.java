@@ -6,6 +6,8 @@ import MITELOVERS.domain.valueobject.Price;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +25,7 @@ class DirectSaleFactoryTest {
         itemsId.add(itemIdDouble);
 
         Price priceDouble = mock(Price.class);
-        Period timeLimit = Period.ofDays(30);
+        Duration timeLimit = Duration.ofDays(30);
 
         List<List<Object>> capturedArguments = new ArrayList<>();
 
@@ -54,7 +56,8 @@ class DirectSaleFactoryTest {
         DirectSaleId id = mock(DirectSaleId.class);
         List<ItemId> itemsId = mock(List.class);
         Price price = mock(Price.class);
-        Period timeLimit = mock(Period.class);
+        Duration timeLimit = Duration.ofDays(5);
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
 
         //SUT
         DirectSaleFactory factory = new DirectSaleFactory();
@@ -67,7 +70,7 @@ class DirectSaleFactoryTest {
                              })) {
 
             //Act
-            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, price, timeLimit);
+            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, price, timeLimit, creationDate);
 
             //Assert
             assertEquals(id, newDirectSale.identity());

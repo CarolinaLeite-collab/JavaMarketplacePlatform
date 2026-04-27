@@ -10,6 +10,8 @@ import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.Period;
 import java.util.List;
 
@@ -40,7 +42,8 @@ class DirectSaleAssemblerTest {
         when(price.getValue()).thenReturn(10.0);
         when(price.getCurrency()).thenReturn(Currency.EUR);
 
-        Period period = Period.ofDays(5);
+        Duration duration = Duration.ofDays(5);
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
 
         DirectSaleFactory factory = mock(DirectSaleFactory.class);
 
@@ -48,9 +51,10 @@ class DirectSaleAssemblerTest {
         when(directSale.identity()).thenReturn(id);
         when(directSale.getItemsId()).thenReturn(List.of(item));
         when(directSale.getPrice()).thenReturn(price);
-        when(directSale.getTimeLimit()).thenReturn(period);
+        when(directSale.getTimeLimit()).thenReturn(duration);
+        when(directSale.getCreationDate()).thenReturn(creationDate);
 
-        String expectedResult = period.toString();
+        String expectedResult = duration.toString();
 
         //SUT
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
@@ -67,6 +71,7 @@ class DirectSaleAssemblerTest {
     void shouldConvertDataModelToDomain() {
         //Arrange
         DirectSale expected = mock(DirectSale.class);
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
 
         PriceDataModel priceDM = mock(PriceDataModel.class);
         when(priceDM.getNumericValue()).thenReturn(10.0);
@@ -76,14 +81,18 @@ class DirectSaleAssemblerTest {
         when(dm.getDirectSaleId()).thenReturn("DS1");
         when(dm.getItemsId()).thenReturn(List.of("ABC123DEF0"));
         when(dm.getPrice()).thenReturn(priceDM);
-        when(dm.getTimeLimit()).thenReturn("P5D");
+        when(dm.getTimeLimit()).thenReturn(5L);
+        when(dm.getCreationDate()).thenReturn(creationDate);
+
+
 
         DirectSaleFactory factory = mock(DirectSaleFactory.class);
         when(factory.createDirectSale(
                 new DirectSaleId("DS1"),
                 List.of(new ItemId("ABC123DEF0")),
                 new Price(10.0, Currency.EUR),
-                Period.parse("P5D")
+                Duration.ofDays(5),
+                Instant.parse("2024-01-01T10:00:00Z")
         )).thenReturn(expected);
 
         //SUT

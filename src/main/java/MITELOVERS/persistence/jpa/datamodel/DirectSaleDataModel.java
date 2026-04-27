@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -25,5 +26,6 @@ public class DirectSaleDataModel {
 
     @Embedded
     private PriceDataModel price;
-    private String timeLimit;
+    private Long timeLimit;
+    private Instant creationDate;
 }

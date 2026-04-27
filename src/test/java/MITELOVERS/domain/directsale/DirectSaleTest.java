@@ -6,7 +6,8 @@ import MITELOVERS.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.Period;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,8 @@ class DirectSaleTest {
     private DirectSaleId _dsId;
     private ItemId _itemIdDouble;
     private Price _priceDouble;
-    private Period _period;
+    private Duration _timeLimit;
+    private Instant _creationDate;
 
     @BeforeEach
     void setUp() {
@@ -28,14 +30,15 @@ class DirectSaleTest {
         _itemIdDouble = mock(ItemId.class);
         _itemsId.add(_itemIdDouble);
         _priceDouble = mock(Price.class);
-        _period = Period.ofMonths(3);
+        _timeLimit = Duration.ofDays(3);
+        _creationDate = Instant.parse("2024-01-01T10:00:00Z");
     }
 
     @Test
     void constructorShouldRebuildDirectSaleWithDirectSaleID() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_dsId, _itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_dsId, _itemsId, _priceDouble, _timeLimit, _creationDate);
 
         //Act & Assert
         assertEquals(_dsId, directSale.identity());
@@ -46,12 +49,12 @@ class DirectSaleTest {
     void constructorShouldBuildDirectSaleWithTimeLimit() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act & Assert
         assertEquals(_itemsId, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
-        assertEquals(_period, directSale.getTimeLimit());
+        assertEquals(_timeLimit, directSale.getTimeLimit());
     }
 
     @Test
@@ -71,7 +74,7 @@ class DirectSaleTest {
         //Act
         //SUT
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(_itemsId, null, _period));
+                () -> new DirectSale(_itemsId, null, _timeLimit));
 
         //Assert
         assertEquals("Price is required for a direct sale", ex.getMessage());
@@ -83,7 +86,7 @@ class DirectSaleTest {
         //Act
         //SUT
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(null, _priceDouble, _period)); // SUT
+                () -> new DirectSale(null, _priceDouble, _timeLimit)); // SUT
 
         //Assert
         assertEquals("ItemId is required for a direct sale", ex.getMessage());
@@ -98,7 +101,7 @@ class DirectSaleTest {
         _itemsId.add(_itemIdDouble);
         _itemsId.add(nullItemId);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new DirectSale(_itemsId, _priceDouble, _period));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new DirectSale(_itemsId, _priceDouble, _timeLimit));
 
         //Assert
         assertEquals("Items cannot contain null elements.", ex.getMessage());
@@ -107,7 +110,7 @@ class DirectSaleTest {
     @Test
     void constructorShouldThrowWhenTimeLimitIsNegative() {
         //Arrange
-        Period negativeLimit = Period.ofMonths(-3);
+        Duration negativeLimit = Duration.ofDays(-3);
 
         //Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
@@ -121,7 +124,7 @@ class DirectSaleTest {
     void shouldReturnIdentity() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         DirectSaleId result = directSale.identity();
@@ -136,7 +139,7 @@ class DirectSaleTest {
     void shouldReturnTrueWhenSameIdentity() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale.equals(directSale);
@@ -149,8 +152,8 @@ class DirectSaleTest {
     void shouldReturnFalseWhenDifferentIdentities(){
         //Arrange
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _period);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.equals(directSale2);
@@ -163,7 +166,7 @@ class DirectSaleTest {
     void shouldReturnFalseWhenObjectIsNull() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Assert
         assertFalse(directSale.sameAs(null));
@@ -173,7 +176,7 @@ class DirectSaleTest {
     void shouldReturnFalseWhenObjectIsDifferentType() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale.equals(_itemIdDouble);
@@ -186,8 +189,8 @@ class DirectSaleTest {
     void shouldReturnTrueWhenSameFields() {
         //Arrange
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _period);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -204,8 +207,8 @@ class DirectSaleTest {
         itemsId2.add(itemIdDouble2);
 
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _period);
-        DirectSale directSale2 = new DirectSale(itemsId2, _priceDouble, _period);
+        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(itemsId2, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -220,8 +223,8 @@ class DirectSaleTest {
         Price pricedouble2 = mock(Price.class);
 
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, pricedouble2, _period);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale1 = new DirectSale(_itemsId, pricedouble2, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -233,11 +236,11 @@ class DirectSaleTest {
     @Test
     void shouldReturnFalseWhenDifferentTime() {
         //Arrange
-        Period timeDouble = mock(Period.class);
+        Duration timeDouble = Duration.ofDays(5);
 
         //SUT
         DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, timeDouble);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _period);
+        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
