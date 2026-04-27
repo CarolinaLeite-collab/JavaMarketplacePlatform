@@ -53,7 +53,7 @@ class DirectSaleAssemblerTest {
         when(directSale.getTimeLimit()).thenReturn(duration);
         when(directSale.getCreationDate()).thenReturn(creationDate);
 
-        String expectedResult = duration.toString();
+        Long expectedResult = duration.toDays();
 
         //SUT
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
