@@ -22,8 +22,6 @@ Package "domain" {
 
     Package "appraisalEntity" <<Folder>> #b0c4d4 {
         class AppraisalEntity <<Root>> <<Entity>>  {
-'            -_publicationTypeIds : List<PublicationTypeId>
-'            -_genreIds : List<GenreId>
 
             +getName() : Name
             +getGenreIds () : List<GenreId>
@@ -63,18 +61,6 @@ Package "domain" {
 
 }
 
-' ===== Repository =====
-'package "persistence" <<Folder>> {
-'
-'    package "mem" {
-'        class MemoAppraisalEntityRepo {
-'
-'        }
-'
-'    }
-'
-'}
-
 Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(entity: T) : T
@@ -101,7 +87,6 @@ AppraisalEntity "*" <- "1" IAppraisalEntityRepo : persists
 
 AppraisalEntityFactory ..> AppraisalEntity : <<create>>
 
-'IAppraisalEntityRepo <|. MemoAppraisalEntityRepo
 IAppraisalEntityRepo -|> IRepository
 AggregateRoot -|> DomainEntity
 AppraisalEntity .|> AggregateRoot
