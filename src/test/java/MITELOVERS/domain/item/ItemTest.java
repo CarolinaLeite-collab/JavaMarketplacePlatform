@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ItemTest {
 
@@ -391,18 +392,6 @@ class ItemTest {
     }
 
     @Test
-    void testEqualsSameInstanceReturnsTrue() {
-        // Arrange
-        Item item = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
-
-        // Act
-        boolean result = item.equals(item);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
     void equalsDifferentItemsWithSameAttributesReturnsFalse() {
         // Arrange
         Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
@@ -413,6 +402,34 @@ class ItemTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void equalsDifferentInstancesWithSameItemIdReturnsTrue() {
+        // Arrange
+        ItemId sharedItemId = new ItemId();
+
+        Item first = new Item(
+                sharedItemId,
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.NotOnSale
+        );
+
+        Item second = new Item(
+                sharedItemId,
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.NotOnSale
+        );
+
+        // Act
+        boolean result = first.equals(second);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test

@@ -118,8 +118,8 @@ class EditionIdTest {
     @Test
     void equalsReturnsTrueForEditionIdsWithSameStringValue() {
         // Arrange
-        EditionId editionId1 = new EditionId("E-TEST123");
-        EditionId editionId2 = new EditionId("E-TEST123");
+        EditionId editionId1 = new EditionId("E-TEST1234");
+        EditionId editionId2 = new EditionId("E-TEST1234");
 
         // Act
         boolean result = editionId1.equals(editionId2);
@@ -142,19 +142,19 @@ class EditionIdTest {
     @Test
     void toStringReturnsUnderlyingValue() {
         // Arrange
-        EditionId editionId = new EditionId("E-TEST123");
+        EditionId editionId = new EditionId("E-TEST1234");
 
         // Act
         String result = editionId.toString();
 
         // Assert
-        assertEquals("E-TEST123", result);
+        assertEquals("E-TEST1234", result);
     }
 
     @Test
     void hashCodeIsConsistentForSameInstance() {
         // Arrange
-        EditionId editionId = new EditionId("E-TEST123");
+        EditionId editionId = new EditionId("E-TEST1234");
 
         // Act
         int firstHash = editionId.hashCode();
@@ -167,8 +167,8 @@ class EditionIdTest {
     @Test
     void hashCodeIsEqualForEqualEditionIds() {
         // Arrange
-        EditionId editionId1 = new EditionId("E-TEST123");
-        EditionId editionId2 = new EditionId("E-TEST123");
+        EditionId editionId1 = new EditionId("E-TEST1234");
+        EditionId editionId2 = new EditionId("E-TEST1234");
 
         // Act
         int hash1 = editionId1.hashCode();
@@ -176,6 +176,21 @@ class EditionIdTest {
 
         // Assert
         assertEquals(hash1, hash2);
+    }
+
+    @Test
+    void hashCodeIsNotEqualForDifferentEditionIds() {
+        //Arrange
+        EditionId editionId1 = new EditionId("E-TEST1234");
+        EditionId editionId2 = new EditionId("E-TEST5678");
+
+        // Act
+        int hash1 = editionId1.hashCode();
+        int hash2 = editionId2.hashCode();
+
+        // Assert
+        assertNotEquals(hash1, hash2);
+
     }
 
 
