@@ -4,6 +4,8 @@ package MITELOVERS.domain.author;
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.AuthorId;
 
+import java.util.Objects;
+
 /**
  * Author is the person who originates, creates, and writes a `publication`.
  * The same name can mean different authors.
@@ -15,14 +17,20 @@ public class Author implements AggregateRoot<AuthorId> {
     private final AuthorId _authorId;
 
 
+    Author (AuthorId authorId, String name) {
+
+        String trimmedName = Objects.requireNonNull(name, "Author name is required").trim();
+
+        if (trimmedName.isEmpty())
+            throw new IllegalArgumentException("Author name cannot be empty");
+
+        _name = trimmedName;
+        _authorId = authorId;
+
+    }
+
     Author (String name) {
-
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("Author name cannot be null or empty");
-
-        _name = name.trim();
-        _authorId = new AuthorId(name);
-
+        this(new AuthorId(name), name);
     }
 
 
@@ -64,14 +72,14 @@ public class Author implements AggregateRoot<AuthorId> {
         if (object == this) return true;
         if (!(object instanceof Author)) return false;
         Author author = (Author) object;
-        return this._authorId.equals(author._authorId);
+        return _authorId.equals(author._authorId);
 
     }
 
     @Override
     public int hashCode() {
 
-        return _name.toLowerCase().hashCode();
+        return _authorId.hashCode();
 
     }
 
