@@ -27,16 +27,16 @@ import java.util.List;
 public class LibraryDataModel {
 
     @Id
-    private String _libraryId;
+    private String libraryId;
 
     @Column(nullable = false)
-    private String _userId;
+    private String userId;
 
     @ElementCollection
     @CollectionTable(
             name = "LibraryItemIds",
-            joinColumns = @JoinColumn(name = "library_id")
+            joinColumns = @JoinColumn(name = "libraryId")
     )
-    @Column(name = "item_id")
-    private List<String> _itemIds;
+    @Column(name = "itemId")
+    private List<String> itemIds;
 }
