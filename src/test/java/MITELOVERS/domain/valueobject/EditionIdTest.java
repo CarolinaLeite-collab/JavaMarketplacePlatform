@@ -17,6 +17,40 @@ class EditionIdTest {
     }
 
     @Test
+    void constructorWithValidStringCreatesEditionIdWithGivenValue() {
+        // Arrange
+        String editionIdValue = "E-ABC12345";
+
+        // Act
+        EditionId editionId = new EditionId(editionIdValue);
+
+        // Assert
+        assertEquals(editionIdValue, editionId.toString());
+    }
+
+    @Test
+    void constructorWithNullStringThrowsIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new EditionId(null)
+        );
+
+        assertEquals("EditionId cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void constructorWithBlankStringThrowsIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new EditionId("   ")
+        );
+
+        assertEquals("EditionId cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
     void editionIdIsEqualToItself() {
         //Act
         //SUT
@@ -50,7 +84,7 @@ class EditionIdTest {
     }
 
     @Test
-    void editionIdIsNotEqualToAnotherEditionId() {
+    void editionIdIsNotEqualToAnotherEditionIdOfDifferentValues() {
         //Act
         //SUT
         EditionId editionId1 = new EditionId();
@@ -61,7 +95,7 @@ class EditionIdTest {
     }
 
     @Test
-    void equalsReturnsFalseForDifferentInstances() {
+    void equalsReturnsFalseForDifferentInstancesOfDifferentValues() {
         //Act
         //SUT
         EditionId editionId1 = new EditionId();
@@ -82,6 +116,20 @@ class EditionIdTest {
     }
 
     @Test
+    void equalsReturnsTrueForEditionIdsWithSameStringValue() {
+        // Arrange
+        EditionId editionId1 = new EditionId("E-TEST123");
+        EditionId editionId2 = new EditionId("E-TEST123");
+
+        // Act
+        boolean result = editionId1.equals(editionId2);
+
+        // Assert
+        assertTrue(result);
+        assertEquals(editionId1, editionId2);
+    }
+
+    @Test
     void equalsShouldReturnFalseForNull() {
         //Act
         //SUT
@@ -90,5 +138,45 @@ class EditionIdTest {
         //Assert
         assertFalse(editionId.equals(null));
     }
+
+    @Test
+    void toStringReturnsUnderlyingValue() {
+        // Arrange
+        EditionId editionId = new EditionId("E-TEST123");
+
+        // Act
+        String result = editionId.toString();
+
+        // Assert
+        assertEquals("E-TEST123", result);
+    }
+
+    @Test
+    void hashCodeIsConsistentForSameInstance() {
+        // Arrange
+        EditionId editionId = new EditionId("E-TEST123");
+
+        // Act
+        int firstHash = editionId.hashCode();
+        int secondHash = editionId.hashCode();
+
+        // Assert
+        assertEquals(firstHash, secondHash);
+    }
+
+    @Test
+    void hashCodeIsEqualForEqualEditionIds() {
+        // Arrange
+        EditionId editionId1 = new EditionId("E-TEST123");
+        EditionId editionId2 = new EditionId("E-TEST123");
+
+        // Act
+        int hash1 = editionId1.hashCode();
+        int hash2 = editionId2.hashCode();
+
+        // Assert
+        assertEquals(hash1, hash2);
+    }
+
 
 }
