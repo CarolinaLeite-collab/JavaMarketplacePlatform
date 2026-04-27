@@ -22,8 +22,6 @@ Package "domain" {
 
     Package "appraisalEntity" <<Folder>> #b0c4d4 {
         class AppraisalEntity <<Root>> <<Entity>>  {
-            -_publicationTypeIds : List<PublicationTypeId>
-            -_genreIds : List<GenreId>
 
             +getName() : Name
             +getGenreIds () : List<GenreId>
@@ -32,13 +30,13 @@ Package "domain" {
 
     class AppraisalEntityFactory <<Factory>> {
         +createAppraisalEntity(name : Name, genresId : List<GenreId>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
+        +createAppraisalEntity(id : AppraisalEntityId, name : Name, genresId : List<GenreId>, \npublicationTypeId : List<PublicationTypeId>) : AppraisalEntity
 
         }
     }
 
     package "repository" <<Folder>> {
         interface IAppraisalEntityRepo <<Interface>> {
-
         }
     }
 
@@ -56,18 +54,6 @@ Package "domain" {
         }
         ' ===== Value Objects =====
         class Name <<ValueObject>> {
-
-        }
-
-    }
-
-}
-
-' ===== Repository =====
-package "persistence" <<Folder>> {
-
-    package "mem" {
-        class MemAppraisalEntityRepo {
 
         }
 
@@ -93,17 +79,15 @@ Package "ddd" {
 }
 
 ' ===== Interactions =====
-AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
-AppraisalEntity "1" ..> "1..*" GenreId : references
-AppraisalEntity "1" ..> "1..*" PublicationTypeId : references
+AppraisalEntity "1" --> "1" AppraisalEntityId : has
+AppraisalEntity "1" o-- "1..*" GenreId : references
+AppraisalEntity "1" o-- "1..*" PublicationTypeId : references
 AppraisalEntity "1" --> "1" Name : has
-AppraisalEntity "*" <- "1" MemAppraisalEntityRepo : persists
+AppraisalEntity "*" <- "1" IAppraisalEntityRepo : persists
 
 AppraisalEntityFactory ..> AppraisalEntity : <<create>>
 
-
-IAppraisalEntityRepo <|. MemAppraisalEntityRepo
-IAppraisalEntityRepo ---|> IRepository
+IAppraisalEntityRepo -|> IRepository
 AggregateRoot -|> DomainEntity
 AppraisalEntity .|> AggregateRoot
 
