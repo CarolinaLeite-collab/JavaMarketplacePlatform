@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
-import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
@@ -20,12 +19,10 @@ import static org.mockito.Mockito.when;
  *
  * <p>The following Mockito doubles are used:
  * <ul>
- *   <li>{@link ListOfItemsFactory} — mocked collaborator (creation dependency)</li>
  *   <li>{@link UserId} — mocked dummy (structural input, no behaviour required)</li>
  *   <li>{@link GenreId} — mocked dummy (structural input, no behaviour required)</li>
  * </ul>
  */
-
 class MemListOfItemsRepoTest {
 
     private UserId _userId1Double;
@@ -45,9 +42,21 @@ class MemListOfItemsRepoTest {
 
     @Test
     void shouldCreateEmptyRepository() {
+        // SUT & Act & Assert
+        assertDoesNotThrow(MemListOfItemsRepo::new);
+    }
+
+    @Test
+    void newRepositoryShouldBeEmpty() {
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
-        assertNotNull(repo);
-        assertEquals(0, repo.findAll().spliterator().getExactSizeIfKnown());
+
+        // Act
+        int count = 0;
+        for (ListOfItems ignored : repo.findAll()) count++;
+
+        // Assert
+        assertEquals(0, count);
     }
 
     @Test
@@ -57,15 +66,19 @@ class MemListOfItemsRepoTest {
         when(created.identity()).thenReturn(_listIdDouble);
         when(created.getName()).thenReturn("My List");
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
 
         // Act
         ListOfItems result = repo.save(created);
 
         // Assert
+        int count = 0;
+        for (ListOfItems ignored : repo.findAll()) count++;
+        final int finalCount = count;
         assertAll(
                 () -> assertNotNull(result),
-                () -> assertEquals(1, repo.findAll().spliterator().getExactSizeIfKnown()),
+                () -> assertEquals(1, finalCount),
                 () -> assertEquals("My List", result.getName())
         );
     }
@@ -79,6 +92,7 @@ class MemListOfItemsRepoTest {
         when(first.identity()).thenReturn(_listIdDouble);
         when(second.identity()).thenReturn(_listIdDouble);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
 
         // Act
@@ -86,39 +100,25 @@ class MemListOfItemsRepoTest {
         repo.save(second);
 
         // Assert
-        assertEquals(1, repo.findAll().spliterator().getExactSizeIfKnown());
-        assertEquals(second, repo.ofIdentity(_listIdDouble).orElse(null));
-    }
-
-    @Test
-    void saveShouldInsertOrReplace() {
-        // Arrange
-        ListOfItems first = mock(ListOfItems.class);
-        ListOfItems second = mock(ListOfItems.class);
-
-        when(first.identity()).thenReturn(_listIdDouble);
-        when(second.identity()).thenReturn(_listIdDouble);
-
-        MemListOfItemsRepo repo = new MemListOfItemsRepo();
-
-        // Act
-        repo.save(first);
-        repo.save(second);
-
-        // Assert
-        assertEquals(1, repo.findAll().spliterator().getExactSizeIfKnown());
+        int count = 0;
+        for (ListOfItems ignored : repo.findAll()) count++;
+        assertEquals(1, count);
         assertEquals(second, repo.ofIdentity(_listIdDouble).orElse(null));
     }
 
     @Test
     void saveShouldReturnSavedEntity() {
+        // Arrange
         ListOfItems item = mock(ListOfItems.class);
         when(item.identity()).thenReturn(mock(ListOfItemsId.class));
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
 
+        // Act
         ListOfItems result = repo.save(item);
 
+        // Assert
         assertSame(item, result);
     }
 
@@ -128,6 +128,7 @@ class MemListOfItemsRepoTest {
         ListOfItems created = mock(ListOfItems.class);
         when(created.identity()).thenReturn(_listIdDouble);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
         repo.save(created);
 
@@ -141,24 +142,30 @@ class MemListOfItemsRepoTest {
 
     @Test
     void containsOfIdentityShouldReturnTrueWhenExists() {
+        // Arrange
         ListOfItems created = mock(ListOfItems.class);
         when(created.identity()).thenReturn(_listIdDouble);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
         repo.save(created);
 
+        // Act & Assert
         assertTrue(repo.containsOfIdentity(_listIdDouble));
     }
 
     @Test
     void containsOfIdentityShouldReturnFalseWhenNotExists() {
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
+
+        // Act & Assert
         assertFalse(repo.containsOfIdentity(_listIdDouble));
     }
 
     @Test
     void findAllKeysShouldReturnEmptyListWhenRepoIsEmpty() {
-        // Arrange
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
 
         // Act
@@ -181,6 +188,7 @@ class MemListOfItemsRepoTest {
         when(list1.identity()).thenReturn(id1);
         when(list2.identity()).thenReturn(id2);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
         repo.save(list1);
         repo.save(list2);
@@ -201,15 +209,15 @@ class MemListOfItemsRepoTest {
         // Arrange
         ListOfItems list = mock(ListOfItems.class);
         ListOfItemsId id = mock(ListOfItemsId.class);
-
         when(list.identity()).thenReturn(id);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
         repo.save(list);
 
         // Act
         List<ListOfItemsId> keys = repo.findAllKeys();
-        keys.clear(); // modify returned list
+        keys.clear();
 
         // Assert
         assertEquals(1, repo.findAllKeys().size());
@@ -227,6 +235,7 @@ class MemListOfItemsRepoTest {
         when(list1.identity()).thenReturn(id1);
         when(list2.identity()).thenReturn(id2);
 
+        // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
         repo.save(list1);
         repo.save(list2);
