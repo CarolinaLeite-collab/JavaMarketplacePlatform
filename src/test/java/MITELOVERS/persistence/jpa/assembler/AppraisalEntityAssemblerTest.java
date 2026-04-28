@@ -34,7 +34,7 @@ class AppraisalEntityAssemblerTest {
     }
 
     @Test
-    void testAContructor() {
+    void testAConstructorWithArgs() {
 
         // Act
         new AppraisalEntityAssembler(_appraisalEntityFactoryDouble);
@@ -42,7 +42,7 @@ class AppraisalEntityAssemblerTest {
     }
 
     @Test
-    void testDomain2DMShouldReturnCorrectDataModelWhenFedWithAAppraisalEntity() {
+    void testToDataModelShouldReturnCorrectDataModelWhenFedWithAAppraisalEntity() {
 
         // Arrange
         AppraisalEntity appraisalEntityDouble = mock(AppraisalEntity.class);
@@ -70,7 +70,7 @@ class AppraisalEntityAssemblerTest {
         AppraisalEntityAssembler assembler = new AppraisalEntityAssembler(_appraisalEntityFactoryDouble);
 
         // Act
-        AppraisalEntityDataModel result = assembler.domain2DM(appraisalEntityDouble);
+        AppraisalEntityDataModel result = assembler.toDataModel(appraisalEntityDouble);
 
         // Assert
         assertEquals("id", result.getId());
@@ -81,7 +81,7 @@ class AppraisalEntityAssemblerTest {
     }
 
     @Test
-    void testDM2DomainShouldReturnCorrectAppraisalEntityObjectWhenFedWithAAppraisalEntityDataModel() {
+    void testToDomainShouldReturnCorrectAppraisalEntityObjectWhenFedWithAAppraisalEntityDataModel() {
 
         // Arrange
         AppraisalEntityDataModel appraisalEntityDataModelDouble = mock(AppraisalEntityDataModel.class);
@@ -123,7 +123,7 @@ class AppraisalEntityAssemblerTest {
         AppraisalEntityAssembler assembler = new AppraisalEntityAssembler(_appraisalEntityFactoryDouble);
 
         // Act
-        AppraisalEntity result = assembler.DM2domain(appraisalEntityDataModelDouble);
+        AppraisalEntity result = assembler.toDomain(appraisalEntityDataModelDouble);
 
         List<String> expectedGenreIds = new ArrayList<>();
         List<GenreId> genreIds = result.getGenreIds();
