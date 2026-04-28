@@ -8,8 +8,7 @@ class EditionIdTest {
 
     @Test
     void testConstructorCreatesInstance() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -21,7 +20,7 @@ class EditionIdTest {
         // Arrange
         String editionIdValue = "E-ABC12345";
 
-        // Act
+        // Act + SUT
         EditionId editionId = new EditionId(editionIdValue);
 
         // Assert
@@ -52,8 +51,7 @@ class EditionIdTest {
 
     @Test
     void editionIdIsEqualToItself() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -62,8 +60,7 @@ class EditionIdTest {
 
     @Test
     void editionIdIsNotEqualToNull() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -72,11 +69,10 @@ class EditionIdTest {
 
     @Test
     void editionIdIsNotEqualToDifferentObjectType() {
-
         //Arrange
         String differentType = "test";
 
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -85,8 +81,7 @@ class EditionIdTest {
 
     @Test
     void editionIdIsNotEqualToAnotherEditionIdOfDifferentValues() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId1 = new EditionId();
         EditionId editionId2 = new EditionId();
 
@@ -96,8 +91,7 @@ class EditionIdTest {
 
     @Test
     void equalsReturnsFalseForDifferentInstancesOfDifferentValues() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId1 = new EditionId();
         EditionId editionId2 = new EditionId();
 
@@ -107,8 +101,7 @@ class EditionIdTest {
 
     @Test
     void equalsShouldReturnTrueForSameReference() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -117,7 +110,7 @@ class EditionIdTest {
 
     @Test
     void equalsReturnsTrueForEditionIdsWithSameStringValue() {
-        // Arrange
+        // SUT
         EditionId editionId1 = new EditionId("E-TEST1234");
         EditionId editionId2 = new EditionId("E-TEST1234");
 
@@ -131,8 +124,7 @@ class EditionIdTest {
 
     @Test
     void equalsShouldReturnFalseForNull() {
-        //Act
-        //SUT
+        //Act + SUT
         EditionId editionId = new EditionId();
 
         //Assert
@@ -140,8 +132,20 @@ class EditionIdTest {
     }
 
     @Test
+    void getValueReturnsUnderlyingValue() {
+        // SUT
+        EditionId editionId = new EditionId("E-TEST1234");
+
+        // Act
+        String result = editionId.getValue();
+
+        // Assert
+        assertEquals("E-TEST1234", result);
+    }
+
+    @Test
     void toStringReturnsUnderlyingValue() {
-        // Arrange
+        // SUT
         EditionId editionId = new EditionId("E-TEST1234");
 
         // Act
@@ -153,7 +157,7 @@ class EditionIdTest {
 
     @Test
     void hashCodeIsConsistentForSameInstance() {
-        // Arrange
+        // SUT
         EditionId editionId = new EditionId("E-TEST1234");
 
         // Act
@@ -166,7 +170,7 @@ class EditionIdTest {
 
     @Test
     void hashCodeIsEqualForEqualEditionIds() {
-        // Arrange
+        // SUT
         EditionId editionId1 = new EditionId("E-TEST1234");
         EditionId editionId2 = new EditionId("E-TEST1234");
 
@@ -180,7 +184,7 @@ class EditionIdTest {
 
     @Test
     void hashCodeIsNotEqualForDifferentEditionIds() {
-        //Arrange
+        //SUT
         EditionId editionId1 = new EditionId("E-TEST1234");
         EditionId editionId2 = new EditionId("E-TEST5678");
 

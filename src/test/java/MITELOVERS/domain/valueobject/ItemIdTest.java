@@ -8,7 +8,7 @@ class ItemIdTest {
 
     @Test
     void constructorShouldCreateItemId() {
-        // SUT
+        // Act + SUT
         ItemId sut = new ItemId();
 
         // Assert
@@ -20,7 +20,7 @@ class ItemIdTest {
         // Arrange
         String skuValue = "ABCDEF1234";
 
-        // Act
+        // Act + SUT
         ItemId sut = new ItemId(skuValue);
 
         // Assert
@@ -79,6 +79,8 @@ class ItemIdTest {
     void equalsShouldReturnTrueForItemIdsWithSameStringValue() {
         // Arrange
         String skuValue = "ABCDEF1234";
+
+        //SUT
         ItemId sut = new ItemId(skuValue);
         ItemId other = new ItemId(skuValue);
 
@@ -162,6 +164,46 @@ class ItemIdTest {
 
         // Assert
         assertEquals(sut.getSku().toString(), result);
+    }
+
+    @Test
+    void getValueShouldReturnUnderlyingSkuValue() {
+        // Arrange
+        String skuValue = "ABCDEF1234";
+
+        //SUT
+        ItemId sut = new ItemId(skuValue);
+
+        // Act
+        String result = sut.getValue();
+
+        // Assert
+        assertEquals(skuValue, result);
+    }
+
+    @Test
+    void getValueShouldMatchSkuGetValue() {
+        // SUT
+        ItemId sut = new ItemId();
+
+        // Act
+        String value = sut.getValue();
+
+        // Assert
+        assertEquals(sut.getSku().getValue(), value);
+    }
+
+    @Test
+    void getValueShouldMatchToStringForNow() {
+        // SUT
+        ItemId sut = new ItemId();
+
+        // Act
+        String value = sut.getValue();
+        String stringRepresentation = sut.toString();
+
+        // Assert
+        assertEquals(value, stringRepresentation);
     }
 
 }

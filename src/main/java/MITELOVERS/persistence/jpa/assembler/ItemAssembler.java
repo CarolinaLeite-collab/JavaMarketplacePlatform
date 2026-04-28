@@ -26,11 +26,11 @@ public class ItemAssembler {
         }
 
         return new ItemDataModel(
-              item.identity().toString(),
-              item.getEditionId().toString(),
-              item.getCondition().toString(),
+              item.identity().getValue(),
+              item.getEditionId().getValue(),
+              item.getCondition().name(),
               item.getDescription().toString(),
-                item.getSaleStatus().toString()
+                item.getSaleStatus().name()
         );
 
     }
