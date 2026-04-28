@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ItemTest {
 
@@ -25,7 +26,7 @@ class ItemTest {
     // ------------------------------------------------------------
 
     @Test
-    void constructorValidArgumentsCreatesItemWithAssignedValues() {
+    void constructorValidArgumentsCreatesNewItemWithAssignedValues() {
         // Arrange
 
         // Act
@@ -35,6 +36,22 @@ class ItemTest {
         assertSame(_editionIdDouble, sut.getEditionId());
         assertEquals(_conditionDouble, sut.getCondition());
         assertSame(_descriptionDouble, sut.getDescription());
+    }
+
+    @Test
+    void reconstructionConstructorValidArgumentsCreatesItemWithGivenIdentity() {
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+
+        // Act
+        Item sut = new Item(itemIdDouble, _editionIdDouble, _conditionDouble, _descriptionDouble, SaleStatus.OnDirectSale);
+
+        // Assert
+        assertSame(itemIdDouble, sut.identity());
+        assertSame(_editionIdDouble, sut.getEditionId());
+        assertEquals(_conditionDouble, sut.getCondition());
+        assertSame(_descriptionDouble, sut.getDescription());
+        assertEquals(SaleStatus.OnDirectSale, sut.getSaleStatus());
     }
 
     @Test
@@ -280,6 +297,18 @@ class ItemTest {
         // Assert
         assertNotNull(result);
     }
+    @Test
+    void identityCalledTwiceReturnsSameItemIdInstance() {
+        // Arrange
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+
+        // Act
+        ItemId first = sut.identity();
+        ItemId second = sut.identity();
+
+        // Assert
+        assertSame(first, second);
+    }
 
     // ------------------------------------------------------------
     // sameAs
@@ -363,18 +392,6 @@ class ItemTest {
     }
 
     @Test
-    void testEqualsSameInstanceReturnsTrue() {
-        // Arrange
-        Item item = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
-
-        // Act
-        boolean result = item.equals(item);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
     void equalsDifferentItemsWithSameAttributesReturnsFalse() {
         // Arrange
         Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
@@ -385,6 +402,34 @@ class ItemTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void equalsDifferentInstancesWithSameItemIdReturnsTrue() {
+        // Arrange
+        ItemId sharedItemId = new ItemId();
+
+        Item first = new Item(
+                sharedItemId,
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.NotOnSale
+        );
+
+        Item second = new Item(
+                sharedItemId,
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.NotOnSale
+        );
+
+        // Act
+        boolean result = first.equals(second);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test

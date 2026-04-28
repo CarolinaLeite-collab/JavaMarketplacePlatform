@@ -24,15 +24,18 @@ public class SKU implements ValueObject {
         _value = generateRandomSKU();
     }
 
-    //needed for rebuilding an DirectSale object from persisted data
+    // Reconstruction from persisted value
     public SKU(String value) {
-        if (value == null || !value.matches(_format)) {
-            throw new IllegalArgumentException("Invalid SKU format");
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("SKU cannot be null or blank.");
+        }
+        if (!value.matches(_format)) {
+            throw new IllegalArgumentException("SKU must match format " + _format + ".");
         }
         _value = value;
     }
 
-    // Geração interna e controlada
+    // Internal and controlled creation
     private String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();   // hex + hífens
         String compact = uuid.replace("-", "");       // remove hífens

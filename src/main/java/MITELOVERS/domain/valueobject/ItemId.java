@@ -34,12 +34,16 @@ public final class ItemId implements DomainId {
         _sku = new SKU();
     }
 
-    //needed for rebuilding an DirectSale object from persisted data
+    //for reconstitution from persisted data
     public ItemId(String sku) {
         _sku = new SKU(sku);
     }
 
     public SKU getSku() { return _sku; }
+
+    // getValue() returns the underlying identifier value used for
+    // persistence and equality. This is a stable data representation.
+    public String getValue() { return _sku.getValue(); }
 
     @Override
     public boolean equals(Object o) {
@@ -48,6 +52,7 @@ public final class ItemId implements DomainId {
         return _sku.equals(other._sku);
     }
 
+    // String representation for logging and debugging
     @Override
     public String toString() {
         return _sku.toString();
