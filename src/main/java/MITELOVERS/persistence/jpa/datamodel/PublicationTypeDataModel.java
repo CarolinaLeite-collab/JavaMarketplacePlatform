@@ -23,10 +23,4 @@ public class PublicationTypeDataModel {
     @Id
     private String publicationTypeId;
 
-    public PublicationTypeDataModel(PublicationType publicationType) {
-
-        publicationTypeId = publicationType.identity().toString();
-
-    }
-
 }
