@@ -36,7 +36,7 @@ deactivate PT
 CTL -> REPO : containsOfIdentity(publicationTypeId)
 activate REPO
 
-REPO -> JPA : existsById(publicationTypeId)
+REPO -> JPA : existsById(publicationTypeId.toString)
 activate JPA
 
 database "DB" as DB
