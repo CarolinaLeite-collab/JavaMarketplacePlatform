@@ -3,6 +3,7 @@ package MITELOVERS.persistence.jpa.datamodel;
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * allowing its persistence in a database.
  */
 
+@Generated
 @Entity
 @Getter
 @NoArgsConstructor
