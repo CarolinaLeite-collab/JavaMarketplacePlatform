@@ -29,13 +29,13 @@ public class JpaPublicationTypeRepo implements IPublicationTypeRepo {
     @Override
     public PublicationType save(PublicationType publicationType) {
 
-        PublicationTypeDataModel dataModel = _assembler.domain2DM(publicationType);
+        PublicationTypeDataModel dataModel = _assembler.toDataModel(publicationType);
 
         _springDataRepo.save(dataModel);
 
         PublicationTypeDataModel savedDataModel = _springDataRepo.save(dataModel);
 
-        return _assembler.DM2Domain(savedDataModel);
+        return _assembler.toDomain(savedDataModel);
 
     }
 
@@ -57,7 +57,7 @@ public class JpaPublicationTypeRepo implements IPublicationTypeRepo {
         List<PublicationType> result = new ArrayList<>();
 
         _springDataRepo.findAll().forEach(
-                dm -> result.add(_assembler.DM2Domain(dm)));
+                dm -> result.add(_assembler.toDomain(dm)));
 
         return result;
 
@@ -69,7 +69,7 @@ public class JpaPublicationTypeRepo implements IPublicationTypeRepo {
         PublicationTypeDataModel dataModel = _springDataRepo.findById(id.toString())
                 .orElseThrow(() -> new IllegalArgumentException("PublicationType not found"));
 
-        return Optional.of(_assembler.DM2Domain(dataModel));
+        return Optional.of(_assembler.toDomain(dataModel));
 
     }
 
