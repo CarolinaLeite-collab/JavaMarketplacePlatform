@@ -20,7 +20,15 @@ public class PublicationType implements AggregateRoot<PublicationTypeId> {
     private final PublicationTypeId _id;
 
     PublicationType(String publicationTypeName) {
+
         _id = new PublicationTypeId(publicationTypeName);
+
+    }
+
+    PublicationType(PublicationTypeId id) {
+
+        _id = id;
+
     }
 
     @Override
