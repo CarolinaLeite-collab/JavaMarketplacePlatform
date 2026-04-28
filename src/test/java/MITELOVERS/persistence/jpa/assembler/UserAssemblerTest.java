@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class UserAssemblerTest {
 
     @Test
-    void domain2DMShouldMapIdFromUserIdentity() {
+    void toDataModelShouldMapIdFromUserIdentity() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -29,14 +29,14 @@ class UserAssemblerTest {
         when(userDouble.getName()).thenReturn(new Name("Pedro"));
 
         // Act
-        UserDataModel result = assembler.domain2DM(userDouble);
+        UserDataModel result = assembler.toDataModel(userDouble);
 
         // Assert
         assertEquals("pedro@mitelovers.com", result.getId());
     }
 
     @Test
-    void domain2DMShouldMapNameCorrectly() {
+    void toDataModelShouldMapNameCorrectly() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -49,14 +49,14 @@ class UserAssemblerTest {
         when(userDouble.getName()).thenReturn(new Name("Pedro"));
 
         // Act
-        UserDataModel result = assembler.domain2DM(userDouble);
+        UserDataModel result = assembler.toDataModel(userDouble);
 
         // Assert
         assertEquals("Pedro", result.getName());
     }
 
     @Test
-    void domain2DMShouldMapEmailCorrectly() {
+    void toDataModelShouldMapEmailCorrectly() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -70,14 +70,14 @@ class UserAssemblerTest {
         when(userDouble.getEmail()).thenReturn("pedro@mitelovers.com");
 
         // Act
-        UserDataModel result = assembler.domain2DM(userDouble);
+        UserDataModel result = assembler.toDataModel(userDouble);
 
         // Assert
         assertEquals("pedro@mitelovers.com", result.getEmail());
     }
 
     @Test
-    void domain2DMShouldThrowWhenUserIsNull() {
+    void toDataModelShouldThrowWhenUserIsNull() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -85,12 +85,12 @@ class UserAssemblerTest {
         UserAssembler assembler = new UserAssembler(factoryDouble);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.domain2DM(null));
+        assertThrows(IllegalArgumentException.class, () -> assembler.toDataModel(null));
     }
 
 
     @Test
-    void DM2DomainShouldDelegateToFactory() {
+    void toDomainShouldDelegateToFactory() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -107,14 +107,14 @@ class UserAssemblerTest {
 
 
         // Act
-        User result = assembler.DM2Domain(dmDouble);
+        User result = assembler.toDomain(dmDouble);
 
         // Assert
         assertEquals(userDouble, result);
     }
 
     @Test
-    void DM2DomainShouldThrowWhenDataModelIsNull() {
+    void toDomainShouldThrowWhenDataModelIsNull() {
         // Arrange
         UserFactory factoryDouble = mock(UserFactory.class);
 
@@ -122,7 +122,7 @@ class UserAssemblerTest {
         UserAssembler assembler = new UserAssembler(factoryDouble);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.DM2Domain(null));
+        assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
     }
 
 }
