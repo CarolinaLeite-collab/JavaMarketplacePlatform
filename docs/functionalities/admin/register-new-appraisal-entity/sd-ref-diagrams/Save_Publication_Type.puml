@@ -1,0 +1,100 @@
+@startuml
+'==== Title ====
+title "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+participant ":Register\nNewAppraisalEntity\nController" as CTL
+participant ":JPAAppraisalEntity\nRepo" as JPAREPO
+participant ":AppraisalEntity\nAssembler" as ASSMBLR
+participant ":IAppraisalEntity\nSpringDataRepo" as SDREPO
+participant ":AppraisalEntity\nFactory" as FACTORY
+database "DB" as DB
+
+activate CTL
+CTL -> JPAREPO : save(appraisalEntity)
+activate JPAREPO
+JPAREPO -> ASSMBLR : toDataModel(appraisalEntity)
+activate ASSMBLR
+create "dmToSave:AppraisalEntityDataModel"
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : <<create>>(appraisalEntity)
+ASSMBLR --> JPAREPO : dmToSave
+deactivate ASSMBLR
+JPAREPO -> SDREPO : savedDm = save(dmToSave)
+activate SDREPO
+SDREPO -> DB : save string based data
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : stringId = getId()
+activate "dmToSave:AppraisalEntityDataModel"
+deactivate "dmToSave:AppraisalEntityDataModel"
+
+create "appraisalEntityId:AppraisalEntityId"
+ASSMBLR -> "appraisalEntityId:AppraisalEntityId" : <<create>>(stringId)
+
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : stringName = getName()
+activate "dmToSave:AppraisalEntityDataModel"
+deactivate "dmToSave:AppraisalEntityDataModel"
+
+create "name:Name"
+ASSMBLR -> "name:Name" : <<create>>(stringName)
+
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : publicationTypeStringIds = getPublicationTypeStringIds()
+activate "dmToSave:AppraisalEntityDataModel"
+deactivate "dmToSave:AppraisalEntityDataModel"
+
+    loop for each publicationTypeStringId in publicationTypeStringIds
+
+    create "publicationTypeId:PublicationTypeId"
+    ASSMBLR -> "publicationTypeId:PublicationTypeId" : <<create>>(publicationTypeStringId)
+
+    ASSMBLR -> ASSMBLR : publicationTypeIds.add(publicationTypeId)
+
+    end loop
+
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : genreStringIds = getGenreStringIds()
+activate "dmToSave:AppraisalEntityDataModel"
+deactivate "dmToSave:AppraisalEntityDataModel"
+
+    loop for each genreStringId in genreStringIds
+
+    create "genreId:GenreId"
+    ASSMBLR -> "genreId:GenreId" : <<create>>(genreId)
+
+    ASSMBLR -> ASSMBLR : genreIds.add(genreId)
+
+    end loop
+
+ASSMBLR -> FACTORY : createAppraisalEntity(appraisalEntityId, name, publicationTypeIds, genreIds)
+activate FACTORY
+create "reconstructedAppraisalEntity:AppraisalEntity"
+FACTORY -->> "reconstructedAppraisalEntity:AppraisalEntity" : <<create>>(appraisalEntityId, name, publicationTypeIds, genreIds)
+FACTORY --> ASSMBLR : reconstructedAppraisalEntity
+deactivate FACTORY
+ASSMBLR --> JPAREPO : reconstructedAppraisalEntity
+deactivate ASSMBLR
+JPAREPO --> CTL : reconstructedAppraisalEntity
+
+ref over CTL
+[[../Register_New_Appraisal_Entity_SD.puml Back to Main Diagram]]
+end ref
+
+'deactivate CTL
+
+@enduml
