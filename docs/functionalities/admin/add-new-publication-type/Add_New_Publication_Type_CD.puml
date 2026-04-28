@@ -15,13 +15,6 @@ skinparam classAttributeIconSize 0
 
 class AddPublicationTypeUI
 
-package "persistence" {
-            package "mem" {
-                class MemPublicationTypeRepo {
-                }
-            }
-}
-
 package "controller" {
     class AddPublicationTypeController {
       + addPublicationType(publicationTypeName : String) : PublicationType
@@ -36,6 +29,7 @@ package "domain" {
 
         class PublicationTypeFactory <<Factory>>{
           + createPublicationType(publicationTypeName : String) : PublicationType
+          + createPublicationType(id : PublicationTypeId) : PublicationType
         }
 }
 
@@ -69,15 +63,17 @@ package "ddd" {
 
 ' ===== RELATIONSHIPS =====
 AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
-AddPublicationTypeController "1" --> "1" IPublicationTypeRepo: calls
+
+AddPublicationTypeController "1" ..> "1" IPublicationTypeRepo: <<use>>
 AddPublicationTypeController "1" --> "1" PublicationTypeFactory : invokes
 AddPublicationTypeController "1" .> "1" PublicationType : <<use>>
-MemPublicationTypeRepo ..|> IPublicationTypeRepo
+
 IPublicationTypeRepo --|> IRepository
 PublicationTypeFactory "1" ..> "1" PublicationType: <<create>>
-MemPublicationTypeRepo "1"--> "1" PublicationType: persists
-PublicationType "1" --> "1" PublicationTypeId: has
 AggregateRoot -|> DomainEntity
-PublicationType .|> AggregateRoot
+
+PublicationType "*" <-- "1"  IPublicationTypeRepo : persists
+PublicationType ...|> AggregateRoot
+PublicationType "1" --> "1" PublicationTypeId: has
 
 @enduml
