@@ -19,7 +19,6 @@ Package "domain" {
 
     Package "user" <<Folder>> #b0c4d4 {
         class User <<Entity>> <<Root>> {
-            +identity() : UserId
             +hasRole(role : Role) : boolean
             +hasEmail(email : Email) : boolean
             +addRole(role : Role) : void
@@ -28,10 +27,6 @@ Package "domain" {
             +getAddress() : Address
             +getPhone() : Phone
             +getRoles() : Set< Role >
-            +sameAs(Object) : boolean
-            +equals(Object) : boolean
-            +hashCode() : int
-            +toString() : String
         }
 
         class UserFactory <<Factory>> {
