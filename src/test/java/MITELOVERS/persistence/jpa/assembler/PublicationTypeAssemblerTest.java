@@ -4,7 +4,6 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,19 +19,11 @@ class PublicationTypeAssemblerTest {
 
     @BeforeEach
     void setUp() {
-        
+
         _factoryDouble = mock(PublicationTypeFactory.class);
         _publicationTypeDouble = mock(PublicationType.class);
         _publicationTypeIdDouble = mock(PublicationTypeId.class);
         _dataModelDouble = mock(PublicationTypeDataModel.class);
-        
-    }
-
-    @Test
-    void shouldConstructPublicationTypeAssembler() {
-
-        // SUT & Act
-        PublicationTypeAssembler assembler = new PublicationTypeAssembler(_factoryDouble);
 
     }
 
@@ -44,13 +35,14 @@ class PublicationTypeAssemblerTest {
         when(_publicationTypeIdDouble.toString()).thenReturn("BOOK");
 
         // SUT
-        PublicationTypeAssembler assembler = new PublicationTypeAssembler(_factoryDouble);
+        PublicationTypeAssembler ptAssembler = new PublicationTypeAssembler(_factoryDouble);
 
         // Act
-        PublicationTypeDataModel result = assembler.domain2DM(_publicationTypeDouble);
+        PublicationTypeDataModel ptDataModel = ptAssembler.toDataModel(_publicationTypeDouble);
+        String result = ptDataModel.getPublicationTypeId();
 
         // Assert
-        assertEquals("BOOK", result.getPublicationTypeId());
+        assertEquals("BOOK", result);
 
     }
 
@@ -62,10 +54,10 @@ class PublicationTypeAssemblerTest {
         when(_factoryDouble.createPublicationType(any(PublicationTypeId.class))).thenReturn(_publicationTypeDouble);
 
         // SUT
-        PublicationTypeAssembler assembler = new PublicationTypeAssembler(_factoryDouble);
+        PublicationTypeAssembler ptAssembler = new PublicationTypeAssembler(_factoryDouble);
 
         // Act
-        PublicationType result = assembler.DM2Domain(_dataModelDouble);
+        PublicationType result = ptAssembler.toDomain(_dataModelDouble);
 
         // Assert
         assertEquals(_publicationTypeDouble, result);
@@ -82,14 +74,14 @@ class PublicationTypeAssemblerTest {
         when(_factoryDouble.createPublicationType(any(PublicationTypeId.class))).thenReturn(_publicationTypeDouble);
 
         // SUT
-        PublicationTypeAssembler assembler = new PublicationTypeAssembler(_factoryDouble);
+        PublicationTypeAssembler ptAssembler = new PublicationTypeAssembler(_factoryDouble);
 
         // Act
-        PublicationTypeDataModel dm = assembler.domain2DM(_publicationTypeDouble);
-        PublicationType reconstructed = assembler.DM2Domain(_dataModelDouble);
+        PublicationTypeDataModel ptDataModel = ptAssembler.toDataModel(_publicationTypeDouble);
+        PublicationType result = ptAssembler.toDomain(_dataModelDouble);
 
         // Assert
-        assertEquals(_publicationTypeDouble, reconstructed);
+        assertEquals(_publicationTypeDouble, result);
 
     }
 

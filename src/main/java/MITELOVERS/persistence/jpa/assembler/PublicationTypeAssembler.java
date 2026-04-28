@@ -17,13 +17,13 @@ public class PublicationTypeAssembler {
 
     }
 
-    public PublicationTypeDataModel domain2DM(PublicationType publicationType) {
+    public PublicationTypeDataModel toDataModel(PublicationType publicationType) {
 
-        return new PublicationTypeDataModel(publicationType);
+        return new PublicationTypeDataModel(publicationType.identity().toString());
 
     }
 
-    public PublicationType DM2Domain(PublicationTypeDataModel dataModel) {
+    public PublicationType toDomain(PublicationTypeDataModel dataModel) {
 
         PublicationTypeId id = new PublicationTypeId(dataModel.getPublicationTypeId());
 
