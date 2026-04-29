@@ -7,24 +7,34 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class GetPublicListsByGenreControllerTest {
 
-    private IListOfItemsRepo _iListOfItemsRepoDouble;
+    @MockBean
+    IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @MockBean
+    UserId _userIdDouble;
+
+    @InjectMocks
+    GetPublicListsByGenreController _controller;
+
     private GenreId _genreIdDouble;
-    private UserId _userIdDouble;
 
     @BeforeEach
-    void setUp() {
-
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
+    void setUp() throws InstantiationException {
+        MockitoAnnotations.openMocks(this);
         _genreIdDouble = mock(GenreId.class);
-        _userIdDouble = mock(UserId.class);
     }
 
     @Test
@@ -36,9 +46,9 @@ class GetPublicListsByGenreControllerTest {
         when(listA.getUserId()).thenReturn(_userIdDouble);
         when(listA.getGenreId()).thenReturn(_genreIdDouble);
         when(listA.isPrivate()).thenReturn(false);
-
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(listA));
 
+        // SUT
         GetPublicListsByGenreController controller =
                 new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
@@ -54,14 +64,15 @@ class GetPublicListsByGenreControllerTest {
 
     @Test
     void controllerShouldThrowWhenGenreIsNull() {
+        // SUT
         GetPublicListsByGenreController controller =
                 new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
+        // Act & Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> controller.getPublicListsByGenre(null)
         );
-
         assertEquals("Genre is mandatory", ex.getMessage());
     }
 
@@ -70,6 +81,7 @@ class GetPublicListsByGenreControllerTest {
         // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
+        // SUT
         GetPublicListsByGenreController controller =
                 new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
@@ -89,12 +101,11 @@ class GetPublicListsByGenreControllerTest {
 
         when(pub.getGenreId()).thenReturn(_genreIdDouble);
         when(pub.isPrivate()).thenReturn(false);
-
         when(priv.getGenreId()).thenReturn(_genreIdDouble);
         when(priv.isPrivate()).thenReturn(true);
-
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(pub, priv));
 
+        // SUT
         GetPublicListsByGenreController controller =
                 new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
@@ -111,13 +122,12 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldIgnoreListsOfDifferentGenre() {
         // Arrange
         GenreId otherGenre = mock(GenreId.class);
-
         ListOfItems list = mock(ListOfItems.class);
         when(list.getGenreId()).thenReturn(otherGenre);
         when(list.isPrivate()).thenReturn(false);
-
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
 
+        // SUT
         GetPublicListsByGenreController controller =
                 new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
