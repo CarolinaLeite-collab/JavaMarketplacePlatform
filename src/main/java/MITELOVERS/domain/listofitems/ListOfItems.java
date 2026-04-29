@@ -16,11 +16,11 @@ import java.util.Objects;
 public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     private final ListOfItemsId _listOfItemsId;
-    private UserId _userId;
-    private String _name;
-    private GenreId _genreId;
+    private final UserId _userId;
+    private final String _name;
+    private final GenreId _genreId;
     private boolean _isPrivate;
-    private List<ItemId> _itemIds;
+    private final List<ItemId> _itemIds;
 
     // Used by the controller — generates a new ID
     public ListOfItems(UserId userId, String name, GenreId genreId) {
@@ -80,5 +80,13 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListOfItems other)) return false;
+        return Objects.equals(_listOfItemsId, other._listOfItemsId);
+    }
+
+    @Override
     public int hashCode() { return Objects.hash(_listOfItemsId); }
+
 }

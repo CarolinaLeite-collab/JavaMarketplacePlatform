@@ -292,4 +292,15 @@ class ListOfItemsTest {
                 () -> new ListOfItems(listOfItemsId, _user1IdDouble, "My List", null));
     }
 
+    @Test
+    void equalsShouldReturnTrueForSameId() {
+        // Arrange
+        ListOfItemsId id = mock(ListOfItemsId.class);
+        ListOfItems list1 = new ListOfItems(id, _user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(id, _user1IdDouble, "My List", _genre1IdDouble);
+
+        // Act & Assert
+        assertEquals(list1, list2);
+    }
+
 }
