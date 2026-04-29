@@ -47,7 +47,7 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
 
     AppraisalEntity(Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
 
-        this (new AppraisalEntityId(name.toString()),
+        this (new AppraisalEntityId(name),
                 name,
                 publicationTypesId,
                 genresId);

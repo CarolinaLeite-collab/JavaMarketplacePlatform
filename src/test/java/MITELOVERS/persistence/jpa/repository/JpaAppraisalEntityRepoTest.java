@@ -4,7 +4,6 @@ import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.valueobject.AppraisalEntityId;
 import MITELOVERS.persistence.jpa.assembler.AppraisalEntityAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AppraisalEntityDataModel;
-import MITELOVERS.persistence.jpa.repository.JpaAppraisalEntityRepo;
 import MITELOVERS.persistence.springdata.IAppraisalEntitySpringDataRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,7 +80,7 @@ class JpaAppraisalEntityRepoTest {
 
         // Assert
         assertEquals(1, resultList.size());
-        assertEquals("entity:I-Id", resultList.get(0).toString());
+        assertEquals("id", resultList.get(0).toString());
     }
 
     @Test
