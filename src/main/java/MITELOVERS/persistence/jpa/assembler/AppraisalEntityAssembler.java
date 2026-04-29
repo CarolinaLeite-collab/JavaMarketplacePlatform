@@ -52,11 +52,14 @@ public class AppraisalEntityAssembler {
 
     public AppraisalEntity toDomain(AppraisalEntityDataModel appraisalEntityDataModel) {
 
-        List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
-        List<GenreId> genreIds = new ArrayList<>();
+        String stringId = appraisalEntityDataModel.getId();
+        AppraisalEntityId appraisalEntityId = new AppraisalEntityId(stringId);
 
+        String stringName = appraisalEntityDataModel.getName();
+        Name name = new Name(stringName);
+
+        List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
         List <String> publicationTypeStringIds = appraisalEntityDataModel.getPublicationTypeIds();
-        List <String> genreStringIds = appraisalEntityDataModel.getGenresIds();
 
         for (String publicationTypeId : publicationTypeStringIds) {
 
@@ -64,16 +67,21 @@ public class AppraisalEntityAssembler {
 
         }
 
+        List<GenreId> genreIds = new ArrayList<>();
+        List <String> genreStringIds = appraisalEntityDataModel.getGenresIds();
+
         for (String genreId : genreStringIds) {
 
             genreIds.add(new GenreId(genreId));
 
         }
 
-        return _appraisalEntityFactory.createAppraisalEntity(new AppraisalEntityId(appraisalEntityDataModel.getId()),
-                new Name(appraisalEntityDataModel.getName()),
+        AppraisalEntity reconstructedAppraisalEntity = _appraisalEntityFactory.createAppraisalEntity(appraisalEntityId,
+                name,
                 publicationTypeIds,
                 genreIds);
+
+        return reconstructedAppraisalEntity;
     }
 
 }
