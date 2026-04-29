@@ -24,8 +24,10 @@ public class SKU implements ValueObject {
 
     // Used by the assembler — reconstructs from an existing SKU string
     public SKU(String value) {
-        if (value == null || !value.matches(_format))
-            throw new IllegalArgumentException("Invalid SKU format");
+        if (value == null || value.isBlank())
+            throw new IllegalArgumentException("SKU cannot be null or blank.");
+        if (!value.matches(_format))
+            throw new IllegalArgumentException("SKU must match format " + _format + ".");
         _value = value;
     }
 
