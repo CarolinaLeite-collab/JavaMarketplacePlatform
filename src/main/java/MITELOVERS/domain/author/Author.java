@@ -3,6 +3,7 @@ package MITELOVERS.domain.author;
 
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 
 import java.util.Objects;
 
@@ -13,23 +14,17 @@ import java.util.Objects;
 
 public class Author implements AggregateRoot<AuthorId> {
 
-    private final String _name;
+    private final Name _name;
     private final AuthorId _authorId;
 
 
-    Author (AuthorId authorId, String name) {
+    Author (AuthorId authorId, Name name) {
 
-        String trimmedName = Objects.requireNonNull(name, "Author name is required").trim();
-
-        if (trimmedName.isEmpty())
-            throw new IllegalArgumentException("Author name cannot be empty");
-
-        _name = trimmedName;
+        _name = Objects.requireNonNull(name, "Name cannot be null");
         _authorId = authorId;
-
     }
 
-    Author (String name) {
+    Author (Name name) {
         this(new AuthorId(name), name);
     }
 
@@ -46,22 +41,16 @@ public class Author implements AggregateRoot<AuthorId> {
 
         if (object instanceof Author other) {
 
-            return _name.equalsIgnoreCase(other._name);
+            return _name.equals(other._name);
 
         }
 
         return false;
     }
 
-    public String getName() {
+    public Name getName() {
 
         return _name;
-
-    }
-
-    public String getLowerCaseName() {
-
-        return _name.toLowerCase();
 
     }
 

@@ -24,15 +24,13 @@ public class AuthorId implements DomainId {
 
     private final String _id;
 
-    public AuthorId(String name) {
+    public AuthorId(Name name) {
 
-        if ( name == null || name.isBlank() ) {
-
-            throw new IllegalArgumentException("AuthorId cannot be null or blank");
-
+        if ( name == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
         }
 
-        String[] parts = name.trim().split("\\s+");
+        String[] parts = name.toString().split("\\s+");
         String lastName = parts[parts.length - 1];
 
         StringBuilder initials = new StringBuilder();
@@ -49,6 +47,15 @@ public class AuthorId implements DomainId {
 
         _id = lastName + " " + initials + "-" + code;
 
+    }
+
+    public AuthorId(String id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
+        }
+
+        _id = id;
     }
 
     @Override

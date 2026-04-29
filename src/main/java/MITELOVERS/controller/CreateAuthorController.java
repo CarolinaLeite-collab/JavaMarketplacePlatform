@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 
 /**
@@ -25,14 +26,14 @@ public class CreateAuthorController {
 
     }
 
-    public Author createAuthor (String authorName){
+    public Author createAuthor (Name authorName){
 
 
-        return addAuthor(authorName.trim());
+        return addAuthor(authorName);
 
     }
 
-    public Author addAuthor(String authorName) {
+    public Author addAuthor(Name authorName) {
 
         Author newAuthor = _authorFactory.createAuthor(authorName);
 

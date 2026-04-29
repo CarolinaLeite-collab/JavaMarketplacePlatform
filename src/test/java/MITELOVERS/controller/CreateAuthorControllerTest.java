@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ class CreateAuthorControllerTest {
     private Author _authorDouble;
     private UserId _userIdDouble;
     private AuthorFactory _authorFactoryDouble;
-    private String _authorName;
+    private Name _authorNameDouble;
 
     @BeforeEach
     void setUp() {
@@ -27,9 +28,9 @@ class CreateAuthorControllerTest {
         _authorDouble = mock(Author.class);
         _userIdDouble = mock(UserId.class);
 
-        _authorName = "Seneca";
+        _authorNameDouble = mock(Name.class);
 
-        when(_authorFactoryDouble.createAuthor(_authorName)).thenReturn(_authorDouble);
+        when(_authorFactoryDouble.createAuthor(_authorNameDouble)).thenReturn(_authorDouble);
         when(_iAuthorRepoDouble.save(_authorDouble)).thenReturn(_authorDouble);
 
     }
@@ -39,7 +40,7 @@ class CreateAuthorControllerTest {
     void testCreateAuthorControllerConstructor() {
 
         // SUT & Act
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
+        new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
     }
 
@@ -50,7 +51,7 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        Author result = controller.createAuthor("Seneca");
+        Author result = controller.createAuthor(_authorNameDouble);
 
         // Assert
         assertEquals(_authorDouble, result);
@@ -58,17 +59,20 @@ class CreateAuthorControllerTest {
     }
 
     @Test
-    void shouldTrimAuthorNameBeforeSaving() {
+    void shouldPassNameToFactoryWithoutModification() {
 
-        // Arrange & SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
+        // Arrange
+        CreateAuthorController controller =
+                new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
+
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn("   Tolstói   ");
 
         // Act
-        controller.createAuthor("   Tolstói   ");
+        controller.createAuthor(nameDouble);
 
         // Assert
-        verify(_authorFactoryDouble).createAuthor("Tolstói");
-
+        verify(_authorFactoryDouble).createAuthor(nameDouble);
     }
 
     @Test
@@ -78,11 +82,11 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        Author result = controller.addAuthor(_authorName);
+        Author result = controller.addAuthor(_authorNameDouble);
 
         // Assert
         assertEquals(_authorDouble, result);
-        verify(_authorFactoryDouble).createAuthor(_authorName);
+        verify(_authorFactoryDouble).createAuthor(_authorNameDouble);
         verify(_iAuthorRepoDouble).save(_authorDouble);
 
     }
@@ -94,10 +98,10 @@ class CreateAuthorControllerTest {
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        controller.addAuthor(_authorName);
+        controller.addAuthor(_authorNameDouble);
 
         // Assert
-        verify(_authorFactoryDouble).createAuthor(_authorName);
+        verify(_authorFactoryDouble).createAuthor(_authorNameDouble);
 
     }
 
