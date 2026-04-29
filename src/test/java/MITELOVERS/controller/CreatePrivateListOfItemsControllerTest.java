@@ -7,6 +7,7 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +25,13 @@ class CreatePrivateListOfItemsControllerTest {
     private UserId _userIdDouble;
     private GenreId _genreIdDouble;
     private Genre _genreDouble;
-    private Genre  _genre2Double;
+    private Genre _genre2Double;
     private ListOfItems _listOfItemsDouble;
     private ListOfItemsFactory _factoryDouble;
+    private Name _nameDouble;
 
     @BeforeEach
     void setUp() {
-
         _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
         _iGenreRepoDouble = mock(IGenreRepo.class);
         _userIdDouble = mock(UserId.class);
@@ -39,59 +40,55 @@ class CreatePrivateListOfItemsControllerTest {
         _genre2Double = mock(Genre.class);
         _listOfItemsDouble = mock(ListOfItems.class);
         _factoryDouble = mock(ListOfItemsFactory.class);
-
+        _nameDouble = new Name("My List");
     }
 
     @Test
     void testCreatePrivateListOfItemsController() {
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
-        assertNotNull(controller);
+        // SUT & Act & Assert
+        assertDoesNotThrow(() -> new CreatePrivateListOfItemsController(
+                _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble));
     }
 
     @Test
     void shouldCreateListSuccessfully() {
         // Arrange
         ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
-
         when(_listOfItemsDouble.identity()).thenReturn(listOfItemsId);
-
-        when(_factoryDouble.createListOfItems(_userIdDouble, "My List", _genreIdDouble))
+        when(_factoryDouble.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble))
                 .thenReturn(_listOfItemsDouble);
-
         when(_iListOfItemsRepoDouble.containsOfIdentity(_listOfItemsDouble.identity()))
                 .thenReturn(false);
 
+        // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
                         _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
 
         // Act
-        boolean result = controller.createListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        boolean result = controller.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
         // Assert
         assertTrue(result);
-        verify(_factoryDouble).createListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        verify(_factoryDouble).createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
         verify(_iListOfItemsRepoDouble).save(_listOfItemsDouble);
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
-        when(_factoryDouble.createListOfItems(_userIdDouble, "My List", _genreIdDouble))
+        when(_factoryDouble.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble))
                 .thenReturn(_listOfItemsDouble);
-
         when(_iListOfItemsRepoDouble.containsOfIdentity(_listOfItemsDouble.identity()))
-                .thenReturn(true); // duplicate
+                .thenReturn(true);
 
+        // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
                         _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
 
         // Act
-        ListOfItems result = controller.addListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        ListOfItems result = controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
         // Assert
         assertNull(result);
@@ -100,51 +97,63 @@ class CreatePrivateListOfItemsControllerTest {
 
     @Test
     void getListOfOfficialGenresDelegatesToRepo() {
+        // Arrange
         when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
+        // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
                         _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
 
+        // Act
         Iterable<Genre> result = controller.getListOfOfficialGenres();
 
+        // Assert
         assertNotNull(result);
         verify(_iGenreRepoDouble).findAll();
     }
 
     @Test
     void getListOfOfficialGenresReturnsCorrectList() {
+        // Arrange
         when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
+        // SUT
         CreatePrivateListOfItemsController controller =
                 new CreatePrivateListOfItemsController(
                         _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
 
+        // Act
         Iterable<Genre> result = controller.getListOfOfficialGenres();
         List<Genre> resultList = new ArrayList<>();
         result.forEach(resultList::add);
 
+        // Assert
         assertTrue(resultList.contains(_genreDouble));
         assertTrue(resultList.contains(_genre2Double));
     }
 
     @Test
     void addListOfItemsShouldReturnNewListWhenNotDuplicate() {
+        // Arrange
         ListOfItems newList = mock(ListOfItems.class);
         ListOfItemsId id = mock(ListOfItemsId.class);
 
         when(newList.identity()).thenReturn(id);
-        when(_factoryDouble.createListOfItems(_userIdDouble, "My List", _genreIdDouble))
+        when(_factoryDouble.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble))
                 .thenReturn(newList);
-
         when(_iListOfItemsRepoDouble.containsOfIdentity(id)).thenReturn(false);
 
+        // SUT
         CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(_iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
+                new CreatePrivateListOfItemsController(
+                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
 
-        ListOfItems result = controller.addListOfItems(_userIdDouble, "My List", _genreIdDouble);
+        // Act
+        ListOfItems result = controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
-        assertSame(newList, result);   // ⭐ THIS KILLS THE MUTANT
+        // Assert
+        assertSame(newList, result);
     }
 
 }
