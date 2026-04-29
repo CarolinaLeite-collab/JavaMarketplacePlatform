@@ -1,9 +1,10 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -15,24 +16,26 @@ import java.util.*;
  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemGenreRepo implements IGenreRepo {
-    private final Map<GenreId, Genre> DATA = new HashMap<>();
+    private final Map<GenreId, Genre> _data = new HashMap<>();
 
     @Override
     public Genre save(Genre genre) {
-        DATA.put(genre.identity(), genre);
+        _data.put(genre.identity(), genre);
         return genre;
     }
 
     @Override
     public Iterable<Genre> findAll() {
-        return DATA.values();
+        return _data.values();
     }
 
     @Override
     public List<GenreId> findAllKeys() {
 
-        return new ArrayList<>(DATA.keySet());
+        return new ArrayList<>(_data.keySet());
     }
 
     @Override
@@ -40,13 +43,13 @@ public class MemGenreRepo implements IGenreRepo {
         if (!containsOfIdentity(genreId)) {
             return Optional.empty();
         } else {
-            return Optional.of(DATA.get(genreId));
+            return Optional.of(_data.get(genreId));
         }
     }
 
     @Override
     public boolean containsOfIdentity(GenreId genreId) {
-        return DATA.containsKey(genreId);
+        return _data.containsKey(genreId);
     }
 }
 
