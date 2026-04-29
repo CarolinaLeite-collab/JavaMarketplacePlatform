@@ -19,7 +19,7 @@ package "controller" {
     class AddItemToListController {
         + getMyLists(userId : UserId) : Map<ListOfItemsId, String>
         + getItemsInMyLibrary(userId : UserId) : List<ItemDetailsDTO>
-        + addItemToList(itemId : ItemId, listOfItemsId : ListOfItemsId) : boolean
+        + addItemToList(itemId : ItemId, listName : Name, genreId : GenreId) : boolean
     }
 }
 
@@ -28,6 +28,7 @@ package "domain" {
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
             - _listOfItemsId : ListOfItemsId
+            - _name : Name
             - _itemIds : List<ItemId>
             + identity() : ListOfItemsId
             + addItem(itemId : ItemId) : void
@@ -44,6 +45,7 @@ package "domain" {
         class ListOfItemsId <<ValueObject>> #LightPink {}
         class ItemId <<ValueObject>> {}
         class UserId <<ValueObject>> {}
+        class Name <<ValueObject>> {}
     }
 }
 
@@ -69,6 +71,7 @@ IListOfItemsRepo --|> IRepository
 IListOfItemsRepo "1" -> "*" ListOfItems : persists
 
 ListOfItems "1" --> "1" ListOfItemsId : has
+ListOfItems "1" --> "1" Name : has
 ListOfItems "*" --> "*" ItemId : references
 
 ListOfItems .|> AggregateRoot
