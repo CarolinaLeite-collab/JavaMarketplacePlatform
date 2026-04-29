@@ -20,7 +20,7 @@ public class ListOfItemsAssembler {
 
     private final ListOfItemsFactory _listOfItemsFactory;
 
-    public ListOfItemsDataModel domain2DM(ListOfItems listOfItems) {
+    public ListOfItemsDataModel toDataModel(ListOfItems listOfItems) {
         if (listOfItems == null)
             throw new IllegalArgumentException("ListOfItems cannot be null");
 
@@ -31,23 +31,24 @@ public class ListOfItemsAssembler {
         return new ListOfItemsDataModel(
                 listOfItems.identity().toString(),
                 listOfItems.getUserId().toString(),
-                listOfItems.getName(),
+                listOfItems.getName().toString(),
                 listOfItems.getGenreId().toString(),
                 listOfItems.isPrivate(),
                 itemIds
         );
     }
 
-    public ListOfItems DM2Domain(ListOfItemsDataModel dm) {
+    public ListOfItems toDomain(ListOfItemsDataModel dm) {
         if (dm == null)
             throw new IllegalArgumentException("ListOfItemsDataModel cannot be null");
 
         ListOfItemsId listOfItemsId = new ListOfItemsId(dm.getListOfItemsId());
         UserId userId = new UserId(new Email(dm.getUserId()));
+        Name name = new Name(dm.getName());
         GenreId genreId = new GenreId(dm.getGenreId());
 
         ListOfItems listOfItems = _listOfItemsFactory.createListOfItems(
-                listOfItemsId, userId, dm.getName(), genreId);
+                listOfItemsId, userId, name, genreId);
 
         if (!dm.isPrivate())
             listOfItems.makePublic();
@@ -59,18 +60,18 @@ public class ListOfItemsAssembler {
         return listOfItems;
     }
 
-    public List<ListOfItemsDataModel> domainList2DMList(List<ListOfItems> listOfItems) {
+    public List<ListOfItemsDataModel> toDataModelList(List<ListOfItems> listOfItems) {
         List<ListOfItemsDataModel> list = new ArrayList<>();
         for (ListOfItems item : listOfItems) {
-            list.add(domain2DM(item));
+            list.add(toDataModel(item));
         }
         return list;
     }
 
-    public List<ListOfItems> dmList2DomainList(List<ListOfItemsDataModel> dataModels) {
+    public List<ListOfItems> toDomainList(List<ListOfItemsDataModel> dataModels) {
         List<ListOfItems> list = new ArrayList<>();
         for (ListOfItemsDataModel dm : dataModels) {
-            list.add(DM2Domain(dm));
+            list.add(toDomain(dm));
         }
         return list;
     }
