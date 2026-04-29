@@ -24,7 +24,12 @@ public class AuthorAssembler {
         if (author == null)
             throw new IllegalArgumentException("Author cannot be null");
 
-        return new AuthorDataModel(author.identity().toString(), author.getName().toString());
+        String stringId = author.identity().toString();
+        String stringName = author.getName().toString();
+
+        AuthorDataModel dataModelToSave = new AuthorDataModel(stringId, stringName);
+
+        return dataModelToSave;
     }
 
     public Author toDomain(AuthorDataModel dataModel) {
