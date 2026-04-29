@@ -4,26 +4,23 @@ import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Represents a list of items created by a user.
- */
 public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     private final ListOfItemsId _listOfItemsId;
     private final UserId _userId;
-    private final String _name;
+    private final Name _name;
     private final GenreId _genreId;
     private boolean _isPrivate;
     private final List<ItemId> _itemIds;
 
-    // Used by the controller — generates a new ID
-    public ListOfItems(UserId userId, String name, GenreId genreId) {
+    public ListOfItems(UserId userId, Name name, GenreId genreId) {
         if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
         if (name == null) throw new IllegalArgumentException("List name cannot be null");
         if (genreId == null) throw new IllegalArgumentException("GenreID cannot be null");
@@ -36,8 +33,7 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
         _itemIds = new ArrayList<>();
     }
 
-    // Used by the assembler — reconstructs from an existing ID
-    public ListOfItems(ListOfItemsId listOfItemsId, UserId userId, String name, GenreId genreId) {
+    public ListOfItems(ListOfItemsId listOfItemsId, UserId userId, Name name, GenreId genreId) {
         if (listOfItemsId == null) throw new IllegalArgumentException("ListOfItemsId cannot be null");
         if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
         if (name == null) throw new IllegalArgumentException("List name cannot be null");
@@ -56,7 +52,7 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     public UserId getUserId() { return _userId; }
 
-    public String getName() { return _name; }
+    public Name getName() { return _name; }
 
     public GenreId getGenreId() { return _genreId; }
 
