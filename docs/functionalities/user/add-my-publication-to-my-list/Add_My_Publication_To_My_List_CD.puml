@@ -27,9 +27,7 @@ package "domain" {
 
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
-            - _listOfItemsId : ListOfItemsId
-            - _name : Name
-            - _itemIds : List<ItemId>
+            - _isPrivate : boolean
             + identity() : ListOfItemsId
             + addItem(itemId : ItemId) : void
             + getItemIds() : List<ItemId>
@@ -38,6 +36,9 @@ package "domain" {
 
     package "repository" {
         interface IListOfItemsRepo <<Interface>> {
+        }
+        interface ILibraryRepo <<Interface>> {
+            + getItemsInLibraryByUserId(userId : UserId) : List<ItemId>
         }
     }
 
@@ -66,6 +67,7 @@ package "ddd" {
 
 AddItemToListUI "1" ..> "1" AddItemToListController : invokes
 AddItemToListController "1" ..> "1" IListOfItemsRepo : «use»
+AddItemToListController "1" ..> "1" ILibraryRepo : «use»
 
 IListOfItemsRepo --|> IRepository
 IListOfItemsRepo "1" -> "*" ListOfItems : persists
