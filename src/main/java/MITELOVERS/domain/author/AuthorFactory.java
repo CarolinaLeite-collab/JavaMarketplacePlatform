@@ -1,6 +1,7 @@
 package MITELOVERS.domain.author;
 
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,13 +14,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthorFactory {
 
-    public Author createAuthor(String authorName){
+    public Author createAuthor(Name authorName){
 
         return new Author(authorName);
 
     }
 
-    public Author createAuthor(AuthorId authorId, String authorName){
+    public Author createAuthor(AuthorId authorId, Name authorName){
 
         return new Author(authorId, authorName);
 

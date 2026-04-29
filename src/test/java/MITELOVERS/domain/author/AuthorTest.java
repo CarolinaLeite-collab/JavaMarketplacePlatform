@@ -1,10 +1,12 @@
 package MITELOVERS.domain.author;
 
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class AuthorTest {
@@ -13,10 +15,10 @@ public class AuthorTest {
     void testConstructor() {
 
         // Arrange
-        String name = "Eça de Queirós";
+        Name nameDouble = mock(Name.class);
 
         // Act & SUT
-        new Author(name);
+        new Author(nameDouble);
 
     }
 
@@ -25,10 +27,10 @@ public class AuthorTest {
 
         // Arrange
         AuthorId authorId = mock(AuthorId.class);
-        String name = "Eça de Queirós";
+        Name nameDouble = mock(Name.class);
 
         // Act & SUT
-        new Author(authorId, name);
+        new Author(authorId, nameDouble);
 
     }
 
@@ -36,13 +38,13 @@ public class AuthorTest {
     void validNameAuthor() {
 
         // Arrange
-        String name = "Eça de Queirós";
+        Name nameDouble = mock(Name.class);
 
         // Act & SUT
-        Author a = new Author(name);
+        Author a = new Author(nameDouble);
 
         // Assert
-        assertEquals("Eça de Queirós", a.getName());
+        assertEquals(nameDouble, a.getName());
 
     }
 
@@ -51,101 +53,25 @@ public class AuthorTest {
 
         // Arrange
         AuthorId authorId = mock(AuthorId.class);
-        String name = "Eça de Queirós";
+        Name nameDouble = mock(Name.class);
 
         // Act & SUT
-        Author a = new Author(authorId, name);
+        Author a = new Author(authorId, nameDouble);
 
         // Assert
-        assertEquals("Eça de Queirós", a.getName());
+        assertEquals(nameDouble, a.getName());
         assertNotNull(a.identity());
 
     }
 
     @Test
-    void authorNameIsTrimmed() {
-
-        // Arrange
-        String name = " Eça de Queirós ";
-
-        // Act & SUT
-        Author a = new Author(name);
-
-        // Assert
-        assertEquals("Eça de Queirós", a.getName());
-
-    }
-
-    @Test
-    void capitalizationNameTest() {
-
-        // Arrange & SUT
-        Author a2 = new Author("Eça De Queirós");
-        Author a3 = new Author("EÇA DE QUEIRÓS");
-        Author a4 = new Author("eça de queirós");
-
-        // Act & Assert
-        assertEquals(a2.getLowerCaseName(), a3.getLowerCaseName());
-        assertEquals(a2.getLowerCaseName(), a4.getLowerCaseName());
-
-    }
-
-    @Test
-    void authorNameIsTrimmedAndLowerCased() {
-
-        // Arrange & SUT
-        Author a = new Author("  EÇA DE QUEIRÓS  ");
-
-        // Act
-        String lowerName = a.getLowerCaseName();
-
-        // Assert
-        assertEquals("eça de queirós", lowerName);
-
-    }
-
-    @Test
-    void rejectEmptyNameAuthor() {
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Author("   "));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNameIsEmptyWithAuthorId() {
-
-        // Arrange
-        AuthorId authorId = mock(AuthorId.class);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new Author(authorId, "   "));
-    }
-
-    @Test
-    void rejectNullNameAuthor() {
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Author(null));
-    }
-
-    @Test
-    void shouldThrowNullPointerExceptionWhenNameIsNull() {
-
-        // Arrange
-        AuthorId authorId = mock(AuthorId.class);
-
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> new Author(authorId, null));
-    }
-
-
-    @Test
     void testEqualsWithSameObject() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act & Assert
         assertTrue(a.equals(a));
@@ -155,8 +81,11 @@ public class AuthorTest {
     @Test
     void equalsShouldReturnFalseWhenNull() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act & Assert
         assertFalse(a.equals(null));
@@ -165,11 +94,14 @@ public class AuthorTest {
     @Test
     void equalsShouldReturnFalseWhenDifferentType() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act & Assert
-        assertFalse(a.equals("string"));
+        assertFalse(a.equals("Name"));
     }
 
     @Test
@@ -177,10 +109,11 @@ public class AuthorTest {
 
         // Arrange
         AuthorId id = mock(AuthorId.class);
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a1 = new Author(id, "Seneca");
-        Author a2 = new Author(id, "Seneca");
+        Author a1 = new Author(id, nameDouble);
+        Author a2 = new Author(id, nameDouble);
 
         // Act & Assert
         assertTrue(a1.equals(a2));
@@ -192,10 +125,11 @@ public class AuthorTest {
         // Arrange
         AuthorId id1 = mock(AuthorId.class);
         AuthorId id2 = mock(AuthorId.class);
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a1 = new Author(id1, "Seneca");
-        Author a2 = new Author(id2, "Seneca");
+        Author a1 = new Author(id1, nameDouble);
+        Author a2 = new Author(id2, nameDouble);
 
         // Act & Assert
         assertFalse(a1.equals(a2));
@@ -206,10 +140,11 @@ public class AuthorTest {
 
         // Arrange
         AuthorId id = mock(AuthorId.class);
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a = new Author(id, "Seneca");
-        Author a2 = new Author(id, "SeneCA");
+        Author a = new Author(id, nameDouble);
+        Author a2 = new Author(id, nameDouble);
 
         // Act & Assert
         assertEquals(a.hashCode(), a2.hashCode());
@@ -222,10 +157,11 @@ public class AuthorTest {
         // Arrange
         AuthorId id1 = mock(AuthorId.class);
         AuthorId id2 = mock(AuthorId.class);
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a = new Author(id1, "Seneca");
-        Author a2 = new Author(id2, "SeneCAR");
+        Author a = new Author(id1, nameDouble);
+        Author a2 = new Author(id2, nameDouble);
 
         // Act & Assert
         assertNotEquals(a.hashCode(), a2.hashCode());
@@ -234,9 +170,12 @@ public class AuthorTest {
 
     @Test
     void identityShouldReturnAuthorId() {
+        
+        // Arrange
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author author = new Author("Seneca");
+        Author author = new Author(nameDouble);
 
         // Act
         AuthorId id = author.identity();
@@ -248,10 +187,13 @@ public class AuthorTest {
 
     @Test
     void identityShouldBeNotEqualForSameName() {
+        
+        // Arrange
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Seneca");
+        Author a1 = new Author(nameDouble);
+        Author a2 = new Author(nameDouble);
 
         // Act & Assert
         assertNotEquals(a1.identity(), a2.identity());
@@ -260,10 +202,13 @@ public class AuthorTest {
 
     @Test
     void identityShouldBeDifferentForDifferentNames() {
+        
+        // Arrange
+        Name nameDouble = mock(Name.class);
 
         // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Justinian");
+        Author a1 = new Author(nameDouble);
+        Author a2 = new Author(nameDouble);
 
         // Act & Assert
         assertNotEquals(a1.identity(), a2.identity());
@@ -271,26 +216,18 @@ public class AuthorTest {
     }
 
     @Test
-    void sameAsShouldReturnTrueIgnoringCase() {
-
-        // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("SENECA");
-
-        // Act
-        boolean result = a1.sameAs(a2);
-
-        // Assert
-        assertTrue(result);
-
-    }
-
-    @Test
     void sameAsShouldReturnFalseForDifferentNames() {
 
+        // Arrange
+        Name nameDouble1 = mock(Name.class);
+        when(nameDouble1.toString()).thenReturn("Seneca");
+
+        Name nameDouble2 = mock(Name.class);
+        when(nameDouble2.toString()).thenReturn("Justinian");
+
         // Arrange & SUT
-        Author a1 = new Author("Seneca");
-        Author a2 = new Author("Justinian");
+        Author a1 = new Author(nameDouble1);
+        Author a2 = new Author(nameDouble2);
 
         // Act
         boolean result = a1.sameAs(a2);
@@ -303,8 +240,11 @@ public class AuthorTest {
     @Test
     void sameAsShouldReturnFalseWhenNull() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act
         boolean result = a.sameAs(null);
@@ -317,11 +257,15 @@ public class AuthorTest {
     @Test
     void sameAsShouldReturnFalseForDifferentType() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn("Seneca");
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act
-        boolean result = a.sameAs("Seneca");
+        boolean result = a.sameAs(nameDouble);
 
         // Assert
         assertFalse(result);
@@ -331,8 +275,11 @@ public class AuthorTest {
     @Test
     void sameAsShouldReturnTrueForSameObject() {
 
+        // Arrange
+        Name nameDouble = mock(Name.class);
+
         // Arrange & SUT
-        Author a = new Author("Seneca");
+        Author a = new Author(nameDouble);
 
         // Act
         boolean result = a.sameAs(a);

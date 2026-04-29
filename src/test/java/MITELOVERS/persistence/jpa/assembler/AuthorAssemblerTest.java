@@ -3,6 +3,7 @@ package MITELOVERS.persistence.jpa.assembler;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
 class AuthorAssemblerTest {
 
@@ -19,10 +19,12 @@ class AuthorAssemblerTest {
 
         // Arrange
         AuthorFactory authorFactoryDouble = mock(AuthorFactory.class);
+        Name nameDouble = mock(Name.class);
         Author authorDouble = mock(Author.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
 
-        when(authorDouble.getName()).thenReturn("Eça de Queirós");
+        when(nameDouble.toString()).thenReturn("Eça de Queirós");
+        when(authorDouble.getName()).thenReturn(nameDouble);
         when(authorDouble.identity()).thenReturn(authorIdDouble);
         when(authorIdDouble.toString()).thenReturn("1");
 
@@ -58,15 +60,16 @@ class AuthorAssemblerTest {
         AuthorFactory authorFactoryDouble = mock(AuthorFactory.class);
         AuthorDataModel dataModelDouble = mock(AuthorDataModel.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
+        Name nameDouble = mock(Name.class);
         Author authorDouble = mock(Author.class);
 
         when(dataModelDouble.getId()).thenReturn("Lev Nikoláievitch Tolstói");
         when(dataModelDouble.getName()).thenReturn("Eça de Queirós");
 
-        when(authorFactoryDouble.createAuthor(any(AuthorId.class), eq("Eça de Queirós")))
+        when(authorFactoryDouble.createAuthor(any(AuthorId.class), any(Name.class)))
                 .thenReturn(authorDouble);
 
-        when(authorDouble.getName()).thenReturn("Eça de Queirós");
+        when(authorDouble.getName()).thenReturn(nameDouble);
         when(authorDouble.identity()).thenReturn(authorIdDouble);
         when(authorIdDouble.toString()).thenReturn("1");
 
@@ -77,7 +80,7 @@ class AuthorAssemblerTest {
         Author author = assembler.toDomain(dataModelDouble);
 
         // Assert
-        assertEquals("Eça de Queirós", author.getName());
+        assertEquals(nameDouble, author.getName());
         assertEquals("1", author.identity().toString());
     }
 
@@ -101,16 +104,17 @@ class AuthorAssemblerTest {
         // Arrange
         AuthorFactory authorFactoryDouble = mock(AuthorFactory.class);
         AuthorDataModel dataModelDouble = mock(AuthorDataModel.class);
+        Name nameDouble = mock(Name.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         Author authorDouble = mock(Author.class);
 
         when(dataModelDouble.getId()).thenReturn("1");
         when(dataModelDouble.getName()).thenReturn("Eça de Queirós");
 
-        when(authorFactoryDouble.createAuthor(any(AuthorId.class), eq("Eça de Queirós")))
+        when(authorFactoryDouble.createAuthor(any(AuthorId.class), any(Name.class)))
                 .thenReturn(authorDouble);
 
-        when(authorDouble.getName()).thenReturn("Eça de Queirós");
+        when(authorDouble.getName()).thenReturn(nameDouble);
         when(authorDouble.identity()).thenReturn(authorIdDouble);
         when(authorIdDouble.toString()).thenReturn("1");
 
@@ -122,7 +126,7 @@ class AuthorAssemblerTest {
 
         // Assert
         assertNotNull(author);
-        assertEquals("Eça de Queirós", author.getName());
+        assertEquals(nameDouble, author.getName());
         assertEquals("1", author.identity().toString());
     }
 }
