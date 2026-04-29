@@ -27,7 +27,7 @@ package "domain" {
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
             - _listOfItemsId : ListOfItemsId
-            - _name : String
+            - _name : Name
             - _isPrivate : boolean
             + identity() : ListOfItemsId
             + makePublic() : void
@@ -43,6 +43,7 @@ package "domain" {
     package "valueobject" {
         class ListOfItemsId <<ValueObject>> #LightPink {}
         class UserId <<ValueObject>> {}
+        class Name <<ValueObject>> {}
     }
 }
 
@@ -68,6 +69,7 @@ IListOfItemsRepo --|> IRepository
 IListOfItemsRepo "1" -> "*" ListOfItems : persists
 
 ListOfItems "1" --> "1" ListOfItemsId : has
+ListOfItems "1" --> "1" Name : has
 ListOfItems "*" --> "1" UserId : references
 
 ListOfItems .|> AggregateRoot
