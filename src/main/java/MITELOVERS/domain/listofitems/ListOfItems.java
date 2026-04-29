@@ -11,6 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a list of items created by a user.
+ * <p>
+ * Each list has a {@link Name}, a {@link GenreId}, and an associated {@link UserId}.
+ * By default, all lists are private. Two lists are considered equal if they share
+ * the same {@link ListOfItemsId}.
+ * </p>
+ */
 public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     private final ListOfItemsId _listOfItemsId;
@@ -20,6 +28,12 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     private boolean _isPrivate;
     private final List<ItemId> _itemIds;
 
+    /**
+     * Creates a new {@link ListOfItems} with a generated {@link ListOfItemsId}.
+     * Used by the controller during creation.
+     *
+     * @throws IllegalArgumentException if any argument is null.
+     */
     public ListOfItems(UserId userId, Name name, GenreId genreId) {
         if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
         if (name == null) throw new IllegalArgumentException("List name cannot be null");
@@ -33,6 +47,12 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
         _itemIds = new ArrayList<>();
     }
 
+    /**
+     * Reconstructs a {@link ListOfItems} from an existing {@link ListOfItemsId}.
+     * Used by the assembler during reconstruction from persistence.
+     *
+     * @throws IllegalArgumentException if any argument is null.
+     */
     public ListOfItems(ListOfItemsId listOfItemsId, UserId userId, Name name, GenreId genreId) {
         if (listOfItemsId == null) throw new IllegalArgumentException("ListOfItemsId cannot be null");
         if (userId == null) throw new IllegalArgumentException("UserID cannot be null");
@@ -62,6 +82,12 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     public List<ItemId> getItemIds() { return List.copyOf(_itemIds); }
 
+    /**
+     * Adds an {@link ItemId} to this list.
+     *
+     * @throws IllegalArgumentException if itemId is null.
+     * @throws IllegalStateException    if the item is already in the list.
+     */
     public void addItem(ItemId itemId) {
         if (itemId == null) throw new IllegalArgumentException("Item is mandatory");
         if (_itemIds.contains(itemId)) throw new IllegalStateException("Item already in list");
@@ -70,9 +96,7 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
 
     @Override
     public boolean sameAs(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof ListOfItems other)) return false;
-        return Objects.equals(_listOfItemsId, other._listOfItemsId);
+        return equals(object);
     }
 
     @Override
