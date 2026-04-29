@@ -24,7 +24,7 @@ participant ":ListOfItemsFactory" as Factory
 "Ctl" -> IRepo : save(newList)
 activate IRepo
 
-IRepo -> Assembler : domain2DM(newList)
+IRepo -> Assembler : toDataModel(newList)
 activate Assembler
 create "dataModel:ListOfItemsDataModel"
 Assembler -->> "dataModel:ListOfItemsDataModel" : <<create>>(newList)
@@ -43,7 +43,7 @@ jpa -->> "savedDataModel:ListOfItemsDataModel" : <<create>>(string based data)
 jpa --> IRepo : savedDataModel
 deactivate jpa
 
-IRepo -> Assembler : DM2Domain(savedDataModel)
+IRepo -> Assembler : toDomain(savedDataModel)
 activate Assembler
 
 Assembler -> "savedDataModel:ListOfItemsDataModel" : getListOfItemsId()
@@ -76,7 +76,7 @@ IRepo --> Ctl : savedList
 deactivate IRepo
 
 ref over Ctl
-[[../Create_ListOfItems_SD.puml Back to Main Diagram]]
+[[../To_Publicly_Share_A_List_Of_Mine_SD.puml Back to Main Diagram]]
 end ref
 
 @enduml
