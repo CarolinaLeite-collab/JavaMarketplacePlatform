@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +44,8 @@ class JpaGenreRepoTest {
 
     @Test
     void testAConstructor() {
-        new JpaGenreRepo(_genreSpringDataRepoDouble, _genreAssemblerDouble);
+        // Assert
+        assertNotNull(_jpaGenreRepo);
     }
 
     @Test
@@ -124,7 +123,6 @@ class JpaGenreRepoTest {
     void testOfIdentityShouldReturnEmptyWhenNotFound() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(genreIdDouble.toString()).thenReturn("Missing");
         when(_genreSpringDataRepoDouble.findById(genreIdDouble.toString())).thenReturn(Optional.empty());
 
         // Act
