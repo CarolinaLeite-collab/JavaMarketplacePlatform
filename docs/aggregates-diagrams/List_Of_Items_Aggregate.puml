@@ -24,7 +24,7 @@ Package "domain" {
             + getGenreId() : GenreId
             + isPrivate() : boolean
             + makePublic() : void
-            + getItemId() : List<ItemId>
+            + getItemIds() : List<ItemId>
             + addItem(itemId : ItemId) : void
         }
         Class ListOfItemsFactory <<Factory>> {
@@ -47,18 +47,11 @@ Package "domain" {
     }
 }
 
-Package "persistence" {
-
-    Package "mem" {
-        Class "MemListOfItemsRepo" as MemRepo <<Repo>> {
-        }
-    }
-}
-
 Package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(entity : T) : T
         +findAll() : Iterable<T>
+        +findAllKeys() : List<ID>
         +ofIdentity(id : ID) : Optional<T>
         +containsOfIdentity(id : ID) : boolean
     }
@@ -77,10 +70,10 @@ ListOfItemsRoot "1" --> "1" Id : has
 ListOfItemsRoot "*" ..> "1" UserId : references
 ListOfItemsRoot "*" ..> "1" GenreId : references
 
-MemRepo .|> IRepo
 IRepo ---|> IRepository
+IRepo "1" -> "1" ListOfItemsRoot : persists
 
+ListOfItemsRoot .|> AggregateRoot
 AggregateRoot --|> DomainEntity
-AggregateRoot ..|> ListOfItemsRoot
 
 @enduml
