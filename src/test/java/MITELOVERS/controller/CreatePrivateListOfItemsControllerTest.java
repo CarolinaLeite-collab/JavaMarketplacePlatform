@@ -11,6 +11,10 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,36 +22,46 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class CreatePrivateListOfItemsControllerTest {
 
-    private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private IGenreRepo _iGenreRepoDouble;
-    private UserId _userIdDouble;
+    @MockBean
+    IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @MockBean
+    IGenreRepo _iGenreRepoDouble;
+
+    @MockBean
+    ListOfItemsFactory _factoryDouble;
+
+    @MockBean
+    UserId _userIdDouble;
+
+    @InjectMocks
+    CreatePrivateListOfItemsController _controller;
+
     private GenreId _genreIdDouble;
     private Genre _genreDouble;
     private Genre _genre2Double;
     private ListOfItems _listOfItemsDouble;
-    private ListOfItemsFactory _factoryDouble;
     private Name _nameDouble;
 
     @BeforeEach
-    void setUp() {
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _iGenreRepoDouble = mock(IGenreRepo.class);
-        _userIdDouble = mock(UserId.class);
+    void setUp() throws InstantiationException {
+        MockitoAnnotations.openMocks(this);
+
         _genreIdDouble = mock(GenreId.class);
         _genreDouble = mock(Genre.class);
         _genre2Double = mock(Genre.class);
         _listOfItemsDouble = mock(ListOfItems.class);
-        _factoryDouble = mock(ListOfItemsFactory.class);
         _nameDouble = new Name("My List");
     }
 
     @Test
     void testCreatePrivateListOfItemsController() {
-        // SUT & Act & Assert
-        assertDoesNotThrow(() -> new CreatePrivateListOfItemsController(
-                _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble));
+        // SUT
+        _controller = new CreatePrivateListOfItemsController(
+                _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
     }
 
     @Test
@@ -96,24 +110,6 @@ class CreatePrivateListOfItemsControllerTest {
     }
 
     @Test
-    void getListOfOfficialGenresDelegatesToRepo() {
-        // Arrange
-        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
-
-        // SUT
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
-        // Act
-        Iterable<Genre> result = controller.getListOfOfficialGenres();
-
-        // Assert
-        assertNotNull(result);
-        verify(_iGenreRepoDouble).findAll();
-    }
-
-    @Test
     void getListOfOfficialGenresReturnsCorrectList() {
         // Arrange
         when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
@@ -155,5 +151,4 @@ class CreatePrivateListOfItemsControllerTest {
         // Assert
         assertSame(newList, result);
     }
-
 }
