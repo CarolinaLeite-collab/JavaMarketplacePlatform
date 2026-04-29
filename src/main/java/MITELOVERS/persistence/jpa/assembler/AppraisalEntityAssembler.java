@@ -27,7 +27,7 @@ public class AppraisalEntityAssembler {
 
     private final AppraisalEntityFactory _appraisalEntityFactory;
 
-    public AppraisalEntityDataModel domain2DM(AppraisalEntity appraisalEntity) {
+    public AppraisalEntityDataModel toDataModel(AppraisalEntity appraisalEntity) {
 
         List<PublicationTypeId> publicationTypeIds = appraisalEntity.getPublicationTypeIds();
         List<GenreId> GenreIds = appraisalEntity.getGenreIds();
@@ -38,8 +38,8 @@ public class AppraisalEntityAssembler {
             publicationTypeStringIds.add(publicationTypeId.toString());
         }
 
-        for (GenreId GenreId : GenreIds) {
-            genreStringIds.add(GenreId.toString());
+        for (GenreId genreId : GenreIds) {
+            genreStringIds.add(genreId.toString());
         }
 
         return new AppraisalEntityDataModel(appraisalEntity.identity().toString(),
@@ -50,7 +50,7 @@ public class AppraisalEntityAssembler {
 
     }
 
-    public AppraisalEntity DM2domain(AppraisalEntityDataModel appraisalEntityDataModel) {
+    public AppraisalEntity toDomain(AppraisalEntityDataModel appraisalEntityDataModel) {
 
         List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
         List<GenreId> genreIds = new ArrayList<>();
