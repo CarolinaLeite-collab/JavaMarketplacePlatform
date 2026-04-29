@@ -42,27 +42,27 @@ class JpaListOfItemsRepoTest {
     }
 
     @Test
-    void saveShouldDelegateToAssemblerAndReturnReconstructedDomain() {
+    void saveShouldDelegateToAssemblerAndSpringDataRepo() {
         // Arrange
-        when(_assemblerDouble.domain2DM(_listDouble)).thenReturn(_dmDouble);
+        when(_assemblerDouble.toDataModel(_listDouble)).thenReturn(_dmDouble);
         when(_springDataRepoDouble.save(_dmDouble)).thenReturn(_savedDmDouble);
-        when(_assemblerDouble.DM2Domain(_savedDmDouble)).thenReturn(_listResultDouble);
+        when(_assemblerDouble.toDomain(_savedDmDouble)).thenReturn(_listResultDouble);
 
         // Act
         ListOfItems result = _repo.save(_listDouble);
 
         // Assert
         assertSame(_listResultDouble, result);
-        verify(_assemblerDouble).domain2DM(_listDouble);
+        verify(_assemblerDouble).toDataModel(_listDouble);
         verify(_springDataRepoDouble).save(_dmDouble);
-        verify(_assemblerDouble).DM2Domain(_savedDmDouble);
+        verify(_assemblerDouble).toDomain(_savedDmDouble);
     }
 
     @Test
     void findAllShouldReturnMappedDomainObjects() {
         // Arrange
         when(_springDataRepoDouble.findAll()).thenReturn(List.of(_dmDouble));
-        when(_assemblerDouble.DM2Domain(_dmDouble)).thenReturn(_listDouble);
+        when(_assemblerDouble.toDomain(_dmDouble)).thenReturn(_listDouble);
 
         // Act
         Iterable<ListOfItems> result = _repo.findAll();
@@ -77,7 +77,7 @@ class JpaListOfItemsRepoTest {
     void ofIdentityShouldReturnMappedDomainObjectWhenExists() {
         // Arrange
         when(_springDataRepoDouble.findById("LOI-ABC123")).thenReturn(Optional.of(_dmDouble));
-        when(_assemblerDouble.DM2Domain(_dmDouble)).thenReturn(_listDouble);
+        when(_assemblerDouble.toDomain(_dmDouble)).thenReturn(_listDouble);
 
         // Act
         Optional<ListOfItems> result = _repo.ofIdentity(_listIdDouble);

@@ -29,9 +29,9 @@ public class JpaListOfItemsRepo implements IListOfItemsRepo {
 
     @Override
     public ListOfItems save(ListOfItems entity) {
-        ListOfItemsDataModel dm = _assembler.domain2DM(entity);
+        ListOfItemsDataModel dm = _assembler.toDataModel(entity);
         ListOfItemsDataModel savedDm = _springDataRepo.save(dm);
-        return _assembler.DM2Domain(savedDm);
+        return _assembler.toDomain(savedDm);
     }
 
     @Override
@@ -39,7 +39,7 @@ public class JpaListOfItemsRepo implements IListOfItemsRepo {
         Iterable<ListOfItemsDataModel> dms = _springDataRepo.findAll();
         List<ListOfItems> list = new ArrayList<>();
         for (ListOfItemsDataModel dm : dms) {
-            list.add(_assembler.DM2Domain(dm));
+            list.add(_assembler.toDomain(dm));
         }
         return list;
     }
@@ -58,11 +58,12 @@ public class JpaListOfItemsRepo implements IListOfItemsRepo {
     public Optional<ListOfItems> ofIdentity(ListOfItemsId id) {
         ListOfItemsDataModel dm = _springDataRepo.findById(id.toString())
                 .orElseThrow(() -> new IllegalArgumentException("ListOfItems not found!"));
-        return Optional.of(_assembler.DM2Domain(dm));
+        return Optional.of(_assembler.toDomain(dm));
     }
 
     @Override
     public boolean containsOfIdentity(ListOfItemsId id) {
         return _springDataRepo.existsById(id.toString());
     }
+
 }
