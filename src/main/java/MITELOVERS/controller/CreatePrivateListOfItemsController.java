@@ -8,16 +8,10 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.persistence.mem.MemListOfItemsRepo;
 
 /**
  * Controller responsible for handling the creation of private lists of items for a user.
- * <p>
- * This class delegates the actual creation logic to {@link IListOfItemsRepo}
- * and providing access to official genres from {@link IGenreRepo}.
- * </p>
  */
-
 public class CreatePrivateListOfItemsController {
 
     private final IListOfItemsRepo _iListOfItemsRepo;
@@ -40,20 +34,18 @@ public class CreatePrivateListOfItemsController {
     }
 
     public boolean createListOfItems(UserId userId, String name, GenreId genreId) {
-
         addListOfItems(userId, name, genreId);
-
         return true;
     }
 
     public ListOfItems addListOfItems(UserId userId, String name, GenreId genreId) {
         ListOfItems newList = _listOfItemsFactory.createListOfItems(userId, name, genreId);
-        ListOfItemsId _id = newList.identity();
+        ListOfItemsId id = newList.identity();
 
-        if (_iListOfItemsRepo.containsOfIdentity(_id))
+        if (_iListOfItemsRepo.containsOfIdentity(id))
             return null;
 
         _iListOfItemsRepo.save(newList);
-        return newList;   //Not yet called - future service layer
+        return newList;
     }
 }
