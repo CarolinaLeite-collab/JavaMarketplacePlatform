@@ -3,6 +3,7 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ class MemListOfItemsRepoTest {
         // Arrange
         ListOfItems created = mock(ListOfItems.class);
         when(created.identity()).thenReturn(_listIdDouble);
-        when(created.getName()).thenReturn("My List");
+        when(created.getName()).thenReturn(new Name("My List"));
 
         // SUT
         MemListOfItemsRepo repo = new MemListOfItemsRepo();
@@ -79,7 +80,7 @@ class MemListOfItemsRepoTest {
         assertAll(
                 () -> assertNotNull(result),
                 () -> assertEquals(1, finalCount),
-                () -> assertEquals("My List", result.getName())
+                () -> assertEquals(new Name("My List"), result.getName())
         );
     }
 
