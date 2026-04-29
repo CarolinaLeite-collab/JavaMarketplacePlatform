@@ -26,11 +26,6 @@ package "domain" {
 
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
-            - _listOfItemsId : ListOfItemsId
-            - _userId : UserId
-            - _name : Name
-            - _genreId : GenreId
-            - _itemIds : List<ItemId>
             - _isPrivate : boolean
             + identity() : ListOfItemsId
             + getItemIds() : List<ItemId>
@@ -44,12 +39,13 @@ package "domain" {
     package "repository" {
         interface IListOfItemsRepo <<Interface>> {
         }
+        interface IGenreRepo <<Interface>> {
+            + getListOfOfficialGenres() : Map<GenreId, String>
+        }
     }
 
     package "valueobject" {
-        class ListOfItemsId <<ValueObject>> #LightPink {
-            - _loiId : String
-        }
+        class ListOfItemsId <<ValueObject>> #LightPink {}
         class UserId <<ValueObject>> {}
         class GenreId <<ValueObject>> {}
         class ItemId <<ValueObject>> {}
@@ -73,6 +69,7 @@ package "ddd" {
 }
 
 CreatePrivateListOfItemsUI "1" ..> "1" CreateListOfItemsController : invokes
+CreateListOfItemsController "1" ..> "1" IGenreRepo : «use»
 CreateListOfItemsController "1" ..> "1" IListOfItemsRepo : «use»
 CreateListOfItemsController "1" ..> "1" ListOfItemsFactory : «use»
 
