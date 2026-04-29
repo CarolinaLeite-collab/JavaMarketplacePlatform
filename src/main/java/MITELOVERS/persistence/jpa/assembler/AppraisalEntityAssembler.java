@@ -29,24 +29,30 @@ public class AppraisalEntityAssembler {
 
     public AppraisalEntityDataModel toDataModel(AppraisalEntity appraisalEntity) {
 
+        String stringId = appraisalEntity.identity().toString();
+        String stringName = appraisalEntity.getName().getName();
+
         List<PublicationTypeId> publicationTypeIds = appraisalEntity.getPublicationTypeIds();
-        List<GenreId> GenreIds = appraisalEntity.getGenreIds();
-        List<String> publicationTypeStringIds = new ArrayList<>();
-        List<String> genreStringIds = new ArrayList<>();
+        List<String> stringPublicationTypeIds = new ArrayList<>();
 
         for (PublicationTypeId publicationTypeId : publicationTypeIds) {
-            publicationTypeStringIds.add(publicationTypeId.toString());
+            stringPublicationTypeIds.add(publicationTypeId.toString());
         }
 
-        for (GenreId genreId : GenreIds) {
-            genreStringIds.add(genreId.toString());
+        List<GenreId> genreIds = appraisalEntity.getGenreIds();
+        List<String> stringGenreIds = new ArrayList<>();
+
+        for (GenreId genreId : genreIds) {
+            stringGenreIds.add(genreId.toString());
         }
 
-        return new AppraisalEntityDataModel(appraisalEntity.identity().toString(),
-                appraisalEntity.getName().getName(),
-                publicationTypeStringIds,
-                genreStringIds
+        AppraisalEntityDataModel dmToSave = new AppraisalEntityDataModel(stringId,
+                stringName,
+                stringPublicationTypeIds,
+                stringGenreIds
         );
+
+        return dmToSave;
 
     }
 
