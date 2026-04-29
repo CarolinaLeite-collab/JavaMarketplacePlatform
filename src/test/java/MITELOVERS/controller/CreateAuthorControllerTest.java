@@ -7,30 +7,39 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class CreateAuthorControllerTest {
 
-    private IAuthorRepo _iAuthorRepoDouble;
-    private Author _authorDouble;
+    @MockBean
+    IAuthorRepo _iAuthorRepoDouble;
+
+    @MockBean
+    AuthorFactory _authorFactoryDouble;
+
+    @InjectMocks
+    CreateAuthorController _createAuthorController;
+
     private UserId _userIdDouble;
-    private AuthorFactory _authorFactoryDouble;
-    private Name _authorNameDouble;
+    private Author _authorDouble;
+    private Name _nameDouble;
+
 
     @BeforeEach
     void setUp() {
 
-        _authorFactoryDouble = mock(AuthorFactory.class);
-
-        _iAuthorRepoDouble = mock(IAuthorRepo.class);
         _authorDouble = mock(Author.class);
         _userIdDouble = mock(UserId.class);
 
-        _authorNameDouble = mock(Name.class);
+        _nameDouble = mock(Name.class);
 
-        when(_authorFactoryDouble.createAuthor(_authorNameDouble)).thenReturn(_authorDouble);
+        when(_authorFactoryDouble.createAuthor(_nameDouble)).thenReturn(_authorDouble);
         when(_iAuthorRepoDouble.save(_authorDouble)).thenReturn(_authorDouble);
 
     }
@@ -40,22 +49,7 @@ class CreateAuthorControllerTest {
     void testCreateAuthorControllerConstructor() {
 
         // SUT & Act
-        new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
-
-    }
-
-    @Test
-    void shouldCreateAuthorSuccessfully() {
-
-        // SUT
-        CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
-
-        // Act
-        Author result = controller.createAuthor(_authorNameDouble);
-
-        // Assert
-        assertEquals(_authorDouble, result);
-
+        _createAuthorController = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
     }
 
     @Test
@@ -76,32 +70,32 @@ class CreateAuthorControllerTest {
     }
 
     @Test
-    void addAuthorShouldCreateAndSaveAuthor() {
+    void createAuthorShouldCreateAndSaveAuthor() {
 
         // Arrange & SUT
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        Author result = controller.addAuthor(_authorNameDouble);
+        Author result = controller.createAuthor(_nameDouble);
 
         // Assert
         assertEquals(_authorDouble, result);
-        verify(_authorFactoryDouble).createAuthor(_authorNameDouble);
+        verify(_authorFactoryDouble).createAuthor(_nameDouble);
         verify(_iAuthorRepoDouble).save(_authorDouble);
 
     }
 
     @Test
-    void addAuthorShouldCallAuthorFactoryWithCorrectName() {
+    void createAuthorShouldCallAuthorFactoryWithCorrectName() {
 
         // SUT
         CreateAuthorController controller = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble, _userIdDouble);
 
         // Act
-        controller.addAuthor(_authorNameDouble);
+        controller.createAuthor(_nameDouble);
 
         // Assert
-        verify(_authorFactoryDouble).createAuthor(_authorNameDouble);
+        verify(_authorFactoryDouble).createAuthor(_nameDouble);
 
     }
 
