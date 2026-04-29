@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ class GetPublicListsByGenreControllerTest {
         // Arrange
         ListOfItems listA = mock(ListOfItems.class);
 
-        when(listA.getName()).thenReturn("List A");
+        when(listA.getName()).thenReturn(new Name("List A"));
         when(listA.getUserId()).thenReturn(_userIdDouble);
         when(listA.getGenreId()).thenReturn(_genreIdDouble);
         when(listA.isPrivate()).thenReturn(false);
@@ -46,7 +47,7 @@ class GetPublicListsByGenreControllerTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("List A", result.get(0).getName());
+        assertEquals(new Name("List A"), result.get(0).getName());
         assertEquals(_userIdDouble, result.get(0).getUserId());
         verify(_iListOfItemsRepoDouble).findAll();
     }
