@@ -1,10 +1,7 @@
 @startuml
-'https://plantuml.com/sequence-diagram
+title "As a user, I want to publicly share a List of mine" SD
 hide footbox
-title To publicly share a List of mine.
 
-
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -15,39 +12,56 @@ skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
+autonumber
+autoactivate off
 
-actor User
+actor "User"
 participant ":ShareListPubliclyUI" as UI
-participant ":ShareListPublicly\nController" as Ctl
-participant ":IListOfItems\nRepo" as IListsRepo
-participant ":MemoListOfItems\nRepo" as MemListsRepo
-participant "selectedList:ListOfItems" as list
+participant ":ShareListPubliclyController" as Ctl
+participant ":IListOfItemsRepo" as IListRepo
 
-
-User -> UI : I want to publicly share one List of mine.
+"User" -> UI : I want to publicly share one of my lists
 activate UI
+
 UI -> Ctl : findListsByUser(userId)
 activate Ctl
-Ctl -> MemListsRepo : findListsByUser(userId)
-activate MemListsRepo
-MemListsRepo -> MemListsRepo : copy
-MemListsRepo --> Ctl : copyListOfLists
-deactivate MemListsRepo
-Ctl --> UI : copyListOfLists
+Ctl -> IListRepo : findListsByUserId(userId)
+activate IListRepo
+IListRepo --> Ctl : Map<ListOfItemsId, String>
+deactivate IListRepo
+Ctl --> UI : Map<ListOfItemsId, String>
 deactivate Ctl
-UI --> User : What List do you want to share?
+
+UI --> "User" : What list do you want to share?
 deactivate UI
-User -> UI : listsOfItemsId
+"User" -> UI : listOfItemsId
 activate UI
-UI -> Ctl : shareListPublicly\n(listsOfItemsId)
+
+UI -> Ctl : shareListPublicly(listOfItemsId)
 activate Ctl
-Ctl -> list: switchVisibility()
+
+Ctl -> IListRepo : ofIdentity(listOfItemsId)
+activate IListRepo
+IListRepo --> Ctl : list
+deactivate IListRepo
+
+Ctl -> "list:ListOfItems" : makePublic()
+activate "list:ListOfItems"
+deactivate "list:ListOfItems"
+
+Ctl -> IListRepo : save(list)
+
+ref over IListRepo
+[[sd-ref-diagrams/Save_ListOfItems.puml Save list and return saved domain object]]
+end ref
+
+activate IListRepo
+IListRepo --> Ctl : savedList
+deactivate IListRepo
+
 Ctl --> UI : true
 deactivate Ctl
-UI --> User : List is now public
+UI --> "User" : List is now public!
 deactivate UI
-
-
-
 
 @enduml
