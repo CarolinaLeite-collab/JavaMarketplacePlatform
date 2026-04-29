@@ -21,9 +21,6 @@ public class ListOfItemsAssembler {
     private final ListOfItemsFactory _listOfItemsFactory;
 
     public ListOfItemsDataModel toDataModel(ListOfItems listOfItems) {
-        if (listOfItems == null)
-            throw new IllegalArgumentException("ListOfItems cannot be null");
-
         List<String> itemIds = listOfItems.getItemIds().stream()
                 .map(ItemId::toString)
                 .toList();
@@ -39,9 +36,6 @@ public class ListOfItemsAssembler {
     }
 
     public ListOfItems toDomain(ListOfItemsDataModel dm) {
-        if (dm == null)
-            throw new IllegalArgumentException("ListOfItemsDataModel cannot be null");
-
         ListOfItemsId listOfItemsId = new ListOfItemsId(dm.getListOfItemsId());
         UserId userId = new UserId(new Email(dm.getUserId()));
         Name name = new Name(dm.getName());

@@ -15,13 +15,11 @@ import static org.mockito.Mockito.*;
 class ListOfItemsAssemblerTest {
 
     private ListOfItemsFactory _factoryDouble;
-    private ListOfItemsAssembler _assembler;
     private ListOfItems _listDouble;
 
     @BeforeEach
     void setUp() {
         _factoryDouble = mock(ListOfItemsFactory.class);
-        _assembler = new ListOfItemsAssembler(_factoryDouble);
         _listDouble = mock(ListOfItems.class);
 
         when(_listDouble.identity()).thenReturn(new ListOfItemsId("LOI-ABC123"));
@@ -34,31 +32,50 @@ class ListOfItemsAssemblerTest {
 
     @Test
     void toDataModelShouldMapIdCorrectly() {
-        ListOfItemsDataModel result = _assembler.toDataModel(_listDouble);
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
+        // Act
+        ListOfItemsDataModel result = assembler.toDataModel(_listDouble);
+
+        // Assert
         assertEquals("LOI-ABC123", result.getListOfItemsId());
     }
 
     @Test
     void toDataModelShouldMapUserIdCorrectly() {
-        ListOfItemsDataModel result = _assembler.toDataModel(_listDouble);
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
+        // Act
+        ListOfItemsDataModel result = assembler.toDataModel(_listDouble);
+
+        // Assert
         assertEquals("user@mitelovers.com", result.getUserId());
     }
 
     @Test
     void toDataModelShouldMapNameCorrectly() {
-        ListOfItemsDataModel result = _assembler.toDataModel(_listDouble);
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
+        // Act
+        ListOfItemsDataModel result = assembler.toDataModel(_listDouble);
+
+        // Assert
         assertEquals("My List", result.getName());
     }
 
     @Test
     void toDataModelShouldMapGenreIdCorrectly() {
-        ListOfItemsDataModel result = _assembler.toDataModel(_listDouble);
-        assertEquals("FICTION", result.getGenreId());
-    }
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
 
-    @Test
-    void toDataModelShouldThrowWhenListOfItemsIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> _assembler.toDataModel(null));
+        // Act
+        ListOfItemsDataModel result = assembler.toDataModel(_listDouble);
+
+        // Assert
+        assertEquals("FICTION", result.getGenreId());
     }
 
     @Test
@@ -78,16 +95,14 @@ class ListOfItemsAssemblerTest {
                 any(Name.class), any(GenreId.class)))
                 .thenReturn(listDouble);
 
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
         // Act
-        ListOfItems result = _assembler.toDomain(dmDouble);
+        ListOfItems result = assembler.toDomain(dmDouble);
 
         // Assert
         assertEquals(listDouble, result);
-    }
-
-    @Test
-    void toDomainShouldThrowWhenDataModelIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> _assembler.toDomain(null));
     }
 
     @Test
@@ -107,8 +122,11 @@ class ListOfItemsAssemblerTest {
                 any(Name.class), any(GenreId.class)))
                 .thenReturn(listDouble);
 
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
         // Act
-        _assembler.toDomain(dmDouble);
+        assembler.toDomain(dmDouble);
 
         // Assert
         verify(listDouble).makePublic();
@@ -125,8 +143,11 @@ class ListOfItemsAssemblerTest {
         when(listDouble2.isPrivate()).thenReturn(true);
         when(listDouble2.getItemIds()).thenReturn(List.of());
 
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
         // Act
-        List<ListOfItemsDataModel> result = _assembler.toDataModelList(List.of(_listDouble, listDouble2));
+        List<ListOfItemsDataModel> result = assembler.toDataModelList(List.of(_listDouble, listDouble2));
 
         // Assert
         assertEquals(2, result.size());
@@ -134,7 +155,13 @@ class ListOfItemsAssemblerTest {
 
     @Test
     void toDataModelListShouldReturnEmptyWhenInputIsEmpty() {
-        List<ListOfItemsDataModel> result = _assembler.toDataModelList(List.of());
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
+        // Act
+        List<ListOfItemsDataModel> result = assembler.toDataModelList(List.of());
+
+        // Assert
         assertTrue(result.isEmpty());
     }
 
@@ -165,8 +192,11 @@ class ListOfItemsAssemblerTest {
                 .thenReturn(_listDouble)
                 .thenReturn(listDouble2);
 
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
         // Act
-        List<ListOfItems> result = _assembler.toDomainList(List.of(dmDouble1, dmDouble2));
+        List<ListOfItems> result = assembler.toDomainList(List.of(dmDouble1, dmDouble2));
 
         // Assert
         assertEquals(2, result.size());
@@ -174,7 +204,13 @@ class ListOfItemsAssemblerTest {
 
     @Test
     void toDomainListShouldReturnEmptyWhenInputIsEmpty() {
-        List<ListOfItems> result = _assembler.toDomainList(List.of());
+        // SUT
+        ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
+
+        // Act
+        List<ListOfItems> result = assembler.toDomainList(List.of());
+
+        // Assert
         assertTrue(result.isEmpty());
     }
 
