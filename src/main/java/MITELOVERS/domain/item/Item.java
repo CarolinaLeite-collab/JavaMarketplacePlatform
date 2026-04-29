@@ -38,6 +38,14 @@ public class Item implements AggregateRoot<ItemId> {
         _saleStatus = SaleStatus.NotOnSale;
     }
 
+    Item(ItemId itemId, EditionId editionId, Condition condition, Description description, SaleStatus saleStatus) {
+        _itemId = itemId;
+        _editionId = editionId;
+        _condition = condition;
+        _description = description;
+        _saleStatus = saleStatus;
+    }
+
     @Override
     public ItemId identity() {
         return _itemId;
