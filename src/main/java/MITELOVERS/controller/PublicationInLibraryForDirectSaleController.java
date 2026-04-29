@@ -9,7 +9,7 @@ import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
 
-import java.time.Period;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -42,7 +42,7 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Period timeLimit) {
+    public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Duration timeLimit) {
 
 
         DirectSale directSale =  _directSaleFactory.createDirectSale(itemsId, price, timeLimit);

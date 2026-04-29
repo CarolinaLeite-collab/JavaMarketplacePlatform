@@ -44,6 +44,55 @@ class SKUTest {
     }
 
     @Test
+    void constructorWithValidStringShouldCreateSKUWithGivenValue() {
+        // Arrange
+        String value = "ABCDEF1234";
+
+        // Act
+        SKU sut = new SKU(value);
+
+        // Assert
+        assertEquals(value, sut.getValue());
+        assertEquals(value, sut.toString());
+    }
+
+    @Test
+    void constructorWithNullStringShouldThrowIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new SKU(null)
+        );
+
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void constructorWithBlankStringShouldThrowIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new SKU("   ")
+        );
+
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void constructorWithStringNotMatchingFormatShouldThrowIllegalArgumentException() {
+        // Arrange
+        String invalidValue = "invalid!";
+
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new SKU(invalidValue)
+        );
+
+        assertEquals("SKU must match format ^[A-F0-9]{10}$.", exception.getMessage());
+    }
+
+    @Test
     void SKUShouldBeEqualToItself() {
         // SUT
         SKU sut = new SKU();
@@ -53,6 +102,21 @@ class SKUTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    void equalsShouldReturnTrueForSKUsWithSameStringValue() {
+        // Arrange
+        String value = "ABCDEF1234";
+        SKU sut = new SKU(value);
+        SKU other = new SKU(value);
+
+        // Act
+        boolean result = sut.equals(other);
+
+        // Assert
+        assertTrue(result);
+        assertEquals(sut.hashCode(), other.hashCode());
     }
 
     @Test
@@ -176,3 +240,4 @@ class SKUTest {
     }
 
 }
+

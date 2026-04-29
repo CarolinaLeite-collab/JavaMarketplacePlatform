@@ -8,12 +8,48 @@ class ItemIdTest {
 
     @Test
     void constructorShouldCreateItemId() {
-        // SUT
+        // Act + SUT
         ItemId sut = new ItemId();
 
         // Assert
         assertNotNull(sut);
     }
+
+    @Test
+    void constructorWithValidStringShouldCreateItemIdWithGivenValue() {
+        // Arrange
+        String skuValue = "ABCDEF1234";
+
+        // Act + SUT
+        ItemId sut = new ItemId(skuValue);
+
+        // Assert
+        assertEquals(skuValue, sut.toString());
+        assertEquals(skuValue, sut.getSku().toString());
+    }
+
+    @Test
+    void constructorWithNullStringShouldThrowIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ItemId(null)
+        );
+
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
+    }
+
+    @Test
+    void constructorWithBlankStringShouldThrowIllegalArgumentException() {
+        // Act + Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> new ItemId("   ")
+        );
+
+        assertEquals("SKU cannot be null or blank.", exception.getMessage());
+    }
+
 
     @Test
     void getSKUShouldReturnNonNullSku() {
@@ -37,6 +73,23 @@ class ItemIdTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    void equalsShouldReturnTrueForItemIdsWithSameStringValue() {
+        // Arrange
+        String skuValue = "ABCDEF1234";
+
+        //SUT
+        ItemId sut = new ItemId(skuValue);
+        ItemId other = new ItemId(skuValue);
+
+        // Act
+        boolean result = sut.equals(other);
+
+        // Assert
+        assertTrue(result);
+        assertEquals(sut.hashCode(), other.hashCode());
     }
 
     @Test
