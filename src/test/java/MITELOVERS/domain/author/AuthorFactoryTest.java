@@ -64,32 +64,4 @@ class AuthorFactoryTest {
         assertThrows(IllegalArgumentException.class,
                 () -> factory.createAuthor(null));
     }
-
-//    @Test
-//    void shouldThrowExceptionWhenConstructorWithAuthorIdHaveNameNull() {
-//        // arrange
-//        AuthorId authorId = mock(AuthorId.class);
-//
-//        //SUT
-//        AuthorFactory factory = new AuthorFactory();
-//
-//        // act & assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> factory.createAuthor(authorId, null));
-//    }
-
-//    @Test
-//    void shouldThrowExceptionWhenNameIsEmpty() {
-//        // arrange
-//        AuthorId authorId = mock(AuthorId.class);
-//        Name authorName = mock(Name.class);
-//        when(authorName.toString()).thenReturn("  ");
-//
-//        //SUT
-//        AuthorFactory factory = new AuthorFactory();
-//
-//        // act & assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> factory.createAuthor(authorId, authorName));
-//    }
 }
