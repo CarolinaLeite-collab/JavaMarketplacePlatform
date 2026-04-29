@@ -16,21 +16,17 @@ Package "domain" {
 
     Package listofitems #B0C4DE {
         Class "ListOfItems" as ListOfItemsRoot <<Root>> <<Entity>> {
-            - _name: String
             - _isPrivate : boolean
-            - _itemIds : List<ItemId>
-            + getUserId() : UserId
-            + getName() : String
-            + getGenreId() : GenreId
-            + isPrivate() : boolean
-            + makePublic() : void
+            + identity() : ListOfItemsId
             + getItemIds() : List<ItemId>
             + addItem(itemId : ItemId) : void
+            + isPrivate() : boolean
+            + makePublic() : void
         }
         Class ListOfItemsFactory <<Factory>> {
-            + createListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
-            + createListOfItems(listOfItemsId : ListOfItemsId, userId : UserId, name : String, genreId : GenreId) : ListOfItems
-            + createPublicListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+            + createListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
+            + createListOfItems(listOfItemsId : ListOfItemsId, userId : UserId, name : Name, genreId : GenreId) : ListOfItems
+            + createPublicListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
         }
     }
 
@@ -43,6 +39,7 @@ Package "domain" {
         Class "ItemId" as ItemId <<ValueObject>> {}
         Class "UserId" as UserId <<ValueObject>> {}
         Class "GenreId" as GenreId <<ValueObject>> {}
+        Class "Name" as Name <<ValueObject>> {}
         Class "ListOfItemsId" as Id <<ValueObject>> #LightPink {}
     }
 }
@@ -62,16 +59,14 @@ Package "ddd" {
     interface AggregateRoot<ID> <<Interface>> {}
 }
 
-' === Interactions === '
-
 ListOfItemsFactory ..> ListOfItemsRoot : <<create>>
 ListOfItemsRoot "1" o-- "*" ItemId : aggregates
 ListOfItemsRoot "1" --> "1" Id : has
 ListOfItemsRoot "*" ..> "1" UserId : references
 ListOfItemsRoot "*" ..> "1" GenreId : references
+ListOfItemsRoot "1" ..> "1" Name : references
 
 IRepo ---|> IRepository
-IRepo "1" -> "1" ListOfItemsRoot : persists
 
 ListOfItemsRoot .|> AggregateRoot
 AggregateRoot --|> DomainEntity
