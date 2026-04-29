@@ -2,15 +2,16 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class ShareListPubliclyControllerTest {
 
@@ -70,6 +71,45 @@ class ShareListPubliclyControllerTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shareListPubliclyShouldCallMakePublicAndSave() {
+        // Arrange
+        ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
+        ListOfItems listDouble = mock(ListOfItems.class);
+
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
+                .thenReturn(Optional.of(listDouble));
+
+        // SUT
+        ShareListPubliclyController controller =
+                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+
+        // Act
+        boolean result = controller.shareListPublicly(listIdDouble);
+
+        // Assert
+        assertTrue(result);
+        verify(listDouble).makePublic();
+        verify(_iListOfItemsRepoDouble).save(listDouble);
+    }
+
+    @Test
+    void shareListPubliclyShouldThrowWhenListNotFound() {
+        // Arrange
+        ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
+
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
+                .thenReturn(Optional.empty());
+
+        // SUT
+        ShareListPubliclyController controller =
+                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class,
+                () -> controller.shareListPublicly(listIdDouble));
     }
 
 }
