@@ -18,7 +18,7 @@ class CreatePrivateListOfItemsUI
 package "controller" {
     class CreateListOfItemsController {
         + getAllGenres() : Map<GenreId, String>
-        + createListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+        + createListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
     }
 }
 
@@ -28,7 +28,7 @@ package "domain" {
         class ListOfItems <<Root>> <<Entity>> {
             - _listOfItemsId : ListOfItemsId
             - _userId : UserId
-            - _name : String
+            - _name : Name
             - _genreId : GenreId
             - _itemIds : List<ItemId>
             - _isPrivate : boolean
@@ -37,14 +37,13 @@ package "domain" {
             + addItem(itemId : ItemId) : void
         }
         class ListOfItemsFactory <<Factory>> {
-            + createListOfItems(userId : UserId, name : String, genreId : GenreId) : ListOfItems
+            + createListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
         }
     }
 
     package "repository" {
         interface IListOfItemsRepo <<Interface>> {
         }
-
     }
 
     package "valueobject" {
@@ -54,6 +53,7 @@ package "domain" {
         class UserId <<ValueObject>> {}
         class GenreId <<ValueObject>> {}
         class ItemId <<ValueObject>> {}
+        class Name <<ValueObject>> {}
     }
 }
 
@@ -84,6 +84,7 @@ ListOfItems "1" --> "1" ListOfItemsId : has
 ListOfItems "*" --> "*" ItemId : references
 ListOfItems "*" --> "1" UserId : references
 ListOfItems "*" --> "1" GenreId : references
+ListOfItems "1" --> "1" Name : has
 
 ListOfItems .|> AggregateRoot
 AggregateRoot --|> DomainEntity
