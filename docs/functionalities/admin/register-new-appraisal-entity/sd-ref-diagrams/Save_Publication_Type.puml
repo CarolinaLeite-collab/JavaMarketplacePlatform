@@ -21,6 +21,7 @@ autonumber
 participant ":Register\nNewAppraisalEntity\nController" as CTL
 participant ":JPAAppraisalEntity\nRepo" as JPAREPO
 participant ":AppraisalEntity\nAssembler" as ASSMBLR
+participant "appraisalEntity:AppraisalEntity" as AE
 participant ":IAppraisalEntity\nSpringDataRepo" as SDREPO
 participant ":AppraisalEntity\nFactory" as FACTORY
 database "DB" as DB
@@ -30,8 +31,27 @@ CTL -> JPAREPO : save(appraisalEntity)
 activate JPAREPO
 JPAREPO -> ASSMBLR : toDataModel(appraisalEntity)
 activate ASSMBLR
+ASSMBLR -> AE : stringId = identity().toString()
+activate AE
+deactivate AE
+ASSMBLR -> AE : stringName = getName().getName();
+activate AE
+deactivate AE
+
+    loop for each publicationTypeId in publicationTypeIds
+
+    ASSMBLR -> ASSMBLR : stringPublicationTypeIds.add(publicationTypeId.toString())
+
+    end loop
+
+    loop for each genreId in genreIds
+
+    ASSMBLR -> ASSMBLR : stringGenreIds.add(genreId.toString())
+
+    end loop
+
 create "dmToSave:AppraisalEntityDataModel"
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : <<create>>(appraisalEntity)
+ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : <<create>>(stringId, stringName, stringPublicationTypeIds, stringGenreIds)
 ASSMBLR --> JPAREPO : dmToSave
 deactivate ASSMBLR
 JPAREPO -> SDREPO : savedDm = save(dmToSave)
