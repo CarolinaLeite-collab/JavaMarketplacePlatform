@@ -27,9 +27,10 @@ public class AddGenreController {
 
         Genre newGenre =  _genreFactory.createGenre(genreName);
 
-            if (_iGenreRepo.containsOfIdentity(newGenre.identity())) {
-                throw new IllegalArgumentException("Genre already exists in the repository");
-            }
-            return _iGenreRepo.save(newGenre);
+        if (_iGenreRepo.containsOfIdentity(newGenre.identity())) {
+            throw new IllegalArgumentException("Genre already exists in the repository");
         }
+        return _iGenreRepo.save(newGenre);
+    }
 }
+
