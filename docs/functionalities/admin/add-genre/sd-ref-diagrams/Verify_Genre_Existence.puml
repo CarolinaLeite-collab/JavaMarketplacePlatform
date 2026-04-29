@@ -35,12 +35,12 @@ IREPO -> SDREPO : existsById(genreId.toString())
 activate SDREPO
 SDREPO -> DB : select count
 activate DB
-DB --> SDREPO : 0 or 1
+DB --> SDREPO : false
 deactivate DB
-SDREPO --> IREPO : boolean
+SDREPO --> IREPO : false
 deactivate SDREPO
 
-IREPO --> CTL : boolean
+IREPO --> CTL : false
 deactivate IREPO
 
 ref over CTL

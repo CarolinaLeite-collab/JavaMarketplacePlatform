@@ -29,7 +29,7 @@ activate JPAREPO
 JPAREPO -> ASSMBLR : toDataModel(genre)
 activate ASSMBLR
 create "dmToSave:GenreDataModel"
-ASSMBLR -> "dmToSave:GenreDataModel" : <<create>>(genre)
+ASSMBLR -> "dmToSave:GenreDataModel" : <<create>>(genre, genre)
 ASSMBLR --> JPAREPO : dmToSave
 deactivate ASSMBLR
 

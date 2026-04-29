@@ -38,9 +38,7 @@ package "domain" {
         }
 
         class GenreFactory <<Factory>> {
-            + createGenre(genreName : String) : Genre
-            + createGenre(id : GenreId, genreName : String) : Genre
-        }
+            + createGenre(genreName : String) : Genre        }
     }
 
     package "valueobject" {
@@ -65,8 +63,8 @@ package "ddd" {
 '==== Interactions ====
 AddGenreUI "1" ..> "1" AddGenreController : invokes
 
-AddGenreController "1" ..> "1" IGenreRepo : calls
-AddGenreController "1" ..> "1" GenreFactory : invokes
+AddGenreController "1" --> "1" IGenreRepo : calls
+AddGenreController "1" --> "1" GenreFactory : invokes
 AddGenreController "1" ..> "*" Genre : <<use>>
 
 GenreFactory "1" ..> "*" Genre : <<create>>
