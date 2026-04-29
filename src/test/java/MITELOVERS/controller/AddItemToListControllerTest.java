@@ -1,4 +1,3 @@
-
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.library.Library;
@@ -8,6 +7,7 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,7 @@ class AddItemToListControllerTest {
     private ItemId _itemIdDouble;
     private Library _libraryDouble;
     private ListOfItems _listDouble;
+    private Name _nameDouble;
 
     @BeforeEach
     void setUp() {
@@ -38,8 +39,8 @@ class AddItemToListControllerTest {
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
         _listDouble = mock(ListOfItems.class);
+        _nameDouble = new Name("My List");
     }
-
 
     // -------------------------------
     // getMyLists / findListsByUserId
@@ -49,16 +50,14 @@ class AddItemToListControllerTest {
     void getMyListsShouldReturnOnlyListsBelongingToUser() {
         // Arrange
         UserId otherUser = mock(UserId.class);
-
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
 
         when(list1.getUserId()).thenReturn(_userIdDouble);
         when(list2.getUserId()).thenReturn(otherUser);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list1, list2));
 
-        when(_iListOfItemsRepoDouble.findAll())
-                .thenReturn(List.of(list1, list2));
-
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
@@ -73,22 +72,28 @@ class AddItemToListControllerTest {
 
     @Test
     void findListsByUserIdShouldThrowWhenUserIdIsNull() {
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.findListsByUserId(null));
     }
 
     @Test
     void getMyListsShouldReturnEmptyListWhenUserHasNoLists() {
+        // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
+        // Act
         List<ListOfItems> result = controller.getMyLists(_userIdDouble);
 
+        // Assert
         assertTrue(result.isEmpty());
         verify(_iListOfItemsRepoDouble).findAll();
     }
@@ -99,19 +104,13 @@ class AddItemToListControllerTest {
 
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
-        //Arrange
+        // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
-
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
-
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(_libraryDouble));
-
-            when(_libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(_itemIdDouble));
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble)).thenReturn(libraryIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble)).thenReturn(Optional.of(_libraryDouble));
+            when(_libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(_itemIdDouble));
 
             // SUT
             AddItemToListController controller =
@@ -128,26 +127,20 @@ class AddItemToListControllerTest {
 
     @Test
     void getItemsInMyLibraryShouldThrowWhenUserLibraryNotFound() {
-
+        // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
+            mocked.when(() -> LibraryId.fromUserId(_userIdDouble)).thenReturn(libraryIdDouble);
+            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble)).thenReturn(Optional.empty());
 
-            // Arrange: control static mapping
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
-
-            // Arrange: repo returns empty (NOT throws)
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.empty());
-
-            // SUT (constructor likely triggers lookup)
+            // SUT
             AddItemToListController controller =
                     new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
-            // Act + Assert (constructor OR method depending on design)
-            assertThrows(IllegalStateException.class, () ->
-                    controller.getItemsInMyLibrary(_userIdDouble));
+            // Act & Assert
+            assertThrows(IllegalStateException.class,
+                    () -> controller.getItemsInMyLibrary(_userIdDouble));
         }
     }
 
@@ -156,172 +149,72 @@ class AddItemToListControllerTest {
     // --------------
 
     @Test
-    void addItemToList_throwsWhenListNameIsBlank() {
-        //arrange / SUT
-        AddItemToListController _controllerSUT = new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+    void addItemToListShouldThrowWhenListNameIsNull() {
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
-        //assert
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> _controllerSUT.addItemToList(_userIdDouble, " ", _genreIdDouble, _itemIdDouble));
+                () -> controller.addItemToList(_userIdDouble, null, _genreIdDouble, _itemIdDouble));
     }
 
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
         // Arrange
         ListOfItems matchingList = mock(ListOfItems.class);
-
         when(matchingList.getUserId()).thenReturn(_userIdDouble);
-        when(matchingList.getName()).thenReturn("My List");
+        when(matchingList.getName()).thenReturn(_nameDouble);
         when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
-
-        // repo now returns ALL lists, controller filters
-        when(_iListOfItemsRepoDouble.findAll())
-                .thenReturn(List.of(matchingList));
-
-        // simulate domain rule violation
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(matchingList));
         doThrow(new IllegalStateException("Item already in list"))
-                .when(matchingList)
-                .addItem(_itemIdDouble);
+                .when(matchingList).addItem(_itemIdDouble);
 
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
-        // Act + Assert
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble)
-        );
-
+        // Act & Assert
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
         assertEquals("Item already in list", ex.getMessage());
     }
 
     @Test
     void addItemToListShouldThrowWhenListDoesNotExist() {
+        // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
+        // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble));
-    }
-
-    @Test
-    void findByOwnerNameAndGenreShouldIgnoreCase() {
-        ListOfItems list = mock(ListOfItems.class);
-
-        when(list.getUserId()).thenReturn(_userIdDouble);
-        when(list.getName()).thenReturn("My List");
-        when(list.getGenreId()).thenReturn(_genreIdDouble);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "my list", _genreIdDouble);
-
-        assertSame(list, result);
-    }
-
-    @Test
-    void findByOwnerNameAndGenreShouldTrimName() {
-        ListOfItems list = mock(ListOfItems.class);
-
-        when(list.getUserId()).thenReturn(_userIdDouble);
-        when(list.getName()).thenReturn("My List");
-        when(list.getGenreId()).thenReturn(_genreIdDouble);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "  My List  ", _genreIdDouble);
-
-        assertSame(list, result);
-    }
-
-    @Test
-    void findByOwnerNameAndGenreShouldReturnNullWhenGenreDiffers() {
-        GenreId otherGenre = mock(GenreId.class);
-
-        ListOfItems list = mock(ListOfItems.class);
-        when(list.getUserId()).thenReturn(_userIdDouble);
-        when(list.getName()).thenReturn("My List");
-        when(list.getGenreId()).thenReturn(otherGenre);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble);
-
-        assertNull(result);
-    }
-
-    @Test
-    void findByOwnerNameAndGenreShouldReturnNullWhenNameDiffers() {
-        ListOfItems list = mock(ListOfItems.class);
-        when(list.getUserId()).thenReturn(_userIdDouble);
-        when(list.getName()).thenReturn("Other Name");
-        when(list.getGenreId()).thenReturn(_genreIdDouble);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        assertNull(controller.findByOwnerNameAndGenre(_userIdDouble, "My List", _genreIdDouble));
-    }
-
-    @Test
-    void addItemToListShouldThrowWhenListNameIsNull() {
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.addItemToList(_userIdDouble, null, _genreIdDouble, _itemIdDouble));
+                () -> controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
     }
 
     @Test
     void addItemToListShouldThrowWhenListNotFound() {
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of()); // no lists
+        // Arrange
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
+        // SUT
         AddItemToListController controller =
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
+        // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble));
+                () -> controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
     }
 
-    @Test
-    void findByOwnerNameAndGenreShouldThrowWhenUserIdIsNull() {
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.findByOwnerNameAndGenre(null, "My List", _genreIdDouble));
-    }
-
-    @Test
-    void findByOwnerNameAndGenreShouldThrowWhenNameIsNull() {
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.findByOwnerNameAndGenre(_userIdDouble, null, _genreIdDouble));
-    }
     @Test
     void addItemToListShouldSaveListAfterAddingItem() {
         // Arrange
         ListOfItems matchingList = mock(ListOfItems.class);
-
         when(matchingList.getUserId()).thenReturn(_userIdDouble);
-        when(matchingList.getName()).thenReturn("My List");
+        when(matchingList.getName()).thenReturn(_nameDouble);
         when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
-
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(matchingList));
 
         // SUT
@@ -329,11 +222,99 @@ class AddItemToListControllerTest {
                 new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
 
         // Act
-        controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble);
+        controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble);
 
         // Assert
         verify(matchingList).addItem(_itemIdDouble);
         verify(_iListOfItemsRepoDouble).save(matchingList);
+    }
+
+    // ----------------------------
+    // findByOwnerNameAndGenre
+    // ----------------------------
+
+    @Test
+    void findByOwnerNameAndGenreShouldTrimName() {
+        // Arrange
+        ListOfItems list = mock(ListOfItems.class);
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn(_nameDouble);
+        when(list.getGenreId()).thenReturn(_genreIdDouble);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act — Name normalizes trailing spaces
+        ListOfItems result = controller.findByOwnerNameAndGenre(
+                _userIdDouble, new Name("  My List  "), _genreIdDouble);
+
+        // Assert
+        assertSame(list, result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldReturnNullWhenGenreDiffers() {
+        // Arrange
+        GenreId otherGenre = mock(GenreId.class);
+        ListOfItems list = mock(ListOfItems.class);
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn(_nameDouble);
+        when(list.getGenreId()).thenReturn(otherGenre);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act
+        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, _nameDouble, _genreIdDouble);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldReturnNullWhenNameDiffers() {
+        // Arrange
+        ListOfItems list = mock(ListOfItems.class);
+        when(list.getUserId()).thenReturn(_userIdDouble);
+        when(list.getName()).thenReturn(new Name("Other Name"));
+        when(list.getGenreId()).thenReturn(_genreIdDouble);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
+
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act
+        ListOfItems result = controller.findByOwnerNameAndGenre(_userIdDouble, _nameDouble, _genreIdDouble);
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldThrowWhenUserIdIsNull() {
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findByOwnerNameAndGenre(null, _nameDouble, _genreIdDouble));
+    }
+
+    @Test
+    void findByOwnerNameAndGenreShouldThrowWhenNameIsNull() {
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.findByOwnerNameAndGenre(_userIdDouble, null, _genreIdDouble));
     }
 
 }

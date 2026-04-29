@@ -7,14 +7,12 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Controller responsible for handling the addition of new items to a list.
- */
 public class AddItemToListController {
 
     private final IListOfItemsRepo _iListOfItemsRepo;
@@ -38,8 +36,8 @@ public class AddItemToListController {
         return lib.getItemsIdInLibrary();
     }
 
-    public void addItemToList(UserId userId, String listName, GenreId genreId, ItemId itemId) {
-        if (listName == null || listName.isBlank())
+    public boolean addItemToList(UserId userId, Name listName, GenreId genreId, ItemId itemId) {
+        if (listName == null)
             throw new IllegalArgumentException("List name is mandatory");
 
         ListOfItems myList = findByOwnerNameAndGenre(userId, listName, genreId);
@@ -49,6 +47,7 @@ public class AddItemToListController {
 
         myList.addItem(itemId);
         _iListOfItemsRepo.save(myList);
+        return true;
     }
 
     public List<ListOfItems> findListsByUserId(UserId userId) {
@@ -65,20 +64,18 @@ public class AddItemToListController {
         return result;
     }
 
-    public ListOfItems findByOwnerNameAndGenre(UserId userId, String name, GenreId genreId) {
+    public ListOfItems findByOwnerNameAndGenre(UserId userId, Name name, GenreId genreId) {
         if (userId == null)
             throw new IllegalArgumentException("UserId is mandatory");
-        if (name == null || name.isBlank())
+        if (name == null)
             throw new IllegalArgumentException("List name is mandatory");
         if (genreId == null)
             throw new IllegalArgumentException("GenreId is mandatory");
 
-        String normalizedName = name.trim();
         Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
-
         for (ListOfItems list : all) {
             if (userId.equals(list.getUserId())
-                    && list.getName().equalsIgnoreCase(normalizedName)
+                    && list.getName().equals(name)
                     && genreId.equals(list.getGenreId())) {
                 return list;
             }
