@@ -13,7 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * JPA implementation of {@link IListOfItemsRepo} for storing {@link ListOfItems} instances.
+ * <p>
+ * Active only when the {@code jpa} Spring profile is enabled.
+ * Delegates persistence to {@link IListOfItemsSpringDataRepo} and
+ * mapping to {@link ListOfItemsAssembler}.
+ * </p>
+ */
 @Repository
 @Profile("jpa")
 public class JpaListOfItemsRepo implements IListOfItemsRepo {

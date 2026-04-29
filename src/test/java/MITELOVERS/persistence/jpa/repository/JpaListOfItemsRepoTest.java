@@ -23,7 +23,6 @@ class JpaListOfItemsRepoTest {
     private ListOfItemsDataModel _dmDouble;
     private ListOfItemsDataModel _savedDmDouble;
     private ListOfItemsId _listIdDouble;
-    private JpaListOfItemsRepo _repo;
 
     @BeforeEach
     void setUp() {
@@ -37,19 +36,20 @@ class JpaListOfItemsRepoTest {
 
         when(_listDouble.identity()).thenReturn(_listIdDouble);
         when(_listIdDouble.toString()).thenReturn("LOI-ABC123");
-
-        _repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
     }
 
     @Test
-    void saveShouldDelegateToAssemblerAndSpringDataRepo() {
+    void saveShouldDelegateToAssemblerAndReturnReconstructedDomain() {
         // Arrange
         when(_assemblerDouble.toDataModel(_listDouble)).thenReturn(_dmDouble);
         when(_springDataRepoDouble.save(_dmDouble)).thenReturn(_savedDmDouble);
         when(_assemblerDouble.toDomain(_savedDmDouble)).thenReturn(_listResultDouble);
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act
-        ListOfItems result = _repo.save(_listDouble);
+        ListOfItems result = repo.save(_listDouble);
 
         // Assert
         assertSame(_listResultDouble, result);
@@ -64,8 +64,11 @@ class JpaListOfItemsRepoTest {
         when(_springDataRepoDouble.findAll()).thenReturn(List.of(_dmDouble));
         when(_assemblerDouble.toDomain(_dmDouble)).thenReturn(_listDouble);
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act
-        Iterable<ListOfItems> result = _repo.findAll();
+        Iterable<ListOfItems> result = repo.findAll();
 
         // Assert
         int count = 0;
@@ -79,8 +82,11 @@ class JpaListOfItemsRepoTest {
         when(_springDataRepoDouble.findById("LOI-ABC123")).thenReturn(Optional.of(_dmDouble));
         when(_assemblerDouble.toDomain(_dmDouble)).thenReturn(_listDouble);
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act
-        Optional<ListOfItems> result = _repo.ofIdentity(_listIdDouble);
+        Optional<ListOfItems> result = repo.ofIdentity(_listIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -92,9 +98,12 @@ class JpaListOfItemsRepoTest {
         // Arrange
         when(_springDataRepoDouble.findById("LOI-ABC123")).thenReturn(Optional.empty());
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> _repo.ofIdentity(_listIdDouble));
+                () -> repo.ofIdentity(_listIdDouble));
     }
 
     @Test
@@ -102,8 +111,11 @@ class JpaListOfItemsRepoTest {
         // Arrange
         when(_springDataRepoDouble.existsById("LOI-ABC123")).thenReturn(true);
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act & Assert
-        assertTrue(_repo.containsOfIdentity(_listIdDouble));
+        assertTrue(repo.containsOfIdentity(_listIdDouble));
     }
 
     @Test
@@ -111,8 +123,11 @@ class JpaListOfItemsRepoTest {
         // Arrange
         when(_springDataRepoDouble.existsById("LOI-ABC123")).thenReturn(false);
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act & Assert
-        assertFalse(_repo.containsOfIdentity(_listIdDouble));
+        assertFalse(repo.containsOfIdentity(_listIdDouble));
     }
 
     @Test
@@ -122,8 +137,11 @@ class JpaListOfItemsRepoTest {
         when(dm.getListOfItemsId()).thenReturn("LOI-ABC123");
         when(_springDataRepoDouble.findAll()).thenReturn(List.of(dm));
 
+        // SUT
+        JpaListOfItemsRepo repo = new JpaListOfItemsRepo(_springDataRepoDouble, _assemblerDouble);
+
         // Act
-        List<ListOfItemsId> keys = _repo.findAllKeys();
+        List<ListOfItemsId> keys = repo.findAllKeys();
 
         // Assert
         assertEquals(1, keys.size());
