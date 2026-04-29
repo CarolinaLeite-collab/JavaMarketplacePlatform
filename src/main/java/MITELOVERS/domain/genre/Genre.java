@@ -3,6 +3,8 @@ package MITELOVERS.domain.genre;
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.GenreId;
 
+import java.util.Objects;
+
 /**
  * Defines the style or category of a `Publication` (e.g., Fiction, Non-Fiction, Sci-Fi).
  * <p>
@@ -22,10 +24,21 @@ public class Genre implements AggregateRoot<GenreId> {
     private final GenreId _genreId;
     private final String _genre;
 
+    Genre(GenreId genreId, String genre) {
+        String trimmedGenre = Objects.requireNonNull(genre, "Genre name is required").trim();
+        if (trimmedGenre.isEmpty()) {
+            throw new IllegalArgumentException("Genre name is required");
+        }
+        _genreId = Objects.requireNonNull(genreId, "Genre id is required");
+        _genre = trimmedGenre;
+    }
+
     Genre(String genre) {
-        if (genre == null || genre.trim().isEmpty())
-            throw new IllegalArgumentException("Genre name cannot be null or empty");
-        _genre = genre.trim();
+        String trimmedGenre = Objects.requireNonNull(genre, "Genre name is required").trim();
+        if (trimmedGenre.isEmpty()) {
+            throw new IllegalArgumentException("Genre name is required");
+        }
+        _genre = trimmedGenre;
         _genreId = new GenreId(_genre);
     }
 
@@ -51,7 +64,7 @@ public class Genre implements AggregateRoot<GenreId> {
 
     @Override
     public int hashCode() {
-        return _genre.toUpperCase().hashCode();
+        return _genreId.hashCode();
     }
 
     @Override
@@ -59,3 +72,4 @@ public class Genre implements AggregateRoot<GenreId> {
         return _genre;
     }
 }
+

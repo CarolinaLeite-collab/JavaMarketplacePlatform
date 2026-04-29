@@ -9,45 +9,71 @@ class GenreTest {
 
     @Test
     void constructorShouldBuildGenre() {
+        // Arrange
+        String name = "Science Fiction";
 
         // SUT
-        Genre genre = new Genre("Science Fiction");
+        Genre _sut = new Genre(name);
+
+        // Act
+        Genre result = _sut;
 
         // Assert
-        assertNotNull(genre);
+        assertNotNull(result);
     }
 
     @Test
     void constructorShouldTrimGenreName() {
+        // Arrange
+        String name = " Science Fiction  ";
 
         // SUT
-        Genre genre = new Genre(" Science Fiction  ");
+        Genre _sut = new Genre(name);
+
+        // Act
+        String result = _sut.getGenre();
 
         // Assert
-        assertEquals("Science Fiction", genre.getGenre());
+        assertEquals("Science Fiction", result);
     }
 
     @Test
     void constructorShouldThrowExceptionWhenGenreNameIsBlank() {
+        // Arrange
+        String name = "  ";
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Genre("  "));
+        // SUT
+        // Act
+        Exception result = assertThrows(IllegalArgumentException.class, () -> new Genre(name));
+
+        // Assert
+        assertNotNull(result);
     }
 
     @Test
     void constructorShouldThrowWhenGenreNameIsNull() {
+        // Arrange
+        String name = null;
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Genre(null));
+        // SUT
+
+        // Act
+        Exception result = assertThrows(NullPointerException.class, () -> new Genre(name));
+
+        // Assert
+        assertNotNull(result);
     }
 
     @Test
     void identityReturnsNonNullGenreId() {
-        // Arrange & SUT
-        Genre genre = new Genre("Science Fiction");
+        // Arrange
+        String name = "Science Fiction";
+
+        // SUT
+        Genre _sut = new Genre(name);
 
         // Act
-        GenreId id = genre.identity();
+        GenreId id = _sut.identity();
 
         // Assert
         assertNotNull(id);
@@ -55,11 +81,14 @@ class GenreTest {
 
     @Test
     void sameAsSameInstanceReturnsTrue() {
-        // Arrange & SUT
+        // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
         // Act
-        boolean result = genre.sameAs(genre);
+        boolean result = _sut.sameAs(genre);
 
         // Assert
         assertTrue(result);
@@ -71,9 +100,14 @@ class GenreTest {
         Genre genre1 = new Genre("Science Fiction");
         Genre genre2 = new Genre("Science FictIon");
 
+        // SUT
+        Genre _sut = genre1;
 
-        // Act + Assert
-        assertTrue(genre1.sameAs(genre2));
+        // Act
+        boolean result = _sut.sameAs(genre2);
+
+        // Assert
+        assertTrue(result);
     }
 
     @Test
@@ -81,11 +115,14 @@ class GenreTest {
         // Arrange
         Genre genre1 = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre1;
+
         // Act
         Genre genre2 = new Genre("Romance");
 
         // Assert
-        assertFalse(genre1.sameAs(genre2));
+        assertFalse(_sut.sameAs(genre2));
     }
 
     @Test
@@ -93,8 +130,11 @@ class GenreTest {
         // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
         // Act
-        boolean result = genre.sameAs(null);
+        boolean result = _sut.sameAs(null);
 
         // Assert
         assertFalse(result);
@@ -105,8 +145,11 @@ class GenreTest {
         // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
         // Act
-        boolean result = genre.sameAs("Science Fiction");
+        boolean result = _sut.sameAs("Science Fiction");
 
         // Assert
         assertFalse(result);
@@ -114,89 +157,127 @@ class GenreTest {
 
     @Test
     void genreNotEqualsToNull() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
+        // Act
+        boolean result = _sut.equals(null);
+
         // Assert
-        assertNotEquals(genre, null);
+        assertFalse(result);
     }
 
     @Test
     void genreWithSameName() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre = new Genre("Romance ");
         Genre genre2 = new Genre("ROMANCE");
 
+        // SUT
+        Genre _sut = genre;
+
+        // Act
+        boolean result = _sut.equals(genre2);
+
         // Assert
-        assertEquals(genre, genre2);
+        assertTrue(result);
     }
 
     @Test
     void genreEqualsItself() {
+        // Arrange
+        Genre genre = new Genre("Science Fiction");
 
-        // Arrange & SUT
-        Genre g = new Genre("Science Fiction");
+        // SUT
+        Genre _sut = genre;
+
+        // Act
+        boolean result = _sut.equals(genre);
 
         // Assert
-        assertEquals(g, g);
+        assertTrue(result);
     }
 
     @Test
     void genreNotEqualsToDifferentType() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
+        // Act
+        boolean result = _sut.equals("Science Fiction");
+
         // Assert
-        assertNotEquals(genre, "Science Fiction");
+        assertFalse(result);
     }
 
     @Test
     void differentGenresAreNotEqual() {
-
         // Arrange
         Genre genre1 = new Genre("Science Fiction");
         Genre genre2 = new Genre("ROMANCE");
 
+        // SUT
+        Genre _sut = genre1;
+
+        // Act
+        boolean result = _sut.equals(genre2);
+
         // Assert
-        assertNotEquals(genre1, genre2);
+        assertFalse(result);
     }
 
     @Test
     void hashCodeShouldBeEqualForSameGenreName() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre1 = new Genre("Romance ");
         Genre genre2 = new Genre("ROMANCE");
 
-        // Act & Assert
-        assertEquals(genre1.hashCode(), genre2.hashCode());
+        // SUT
+        Genre _sut = genre1;
+
+        // Act
+        int result = _sut.hashCode();
+
+        // Assert
+        assertEquals(result, genre2.hashCode());
     }
 
     @Test
     void hashCodeShouldBeDifferentForDifferentGenreNames() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre1 = new Genre("Science Fiction");
         Genre genre2 = new Genre("ROMANCE");
 
-        // Act & Assert
-        assertNotEquals(genre1.hashCode(), genre2.hashCode());
+        // SUT
+        Genre _sut = genre1;
+
+        // Act
+        int result = _sut.hashCode();
+
+        // Assert
+        assertNotEquals(result, genre2.hashCode());
     }
 
     @Test
     void toStringShouldReturnGenreName() {
-
-        // Arrange & SUT
+        // Arrange
         Genre genre = new Genre("Science Fiction");
 
+        // SUT
+        Genre _sut = genre;
+
         // Act
-        String result = genre.toString();
+        String result = _sut.toString();
 
         // Assert
-        assertEquals("Science Fiction",result);
+        assertEquals("Science Fiction", result);
     }
 
 }
+
