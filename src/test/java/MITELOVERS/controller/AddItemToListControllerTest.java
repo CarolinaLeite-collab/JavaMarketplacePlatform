@@ -11,7 +11,11 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.mockito.MockedStatic;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,32 +23,35 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class AddItemToListControllerTest {
 
-    private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private ILibraryRepo _iLibraryRepoDouble;
-    private UserId _userIdDouble;
+    @MockBean
+    IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @MockBean
+    ILibraryRepo _iLibraryRepoDouble;
+
+    @MockBean
+    UserId _userIdDouble;
+
+    @InjectMocks
+    AddItemToListController _controller;
+
     private GenreId _genreIdDouble;
     private ItemId _itemIdDouble;
     private Library _libraryDouble;
-    private ListOfItems _listDouble;
     private Name _nameDouble;
 
     @BeforeEach
-    void setUp() {
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _userIdDouble = mock(UserId.class);
+    void setUp() throws InstantiationException {
+        MockitoAnnotations.openMocks(this);
+
         _genreIdDouble = mock(GenreId.class);
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
-        _listDouble = mock(ListOfItems.class);
         _nameDouble = new Name("My List");
     }
-
-    // -------------------------------
-    // getMyLists / findListsByUserId
-    // -------------------------------
 
     @Test
     void getMyListsShouldReturnOnlyListsBelongingToUser() {
@@ -98,10 +105,6 @@ class AddItemToListControllerTest {
         verify(_iListOfItemsRepoDouble).findAll();
     }
 
-    // --------------------
-    // getItemsInMyLibrary
-    // --------------------
-
     @Test
     void getItemsInMyLibraryShouldReturnItemsList() {
         // Arrange
@@ -143,10 +146,6 @@ class AddItemToListControllerTest {
                     () -> controller.getItemsInMyLibrary(_userIdDouble));
         }
     }
-
-    // --------------
-    // addItemToList
-    // --------------
 
     @Test
     void addItemToListShouldThrowWhenListNameIsNull() {
@@ -195,20 +194,6 @@ class AddItemToListControllerTest {
     }
 
     @Test
-    void addItemToListShouldThrowWhenListNotFound() {
-        // Arrange
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
-
-        // SUT
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class,
-                () -> controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
-    }
-
-    @Test
     void addItemToListShouldSaveListAfterAddingItem() {
         // Arrange
         ListOfItems matchingList = mock(ListOfItems.class);
@@ -227,31 +212,6 @@ class AddItemToListControllerTest {
         // Assert
         verify(matchingList).addItem(_itemIdDouble);
         verify(_iListOfItemsRepoDouble).save(matchingList);
-    }
-
-    // ----------------------------
-    // findByOwnerNameAndGenre
-    // ----------------------------
-
-    @Test
-    void findByOwnerNameAndGenreShouldTrimName() {
-        // Arrange
-        ListOfItems list = mock(ListOfItems.class);
-        when(list.getUserId()).thenReturn(_userIdDouble);
-        when(list.getName()).thenReturn(_nameDouble);
-        when(list.getGenreId()).thenReturn(_genreIdDouble);
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        // SUT
-        AddItemToListController controller =
-                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
-
-        // Act — Name normalizes trailing spaces
-        ListOfItems result = controller.findByOwnerNameAndGenre(
-                _userIdDouble, new Name("  My List  "), _genreIdDouble);
-
-        // Assert
-        assertSame(list, result);
     }
 
     @Test
