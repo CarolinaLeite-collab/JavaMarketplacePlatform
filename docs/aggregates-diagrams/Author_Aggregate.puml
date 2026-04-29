@@ -22,9 +22,8 @@ package "domain" {
 
     package "author" #b0c4d4 {
         class Author <<Root>> <<Entity>> {
-            -_name : String
-            +getName() : String
-            +getLowerCaseName() : String
+            -_name : Name
+            +getName() : Name
         }
 
         class AuthorFactory <<Factory>> {
@@ -54,7 +53,7 @@ package "ddd" {
         +findAllKeys() : List<ID>
     }
 
-    interface AggregateRoot <ID >
+    interface AggregateRoot <ID > <<Interface>>
 
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
