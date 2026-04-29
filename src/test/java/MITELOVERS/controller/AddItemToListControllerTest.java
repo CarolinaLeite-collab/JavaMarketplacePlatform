@@ -313,4 +313,27 @@ class AddItemToListControllerTest {
         assertThrows(IllegalArgumentException.class,
                 () -> controller.findByOwnerNameAndGenre(_userIdDouble, null, _genreIdDouble));
     }
+    @Test
+    void addItemToListShouldSaveListAfterAddingItem() {
+        // Arrange
+        ListOfItems matchingList = mock(ListOfItems.class);
+
+        when(matchingList.getUserId()).thenReturn(_userIdDouble);
+        when(matchingList.getName()).thenReturn("My List");
+        when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
+
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(matchingList));
+
+        // SUT
+        AddItemToListController controller =
+                new AddItemToListController(_iListOfItemsRepoDouble, _iLibraryRepoDouble, _userIdDouble);
+
+        // Act
+        controller.addItemToList(_userIdDouble, "My List", _genreIdDouble, _itemIdDouble);
+
+        // Assert
+        verify(matchingList).addItem(_itemIdDouble);
+        verify(_iListOfItemsRepoDouble).save(matchingList);
+    }
+
 }
