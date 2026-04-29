@@ -28,13 +28,6 @@ public class CreateAuthorController {
 
     public Author createAuthor (Name authorName){
 
-
-        return addAuthor(authorName);
-
-    }
-
-    public Author addAuthor(Name authorName) {
-
         Author newAuthor = _authorFactory.createAuthor(authorName);
 
         return _iAuthorRepo.save (newAuthor);
