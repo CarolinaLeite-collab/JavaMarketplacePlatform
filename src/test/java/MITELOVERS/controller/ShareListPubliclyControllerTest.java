@@ -6,6 +6,10 @@ import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,31 +17,35 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 class ShareListPubliclyControllerTest {
 
-    private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private UserId _userIdDouble;
+    @MockBean
+    IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @MockBean
+    UserId _userIdDouble;
+
+    @InjectMocks
+    ShareListPubliclyController _controller;
 
     @BeforeEach
-    void setUp() {
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _userIdDouble = mock(UserId.class);
+    void setUp() throws InstantiationException {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     void returnListFromRepo() {
         // Arrange
         UserId otherUser = mock(UserId.class);
-
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
 
         when(list1.getUserId()).thenReturn(_userIdDouble);
         when(list2.getUserId()).thenReturn(otherUser);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list1, list2));
 
-        when(_iListOfItemsRepoDouble.findAll())
-                .thenReturn(List.of(list1, list2));
-
+        // SUT
         ShareListPubliclyController controller =
                 new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
 
@@ -51,9 +59,11 @@ class ShareListPubliclyControllerTest {
 
     @Test
     void findListsByUserIdShouldThrowWhenUserIdIsNull() {
+        // SUT
         ShareListPubliclyController controller =
                 new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
 
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.findListsByUserId(null));
     }
@@ -63,6 +73,7 @@ class ShareListPubliclyControllerTest {
         // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
+        // SUT
         ShareListPubliclyController controller =
                 new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
 
