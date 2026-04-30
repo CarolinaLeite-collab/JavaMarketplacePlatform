@@ -1,0 +1,62 @@
+package MITELOVERS.persistence.jpa.repository;
+
+import MITELOVERS.domain.city.City;
+import MITELOVERS.domain.repository.ICityRepo;
+import MITELOVERS.domain.valueobject.CityId;
+import MITELOVERS.domain.valueobject.CountryId;
+import MITELOVERS.persistence.jpa.assembler.CityAssembler;
+import MITELOVERS.persistence.jpa.datamodel.CityDataModel;
+import MITELOVERS.persistence.springdata.ICitySpringDataRepo;
+import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@Profile("jpa")
+@AllArgsConstructor
+public class JpaCityRepo implements ICityRepo {
+
+    private final ICitySpringDataRepo springDataRepo;
+    private final CityAssembler assembler;
+
+    @Override
+    public City save(City city) {
+        CityDataModel dm = assembler.domain2DM(city);
+        CityDataModel saved = springDataRepo.save(dm);
+        return assembler.DM2domain(saved);
+    }
+
+    @Override
+    public Iterable<City> findAll() {
+        List<CityDataModel> list = springDataRepo.findAll();
+        List<City> listDomain = assembler.DMList2DomainList(list);
+        return listDomain;
+    }
+
+    @Override
+    public List<CityId> findAllKeys() {
+        List<CityDataModel> list = springDataRepo.findAll();
+        List<CityId> ids = new ArrayList<>();
+
+        for (CityDataModel dm : list) {
+            ids.add(new CityId(dm.get_name(),
+                    new CountryId(dm.get_countryId())));
+        }
+        return ids;
+    }
+
+    @Override
+    public Optional<City> ofIdentity(CityId cityId) {
+        return springDataRepo.findById(cityId.toString())
+                .map(assembler::DM2domain);
+    }
+
+    @Override
+    public boolean containsOfIdentity(CityId cityId) {
+        return springDataRepo.existsById(cityId.toString());
+    }
+}
