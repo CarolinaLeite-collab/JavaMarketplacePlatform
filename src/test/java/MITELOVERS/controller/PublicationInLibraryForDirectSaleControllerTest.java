@@ -81,7 +81,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
             PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
             //Act
-            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            List<ItemId> result = controller.getItemsIdInLibraryByUserId(_userIdDouble);
 
             //Assert
             assertNotNull(result);
@@ -106,7 +106,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
             PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
             //Act
-            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            List<ItemId> result = controller.getItemsIdInLibraryByUserId(_userIdDouble);
 
             //Assert
             assertEquals(1, result.size());
@@ -131,7 +131,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
             PublicationInLibraryForDirectSaleController controller = new PublicationInLibraryForDirectSaleController(_directSaleFactory, _iLibraryRepoDouble, _iDirectSaleRepoDouble, _iItemRepoDouble, _userIdDouble);
 
             //Act
-            List<ItemId> result = controller.getItemsInLibraryByUser(_userIdDouble);
+            List<ItemId> result = controller.getItemsIdInLibraryByUserId(_userIdDouble);
 
             //Assert
             assertThrows(UnsupportedOperationException.class, () -> result.add(_itemIdDouble));

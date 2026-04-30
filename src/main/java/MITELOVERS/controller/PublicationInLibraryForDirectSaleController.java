@@ -30,7 +30,7 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public List<ItemId> getItemsInLibraryByUser(UserId userId) {
+    public List<ItemId> getItemsIdInLibraryByUserId(UserId userId) {
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
 
@@ -42,10 +42,10 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Duration timeLimit) {
+    public DirectSale putItemIdOnDirectSale (List<ItemId> itemIds, Price price, Duration timeLimit) {
 
 
-        DirectSale directSale =  _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+        DirectSale directSale =  _directSaleFactory.createDirectSale(itemIds, price, timeLimit);
 
         if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
 
@@ -53,7 +53,7 @@ public class PublicationInLibraryForDirectSaleController {
 
         }
 
-        for (ItemId itemId : itemsId) {
+        for (ItemId itemId : itemIds) {
             Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
