@@ -22,14 +22,13 @@ package "domain" {
 
     package "author" #b0c4d4 {
         class Author <<Root>> <<Entity>> {
-            -_name : String
-            +getName() : String
-            +getLowerCaseName() : String
+            -_name : Name
+            +getName() : Name
         }
 
         class AuthorFactory <<Factory>> {
-            +createAuthor(authorName : String) : Author
-            +createAuthor(id : AuthorId, authorName : String) : Author
+            +createAuthor(authorName : Name) : Author
+            +createAuthor(id : AuthorId, authorName : Name) : Author
         }
     }
 
@@ -44,14 +43,6 @@ package "domain" {
     }
 }
 
-' ===== Repository =====
-'package "persistence" {
-'
-'   package "mem"  {
-'        class MemAuthorRepo
-'    }
-'}
-
 
 package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
@@ -62,7 +53,7 @@ package "ddd" {
         +findAllKeys() : List<ID>
     }
 
-    interface AggregateRoot <ID >
+    interface AggregateRoot <ID > <<Interface>>
 
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
@@ -77,8 +68,6 @@ Author "*" <--- "1" IAuthorRepo : persists
 
 AuthorFactory ..> Author : <<create>>
 
-
-'IAuthorRepo <|. MemAuthorRepo
 IAuthorRepo --|> IRepository
 
 AggregateRoot -|> DomainEntity

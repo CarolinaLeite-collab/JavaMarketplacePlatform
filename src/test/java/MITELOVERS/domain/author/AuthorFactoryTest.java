@@ -1,6 +1,7 @@
 package MITELOVERS.domain.author;
 
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -12,7 +13,7 @@ class AuthorFactoryTest {
     @Test
     void shouldCreateAuthor() {
         //arrange
-        String authorName = "João";
+        Name authorName = mock(Name.class);
 
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class,
@@ -36,7 +37,7 @@ class AuthorFactoryTest {
     void shouldCreateAuthorWithId() {
         // arrange
         AuthorId authorId = mock(AuthorId.class);
-        String authorName = "João";
+        Name authorName = mock(Name.class);
 
         try (MockedConstruction<Author> mocked =
                      mockConstruction(Author.class,
@@ -62,32 +63,5 @@ class AuthorFactoryTest {
 
         assertThrows(IllegalArgumentException.class,
                 () -> factory.createAuthor(null));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenConstructorWithAuthorIdHaveNameNull() {
-        // arrange
-        AuthorId authorId = mock(AuthorId.class);
-
-        //SUT
-        AuthorFactory factory = new AuthorFactory();
-
-        // act & assert
-        assertThrows(NullPointerException.class,
-                () -> factory.createAuthor(authorId, null));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNameIsEmpty() {
-        // arrange
-        AuthorId authorId = mock(AuthorId.class);
-        String authorName = "  ";
-
-        //SUT
-        AuthorFactory factory = new AuthorFactory();
-
-        // act & assert
-        assertThrows(IllegalArgumentException.class,
-                () -> factory.createAuthor(authorId, authorName));
     }
 }

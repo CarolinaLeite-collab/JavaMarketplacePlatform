@@ -3,6 +3,7 @@ package MITELOVERS.persistence.jpa.assembler;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,7 @@ public class AuthorAssembler {
             throw new IllegalArgumentException("AuthorDataModel cannot be null");
 
         AuthorId authorId = new AuthorId(dataModel.getId());
-        String name = dataModel.getName();
+        Name name = new Name(dataModel.getName());
 
         Author author = _authorFactory.createAuthor(authorId, name);
 
