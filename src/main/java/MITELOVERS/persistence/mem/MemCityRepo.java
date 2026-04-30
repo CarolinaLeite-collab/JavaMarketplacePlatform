@@ -3,9 +3,13 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.city.City;
 import MITELOVERS.domain.repository.ICityRepo;
 import MITELOVERS.domain.valueobject.CityId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
+@Repository
+@Profile("mem")
 public class MemCityRepo implements ICityRepo {
 
     private final Map<CityId, City> DATA = new HashMap<>();
