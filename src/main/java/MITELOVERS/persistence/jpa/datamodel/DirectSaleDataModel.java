@@ -24,7 +24,8 @@ public class DirectSaleDataModel {
 
     private List<String> itemsId;
 
-    @Embedded
+    @Convert(converter=PriceConverter.class)
+    @Column(name="price")
     private PriceDataModel price;
     private Long timeLimit;
     private Instant creationDate;

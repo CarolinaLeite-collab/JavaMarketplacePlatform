@@ -1,6 +1,8 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,16 +10,12 @@ import lombok.NoArgsConstructor;
  * Data model object representing {@link MITELOVERS.domain.valueobject.Price} value object,
  * enabling its persistence as part of a JPA entity.
  */
-
+@EqualsAndHashCode
 @Getter
 @NoArgsConstructor
-@Embeddable
+@AllArgsConstructor
 public class PriceDataModel {
     private double numericValue;
     private String currency;
 
-    public PriceDataModel(double numericValue, String currency){
-        this.numericValue = numericValue;
-        this.currency = currency;
-    }
 }
