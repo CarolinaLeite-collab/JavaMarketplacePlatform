@@ -32,7 +32,7 @@ public class RegisterNewAppraisalEntityController {
     private IPublicationTypeRepo _iPubTypeRepo;
     private IGenreRepo _iGenreRepo;
 
-    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, AppraisalEntityFactory appraisalEntityFactory, IGenreRepo iGenreRepo, UserId adminId) {
+    public RegisterNewAppraisalEntityController(IAppraisalEntityRepo iAppraisalEntityRepo, IPublicationTypeRepo iPublicationTypeRepo, AppraisalEntityFactory appraisalEntityFactory, IGenreRepo iGenreRepo) {
 
         _iAppraisalEntityRepo = iAppraisalEntityRepo;
         _iPubTypeRepo = iPublicationTypeRepo;
@@ -41,14 +41,14 @@ public class RegisterNewAppraisalEntityController {
 
     }
 
-    public Iterable<PublicationType> getPublicationTypes(){
+    public Iterable<PublicationTypeId> getPublicationTypesId(){
 
-        return _iPubTypeRepo.findAll();
+        return _iPubTypeRepo.findAllKeys();
     }
 
-    public Iterable <Genre> getGenres(){
+    public Iterable <GenreId> getGenresId(){
 
-        return _iGenreRepo.findAll();
+        return _iGenreRepo.findAllKeys();
     }
 
     public AppraisalEntity registerNewAppraisalEntity(Name name, List<PublicationTypeId> publicationTypeIds, List<GenreId> genreIds){
@@ -66,4 +66,3 @@ public class RegisterNewAppraisalEntityController {
     }
 
 }
-
