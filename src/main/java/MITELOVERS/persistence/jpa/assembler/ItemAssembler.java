@@ -21,10 +21,6 @@ public class ItemAssembler {
 
     public ItemDataModel toDataModel(Item item) {
 
-        if (item == null) {
-            throw new IllegalArgumentException("Item cannot be null");
-        }
-
         return new ItemDataModel(
               item.identity().getValue(),
               item.getEditionId().getValue(),
@@ -37,10 +33,6 @@ public class ItemAssembler {
 
     public Item toDomain(ItemDataModel itemDataModel) {
 
-        if (itemDataModel == null) {
-            throw new IllegalArgumentException("ItemDataModel cannot be null");
-        }
-
         return _itemFactory.createItem(
                 new ItemId(itemDataModel.getId()),
                 new EditionId(itemDataModel.getEditionId()),
@@ -49,8 +41,9 @@ public class ItemAssembler {
                 SaleStatus.valueOf(itemDataModel.getSaleStatus())
         );
 
-
-
     }
+
+
+
 
 }

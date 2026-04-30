@@ -126,18 +126,6 @@ class ItemAssemblerTest {
     }
 
     @Test
-    void toDataModelShouldThrowWhenItemIsNull() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-
-        //SUT
-        ItemAssembler assembler = new ItemAssembler(factoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDataModel(null));
-    }
-
-    @Test
     void toDomainShouldDelegateToFactory() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
@@ -162,15 +150,4 @@ class ItemAssemblerTest {
         assertEquals(itemDouble, result);
     }
 
-    @Test
-    void toDomainShouldThrowWhenDataModelIsNull() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
-
-        //SUT
-        ItemAssembler assembler = new ItemAssembler(factoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
-    }
 }
