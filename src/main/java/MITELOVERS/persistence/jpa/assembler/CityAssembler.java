@@ -1,0 +1,53 @@
+package MITELOVERS.persistence.jpa.assembler;
+
+import MITELOVERS.domain.city.City;
+import MITELOVERS.domain.city.CityFactory;
+import MITELOVERS.domain.valueobject.CityId;
+import MITELOVERS.domain.valueobject.CountryId;
+import MITELOVERS.persistence.jpa.datamodel.CityDataModel;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Component
+@AllArgsConstructor
+public class CityAssembler {
+
+    private CityFactory cityFactory;
+
+    public CityDataModel domain2DM(City city) {
+        return new CityDataModel(
+                city.identity().toString(),
+                city.getName(),
+                city.getCountryId().toString());
+    }
+
+    public City DM2domain(CityDataModel cityDM) {
+        return cityFactory.createCity(
+                cityDM.get_name(),
+                new CountryId(cityDM.get_countryId()),
+                new CityId(cityDM.get_name(), new CountryId(cityDM.get_countryId())));
+    }
+
+    public List<CityDataModel> domainList2DMList(List<City> cities) {
+        List<CityDataModel> list = new ArrayList<>();
+
+        for (City city : cities) {
+            list.add(domain2DM(city));
+        }
+
+        return list;
+    }
+
+    public List<City> DMList2DomainList(List<CityDataModel> cityDMs) {
+        List<City> list = new ArrayList<>();
+
+        for (CityDataModel cityDM : cityDMs) {
+            list.add(DM2domain(cityDM));
+        }
+
+        return list;
+    }
+}
