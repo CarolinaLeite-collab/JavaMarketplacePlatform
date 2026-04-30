@@ -79,14 +79,14 @@ Factory --> CTL: appraisalEntity
 deactivate Factory
 
 ref over CTL
-[[sd-ref-diagrams/Verify_Publication_Type.puml Verify the existence of appraisalEntity in persistence]]
+[[sd-ref-diagrams/Verify_Appraisal_Entity.puml Verify the existence of appraisalEntity in persistence]]
 end ref
 
 CTL -> IREPO : save(appraisalEntity)
 activate IREPO
 
 ref over IREPO
-[[sd-ref-diagrams/Save_Publication_Type.puml Save appraisalEntity and return saved domain object]]
+[[sd-ref-diagrams/Save_Appraisal_Entity.puml Save appraisalEntity and return saved domain object]]
 end ref
 
 CTL <-- IREPO : reconstructedAppraisalEntity
