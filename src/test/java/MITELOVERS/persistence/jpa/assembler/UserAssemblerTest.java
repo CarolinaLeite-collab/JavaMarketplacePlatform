@@ -76,17 +76,6 @@ class UserAssemblerTest {
         assertEquals("pedro@mitelovers.com", result.getEmail());
     }
 
-    @Test
-    void toDataModelShouldThrowWhenUserIsNull() {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-
-        // SUT
-        UserAssembler assembler = new UserAssembler(factoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDataModel(null));
-    }
 
 
     @Test
@@ -113,16 +102,5 @@ class UserAssemblerTest {
         assertEquals(userDouble, result);
     }
 
-    @Test
-    void toDomainShouldThrowWhenDataModelIsNull() {
-        // Arrange
-        UserFactory factoryDouble = mock(UserFactory.class);
-
-        // SUT
-        UserAssembler assembler = new UserAssembler(factoryDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
-    }
 
 }

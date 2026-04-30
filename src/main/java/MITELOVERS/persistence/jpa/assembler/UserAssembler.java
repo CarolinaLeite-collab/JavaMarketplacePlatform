@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 /**
  * Assembler responsible for converting between {@link User} domain objects
  * and {@link UserDataModel} persistence objects.
+ * <p>
+ * Handles transformation of domain value objects to persistence-friendly
+ * formats and reconstruction of domain objects from stored data.
  */
 
 @Component
@@ -21,8 +24,6 @@ public class UserAssembler {
 
 
     public UserDataModel toDataModel(User user) {
-        if (user == null)
-            throw new IllegalArgumentException("User cannot be null");
 
         return new UserDataModel(
                 user.identity().toString(),
@@ -34,8 +35,6 @@ public class UserAssembler {
 
 
     public User toDomain(UserDataModel userDataModel) {
-        if (userDataModel == null)
-            throw new IllegalArgumentException("UserDataModel cannot be null");
 
         Email email = new Email(userDataModel.getEmail());
         UserId userId = new UserId(new Email(userDataModel.getId()));
