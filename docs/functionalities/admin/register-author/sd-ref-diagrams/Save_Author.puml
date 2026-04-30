@@ -23,7 +23,7 @@ participant ":IAuthorRepo" as IA
 participant ":AuthorAssembler" as assembler
 participant ":IAuthorSpringDataRepo" as springData
 participant ":AuthorFactory" as factory
-participant ":Author" as author
+participant "authorName:Author" as author
 
 
 '==== UI interaction ====
@@ -33,15 +33,15 @@ activate CTL
 
 IA -> assembler : toDataModel(authorName)
 activate assembler
-assembler -> author : identity()
+assembler -> author : stringId = identity()
 activate author
 deactivate author
-assembler -> author : getName()
+assembler -> author : stringName = getName()
 activate author
 deactivate author
 
 create "authorDataModel: AuthorDataModel" as DM
-assembler -->> DM : <<create>>(authorName)
+assembler -->> DM : <<create>>(stringId, stringName)
 assembler --> IA : authorDataModel
 deactivate assembler
 
@@ -72,12 +72,12 @@ assembler -> factory : createAuthor(authorId, name)
 activate factory
 create "author:Author"
 factory -->> "author:Author" : <<create>>(authorId, name)
-factory --> assembler : author
+factory --> assembler : reconstructoredAuthor
 deactivate factory
-assembler --> IA : author
+assembler --> IA : reconstructoredAuthor
 deactivate assembler
 
-IA --> CTL : author
+IA --> CTL : reconstructoredAuthor
 deactivate IA
 
 ref over CTL
