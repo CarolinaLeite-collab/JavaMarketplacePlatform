@@ -11,6 +11,7 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ import java.util.List;
  * @see AppraisalEntity
  */
 
+@Controller
 public class RegisterNewAppraisalEntityController {
     private IAppraisalEntityRepo _iAppraisalEntityRepo;
     private AppraisalEntityFactory _appraisalEntityFactory;
