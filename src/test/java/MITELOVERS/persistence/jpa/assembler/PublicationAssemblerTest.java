@@ -67,6 +67,9 @@ class PublicationAssemblerTest {
         // arrange
         when(_authorIdDouble.toString()).thenReturn("Maria Tavares");
         when(_genreIdDouble.toString()).thenReturn("Romance");
+        when(_publicationIdDouble.toString()).thenReturn("publicationIdDouble");
+        when(_releaseYearDouble.toString()).thenReturn("2000");
+        when(_titleDouble.toString()).thenReturn("titleDouble");
 
         when(_publicationDataModelDouble.getId()).thenReturn("publicationIdDouble");
         when(_publicationDataModelDouble.getAuthorId()).thenReturn("Maria Tavares");
@@ -77,6 +80,9 @@ class PublicationAssemblerTest {
 
         when(_publicationDouble.getAuthorId()).thenReturn(_authorIdDouble);
         when(_publicationDouble.getGenreId()).thenReturn(_genreIdDouble);
+        when(_publicationDouble.getTitle()).thenReturn(_titleDouble);
+        when(_publicationDouble.getReleaseYear()).thenReturn(_releaseYearDouble);
+        when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
 
         when(_publicationFactoryDouble.createPublication(any(PublicationId.class), any(Title.class), any(AuthorId.class), any(Year.class), any(GenreId.class))).thenReturn(_publicationDouble);
 
@@ -88,8 +94,11 @@ class PublicationAssemblerTest {
 
         // assert
         assertEquals(_publicationDouble, result);
-        assertEquals(_genreIdDouble, result.getGenreId());
-        assertEquals(_authorIdDouble, result.getAuthorId());
+        assertEquals("publicationIdDouble", result.identity().toString());
+        assertEquals("Romance", result.getGenreId().toString());
+        assertEquals("Maria Tavares", result.getAuthorId().toString());
+        assertEquals("2000", result.getReleaseYear().toString());
+        assertEquals("titleDouble", result.getTitle().toString());
     }
 
     @Test
@@ -126,6 +135,6 @@ class PublicationAssemblerTest {
 
         // Assert
         assertEquals(_publicationDouble, reconstructed);
-
+        assertEquals(_publicationIdDouble, reconstructed.identity());
     }
 }
