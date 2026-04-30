@@ -4,7 +4,7 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Component;
 
 /**
  * Controller responsible for creating new authors in the system.
@@ -14,12 +14,13 @@ import MITELOVERS.domain.valueobject.UserId;
  * </p>
  */
 
+@Component
 public class CreateAuthorController {
 
     private IAuthorRepo _iAuthorRepo;
     private AuthorFactory _authorFactory;
 
-    public CreateAuthorController(IAuthorRepo iAuthorRepo,AuthorFactory authorFactory, UserId adminId) {
+    public CreateAuthorController(IAuthorRepo iAuthorRepo,AuthorFactory authorFactory) {
 
         _iAuthorRepo = iAuthorRepo;
         _authorFactory = authorFactory;
@@ -27,13 +28,6 @@ public class CreateAuthorController {
     }
 
     public Author createAuthor (Name authorName){
-
-
-        return addAuthor(authorName);
-
-    }
-
-    public Author addAuthor(Name authorName) {
 
         Author newAuthor = _authorFactory.createAuthor(authorName);
 
