@@ -6,8 +6,8 @@ import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -23,7 +23,7 @@ class RegisterNewUserControllerTest {
     @MockBean
     UserFactory _userFactoryDouble;
 
-    @InjectMocks
+    @Autowired
     RegisterNewUserController _registerNewUserController;
 
     private User _userDouble;
@@ -32,6 +32,7 @@ class RegisterNewUserControllerTest {
     private Email _emailDouble;
     private Phone _phoneDouble;
     private UserId _userIdDouble;
+
 
     @BeforeEach
     void setUp() throws InstantiationException{
@@ -44,12 +45,7 @@ class RegisterNewUserControllerTest {
         _emailDouble = mock(Email.class);
         _phoneDouble = mock(Phone.class);
         _userIdDouble = mock(UserId.class);
-    }
 
-    @Test
-    void registerNewUserControllerTest() {
-        // SUT
-        _registerNewUserController = new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
     }
 
     @Test
@@ -61,12 +57,8 @@ class RegisterNewUserControllerTest {
         when(_iUserRepoDouble.containsOfIdentity(_userIdDouble)).thenReturn(false);
         when(_iUserRepoDouble.save(_userDouble)).thenReturn(_userDouble);
 
-        // SUT
-        RegisterNewUserController controller =
-                new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
-
         // Act
-        User result = controller.registerNewUser(
+        User result = _registerNewUserController.registerNewUser(
                 _nameDouble, _addressDouble, _emailDouble, _phoneDouble);
 
         // Assert
@@ -84,13 +76,10 @@ class RegisterNewUserControllerTest {
         when(_userDouble.identity()).thenReturn(_userIdDouble);
         when(_iUserRepoDouble.containsOfIdentity(_userIdDouble)).thenReturn(true);
 
-        // SUT
-        RegisterNewUserController controller =
-                new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.registerNewUser(
+                () -> _registerNewUserController.registerNewUser(
                         _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
     }
 
@@ -102,13 +91,9 @@ class RegisterNewUserControllerTest {
         when(_userDouble.identity()).thenReturn(_userIdDouble);
         when(_iUserRepoDouble.containsOfIdentity(_userIdDouble)).thenReturn(true);
 
-        // SUT
-        RegisterNewUserController controller =
-                new RegisterNewUserController(_iUserRepoDouble, _userFactoryDouble);
-
         // Act
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> controller.registerNewUser(
+                () -> _registerNewUserController.registerNewUser(
                         _nameDouble, _addressDouble, _emailDouble, _phoneDouble));
 
         // Assert
