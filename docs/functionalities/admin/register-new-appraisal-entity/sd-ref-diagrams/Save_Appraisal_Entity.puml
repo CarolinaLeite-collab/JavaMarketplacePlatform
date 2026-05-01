@@ -51,51 +51,54 @@ deactivate AE
     end loop
 
 create "dmToSave:AppraisalEntityDataModel"
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : <<create>>(stringId, stringName, stringPublicationTypeIds, stringGenreIds)
+ASSMBLR -->> "dmToSave:AppraisalEntityDataModel" : <<create>>(stringId, stringName, stringPublicationTypeIds, stringGenreIds)
 ASSMBLR --> JPAREPO : dmToSave
 deactivate ASSMBLR
-JPAREPO -> SDREPO : savedDm = save(dmToSave)
+JPAREPO -> SDREPO : save(dmToSave)
 activate SDREPO
-SDREPO -> DB : save string based data
+SDREPO -> DB : save(dmToSave))
+DB --> SDREPO : string based data
+create "savedDm:AppraisalEntityDataModel"
+SDREPO -->> "savedDm:AppraisalEntityDataModel" : <<create>>
 SDREPO --> JPAREPO : savedDm
 deactivate SDREPO
 JPAREPO -> ASSMBLR : toDomain(savedDm)
 activate ASSMBLR
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : stringId = getId()
-activate "dmToSave:AppraisalEntityDataModel"
-deactivate "dmToSave:AppraisalEntityDataModel"
+ASSMBLR -> "savedDm:AppraisalEntityDataModel" : stringId = getId()
+activate "savedDm:AppraisalEntityDataModel"
+deactivate "savedDm:AppraisalEntityDataModel"
 
 create "appraisalEntityId:AppraisalEntityId"
-ASSMBLR -> "appraisalEntityId:AppraisalEntityId" : <<create>>(stringId)
+ASSMBLR -->> "appraisalEntityId:AppraisalEntityId" : <<create>>(stringId)
 
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : stringName = getName()
-activate "dmToSave:AppraisalEntityDataModel"
-deactivate "dmToSave:AppraisalEntityDataModel"
+ASSMBLR -> "savedDm:AppraisalEntityDataModel" : stringName = getName()
+activate "savedDm:AppraisalEntityDataModel"
+deactivate "savedDm:AppraisalEntityDataModel"
 
 create "name:Name"
-ASSMBLR -> "name:Name" : <<create>>(stringName)
+ASSMBLR -->> "name:Name" : <<create>>(stringName)
 
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : publicationTypeStringIds = getPublicationTypeStringIds()
-activate "dmToSave:AppraisalEntityDataModel"
-deactivate "dmToSave:AppraisalEntityDataModel"
+ASSMBLR -> "savedDm:AppraisalEntityDataModel" : publicationTypeStringIds = getPublicationTypeStringIds()
+activate "savedDm:AppraisalEntityDataModel"
+deactivate "savedDm:AppraisalEntityDataModel"
 
     loop for each publicationTypeStringId in publicationTypeStringIds
 
     create "publicationTypeId:PublicationTypeId"
-    ASSMBLR -> "publicationTypeId:PublicationTypeId" : <<create>>(publicationTypeStringId)
+    ASSMBLR -->> "publicationTypeId:PublicationTypeId" : <<create>>(publicationTypeStringId)
 
     ASSMBLR -> ASSMBLR : publicationTypeIds.add(publicationTypeId)
 
     end loop
 
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : genreStringIds = getGenreStringIds()
-activate "dmToSave:AppraisalEntityDataModel"
-deactivate "dmToSave:AppraisalEntityDataModel"
+ASSMBLR -> "savedDm:AppraisalEntityDataModel" : genreStringIds = getGenreStringIds()
+activate "savedDm:AppraisalEntityDataModel"
+deactivate "savedDm:AppraisalEntityDataModel"
 
     loop for each genreStringId in genreStringIds
 
     create "genreId:GenreId"
-    ASSMBLR -> "genreId:GenreId" : <<create>>(genreId)
+    ASSMBLR -->> "genreId:GenreId" : <<create>>(genreId)
 
     ASSMBLR -> ASSMBLR : genreIds.add(genreId)
 

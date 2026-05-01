@@ -12,8 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@ActiveProfiles("jpa")
 class RegisterNewAppraisalEntityControllerTest {
 
     @MockBean
@@ -36,18 +39,15 @@ class RegisterNewAppraisalEntityControllerTest {
     @MockBean
     IGenreRepo _iGenreRepoDouble;
 
-    @MockBean
-    UserId _adminIdDouble;
-
-    @InjectMocks
+    @Autowired
     RegisterNewAppraisalEntityController _controller;
 
     private Name _nameDouble;
-    private List<Genre> _genres;
+    private List<Genre> _genresIdDouble;
     private Genre _genreDouble;
-    private List<GenreId> _genreIds;
+    private List<GenreId> _genreIdsDouble;
     private GenreId _genreIdDouble;
-    private List<PublicationType> _publicationTypes;
+    private List<PublicationType> _publicationTypesDouble;
     private List<PublicationTypeId> _publicationTypeIds;
     private PublicationTypeId _publicationTypeIdDouble;
     private AppraisalEntityId _appraisalEntityIdDouble;
@@ -55,87 +55,84 @@ class RegisterNewAppraisalEntityControllerTest {
     private PublicationType _publicationTypeDouble;
 
     @BeforeEach
-    void setUp() throws InstantiationException{
+    void setUp() throws InstantiationException {
 
         MockitoAnnotations.openMocks(this);
 
         _nameDouble = mock(Name.class);
 
+        // Genres
         _genreDouble = mock(Genre.class);
-        _genres = new ArrayList<>();
-        _genres.add(_genreDouble);
-
-        when(_iGenreRepoDouble.findAll()).thenReturn(_genres);
-
         _genreIdDouble = mock(GenreId.class);
-        _genreIds = new ArrayList<>();
-        _genreIds.add(_genreIdDouble);
+        _genreIdsDouble = new ArrayList<>();
+        _genreIdsDouble.add(_genreIdDouble);
+        when(_iGenreRepoDouble.findAllKeys()).thenReturn(_genreIdsDouble);
 
+        // Publication Types
         _publicationTypeDouble = mock(PublicationType.class);
-        _publicationTypes = new ArrayList<>();
-        _publicationTypes.add(_publicationTypeDouble);
-
         _publicationTypeIdDouble = mock(PublicationTypeId.class);
         _publicationTypeIds = new ArrayList<>();
         _publicationTypeIds.add(_publicationTypeIdDouble);
+        when(_iPublicationTypeRepoDouble.findAllKeys()).thenReturn(_publicationTypeIds);
 
-        when(_iPublicationTypeRepoDouble.findAll()).thenReturn(_publicationTypes);
-
+        // Appraisal Entity
         _appraisalEntityDouble = mock(AppraisalEntity.class);
-
         _appraisalEntityIdDouble = mock(AppraisalEntityId.class);
-
     }
 
     @Test
     void registerNewAppraisalEntityControllerTest(){
         // SUT
-          _controller =
+        _controller =
                 new RegisterNewAppraisalEntityController(_iAppraisalEntityRepoDouble,
-                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble, _adminIdDouble);
+                        _iPublicationTypeRepoDouble, _appraisalEntityFactoryDouble, _iGenreRepoDouble);
 
     }
 
     @Test
-    void shouldGetPublicationTypesFromRepo() {
+    void shouldGetPublicationTypeIdsFromRepo() {
+        // Arrange
+        when(_publicationTypeDouble.identity()).thenReturn(_publicationTypeIdDouble);
+
         // Act
-        Iterable <PublicationType> types = _controller.getPublicationTypes();
+        Iterable<PublicationTypeId> types = _controller.getPublicationTypesId();
 
         // Assert
-        assertEquals(_publicationTypes, types);
-
+        assertEquals(_publicationTypeIds, types);
     }
 
     @Test
-    void shouldGetEmptyPublicationTypesWhenRepoIsEmpty() {
+    void shouldGetEmptyPublicationTypeIdsWhenRepoIsEmpty() {
         // Arrange
-        when(_iPublicationTypeRepoDouble.findAll()).thenReturn(new ArrayList<>());
+        when(_iPublicationTypeRepoDouble.findAllKeys()).thenReturn(new ArrayList<>());
 
         // Act
-        Iterable<PublicationType> types = _controller.getPublicationTypes();
+        Iterable<PublicationTypeId> types = _controller.getPublicationTypesId();
 
         // Assert
         assertFalse(types.iterator().hasNext());
     }
 
     @Test
-    void shouldGetGenresFromRepo() {
+    void shouldGetGenreIdsFromRepo() {
+        // Arrange
+        when(_genreDouble.identity()).thenReturn(_genreIdDouble);
+
         // Act
-        Iterable <Genre> genres = _controller.getGenres();
+        Iterable<GenreId> genres = _controller.getGenresId();
 
         // Assert
         assertNotNull(genres);
         assertTrue(genres.iterator().hasNext());
-
     }
 
     @Test
-    void shouldGetEmptyGenresWhenRepoIsEmpty() {
+    void shouldGetEmptyGenreIdsWhenRepoIsEmpty() {
         // Arrange
-        when(_iGenreRepoDouble.findAll()).thenReturn(new ArrayList<>());
+        when(_iGenreRepoDouble.findAllKeys()).thenReturn(new ArrayList<>());
 
         // Act
-        Iterable<Genre> genres = _controller.getGenres();
+        Iterable<GenreId> genres = _controller.getGenresId();
 
         // Assert
         assertFalse(genres.iterator().hasNext());
@@ -144,14 +141,14 @@ class RegisterNewAppraisalEntityControllerTest {
     @Test
     void shouldSuccessfullyRegisterAppraisalEntity() {
         // Arrange
-        when(_appraisalEntityFactoryDouble.createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds))
+        when(_appraisalEntityFactoryDouble.createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIdsDouble))
                 .thenReturn(_appraisalEntityDouble);
         when(_appraisalEntityDouble.identity()).thenReturn(_appraisalEntityIdDouble);
         when(_iAppraisalEntityRepoDouble.containsOfIdentity(_appraisalEntityIdDouble)).thenReturn(false);
         when(_iAppraisalEntityRepoDouble.save(_appraisalEntityDouble)).thenReturn(_appraisalEntityDouble);
 
         // Act
-        AppraisalEntity result = _controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
+        AppraisalEntity result = _controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIdsDouble);
 
         // Assert
         assertEquals(_appraisalEntityDouble, result);
@@ -162,7 +159,7 @@ class RegisterNewAppraisalEntityControllerTest {
     void shouldThrowWhenAddingDuplicateAppraisalEntity() {
         // Arrange
         when(_appraisalEntityFactoryDouble.createAppraisalEntity(
-                _nameDouble, _publicationTypeIds, _genreIds))
+                _nameDouble, _publicationTypeIds, _genreIdsDouble))
                 .thenReturn(_appraisalEntityDouble);
 
         when(_appraisalEntityDouble.identity()).thenReturn(_appraisalEntityIdDouble);
@@ -170,7 +167,7 @@ class RegisterNewAppraisalEntityControllerTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                _controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds));
+                _controller.registerNewAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIdsDouble));
 
     }
 

@@ -118,8 +118,8 @@ RegisterNewAppraisalEntityController "1" --> "1" AppraisalEntityFactory : invoke
 AppraisalEntityFactory "1" ..> "*" AppraisalEntity : <<create>>
 
 AppraisalEntity "1" --> "ID 1" AppraisalEntityId : has
-AppraisalEntity "1" o-- "1..*" GenreId : references
-AppraisalEntity "1" o-- "1..*" PublicationTypeId : references
+AppraisalEntity "*" o-- "1..*" GenreId : references
+AppraisalEntity "*" o-- "1..*" PublicationTypeId : references
 AppraisalEntity "1" --> "1" Name : has
 AppraisalEntity "*" <- "1" IAppraisalEntityRepo : persists
 

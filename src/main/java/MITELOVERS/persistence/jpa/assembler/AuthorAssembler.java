@@ -21,21 +21,22 @@ public class AuthorAssembler {
     private final AuthorFactory _authorFactory;
 
     public AuthorDataModel toDataModel(Author author) {
-        if (author == null)
-            throw new IllegalArgumentException("Author cannot be null");
 
-        return new AuthorDataModel(author.identity().toString(), author.getName().toString());
+        String stringId = author.identity().toString();
+        String stringName = author.getName().toString();
+
+        AuthorDataModel dataModelToSave = new AuthorDataModel(stringId, stringName);
+
+        return dataModelToSave;
     }
 
     public Author toDomain(AuthorDataModel dataModel) {
-        if (dataModel == null)
-            throw new IllegalArgumentException("AuthorDataModel cannot be null");
 
         AuthorId authorId = new AuthorId(dataModel.getId());
         Name name = new Name(dataModel.getName());
 
-        Author author = _authorFactory.createAuthor(authorId, name);
+        Author reconstructoredAuthor = _authorFactory.createAuthor(authorId, name);
 
-        return author;
+        return reconstructoredAuthor;
     }
 }

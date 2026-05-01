@@ -40,20 +40,6 @@ class AuthorAssemblerTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenAuthorIsNull() {
-
-        // Arrange
-        AuthorFactory authorFactoryDouble = mock(AuthorFactory.class);
-
-        // SUT
-        AuthorAssembler assembler = new AuthorAssembler(authorFactoryDouble);
-
-
-        assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDataModel(null));
-    }
-
-    @Test
     void shouldConvertDataModelToAuthor() {
 
         // Arrange
@@ -82,20 +68,6 @@ class AuthorAssemblerTest {
         // Assert
         assertEquals(nameDouble, author.getName());
         assertEquals("1", author.identity().toString());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenDataModelIsNull() {
-
-        // Arrange
-        AuthorFactory authorFactoryDouble = mock(AuthorFactory.class);
-
-        // SUT
-        AuthorAssembler assembler = new AuthorAssembler(authorFactoryDouble);
-
-        // Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDomain(null));
     }
 
     @Test
