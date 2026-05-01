@@ -38,9 +38,9 @@ class JpaCityRepoTest {
         CityDataModel cityDMDouble = mock(CityDataModel.class);
         CityDataModel savedCityDMDouble = mock(CityDataModel.class);
 
-        when(assembler.domain2DM(cityDouble)).thenReturn(cityDMDouble);
+        when(assembler.toDataModel(cityDouble)).thenReturn(cityDMDouble);
         when(springDataRepo.save(cityDMDouble)).thenReturn(savedCityDMDouble);
-        when(assembler.DM2domain(savedCityDMDouble)).thenReturn(cityDouble);
+        when(assembler.toDomain(savedCityDMDouble)).thenReturn(cityDouble);
 
         //SUT
         JpaCityRepo jpaCityRepo = new JpaCityRepo(springDataRepo, assembler);
@@ -69,7 +69,7 @@ class JpaCityRepoTest {
         List<City> cityList = List.of(city1, city2);
 
         when(springDataRepo.findAll()).thenReturn(dmList);
-        when(assembler.DMList2DomainList(dmList)).thenReturn(cityList);
+        when(assembler.toDomainList(dmList)).thenReturn(cityList);
 
         // SUT
         JpaCityRepo jpaCityRepo = new JpaCityRepo(springDataRepo, assembler);
@@ -117,7 +117,7 @@ class JpaCityRepoTest {
         City city = mock(City.class);
 
         when(springDataRepo.findById(cityId.toString())).thenReturn(Optional.of(cityDM));
-        when(assembler.DM2domain(cityDM)).thenReturn(city);
+        when(assembler.toDomain(cityDM)).thenReturn(city);
 
         // SUT
         JpaCityRepo jpaCityRepo = new JpaCityRepo(springDataRepo, assembler);

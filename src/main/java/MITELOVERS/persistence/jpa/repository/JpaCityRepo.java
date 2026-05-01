@@ -25,15 +25,15 @@ public class JpaCityRepo implements ICityRepo {
 
     @Override
     public City save(City city) {
-        CityDataModel dm = assembler.domain2DM(city);
+        CityDataModel dm = assembler.toDataModel(city);
         CityDataModel saved = springDataRepo.save(dm);
-        return assembler.DM2domain(saved);
+        return assembler.toDomain(saved);
     }
 
     @Override
     public Iterable<City> findAll() {
         List<CityDataModel> list = springDataRepo.findAll();
-        List<City> listDomain = assembler.DMList2DomainList(list);
+        List<City> listDomain = assembler.toDomainList(list);
         return listDomain;
     }
 
@@ -52,7 +52,7 @@ public class JpaCityRepo implements ICityRepo {
     @Override
     public Optional<City> ofIdentity(CityId cityId) {
         return springDataRepo.findById(cityId.toString())
-                .map(assembler::DM2domain);
+                .map(assembler::toDomain);
     }
 
     @Override

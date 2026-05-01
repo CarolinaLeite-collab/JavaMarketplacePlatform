@@ -17,35 +17,35 @@ public class CityAssembler {
 
     private CityFactory cityFactory;
 
-    public CityDataModel domain2DM(City city) {
+    public CityDataModel toDataModel(City city) {
         return new CityDataModel(
                 city.identity().toString(),
                 city.getName(),
                 city.getCountryId().toString());
     }
 
-    public City DM2domain(CityDataModel cityDM) {
+    public City toDomain(CityDataModel cityDM) {
         return cityFactory.createCity(
                 cityDM.get_name(),
                 new CountryId(cityDM.get_countryId()),
                 new CityId(cityDM.get_name(), new CountryId(cityDM.get_countryId())));
     }
 
-    public List<CityDataModel> domainList2DMList(List<City> cities) {
+    public List<CityDataModel> toDataModelList(List<City> cities) {
         List<CityDataModel> list = new ArrayList<>();
 
         for (City city : cities) {
-            list.add(domain2DM(city));
+            list.add(toDataModel(city));
         }
 
         return list;
     }
 
-    public List<City> DMList2DomainList(List<CityDataModel> cityDMs) {
+    public List<City> toDomainList(List<CityDataModel> cityDMs) {
         List<City> list = new ArrayList<>();
 
         for (CityDataModel cityDM : cityDMs) {
-            list.add(DM2domain(cityDM));
+            list.add(toDomain(cityDM));
         }
 
         return list;

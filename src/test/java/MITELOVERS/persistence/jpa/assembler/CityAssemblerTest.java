@@ -19,7 +19,7 @@ class CityAssemblerTest {
         CountryId countryId = new CountryId("PT");
         City city = factory.createCity("Porto", countryId);
 
-        CityDataModel result = assembler.domain2DM(city);
+        CityDataModel result = assembler.toDataModel(city);
 
         assertEquals(city.getName().toString(), result.get_name());
         assertEquals(city.getCountryId().toString(), result.get_countryId());
@@ -32,7 +32,7 @@ class CityAssemblerTest {
         CityAssembler assembler = new CityAssembler(factory);
         CityDataModel cityDM = new CityDataModel("PTporto", "Porto", "PT");
 
-        City result = assembler.DM2domain(cityDM);
+        City result = assembler.toDomain(cityDM);
 
         assertEquals(cityDM.get_name().toString(), result.getName());
         assertEquals(cityDM.get_cityId().toString(), result.identity().toString());
@@ -50,7 +50,7 @@ class CityAssemblerTest {
         cityDMs.add(cityDM1);
         cityDMs.add(cityDM2);
 
-        List<City> cityList = assembler.DMList2DomainList(cityDMs);
+        List<City> cityList = assembler.toDomainList(cityDMs);
 
         assertEquals(cityDMs.size(), cityList.size());
         assertEquals(cityDMs.get(0).get_name().toString(), cityDMs.get(0).get_name());
@@ -68,7 +68,7 @@ class CityAssemblerTest {
         cities.add(city1);
         cities.add(city2);
 
-        List<CityDataModel> cityDMs = assembler.domainList2DMList(cities);
+        List<CityDataModel> cityDMs = assembler.toDataModelList(cities);
 
         assertEquals(cityDMs.size(), cityDMs.size());
         assertEquals(cityDMs.get(0).get_name().toString(), cityDMs.get(0).get_name());
