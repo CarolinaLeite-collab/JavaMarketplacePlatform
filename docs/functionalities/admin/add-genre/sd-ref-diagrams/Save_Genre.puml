@@ -1,0 +1,65 @@
+@startuml
+'==== Title ====
+title "Save Genre" SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":AddGenreController" as CTL
+participant ":JPAGenreRepo" as JPAREPO
+participant ":GenreAssembler" as ASSMBLR
+participant ":IGenreSpringDataRepo" as SDREPO
+participant ":GenreFactory" as FACTORY
+database "DB" as DB
+
+activate CTL
+CTL -> JPAREPO : save(genre)
+activate JPAREPO
+JPAREPO -> ASSMBLR : toDataModel(genre)
+activate ASSMBLR
+create "dmToSave:GenreDataModel"
+ASSMBLR -> "dmToSave:GenreDataModel" : <<create>>(genre, genre)
+ASSMBLR --> JPAREPO : dmToSave
+deactivate ASSMBLR
+
+JPAREPO -> SDREPO : savedDm = save(dmToSave)
+activate SDREPO
+SDREPO -> DB : persist
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+ASSMBLR -> "dmToSave:GenreDataModel" : stringId = getId()
+ASSMBLR -> "dmToSave:GenreDataModel" : stringName = getName()
+
+create "id:GenreId"
+ASSMBLR -> "id:GenreId" : <<create>>(stringId)
+
+ASSMBLR -> FACTORY : createGenre(id, stringName)
+activate FACTORY
+create "reconstructedGenre:Genre"
+FACTORY -->> "reconstructedGenre:Genre" : <<create>>(id, stringName)
+FACTORY --> ASSMBLR : reconstructedGenre
+deactivate FACTORY
+
+ASSMBLR --> JPAREPO : reconstructedGenre
+deactivate ASSMBLR
+JPAREPO --> CTL : reconstructedGenre
+
+ref over CTL
+[[../Add_Genre_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml
