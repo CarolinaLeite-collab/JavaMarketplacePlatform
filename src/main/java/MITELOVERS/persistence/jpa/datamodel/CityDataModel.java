@@ -19,12 +19,12 @@ public class CityDataModel {
 
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    private String _cityId;
+    private String cityId;
 
     @Column(name = "name", nullable = false)
-    private String _name;
+    private String name;
 
     @Column(name = "countryId",  nullable = false)
-    private String _countryId;
+    private String countryId;
 
 }

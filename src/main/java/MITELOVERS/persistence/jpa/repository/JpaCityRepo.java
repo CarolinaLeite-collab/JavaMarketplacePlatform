@@ -43,8 +43,8 @@ public class JpaCityRepo implements ICityRepo {
         List<CityId> ids = new ArrayList<>();
 
         for (CityDataModel dm : list) {
-            ids.add(new CityId(dm.get_name(),
-                    new CountryId(dm.get_countryId())));
+            ids.add(new CityId(dm.getName(),
+                    new CountryId(dm.getCountryId())));
         }
         return ids;
     }

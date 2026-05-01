@@ -21,9 +21,9 @@ class CityAssemblerTest {
 
         CityDataModel result = assembler.toDataModel(city);
 
-        assertEquals(city.getName().toString(), result.get_name());
-        assertEquals(city.getCountryId().toString(), result.get_countryId());
-        assertEquals(city.identity().toString(), result.get_cityId());
+        assertEquals(city.getName().toString(), result.getName());
+        assertEquals(city.getCountryId().toString(), result.getCountryId());
+        assertEquals(city.identity().toString(), result.getCityId());
     }
 
     @Test
@@ -34,9 +34,9 @@ class CityAssemblerTest {
 
         City result = assembler.toDomain(cityDM);
 
-        assertEquals(cityDM.get_name().toString(), result.getName());
-        assertEquals(cityDM.get_cityId().toString(), result.identity().toString());
-        assertEquals(cityDM.get_countryId().toString(), result.getCountryId().toString());
+        assertEquals(cityDM.getName().toString(), result.getName());
+        assertEquals(cityDM.getCityId().toString(), result.identity().toString());
+        assertEquals(cityDM.getCountryId().toString(), result.getCountryId().toString());
 
     }
 
@@ -53,7 +53,7 @@ class CityAssemblerTest {
         List<City> cityList = assembler.toDomainList(cityDMs);
 
         assertEquals(cityDMs.size(), cityList.size());
-        assertEquals(cityDMs.get(0).get_name().toString(), cityDMs.get(0).get_name());
+        assertEquals(cityDMs.get(0).getName().toString(), cityDMs.get(0).getName());
     }
 
     @Test
@@ -71,6 +71,6 @@ class CityAssemblerTest {
         List<CityDataModel> cityDMs = assembler.toDataModelList(cities);
 
         assertEquals(cityDMs.size(), cityDMs.size());
-        assertEquals(cityDMs.get(0).get_name().toString(), cityDMs.get(0).get_name());
+        assertEquals(cityDMs.get(0).getName().toString(), cityDMs.get(0).getName());
     }
 }

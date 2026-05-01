@@ -26,9 +26,9 @@ public class CityAssembler {
 
     public City toDomain(CityDataModel cityDM) {
         return cityFactory.createCity(
-                cityDM.get_name(),
-                new CountryId(cityDM.get_countryId()),
-                new CityId(cityDM.get_name(), new CountryId(cityDM.get_countryId())));
+                cityDM.getName(),
+                new CountryId(cityDM.getCountryId()),
+                new CityId(cityDM.getName(), new CountryId(cityDM.getCountryId())));
     }
 
     public List<CityDataModel> toDataModelList(List<City> cities) {

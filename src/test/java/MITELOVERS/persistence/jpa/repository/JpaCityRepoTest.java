@@ -89,8 +89,8 @@ class JpaCityRepoTest {
 
         CityDataModel cityDM = mock(CityDataModel.class);
 
-        when(cityDM.get_name()).thenReturn("Lisboa");
-        when(cityDM.get_countryId()).thenReturn("PT");
+        when(cityDM.getName()).thenReturn("Lisboa");
+        when(cityDM.getCountryId()).thenReturn("PT");
 
         when(springDataRepo.findAll()).thenReturn(List.of(cityDM));
 
