@@ -45,6 +45,9 @@ deactivate CASS
 JPA -> SDREPO : save(dm)
 activate SDREPO
 SDREPO -> DB : savedDM = save(dm)
+DB --> SDREPO : string based data
+create "savedDM:CityDataModel"
+SDREPO -> "savedDM:CityDataModel" : <<create>>
 SDREPO --> JPA : savedDM
 deactivate SDREPO
 

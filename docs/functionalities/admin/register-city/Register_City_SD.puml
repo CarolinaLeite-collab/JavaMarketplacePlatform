@@ -33,21 +33,21 @@ activate CTL
 ref over CTL
 [[sd-ref-diagrams/Get_Country_Ids.puml Get All Country Ids]]
 end ref
-UI <-- CTL: List<CountryId>
+UI <-- CTL: countryIds
 deactivate CTL
 
 
 '==== Create City ====
 UI --> Admin: Please choose a country \n and provide the city name.
 deactivate UI
-Admin -> UI: country, cityName
+Admin -> UI: countryId, cityName
 activate UI
 UI -> CTL: registerCity(cityName, countryId)
 activate CTL
 CTL -> FCT : creacteCity(cityName, countryId)
 activate FCT
 create city
-FCT -> city : <<create>>
+FCT -> city : creacteCity(cityName, countryId)
 FCT --> CTL : city
 deactivate FCT
 ref over CTL

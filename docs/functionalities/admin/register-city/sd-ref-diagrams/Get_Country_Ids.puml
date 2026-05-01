@@ -21,7 +21,7 @@ participant ":ICountryRepo" as REPO
 activate CTL
 CTL -> REPO : findAllKeys()
 activate REPO
-REPO --> CTL : List<CountryId>
+REPO --> CTL : countryIds
 deactivate REPO
 
 ref over CTL
