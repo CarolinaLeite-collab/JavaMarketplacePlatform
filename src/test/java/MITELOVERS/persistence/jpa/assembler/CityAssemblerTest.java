@@ -30,7 +30,7 @@ class CityAssemblerTest {
     void shouldConvertDataModelToDomain() {
         CityFactory factory = new CityFactory();
         CityAssembler assembler = new CityAssembler(factory);
-        CityDataModel cityDM = new CityDataModel("PTporto, PT", "Porto", "PT");
+        CityDataModel cityDM = new CityDataModel("PTporto", "Porto", "PT");
 
         City result = assembler.DM2domain(cityDM);
 
