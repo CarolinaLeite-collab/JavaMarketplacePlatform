@@ -30,8 +30,12 @@ public final class ItemId implements DomainId {
     private final SKU _sku;
 
     public ItemId() {
-
         _sku = new SKU();
+    }
+
+    // Constructor used when reconstructing from persistence
+    public ItemId(String skuValue) {
+        _sku = new SKU(skuValue);
     }
 
     public SKU getSku() { return _sku; }

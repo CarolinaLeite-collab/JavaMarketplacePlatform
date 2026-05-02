@@ -112,4 +112,29 @@ class ItemIdTest {
         // Assert
         assertEquals(sut.getSku().toString(), result);
     }
+
+    // --------------------------------------
+    // Tests for the rehydration constructor
+    // --------------------------------------
+
+    @Test
+    void rehydrationConstructorShouldStoreGivenSkuValue() {
+        String value = "ABCDEF1234"; // valid SKU
+        ItemId sut = new ItemId(value);
+        assertEquals(value, sut.getSku().getValue());
+    }
+
+    @Test
+    void rehydrationConstructorShouldRejectInvalidSkuValue() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new ItemId(invalid));
+    }
+
+    @Test
+    void rehydratedItemIdsWithSameValueShouldBeEqual() {
+        String value = "A1B2C3D4E5";
+        ItemId sut = new ItemId(value);
+        ItemId other = new ItemId(value);
+        assertEquals(sut, other);
+    }
 }
