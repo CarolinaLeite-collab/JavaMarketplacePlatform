@@ -22,7 +22,7 @@ class RegisterNewUserUI {
 package "controller" {
 
     class RegisterNewUserController {
-    + registerNewUser(name : Name, aaddress : Address,\n email : Email, phone : Phone) : User
+    + registerNewUser(name : Name, address : Address,\n email : Email, phone : Phone) : User
     }
 }
 
