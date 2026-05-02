@@ -24,17 +24,17 @@ class LibraryAssemblerTest {
     }
 
     // ----------------
-    // domain2dm TESTS
+    // toDataModel TESTS
     // ----------------
 
     @Test
-    void domain2dm_shouldThrowWhenLibraryIsNull() {
+    void toDataModel_shouldThrowWhenLibraryIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.domain2dm(null));
+                () -> assembler.toDataModel(null));
     }
 
     @Test
-    void domain2dm_shouldMapLibraryIdCorrectly() {
+    void toDataModel_shouldMapLibraryIdCorrectly() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -49,14 +49,14 @@ class LibraryAssemblerTest {
 
         when(library.getItemsIdInLibrary()).thenReturn(List.of(item1, item2));
 
-        LibraryDataModel dm = assembler.domain2dm(library);
+        LibraryDataModel dm = assembler.toDataModel(library);
 
         assertEquals("test@example.com", dm.getLibraryId());
         assertEquals(List.of("ABCDEF1234", "A1B2C3D4E5"), dm.getItemIds());
     }
 
     @Test
-    void domain2dm_shouldMapEmptyItemList() {
+    void toDataModel_shouldMapEmptyItemList() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -65,13 +65,13 @@ class LibraryAssemblerTest {
 
         when(library.getItemsIdInLibrary()).thenReturn(List.of());
 
-        LibraryDataModel dm = assembler.domain2dm(library);
+        LibraryDataModel dm = assembler.toDataModel(library);
 
         assertTrue(dm.getItemIds().isEmpty());
     }
 
     @Test
-    void domain2dm_shouldMapAllItemIds() {
+    void toDataModel_shouldMapAllItemIds() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -86,29 +86,29 @@ class LibraryAssemblerTest {
 
         when(library.getItemsIdInLibrary()).thenReturn(List.of(item1, item2));
 
-        LibraryDataModel dm = assembler.domain2dm(library);
+        LibraryDataModel dm = assembler.toDataModel(library);
 
         assertEquals(List.of("ABCDEF1234", "A1B2C3D4E5"), dm.getItemIds());
     }
 
     // -------------------------
-    // dm2domain TESTS
+    // toDomain TESTS
     // -------------------------
 
     @Test
-    void dm2domain_shouldThrowWhenDataModelIsNull() {
+    void toDomain_shouldThrowWhenDataModelIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.dm2domain(null));
+                () -> assembler.toDomain(null));
     }
 
     @Test
-    void dm2domain_shouldReconstructDomainCorrectly() {
+    void toDomainCorrectly() {
         LibraryDataModel dm = new LibraryDataModel(
                 "test@example.com",
                 List.of("ABCDEF1234", "A1B2C3D4E5")
         );
 
-        Library library = assembler.dm2domain(dm);
+        Library library = assembler.toDomain(dm);
 
         assertEquals("test@example.com", library.identity().toString());
         assertEquals(2, library.getItemsIdInLibrary().size());
@@ -121,7 +121,7 @@ class LibraryAssemblerTest {
     // -------------------------
 
     @Test
-    void domainList2dmList_shouldMapAll() {
+    void listToDataModel_shouldMapAll() {
         Library lib1 = mock(Library.class);
         Library lib2 = mock(Library.class);
 
@@ -138,18 +138,18 @@ class LibraryAssemblerTest {
         when(lib2.getItemsIdInLibrary()).thenReturn(List.of());
 
         List<LibraryDataModel> result =
-                assembler.domainList2dmList(List.of(lib1, lib2));
+                assembler.listToDataModel(List.of(lib1, lib2));
 
         assertEquals(2, result.size());
     }
 
     @Test
-    void dmList2DomainList_shouldMapAll() {
+    void listToDomain_shouldMapAll() {
         LibraryDataModel dm1 = new LibraryDataModel("test@example1.com", List.of());
         LibraryDataModel dm2 = new LibraryDataModel("test@example2.com", List.of());
 
         List<Library> result =
-                assembler.dmList2DomainList(List.of(dm1, dm2));
+                assembler.listToDomain(List.of(dm1, dm2));
 
         assertEquals(2, result.size());
         assertEquals("test@example1.com", result.get(0).identity().toString());

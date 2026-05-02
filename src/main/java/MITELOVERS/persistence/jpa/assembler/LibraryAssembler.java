@@ -28,7 +28,7 @@ public class LibraryAssembler {
 
     private LibraryFactory _libraryFactory;
 
-    public LibraryDataModel domain2dm(Library library) {
+    public LibraryDataModel toDataModel(Library library) {
 
         if (library == null) {
             throw new IllegalArgumentException("Library cannot be null");
@@ -47,7 +47,7 @@ public class LibraryAssembler {
         );
     }
 
-    public Library dm2domain(LibraryDataModel libraryDataModel) {
+    public Library toDomain(LibraryDataModel libraryDataModel) {
 
         if (libraryDataModel == null) {
             throw new IllegalArgumentException("LibraryDataModel cannot be null");
@@ -63,21 +63,21 @@ public class LibraryAssembler {
         return _libraryFactory.createLibrary(libraryId, itemIds);
     }
 
-    public List<LibraryDataModel> domainList2dmList(List<Library> libraries) {
+    public List<LibraryDataModel> listToDataModel(List<Library> libraries) {
         List<LibraryDataModel> list = new ArrayList<>();
 
         for (Library library : libraries) {
-            list.add(domain2dm(library));
+            list.add(toDataModel(library));
         }
 
         return list;
     }
 
-    public List<Library> dmList2DomainList(List<LibraryDataModel> libraryDMs) {
+    public List<Library> listToDomain(List<LibraryDataModel> libraryDMs) {
         List<Library> list = new ArrayList<>();
 
         for (LibraryDataModel libraryDataModel : libraryDMs) {
-            list.add(dm2domain(libraryDataModel));
+            list.add(toDomain(libraryDataModel));
         }
 
         return list;
