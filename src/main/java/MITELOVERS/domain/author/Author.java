@@ -3,6 +3,9 @@ package MITELOVERS.domain.author;
 
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
+
+import java.util.Objects;
 
 /**
  * Author is the person who originates, creates, and writes a `publication`.
@@ -11,18 +14,18 @@ import MITELOVERS.domain.valueobject.AuthorId;
 
 public class Author implements AggregateRoot<AuthorId> {
 
-    private final String _name;
+    private final Name _name;
     private final AuthorId _authorId;
 
 
-    Author (String name) {
+    Author (AuthorId authorId, Name name) {
 
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("Author name cannot be null or empty");
+        _name = Objects.requireNonNull(name, "Name cannot be null");
+        _authorId = authorId;
+    }
 
-        _name = name.trim();
-        _authorId = new AuthorId(name);
-
+    Author (Name name) {
+        this(new AuthorId(name), name);
     }
 
 
@@ -38,22 +41,16 @@ public class Author implements AggregateRoot<AuthorId> {
 
         if (object instanceof Author other) {
 
-            return _name.equalsIgnoreCase(other._name);
+            return _name.equals(other._name);
 
         }
 
         return false;
     }
 
-    public String getName() {
+    public Name getName() {
 
         return _name;
-
-    }
-
-    public String getLowerCaseName() {
-
-        return _name.toLowerCase();
 
     }
 
@@ -64,14 +61,14 @@ public class Author implements AggregateRoot<AuthorId> {
         if (object == this) return true;
         if (!(object instanceof Author)) return false;
         Author author = (Author) object;
-        return this._authorId.equals(author._authorId);
+        return _authorId.equals(author._authorId);
 
     }
 
     @Override
     public int hashCode() {
 
-        return _name.toLowerCase().hashCode();
+        return _authorId.hashCode();
 
     }
 

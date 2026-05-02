@@ -1,5 +1,9 @@
 package MITELOVERS.domain.author;
 
+import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.Name;
+import org.springframework.stereotype.Component;
+
 /**
  * Factory responsible for creating {@link Author} instances.
  * <p>
@@ -7,11 +11,18 @@ package MITELOVERS.domain.author;
  * into an {@link InstantiationException}.
  */
 
+@Component
 public class AuthorFactory {
 
-    public Author createAuthor(String authorName){
+    public Author createAuthor(Name authorName){
 
         return new Author(authorName);
+
+    }
+
+    public Author createAuthor(AuthorId authorId, Name authorName){
+
+        return new Author(authorId, authorName);
 
     }
 

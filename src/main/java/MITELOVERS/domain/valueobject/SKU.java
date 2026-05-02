@@ -24,6 +24,14 @@ public class SKU implements ValueObject {
         _value = generateRandomSKU();
     }
 
+    // For reconstruction
+    public SKU(String value) {
+        if (value == null || !value.matches(_format)) {
+            throw new IllegalArgumentException("Invalid SKU format: " + value);
+        }
+        this._value = value;
+    }
+
     // Geração interna e controlada
     private String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();   // hex + hífens

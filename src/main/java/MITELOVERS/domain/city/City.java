@@ -28,6 +28,16 @@ public class City implements AggregateRoot<CityId> {
         _cityId = new CityId(_name, _countryId);
     }
 
+    City(String cityName, CountryId countryId, CityId cityId) {
+        if (cityName == null || cityName.isBlank()) {
+            throw new IllegalArgumentException("City name cannot be null or blank");
+        }
+
+        _countryId = Objects.requireNonNull(countryId, "CountryId cannot be null");
+        _cityId = Objects.requireNonNull(cityId, "CityId cannot be null");
+        _name = cityName.trim().replaceAll("\\s+", " ");
+    }
+
     public String getName() {
         return _name;
     }

@@ -1,9 +1,15 @@
 package MITELOVERS.persistence.jpa.assembler;
 
 import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.library.LibraryFactory;
+import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.persistence.jpa.datamodel.LibraryDataModel;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,13 +22,13 @@ import java.util.List;
  * </p>
  */
 
+@Component
+@AllArgsConstructor
 public class LibraryAssembler {
 
-    private LibraryAssembler() {
-        // Prevent instantiation
-    }
+    private LibraryFactory _libraryFactory;
 
-    public static LibraryDataModel toDTO(Library library) {
+    public LibraryDataModel toDataModel(Library library) {
 
         if (library == null) {
             throw new IllegalArgumentException("Library cannot be null");
@@ -35,6 +41,46 @@ public class LibraryAssembler {
                 .map(ItemId::toString)
                 .toList();
 
-        return new LibraryDataModel(libraryId, itemIds);
+        return new LibraryDataModel(
+                libraryId,
+                itemIds
+        );
+    }
+
+    public Library toDomain(LibraryDataModel libraryDataModel) {
+
+        if (libraryDataModel == null) {
+            throw new IllegalArgumentException("LibraryDataModel cannot be null");
+        }
+
+        LibraryId libraryId = new LibraryId(new Email(libraryDataModel.getLibraryId()));
+
+        List<ItemId> itemIds = libraryDataModel.getItemIds()
+                .stream()
+                .map(ItemId::new)
+                .toList();
+
+        return _libraryFactory.createLibrary(libraryId, itemIds);
+    }
+
+    public List<LibraryDataModel> listToDataModel(List<Library> libraries) {
+        List<LibraryDataModel> list = new ArrayList<>();
+
+        for (Library library : libraries) {
+            list.add(toDataModel(library));
+        }
+
+        return list;
+    }
+
+    public List<Library> listToDomain(List<LibraryDataModel> libraryDMs) {
+        List<Library> list = new ArrayList<>();
+
+        for (LibraryDataModel libraryDataModel : libraryDMs) {
+            list.add(toDomain(libraryDataModel));
+        }
+
+        return list;
     }
 }
+

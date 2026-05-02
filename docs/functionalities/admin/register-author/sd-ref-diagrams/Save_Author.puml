@@ -1,0 +1,87 @@
+@startuml
+'==== Title ====
+title "Save Author and return saved domain object" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+autoactivate off
+
+
+' ==== Actor and participants ====
+participant ":CreateAuthorController" as CTL
+participant ":IAuthorRepo" as IA
+participant ":AuthorAssembler" as assembler
+participant ":IAuthorSpringDataRepo" as springData
+participant ":AuthorFactory" as factory
+participant "authorName:Author" as author
+
+
+'==== UI interaction ====
+CTL -> IA: save(authorName)
+activate IA
+activate CTL
+
+IA -> assembler : toDataModel(authorName)
+activate assembler
+assembler -> author : stringId = identity()
+activate author
+deactivate author
+assembler -> author : stringName = getName()
+activate author
+deactivate author
+
+create "authorDataModel: AuthorDataModel" as DM
+assembler -->> DM : <<create>>(stringId, stringName)
+assembler --> IA : authorDataModel
+deactivate assembler
+
+IA -> springData : save(authorDataModel)
+activate springData
+database "DB" as DB
+springData -> DB : insert
+activate DB
+DB --> springData : spring based data
+deactivate DB
+create "authorDataModel2: AuthorDataModel"
+springData -->> "authorDataModel2: AuthorDataModel" : <<create>> (spring based data)
+springData --> IA : authorDataModel2
+deactivate springData
+
+IA -> assembler : toDomain(authorDataModel2)
+activate assembler
+
+assembler -> "authorDataModel2: AuthorDataModel" : authorId = getId()
+activate "authorDataModel2: AuthorDataModel"
+deactivate "authorDataModel2: AuthorDataModel"
+
+assembler -> "authorDataModel2: AuthorDataModel" : name = getName()
+activate "authorDataModel2: AuthorDataModel"
+deactivate "authorDataModel2: AuthorDataModel"
+
+assembler -> factory : createAuthor(authorId, name)
+activate factory
+create "author:Author"
+factory -->> "author:Author" : <<create>>(authorId, name)
+factory --> assembler : reconstructoredAuthor
+deactivate factory
+assembler --> IA : reconstructoredAuthor
+deactivate assembler
+
+IA --> CTL : reconstructoredAuthor
+deactivate IA
+
+ref over CTL
+[[../To_Register_An_Author_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml
