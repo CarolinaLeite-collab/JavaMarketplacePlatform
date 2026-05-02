@@ -22,6 +22,12 @@ public class DirectSaleDataModel {
     @Id
     private String directSaleId;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "direct_sale_items",
+            joinColumns = @JoinColumn(name = "direct_sale_id")
+    )
+    @Column(name = "item_id")
     private List<String> itemsId;
 
     @Convert(converter=PriceConverter.class)
