@@ -68,21 +68,11 @@ class CityIdTest {
     }
 
     @Test
-    void shouldReturnCountryId() {
+    void shouldBeEqualWhenSameName() {
         //Act
         //SUT
-        CityId cityId = new CityId("Porto", _countryIdPT);
-
-        //Assert
-        assertEquals(_countryIdPT, cityId.getCountryId());
-    }
-
-    @Test
-    void shouldBeEqualWhenSameNameAndCountry() {
-        //Act
-        //SUT
-        CityId cityId1 = new CityId("Porto", _countryIdPT);
-        CityId cityId2 = new CityId("Porto", _countryIdPT);
+        CityId cityId1 = new CityId("Porto");
+        CityId cityId2 = new CityId("Porto");
 
         //Assert
         assertEquals(cityId1, cityId2);
@@ -167,10 +157,10 @@ class CityIdTest {
     void toStringShouldReturnNormalizedNameAndCountryCode() {
         //Act
         //SUT
-        CityId cityId = new CityId("Porto", _countryIdPT);
+        CityId cityId = new CityId("Porto");
 
         //Assert
-        assertEquals("PTporto, PT", cityId.toString());
+        assertEquals("Porto", cityId.toString());
     }
     @Test
     void equalsShouldReturnFalseWhenObjectIsDifferentType() {

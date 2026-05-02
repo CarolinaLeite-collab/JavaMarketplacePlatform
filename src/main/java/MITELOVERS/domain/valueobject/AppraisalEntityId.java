@@ -27,7 +27,13 @@ public class AppraisalEntityId implements DomainId {
 
     private final String _id;
 
-    public AppraisalEntityId(String name) {
+    public AppraisalEntityId(Name appraisalEntityName) {
+
+        if (appraisalEntityName == null) {
+            throw new IllegalArgumentException("AppraisalEntityId cannot be null or blank");
+        }
+
+        String name = appraisalEntityName.toString();
 
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("AppraisalEntityId cannot be null or blank");
@@ -47,6 +53,12 @@ public class AppraisalEntityId implements DomainId {
         }
 
         _id = "entity:" + acronym + "-" + normalized;
+
+    }
+
+    public AppraisalEntityId(String name) {
+
+        _id = name;
 
     }
 

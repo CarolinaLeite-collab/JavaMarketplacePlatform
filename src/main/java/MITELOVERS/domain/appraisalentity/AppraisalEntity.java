@@ -26,8 +26,11 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
     private final AppraisalEntityId _appraisalEntityId;
 
 
-    AppraisalEntity(Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
+    AppraisalEntity(AppraisalEntityId id, Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
 
+        if (id == null) {
+            throw new IllegalArgumentException("AppraisalEntityId must not be null");
+        }
         if (publicationTypesId == null || publicationTypesId.isEmpty()) {
             throw new IllegalArgumentException("List of publication types cannot be null or empty");
         }
@@ -38,7 +41,16 @@ public class AppraisalEntity implements AggregateRoot<AppraisalEntityId> {
         _name = name;
         _publicationTypesId = publicationTypesId;
         _genresId = genresId;
-        _appraisalEntityId = new AppraisalEntityId(name.toString());
+        _appraisalEntityId = id;
+
+    }
+
+    AppraisalEntity(Name name, List<PublicationTypeId> publicationTypesId, List<GenreId> genresId) {
+
+        this (new AppraisalEntityId(name),
+                name,
+                publicationTypesId,
+                genresId);
 
     }
 
