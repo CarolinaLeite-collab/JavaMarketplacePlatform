@@ -53,11 +53,11 @@ deactivate SDREPO
 
 JPA -> CASS : toDomain(savedDM)
 activate CASS
-CASS -> "dm:CityDataModel" : name = get_name()
+CASS -> "dm:CityDataModel" : name = getName()
 activate "dm:CityDataModel"
 deactivate "dm:CityDataModel"
 create "countryId:CountryId"
-CASS -> "countryId:CountryId" : <<create>>(get_countryId)
+CASS -> "countryId:CountryId" : <<create>>(getCountryId)
 create "cityId:CityId"
 CASS -> "cityId:CityId" : <<create>>(name, countryId)
 CASS -> FACTORY : createCity(name, countryId, cityId)
