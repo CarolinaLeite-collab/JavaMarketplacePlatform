@@ -1,0 +1,78 @@
+
+@startuml
+title  Save newUser and return saved domain object
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":RegisterNewUserController" as Ctl
+participant ":IUserRepo" as IR
+participant ":UserAssembler" as UA
+participant ":IUserSpringDataRepo" as jpa
+participant ":UserFactory" as Factory
+
+"Ctl" -> IR : save(newUser)
+activate IR
+
+IR -> UA : toDataModel(newUser)
+activate UA
+create "userDataModel: UserDataModel"
+UA -->> "userDataModel: UserDataModel" : <<create>>(newUser)
+UA --> IR : userDataModel
+deactivate UA
+
+IR -> jpa : save(userDataModel)
+activate jpa
+database "DB" as DB
+jpa -> DB : insert
+activate DB
+DB --> jpa : string based data
+deactivate DB
+create "userDataModel2: UserDataModel"
+jpa -->> "userDataModel2: UserDataModel" : <<create>>(string based data)
+jpa --> IR : userDataModel2
+deactivate jpa
+
+IR -> UA : toDomain(userDataModel2)
+activate UA
+
+UA -> "userDataModel2: UserDataModel" : userId = getUserId()
+activate "userDataModel2: UserDataModel"
+deactivate "userDataModel2: UserDataModel"
+
+UA -> "userDataModel2: UserDataModel" : name = getName()
+activate "userDataModel2: UserDataModel"
+deactivate "userDataModel2: UserDataModel"
+
+UA -> "userDataModel2: UserDataModel" : email = getEmail()
+activate "userDataModel2: UserDataModel"
+deactivate "userDataModel2: UserDataModel"
+
+UA -> "Factory" : createUser(userId, name, email)
+activate "Factory"
+create "user: User"
+"Factory" -->> "user: User" : <<create>>(userId, name, email)
+"Factory" --> UA : user
+deactivate "Factory"
+UA --> IR : user
+deactivate UA
+
+IR --> Ctl : user
+deactivate IR
+
+ref over Ctl
+[[../Register_User_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml
