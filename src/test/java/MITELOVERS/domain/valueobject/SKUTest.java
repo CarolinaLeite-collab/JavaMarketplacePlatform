@@ -130,4 +130,29 @@ class SKUTest {
         // Assert
         assertEquals(firstHash, secondHash);
     }
+
+    //--------------------------------------
+    // Tests for the rehydration constructor
+    //--------------------------------------
+
+    @Test
+    void rehydrationConstructorShouldStoreGivenValue() {
+        String value = "ABCDEF1234";
+        SKU sut = new SKU(value);
+        assertEquals(value, sut.getValue());
+    }
+
+    @Test
+    void rehydrationConstructorShouldRejectInvalidFormat() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new SKU(invalid));
+    }
+
+    @Test
+    void rehydratedSKUShouldBeEqualToOriginalValue() {
+        String value = "A1B2C3D4E5";
+        SKU sut = new SKU(value);
+        SKU other = new SKU(value);
+        assertEquals(sut, other);
+    }
 }
