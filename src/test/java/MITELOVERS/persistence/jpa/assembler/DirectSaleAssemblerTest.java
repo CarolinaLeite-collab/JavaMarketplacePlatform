@@ -59,7 +59,7 @@ class DirectSaleAssemblerTest {
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
 
         //Act
-        DirectSaleDataModel dm = assembler.domain2DM(directSale);
+        DirectSaleDataModel dm = assembler.toDataModel(directSale);
 
         //Assert
         assertEquals(expectedResult,dm.getTimeLimit());
@@ -98,7 +98,7 @@ class DirectSaleAssemblerTest {
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
 
         //Act
-        DirectSale result = assembler.DM2Domain(dm);
+        DirectSale result = assembler.toDomain(dm);
 
         //Assert
         assertSame(expected, result);

@@ -7,8 +7,7 @@ import MITELOVERS.persistence.jpa.assembler.DirectSaleAssembler;
 import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.springdata.IDirectSaleSpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Repository;
+to
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +26,11 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
     @Override
     public DirectSale save(DirectSale entity) {
 
-        DirectSaleDataModel dbEntity = _directSaleAssembler.domain2DM(entity);
+        DirectSaleDataModel dbEntity = _directSaleAssembler.toDataModel(entity);
 
         DirectSaleDataModel savedDbEntity = _iDirectSaleSpringDataRepo.save(dbEntity);
 
-        return _directSaleAssembler.DM2Domain(savedDbEntity);
+        return _directSaleAssembler.toDomain(savedDbEntity);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
 
        for (DirectSaleDataModel directSaleDataModel : directSaleDms){
 
-           directSales.add(_directSaleAssembler.DM2Domain(directSaleDataModel));
+           directSales.add(_directSaleAssembler.toDomain(directSaleDataModel));
        }
 
        return directSales;
@@ -71,7 +70,7 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
 
         if ( dbDirectSale.isPresent() ) {
 
-            DirectSale directSaleEntity = _directSaleAssembler.DM2Domain(dbDirectSale.get());
+            DirectSale directSaleEntity = _directSaleAssembler.toDomain(dbDirectSale.get());
 
             return  Optional.of(directSaleEntity);
         }

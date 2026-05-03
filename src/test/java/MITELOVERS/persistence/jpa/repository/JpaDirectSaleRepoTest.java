@@ -47,9 +47,9 @@ class JpaDirectSaleRepoTest {
     @Test
     void shouldSaveDirectSale() {
         //Arrange
-        when(assembler.domain2DM(directSaleEntity)).thenReturn(directSaleDataModel);
+        when(assembler.toDataModel(directSaleEntity)).thenReturn(directSaleDataModel);
         when(iDirectSaleSpringDataRepo.save(directSaleDataModel)).thenReturn(directSaleDataModel);
-        when(assembler.DM2Domain(directSaleDataModel)).thenReturn(directSaleEntity);
+        when(assembler.toDomain(directSaleDataModel)).thenReturn(directSaleEntity);
 
         //Act
         DirectSale result = repo.save(directSaleEntity);
@@ -75,8 +75,8 @@ class JpaDirectSaleRepoTest {
     @Test
     void shouldFindAll() {
         //Arrange
-        when(assembler.DM2Domain(directSaleDataModel)).thenReturn(directSaleEntity);
-        when(assembler.DM2Domain(dmOther)).thenReturn(directSaleEntityOther);
+        when(assembler.toDomain(directSaleDataModel)).thenReturn(directSaleEntity);
+        when(assembler.toDomain(dmOther)).thenReturn(directSaleEntityOther);
         when(iDirectSaleSpringDataRepo.findAll()).thenReturn(List.of(directSaleDataModel,dmOther));
 
         //Act
@@ -91,7 +91,7 @@ class JpaDirectSaleRepoTest {
         //Arrange
         when(id.toString()).thenReturn("DS-12345678");
         when(iDirectSaleSpringDataRepo.findById(id.toString())).thenReturn(Optional.of(directSaleDataModel));
-        when(assembler.DM2Domain(directSaleDataModel)).thenReturn(directSaleEntity);
+        when(assembler.toDomain(directSaleDataModel)).thenReturn(directSaleEntity);
 
         //Act
         Optional<DirectSale> result = repo.ofIdentity(id);

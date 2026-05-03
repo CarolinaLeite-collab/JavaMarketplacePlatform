@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Period;
 
 @Component
 public class DirectSaleAssembler {
@@ -26,7 +25,7 @@ public class DirectSaleAssembler {
         this.factory = factory;
     }
 
-    public DirectSaleDataModel domain2DM(DirectSale directSale){
+    public DirectSaleDataModel toDataModel(DirectSale directSale){
 
         DirectSaleDataModel dm = new DirectSaleDataModel(
                 directSale.identity().toString(),
@@ -40,7 +39,7 @@ public class DirectSaleAssembler {
         return dm;
     }
 
-    public DirectSale DM2Domain(DirectSaleDataModel dm){
+    public DirectSale toDomain(DirectSaleDataModel dm){
 
         DirectSale directSale = factory.createDirectSale(
                 new DirectSaleId(dm.getDirectSaleId()),
