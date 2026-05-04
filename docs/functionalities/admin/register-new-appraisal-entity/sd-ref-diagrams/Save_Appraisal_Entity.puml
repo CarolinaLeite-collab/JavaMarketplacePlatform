@@ -51,7 +51,7 @@ deactivate AE
     end loop
 
 create "dmToSave:AppraisalEntityDataModel"
-ASSMBLR -> "dmToSave:AppraisalEntityDataModel" : <<create>>(stringId, stringName, stringPublicationTypeIds, stringGenreIds)
+ASSMBLR -->> "dmToSave:AppraisalEntityDataModel" : <<create>>(stringId, stringName, stringPublicationTypeIds, stringGenreIds)
 ASSMBLR --> JPAREPO : dmToSave
 deactivate ASSMBLR
 JPAREPO -> SDREPO : save(dmToSave)
@@ -59,7 +59,7 @@ activate SDREPO
 SDREPO -> DB : save(dmToSave))
 DB --> SDREPO : string based data
 create "savedDm:AppraisalEntityDataModel"
-SDREPO -->> "savedDm:AppraisalEntityDataModel"
+SDREPO -->> "savedDm:AppraisalEntityDataModel" : <<create>>
 SDREPO --> JPAREPO : savedDm
 deactivate SDREPO
 JPAREPO -> ASSMBLR : toDomain(savedDm)
@@ -69,14 +69,14 @@ activate "savedDm:AppraisalEntityDataModel"
 deactivate "savedDm:AppraisalEntityDataModel"
 
 create "appraisalEntityId:AppraisalEntityId"
-ASSMBLR -> "appraisalEntityId:AppraisalEntityId" : <<create>>(stringId)
+ASSMBLR -->> "appraisalEntityId:AppraisalEntityId" : <<create>>(stringId)
 
 ASSMBLR -> "savedDm:AppraisalEntityDataModel" : stringName = getName()
 activate "savedDm:AppraisalEntityDataModel"
 deactivate "savedDm:AppraisalEntityDataModel"
 
 create "name:Name"
-ASSMBLR -> "name:Name" : <<create>>(stringName)
+ASSMBLR -->> "name:Name" : <<create>>(stringName)
 
 ASSMBLR -> "savedDm:AppraisalEntityDataModel" : publicationTypeStringIds = getPublicationTypeStringIds()
 activate "savedDm:AppraisalEntityDataModel"
@@ -85,7 +85,7 @@ deactivate "savedDm:AppraisalEntityDataModel"
     loop for each publicationTypeStringId in publicationTypeStringIds
 
     create "publicationTypeId:PublicationTypeId"
-    ASSMBLR -> "publicationTypeId:PublicationTypeId" : <<create>>(publicationTypeStringId)
+    ASSMBLR -->> "publicationTypeId:PublicationTypeId" : <<create>>(publicationTypeStringId)
 
     ASSMBLR -> ASSMBLR : publicationTypeIds.add(publicationTypeId)
 
@@ -98,7 +98,7 @@ deactivate "savedDm:AppraisalEntityDataModel"
     loop for each genreStringId in genreStringIds
 
     create "genreId:GenreId"
-    ASSMBLR -> "genreId:GenreId" : <<create>>(genreId)
+    ASSMBLR -->> "genreId:GenreId" : <<create>>(genreId)
 
     ASSMBLR -> ASSMBLR : genreIds.add(genreId)
 
