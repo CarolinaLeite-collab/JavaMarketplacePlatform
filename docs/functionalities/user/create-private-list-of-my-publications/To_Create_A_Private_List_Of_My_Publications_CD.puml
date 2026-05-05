@@ -27,9 +27,13 @@ package "domain" {
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
             - _isPrivate : boolean
-            + identity() : ListOfItemsId
-            + getItemIds() : List<ItemId>
-            + addItem(itemId : ItemId) : void
+                        + getUserId() : UserId
+                        + getName() : Name
+                        + getGenreId() : GenreId
+                        + getItemIds() : List<ItemId>
+                        + addItem(itemId : ItemId) : void
+                        + isPrivate() : boolean
+                        + makePublic() : void
         }
         class ListOfItemsFactory <<Factory>> {
             + createListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems

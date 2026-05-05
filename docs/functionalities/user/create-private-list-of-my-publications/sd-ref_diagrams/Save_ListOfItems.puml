@@ -23,6 +23,7 @@ participant ":ListOfItemsFactory" as Factory
 
 "Ctl" -> IRepo : save(newList)
 activate IRepo
+activate Ctl
 
 IRepo -> Assembler : toDataModel(newList)
 activate Assembler
@@ -74,6 +75,7 @@ deactivate Assembler
 
 IRepo --> Ctl : savedList
 deactivate IRepo
+deactivate Ctl
 
 ref over Ctl
 [[../To_Create_A_Private_List_Of_My_Publications_SD.puml Back to Main Diagram]]
