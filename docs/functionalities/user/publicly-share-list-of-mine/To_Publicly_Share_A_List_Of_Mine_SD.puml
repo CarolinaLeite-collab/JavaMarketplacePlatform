@@ -23,7 +23,7 @@ participant ":IListOfItemsRepo" as IListRepo
 "User" -> UI : I want to publicly share one of my lists
 activate UI
 
-UI -> Ctl : findListsByUser(userId)
+UI -> Ctl : findListsByUserId(userId)
 activate Ctl
 Ctl -> IListRepo : findListsByUserId(userId)
 activate IListRepo
