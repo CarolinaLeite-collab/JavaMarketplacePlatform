@@ -1,5 +1,5 @@
 @startuml
-title ListOfItems Aggregate - CD - DDD
+title ListOfItems Aggregate
 
 skinparam monochrome false
 skinparam shadowing false
@@ -17,7 +17,9 @@ Package "domain" {
     Package listofitems #B0C4DE {
         Class "ListOfItems" as ListOfItemsRoot <<Root>> <<Entity>> {
             - _isPrivate : boolean
-            + identity() : ListOfItemsId
+            + getUserId() : UserId
+            + getName() : Name
+            + getGenreId() : GenreId
             + getItemIds() : List<ItemId>
             + addItem(itemId : ItemId) : void
             + isPrivate() : boolean
@@ -65,6 +67,9 @@ ListOfItemsRoot "1" --> "1" Id : has
 ListOfItemsRoot "*" ..> "1" UserId : references
 ListOfItemsRoot "*" ..> "1" GenreId : references
 ListOfItemsRoot "1" ..> "1" Name : references
+ListOfItemsRoot "*" <- "1" IRepo : persists
+
+
 
 IRepo ---|> IRepository
 
