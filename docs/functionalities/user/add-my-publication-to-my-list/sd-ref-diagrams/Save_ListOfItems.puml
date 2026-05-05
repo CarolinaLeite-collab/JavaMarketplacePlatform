@@ -22,6 +22,7 @@ participant ":IListOfItemsSpringDataRepo" as jpa
 participant ":ListOfItemsFactory" as Factory
 
 "Ctl" -> IRepo : save(newList)
+activate Ctl
 activate IRepo
 
 IRepo -> Assembler : toDataModel(newList)
@@ -74,6 +75,7 @@ deactivate Assembler
 
 IRepo --> Ctl : savedList
 deactivate IRepo
+deactivate Ctl
 
 ref over Ctl
 [[../Add_My_Publication_To_My_List_SD.puml Back to Main Diagram]]
