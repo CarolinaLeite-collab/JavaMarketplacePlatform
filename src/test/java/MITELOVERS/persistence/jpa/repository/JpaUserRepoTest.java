@@ -7,6 +7,12 @@ import MITELOVERS.persistence.jpa.datamodel.UserDataModel;
 import MITELOVERS.persistence.springdata.IUserSpringDataRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,24 +22,25 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JpaUserRepoTest {
+
+    // SUT
+    @InjectMocks
+    private JpaUserRepo jpaUserRepo;
+
+    @Mock
     private IUserSpringDataRepo _springRepoDouble;
+
+    @Mock
     private UserAssembler _assemblerDouble;
+
+    @Mock
     private User _userDouble;
+
+    @Mock
     private UserDataModel _dataModelDouble;
 
-    @BeforeEach
-    void setUp() {
-        _springRepoDouble = mock(IUserSpringDataRepo.class);
-        _assemblerDouble = mock(UserAssembler.class);
-        _userDouble = mock(User.class);
-        _dataModelDouble = mock(UserDataModel.class);
-    }
-
-    @Test
-    void testConstructor() {
-        new JpaUserRepo(_springRepoDouble, _assemblerDouble);
-    }
 
     @Test
     void testSaveShouldReturnDomainUser() {
@@ -41,9 +48,6 @@ class JpaUserRepoTest {
         when(_assemblerDouble.toDataModel(_userDouble)).thenReturn(_dataModelDouble);
         when(_springRepoDouble.save(_dataModelDouble)).thenReturn(_dataModelDouble);
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_userDouble);
-
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
 
         // Act
         User result = jpaUserRepo.save(_userDouble);
@@ -58,8 +62,6 @@ class JpaUserRepoTest {
         when(_springRepoDouble.findAll()).thenReturn(List.of(_dataModelDouble));
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_userDouble);
 
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
 
         // Act
         Iterable<User> result = jpaUserRepo.findAll();
@@ -79,9 +81,6 @@ class JpaUserRepoTest {
         when(_springRepoDouble.findAll()).thenReturn(List.of(_dataModelDouble));
         when(_dataModelDouble.getId()).thenReturn("test@email.com");
 
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
-
         // Act
         List<UserId> result = jpaUserRepo.findAllKeys();
 
@@ -96,9 +95,6 @@ class JpaUserRepoTest {
         when(_springRepoDouble.findById(userIdDouble.toString())).thenReturn(Optional.of(_dataModelDouble));
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_userDouble);
 
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
-
         // Act
         Optional<User> result = jpaUserRepo.ofIdentity(userIdDouble);
 
@@ -111,9 +107,6 @@ class JpaUserRepoTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         when(_springRepoDouble.findById(userIdDouble.toString())).thenReturn(Optional.empty());
-
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
 
         // Assert
         assertThrows(IllegalArgumentException.class, () -> {
@@ -128,9 +121,6 @@ class JpaUserRepoTest {
         when(userIdDouble.toString()).thenReturn("test@email.com");
         when(_springRepoDouble.existsById(userIdDouble.toString())).thenReturn(true);
 
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
-
         // Act
         boolean result = jpaUserRepo.containsOfIdentity(userIdDouble);
 
@@ -141,13 +131,8 @@ class JpaUserRepoTest {
     @Test
     void testContainsOfIdentityShouldReturnFalseWhenUserDoesNotExist() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         UserId otherUserIdDouble = mock(UserId.class);
-        when(userIdDouble.toString()).thenReturn("test@email.com");
-        when(_springRepoDouble.existsById(userIdDouble.toString())).thenReturn(true);
-
-        // SUT
-        JpaUserRepo jpaUserRepo = new JpaUserRepo(_springRepoDouble, _assemblerDouble);
+        when(otherUserIdDouble.toString()).thenReturn("test@email.com");
 
         // Act
         boolean result = jpaUserRepo.containsOfIdentity(otherUserIdDouble);

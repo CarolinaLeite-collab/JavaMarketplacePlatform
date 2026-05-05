@@ -7,6 +7,7 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.springdata.IUserSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -25,14 +26,12 @@ import java.util.Optional;
 @Profile("jpa")
 public class JpaUserRepo implements IUserRepo {
 
-    private final IUserSpringDataRepo _iUserSpringDataRepo;
-    private final UserAssembler _assembler;
+    @Autowired
+    IUserSpringDataRepo _iUserSpringDataRepo;
 
-    public JpaUserRepo(IUserSpringDataRepo iUserSpringDataRepo, UserAssembler assembler) {
+    @Autowired
+    UserAssembler _assembler;
 
-        _iUserSpringDataRepo = iUserSpringDataRepo;
-        _assembler = assembler;
-    }
 
     @Override
     public User save(User user) {
