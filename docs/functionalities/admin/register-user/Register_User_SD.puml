@@ -49,9 +49,9 @@ ref over IR
 [[sd-ref-diagrams/Save_User.puml Save newUser and return saved domain object]]
 end ref
 activate IR
-IR --> Ctl : user
+IR --> Ctl : reconstructedUser
 deactivate IR
-Ctl --> UI : user
+Ctl --> UI : reconstructedUser
 deactivate Ctl
 UI --> Administrator : Registered successfully!
 deactivate UI
