@@ -6,6 +6,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * This controller acts as an application-layer entry point, delegating the
  * retrieval logic to the {@link IDirectSaleRepo}.
  */
-
+@Controller
 public class GetDirectSaleItemsByAuthorController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
@@ -27,7 +28,7 @@ public class GetDirectSaleItemsByAuthorController {
     private final IEditionRepo _iEditionRepo;
     private final IPublicationRepo _iPublicationRepo;
 
-    public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr, UserId buyerId){
+    public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr){
 
         _iAuthorRepo = ar;
         _iItemRepo = ir;
@@ -38,9 +39,8 @@ public class GetDirectSaleItemsByAuthorController {
     }
 
     public Iterable<AuthorId> findAllKeys(){
-        Iterable<AuthorId> authorIds = _iAuthorRepo.findAllKeys();
 
-        return authorIds;
+        return _iAuthorRepo.findAllKeys();
     }
 
     public List<ItemId> getDirectSaleItemsByAuthorId(AuthorId authorId) {

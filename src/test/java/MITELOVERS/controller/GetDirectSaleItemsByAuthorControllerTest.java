@@ -8,6 +8,10 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +19,29 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@WebMvcTest(GetDirectSaleItemsByAuthorController.class)
+@ActiveProfiles("jpa")
 class GetDirectSaleItemsByAuthorControllerTest {
 
-    private UserId _userIdDouble;
+    //SUT
+    @Autowired
+    private GetDirectSaleItemsByAuthorController _controller;
+
+    @MockBean
     private IDirectSaleRepo _iDirectSaleRepoDouble;
+
+    @MockBean
     private IItemRepo _iItemRepoDouble;
+
+    @MockBean
     private IEditionRepo  _iEditionRepoDouble;
+
+    @MockBean
     private IPublicationRepo _iPublicationRepoDouble;
+
+    @MockBean
     private IAuthorRepo _iAuthorRepoDouble;
+
     private AuthorId _authorIdDouble;
     private ItemId _itemIdDouble;
     private Item _itemDouble;
@@ -36,11 +55,6 @@ class GetDirectSaleItemsByAuthorControllerTest {
     @BeforeEach
     void setUp() {
 
-        _userIdDouble = mock(UserId.class);
-        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
-        _iItemRepoDouble = mock(IItemRepo.class);
-        _iEditionRepoDouble = mock(IEditionRepo.class);
-        _iPublicationRepoDouble = mock(IPublicationRepo.class);
         _authorIdDouble = mock(AuthorId.class);
         _itemIdDouble = mock(ItemId.class);
         _itemDouble = mock(Item.class);
@@ -49,15 +63,14 @@ class GetDirectSaleItemsByAuthorControllerTest {
         _publicationIdDouble = mock(PublicationId.class);
         _editionDouble = mock(Edition.class);
         _publicationDouble = mock(Publication.class);
-        _iAuthorRepoDouble = mock(IAuthorRepo.class);
 
     }
 
     @Test
     void testAConstructor(){
 
-        //act / SUT
-        new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
+        //Assert
+        assertNotNull(_controller);
 
     }
 
@@ -70,11 +83,8 @@ class GetDirectSaleItemsByAuthorControllerTest {
 
         when(_iAuthorRepoDouble.findAllKeys()).thenReturn(expected);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller =  new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
-
         //Act
-        Iterable<AuthorId> result = controller.findAllKeys();
+        Iterable<AuthorId> result = _controller.findAllKeys();
 
         //Assert
         assertEquals(expected, result);
@@ -92,11 +102,8 @@ class GetDirectSaleItemsByAuthorControllerTest {
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_publicationDouble));
         when(_publicationDouble.isByAuthorId(_authorIdDouble)).thenReturn(true);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller =  new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
-
         //Act
-        List<ItemId> result = controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
+        List<ItemId> result = _controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
 
         //Assert
         assertEquals(1, result.size());
@@ -105,7 +112,7 @@ class GetDirectSaleItemsByAuthorControllerTest {
 
     @Test
     void shouldReturnEmptyListWhenNoItemsMatchAuthorId() {
-        // Arrange
+        //Arrange
         when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
         when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
@@ -113,19 +120,16 @@ class GetDirectSaleItemsByAuthorControllerTest {
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_publicationDouble));
         when(_publicationDouble.isByAuthorId(_authorIdDouble)).thenReturn(false);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller =  new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
+        //Act
+        List<ItemId> result = _controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
 
-        // Act
-        List<ItemId> result = controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
-
-        // Assert
+        //Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
     void shouldAggregateItemsFromMultipleDirectSales() {
-        // Arrange
+        //Arrange
         DirectSale auctionDouble2 = mock(DirectSale.class);
         ItemId itemIdDouble2 = mock(ItemId.class);
 
@@ -137,46 +141,37 @@ class GetDirectSaleItemsByAuthorControllerTest {
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_publicationDouble));
         when(_publicationDouble.isByAuthorId(_authorIdDouble)).thenReturn(true);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller = new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
+        //Act
+        List<ItemId> result = _controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
 
-        // Act
-        List<ItemId> result = controller.getDirectSaleItemsByAuthorId(_authorIdDouble);
-
-        // Assert
+        //Assert
         assertEquals(2, result.size());
     }
 
     @Test
     void shouldThrowExceptionWhenItemNotFound() {
-        // Arrange
+        //Arrange
         when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
         when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.empty());
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller = new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
-
-        // Act & Assert
+        //Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
+                () -> _controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
     }
 
     @Test
     void shouldThrowExceptionWhenEditionNotFound() {
-        // Arrange
+        //Arrange
         when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
         when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
         when(_iEditionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.empty());
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_itemDouble.getEditionId()).thenReturn(_editionIdDouble);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller = new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
-
-        // Act & Assert
+        //Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
+                () -> _controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
     }
 
     @Test
@@ -190,12 +185,9 @@ class GetDirectSaleItemsByAuthorControllerTest {
         when(_iEditionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.of(_editionDouble));
         when(_editionDouble.getPublicationId()).thenReturn(_publicationIdDouble);
 
-        //SUT
-        GetDirectSaleItemsByAuthorController controller = new GetDirectSaleItemsByAuthorController(_iAuthorRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble, _iDirectSaleRepoDouble, _userIdDouble);
-
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
+                () -> _controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
     }
 
 
