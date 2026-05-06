@@ -10,7 +10,6 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.PublicationId;
-import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
