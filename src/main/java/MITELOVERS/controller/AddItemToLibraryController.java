@@ -25,11 +25,11 @@ import java.util.List;
  * </p>
  */
 
-public class AddPublicationOnLibraryController {
+public class AddPublicationToLibraryController {
     private final ILibraryRepo _iLibraryRepo;
     private final IItemRepo _iItemRepo;
 
-    public AddPublicationOnLibraryController(ILibraryRepo ilibraryRepo, IItemRepo iItemRepo, UserId userId) {
+    public AddPublicationToLibraryController(ILibraryRepo ilibraryRepo, IItemRepo iItemRepo, UserId userId) {
         _iLibraryRepo = ilibraryRepo;
         _iItemRepo = iItemRepo;
     }

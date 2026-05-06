@@ -16,7 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AddPublicationOnLibraryControllerTest {
+class AddPublicationToLibraryControllerTest {
 
     private IItemRepo _itemRepoDouble;
     private ILibraryRepo _libraryRepoDouble;
@@ -48,8 +48,8 @@ class AddPublicationOnLibraryControllerTest {
                 .thenReturn(List.of(itemId1Double));
 
         // SUT
-        AddPublicationOnLibraryController ctl =
-                new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+        AddPublicationToLibraryController ctl =
+                new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
         // Act
         List<ItemId> result = ctl.getListOfAvailableItemIds();
@@ -77,8 +77,8 @@ class AddPublicationOnLibraryControllerTest {
                 .thenReturn(List.of(itemId1Double, itemId2Double));
 
         // SUT
-        AddPublicationOnLibraryController ctl =
-                new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+        AddPublicationToLibraryController ctl =
+                new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
         // Act
         List<ItemId> result = ctl.getListOfAvailableItemIds();
@@ -102,8 +102,8 @@ class AddPublicationOnLibraryControllerTest {
                 .thenReturn(List.of());
 
         // SUT
-        AddPublicationOnLibraryController ctl =
-                new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+        AddPublicationToLibraryController ctl =
+                new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
         // Act
         List<ItemId> result = ctl.getListOfAvailableItemIds();
@@ -139,8 +139,8 @@ class AddPublicationOnLibraryControllerTest {
                     .thenReturn(true);
 
             // SUT
-            AddPublicationOnLibraryController ctl =
-                    new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+            AddPublicationToLibraryController ctl =
+                    new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
             // Act
             boolean result = ctl.addItemIdToLibrary(itemIdDouble, userIdDouble);
@@ -167,8 +167,8 @@ class AddPublicationOnLibraryControllerTest {
                     .thenReturn(Optional.empty());
 
             // SUT
-            AddPublicationOnLibraryController ctl =
-                    new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+            AddPublicationToLibraryController ctl =
+                    new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
             // Act + Assert
             assertThrows(IllegalStateException.class,
@@ -197,8 +197,8 @@ class AddPublicationOnLibraryControllerTest {
                     .thenReturn(List.of(libraryDouble));
 
             // SUT
-            AddPublicationOnLibraryController ctl =
-                    new AddPublicationOnLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
+            AddPublicationToLibraryController ctl =
+                    new AddPublicationToLibraryController(_libraryRepoDouble, _itemRepoDouble, userIdDouble);
 
             // Act
             boolean result = ctl.addItemIdToLibrary(itemIdDouble, userIdDouble);
