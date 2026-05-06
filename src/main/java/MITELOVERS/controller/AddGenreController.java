@@ -5,6 +5,8 @@ import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.UserId;
 
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  * Controller responsible for handling the addition of new genres.
  * <p>
@@ -13,6 +15,7 @@ import MITELOVERS.domain.valueobject.UserId;
  * </p>
  */
 
+@RestController
 public class AddGenreController {
     private final IGenreRepo _iGenreRepo;
     private final GenreFactory _genreFactory;

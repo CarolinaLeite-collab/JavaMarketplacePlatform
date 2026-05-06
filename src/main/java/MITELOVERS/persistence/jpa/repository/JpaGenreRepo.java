@@ -5,7 +5,8 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.persistence.jpa.assembler.GenreAssembler;
 import MITELOVERS.persistence.jpa.datamodel.GenreDataModel;
-import MITELOVERS.persistence.jpa.springdata.IGenreSpringDataRepo;
+import MITELOVERS.persistence.springdata.IGenreSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired; // Added
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -13,24 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * JPA implementation of {@link IGenreRepo}.
- * <p>
- * Active when the {@code jpa} Spring profile is enabled.
- * </p>
- */
-
 @Repository
 @Profile("jpa")
 public class JpaGenreRepo implements IGenreRepo {
 
-    private final IGenreSpringDataRepo _genreSpringDataRepo;
-    private final GenreAssembler _genreAssembler;
+    @Autowired
+    private IGenreSpringDataRepo _genreSpringDataRepo;
 
-    public JpaGenreRepo(IGenreSpringDataRepo springRepo, GenreAssembler assembler) {
-        _genreSpringDataRepo = springRepo;
-        _genreAssembler = assembler;
-    }
+    @Autowired
+    private GenreAssembler _genreAssembler;
 
     @Override
     public Genre save(Genre genre) {
@@ -74,4 +66,3 @@ public class JpaGenreRepo implements IGenreRepo {
         return _genreSpringDataRepo.existsById(id.toString());
     }
 }
-
