@@ -8,6 +8,7 @@ import MITELOVERS.persistence.jpa.assembler.CityAssembler;
 import MITELOVERS.persistence.jpa.datamodel.CityDataModel;
 import MITELOVERS.persistence.springdata.ICitySpringDataRepo;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -20,8 +21,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class JpaCityRepo implements ICityRepo {
 
-    private final ICitySpringDataRepo springDataRepo;
-    private final CityAssembler assembler;
+    @Autowired
+    private ICitySpringDataRepo springDataRepo;
+
+    @Autowired
+    private CityAssembler assembler;
 
     @Override
     public City save(City city) {
