@@ -6,8 +6,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectSaleIdTest {
 
+    String exceptionMessageDirectSaleIdNull = "DirectSaleId cannot be null or blank";
+    String exceptionMessageDirectSaleIdInvalidFormat = "Invalid DirectSaleId format: ";
+
     @Test
-    void testConstructot() {
+    void testConstructor() {
 
         //Act
         DirectSaleId id = new DirectSaleId(); //SUT
@@ -53,4 +56,49 @@ class DirectSaleIdTest {
         assertFalse((id.toString()).equals("DS-ABC12345"));
     }
 
+    @Test
+    void shouldCreateIdFromValidString() {
+
+        //Act
+        DirectSaleId id = new DirectSaleId("DS-ABCDEF12"); //SUT
+
+        //Assert
+        assertEquals("DS-ABCDEF12", id.toString());
+    }
+
+    @Test
+    void shouldThrowWhenInvalidString() {
+
+        //Act
+        //SUT
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId("invalid"));
+        //Assert
+        assertEquals(exceptionMessageDirectSaleIdInvalidFormat + "invalid", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenIdNullString() {
+
+        //Act
+        //SUT
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId(null));
+        //Assert
+        assertEquals(exceptionMessageDirectSaleIdNull, ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenIdEmptyString() {
+
+        //Act
+        //SUT
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId(""));
+        //Assert
+        assertEquals(exceptionMessageDirectSaleIdNull, ex.getMessage());
+    }
 }
