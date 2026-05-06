@@ -77,7 +77,7 @@ class DirectSaleAssemblerTest {
         when(priceDM.getCurrency()).thenReturn("EUR");
 
         DirectSaleDataModel dm = mock(DirectSaleDataModel.class);
-        when(dm.getDirectSaleId()).thenReturn("DS1");
+        when(dm.getDirectSaleId()).thenReturn("DS-ABCDEF12");
         when(dm.getItemsId()).thenReturn(List.of("ABC123DEF0"));
         when(dm.getPrice()).thenReturn(priceDM);
         when(dm.getTimeLimit()).thenReturn(5L);
@@ -87,7 +87,7 @@ class DirectSaleAssemblerTest {
 
         DirectSaleFactory factory = mock(DirectSaleFactory.class);
         when(factory.createDirectSale(
-                new DirectSaleId("DS1"),
+                new DirectSaleId("DS-ABCDEF12"),
                 List.of(new ItemId("ABC123DEF0")),
                 new Price(10.0, Currency.EUR),
                 Duration.ofDays(5),
