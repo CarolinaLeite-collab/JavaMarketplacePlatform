@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 
 @WebMvcTest(GetDirectSaleItemsByPublicationsController.class)
 @ActiveProfiles("jpa")
-public class GetDirectSaleItemsByPublicationsControllerqTest {
+public class GetDirectSaleItemsByPublicationsControllerTest {
 
     //SUT
     @Autowired
