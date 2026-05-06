@@ -7,7 +7,9 @@ import MITELOVERS.persistence.jpa.assembler.DirectSaleAssembler;
 import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.springdata.IDirectSaleSpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-to
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
 
 import java.util.ArrayList;
 import java.util.List;
