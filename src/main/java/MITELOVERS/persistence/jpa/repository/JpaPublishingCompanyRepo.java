@@ -15,6 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JPA implementation of {@link IPublishingCompanyRepo}.
+ *
+ * Responsible for persisting and retrieving
+ * {@link PublishingCompany} aggregates using Spring Data JPA.
+ *
+ * Uses {@link PublishingCompanyAssembler} to convert between
+ * domain objects and {@link PublishingCompanyDataModel} instances.
+ */
+
 @Repository
 @Profile("jpa")
 public class JpaPublishingCompanyRepo implements IPublishingCompanyRepo {
