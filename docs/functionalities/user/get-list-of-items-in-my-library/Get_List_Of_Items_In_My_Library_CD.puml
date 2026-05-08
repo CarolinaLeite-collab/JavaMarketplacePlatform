@@ -29,17 +29,16 @@ package "controller" {
 
 package "domain" {
 
-package "repository" {
+    package "repository" {
 
-    interface ILibraryRepo <<Interface>> {
+        interface ILibraryRepo <<Interface>>
+        interface IItemRepo <<Interface>>
+        interface IEditionRepo <<Interface>>
+        interface IPublicationRepo <<Interface>>
+        interface IPublicationTypeRepo <<Interface>>
+        interface IAuthorRepo <<Interface>>
+
     }
-    interface IItemRepo <<Interface>>
-    interface IEditionRepo <<Interface>>
-    interface IPublicationRepo <<Interface>>
-    interface IPublicationTypeRepo <<Interface>>
-    interface IAuthorRepo <<Interface>>
-
-}
 
 package "valueobject" {
 
@@ -56,6 +55,7 @@ package "valueobject" {
 package "library" #b0c4d4 {
 
     class Library <<Root>> <<Entity>> {
+        + getItemIdsInLibrary() : List<ItemId>
     }
 
 }
@@ -131,6 +131,12 @@ package "mapper" {
 '
 '}
 
+package "persistence" {
+    class JpaLibraryRepo <<Repository>>
+    class LibraryAssembler <<Assembler>>
+    class LibraryDataModel <<DataModel>>
+}
+
 package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
@@ -187,6 +193,10 @@ IAuthorRepo "1" --> "*" Author : manages
 'MemoPublicationRepo ....|> IPublicationRepo
 'MemoPublicationTypeRepo ....|> IPublicationTypeRepo
 'MemoAuthorRepo ....|> IAuthorRepo
+
+JpaLibraryRepo ..|> ILibraryRepo
+JpaLibraryRepo *-- LibraryAssembler
+JpaLibraryRepo *-- ILibrarySpringDataRepo
 
 ItemDetailsMapper ...> ItemDetailsDTO : <<creates>>
 ItemDetailsMapper ...> Edition : <<use>>

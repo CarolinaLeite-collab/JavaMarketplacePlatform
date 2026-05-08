@@ -1,9 +1,6 @@
 @startuml
 '==== basic style ====
-
-'hides unwanted text
 hide stereotype
-
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -15,25 +12,17 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 hidefootbox
 
-'undefined objects
-skinparam object {
-  BackgroundColor<<highlight>> 91C6BCAA
-  BorderColor<<highlight>> 4B9DA9AA
-  FontColor<<highlight>> 547792AA
-}
-skinparam shadowing<<highlight>> false
-
 autonumber
 
-title "As a User, I want to get the list (title, author, type and ISBN/ISSN) of publications in my library" - SD
+title "As a User, I want to get the list of items in my library" - SD (JPA Version)
 
-
-' --- Actor and participants ---'
+' --- Actor and participants ---
 
 actor User
 participant ":ListOfItemsInMyLibraryUI" as UI
 participant ":ListOfItemsInMyLibraryController" as Ctl
 participant ":ILibraryRepo" as LibRepo
+participant "myLibrary:Library" as LIB
 participant ":IItemRepo" as ItRepo
 participant ":IEditionRepo" as EdRepo
 participant ":IPublicationRepo" as PubRepo
@@ -41,52 +30,65 @@ participant ":IPublicationTypeRepo" as PTRepo
 participant ":IAuthorRepo" as AutRepo
 participant ":ItemDetailsMapper" as Mapper
 
-
 User -> UI: Display list of information\n of Items in my library
 activate UI
 
 UI -> Ctl: getListOfItemInfoInMyLibrary(userId)
 activate Ctl
+
 create "libraryId:LibraryId"
 Ctl -->> "libraryId:LibraryId": LibraryId.fromUserId(userId)
+
+' JPA Retrieval Reference
 Ctl -> LibRepo : ofIdentity(libraryId)
 activate LibRepo
-LibRepo --> Ctl : listOfItemIds
+ref over LibRepo : [[Retrieve_Library.puml Retrieve Library from Persistence via JPA]]
+LibRepo --> Ctl : myLibrary
 deactivate LibRepo
+
+' Extract IDs from Aggregate
+Ctl -> LIB : listOfItemIds = getItemsIdInLibrary()
+activate LIB
+LIB --> Ctl : listOfItemIds
+deactivate LIB
+
 create "listOfItemDetailsDTOs: List<ItemDetailsDTO>" as listOfDTO
 Ctl -->> listOfDTO: <<create>>
 
 loop for each itemId in listOfItemIds
-Ctl -> ItRepo : ofIdentity(itemId)
-activate ItRepo
-ItRepo --> Ctl : item
-deactivate ItRepo
-Ctl -> EdRepo : ofIdentity(item.getEditionId())
-activate EdRepo
-EdRepo --> Ctl : edition
-deactivate EdRepo
-Ctl -> PubRepo : ofIdentity(edition.getPublicationId())
-activate PubRepo
-PubRepo --> Ctl : publication
-deactivate PubRepo
-Ctl -> PTRepo : ofIdentity(edition.getPublicationTypeId())
-activate PTRepo
-PTRepo --> Ctl : publicationType
-deactivate PTRepo
-Ctl -> AutRepo : ofIdentity(publication.getAuthorId())
-activate AutRepo
-AutRepo --> Ctl : author
-deactivate AutRepo
+    Ctl -> ItRepo : ofIdentity(itemId)
+    activate ItRepo
+    ItRepo --> Ctl : item
+    deactivate ItRepo
 
-Ctl -> Mapper : toDTO(edition, publication, publicationType, author)
-activate Mapper
-create "itemDetailsDTO:ItemDetailsDTO" as DTO
-Mapper -->> DTO : <<create>>
-Mapper --> Ctl : itemDetailsDTO
-deactivate Mapper
+    Ctl -> EdRepo : ofIdentity(item.getEditionId())
+    activate EdRepo
+    EdRepo --> Ctl : edition
+    deactivate EdRepo
 
-Ctl -> listOfDTO : add(itemDetailsDTO)
+    Ctl -> PubRepo : ofIdentity(edition.getPublicationId())
+    activate PubRepo
+    PubRepo --> Ctl : publication
+    deactivate PubRepo
 
+    Ctl -> PTRepo : ofIdentity(edition.getPublicationTypeId())
+    activate PTRepo
+    PTRepo --> Ctl : publicationType
+    deactivate PTRepo
+
+    Ctl -> AutRepo : ofIdentity(publication.getAuthorId())
+    activate AutRepo
+    AutRepo --> Ctl : author
+    deactivate AutRepo
+
+    Ctl -> Mapper : toDTO(edition, publication, publicationType, author)
+    activate Mapper
+    create "itemDetailsDTO:ItemDetailsDTO" as DTO
+    Mapper -->> DTO : <<create>>
+    Mapper --> Ctl : itemDetailsDTO
+    deactivate Mapper
+
+    Ctl -> listOfDTO : add(itemDetailsDTO)
 end
 
 Ctl --> UI: listOfItemDetailsDTOs
@@ -94,7 +96,5 @@ deactivate Ctl
 
 UI --> User: Items details displayed!
 deactivate UI
-
-
 
 @enduml
