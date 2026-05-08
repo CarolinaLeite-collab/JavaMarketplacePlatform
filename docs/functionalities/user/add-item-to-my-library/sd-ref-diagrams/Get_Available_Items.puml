@@ -1,15 +1,50 @@
 @startuml
-'https://plantuml.com/sequence-diagram
+title Get items not yet in any library - Ref
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
 
 autonumber
 
-== Initialization ==
+participant ":AddPublicationOnLibraryCtl" as CTL
+participant ":IItemRepo" as ITEMREPO
+participant ":ILibraryRepo" as LIBREPO
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+[-> CTL : getListOfAvailableItemsIds()
+activate CTL
 
-== Repetition ==
+CTL -> ITEMREPO : findAllKeys()
+activate ITEMREPO
+ITEMREPO --> CTL : allItemIds
+deactivate ITEMREPO
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+' Fetching all libraries to check ownership/occupancy
+CTL -> LIBREPO : findAll()
+activate LIBREPO
+LIBREPO --> CTL : libraries
+deactivate LIBREPO
+
+create "availableItemIds:List<ItemId>"
+CTL -->> "availableItemIds:List<ItemId>" : <<create>>
+
+loop for each itemId in allItemIds
+
+    CTL -> CTL : existsInAnyLibrary = isItemIdAlreadyInAnyLibrary(itemId, libraries)
+
+    opt !existsInAnyLibrary
+        CTL -> "availableItemIds:List<ItemId>" : add(itemId)
+    end
+end
+
+[<-- CTL : availableItemIds
+deactivate CTL
 @enduml
