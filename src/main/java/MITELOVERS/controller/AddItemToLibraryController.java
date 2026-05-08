@@ -1,75 +1,85 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.ddd.IRepository;
+import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
-import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller responsible for managing the addition of publications (items) to a user's library.
- * <p>
- * This controller coordinates between the {@link IItemRepo} and {@link ILibraryRepo} to:
- * <ul>
- *     <li>Retrieve all available items that are not yet present in any library</li>
- *     <li>Allow a user to add a selected item to their library, if it is not already assigned</li>
- * </ul>
- * </p>
+ * Controller responsible for managing the addition of items to a user's {@link Library}.
  *
- * <p>
- * It enforces the business rule that an item can only belong to a single library at a time.
- * </p>
+ * It coordinates between the {@link IRepository} for libraries and items to:
+ *  - Retrieve all available items not yet assigned to any library
+ *  - Add an item to a user's library if it is not already assigned
+ *
+ * It enforces the business rule that an item can only belong to one library.
  */
 
-public class AddPublicationToLibraryController {
-    private final ILibraryRepo _iLibraryRepo;
-    private final IItemRepo _iItemRepo;
+@Controller
+public class AddItemToLibraryController {
 
-    public AddPublicationToLibraryController(ILibraryRepo ilibraryRepo, IItemRepo iItemRepo, UserId userId) {
-        _iLibraryRepo = ilibraryRepo;
-        _iItemRepo = iItemRepo;
+    private final IRepository<LibraryId, Library> _libraryRepo;
+    private final IRepository<ItemId, Item> _itemRepo;
+
+    public AddItemToLibraryController(IRepository<LibraryId, Library> libraryRepo,
+                                      IRepository<ItemId, Item> itemRepo) {
+
+        _libraryRepo = libraryRepo;
+        _itemRepo = itemRepo;
     }
 
     public List<ItemId> getListOfAvailableItemIds(){
 
-        Iterable<ItemId> itemIds = _iItemRepo.findAllKeys();
-        Iterable<Library> libraries = _iLibraryRepo.findAll();
-        List<ItemId> availableItemIds = new ArrayList<>();
+        Iterable<ItemId> allItemIds = _itemRepo.findAllKeys();
+        Iterable<Library> libraries = _libraryRepo.findAll();
+
+        List<ItemId> availableItems = new ArrayList<>();
 
 
-        for (ItemId itemId : itemIds){
+        for (ItemId itemId : allItemIds){
 
             if(!isItemIdAlreadyInAnyLibrary(itemId, libraries)){
-                availableItemIds.add(itemId);
+                availableItems.add(itemId);
             }
-
         }
 
-        return availableItemIds;
+        return availableItems;
 
     }
 
     public boolean addItemIdToLibrary(ItemId selectedItemId, UserId userId){
 
-        Iterable<Library> libraries = _iLibraryRepo.findAll();
-        if (isItemIdAlreadyInAnyLibrary(selectedItemId, libraries)) return false;
+        Iterable<Library> libraries = _libraryRepo.findAll();
+
+        if (isItemIdAlreadyInAnyLibrary(selectedItemId, libraries)) {
+            return false;
+        }
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
 
-        Library myLibrary = _iLibraryRepo.ofIdentity(libraryID)
+        Library myLibrary = _libraryRepo.ofIdentity(libraryID)
                 .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
 
-        return myLibrary.addItemIdToLibrary(selectedItemId);
+        boolean added = myLibrary.addItemIdToLibrary(selectedItemId);
+
+        if (added) {
+            _libraryRepo.save(myLibrary);
+        }
+
+        return added;
 
     }
 
     private boolean isItemIdAlreadyInAnyLibrary(ItemId itemId, Iterable<Library> libraries) {
 
         for (Library library : libraries) {
+
             if (library.getItemsIdInLibrary().contains(itemId)) {
                 return true;
             }
@@ -77,6 +87,5 @@ public class AddPublicationToLibraryController {
 
         return false;
     }
-
 
 }
