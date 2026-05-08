@@ -6,6 +6,7 @@ import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.persistence.jpa.assembler.AuthorAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -17,13 +18,12 @@ import java.util.Optional;
 @Profile("jpa")
 public class JpaAuthorRepo implements IAuthorRepo {
 
-    private final IAuthorSpringDataRepo _springDataRepo;
-    private final AuthorAssembler _assembler;
+    @Autowired
+    private IAuthorSpringDataRepo _springDataRepo;
 
-    public JpaAuthorRepo(IAuthorSpringDataRepo springDataRepo, AuthorAssembler assembler) {
-        _springDataRepo = springDataRepo;
-        _assembler = assembler;
-    }
+    @Autowired
+    private AuthorAssembler _assembler;
+
 
     @Override
     public Author save(Author author) {

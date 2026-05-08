@@ -6,6 +6,7 @@ import MITELOVERS.domain.valueobject.AppraisalEntityId;
 import MITELOVERS.persistence.jpa.assembler.AppraisalEntityAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AppraisalEntityDataModel;
 import MITELOVERS.persistence.springdata.IAppraisalEntitySpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -17,16 +18,11 @@ import java.util.Optional;
 @Profile("jpa")
 public class JpaAppraisalEntityRepo implements IAppraisalEntityRepo {
 
-    private final IAppraisalEntitySpringDataRepo _appraisalEntitySpringDataRepo;
+    @Autowired
+    private  IAppraisalEntitySpringDataRepo _appraisalEntitySpringDataRepo;
 
-    private final AppraisalEntityAssembler _appraisalEntityAssembler;
-
-    public JpaAppraisalEntityRepo(IAppraisalEntitySpringDataRepo springRepo, AppraisalEntityAssembler assembler) {
-
-        _appraisalEntitySpringDataRepo = springRepo;
-        _appraisalEntityAssembler = assembler;
-
-    }
+    @Autowired
+    private  AppraisalEntityAssembler _appraisalEntityAssembler;
 
     @Override
     public AppraisalEntity save(AppraisalEntity appraisalEntity) {
