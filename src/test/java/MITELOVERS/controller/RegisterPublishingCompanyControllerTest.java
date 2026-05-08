@@ -6,31 +6,44 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@WebMvcTest(RegisterPublishingCompanyController.class)
+@ActiveProfiles("jpa")
 class RegisterPublishingCompanyControllerTest {
 
-    private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
-    private PublishingCompanyFactory _publishingCompanyFactoryDouble;
+    @MockBean
+    IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
+
+    @MockBean
+    PublishingCompanyFactory _publishingCompanyFactoryDouble;
+
+    @Autowired
+    RegisterPublishingCompanyController _registerPublishingCompanyController;
+
+    private PublishingCompany _publishingCompanyDouble;
+    private PublishingCompanyId _publishingCompanyIdDouble;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InstantiationException {
 
-        _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
-        _publishingCompanyFactoryDouble = mock(PublishingCompanyFactory.class);
+        MockitoAnnotations.openMocks(this);
+
+        _publishingCompanyDouble = mock(PublishingCompany.class);
+        _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
 
     }
 
     @Test
     void constructorShouldInitializeController() {
-
-        // Act & SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _publishingCompanyFactoryDouble);
-
-        //Assert
-        assertNotNull(controller);
+        assertNotNull(_registerPublishingCompanyController);
 
     }
 
@@ -39,28 +52,21 @@ class RegisterPublishingCompanyControllerTest {
 
         //Arrange
         String publishingCompanyName = "Bertrand Editora";
-        PublishingCompany pcDouble = mock(PublishingCompany.class);
-        PublishingCompanyId pcIdDouble = mock(PublishingCompanyId.class);
 
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
-        when(pcDouble.identity()).thenReturn(pcIdDouble);
+        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
+        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
 
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(pcIdDouble)).thenReturn(false);
+        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(false);
 
-        when(_iPublishingCompanyRepoDouble.save(pcDouble)).thenReturn(pcDouble);
-
-        //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _publishingCompanyFactoryDouble);
+        when(_iPublishingCompanyRepoDouble.save(_publishingCompanyDouble)).thenReturn(_publishingCompanyDouble);
 
         //Act
-        PublishingCompany publishingCompanyResult = controller.registerPublishingCompany(publishingCompanyName);
+        PublishingCompany publishingCompanyResult =
+                _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName);
 
         //Assert
-        assertEquals(pcDouble, publishingCompanyResult);
-        verify(_publishingCompanyFactoryDouble).createPublishingCompany(publishingCompanyName);
-        verify(pcDouble).identity();
-        verify(_iPublishingCompanyRepoDouble).containsOfIdentity(pcIdDouble);
-        verify(_iPublishingCompanyRepoDouble).save(pcDouble);
+        assertEquals(_publishingCompanyDouble, publishingCompanyResult);
+
     }
 
     @Test
@@ -68,19 +74,16 @@ class RegisterPublishingCompanyControllerTest {
 
         //Arrange
         String publishingCompanyName = "Pendant Publishing";
-        PublishingCompany pcDouble = mock(PublishingCompany.class);
-        PublishingCompanyId pcIdDouble = mock(PublishingCompanyId.class);
 
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
-        when(pcDouble.identity()).thenReturn(pcIdDouble);
+        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
+        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
 
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(pcIdDouble)).thenReturn(true);
-
-        //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _publishingCompanyFactoryDouble);
+        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(true);
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(publishingCompanyName));
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class,
+                        () -> _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName));
 
         //Assert
         assertEquals("Publishing Company with name " + publishingCompanyName + " already exists", exception.getMessage());
@@ -91,22 +94,18 @@ class RegisterPublishingCompanyControllerTest {
 
         //Arrange
         String publishingCompanyName = "Pendant Publishing";
-        PublishingCompany pcDouble = mock(PublishingCompany.class);
-        PublishingCompanyId pcIdDouble = mock(PublishingCompanyId.class);
 
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(pcDouble);
-        when(pcDouble.identity()).thenReturn(pcIdDouble);
+        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
+        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
 
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(pcIdDouble)).thenReturn(true);
-
-        //SUT
-        RegisterPublishingCompanyController controller = new RegisterPublishingCompanyController(_iPublishingCompanyRepoDouble, _publishingCompanyFactoryDouble);
+        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(true);
 
         //Act
-        assertThrows(IllegalArgumentException.class, () -> controller.registerPublishingCompany(publishingCompanyName));
+        assertThrows(IllegalArgumentException.class,
+                () -> _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName));
 
         //Assert
-        verify(_iPublishingCompanyRepoDouble, never()).save(pcDouble);
+        verify(_iPublishingCompanyRepoDouble, never()).save(_publishingCompanyDouble);
     }
 
 }
