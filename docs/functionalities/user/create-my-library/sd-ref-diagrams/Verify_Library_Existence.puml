@@ -1,0 +1,27 @@
+@startuml
+title "Verify Library Existence"
+hide footbox
+autonumber
+
+participant ":CreateLibraryController" as CTL
+participant "myLibrary:Library" as LIB
+participant ":JpaLibraryRepo" as JPAREPO
+participant ":ILibrarySpringDataRepo" as SDREPO
+
+activate CTL
+CTL -> LIB : identity()
+activate LIB
+LIB --> CTL : libraryId
+deactivate LIB
+
+CTL -> JPAREPO : containsOfIdentity(libraryId)
+activate JPAREPO
+
+JPAREPO -> SDREPO : existsById(libraryId.toString())
+activate SDREPO
+SDREPO --> JPAREPO : boolean
+deactivate SDREPO
+
+JPAREPO --> CTL : exists
+deactivate JPAREPO
+@enduml
