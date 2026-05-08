@@ -1,9 +1,12 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.repository.ILibraryRepo;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for handling the creation of a user's personal {@link Library}.
@@ -18,14 +21,15 @@ import MITELOVERS.domain.valueobject.UserId;
  * </p>
  */
 
+@Controller
 public class CreateLibraryController {
 
-    private final ILibraryRepo _iLibraryRepo;
+    private final IRepository<LibraryId, Library> _libraryRepo;
     private final LibraryFactory _libraryFactory;
 
-    public CreateLibraryController(ILibraryRepo lr, LibraryFactory libraryFactory, UserId userId){
+    public CreateLibraryController(IRepository<LibraryId, Library> libraryRepo, LibraryFactory libraryFactory, UserId userId){
 
-        _iLibraryRepo =lr;
+        _libraryRepo = libraryRepo;
         _libraryFactory = libraryFactory;
 
     }
@@ -34,13 +38,13 @@ public class CreateLibraryController {
 
         Library myLibrary = _libraryFactory.createLibrary(userId);
 
-        if (_iLibraryRepo.containsOfIdentity(myLibrary.identity())) {
+        if (_libraryRepo.containsOfIdentity(myLibrary.identity())) {
 
             throw new IllegalStateException("User already has a library!");
 
         }
 
-        _iLibraryRepo.save(myLibrary);
+        _libraryRepo.save(myLibrary);
 
         return true;
 

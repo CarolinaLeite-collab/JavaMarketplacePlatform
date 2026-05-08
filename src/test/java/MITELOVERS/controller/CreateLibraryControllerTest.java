@@ -1,59 +1,60 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.repository.ILibraryRepo;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class CreateLibraryControllerTest {
 
+    @Mock
+    private IRepository<LibraryId, Library> libraryRepo;
 
-    private UserId _userIdDouble;
-    private ILibraryRepo _iLibraryRepoDouble;
-    private LibraryFactory _libraryFactoryDouble;
+    @Mock
+    private LibraryFactory libraryFactory;
+
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private Library library;
+
+    private CreateLibraryController controller;
 
     @BeforeEach
     void setUp() {
-
-        _userIdDouble = mock(UserId.class);
-        _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _libraryFactoryDouble = mock(LibraryFactory.class);
-
+        controller = new CreateLibraryController(libraryRepo, libraryFactory);
     }
 
     @Test
-    void testCreateLibraryController() {
-
-        // SUT
-        new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
-
+    void controllerShouldInstantiate() {
+        new CreateLibraryController(libraryRepo, libraryFactory);
     }
 
     @Test
     void shouldCreateLibrarySuccessfully() {
 
         // Arrange
-        Library libraryDouble = mock(Library.class);
-
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
-                .thenReturn(libraryDouble);
-
-        when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
-                .thenReturn(false);
-
-        // SUT
-        CreateLibraryController ctl =
-                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
+        when(libraryFactory.createLibrary(userId)).thenReturn(library);
+        when(library.identity()).thenReturn(new LibraryId(new Email("test@example.com")));
+        when(libraryRepo.containsOfIdentity(library.identity())).thenReturn(false);
 
         // Act
-        boolean result = ctl.createLibrary(_userIdDouble);
+        boolean result = controller.createLibrary(userId);
 
         // Assert
         assertTrue(result);
@@ -63,21 +64,14 @@ class CreateLibraryControllerTest {
     void shouldThrowWhenLibraryAlreadyExists() {
 
         // Arrange
-        Library libraryDouble = mock(Library.class);
-
-        when(_libraryFactoryDouble.createLibrary(_userIdDouble))
-                .thenReturn(libraryDouble);
-
-        when(_iLibraryRepoDouble.containsOfIdentity(libraryDouble.identity()))
-                .thenReturn(true);
-
-        // SUT
-        CreateLibraryController ctl =
-                new CreateLibraryController(_iLibraryRepoDouble, _libraryFactoryDouble, _userIdDouble);
+        when(libraryFactory.createLibrary(userId)).thenReturn(library);
+        when(library.identity()).thenReturn(new LibraryId(new Email("test@example.com")));
+        when(libraryRepo.containsOfIdentity(library.identity())).thenReturn(true);
 
         // Act + Assert
         assertThrows(IllegalStateException.class,
-                () -> ctl.createLibrary(_userIdDouble));
+                () -> controller.createLibrary(userId));
     }
+
 }
 
