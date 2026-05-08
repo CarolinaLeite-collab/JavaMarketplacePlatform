@@ -25,10 +25,6 @@ participant ":PublicationTypeFactory" as FACTORY
 
 ' --- System dialog ---
 
-ref over CTL
-[[Add_New_Publication_Type_SD.puml Back to main diagram]]
-end ref
-
 CTL -> REPO: save(newPublicationType)
 activate REPO
 
@@ -82,5 +78,8 @@ deactivate PTA
 CTL <-- REPO: PublicationType
 deactivate "REPO"
 
+ref over CTL
+[[Add_New_Publication_Type_SD.puml Back to main diagram]]
+end ref
 
 @enduml

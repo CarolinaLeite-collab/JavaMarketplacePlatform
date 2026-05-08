@@ -24,10 +24,6 @@ participant "newPublicationType\n:PublicationType " as PT
 
 ' --- System dialog ---
 
-ref over CTL
-[[Add_New_Publication_Type_SD.puml Back to main diagram]]
-end ref
-
 CTL -> PT : identify()
 activate PT
 CTL <-- PT : publicationTypeId
@@ -51,5 +47,8 @@ deactivate JPA
 CTL <- REPO : false
 deactivate JPA
 
+ref over CTL
+[[Add_New_Publication_Type_SD.puml Back to main diagram]]
+end ref
 
 @enduml
