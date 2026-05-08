@@ -35,7 +35,6 @@ class CountryFactoryTest {
     @Test
     void shouldSuccessfullyCreateCountryWithCountryId() {
         // Arrange
-        CountryId countryId = new CountryId("PT");
         String countryName = "Portugal";
         CountryFactory factory = new CountryFactory(); // SUT
         Country result;
@@ -43,7 +42,10 @@ class CountryFactoryTest {
         Country mockedInstance;
 
         // Act
-        try (MockedConstruction<Country> mocked = mockConstruction(Country.class)) {
+        try (MockedConstruction<CountryId> mockedId = mockConstruction(CountryId.class);
+             MockedConstruction<Country> mocked = mockConstruction(Country.class)) {
+
+            CountryId countryId = new CountryId("PT");
             result = factory.createCountry(countryId, countryName);
 
             constructedCount = mocked.constructed().size();
