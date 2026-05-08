@@ -83,7 +83,7 @@ class CountryAssemblerTest {
         Country result = assembler.toDomain(dmDouble);
 
         // Assert
-        assertEquals(countryDouble, result);
+        assertSame(countryDouble, result);
     }
 
     @Test
