@@ -4,18 +4,18 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@WebMvcTest(CreateAuthorController.class)
+@ActiveProfiles("jpa")
 class CreateAuthorControllerTest {
 
     @MockBean
@@ -26,7 +26,6 @@ class CreateAuthorControllerTest {
 
     @Autowired
     CreateAuthorController _createAuthorController;
-
 
     private Author _authorDouble;
     private Name _nameDouble;
@@ -53,20 +52,6 @@ class CreateAuthorControllerTest {
     }
 
     @Test
-    void shouldPassNameToFactoryWithoutModification() {
-
-        // Arrange
-        Name nameDouble = mock(Name.class);
-        when(nameDouble.toString()).thenReturn("   Tolstói   ");
-
-        // Act
-        _createAuthorController.createAuthor(nameDouble);
-
-        // Assert
-        verify(_authorFactoryDouble).createAuthor(nameDouble);
-    }
-
-    @Test
     void createAuthorShouldCreateAndSaveAuthor() {
 
         // Act
@@ -76,17 +61,6 @@ class CreateAuthorControllerTest {
         assertEquals(_authorDouble, result);
         verify(_authorFactoryDouble).createAuthor(_nameDouble);
         verify(_iAuthorRepoDouble).save(_authorDouble);
-
-    }
-
-    @Test
-    void createAuthorShouldCallAuthorFactoryWithCorrectName() {
-
-        // Act
-        _createAuthorController.createAuthor(_nameDouble);
-
-        // Assert
-        verify(_authorFactoryDouble).createAuthor(_nameDouble);
 
     }
 

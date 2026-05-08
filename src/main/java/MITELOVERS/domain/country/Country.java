@@ -20,6 +20,11 @@ public class Country implements AggregateRoot<CountryId> {
         _countryId = new CountryId(_name);
     }
 
+    Country(CountryId countryId, String countryName) {
+        _name = new CountryName(countryName);
+        _countryId = countryId;
+    }
+
     public CountryId identity() {
         return _countryId;
     }
