@@ -64,7 +64,7 @@ package "ddd" {
 ' ===== RELATIONSHIPS =====
 AddPublicationTypeUI "1" ..> "1" AddPublicationTypeController: invokes
 
-AddPublicationTypeController "1" ..> "1" IPublicationTypeRepo: <<use>>
+AddPublicationTypeController "1" ..> "1" IPublicationTypeRepo: calls
 AddPublicationTypeController "1" --> "1" PublicationTypeFactory : invokes
 AddPublicationTypeController "1" .> "1" PublicationType : <<use>>
 
