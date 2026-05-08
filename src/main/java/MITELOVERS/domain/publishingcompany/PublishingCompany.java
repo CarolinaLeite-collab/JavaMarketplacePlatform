@@ -1,6 +1,7 @@
 package MITELOVERS.domain.publishingcompany;
 
 import MITELOVERS.ddd.AggregateRoot;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 
 import java.util.Objects;
@@ -23,7 +24,7 @@ public class PublishingCompany implements AggregateRoot<PublishingCompanyId> {
 
     PublishingCompany(String publishingCompanyName) {
 
-        _id = new PublishingCompanyId(publishingCompanyName);
+        _id = new PublishingCompanyId(new Name(publishingCompanyName).toString());
     }
 
     PublishingCompany(PublishingCompanyId publishingCompanyid) {
