@@ -4,22 +4,20 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class PublicationTypeAssembler {
 
     private final PublicationTypeFactory _publicationTypeFactory;
 
-    public PublicationTypeAssembler(PublicationTypeFactory publicationTypeFactory) {
-
-        _publicationTypeFactory = publicationTypeFactory;
-
-    }
-
     public PublicationTypeDataModel toDataModel(PublicationType publicationType) {
 
-        return new PublicationTypeDataModel(publicationType.identity().toString());
+        PublicationTypeDataModel dmToSave = new PublicationTypeDataModel(publicationType.identity().toString());
+
+        return dmToSave;
 
     }
 
@@ -27,7 +25,9 @@ public class PublicationTypeAssembler {
 
         PublicationTypeId id = new PublicationTypeId(dataModel.getPublicationTypeId());
 
-        return _publicationTypeFactory.createPublicationType(id);
+        PublicationType reconstructedPublicationType = _publicationTypeFactory.createPublicationType(id);
+
+        return reconstructedPublicationType;
 
     }
 

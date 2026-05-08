@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "PublicationTypes")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "PublicationTypes")
 public class PublicationTypeDataModel {
 
     @Id

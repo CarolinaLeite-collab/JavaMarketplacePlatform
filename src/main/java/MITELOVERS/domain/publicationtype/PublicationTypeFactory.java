@@ -6,9 +6,8 @@ import org.springframework.stereotype.Component;
 /**
  * Factory responsible for creating {@link PublicationType} instances.
  * <p>
- * IllegalArgumentException is thrown if publicationTypeName is invalid (as defined by {@link PublicationTypeId}'s constructor)
- * </p>
  */
+
 @Component
 public class PublicationTypeFactory {
 
