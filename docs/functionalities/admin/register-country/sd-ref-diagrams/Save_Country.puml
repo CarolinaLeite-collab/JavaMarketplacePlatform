@@ -1,0 +1,74 @@
+
+@startuml
+title  Save newCountry and return saved domain object
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":RegisterCountryController" as Ctl
+participant ":ICountryRepo" as IR
+participant ":CountryAssembler" as UA
+participant ":ICountrySpringDataRepo" as jpa
+participant ":CountryFactory" as Factory
+
+"Ctl" -> IR : save(newCountry)
+activate IR
+
+IR -> UA : toDataModel(newCountry)
+activate UA
+create "countryDataModel: CountryDataModel"
+UA -->> "countryDataModel: CountryDataModel" : <<create>>(newCountry)
+UA --> IR : countryDataModel
+deactivate UA
+
+IR -> jpa : save(countryDataModel)
+activate jpa
+database "DB" as DB
+jpa -> DB : insert
+activate DB
+DB --> jpa : string based data
+deactivate DB
+create "countryDataModel2: CountryDataModel"
+jpa -->> "countryDataModel2: CountryDataModel" : <<create>>(string based data)
+jpa --> IR : countryDataModel2
+deactivate jpa
+
+IR -> UA : toDomain(countryDataModel2)
+activate UA
+
+UA -> "countryDataModel2: CountryDataModel" : countryId = getCountryId()
+activate "countryDataModel2: CountryDataModel"
+deactivate "countryDataModel2: CountryDataModel"
+
+UA -> "countryDataModel2: CountryDataModel" : name = getCountryName()
+activate "countryDataModel2: CountryDataModel"
+deactivate "countryDataModel2: CountryDataModel"
+
+UA -> "Factory" : createCountry(countryId, countryName)
+activate "Factory"
+create "country: Country"
+"Factory" -->> "country: Country" : <<create>>(countryId, countryName)
+"Factory" --> UA : country
+deactivate "Factory"
+UA --> IR : country
+deactivate UA
+
+IR --> Ctl : country
+deactivate IR
+
+ref over Ctl
+[[../Register_Country_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml
