@@ -1,6 +1,7 @@
 package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.persistence.jpa.assembler.LibraryAssembler;
@@ -14,14 +15,15 @@ import java.util.Optional;
 
 @Repository
 @Profile("jpa")
-public class JpaLibraryRepo {
 
-    private final ILibrarySpringDataRepo _iSpringDataRepo;
+public class JpaLibraryRepo implements ILibraryRepo {
+
+    private final ILibrarySpringDataRepo _iSpringRepo;
     private final LibraryAssembler _libraryAssembler;
 
     public JpaLibraryRepo(ILibrarySpringDataRepo springRepo, LibraryAssembler libraryAssembler) {
 
-        _iSpringDataRepo = springRepo;
+        _iSpringRepo = springRepo;
         _libraryAssembler = libraryAssembler;
     }
 
@@ -32,7 +34,7 @@ public class JpaLibraryRepo {
         LibraryDataModel dm = _libraryAssembler.toDataModel(entity);
 
         // persist
-        LibraryDataModel saved = _iSpringDataRepo.save(dm);
+        LibraryDataModel saved = _iSpringRepo.save(dm);
 
         // convert back to domain
         return _libraryAssembler.toDomain(saved);
@@ -41,7 +43,7 @@ public class JpaLibraryRepo {
     @Override
     public Iterable<LibraryId> findAllKeys() {
 
-        return _iSpringDataRepo.findAll().stream()
+        return _iSpringRepo.findAll().stream()
                 .map(dm -> new LibraryId(new Email(dm.getLibraryId())))
                 .toList();
     }
@@ -49,7 +51,7 @@ public class JpaLibraryRepo {
     @Override
     public Iterable<Library> findAll() {
 
-        List<LibraryDataModel> dms = _iSpringDataRepo.findAll();
+        List<LibraryDataModel> dms = _iSpringRepo.findAll();
 
         return _libraryAssembler.listToDomain(dms);
 
@@ -58,14 +60,14 @@ public class JpaLibraryRepo {
     @Override
     public Optional<Library> ofIdentity(LibraryId id) {
 
-        return _iSpringDataRepo.findById(id.toString())
+        return _iSpringRepo.findById(id.toString())
                 .map(_libraryAssembler::toDomain);
     }
 
     @Override
     public boolean containsOfIdentity(LibraryId id) {
 
-        return _iSpringDataRepo.existsById(id.toString());
+        return _iSpringRepo.existsById(id.toString());
     }
 
 }
