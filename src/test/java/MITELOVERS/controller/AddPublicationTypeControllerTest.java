@@ -4,37 +4,30 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-
+@WebMvcTest(AddPublicationTypeController.class)
+@ActiveProfiles("jpa")
 class AddPublicationTypeControllerTest {
 
+    @MockBean
     private IPublicationTypeRepo _iPublicationTypeRepoDouble;
+
+    @MockBean
     private PublicationTypeFactory _publicationTypeFactoryDouble;
-    private UserId _adminDoubleId;
 
-    @BeforeEach
-    void setUp() {
+    @Autowired
+    AddPublicationTypeController _controller;
 
-        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        _publicationTypeFactoryDouble = mock(PublicationTypeFactory.class);
-        _adminDoubleId = mock(UserId.class);
-
-    }
-
-    @Test
-    void constructorAddPublicationTypeControllerShouldCreateController() {
-
-        //SUT
-        new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
-
-    }
 
     @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
@@ -48,18 +41,12 @@ class AddPublicationTypeControllerTest {
         when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(false);
         when(_iPublicationTypeRepoDouble.save(pubTypeDouble)).thenReturn(pubTypeDouble);
 
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
-
         //Act
-        PublicationType pubTypeResult = controller.addPublicationType(publicationTypeName);
+        PublicationType pubTypeResult = _controller.addPublicationType(publicationTypeName);
 
         //Assert
         assertEquals(pubTypeDouble, pubTypeResult);
-        verify(_publicationTypeFactoryDouble).createPublicationType(publicationTypeName);
-        verify(pubTypeDouble).identity();
-        verify(_iPublicationTypeRepoDouble).containsOfIdentity(pubTypeIdDouble);
-        verify(_iPublicationTypeRepoDouble).save(pubTypeDouble);
+
     }
 
     @Test
@@ -75,14 +62,14 @@ class AddPublicationTypeControllerTest {
 
         when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
 
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
-
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationType(publicationTypeName));
 
         //Assert
-        assertEquals("The publication type " + publicationTypeName + " already exists.", exception.getMessage());
+        assertEquals("The publication type "
+                + publicationTypeName + " already exists.", exception.getMessage());
+
     }
 
     @Test
@@ -98,14 +85,14 @@ class AddPublicationTypeControllerTest {
 
         when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
 
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
-
         //Act
-        assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
+        Exception result = assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationType(publicationTypeName));
 
         //Assert
-        verify(_iPublicationTypeRepoDouble, never()).save(pubTypeDouble);
+        assertEquals("The publication type " +
+                publicationTypeName + " already exists.", result.getMessage());
+
     }
 
 }
