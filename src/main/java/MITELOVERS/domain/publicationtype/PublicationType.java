@@ -1,6 +1,7 @@
 package MITELOVERS.domain.publicationtype;
 
 import MITELOVERS.ddd.AggregateRoot;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 
 /**
@@ -21,7 +22,7 @@ public class PublicationType implements AggregateRoot<PublicationTypeId> {
 
     PublicationType(String publicationTypeName) {
 
-        _id = new PublicationTypeId(publicationTypeName);
+        _id = new PublicationTypeId(new Name(publicationTypeName).toString());
 
     }
 
