@@ -5,8 +5,12 @@ import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.persistence.jpa.assembler.PublicationTypeAssembler;
 import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
 import MITELOVERS.persistence.springdata.IPublicationTypeSpringDataRepo;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,32 +19,28 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaPublicationTypeRepoTest {
 
+    // SUT
+    @InjectMocks
+    private JpaPublicationTypeRepo _jpaPublicationTypeRepo;
+
+    @Mock
     private IPublicationTypeSpringDataRepo _springDataRepoDouble;
+
+    @Mock
     private PublicationTypeAssembler _assemblerDouble;
+
+    @Mock
     private PublicationType _publicationTypeDouble;
+
+    @Mock
     private PublicationTypeId _publicationTypeIdDouble;
+
+    @Mock
     private PublicationTypeDataModel _dataModelDouble;
 
-    @BeforeEach
-    void setUp() {
-
-        _springDataRepoDouble = mock(IPublicationTypeSpringDataRepo.class);
-        _assemblerDouble = mock(PublicationTypeAssembler.class);
-        _publicationTypeDouble = mock(PublicationType.class);
-        _publicationTypeIdDouble = mock(PublicationTypeId.class);
-        _dataModelDouble = mock(PublicationTypeDataModel.class);
-
-    }
-
-    @Test
-    void shouldConstructPublicationTypeRepo() {
-
-        // SUT & Act
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
-    }
 
     @Test
     void shouldSaveAndReturnPublicationType() {
@@ -50,11 +50,8 @@ class JpaPublicationTypeRepoTest {
         when(_springDataRepoDouble.save(_dataModelDouble)).thenReturn(_dataModelDouble);
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_publicationTypeDouble);
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
-        PublicationType result = jpaPublicationTypeRepo.save(_publicationTypeDouble);
+        PublicationType result = _jpaPublicationTypeRepo.save(_publicationTypeDouble);
 
         // Assert
         assertEquals(_publicationTypeDouble, result);
@@ -69,12 +66,9 @@ class JpaPublicationTypeRepoTest {
         when(_springDataRepoDouble.findAll()).thenReturn(dataModels);
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_publicationTypeDouble);
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
         List<PublicationType> result = new ArrayList<>();
-        jpaPublicationTypeRepo.findAll().forEach(result::add);
+        _jpaPublicationTypeRepo.findAll().forEach(result::add);
 
         // Assert
         assertEquals(1, result.size());
@@ -89,15 +83,13 @@ class JpaPublicationTypeRepoTest {
         when(_dataModelDouble.getPublicationTypeId()).thenReturn("BOOK");
         when(_springDataRepoDouble.findAll()).thenReturn(List.of(_dataModelDouble));
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
         List<PublicationTypeId> result = new ArrayList<>();
-        jpaPublicationTypeRepo.findAllKeys().forEach(result::add);
+        _jpaPublicationTypeRepo.findAllKeys().forEach(result::add);
 
         // Assert
         assertEquals(1, result.size());
+        assertEquals("BOOK", result.get(0).toString());
 
     }
 
@@ -109,11 +101,8 @@ class JpaPublicationTypeRepoTest {
         when(_springDataRepoDouble.findById("BOOK")).thenReturn(Optional.of(_dataModelDouble));
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_publicationTypeDouble);
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
-        Optional<PublicationType> result = jpaPublicationTypeRepo.ofIdentity(_publicationTypeIdDouble);
+        Optional<PublicationType> result = _jpaPublicationTypeRepo.ofIdentity(_publicationTypeIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -122,22 +111,17 @@ class JpaPublicationTypeRepoTest {
     }
 
     @Test
-    void shouldReturnEmptyOptionalWhenIdNotPresent() {
+    void shouldReturnEmptyListWhenNoPublicationTypes() {
 
         // Arrange
-        when(_publicationTypeIdDouble.toString()).thenReturn("BOOK");
-        when(_springDataRepoDouble.findById("BOOK")).thenReturn(Optional.of(_dataModelDouble));
-        when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_publicationTypeDouble);
-
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
+        when(_springDataRepoDouble.findAll()).thenReturn(List.of());
 
         // Act
-        Optional<PublicationType> result = jpaPublicationTypeRepo.ofIdentity(_publicationTypeIdDouble);
+        List<PublicationType> result = new ArrayList<>();
+        _jpaPublicationTypeRepo.findAll().forEach(result::add);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(_publicationTypeDouble, result.get());
+        assertTrue(result.isEmpty());
 
     }
 
@@ -148,11 +132,8 @@ class JpaPublicationTypeRepoTest {
         when(_publicationTypeIdDouble.toString()).thenReturn("BOOK");
         when(_springDataRepoDouble.existsById("BOOK")).thenReturn(true);
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
-        boolean result = jpaPublicationTypeRepo.containsOfIdentity(_publicationTypeIdDouble);
+        boolean result = _jpaPublicationTypeRepo.containsOfIdentity(_publicationTypeIdDouble);
 
         // Assert
         assertTrue(result);
@@ -166,11 +147,8 @@ class JpaPublicationTypeRepoTest {
         when(_publicationTypeIdDouble.toString()).thenReturn("BOOK");
         when(_springDataRepoDouble.existsById("BOOK")).thenReturn(false);
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
-        boolean result = jpaPublicationTypeRepo.containsOfIdentity(_publicationTypeIdDouble);
+        boolean result = _jpaPublicationTypeRepo.containsOfIdentity(_publicationTypeIdDouble);
 
         // Assert
         assertFalse(result);
@@ -178,22 +156,18 @@ class JpaPublicationTypeRepoTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenIdNotPresent() {
-
+    void shouldReturnEmptyOptionalWhenIdNotPresent() {
         // Arrange
         when(_publicationTypeIdDouble.toString()).thenReturn("BOOK");
         when(_springDataRepoDouble.findById("BOOK")).thenReturn(Optional.empty());
 
-        // SUT
-        JpaPublicationTypeRepo jpaPublicationTypeRepo = new JpaPublicationTypeRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
-        Exception result = assertThrows(IllegalArgumentException.class,
-                () -> jpaPublicationTypeRepo.ofIdentity(_publicationTypeIdDouble));
+        Optional<PublicationType> result = _jpaPublicationTypeRepo.ofIdentity(_publicationTypeIdDouble);
 
         // Assert
-        assertEquals("PublicationType not found", result.getMessage());
-
+        assertTrue(result.isEmpty());
     }
+
+
 
 }

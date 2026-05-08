@@ -6,77 +6,87 @@ import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.persistence.jpa.assembler.PublicationTypeAssembler;
 import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
 import MITELOVERS.persistence.springdata.IPublicationTypeSpringDataRepo;
-import org.springframework.stereotype.Component;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
+@Profile("jpa")
 public class JpaPublicationTypeRepo implements IPublicationTypeRepo {
 
-    private final IPublicationTypeSpringDataRepo _springDataRepo;
-    private final PublicationTypeAssembler _assembler;
+    @Autowired
+    private IPublicationTypeSpringDataRepo _publicationTypeSpringDataRepo;
 
-    public JpaPublicationTypeRepo(IPublicationTypeSpringDataRepo springDataRepo,
-                                  PublicationTypeAssembler assembler) {
+    @Autowired
+    private PublicationTypeAssembler _publicationTyperAssembler;
 
-        _springDataRepo = springDataRepo;
-        _assembler = assembler;
-
-    }
 
     @Override
     public PublicationType save(PublicationType publicationType) {
 
-        PublicationTypeDataModel dataModel = _assembler.toDataModel(publicationType);
+        PublicationTypeDataModel dataModel = _publicationTyperAssembler.toDataModel(publicationType);
 
-        _springDataRepo.save(dataModel);
+        PublicationTypeDataModel savedDataModel = _publicationTypeSpringDataRepo.save(dataModel);
 
-        PublicationTypeDataModel savedDataModel = _springDataRepo.save(dataModel);
-
-        return _assembler.toDomain(savedDataModel);
+        return _publicationTyperAssembler.toDomain(savedDataModel);
 
     }
 
     @Override
     public Iterable<PublicationTypeId> findAllKeys() {
 
-        List<PublicationTypeId> ids = new ArrayList<>();
+        Iterable<PublicationTypeDataModel> publicationTypeDms = _publicationTypeSpringDataRepo.findAll();
 
-        _springDataRepo.findAll().forEach(
-                dm -> ids.add(new PublicationTypeId(dm.getPublicationTypeId())));
+        List<PublicationTypeId> publicationTypeIds = new ArrayList<>();
 
-        return ids;
+        for  (PublicationTypeDataModel publicationTypeDataModel : publicationTypeDms) {
+
+            publicationTypeIds.add(new PublicationTypeId(publicationTypeDataModel.getPublicationTypeId()));
+        }
+
+        return publicationTypeIds;
 
     }
 
     @Override
     public Iterable<PublicationType> findAll() {
 
-        List<PublicationType> result = new ArrayList<>();
+        Iterable<PublicationTypeDataModel> publicationTypeDms = _publicationTypeSpringDataRepo.findAll();
 
-        _springDataRepo.findAll().forEach(
-                dm -> result.add(_assembler.toDomain(dm)));
+        List<PublicationType> publicationTypes = new ArrayList<>();
 
-        return result;
+        for ( PublicationTypeDataModel publicationTypeDataModel : _publicationTypeSpringDataRepo.findAll() ) {
+
+            publicationTypes.add(_publicationTyperAssembler.toDomain(publicationTypeDataModel));
+        }
+
+        return publicationTypes;
 
     }
 
     @Override
     public Optional<PublicationType> ofIdentity(PublicationTypeId id) {
 
-        PublicationTypeDataModel dataModel = _springDataRepo.findById(id.toString())
-                .orElseThrow(() -> new IllegalArgumentException("PublicationType not found"));
+        Optional<PublicationTypeDataModel> dataModel =
+                _publicationTypeSpringDataRepo.findById(id.toString());
 
-        return Optional.of(_assembler.toDomain(dataModel));
+        if (dataModel.isPresent()) {
+            return Optional.of(_publicationTyperAssembler.toDomain(dataModel.get()));
+        }
+
+        return Optional.empty();
 
     }
 
     @Override
     public boolean containsOfIdentity(PublicationTypeId id) {
 
-        return _springDataRepo.existsById(id.toString());
+        return _publicationTypeSpringDataRepo.existsById(id.toString());
 
     }
 
