@@ -15,6 +15,18 @@ public class PublishingCompanyTest {
     }
 
     @Test
+    void constructorShouldReconstructPublishingCompanyFromId() {
+        // Arrange
+        PublishingCompanyId publishingCompanyId = new PublishingCompanyId("Test Company");
+
+        // Act
+        PublishingCompany publishingCompany = new PublishingCompany(publishingCompanyId);
+
+        // Assert
+        assertEquals(publishingCompanyId, publishingCompany.identity());
+    }
+
+    @Test
     void identityShouldReturnUnderlyingId() {
 
         //Arrange
