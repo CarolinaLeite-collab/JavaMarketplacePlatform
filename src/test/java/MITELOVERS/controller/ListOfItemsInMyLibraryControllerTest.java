@@ -1,6 +1,7 @@
 
 package MITELOVERS.controller;
 
+import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
@@ -12,7 +13,10 @@ import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,123 +25,88 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ListOfItemsInMyLibraryControllerTest {
-    private UserId _userIdDouble;
-    private ILibraryRepo _iLibraryRepoDouble;
-    private IItemRepo _iItemRepoDouble;
-    private IEditionRepo _iEditionRepoDouble;
-    private IPublicationRepo _iPublicationRepoDouble;
-    private IPublicationTypeRepo _iPublicationTypeRepoDouble;
-    private IAuthorRepo _iAuthorRepoDouble;
+
+    @Mock private IRepository<LibraryId, Library> libraryRepo;
+    @Mock private IRepository<ItemId, Item> itemRepo;
+    @Mock private IRepository<EditionId, Edition> editionRepo;
+    @Mock private IRepository<PublicationId, Publication> publicationRepo;
+    @Mock private IRepository<AuthorId, Author> authorRepo;
+    @Mock private IRepository<PublicationTypeId, PublicationType> publicationTypeRepo;
+
+    @Mock private UserId userId;
+
+    private ListOfItemsInMyLibraryController controller;
 
     @BeforeEach
     void setUp() {
-        _userIdDouble = mock(UserId.class);
-        _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _iItemRepoDouble = mock(IItemRepo.class);
-        _iEditionRepoDouble = mock(IEditionRepo.class);
-        _iPublicationRepoDouble = mock(IPublicationRepo.class);
-        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        _iAuthorRepoDouble = mock(IAuthorRepo.class);
-
+        controller = new ListOfItemsInMyLibraryController(
+                libraryRepo,
+                itemRepo,
+                editionRepo,
+                publicationRepo,
+                authorRepo,
+                publicationTypeRepo
+        );
     }
 
     @Test
-    void testListOfItemsInMyLibraryController(){
-        //Act + SUT
-        new ListOfItemsInMyLibraryController(_iLibraryRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _iAuthorRepoDouble,
-                _iPublicationTypeRepoDouble,
-                _userIdDouble);
-    }
-
-    @Test
-    void testListOfItemsInMyLibraryControllerShouldReturnListOfItemDetailsDTO() {
+    void shouldReturnListOfItemDetailsDTO() {
 
         // Arrange
-        Item item1Double = mock(Item.class);
-        ItemId itemIdDouble = mock(ItemId.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
 
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
 
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
+        PublicationId publicationId = mock(PublicationId.class);
+        Publication publication = mock(Publication.class);
 
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        PublicationType publicationType = mock(PublicationType.class);
 
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Author authorDouble = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
 
-        Title titleDouble = mock(Title.class);
-        Name nameDouble = mock(Name.class);
-        ISBN isbnMock = mock(ISBN.class);
+        Title title = mock(Title.class);
+        Name name = mock(Name.class);
+        ISBN isbn = mock(ISBN.class);
 
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(item1Double));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(edition.getPublicationId()).thenReturn(publicationId);
+            when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
+            when(edition.getIdentifier()).thenReturn(isbn);
 
-            when(item1Double.getEditionId())
-                    .thenReturn(editionIdDouble);
+            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(publication.getAuthorId()).thenReturn(authorId);
+            when(publication.getTitle()).thenReturn(title);
 
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.of(editionDouble));
+            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
+            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
 
-            when(editionDouble.getPublicationId())
-                    .thenReturn(publicationIdDouble);
-
-            when(editionDouble.getPublicationTypeId())
-                    .thenReturn(publicationTypeIdDouble);
-
-            when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                    .thenReturn(Optional.of(publicationDouble));
-
-            when(publicationDouble.getAuthorId())
-                    .thenReturn(authorIdDouble);
-
-            when(publicationDouble.getTitle()).thenReturn(titleDouble);
-            when(nameDouble.toString()).thenReturn("J.D. Salinger");
-            when(authorDouble.getName()).thenReturn(nameDouble);
-            when(editionDouble.getIdentifier()).thenReturn(isbnMock);
-
-            when(_iPublicationTypeRepoDouble.ofIdentity(publicationTypeIdDouble))
-                    .thenReturn(Optional.of(publicationTypeDouble));
-
-            when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                    .thenReturn(Optional.of(authorDouble));
-
-            // SUT
-            ListOfItemsInMyLibraryController ctl =
-                    new ListOfItemsInMyLibraryController(
-                            _iLibraryRepoDouble,
-                            _iItemRepoDouble,
-                            _iEditionRepoDouble,
-                            _iPublicationRepoDouble,
-                            _iAuthorRepoDouble,
-                            _iPublicationTypeRepoDouble,
-                            _userIdDouble
-                    );
+            when(title.toString()).thenReturn("The Catcher in the Rye");
+            when(name.toString()).thenReturn("J.D. Salinger");
+            when(author.getName()).thenReturn(name);
+            when(publicationType.toString()).thenReturn("Book");
+            when(isbn.toString()).thenReturn("978-0316769488");
 
             // Act
-            List<ItemDetailsDTO> dtos =
-                    ctl.getListOfItemInfoInMyLibrary(_userIdDouble);
+            List<ItemDetailsDTO> dtos = controller.getListOfItemInfoInMyLibrary(userId);
 
             // Assert
             assertEquals(1, dtos.size());
@@ -145,109 +114,64 @@ class ListOfItemsInMyLibraryControllerTest {
     }
 
     @Test
-    void testListOfItemsInMyLibraryControllerShouldReturnCorrectDTOFields() {
+    void shouldReturnCorrectDTOFields() {
 
         // Arrange
-        Item item1Double = mock(Item.class);
-        ItemId itemIdDouble = mock(ItemId.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
 
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
 
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
+        PublicationId publicationId = mock(PublicationId.class);
+        Publication publication = mock(Publication.class);
 
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        PublicationType publicationType = mock(PublicationType.class);
 
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Author authorDouble = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
 
-        Title titleDouble = mock(Title.class);
-        Name nameDouble = mock(Name.class);
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        Title title = mock(Title.class);
+        Name name = mock(Name.class);
+        ISBN isbn = mock(ISBN.class);
 
-        ISBN isbnDouble = mock(ISBN.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(item1Double));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(edition.getPublicationId()).thenReturn(publicationId);
+            when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
+            when(edition.getIdentifier()).thenReturn(isbn);
 
-            when(item1Double.getEditionId())
-                    .thenReturn(editionIdDouble);
+            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(publication.getAuthorId()).thenReturn(authorId);
+            when(publication.getTitle()).thenReturn(title);
 
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.of(editionDouble));
+            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
+            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
 
-            when(editionDouble.getPublicationId())
-                    .thenReturn(publicationIdDouble);
-
-            when(editionDouble.getPublicationTypeId())
-                    .thenReturn(publicationTypeIdDouble);
-
-            when(editionDouble.getIdentifier())
-                    .thenReturn(isbnDouble);
-
-            when(isbnDouble.toString())
-                    .thenReturn("978-0316769488");
-
-            when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                    .thenReturn(Optional.of(publicationDouble));
-
-            when(publicationDouble.getTitle())
-                    .thenReturn(titleDouble);
-
-            when(titleDouble.toString())
-                    .thenReturn("The Catcher in the Rye");
-
-            when(nameDouble.toString()).thenReturn("J.D. Salinger");
-
-            when(publicationDouble.getAuthorId())
-                    .thenReturn(authorIdDouble);
-
-            when(_iPublicationTypeRepoDouble.ofIdentity(publicationTypeIdDouble))
-                    .thenReturn(Optional.of(publicationTypeDouble));
-
-            when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                    .thenReturn(Optional.of(authorDouble));
-
-            when(authorDouble.getName())
-                    .thenReturn(nameDouble);
-
-            when(publicationTypeDouble.toString())
-                    .thenReturn("Book");
-
-            // SUT
-            ListOfItemsInMyLibraryController ctl =
-                    new ListOfItemsInMyLibraryController(
-                            _iLibraryRepoDouble,
-                            _iItemRepoDouble,
-                            _iEditionRepoDouble,
-                            _iPublicationRepoDouble,
-                            _iAuthorRepoDouble,
-                            _iPublicationTypeRepoDouble,
-                            _userIdDouble
-                    );
+            when(title.toString()).thenReturn("The Catcher in the Rye");
+            when(name.toString()).thenReturn("J.D. Salinger");
+            when(author.getName()).thenReturn(name);
+            when(publicationType.toString()).thenReturn("Book");
+            when(isbn.toString()).thenReturn("978-0316769488");
 
             // Act
-            List<ItemDetailsDTO> dtos =
-                    ctl.getListOfItemInfoInMyLibrary(_userIdDouble);
-
+            List<ItemDetailsDTO> dtos = controller.getListOfItemInfoInMyLibrary(userId);
             ItemDetailsDTO dto = dtos.get(0);
 
             // Assert
-            assertEquals(1, dtos.size());
             assertEquals("The Catcher in the Rye", dto.getTitle());
             assertEquals("J.D. Salinger", dto.getAuthorName());
             assertEquals("Book", dto.getPublicationType());
@@ -255,294 +179,173 @@ class ListOfItemsInMyLibraryControllerTest {
         }
     }
 
+    // ---------------------------------------------------------
+    // ERROR PATH TESTS
+    // ---------------------------------------------------------
+
     @Test
-    void shouldThrowIllegalStateExceptionWhenItemNotFound() {
+    void shouldThrowWhenItemNotFound() {
 
-        // Arrange
-        ItemId itemIdDouble = mock(ItemId.class);
-
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        ItemId itemId = mock(ItemId.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
-
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.empty());
-
-            // SUT
-            ListOfItemsInMyLibraryController ctl = new ListOfItemsInMyLibraryController(
-                    _iLibraryRepoDouble,
-                    _iItemRepoDouble,
-                    _iEditionRepoDouble,
-                    _iPublicationRepoDouble,
-                    _iAuthorRepoDouble,
-                    _iPublicationTypeRepoDouble,
-                    _userIdDouble
-            );
-
-            // Act + Assert
             assertThrows(IllegalStateException.class,
-                    () -> ctl.getListOfItemInfoInMyLibrary(_userIdDouble));
+                    () -> controller.getListOfItemInfoInMyLibrary(userId));
         }
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionWhenEditionNotFound() {
+    void shouldThrowWhenEditionNotFound() {
 
-        // Arrange
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
-        EditionId editionIdDouble = mock(EditionId.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        EditionId editionId = mock(EditionId.class);
 
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(itemDouble));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.empty());
 
-            when(itemDouble.getEditionId())
-                    .thenReturn(editionIdDouble);
-
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.empty());
-
-            //SUT
-            ListOfItemsInMyLibraryController ctl = new ListOfItemsInMyLibraryController(
-                    _iLibraryRepoDouble,
-                    _iItemRepoDouble,
-                    _iEditionRepoDouble,
-                    _iPublicationRepoDouble,
-                    _iAuthorRepoDouble,
-                    _iPublicationTypeRepoDouble,
-                    _userIdDouble
-            );
-
-            // Act + Assert
             assertThrows(IllegalStateException.class,
-                    () -> ctl.getListOfItemInfoInMyLibrary(_userIdDouble));
+                    () -> controller.getListOfItemInfoInMyLibrary(userId));
         }
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionWhenPublicationNotFound() {
+    void shouldThrowWhenPublicationNotFound() {
 
-        // Arrange
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
 
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
 
-        PublicationId publicationIdDouble = mock(PublicationId.class);
+        PublicationId publicationId = mock(PublicationId.class);
 
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(itemDouble));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(edition.getPublicationId()).thenReturn(publicationId);
 
-            when(itemDouble.getEditionId())
-                    .thenReturn(editionIdDouble);
+            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.empty());
 
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.of(editionDouble));
-
-            when(editionDouble.getPublicationId())
-                    .thenReturn(publicationIdDouble);
-
-            when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                    .thenReturn(Optional.empty());
-
-            //SUT
-            ListOfItemsInMyLibraryController ctl = new ListOfItemsInMyLibraryController(
-                    _iLibraryRepoDouble,
-                    _iItemRepoDouble,
-                    _iEditionRepoDouble,
-                    _iPublicationRepoDouble,
-                    _iAuthorRepoDouble,
-                    _iPublicationTypeRepoDouble,
-                    _userIdDouble
-            );
-
-            // Act + Assert
             assertThrows(IllegalStateException.class,
-                    () -> ctl.getListOfItemInfoInMyLibrary(_userIdDouble));
+                    () -> controller.getListOfItemInfoInMyLibrary(userId));
         }
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionWhenPublicationTypeNotFound() {
+    void shouldThrowWhenPublicationTypeNotFound() {
 
-        // Arrange
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
 
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
 
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
+        PublicationId publicationId = mock(PublicationId.class);
+        Publication publication = mock(Publication.class);
 
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
 
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(itemDouble));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(edition.getPublicationId()).thenReturn(publicationId);
+            when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
 
-            when(itemDouble.getEditionId())
-                    .thenReturn(editionIdDouble);
+            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.empty());
 
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.of(editionDouble));
-
-            when(editionDouble.getPublicationId())
-                    .thenReturn(publicationIdDouble);
-
-            when(editionDouble.getPublicationTypeId())
-                    .thenReturn(publicationTypeIdDouble);
-
-            when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                    .thenReturn(Optional.of(publicationDouble));
-
-            when(_iPublicationTypeRepoDouble.ofIdentity(publicationTypeIdDouble))
-                    .thenReturn(Optional.empty());
-
-            //SUT
-            ListOfItemsInMyLibraryController ctl = new ListOfItemsInMyLibraryController(
-                    _iLibraryRepoDouble,
-                    _iItemRepoDouble,
-                    _iEditionRepoDouble,
-                    _iPublicationRepoDouble,
-                    _iAuthorRepoDouble,
-                    _iPublicationTypeRepoDouble,
-                    _userIdDouble
-            );
-
-            // Act + Assert
             assertThrows(IllegalStateException.class,
-                    () -> ctl.getListOfItemInfoInMyLibrary(_userIdDouble));
+                    () -> controller.getListOfItemInfoInMyLibrary(userId));
         }
     }
 
     @Test
-    void shouldThrowIllegalStateExceptionWhenAuthorNotFound() {
+    void shouldThrowWhenAuthorNotFound() {
 
-        // Arrange
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
 
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
 
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
+        PublicationId publicationId = mock(PublicationId.class);
+        Publication publication = mock(Publication.class);
 
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-        PublicationType publicationTypeDouble = mock(PublicationType.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        PublicationType publicationType = mock(PublicationType.class);
 
-        AuthorId authorIdDouble = mock(AuthorId.class);
+        AuthorId authorId = mock(AuthorId.class);
 
-        LibraryId libraryIdDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        LibraryId libraryId = mock(LibraryId.class);
+        Library library = mock(Library.class);
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
-                    .thenReturn(libraryIdDouble);
+            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
 
-            when(_iLibraryRepoDouble.ofIdentity(libraryIdDouble))
-                    .thenReturn(Optional.of(libraryDouble));
+            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(libraryDouble.getItemsIdInLibrary())
-                    .thenReturn(List.of(itemIdDouble));
+            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(item.getEditionId()).thenReturn(editionId);
 
-            when(_iItemRepoDouble.ofIdentity(itemIdDouble))
-                    .thenReturn(Optional.of(itemDouble));
+            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(edition.getPublicationId()).thenReturn(publicationId);
+            when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
 
-            when(itemDouble.getEditionId())
-                    .thenReturn(editionIdDouble);
+            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
 
-            when(_iEditionRepoDouble.ofIdentity(editionIdDouble))
-                    .thenReturn(Optional.of(editionDouble));
+            when(publication.getAuthorId()).thenReturn(authorId);
+            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.empty());
 
-            when(editionDouble.getPublicationId())
-                    .thenReturn(publicationIdDouble);
-
-            when(editionDouble.getPublicationTypeId())
-                    .thenReturn(publicationTypeIdDouble);
-
-            when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                    .thenReturn(Optional.of(publicationDouble));
-
-            when(_iPublicationTypeRepoDouble.ofIdentity(publicationTypeIdDouble))
-                    .thenReturn(Optional.of(publicationTypeDouble));
-
-            when(publicationDouble.getAuthorId())
-                    .thenReturn(authorIdDouble);
-
-            when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                    .thenReturn(Optional.empty());
-
-            //SUT
-            ListOfItemsInMyLibraryController ctl = new ListOfItemsInMyLibraryController(
-                    _iLibraryRepoDouble,
-                    _iItemRepoDouble,
-                    _iEditionRepoDouble,
-                    _iPublicationRepoDouble,
-                    _iAuthorRepoDouble,
-                    _iPublicationTypeRepoDouble,
-                    _userIdDouble
-            );
-
-            // Act + Assert
             assertThrows(IllegalStateException.class,
-                    () -> ctl.getListOfItemInfoInMyLibrary(_userIdDouble));
+                    () -> controller.getListOfItemInfoInMyLibrary(userId));
         }
     }
-
 
 }
