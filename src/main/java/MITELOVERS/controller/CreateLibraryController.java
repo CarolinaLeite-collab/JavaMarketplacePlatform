@@ -27,7 +27,7 @@ public class CreateLibraryController {
     private final IRepository<LibraryId, Library> _libraryRepo;
     private final LibraryFactory _libraryFactory;
 
-    public CreateLibraryController(IRepository<LibraryId, Library> libraryRepo, LibraryFactory libraryFactory, UserId userId){
+    public CreateLibraryController(IRepository<LibraryId, Library> libraryRepo, LibraryFactory libraryFactory){
 
         _libraryRepo = libraryRepo;
         _libraryFactory = libraryFactory;
