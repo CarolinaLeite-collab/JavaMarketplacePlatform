@@ -6,26 +6,26 @@ import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(RegisterNewUserController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class RegisterNewUserControllerTest {
 
-    @MockBean
+    @Mock
     IUserRepo _iUserRepoDouble;
 
-    @MockBean
+    @Mock
     UserFactory _userFactoryDouble;
 
-    @Autowired
+    @InjectMocks
     RegisterNewUserController _registerNewUserController;
 
     private User _userDouble;
@@ -38,8 +38,6 @@ class RegisterNewUserControllerTest {
 
     @BeforeEach
     void setUp() throws InstantiationException{
-
-        MockitoAnnotations.openMocks(this);
 
         _userDouble = mock(User.class);
         _nameDouble = mock(Name.class);
