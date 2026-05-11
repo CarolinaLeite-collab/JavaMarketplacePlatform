@@ -7,6 +7,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetItemsOnAuctionOfAGivenAuthorController {
 
 
@@ -28,7 +30,11 @@ public class GetItemsOnAuctionOfAGivenAuthorController {
     private final IEditionRepo _iEditionRepo;
     private final IPublicationRepo _iPublicationRepo;
 
-    public GetItemsOnAuctionOfAGivenAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IAuctionRepo auctionRepo, UserId buyerId){
+    public GetItemsOnAuctionOfAGivenAuthorController(IAuthorRepo ar,
+                                                     IItemRepo ir,
+                                                     IEditionRepo er,
+                                                     IPublicationRepo pr,
+                                                     IAuctionRepo auctionRepo){
 
         _iAuthorRepo = ar;
         _iItemRepo = ir;
