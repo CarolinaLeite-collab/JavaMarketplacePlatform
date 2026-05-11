@@ -9,9 +9,10 @@ import MITELOVERS.domain.valueobject.CityId;
 import MITELOVERS.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -19,20 +20,20 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(RegisterCityController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class RegisterCityControllerTest {
 
-    @MockBean
+    @Mock
     private ICityRepo _iCityRepoDouble;
 
-    @MockBean
+    @Mock
     private ICountryRepo _iCountryRepoDouble;
 
-    @MockBean
+    @Mock
     private CityFactory _cityFactoryDouble;
 
-    @Autowired
+    @InjectMocks
     private RegisterCityController _controller;
 
     private CountryId _countryIdDouble;
@@ -44,8 +45,6 @@ class RegisterCityControllerTest {
         _countryIdDouble = mock(CountryId.class);
         _cityIdDouble = mock(CityId.class);
         _cityDouble = mock(City.class);
-
-        when(_cityDouble.identity()).thenReturn(_cityIdDouble);
     }
 
     @Test
@@ -57,6 +56,7 @@ class RegisterCityControllerTest {
     void registerCityShouldCreateAndReturnCity() {
         Country countryDouble = mock(Country.class);
 
+        when(_cityDouble.identity()).thenReturn(_cityIdDouble);
         when(_iCountryRepoDouble.ofIdentity(_countryIdDouble))
                 .thenReturn(Optional.of(countryDouble));
 
@@ -82,6 +82,9 @@ class RegisterCityControllerTest {
 
         when(_iCountryRepoDouble.ofIdentity(_countryIdDouble))
                 .thenReturn(Optional.of(countryDouble));
+
+        when(_cityDouble.identity()).thenReturn(_cityIdDouble);
+
 
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
@@ -111,6 +114,8 @@ class RegisterCityControllerTest {
 
         when(_iCountryRepoDouble.ofIdentity(_countryIdDouble))
                 .thenReturn(Optional.of(countryDouble));
+
+        when(_cityDouble.identity()).thenReturn(_cityIdDouble);
 
         when(_cityFactoryDouble.createCity("Porto", _countryIdDouble))
                 .thenReturn(_cityDouble);
