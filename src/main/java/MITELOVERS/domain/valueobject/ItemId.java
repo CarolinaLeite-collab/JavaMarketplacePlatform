@@ -34,6 +34,10 @@ public final class ItemId implements DomainId {
         _sku = new SKU();
     }
 
+    public ItemId(String id) {
+        _sku = new SKU(id);
+    }
+
     public SKU getSku() { return _sku; }
 
     @Override
