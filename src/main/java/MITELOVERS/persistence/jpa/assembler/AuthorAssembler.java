@@ -35,8 +35,8 @@ public class AuthorAssembler {
         AuthorId authorId = new AuthorId(dataModel.getId());
         Name name = new Name(dataModel.getName());
 
-        Author reconstructoredAuthor = _authorFactory.createAuthor(authorId, name);
+        Author reconstructedAuthor = _authorFactory.createAuthor(authorId, name);
 
-        return reconstructoredAuthor;
+        return reconstructedAuthor;
     }
 }

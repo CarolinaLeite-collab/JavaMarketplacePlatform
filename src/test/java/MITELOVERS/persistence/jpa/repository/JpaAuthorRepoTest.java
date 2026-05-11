@@ -7,6 +7,10 @@ import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,24 +19,18 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaAuthorRepoTest {
 
+    @Mock
     private IAuthorSpringDataRepo _springDataRepoDouble;
+
+    @Mock
     private AuthorAssembler _assemblerDouble;
+
+    @InjectMocks
     private JpaAuthorRepo _jpaRepoDouble;
 
-    @BeforeEach
-    void setup() {
-        _springDataRepoDouble = mock(IAuthorSpringDataRepo.class);
-        _assemblerDouble = mock(AuthorAssembler.class);
-        _jpaRepoDouble = new JpaAuthorRepo(_springDataRepoDouble, _assemblerDouble);
-    }
-
-    @Test
-    void testConstructor() {
-        // SUT
-        new JpaAuthorRepo(_springDataRepoDouble, _assemblerDouble);
-    }
 
     @Test
     void shouldSaveAuthor() {
@@ -45,9 +43,6 @@ class JpaAuthorRepoTest {
         when(_assemblerDouble.toDataModel(authorDouble)).thenReturn(dataModelDouble);
         when(_springDataRepoDouble.save(dataModelDouble)).thenReturn(savedDataModelDouble);
         when(_assemblerDouble.toDomain(savedDataModelDouble)).thenReturn(savedAuthorDouble);
-
-        // SUT
-        new JpaAuthorRepo(_springDataRepoDouble, _assemblerDouble);
 
         // Act
         Author result = _jpaRepoDouble.save(authorDouble);
@@ -75,9 +70,6 @@ class JpaAuthorRepoTest {
 
         when(_springDataRepoDouble.findAll()).thenReturn(dataModels);
 
-        // SUT
-        new JpaAuthorRepo(_springDataRepoDouble, _assemblerDouble);
-
         // Act
         Iterable<AuthorId> result = _jpaRepoDouble.findAllKeys();
 
@@ -88,8 +80,8 @@ class JpaAuthorRepoTest {
 
         // Assert
         assertEquals(2, ids.size());
-        assertEquals("1", ids.get(0).toString());
-        assertEquals("2", ids.get(1).toString());
+        assertTrue(ids.contains(new AuthorId("1")));
+        assertTrue(ids.contains(new AuthorId("2")));
     }
 
     @Test
@@ -178,17 +170,13 @@ class JpaAuthorRepoTest {
     void shouldReturnFalseWhenAuthorDoesNotExist() {
 
         // Arrange
-        IAuthorSpringDataRepo springRepoDouble = mock(IAuthorSpringDataRepo.class);
-        AuthorAssembler assemblerDouble = mock(AuthorAssembler.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
 
         when(authorIdDouble.toString()).thenReturn("1");
-        when(springRepoDouble.existsById("1")).thenReturn(false);
-
-        JpaAuthorRepo repo = new JpaAuthorRepo(springRepoDouble, assemblerDouble);
+        when(_springDataRepoDouble.existsById("1")).thenReturn(false);
 
         // Act
-        boolean result = repo.containsOfIdentity(authorIdDouble);
+        boolean result = _jpaRepoDouble.containsOfIdentity(authorIdDouble);
 
         // Assert
         assertFalse(result);

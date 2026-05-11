@@ -5,7 +5,7 @@ on:
     branches: [ main, b3, b4 ]
 
 jobs:
-  unit-tests:
+  build-and-test-with-coverage:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,5 +19,5 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run unit tests
-        run: mvn clean test
+      - name: Build and run unit tests with coverage
+        run: mvn clean verify

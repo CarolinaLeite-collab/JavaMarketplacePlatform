@@ -55,10 +55,10 @@ ref over IA
 [[sd-ref-diagrams/Save_Author.puml Save Author and return saved domain object]]
 end ref
 
-IA --> CTL: reconstructoredAuthor
+IA --> CTL: reconstructedAuthor
 deactivate IA
 
-CTL --> UI: reconstructoredAuthor
+CTL --> UI: reconstructedAuthor
 deactivate CTL
 
 UI --> Administrator: Done!
