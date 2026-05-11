@@ -24,6 +24,10 @@ public class SKU implements ValueObject {
         _value = generateRandomSKU();
     }
 
+    public SKU(String value) {
+        _value = value;
+    }
+
     // Geração interna e controlada
     private String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();   // hex + hífens
