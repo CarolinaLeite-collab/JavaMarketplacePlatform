@@ -11,6 +11,7 @@ import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.List;
  * following the Controller pattern (GRASP).</p>
  */
 
+@Controller
 public class GetAuctionItemsByPublicationController {
     private final IAuctionRepo _iAuctionRepo;
     private final IPublicationRepo _iPublicationRepo;
@@ -29,7 +31,7 @@ public class GetAuctionItemsByPublicationController {
     private final IEditionRepo _iEditionRepo;
 
     public GetAuctionItemsByPublicationController(IAuctionRepo iAuctionRepo, IPublicationRepo iPublicationRepo,
-                                                  IItemRepo iItemRepo, IEditionRepo iEditionRepo, UserId buyerId){
+                                                  IItemRepo iItemRepo, IEditionRepo iEditionRepo){
 
         _iAuctionRepo = iAuctionRepo;
         _iPublicationRepo = iPublicationRepo;
