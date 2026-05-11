@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Tag("unit")
 class MemGenreRepoTest {
 
     @Test
-    @Tag("unit")
     void constructorOfGenreRepoShouldCreateGenreRepo() {
         // Arrange
         MemGenreRepo _sut;
@@ -33,7 +33,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void classShouldBeAnnotatedWithRepositoryAndMemProfile() {
         // Arrange
         Class<MemGenreRepo> repoClass = MemGenreRepo.class;
@@ -52,7 +51,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void saveValidGenreReturnsGenre() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -70,7 +68,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void findAllReturnsAllStoredGenres() {
         // Arrange
         GenreId id1Double = mock(GenreId.class);
@@ -94,7 +91,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void findAllEmptyRepoReturnsEmptyIterable() {
         // Arrange
         MemGenreRepo repo = new MemGenreRepo();
@@ -110,7 +106,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void findAllKeysReturnsAllStoredKeys() {
         // Arrange
         GenreId id1Double = mock(GenreId.class);
@@ -136,7 +131,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void findAllKeysEmptyRepoReturnsEmptyList() {
         // Arrange
         MemGenreRepo repo = new MemGenreRepo();
@@ -152,7 +146,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void ofIdentityExistingGenreIdReturnsGenre() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -172,7 +165,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void ofIdentityNonExistingGenreIdReturnsEmpty() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -188,7 +180,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void containsOfIdentityExistingGenreIdReturnsTrue() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -207,7 +198,6 @@ class MemGenreRepoTest {
     }
 
     @Test
-    @Tag("unit")
     void containsOfIdentityNonExistingGenreIdReturnsFalse() {
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
@@ -222,4 +212,3 @@ class MemGenreRepoTest {
         assertFalse(result);
     }
 }
-

@@ -6,90 +6,80 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.persistence.jpa.datamodel.GenreDataModel;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
 
+@Tag("unit")
+@ExtendWith(MockitoExtension.class)
 class GenreAssemblerTest {
 
+    @Mock
+    private GenreFactory _genreFactoryDouble;
+
+    @InjectMocks
+    private GenreAssembler _sut;
+
     @Test
-    @Tag("unit")
     void toDataModelShouldMapIdAndName() {
         // Arrange
-        GenreFactory _genreFactory = mock(GenreFactory.class);
-        Genre _genre = mock(Genre.class);
-        GenreId _genreId = new GenreId("Science Fiction");
-        when(_genre.identity()).thenReturn(_genreId);
-        when(_genre.getGenre()).thenReturn("Science Fiction");
+        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        // SUT
-        GenreAssembler _sut = new GenreAssembler(_genreFactory);
+        when(genreIdDouble.toString()).thenReturn("SCIENCE FICTION");
+        when(genreDouble.identity()).thenReturn(genreIdDouble);
+        when(genreDouble.getGenre()).thenReturn("Science Fiction");
 
         // Act
-        GenreDataModel result = _sut.toDataModel(_genre);
+        GenreDataModel result = _sut.toDataModel(genreDouble);
 
         // Assert
         assertEquals("SCIENCE FICTION", result.getId());
         assertEquals("Science Fiction", result.getName());
+        verify(genreDouble).identity();
+        verify(genreDouble).getGenre();
     }
 
     @Test
-    @Tag("unit")
-    void toDataModelShouldThrowWhenGenreIsNull() {
-        // Arrange
-        GenreFactory _genreFactory = mock(GenreFactory.class);
-        GenreAssembler _sut;
-
-        // SUT
-        _sut = new GenreAssembler(_genreFactory);
-
-        // Act
-        Exception result = assertThrows(IllegalArgumentException.class, () -> _sut.toDataModel(null));
-
-        // Assert
-        assertNotNull(result);
-    }
-
-    @Test
-    @Tag("unit")
     void toDomainShouldDelegateReconstructionToFactory() {
         // Arrange
-        GenreFactory _genreFactory = mock(GenreFactory.class);
-        GenreDataModel _dataModel = new GenreDataModel("SCIENCE FICTION", "Science Fiction");
-        Genre _genre = mock(Genre.class);
-        when(_genreFactory.createGenre(new GenreId("SCIENCE FICTION"), "Science Fiction")).thenReturn(_genre);
+        GenreDataModel dataModelDouble = mock(GenreDataModel.class);
+        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        // SUT
-        GenreAssembler _sut = new GenreAssembler(_genreFactory);
+        when(dataModelDouble.getId()).thenReturn("SCIENCE FICTION");
+        when(dataModelDouble.getName()).thenReturn("Science Fiction");
 
-        // Act
-        Genre result = _sut.toDomain(_dataModel);
+        when(_genreFactoryDouble.createGenre(any(GenreId.class), eq("Science Fiction")))
+                .thenReturn(genreDouble);
 
-        // Assert
-        assertSame(_genre, result);
-        verify(_genreFactory).createGenre(new GenreId("SCIENCE FICTION"), "Science Fiction");
-    }
-
-    @Test
-    @Tag("unit")
-    void toDomainShouldThrowWhenDataModelIsNull() {
-        // Arrange
-        GenreFactory _genreFactory = mock(GenreFactory.class);
-        GenreAssembler _sut;
-
-        // SUT
-        _sut = new GenreAssembler(_genreFactory);
+        when(genreDouble.identity()).thenReturn(genreIdDouble);
+        when(genreIdDouble.toString()).thenReturn("SCIENCE FICTION");
 
         // Act
-        Exception result = assertThrows(IllegalArgumentException.class, () -> _sut.toDomain(null));
+        Genre result = _sut.toDomain(dataModelDouble);
 
         // Assert
         assertNotNull(result);
+        assertEquals(genreDouble, result);
+        assertEquals("SCIENCE FICTION", result.identity().toString());
+        verify(_genreFactoryDouble).createGenre(any(GenreId.class), eq("Science Fiction"));
+    }
+
+    @Test
+    void toDataModelShouldThrowWhenGenreIsNull() {
+        // Act // Assert
+        assertThrows(IllegalArgumentException.class, () -> _sut.toDataModel(null));
+    }
+
+    @Test
+    void toDomainShouldThrowWhenDataModelIsNull() {
+        // Act // Assert
+        assertThrows(IllegalArgumentException.class, () -> _sut.toDomain(null));
     }
 }
-

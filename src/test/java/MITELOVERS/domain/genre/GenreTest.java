@@ -55,10 +55,8 @@ class GenreTest {
         // Arrange
         String name = null;
 
-        // SUT
-
         // Act
-        Exception result = assertThrows(NullPointerException.class, () -> new Genre(name));
+        Exception result = assertThrows(IllegalArgumentException.class, () -> new Genre(name));
 
         // Assert
         assertNotNull(result);
@@ -293,6 +291,55 @@ class GenreTest {
         // Assert
         assertEquals(genreId, resultId);
         assertEquals("Mystery", _sut.getGenre());
+    }
+
+    @Test
+    void constructorWithIdShouldTrimGenreName() {
+        // Arrange
+        GenreId genreId = new GenreId("Mystery");
+
+        // SUT
+        Genre _sut = new Genre(genreId, "  Mystery  ");
+
+        // Act
+        String result = _sut.getGenre();
+
+        // Assert
+        assertEquals("Mystery", result);
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenIdsMatchEvenIfNamesDiffer() {
+        // Arrange
+        GenreId sharedId = new GenreId("Mystery");
+        Genre genre1 = new Genre(sharedId, "Mystery");
+        Genre genre2 = new Genre(sharedId, "Romance");
+
+        // SUT
+        Genre _sut = genre1;
+
+        // Act
+        boolean result = _sut.equals(genre2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenNamesDifferEvenIfIdsMatch() {
+        // Arrange
+        GenreId sharedId = new GenreId("Mystery");
+        Genre genre1 = new Genre(sharedId, "Mystery");
+        Genre genre2 = new Genre(sharedId, "Romance");
+
+        // SUT
+        Genre _sut = genre1;
+
+        // Act
+        boolean result = _sut.sameAs(genre2);
+
+        // Assert
+        assertFalse(result);
     }
 
     @Test
