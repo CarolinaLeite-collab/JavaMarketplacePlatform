@@ -6,35 +6,34 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(RegisterPublishingCompanyController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
+
 class RegisterPublishingCompanyControllerTest {
 
-    @MockBean
+    @Mock
     IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
 
-    @MockBean
+    @Mock
     PublishingCompanyFactory _publishingCompanyFactoryDouble;
 
-    @Autowired
+    @InjectMocks
     RegisterPublishingCompanyController _registerPublishingCompanyController;
 
     private PublishingCompany _publishingCompanyDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
 
     @BeforeEach
-    void setUp() throws InstantiationException {
-
-        MockitoAnnotations.openMocks(this);
+    void setUp() {
 
         _publishingCompanyDouble = mock(PublishingCompany.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
