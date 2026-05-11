@@ -16,6 +16,14 @@ public class BidId implements DomainId {
         _id = id;
     }
 
+    public BidId(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("BidId cannot be null or blank");
+        }
+
+        _id = UUID.fromString(id);
+    }
+
     public static BidId newId() {
         return new BidId(UUID.randomUUID());
     }

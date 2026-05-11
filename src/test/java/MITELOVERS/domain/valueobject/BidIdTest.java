@@ -1,6 +1,5 @@
-package MITELOVERS.domain.auction;
+package MITELOVERS.domain.valueobject;
 
-import MITELOVERS.domain.valueobject.BidId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,10 +24,16 @@ class BidIdTest {
     }
 
     @Test
-    void throwsExceptionWhenBidIdIsNull() {
+    void throwsExceptionWhenUUIDBidIdIsNull() {
 
         //act + assert
-        assertThrows(IllegalArgumentException.class, () -> new BidId(null));
+        assertThrows(IllegalArgumentException.class, () -> new BidId((UUID) null));    }
+
+    @Test
+    void throwsExceptionWhenStringBidIsNull() {
+
+        //act + assert
+        assertThrows(IllegalArgumentException.class, () -> new BidId((String) null));
     }
 
     @Test
