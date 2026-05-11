@@ -7,29 +7,28 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @Tag("unit")
-@WebMvcTest(AddGenreController.class)
-@ActiveProfiles("jpa")
+@ExtendWith(MockitoExtension.class)
 class AddGenreControllerTest {
 
-    @Autowired
+    @InjectMocks
     private AddGenreController _sut;
 
-    @MockBean
+    @Mock
     private IGenreRepo _iGenreRepoDouble;
 
-    @MockBean
+    @Mock
     private GenreFactory _genreFactoryDouble;
 
-    @MockBean
+    @Mock
     private UserId _adminIdDouble;
 
     @Test
