@@ -23,9 +23,9 @@ participant ":MiteLovers" as System
 ' --- System dialog ---
 User -> System: I want to put for auction\nan item in my library
 activate "System"
-System --> User: Which item\nwould you like to sell?
+System --> User: Select ItemId
 deactivate "System"
-User -> System: item
+User -> System: itemId
 activate "System"
 System --> User: What are the starting, reserve and outright prices,\n plus the end date for this sale?
 deactivate "System"

@@ -28,11 +28,8 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     private boolean _isPrivate;
     private List<ItemId> _itemIds;
 
-    ListOfItems(ListOfItemsId listOfItemsId, UserId userId, String name, GenreId genreId) {
+    ListOfItems(UserId userId, String name, GenreId genreId) {
 
-        if (listOfItemsId == null) {
-            throw new IllegalArgumentException("ListOfItemsID cannot be null");
-        }
         if (userId == null) {
             throw new IllegalArgumentException("UserID cannot be null");
         }
@@ -43,7 +40,7 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
             throw new IllegalArgumentException("GenreID cannot be null");
         }
 
-        _listOfItemsId = listOfItemsId;
+        _listOfItemsId = ListOfItemsId.newId();  //created here instead of in the factory as before
         _userId = userId;
         _name = name;
         _genreId = genreId;

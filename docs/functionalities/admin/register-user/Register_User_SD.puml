@@ -1,3 +1,4 @@
+
 @startuml
 title **"As an Administrator, I want to register a user in the system"**  SD
 hide footbox
@@ -18,8 +19,8 @@ autoactivate off
 actor "Admin" as Administrator
 participant ":RegisterNewUserUI" as UI
 participant ":RegisterNewUserController" as Ctl
-participant ":MemoUserRepo" as Repo
 participant ":UserFactory" as Factory
+participant ":IUserRepo" as IR
 
 Administrator -> "UI": I want to register a user in the system.
 activate "UI"
@@ -27,36 +28,32 @@ activate "UI"
 Administrator -> "UI": name, email
 "UI" -> "Ctl": registerNewUser(name, email)
 activate "Ctl"
-"Ctl" -> "Repo" : registerNewUser(name, email)
 
 
-activate "Repo"
+Ctl -> "Factory" : createUser(name, email)
 
-create "newEmail:Email"
-"Repo" -->> "newEmail:Email": <<Create>>
+activate "Factory"
 
-opt userExists(email) == false
-    create "newName:Name"
-    "Repo" -->> "newName:Name": <<Create>>
+create "newUser:User"
+Factory -->> "newUser:User" : <<create>>(name, email)
+Factory --> Ctl: newUser
+deactivate "Factory"
 
+ref over Ctl
+[[sd-ref-diagrams/Verify_User.puml Verify the existence of newUser in persistence]]
+end ref
 
+Ctl -> IR : save(newUser)
 
-    "Repo" -> "Factory": createUser(newName, newEmail)
-    activate "Factory"
-    create "newUser:User"
-    "Factory" -->> "newUser:User": <<Create>>
-    "Factory" --> "Repo": newUser
-    deactivate "Factory"
-
-    "Repo" -> "Repo": add(newUser)
-end
-
-"Repo" --> "Ctl": newUser
-deactivate "Repo"
-"Ctl" --> "UI": newUser
-
-deactivate "Ctl"
-"UI" --> Administrator: Registered successfully!
-deactivate "UI"
+ref over IR
+[[sd-ref-diagrams/Save_User.puml Save newUser and return saved domain object]]
+end ref
+activate IR
+IR --> Ctl : reconstructedUser
+deactivate IR
+Ctl --> UI : reconstructedUser
+deactivate Ctl
+UI --> Administrator : Registered successfully!
+deactivate UI
 
 @enduml

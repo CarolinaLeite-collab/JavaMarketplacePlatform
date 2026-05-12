@@ -6,6 +6,8 @@ import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.time.Period;
 import java.util.*;
@@ -21,15 +23,11 @@ import java.util.*;
  * layers from persistence concerns.
  * </p>
  */
-
+@Repository
+@Profile("mem")
 public class MemDirectSaleRepo implements IDirectSaleRepo {
 
     private final Map<DirectSaleId, DirectSale> DATA = new HashMap<DirectSaleId, DirectSale>();
-    private final DirectSaleFactory _factory;
-
-    public MemDirectSaleRepo(DirectSaleFactory factory) {
-        _factory = factory;
-    }
 
     @Override
     public List<DirectSaleId> findAllKeys() {
@@ -70,18 +68,4 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
         return DATA.containsKey(id);
     }
 
-    @Override
-    public DirectSale addDirectSale(List<ItemId> itemsId, Price price, Period timeLimit) {
-
-        DirectSale directSale = _factory.createDirectSale(itemsId, price, timeLimit);
-
-        if (containsOfIdentity(directSale.identity())) {
-
-            throw new IllegalStateException("Direct sale already exists!");
-
-        }
-
-        return save(directSale);
-
-    }
 }
