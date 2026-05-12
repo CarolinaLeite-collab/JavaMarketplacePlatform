@@ -7,23 +7,25 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class GetPublicListsByGenreControllerTest {
 
-    @MockBean
+    @Mock
     IListOfItemsRepo _iListOfItemsRepoDouble;
 
-    @MockBean
+    @Mock
     UserId _userIdDouble;
 
     @InjectMocks
@@ -33,7 +35,6 @@ class GetPublicListsByGenreControllerTest {
 
     @BeforeEach
     void setUp() throws InstantiationException {
-        MockitoAnnotations.openMocks(this);
         _genreIdDouble = mock(GenreId.class);
     }
 
@@ -41,19 +42,14 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnPublicListsByGenre() {
         // Arrange
         ListOfItems listA = mock(ListOfItems.class);
-
         when(listA.getName()).thenReturn(new Name("List A"));
         when(listA.getUserId()).thenReturn(_userIdDouble);
         when(listA.getGenreId()).thenReturn(_genreIdDouble);
         when(listA.isPrivate()).thenReturn(false);
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(listA));
 
-        // SUT
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -64,14 +60,10 @@ class GetPublicListsByGenreControllerTest {
 
     @Test
     void controllerShouldThrowWhenGenreIsNull() {
-        // SUT
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act & Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.getPublicListsByGenre(null)
+                () -> _controller.getPublicListsByGenre(null)
         );
         assertEquals("Genre is mandatory", ex.getMessage());
     }
@@ -81,12 +73,8 @@ class GetPublicListsByGenreControllerTest {
         // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
-        // SUT
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -101,16 +89,11 @@ class GetPublicListsByGenreControllerTest {
 
         when(pub.getGenreId()).thenReturn(_genreIdDouble);
         when(pub.isPrivate()).thenReturn(false);
-        when(priv.getGenreId()).thenReturn(_genreIdDouble);
         when(priv.isPrivate()).thenReturn(true);
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(pub, priv));
 
-        // SUT
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -127,12 +110,8 @@ class GetPublicListsByGenreControllerTest {
         when(list.isPrivate()).thenReturn(false);
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
 
-        // SUT
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
