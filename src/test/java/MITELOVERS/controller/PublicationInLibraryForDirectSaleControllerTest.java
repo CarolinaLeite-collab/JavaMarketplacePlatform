@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,8 @@ class PublicationInLibraryForDirectSaleControllerTest {
     private List<ItemId> _itemsId;
     private ItemId _itemIdDouble;
     private Price _priceDouble;
-    private Period _timeLimitDouble;
+    private Duration _timeLimitDouble;
+    private Instant _creationDate;
     private Item _itemDouble;
     private DirectSaleFactory _directSaleFactory;
 
@@ -48,7 +51,7 @@ class PublicationInLibraryForDirectSaleControllerTest {
         _itemsId.add(_itemIdDouble);
 
         _priceDouble = mock(Price.class);
-        _timeLimitDouble = Period.ofDays(30);
+        _timeLimitDouble = Duration.ofDays(30);
 
         _itemDouble = mock(Item.class);
     }

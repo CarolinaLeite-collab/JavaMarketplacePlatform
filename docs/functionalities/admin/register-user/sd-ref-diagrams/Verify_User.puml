@@ -1,0 +1,54 @@
+@startuml
+title Verify the existence of newUser in persistence
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":RegisterNewUserController" as Ctl
+participant ":IUserRepo" as IR
+participant ":IUserSpringDataRepo" as jpa
+
+activate Ctl
+Ctl -> "newUser:User" : identity()
+
+
+activate "newUser:User"
+"newUser:User" --> Ctl : userId
+deactivate "newUser:User"
+
+Ctl -> IR : containsOfIdentity(userId)
+activate IR
+
+IR -> jpa : existsById(userId.toString)
+activate jpa
+
+database "DB" as DB
+jpa -> DB : select
+activate DB
+DB --> jpa : false
+deactivate DB
+
+jpa --> IR : false
+deactivate jpa
+
+IR --> Ctl : false
+deactivate IR
+
+ref over Ctl
+[[../Register_User_SD.puml Back to Main Diagram]]
+end ref
+
+
+
+@enduml
