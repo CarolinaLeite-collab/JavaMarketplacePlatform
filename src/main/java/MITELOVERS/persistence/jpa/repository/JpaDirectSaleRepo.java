@@ -2,7 +2,9 @@ package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
+import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.DirectSaleAssembler;
 import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.springdata.IDirectSaleSpringDataRepo;
@@ -84,4 +86,12 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
 
         return _iDirectSaleSpringDataRepo.existsById(id.toString());
     }
+
+    @Override
+    public List<ItemId> findDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId){
+        return new ArrayList<>();
+    }
+
+
+
 }
