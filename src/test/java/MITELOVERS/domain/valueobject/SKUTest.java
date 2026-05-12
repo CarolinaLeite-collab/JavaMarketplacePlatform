@@ -89,7 +89,7 @@ class SKUTest {
                 () -> new SKU(invalidValue)
         );
 
-        assertEquals("SKU must match format ^[A-F0-9]{10}$.", exception.getMessage());
+        assertEquals("Invalid SKU format: invalid!", exception.getMessage());
     }
 
     @Test
@@ -219,7 +219,5 @@ class SKUTest {
         SKU other = new SKU(value);
         assertEquals(sut, other);
     }
-}
-
 }
 

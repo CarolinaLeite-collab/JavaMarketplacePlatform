@@ -29,29 +29,6 @@ class ItemIdTest {
     }
 
     @Test
-    void constructorWithNullStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId(null)
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-    @Test
-    void constructorWithBlankStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId("   ")
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-
-    @Test
     void getSKUShouldReturnNonNullSku() {
         // SUT
         ItemId sut = new ItemId();

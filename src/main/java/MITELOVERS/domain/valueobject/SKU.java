@@ -26,9 +26,14 @@ public class SKU implements ValueObject {
 
     // For reconstruction
     public SKU(String value) {
-        if (value == null || !value.matches(_format)) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException("SKU cannot be null or blank.");
+        }
+
+        if (!value.matches(_format)) {
             throw new IllegalArgumentException("Invalid SKU format: " + value);
         }
+
         this._value = value;
     }
 
