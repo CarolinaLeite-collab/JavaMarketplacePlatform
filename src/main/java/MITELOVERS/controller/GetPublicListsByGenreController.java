@@ -20,7 +20,7 @@ import java.util.List;
 public class GetPublicListsByGenreController {
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, UserId userId) {
+    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo) {
         _iListOfItemsRepo = iListOfPubRepo;
     }
 

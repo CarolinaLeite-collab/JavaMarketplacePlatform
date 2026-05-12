@@ -15,7 +15,7 @@ public class ShareListPubliclyController {
 
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo, UserId userId) {
+    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo) {
         _iListOfItemsRepo = iListOfItemsRepo;
     }
 

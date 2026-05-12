@@ -19,8 +19,7 @@ public class CreatePrivateListOfItemsController {
     public CreatePrivateListOfItemsController(
             IListOfItemsRepo iListOfItemsRepo,
             IGenreRepo iGenreRepo,
-            ListOfItemsFactory listOfItemsFactory,
-            UserId userId) {
+            ListOfItemsFactory listOfItemsFactory) {
         _iListOfItemsRepo = iListOfItemsRepo;
         _iGenreRepo = iGenreRepo;
         _listOfItemsFactory = listOfItemsFactory;

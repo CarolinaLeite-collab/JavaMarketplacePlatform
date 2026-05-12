@@ -19,8 +19,7 @@ public class AddItemToListController {
     private final ILibraryRepo _iLibraryRepo;
 
     public AddItemToListController(IListOfItemsRepo iListRepo,
-                                   ILibraryRepo iLibraryRepo,
-                                   UserId userId) {
+                                   ILibraryRepo iLibraryRepo) {
         _iListOfItemsRepo = iListRepo;
         _iLibraryRepo = iLibraryRepo;
     }

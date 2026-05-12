@@ -62,7 +62,7 @@ class CreatePrivateListOfItemsControllerTest {
     void testCreatePrivateListOfItemsController() {
         // SUT
         _controller = new CreatePrivateListOfItemsController(
-                _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
+                _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble);
     }
 
     @Test
