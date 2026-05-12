@@ -32,7 +32,7 @@ public class SKU implements ValueObject {
         this._value = value;
     }
 
-    // Geração interna e controlada
+    // Internal and controlled creation
     private String generateRandomSKU() {
         String uuid = UUID.randomUUID().toString();   // hex + hífens
         String compact = uuid.replace("-", "");       // remove hífens

@@ -18,7 +18,6 @@ autonumber
 
 
 ' ==== Actor and participants ====
-participant ":Register\nNewAppraisalEntity\nController" as CTL
 participant ":JPAAppraisalEntity\nRepo" as JPAREPO
 participant ":AppraisalEntity\nAssembler" as ASSMBLR
 participant "appraisalEntity:AppraisalEntity" as AE
@@ -26,8 +25,6 @@ participant ":IAppraisalEntity\nSpringDataRepo" as SDREPO
 participant ":AppraisalEntity\nFactory" as FACTORY
 database "DB" as DB
 
-activate CTL
-CTL -> JPAREPO : save(appraisalEntity)
 activate JPAREPO
 JPAREPO -> ASSMBLR : toDataModel(appraisalEntity)
 activate ASSMBLR
@@ -112,12 +109,10 @@ FACTORY --> ASSMBLR : reconstructedAppraisalEntity
 deactivate FACTORY
 ASSMBLR --> JPAREPO : reconstructedAppraisalEntity
 deactivate ASSMBLR
-JPAREPO --> CTL : reconstructedAppraisalEntity
 
-ref over CTL
+ref over JPAREPO
 [[../Register_New_Appraisal_Entity_SD.puml Back to Main Diagram]]
 end ref
 
-'deactivate CTL
 
 @enduml

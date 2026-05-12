@@ -1,0 +1,73 @@
+@startuml
+title "Save Genre" SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":AddGenreController" as CTL
+participant ":JPAGenreRepo" as JPAREPO
+participant ":GenreAssembler" as ASSMBLR
+participant "genre:Genre" as G
+participant ":IGenreSpringDataRepo" as SDREPO
+participant ":GenreFactory" as FACTORY
+database "DB" as DB
+
+activate CTL
+CTL -> JPAREPO : save(genre)
+activate JPAREPO
+
+JPAREPO -> ASSMBLR : toDataModel(genre)
+activate ASSMBLR
+ASSMBLR -> G : stringId = identity().toString()
+ASSMBLR -> G : stringName = getGenre()
+create "dmToSave:GenreDataModel"
+ASSMBLR -->> "dmToSave:GenreDataModel" : <<create>>(stringId, stringName)
+ASSMBLR --> JPAREPO : dmToSave
+deactivate ASSMBLR
+
+JPAREPO -> SDREPO : save(dmToSave)
+activate SDREPO
+SDREPO -> DB : insert
+activate DB
+DB --> SDREPO : spring based data
+deactivate DB
+create "savedDm:GenreDataModel"
+SDREPO -->> "savedDm:GenreDataModel" : <<create>>(spring based data)
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+ASSMBLR -> "savedDm:GenreDataModel" : stringId = getId()
+ASSMBLR -> "savedDm:GenreDataModel" : stringName = getName()
+
+create "id:GenreId"
+ASSMBLR -->> "id:GenreId" : <<create>>(stringId)
+
+ASSMBLR -> FACTORY : createGenre(id, stringName)
+activate FACTORY
+create "reconstructedGenre:Genre"
+FACTORY -->> "reconstructedGenre:Genre" : <<create>>(id, stringName)
+FACTORY --> ASSMBLR : reconstructedGenre
+deactivate FACTORY
+
+ASSMBLR --> JPAREPO : reconstructedGenre
+deactivate ASSMBLR
+
+JPAREPO --> CTL : reconstructedGenre
+deactivate JPAREPO
+
+ref over CTL
+[[../Add_Genre_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml

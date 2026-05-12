@@ -26,14 +26,17 @@ public class User implements AggregateRoot<UserId> {
     private final Phone _phone;
     private final Set<Role> _roles = new HashSet<>();
 
-    User(Name name, Address address, Email email, Phone phone) {
-
+    User(UserId userId, Name name, Address address, Email email, Phone phone) {
+        _userId =  Objects.requireNonNull(userId, "UserId is required");
         _name = Objects.requireNonNull(name, "Name is required");
         _address = address;
         _email = Objects.requireNonNull(email, "Email is required");
-        _userId = new UserId(_email);
         _phone = phone;
         _roles.add(Role.USER);
+    }
+
+    User(Name name, Address address, Email email, Phone phone) {
+        this(new UserId(email), name, address, email, phone);
     }
 
     User(Name name, Email email) {
