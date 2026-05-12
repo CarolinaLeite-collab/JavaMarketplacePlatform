@@ -99,6 +99,9 @@ package "domain"{
        OnDirectSale
        Sold
        }
+       class Name {
+       -_name : String
+       }
    }
 }
 
@@ -126,6 +129,7 @@ Item "1" --> "1" EditionId : has
 Item "1" --> "1" Condition : has
 Item "1" --> "1" Description : has
 Item "1" --> "1" SaleStatus : has
+Item "1" --> "1" Name : has
 ItemId "1" <-- "1" DirectSale : references
 
 AggregateRoot -|> DomainEntity
