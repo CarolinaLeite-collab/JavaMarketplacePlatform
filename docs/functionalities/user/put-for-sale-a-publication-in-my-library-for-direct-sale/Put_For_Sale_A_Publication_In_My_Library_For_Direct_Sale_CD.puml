@@ -65,10 +65,6 @@ package "domain"{
 
     package "item" #b0c4d4 {
             class Item {
-              - _editionId: EditionId
-              - _condition: Condition
-              - _description: Description
-              - _saleStatus: SaleStatus
               + getSaleStatus(): SaleStatus
               + markAsDirectSale(): void
             }
@@ -84,6 +80,24 @@ package "domain"{
        }
        class UserId {
        - _email : Email
+       }
+       class EditionId {
+       -_eId : String
+       }
+       enum Condition {
+       LIKE_NEW
+       GOOD
+       FAIR
+       POOR
+       }
+       class Description {
+       -_description : String
+       }
+       enum SaleStatus {
+       NotOnSale
+       OnAuction
+       OnDirectSale
+       Sold
        }
    }
 }
@@ -104,10 +118,15 @@ PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : 
 DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
 IDirectSaleRepo "1" --> "*" DirectSale : persists
-ILibraryRepo "1" --> "*" Library : manages
+ILibraryRepo "1" --> "*" Library : persists
+IItemRepo "1" --> "*" Item : persists
 
 Item "1" --> "1" ItemId : has
-ItemId "*" --> "1" DirectSale : references
+Item "1" --> "1" EditionId : has
+Item "1" --> "1" Condition : has
+Item "1" --> "1" Description : has
+Item "1" --> "1" SaleStatus : has
+ItemId "1" <-- "1" DirectSale : references
 
 AggregateRoot -|> DomainEntity
 DirectSale .|> AggregateRoot
