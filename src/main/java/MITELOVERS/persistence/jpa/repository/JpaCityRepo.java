@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @Repository
 @Profile("jpa")
-@AllArgsConstructor
 public class JpaCityRepo implements ICityRepo {
 
     @Autowired
