@@ -1,8 +1,6 @@
 @startuml
-'==== Title ====
 title "Verify Genre Existence" SD
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -15,7 +13,6 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-' ==== Actor and participants ====
 participant ":AddGenreController" as CTL
 participant "newGenre:Genre" as G
 participant ":IGenreRepo" as IREPO
@@ -33,9 +30,9 @@ activate IREPO
 
 IREPO -> SDREPO : existsById(genreId.toString())
 activate SDREPO
-SDREPO -> DB : select count
+SDREPO -> DB : findById
 activate DB
-DB --> SDREPO : false
+DB --> SDREPO : null
 deactivate DB
 SDREPO --> IREPO : false
 deactivate SDREPO

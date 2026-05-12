@@ -3,7 +3,8 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
-import MITELOVERS.domain.valueobject.UserId;
+
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller responsible for handling the addition of new genres.
@@ -13,11 +14,12 @@ import MITELOVERS.domain.valueobject.UserId;
  * </p>
  */
 
+@RestController
 public class AddGenreController {
     private final IGenreRepo _iGenreRepo;
     private final GenreFactory _genreFactory;
 
-    public AddGenreController(IGenreRepo iGenreRepo, GenreFactory genreFactory, UserId adminId) {
+    public AddGenreController(IGenreRepo iGenreRepo, GenreFactory genreFactory) {
 
         _iGenreRepo = iGenreRepo;
         _genreFactory = genreFactory;
@@ -33,4 +35,3 @@ public class AddGenreController {
         return _iGenreRepo.save(newGenre);
     }
 }
-

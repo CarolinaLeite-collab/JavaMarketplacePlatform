@@ -28,22 +28,16 @@ public class Item implements AggregateRoot<ItemId> {
     private final ItemId _itemId;
     private SaleStatus _saleStatus;
 
-
-    Item(EditionId editionId, Condition condition, Description description) {
-        _editionId = editionId;
-        _condition = condition;
-        _description = description;
-
-        _itemId = new ItemId();
-        _saleStatus = SaleStatus.NotOnSale;
-    }
-
     Item(ItemId itemId, EditionId editionId, Condition condition, Description description, SaleStatus saleStatus) {
         _itemId = itemId;
         _editionId = editionId;
         _condition = condition;
         _description = description;
         _saleStatus = saleStatus;
+    }
+
+    Item(EditionId editionId, Condition condition, Description description) {
+        this(new ItemId(), editionId, condition, description, SaleStatus.NotOnSale);
     }
 
     @Override

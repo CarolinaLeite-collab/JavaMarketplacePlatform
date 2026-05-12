@@ -52,4 +52,53 @@ class GenreFactoryTest {
             assertSame(newGenre, constructedGenre);
         }
     }
+
+    @Test
+    void factoryShouldThrowWhenGenreNameIsNull() {
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+
+        // Act
+        Exception result = assertThrows(IllegalArgumentException.class, () -> factory.createGenre((String) null));
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void factoryShouldThrowWhenGenreNameIsBlank() {
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+
+        // Act
+        Exception result = assertThrows(IllegalArgumentException.class, () -> factory.createGenre("  "));
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void factoryShouldThrowWhenGenreIdIsNull() {
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+
+        // Act
+        Exception result = assertThrows(NullPointerException.class, () -> factory.createGenre(null, "Mystery"));
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void factoryShouldThrowWhenGenreNameIsNullWithId() {
+        // Arrange
+        GenreId genreId = new GenreId("Mystery");
+        GenreFactory factory = new GenreFactory();
+
+        // Act
+        Exception result = assertThrows(NullPointerException.class, () -> factory.createGenre(genreId, null));
+
+        // Assert
+        assertNotNull(result);
+    }
 }

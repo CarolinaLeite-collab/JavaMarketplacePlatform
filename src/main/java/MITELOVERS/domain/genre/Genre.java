@@ -34,12 +34,7 @@ public class Genre implements AggregateRoot<GenreId> {
     }
 
     Genre(String genre) {
-        String trimmedGenre = Objects.requireNonNull(genre, "Genre name is required").trim();
-        if (trimmedGenre.isEmpty()) {
-            throw new IllegalArgumentException("Genre name is required");
-        }
-        _genre = trimmedGenre;
-        _genreId = new GenreId(_genre);
+        this(new GenreId(genre), genre);
     }
 
     public String getGenre() {
