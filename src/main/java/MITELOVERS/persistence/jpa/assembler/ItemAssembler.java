@@ -26,7 +26,8 @@ public class ItemAssembler {
               item.getEditionId().getValue(),
               item.getCondition().name(),
               item.getDescription().toString(),
-                item.getSaleStatus().name()
+                item.getSaleStatus().name(),
+                item.getName().toString()
         );
 
     }
@@ -38,7 +39,8 @@ public class ItemAssembler {
                 new EditionId(itemDataModel.getEditionId()),
                 Condition.valueOf(itemDataModel.getCondition()),
                 new Description(itemDataModel.getDescription()),
-                SaleStatus.valueOf(itemDataModel.getSaleStatus())
+                SaleStatus.valueOf(itemDataModel.getSaleStatus()),
+                new Name(itemDataModel.getName())
         );
 
     }
