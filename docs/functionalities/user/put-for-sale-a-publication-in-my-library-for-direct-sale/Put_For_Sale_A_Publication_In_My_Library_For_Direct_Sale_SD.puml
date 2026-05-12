@@ -20,12 +20,12 @@ participant ":PublicationInLibrary\nForDirectSaleUI" as UI
 participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
 participant "libraryId:LibraryId" as libraryId
 participant ":ILibraryRepo" as LibraryRepo
-participant "userLibrary:Library" as Library
+participant "reconstructedLibrary%n():Library" as Library
 participant ":DirectSaleFactory" as DirectSaleFactory
 participant "directSale:DirectSale" as directSale
 participant ":IDirectSaleRepo" as DirectSaleRepo
 participant ":IItemRepo" as itemRepo
-participant "item:Item" as item
+participant "reconstructed%n()Item:Item" as item
 
 User -> UI: I want to put an item in %n() my library on direct sale.
 activate UI
@@ -39,17 +39,21 @@ libraryId --> Ctl : libaryId
 deactivate libraryId
 Ctl -> LibraryRepo : ofIdentity(libaryId)
 activate LibraryRepo
-LibraryRepo --> Ctl: userLibary
+ref over LibraryRepo
+[[sd-ref-diagrams/Retrieve_Library.puml Retrieve Library from persistence (via JPA)]]
+end ref
+LibraryRepo --> Ctl: reconstructedLibrary
 deactivate LibraryRepo
 Ctl -> Library : getItemsIdInLibrary();
 activate Library
 Library --> Ctl : itemIds
 deactivate Library
 Ctl --> UI : itemIds
+deactivate Ctl
 UI --> User: Which item?
 deactivate UI
 
-User -> UI: item
+User -> UI: itemId
 activate UI
 
 UI --> User: What is the price and %n()time limit for this sale?
@@ -57,10 +61,13 @@ deactivate UI
 User -> UI: price, timeLimit
 activate UI
 
-UI -> Ctl: putItemIdOnDirectSale\n(itemIds, price, timeLimit)
+note right UI
+The below method accepts List<ItemId> %n()as its first argument (for if a user wants to %n()put a **collection** of items in a direct sale) %n()%n() For the purpose of this functionality, a user%n() is only putting **one item in a direct sale**
+end note
+UI -> Ctl: putItemIdOnDirectSale\n(itemId, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleFactory: createDirectSale\n(itemIds, price, timeLimit)
+Ctl -> DirectSaleFactory: createDirectSale\n(itemId, price, timeLimit)
 activate DirectSaleFactory
 create directSale
 DirectSaleFactory -->> directSale: <<create>>
@@ -72,31 +79,35 @@ directSale --> Ctl : directSaleId
 deactivate directSale
 Ctl -> DirectSaleRepo : containsOfIdentity(directSaleId)
 activate DirectSaleRepo
-note right Ctl : Happy path
+ref over DirectSaleRepo
+[[sd-ref-diagrams/Verify_Direct_Sale_Exists.puml Verify directSaleId is not already persisted (in JPA)]]
+end ref
 DirectSaleRepo --> Ctl : false
 deactivate DirectSaleRepo
-loop itemId : itemIds
     Ctl -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo --> Ctl : item
+    ref over itemRepo
+    [[sd-ref-diagrams/Retrieve_Item.puml Retrieve Item from persistence (via JPA)]]
+    end ref
+    itemRepo --> Ctl : reconstructedItem
     deactivate itemRepo
     Ctl -> item: getSaleStatus()
     activate item
     item --> Ctl: NotOnSale
     Ctl -> item : markAsDirectSale()
     deactivate item
-end
+
 
 
 Ctl -> DirectSaleRepo : save(directSale)
 ref over DirectSaleRepo
-[[sd-ref-diagrams/Save_Item_Direct_Sale.puml Save item status as on direct sale]]
+[[sd-ref-diagrams/Save_Direct_Sale_Of_Item.puml Save direct sale of an item]]
 end ref
 activate DirectSaleRepo
-DirectSaleRepo --> Ctl : directSale
+DirectSaleRepo --> Ctl : reconstructedDirectSale
 deactivate DirectSaleRepo
 
-Ctl --> UI: directSale
+Ctl --> UI: reconstructedDirectSale
 deactivate Ctl
 UI --> User: Your item was successfully %n()put up in a direct sale!
 deactivate UI
