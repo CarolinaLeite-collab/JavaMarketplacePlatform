@@ -11,10 +11,11 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +23,20 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class CreatePrivateListOfItemsControllerTest {
 
-    @MockBean
+    @Mock
     IListOfItemsRepo _iListOfItemsRepoDouble;
 
-    @MockBean
+    @Mock
     IGenreRepo _iGenreRepoDouble;
 
-    @MockBean
+    @Mock
     ListOfItemsFactory _factoryDouble;
 
-    @MockBean
+    @Mock
     UserId _userIdDouble;
 
     @InjectMocks
@@ -48,7 +50,6 @@ class CreatePrivateListOfItemsControllerTest {
 
     @BeforeEach
     void setUp() throws InstantiationException {
-        MockitoAnnotations.openMocks(this);
 
         _genreIdDouble = mock(GenreId.class);
         _genreDouble = mock(Genre.class);
@@ -74,13 +75,8 @@ class CreatePrivateListOfItemsControllerTest {
         when(_iListOfItemsRepoDouble.containsOfIdentity(_listOfItemsDouble.identity()))
                 .thenReturn(false);
 
-        // SUT
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
         // Act
-        boolean result = controller.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
+        boolean result = _controller.createListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
         // Assert
         assertTrue(result);
@@ -96,13 +92,8 @@ class CreatePrivateListOfItemsControllerTest {
         when(_iListOfItemsRepoDouble.containsOfIdentity(_listOfItemsDouble.identity()))
                 .thenReturn(true);
 
-        // SUT
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
         // Act
-        ListOfItems result = controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
+        ListOfItems result = _controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
         // Assert
         assertNull(result);
@@ -114,13 +105,8 @@ class CreatePrivateListOfItemsControllerTest {
         // Arrange
         when(_iGenreRepoDouble.findAll()).thenReturn(List.of(_genreDouble, _genre2Double));
 
-        // SUT
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
         // Act
-        Iterable<Genre> result = controller.getListOfOfficialGenres();
+        Iterable<Genre> result = _controller.getListOfOfficialGenres();
         List<Genre> resultList = new ArrayList<>();
         result.forEach(resultList::add);
 
@@ -140,15 +126,11 @@ class CreatePrivateListOfItemsControllerTest {
                 .thenReturn(newList);
         when(_iListOfItemsRepoDouble.containsOfIdentity(id)).thenReturn(false);
 
-        // SUT
-        CreatePrivateListOfItemsController controller =
-                new CreatePrivateListOfItemsController(
-                        _iListOfItemsRepoDouble, _iGenreRepoDouble, _factoryDouble, _userIdDouble);
-
         // Act
-        ListOfItems result = controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
+        ListOfItems result = _controller.addListOfItems(_userIdDouble, _nameDouble, _genreIdDouble);
 
         // Assert
         assertSame(newList, result);
     }
+
 }
