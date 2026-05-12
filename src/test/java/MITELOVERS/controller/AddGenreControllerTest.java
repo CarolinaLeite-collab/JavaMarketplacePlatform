@@ -4,7 +4,6 @@ import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +27,6 @@ class AddGenreControllerTest {
     @Mock
     private GenreFactory _genreFactoryDouble;
 
-    @Mock
-    private UserId _adminIdDouble;
 
     @Test
     void addGenreShouldReturnGenreFromRepo() {
