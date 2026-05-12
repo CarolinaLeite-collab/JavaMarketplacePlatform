@@ -42,15 +42,6 @@ class JpaPublicationRepoTest {
     private PublicationId _publicationIdDouble;
 
     @Test
-    void shouldCorrectlyConstructJpaPublicationRepo(){
-        //SUT + act
-        _repo = new JpaPublicationRepo(_publicationAssemblerDouble, _publicationSpringdataRepoDouble);
-
-        //assert
-        assertNotNull(_repo);
-    }
-
-    @Test
     void shouldCorrectlySaveAndReturnPublication() {
         //arrange
         when(_publicationAssemblerDouble.toDataModel(any(Publication.class))).thenReturn(_publicationDataModelDouble);

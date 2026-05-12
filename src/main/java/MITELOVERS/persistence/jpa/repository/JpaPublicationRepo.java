@@ -22,14 +22,9 @@ import java.util.Optional;
 public class JpaPublicationRepo implements IPublicationRepo {
 
     @Autowired
-    private final PublicationAssembler _publicationAssembler;
+    private PublicationAssembler _publicationAssembler;
     @Autowired
-    private final IPublicationSpringdataRepo _publicationSpringdataRepo;
-
-    public JpaPublicationRepo(PublicationAssembler publicationAssembler, IPublicationSpringdataRepo publicationSpringdataRepo) {
-        _publicationAssembler = publicationAssembler;
-        _publicationSpringdataRepo = publicationSpringdataRepo;
-    }
+    private IPublicationSpringdataRepo _publicationSpringdataRepo;
 
     @Override
     public Publication save(Publication publication){
