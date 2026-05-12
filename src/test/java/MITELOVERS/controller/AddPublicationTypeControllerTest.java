@@ -26,6 +26,12 @@ class AddPublicationTypeControllerTest {
     @Mock
     private PublicationTypeFactory _publicationTypeFactoryDouble;
 
+    @Mock
+    private PublicationType _pubTypeDouble;
+
+    @Mock
+    private PublicationTypeId _pubTypeIdDouble;
+
     //SUT
     @InjectMocks
     AddPublicationTypeController _controller;
@@ -35,19 +41,17 @@ class AddPublicationTypeControllerTest {
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(false);
-        when(_iPublicationTypeRepoDouble.save(pubTypeDouble)).thenReturn(pubTypeDouble);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(false);
+        when(_iPublicationTypeRepoDouble.save(_pubTypeDouble)).thenReturn(_pubTypeDouble);
 
         //Act
         PublicationType pubTypeResult = _controller.addPublicationType(publicationTypeName);
 
         //Assert
-        assertEquals(pubTypeDouble, pubTypeResult);
+        assertEquals(_pubTypeDouble, pubTypeResult);
 
     }
 
@@ -56,13 +60,11 @@ class AddPublicationTypeControllerTest {
 
         //Arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
 
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(true);
 
         //Act
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
@@ -79,13 +81,11 @@ class AddPublicationTypeControllerTest {
 
         //Arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
 
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(true);
 
         //Act
         Exception result = assertThrows(IllegalArgumentException.class,
