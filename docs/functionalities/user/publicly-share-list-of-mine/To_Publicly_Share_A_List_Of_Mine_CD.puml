@@ -1,8 +1,7 @@
 @startuml
-'https://plantuml.com/class-diagram
-title "As a user, I want to publicly share a List of mine.
+title "As a user, I want to publicly share a List of mine" CD
+top to bottom direction
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -16,33 +15,70 @@ skinparam classAttributeIconSize 0
 
 class ShareListPubliclyUI
 
-class ShareListPubliclyController {
-    - _listOfPublicationsRepo : IListOfPublicationsRepo
-    + findListsByUser(userId : UserId) : List<ListOfPublications>
-    + shareListPublicly(myList : ListOfPublications) : boolean
+package "controller" {
+    class ShareListPubliclyController {
+        + findListsByUser(userId : UserId) : Map<ListOfItemsId, String>
+        + shareListPublicly(listOfItemsId : ListOfItemsId) : boolean
+    }
 }
 
-interface IListOfPublicationsRepo {
+package "domain" {
 
+    package "listofitems" #b0c4d4 {
+        class ListOfItems <<Root>> <<Entity>> {
+            - _isPrivate : boolean
+            + getUserId() : UserId
+            + getName() : Name
+            + getGenreId() : GenreId
+            + getItemIds() : List<ItemId>
+            + makePublic() : void
+            + isPrivate() : boolean
+        }
+    }
+
+    package "repository" {
+        interface IListOfItemsRepo <<Interface>> {
+        }
+    }
+
+    package "valueobject" {
+        class ListOfItemsId <<ValueObject>> #LightPink {}
+        class UserId <<ValueObject>> {}
+        class ItemId <<ValueObject>> {}
+        class Name <<ValueObject>> {}
+        class GenreId <<ValueObject>> {}
+    }
 }
 
-class MemoListOfPublicationsRepo {
-    - _listsOfListOfPublications : List<ListOfPublications>
-
+package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity : T) : T
+        +findAll() : Iterable<T>
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
+    }
+    interface DomainEntity<ID> <<Interface>> {
+        +identity() : ID
+        +sameAs(object : Object) : boolean
+    }
+    interface AggregateRoot<ID> <<Interface>> {}
 }
 
-class ListOfPublications {
-    - _name : String
-    - _user : User
-    - _items : List<Item>
-    - _isPrivate : Boolean
-    + makePublic() : void
-    + getItems() : List<Item>
-}
+ShareListPubliclyUI "1" ..> "1" ShareListPubliclyController : invokes
+ShareListPubliclyController "1" ..> "1" IListOfItemsRepo : «use»
 
-"ShareListPubliclyUI" "1" --> "1" "ShareListPubliclyController" : request
-"ShareListPubliclyController" "1" --> "1" "IListOfPublicationsRepo" : uses
-"IListOfPublicationsRepo" "1" --> "1" "ListOfPublications" : stores
-IListOfPublicationsRepo <|.. MemoListOfPublicationsRepo
+IListOfItemsRepo --|> IRepository
+IListOfItemsRepo "1" -> "*" ListOfItems : persists
+
+ListOfItems "1" --> "1" ListOfItemsId : has
+ListOfItems "1" --> "1" Name : has
+ListOfItems "*" --> "1" UserId : references
+ListOfItems "*" --> "*" ItemId : references
+ListOfItems "*" --> "1" GenreId : references
+
+
+ListOfItems .|> AggregateRoot
+AggregateRoot --|> DomainEntity
 
 @enduml
