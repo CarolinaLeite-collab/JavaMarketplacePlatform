@@ -7,6 +7,14 @@ import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Assembler responsible for converting between {@link PublicationType} domain objects
+ * and {@link PublicationTypeDataModel} persistence objects.
+ * <p>
+ * Delegates domain object creation to {@link PublicationTypeFactory}.
+ * </p>
+ */
+
 @Component
 @AllArgsConstructor
 public class PublicationTypeAssembler {

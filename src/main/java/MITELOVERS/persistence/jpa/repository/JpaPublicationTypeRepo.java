@@ -15,6 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JPA implementation of {@link IPublicationTypeRepo} for storing {@link PublicationType} instances.
+ * <p>
+ * Active only when the {@code jpa} Spring profile is enabled.
+ * Delegates persistence to {@link IPublicationTypeSpringDataRepo} and
+ * mapping to {@link PublicationTypeAssembler}.
+ * </p>
+ */
+
 @Repository
 @Profile("jpa")
 public class JpaPublicationTypeRepo implements IPublicationTypeRepo {

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 /**
  * Controller responsible for handling the addition of a new {@link PublicationType}.
  * <p>
- * Delegates the creation to {@link MITELOVERS.domain.publicationtype.PublicationTypeFactory}
+ * Delegates the creation to {@link PublicationTypeFactory}
  * and storage to {@link IPublicationTypeRepo}. Validates uniqueness.
  * </p>
  */

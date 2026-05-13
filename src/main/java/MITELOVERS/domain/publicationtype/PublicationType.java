@@ -5,15 +5,9 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 
 /**
- * Represents the type of publication (e.g. BOOK, MAGAZINE), used to
- * classify and organize publications.
- * <p>
- * A {@code PublicationType} is an aggregate root identified by a
- * {@link MITELOVERS.domain.valueobject.PublicationTypeId}. The identity is
- * derived from the publication type name, which is validated (non-null,
- * non-blank, and non-empty) and normalized by trimming whitespace and
- * converting it to uppercase.
- * </p>
+ * Aggregate root representing a type of publication (e.g. BOOK, MAGAZINE),
+ * identified by a {@link PublicationTypeId} and created via {@link PublicationTypeFactory}.
+ * Can be instantiated from a name string or reconstructed from an existing {@link PublicationTypeId}.
  */
 
 public class PublicationType implements AggregateRoot<PublicationTypeId> {
