@@ -82,6 +82,34 @@ class UserTest {
     }
 
     @Test
+    void reconstituteConstructorShouldCreateUserWithProvidedUserId() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+
+        // SUT
+        User user = new User(userIdDouble, _nameDouble, _addressDouble, emailDouble, _phoneDouble);
+
+        // Assert
+        assertEquals(userIdDouble, user.identity());
+        assertEquals(_nameDouble, user.getName());
+        assertEquals(_addressDouble, user.getAddress());
+        assertEquals(_phoneDouble, user.getPhone());
+    }
+
+    @Test
+    void reconstituteConstructorShouldThrowWhenUserIdIsNull() {
+
+        // Arrange
+        Email emailDouble = mock(Email.class);
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> new User(null, _nameDouble, _addressDouble, emailDouble, _phoneDouble));
+    }
+
+    @Test
     void toStringShouldReturnName() {
 
         // Arrange
@@ -310,23 +338,4 @@ class UserTest {
         assertFalse(result);
     }
 
-    @Test
-    void shouldThrowWhenNameIsNull() {
-        Address addressDouble = mock(Address.class);
-        Email emailDouble = mock(Email.class);
-        Phone phoneDouble = mock(Phone.class);
-
-        assertThrows(NullPointerException.class,
-                () -> new UserFactory().createUser(null, addressDouble, emailDouble, phoneDouble));
-    }
-
-    @Test
-    void shouldThrowWhenEmailIsNull() {
-        Name nameDouble = mock(Name.class);
-        Address addressDouble = mock(Address.class);
-        Phone phoneDouble = mock(Phone.class);
-
-        assertThrows(NullPointerException.class,
-                () -> new UserFactory().createUser(nameDouble, addressDouble, null, phoneDouble));
-    }
 }

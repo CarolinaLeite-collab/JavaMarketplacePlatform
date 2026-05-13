@@ -21,11 +21,34 @@ public class EditionId implements DomainId {
 
     }
 
+    public EditionId(String eId){
+        if (eId == null || eId.isBlank()) {
+            throw new IllegalArgumentException("EditionId cannot be null or blank.");
+        }
+        _eId = eId;
+    }
+
+    // getValue() returns the underlying identifier value stored in the database.
+    // This is a stable data representation. Assemblers and persistence code
+    // should call this method instead of relying on toString().
+    public String getValue() { return _eId; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof EditionId other)) return false;
         return _eId.equals(other._eId);
+    }
+
+    // String representation for logging and debugging
+    @Override
+    public String toString() {
+        return _eId ;
+    }
+
+    @Override
+    public int hashCode() {
+        return _eId.hashCode();
     }
 
 }

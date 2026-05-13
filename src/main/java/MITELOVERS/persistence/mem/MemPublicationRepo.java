@@ -2,9 +2,10 @@ package MITELOVERS.persistence.mem;
 
 
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.PublicationId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -16,6 +17,8 @@ import java.util.*;
  *  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemPublicationRepo implements IPublicationRepo {
 
     private final Map<PublicationId, Publication> DATA = new HashMap<PublicationId, Publication>();

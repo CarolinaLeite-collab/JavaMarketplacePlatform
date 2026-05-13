@@ -12,10 +12,13 @@ class GenreIdTest {
         String name = "Fiction";
 
         // SUT
-        GenreId genreId = new GenreId(name);
+        GenreId _sut = new GenreId(name);
+
+        // Act
+        GenreId result = _sut;
 
         // Assert
-        assertNotNull(genreId);
+        assertNotNull(result);
     }
 
     @Test
@@ -23,9 +26,9 @@ class GenreIdTest {
         // Arrange
         String name = null;
 
+        // SUT
         // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new GenreId(name));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new GenreId(name));
 
         // Assert
         assertNotNull(exception);
@@ -36,9 +39,9 @@ class GenreIdTest {
         // Arrange
         String name = "   ";
 
+        // SUT
         // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new GenreId(name));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new GenreId(name));
 
         // Assert
         assertNotNull(exception);
@@ -49,9 +52,10 @@ class GenreIdTest {
         // Arrange
         String name = "";
 
+        // SUT
+
         // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () ->
-                new GenreId(name));
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new GenreId(name));
 
         // Assert
         assertNotNull(exception);
@@ -61,10 +65,15 @@ class GenreIdTest {
     void constructorNormalisesNameToUpperCase() {
         // Arrange
         String name = "fiction";
-        GenreId genreId = new GenreId(name);
+
+        // SUT
+        GenreId _sut = new GenreId(name);
+
+        // Act
+        String result = _sut.toString();
 
         // Assert
-        assertEquals("FICTION", genreId.toString());
+        assertEquals("FICTION", result);
     }
 
     @Test
@@ -73,27 +82,42 @@ class GenreIdTest {
         GenreId genreId1 = new GenreId("Fiction");
         GenreId genreId2 = new GenreId("fiction");
 
+        // SUT
+        GenreId _sut = genreId1;
+
+        // Act
+        boolean result = _sut.equals(genreId2);
+
         // Assert
-        assertEquals(genreId1, genreId2);
+        assertTrue(result);
     }
 
     @Test
     void equalsDifferentNameReturnsFalse() {
-        // Arrange & SUT
+        // Arrange
         GenreId genreId1 = new GenreId("Fiction");
         GenreId genreId2 = new GenreId("Horror");
 
+        // SUT
+        GenreId _sut = genreId1;
+
+        // Act
+        boolean result = _sut.equals(genreId2);
+
         // Assert
-        assertNotEquals(genreId1, genreId2);
+        assertFalse(result);
     }
 
     @Test
     void equalsSameInstanceReturnsTrue() {
-        // Arrange & SUT
+        // Arrange
         GenreId genreId = new GenreId("Fiction");
 
+        // SUT
+        GenreId _sut = genreId;
+
         // Act
-        boolean result = genreId.equals(genreId);
+        boolean result = _sut.equals(genreId);
 
         // Assert
         assertTrue(result);
@@ -101,11 +125,14 @@ class GenreIdTest {
 
     @Test
     void equalsNullReturnsFalse() {
-        // Arrange & SUT
+        // Arrange
         GenreId genreId = new GenreId("Fiction");
 
+        // SUT
+        GenreId _sut = genreId;
+
         // Act
-        boolean result = genreId.equals(null);
+        boolean result = _sut.equals(null);
 
         // Assert
         assertFalse(result);
@@ -113,21 +140,30 @@ class GenreIdTest {
 
     @Test
     void hashCodeSameNameReturnsSameHash() {
-        // Arrange & SUT
+        // Arrange
         GenreId genreId1 = new GenreId("Fiction");
         GenreId genreId2 = new GenreId("fiction");
 
-        // Act & Assert
-        assertEquals(genreId1.hashCode(), genreId2.hashCode());
+        // SUT
+        GenreId _sut = genreId1;
+
+        // Act
+        int result = _sut.hashCode();
+
+        // Assert
+        assertEquals(result, genreId2.hashCode());
     }
 
     @Test
     void hashCodeReturnsIdHashCode() {
-        // Arrange + SUT
+        // Arrange
         GenreId genreId = new GenreId("Fiction");
 
+        // SUT
+        GenreId _sut = genreId;
+
         // Act
-        int result = genreId.hashCode();
+        int result = _sut.hashCode();
 
         // Assert
         assertEquals("FICTION".hashCode(), result);
@@ -138,11 +174,15 @@ class GenreIdTest {
         // Arrange
         String name = "Fiction";
 
+        // SUT
+        GenreId _sut = new GenreId(name);
+
         // Act
-        GenreId genreId = new GenreId(name);
+        String result = _sut.toString();
 
         // Assert
-        assertEquals("FICTION", genreId.toString());
+        assertEquals("FICTION", result);
     }
 
 }
+

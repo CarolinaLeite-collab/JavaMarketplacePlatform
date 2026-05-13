@@ -19,15 +19,43 @@ actor User
 participant ":RegisterPublicationUI" as UI
 participant ":RegisterNew\nPublicationController" as Ctl
 participant ":PublicationFactory" as PF
-participant ":MemPublicationRepo" as PR
-
+participant ":IPublicationRepo" as IR
 ' --- UI interaction ---
 User -> UI: I want to register \na new publication
 activate UI
-UI --> User: Fill in the publication's \ninformation
+
+UI -> Ctl: getAuthorsId()
+activate Ctl
+ref over Ctl
+[[sd-ref-diagrams/Get_Author_Ids.puml Retrieve the list of all author Ids]]
+end ref
+
+Ctl --> UI: authorIds
+deactivate Ctl
+UI --> User: Select authorId
 deactivate UI
 
-User -> UI: title, author, \n releaseYear, genre
+User -> UI: authorId
+activate UI
+
+UI -> Ctl: getGenresId()
+activate Ctl
+ref over Ctl
+[[sd-ref-diagrams/Get_Genre_Ids.puml Retrieve the list of all genre Ids]]
+end ref
+
+Ctl --> UI: genreIds
+deactivate Ctl
+UI --> User: Select genreId
+deactivate UI
+
+User -> UI: genreId
+activate UI
+
+UI --> User: Fill in the title and release year
+deactivate UI
+
+User -> UI: title, releaseYear
 activate UI
 
 ' --- Use case execution ---
@@ -39,23 +67,27 @@ activate Ctl
 Ctl -> PF: createPublication\n(title, authorId, releaseYear, genreId)
 activate PF
 create "newPublication:Publication"
-PF -->> "newPublication:Publication": <<create>>
+PF -->> "newPublication:Publication": createPublication\n(title, authorId, releaseYear, genreId)
 PF --> Ctl: newPublication
 deactivate PF
 
-' --- Duplication check ---
-Ctl -> PR : isRepeated = containsOfIdentity(newPublication.identity())
-activate PR
-    opt !isRepeated == true
-            Ctl -> PR: save(newPublication)
-PR --> Ctl: newPublication
-    end
+ref over Ctl
+[[sd-ref-diagrams/Verify_Publication.puml Verify the existence of newPublication in persistence]]
+end ref
 
-deactivate PR
+Ctl -> IR : save(newPublication)
+activate IR
 
-Ctl --> UI: newPublication
+ref over IR
+[[sd-ref-diagrams/Save_Publication.puml Save newPublication and return saved domain object]]
+end ref
+
+IR -> Ctl : reconstructedPublication
+deactivate IR
+
+Ctl --> UI : reconstructedPublication
 deactivate Ctl
 
-UI --> User: You have \nsuccessfully \nregistered a \nnew publication.
-deactivate UI
+UI --> User : You have \nsuccessfully \nregistered a \nnew publication.
+
 @enduml
