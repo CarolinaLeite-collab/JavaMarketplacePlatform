@@ -28,11 +28,34 @@ activate JpaDirectSaleRepo
 
 JpaDirectSaleRepo -> Assembler: domain2DM(directSale)
 activate Assembler
+Assembler -> directSale: directSaleIdString = identity().toString()
+activate directSale
+deactivate directSale
+
+
+Assembler -> directSale: itemIdString = getItemsId().toString()
+activate directSale
+deactivate directSale
+
+Assembler -> directSale: priceValue = getPrice().getValue()
+activate directSale
+deactivate directSale
+Assembler -> directSale: priceCurrency = getPrice().getCurrency().toString()
+activate directSale
+deactivate directSale
+create "priceDM:PriceDataModel"
+Assembler -->> "priceDM:PriceDataModel": createPriceDataModel(priceValue, priceCurrency)
+
+Assembler -> directSale: timeLimit = getTimeLimit()
+activate directSale
+deactivate directSale
+Assembler -> directSale: creationDate = getCreationDate().toDays
+activate directSale
+deactivate directSale
+
 create "directSaleDM %n():DirectSaleDataModel"
-note right Assembler
-Abstraction of how a DirectSale object %n()is turned into a DirectSaleDataModel object
-end note
-Assembler -->> "directSaleDM %n():DirectSaleDataModel": <<create>>
+Assembler -->> "directSaleDM %n():DirectSaleDataModel":createDirectSaleDataModel(directSaleIdString, itemIdString, priceDM, timeLimit, creationDate)
+
 Assembler --> JpaDirectSaleRepo: directSaleDM
 deactivate Assembler
 
