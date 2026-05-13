@@ -136,4 +136,5 @@ ItemId "1" <-- "1" DirectSale : references
 AggregateRoot -|> DomainEntity
 DirectSale .|> AggregateRoot
 Item .|> AggregateRoot
+Library .|> AggregateRoot
 @enduml
