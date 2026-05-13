@@ -1,0 +1,60 @@
+@startuml
+title "Save Library Reference Diagram"
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+hide footbox
+
+participant ":JpaLibraryRepo" as JPAREPO
+participant ":LibraryAssembler" as ASSMBLR
+participant "myLibrary:Library" as LIB
+participant ":ILibrarySpringDataRepo" as SDREPO
+participant ":LibraryFactory" as FACTORY
+
+[-> JPAREPO : save(myLibrary)
+activate JPAREPO
+
+' 1. Domain to Data Model
+JPAREPO -> ASSMBLR : toDataModel(myLibrary)
+activate ASSMBLR
+ASSMBLR -> LIB : id = identity().toString()
+ASSMBLR -> LIB : items = getItemsIdInLibrary()
+loop for each itemId
+    ASSMBLR -> ASSMBLR : stringItems.add(itemId.toString())
+end
+create "dm:LibraryDataModel"
+ASSMBLR -->> "dm:LibraryDataModel" : <<create>>(id, stringItems)
+ASSMBLR --> JPAREPO : dm
+deactivate ASSMBLR
+
+' 2. JPA Persistence
+JPAREPO -> SDREPO : save(dm)
+activate SDREPO
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+
+' 3. Data Model back to Domain
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+ASSMBLR -> FACTORY : createLibrary(id, items)
+activate FACTORY
+create "reconstructed:Library"
+FACTORY -->> "reconstructed:Library" : <<create>>
+FACTORY --> ASSMBLR : reconstructed
+deactivate FACTORY
+ASSMBLR --> JPAREPO : reconstructed
+deactivate ASSMBLR
+
+[<-- JPAREPO : reconstructed
+deactivate JPAREPO
+@enduml

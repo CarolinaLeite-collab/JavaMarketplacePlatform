@@ -14,14 +14,13 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 
 autonumber
-autoactivate off
 
 ' --- Actor and participants ---
 actor User
 participant ":CreateLibraryUI" as UI
 participant ":CreateLibraryController" as CTL
 participant ":LibraryFactory" as LF
-participant ":MemLibraryRepo" as LR
+participant ":ILibraryRepo" as IREPO
 
 User -> UI: I want to create my library
 activate UI
@@ -36,12 +35,23 @@ LF -->> "myLibrary:Library": <<create>>
 LF --> CTL: myLibrary
 deactivate LF
 
-CTL -> LR : hasId = containsOfIdentity(myLibrary.identity())
+' Use Ref to handle existence check via JPA
+ref over CTL, IREPO
+[[Verify_Library_Existence.puml Verify if a library for this user already exists]]
+end ref
 
-    opt !hasId
-    CTL -> LR: save(myLibrary)
+opt !exists
+    CTL -> IREPO: save(myLibrary)
+    activate IREPO
 
-    end
+    ' Use Ref to handle the Assembler/JPA logic
+    ref over IREPO
+    [[Save_Library.puml Convert to Data Model, persist, and return domain object]]
+    end ref
+
+    IREPO --> CTL: reconstructedLibrary
+    deactivate IREPO
+end
 
 CTL --> UI: true
 deactivate CTL
