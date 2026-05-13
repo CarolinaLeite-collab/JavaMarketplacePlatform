@@ -20,37 +20,37 @@ public class AuctionDataModel {
     private String auctionId;
 
     @ElementCollection
-    @CollectionTable(name = "auctionItems", joinColumns = @JoinColumn(name = "auctionId"))
-    @Column(name = "itemsId",  nullable = false)
+    @CollectionTable(name = "auction_items", joinColumns = @JoinColumn(name = "auction_id"))
+    @Column(name = "items_id",  nullable = false)
     private List<String> itemsId;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "startingPrice", nullable = false)
+    @Column(name = "starting_price", nullable = false)
     private PriceDataModel startingPrice;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "reservePrice", nullable = false)
+    @Column(name = "reserve_price", nullable = false)
     private PriceDataModel reservePrice;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "outrightPrice",  nullable = false)
+    @Column(name = "outright_price",  nullable = false)
     private PriceDataModel outrightPrice;
 
-    @Column(name = "startDate", nullable = false)
+    @Column(name = "start_date", nullable = false)
     private Instant auctionStartDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column(name = "end_date", nullable = false)
     private Instant auctionEndDate;
 
-    @Column(name = "userId", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "finalPrice")
+    @Column(name = "final_price")
     private PriceDataModel finalPrice;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "auctionId")
+    @JoinColumn(name = "auction_id")
     private List<BidDataModel> bids;
 
 }
