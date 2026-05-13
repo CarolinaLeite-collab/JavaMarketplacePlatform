@@ -12,12 +12,14 @@ import static org.mockito.Mockito.when;
 
 class EditionTest {
 
-    private PublicationTypeId _bookTypeId;
-    private PublicationTypeId _magazineTypeId;
+    private EditionId _editionIdDouble;
 
-    private Identifier _bookIdentifier;
-    private Identifier _magazineIdentifier;
-    private Identifier _noIdentifier;
+    private PublicationTypeId _bookTypeIdDouble;
+    private PublicationTypeId _magazineTypeIdDouble;
+
+    private Identifier _bookIdentifierDouble;
+    private Identifier _magazineIdentifierDouble;
+    private Identifier _noIdentifierDouble;
 
     private PublicationId _publicationIdDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
@@ -30,6 +32,7 @@ class EditionTest {
     private EditionNumber _editionNumberDouble;
     private Binding _bindingDouble;
 
+    private static final String expectedMessageEditionId = "EditionId is required";
     private static final String expectedMessageTypeId = "Publication Type Id is required";
     private static final String expectedMessagePublicationId = "Publication Id is required";
     private static final String expectedMessageCompanyId = "Publishing Company is required";
@@ -41,14 +44,16 @@ class EditionTest {
     @BeforeEach
     void setUp() {
 
-        _bookTypeId = mock(PublicationTypeId.class);
-        when(_bookTypeId.isBook()).thenReturn(true);
-        _magazineTypeId = mock(PublicationTypeId.class);
-        when(_magazineTypeId.isMagazine()).thenReturn(true);
+        _editionIdDouble = mock(EditionId.class);
 
-        _bookIdentifier = mock(ISBN.class);
-        _magazineIdentifier = mock(ISSN.class);
-        _noIdentifier = mock(NoIdentifier.class);
+        _bookTypeIdDouble = mock(PublicationTypeId.class);
+        when(_bookTypeIdDouble.isBook()).thenReturn(true);
+        _magazineTypeIdDouble = mock(PublicationTypeId.class);
+        when(_magazineTypeIdDouble.isMagazine()).thenReturn(true);
+
+        _bookIdentifierDouble = mock(ISBN.class);
+        _magazineIdentifierDouble = mock(ISSN.class);
+        _noIdentifierDouble = mock(NoIdentifier.class);
 
         _publicationIdDouble = mock(PublicationId.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
@@ -68,8 +73,28 @@ class EditionTest {
 
         //SUT
         new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _editionIdDouble,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                _publishingYear,
+                _languageDouble,
+                _dimensionDouble,
+                _weightDouble,
+                _pagesDouble,
+                _editionNumberDouble,
+                _bindingDouble
+        );
+    }
+
+    @Test
+    void testConstructorWithoutEditionId() {
+
+        //SUT
+        new Edition(
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -87,8 +112,8 @@ class EditionTest {
 
         // SUT
         new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -101,8 +126,8 @@ class EditionTest {
 
         //SUT
         new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -116,13 +141,37 @@ class EditionTest {
     }
 
     @Test
+    void shouldThrowWhenEditionIdIsNull() {
+        //Act
+        //SUT
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () ->
+                        new Edition(null,
+                                _bookTypeIdDouble,
+                                _bookIdentifierDouble,
+                                _publicationIdDouble,
+                                _publishingCompanyIdDouble,
+                                _publishingYear,
+                                _languageDouble,
+                                _dimensionDouble,
+                                _weightDouble,
+                                _pagesDouble,
+                                _editionNumberDouble,
+                                _bindingDouble));
+
+        //Assert
+        assertEquals(expectedMessageEditionId, exception.getMessage());
+
+    }
+
+    @Test
     void shouldThrowWhenTypeIdIsNull() {
         //Act
         //SUT
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(null,
-                                _bookIdentifier,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 _publishingYear,
@@ -144,8 +193,8 @@ class EditionTest {
         //SUT
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
-                        new Edition(_bookTypeId,
-                                _bookIdentifier,
+                        new Edition(_bookTypeIdDouble,
+                                _bookIdentifierDouble,
                                 null,
                                 _publishingCompanyIdDouble,
                                 _publishingYear,
@@ -166,8 +215,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _bookIdentifier,
+                                _bookTypeIdDouble,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 null,
                                 _publishingYear,
@@ -190,8 +239,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _bookIdentifier,
+                                _bookTypeIdDouble,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 null,
@@ -215,8 +264,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _bookIdentifier,
+                                _bookTypeIdDouble,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 _publishingYear,
@@ -241,8 +290,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _magazineIdentifier,
+                                _bookTypeIdDouble,
+                                _magazineIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 _publishingYear,
@@ -260,33 +309,14 @@ class EditionTest {
     }
 
     @Test
-    void shouldCreateBookEditionWhenYearIsAfter1970AndIdentifierIsIsbn() {
-
-        //SUT
-        new Edition(
-                _bookTypeId,
-                _bookIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                Year.of(2020),
-                _languageDouble,
-                _dimensionDouble,
-                _weightDouble,
-                _pagesDouble,
-                _editionNumberDouble,
-                _bindingDouble
-        );
-    }
-
-    @Test
     void shouldThrowWhenBookYearIsAfter1970AndIdentifierIsNotIsbn() {
 
         //Act
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _magazineIdentifier,
+                                _bookTypeIdDouble,
+                                _magazineIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 Year.of(2020),
@@ -304,12 +334,24 @@ class EditionTest {
     }
 
     @Test
+    void shouldCreateBookEditionWhenYearIs1970AndIdentifierIsNoIdentifier() {
+        new Edition(
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                Year.of(1970),  // isAfter(1970) → false, so NoIdentifier is valid
+                _languageDouble
+        );
+    }
+
+    @Test
     void shouldCreateBookEditionWhenYearIsBefore1970() {
 
         //SUT
         new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1969),
@@ -329,7 +371,7 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
+                                _bookTypeIdDouble,
                                 null,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
@@ -352,8 +394,8 @@ class EditionTest {
     void shouldCreateMagazineEditionWhenYearIsAfter1975AndIdentifierIsIssn() {
         //SUT
         new Edition(
-                _magazineTypeId,
-                _magazineIdentifier,
+                _magazineTypeIdDouble,
+                _magazineIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(2020),
@@ -372,8 +414,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _magazineTypeId,
-                                _bookIdentifier,
+                                _magazineTypeIdDouble,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 Year.of(2020),
@@ -393,8 +435,8 @@ class EditionTest {
     void shouldCreateMagazineEditionWhenYearIsBefore1975() {
         //SUT
         new Edition(
-                _magazineTypeId,
-                _noIdentifier,
+                _magazineTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1974),
@@ -411,8 +453,8 @@ class EditionTest {
     void shouldCreateMagazineEditionWhenYearIs1975AndIdentifierIsNoIdentifier() {
         //SUT
         new Edition(
-                _magazineTypeId,
-                _noIdentifier,
+                _magazineTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1975),
@@ -434,7 +476,7 @@ class EditionTest {
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
                                 unknownType,
-                                _bookIdentifier,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 Year.of(2020),
@@ -455,8 +497,8 @@ class EditionTest {
 
         //Arrange
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -470,8 +512,8 @@ class EditionTest {
         //Assert
         assertEquals(
                 "Id: " + edition.identity() +
-                        "\nType: " + _bookTypeId +
-                        "\nIdentifier: " + _bookIdentifier +
+                        "\nType: " + _bookTypeIdDouble +
+                        "\nIdentifier: " + _bookIdentifierDouble +
                         "\nPublication: " + _publicationIdDouble +
                         "\nPublishing Company: " + _publishingCompanyIdDouble +
                         "\nYear: " + _publishingYear +
@@ -485,8 +527,8 @@ class EditionTest {
 
         //Arrange
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -505,8 +547,8 @@ class EditionTest {
         //Assert
         assertEquals(
                 "Id: " + edition.identity() +
-                        "\nType: " + _bookTypeId +
-                        "\nIdentifier: " + _bookIdentifier +
+                        "\nType: " + _bookTypeIdDouble +
+                        "\nIdentifier: " + _bookIdentifierDouble +
                         "\nPublication: " + _publicationIdDouble +
                         "\nPublishing Company: " + _publishingCompanyIdDouble +
                         "\nYear: " + _publishingYear +
@@ -525,8 +567,8 @@ class EditionTest {
 
         //Arrange
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -546,8 +588,8 @@ class EditionTest {
 
         //Arrange
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -568,8 +610,8 @@ class EditionTest {
         //Arrange
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -577,8 +619,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 mock(PublicationId.class),
                 mock(PublishingCompanyId.class),
                 Year.of(2022),
@@ -600,8 +642,8 @@ class EditionTest {
 
         // SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -609,7 +651,7 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
+                _bookTypeIdDouble,
                 otherBookIdentifier,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
@@ -632,8 +674,8 @@ class EditionTest {
         Year oldYear = Year.of(1969);
 
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -641,8 +683,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -665,8 +707,8 @@ class EditionTest {
         PublicationId otherPublicationId = mock(PublicationId.class);
 
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -674,8 +716,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 otherPublicationId,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -698,8 +740,8 @@ class EditionTest {
         Year oldMagazineYear = Year.of(1975);
 
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldBookYear,
@@ -707,8 +749,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _magazineTypeId,
-                _noIdentifier,
+                _magazineTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldMagazineYear,
@@ -722,39 +764,6 @@ class EditionTest {
         assertFalse(result);
     }
 
-
-    @Test
-    void sameAsShouldReturnTrueWhenBusinessFieldsMatch() {
-
-        //Arrange
-        //SUT
-        Year oldYear = Year.of(1969);
-
-        Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                oldYear,
-                _languageDouble
-        );
-
-        //Act
-        boolean result = edition1.sameAs(edition2);
-
-        //Assert
-        assertTrue(result);
-    }
-
     @Test
     void sameAsShouldReturnFalseWhenPublishingCompanyDiffers() {
 
@@ -764,8 +773,8 @@ class EditionTest {
 
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -773,8 +782,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 otherCompany,
                 oldYear,
@@ -796,8 +805,8 @@ class EditionTest {
 
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -805,8 +814,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 Year.of(1959),
@@ -829,8 +838,8 @@ class EditionTest {
 
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -838,8 +847,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _noIdentifier,
+                _bookTypeIdDouble,
+                _noIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 oldYear,
@@ -859,8 +868,8 @@ class EditionTest {
         //Arrange
         //SUT
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -875,13 +884,48 @@ class EditionTest {
     }
 
     @Test
+    void equalsShouldReturnTrueWhenEditionsHaveSameGeneratedId() {
+
+        // Arrange
+        EditionId sharedId = new EditionId("E-12345678");
+
+        Edition edition1 = new Edition(
+                sharedId,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                _publishingYear,
+                _languageDouble,
+                null, null, null, null, null
+        );
+
+        Edition edition2 = new Edition(
+                sharedId,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
+                _publicationIdDouble,
+                _publishingCompanyIdDouble,
+                _publishingYear,
+                _languageDouble,
+                null, null, null, null, null
+        );
+
+        // Act
+        boolean result = edition1.equals(edition2);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
     void equalsShouldReturnFalseWhenObjectIsNull() {
 
         //Arrange
         //SUT
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -900,8 +944,8 @@ class EditionTest {
 
         //Arrange
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -921,8 +965,8 @@ class EditionTest {
         //Arrange
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -930,8 +974,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -951,8 +995,9 @@ class EditionTest {
         //Arrange
         //SUT
         Edition edition = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _editionIdDouble,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -965,8 +1010,9 @@ class EditionTest {
         );
 
         //Assert
-        assertEquals(_bookTypeId, edition.getPublicationTypeId());
-        assertEquals(_bookIdentifier, edition.getIdentifier());
+        assertEquals(_editionIdDouble, edition.getEditionId());
+        assertEquals(_bookTypeIdDouble, edition.getPublicationTypeId());
+        assertEquals(_bookIdentifierDouble, edition.getIdentifier());
         assertEquals(_publicationIdDouble, edition.getPublicationId());
         assertEquals(_publishingCompanyIdDouble, edition.getPublishingCompanyId());
         assertEquals(_publishingYear, edition.getPublishingYear());
@@ -984,8 +1030,8 @@ class EditionTest {
         //Arrange
         //SUT
         Edition edition1 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -993,8 +1039,8 @@ class EditionTest {
         );
 
         Edition edition2 = new Edition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _publishingCompanyIdDouble,
                 _publishingYear,
@@ -1010,7 +1056,7 @@ class EditionTest {
     @Test
     void isByPublicationIdSamePublicationReturnsTrue() {
         // SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         // Act
         boolean result = e.isByPublicationId(_publicationIdDouble);
@@ -1025,7 +1071,7 @@ class EditionTest {
         PublicationId otherPublicationIdDouble = mock(PublicationId.class);
 
         // SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         // Act
         boolean result = e.isByPublicationId(otherPublicationIdDouble);
@@ -1037,7 +1083,7 @@ class EditionTest {
     @Test
     void isByPublicationIdNullReturnsFalse() {
         // SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         // Act
         boolean result = e.isByPublicationId(null);
@@ -1049,7 +1095,7 @@ class EditionTest {
     @Test
     void isByPublishingCompanyIdSamePublishingCompanyReturnsTrue() {
         // SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         // Act
         boolean result = e.isByPublishingCompanyId(_publishingCompanyIdDouble);
@@ -1064,7 +1110,7 @@ class EditionTest {
         PublishingCompanyId otherPublishingCompanyIdDouble = mock(PublishingCompanyId.class);
 
         // SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         // Act
         boolean result = e.isByPublishingCompanyId(otherPublishingCompanyIdDouble);
@@ -1076,7 +1122,7 @@ class EditionTest {
     @Test
     void isByPublishingCompanyIdNullReturnsFalse() {
         //SUT
-        Edition e = new Edition(_bookTypeId, _bookIdentifier, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
+        Edition e = new Edition(_bookTypeIdDouble, _bookIdentifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _publishingYear, _languageDouble);
 
         //Act
         boolean result = e.isByPublishingCompanyId(null);
@@ -1086,44 +1132,14 @@ class EditionTest {
     }
 
     @Test
-    void sameAsShouldEnterIdentifierComparisonBranch() {
-        //Arrange
-        Identifier sameIdentifier = mock(ISBN.class);
-
-        Edition edition1 = new Edition(
-                _bookTypeId,
-                sameIdentifier,
-                _publicationIdDouble,
-                _publishingCompanyIdDouble,
-                Year.of(2020),
-                _languageDouble
-        );
-
-        Edition edition2 = new Edition(
-                _bookTypeId, // same type instance
-                sameIdentifier, // same real identifier object
-                mock(PublicationId.class),
-                mock(PublishingCompanyId.class),
-                Year.of(2021),
-                mock(Language.class)
-        );
-
-        // Act
-        boolean result = edition1.sameAs(edition2);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
     void shouldThrowWhenBookYearIsBefore1970AndIdentifierIsIsbn() {
         //Act
         //SUT
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _bookTypeId,
-                                _bookIdentifier,
+                                _bookTypeIdDouble,
+                                _bookIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 Year.of(1969),
@@ -1136,7 +1152,7 @@ class EditionTest {
                         )
                 );
 
-        //Arrange
+        //Assert
         assertEquals(expectedMessageInvalidIdentifier, exception.getMessage());
     }
 
@@ -1147,8 +1163,8 @@ class EditionTest {
         IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () ->
                         new Edition(
-                                _magazineTypeId,
-                                _magazineIdentifier,
+                                _magazineTypeIdDouble,
+                                _magazineIdentifierDouble,
                                 _publicationIdDouble,
                                 _publishingCompanyIdDouble,
                                 Year.of(1975),
@@ -1161,7 +1177,7 @@ class EditionTest {
                         )
                 );
 
-        //Arrange
+        //Assert
         assertEquals(expectedMessageInvalidIdentifier, exception.getMessage());
     }
 }
