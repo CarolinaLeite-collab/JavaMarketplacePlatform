@@ -18,8 +18,7 @@ autoactivate off
 
 
 ' ==== Actor and participants ====
-participant ":CreateAuthorController" as CTL
-participant ":IAuthorRepo" as IA
+participant ":JpaAuthorRepo" as IA
 participant ":AuthorAssembler" as assembler
 participant ":IAuthorSpringDataRepo" as springData
 participant ":AuthorFactory" as factory
@@ -27,9 +26,7 @@ participant "authorName:Author" as author
 
 
 '==== UI interaction ====
-CTL -> IA: save(authorName)
 activate IA
-activate CTL
 
 IA -> assembler : toDataModel(authorName)
 activate assembler
@@ -77,10 +74,7 @@ deactivate factory
 assembler --> IA : reconstructoredAuthor
 deactivate assembler
 
-IA --> CTL : reconstructoredAuthor
-deactivate IA
-
-ref over CTL
+ref over IA
 [[../To_Register_An_Author_SD.puml Back to Main Diagram]]
 end ref
 

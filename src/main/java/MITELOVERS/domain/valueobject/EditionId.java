@@ -30,6 +30,8 @@ public class EditionId implements DomainId {
         _eId = id;
     }
 
+    public String getValue() { return _eId; }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

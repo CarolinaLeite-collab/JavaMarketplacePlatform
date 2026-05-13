@@ -1,5 +1,6 @@
 @startuml
-title **"As an Administrator, I want to register a user in the system"** CD
+
+title **"As an Administrator, I want to register a user in the system"**  CD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -12,48 +13,91 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-class RegisterNewUserUI
+top to bottom direction
 
-class RegisterNewUserController {
-  + registerNewUser(name: String, email: String): User
-}
-
-Interface IUserRepo {
-  + registerNewUser(name: String, email: String): User
-}
-
-class MemoUserRepo{
-- _users: List<User>
-
-  - userExists(email: Email): boolean
-}
-
-class UserFactory {
-  + createUser(name: Name, email: Email): User
-}
-
-class User {
-+ sameAs(object: Object): boolean
-+hasEmail(email: Email): boolean
+class RegisterNewUserUI {
 
 }
 
-class Name {
-  - _name: String
+package "controller" {
+
+    class RegisterNewUserController {
+    + registerNewUser(name : Name, address : Address,\n email : Email, phone : Phone) : User
+    }
 }
 
-class Email {
-  - _email: String
+Package "domain" {
+
+    Package "user" <<Folder>> #b0c4d4 {
+        class User <<Entity>> <<Root>> {
+            +hasRole(role : Role) : boolean
+            +hasEmail(email : Email) : boolean
+            +addRole(role : Role) : void
+            +getName() : Name
+            +getEmail() : String
+            +getAddress() : Address
+            +getPhone() : Phone
+            +getRoles() : Set<Role>
+        }
+
+        class UserFactory <<Factory>> {
+            +createUser(name : Name, address : Address, email : Email, phone : Phone) : User
+            +createUser(userId : UserId, name : Name, address : Address, email : Email, phone : Phone) : User
+        }
+    }
+
+    Package "valueobject" <<Folder>> {
+        class UserId <<ValueObject>> #LightPink {
+            -_id : Email
+        }
+        class Name <<ValueObject>>{}
+         class Address <<ValueObject>>{}
+          class Phone <<ValueObject>>{}
+          class Email <<ValueObject>>{}
+           Enum Role <<ValueObject>>{}
+
+    }
+
+    Package "repository" <<Folder>> {
+        interface IUserRepo <<Interface>> {
+        }
+    }
 }
 
-' === RELAÇÕES ===
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity : T) : T
+        +findAll() : Iterable<T>
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
+    }
+    interface AggregateRoot<ID> {}
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(object : Object) : boolean
+    }
+}
 
-RegisterNewUserUI "1" ..> "1" RegisterNewUserController : invokes
-RegisterNewUserController "1" ..> "1" IUserRepo : uses
-MemoUserRepo  ..|>  IUserRepo
-MemoUserRepo "1" --> "1" UserFactory : uses
-UserFactory "1" --> "*" User : instantiates
+RegisterNewUserUI "1" .> "1" RegisterNewUserController : invokes
+RegisterNewUserController "1" .> "1" IUserRepo : <<use>>
+RegisterNewUserController "1" ...> "*" User : <<use>>
+RegisterNewUserController "1" -> UserFactory : invokes
+
+User "1" --> "1" UserId : has
 User "1" --> "1" Name : has
+User "1" --> "0..1" Address : has
 User "1" --> "1" Email : has
+User "1" --> "0..1" Phone : has
+User "1" --> "1" Role : has
+
+
+User "*" <- "1" IUserRepo : persists
+
+IUserRepo --|> IRepository
+UserFactory ..> User : <<create>>
+
+AggregateRoot -|> DomainEntity
+User .|> AggregateRoot
 
 @enduml

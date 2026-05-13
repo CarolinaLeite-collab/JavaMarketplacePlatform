@@ -15,7 +15,6 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-participant ":RegisterCityController" as CTL
 participant ":JpaCityRepo" as JPA
 participant ":CityAssembler" as CASS
 participant "city:City" as CITY
@@ -23,8 +22,6 @@ participant ":ICitySpringDataRepo" as SDREPO
 participant ":CityFactory" as FACTORY
 database "DB" as DB
 
-activate CTL
-CTL -> JPA : save(city)
 activate JPA
 JPA -> CASS : toDataModel(city)
 activate CASS
@@ -68,9 +65,8 @@ FACTORY --> CASS : reconstructedCity
 deactivate FACTORY
 CASS --> JPA : reconstructedCity
 deactivate CASS
-JPA --> CTL : reconstructedCity
 
-ref over CTL
+ref over JPA
 [[../Register_City_SD.puml Back to Main Diagram]]
 end ref
 

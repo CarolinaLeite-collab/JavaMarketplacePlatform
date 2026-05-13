@@ -65,15 +65,6 @@ package "domain"{
    }
 }
 
-package "persistence"{
-    package "mem"{
-        class MemDirectSaleRepo{
-         +save(directSale : DirectSale) : DirectSale
-        }
-        class MemLibraryRepo{
-        }
-    }
-}
 
 PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
 PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
@@ -86,10 +77,8 @@ IDirectSaleRepo "1     " ..|> "1" IRepository
 PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : <<use>>
 DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
-MemDirectSaleRepo "1" --> "*" DirectSale : persists
-MemDirectSaleRepo "1" ..|> IDirectSaleRepo
-MemLibraryRepo "1" ...|> ILibraryRepo
-MemLibraryRepo "1" ----> "*" Library : manages
+IDirectSaleRepo "1" --> "*" DirectSale : persists
+ILibraryRepo "1" --> "*" Library : manages
 
 ItemId "*" --> "1" DirectSale : references
 

@@ -17,11 +17,11 @@ public class PublicationDataModel {
     @Column(name = "id", nullable = false)
     private String id;
     @Column(name = "title", nullable = false)
-    private String Title;
-    @Column(name = "authorId", nullable = false)
-    private String AuthorId;
-    @Column(name = "releaseYear", nullable = false)
-    private String ReleaseYear;
-    @Column(name = "genreId", nullable = false)
-    private String GenreId;
+    private String title;
+    @Column(name = "author_id", nullable = false)
+    private String authorId;
+    @Column(name = "release_year", nullable = false)
+    private String releaseYear;
+    @Column(name = "genre_id", nullable = false)
+    private String genreId;
 }
