@@ -16,8 +16,8 @@ hidefootbox
 actor User
 
 participant ":UIPublicationTypeList" as UI
-participant ":GetPublicationType%n()ListController" as CTRL
-participant ":IPublication%n()TypeRepo" as PTR
+participant ":GetPublicationTypeListController" as CTRL
+participant ":IPublicationTypeRepo" as PTR
 
 User -> UI : 1. I want the list of %n()all publication types.
 Activate UI
@@ -25,6 +25,10 @@ UI -> CTRL : 2. getListOf%n()PublicationTypes()
 Activate CTRL
 CTRL -> PTR : 3. findAll()
 Activate PTR
+
+ref over PTR
+[[sd-ref-diagrams/Find_All_Publication_Types.puml Find all PublicationTypes from persistence]]
+end ref
 
 PTR --> CTRL : 4. Iterable%n()<PublicationType>
 Deactivate PTR

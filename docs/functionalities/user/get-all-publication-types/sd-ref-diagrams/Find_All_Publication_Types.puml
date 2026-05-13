@@ -1,0 +1,60 @@
+@startuml
+title Find all publication types from persistence - SD
+hidefootbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":IPublicationTypeRepo" as REPO
+participant ":PublicationTypeAssembler" as PTA
+participant ":IPublicationTypeSpringDataRepo" as JPA
+participant ":PublicationTypeFactory" as FACTORY
+
+REPO -> JPA : findAll()
+activate JPA
+
+database "DB" as DB
+JPA -> DB : select
+activate DB
+DB --> JPA : string based data
+deactivate DB
+
+JPA --> REPO : Iterable<PublicationTypeDataModel>
+deactivate JPA
+
+loop for each PublicationTypeDataModel
+
+    REPO -> PTA : toDomain(publicationTypeDataModel)
+    activate PTA
+
+    PTA -> publicationTypeDataModel : publicationTypeId = getPublicationTypeId()
+    activate publicationTypeDataModel
+
+    deactivate publicationTypeDataModel
+
+    PTA -> FACTORY : createPublicationType(publicationTypeId)
+    activate FACTORY
+    create "publicationType\n:PublicationType"
+    FACTORY -->> "publicationType\n:PublicationType" : create(publicationTypeId)
+    FACTORY --> PTA : publicationType
+    deactivate FACTORY
+
+    PTA --> REPO : publicationType
+    deactivate PTA
+
+end
+
+ref over REPO
+[[../Get_All_Publication_Types_SD.puml Back to main diagram]]
+end ref
+
+@enduml
