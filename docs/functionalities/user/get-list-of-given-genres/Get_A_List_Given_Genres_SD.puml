@@ -53,7 +53,7 @@ CTL -> R: findAll()
 activate R
 
 ref over R
-[[sd-ref-diagrams/Find_All_genreIds.puml Find all genreIds from persistence]]
+[[sd-ref-diagrams/Find_All_Lists_By_Genre.puml Find all lists by genre from persistence]]
 end ref
 
 R --> CTL: Iterable<ListOfItems>
@@ -73,12 +73,11 @@ loop for listOfItems : allLists
 
     deactivate LOI
 
-    opt publicList && genreId
-        CTL -> List: add(listOfItems)
-        activate List
-        CTL <-- List: true
-        deactivate List
-    end
+
+CTL -> List: add(listOfItems)
+activate List
+deactivate List
+
 end
 
 CTL --> UI: publicListsByGenre

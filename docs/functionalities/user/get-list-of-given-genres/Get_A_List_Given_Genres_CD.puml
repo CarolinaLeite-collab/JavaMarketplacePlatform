@@ -10,7 +10,10 @@ class GetPublicListsByGenreUI {}
 
 package "controller" {
     class GetPublicListsByGenreController {
-        +getPublicListsByGenre(genreId: GenreId): List<ListOfItems>
+        +findAllKeys() : Iterable
+        +getPublicListsByGenre(genreId: GenreId): List
+        +findPublicListsByGenre(genreId : GenreId) : List
+
     }
 }
 
@@ -41,7 +44,7 @@ package "domain" {
 GetPublicListsByGenreUI "1" ..> "1" GetPublicListsByGenreController : invokes
 GetPublicListsByGenreController "1" ..> "1" IListOfItemsRepo : <<use>>
 GetPublicListsByGenreController "1" ..> "1" GenreId : <<use>>
-
+GetPublicListsByGenreController "1" ..> "1" IGenreRepo : <<use>>
 IListOfItemsRepo --|> IRepository
 IGenreRepo --|> IRepository
 

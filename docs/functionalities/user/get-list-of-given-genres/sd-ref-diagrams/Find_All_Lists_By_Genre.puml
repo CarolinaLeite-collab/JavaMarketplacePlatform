@@ -20,7 +20,7 @@ participant ":ListOfItemsAssembler" as ASM
 participant ":IListOfItemsSpringDataRepo" as JPA
 participant ":ListOfItemsFactory" as FACTORY
 
-REPO -> JPA: findAll()
+REPO -> JPA: findAllKeys()
 activate JPA
 
 database "DB" as DB
@@ -37,26 +37,26 @@ loop for each ListOfItemsDataModel
     REPO -> ASM: toDomain(listOfItemsDataModel)
     activate ASM
 
-    ASM -> listOfItemsDataModel: getListOfItemsId()
+    ASM -> listOfItemsDataModel: listOfItemsId = getListOfItemsId()
     activate listOfItemsDataModel
     deactivate listOfItemsDataModel
 
-    ASM -> listOfItemsDataModel: getUserId()
+    ASM -> listOfItemsDataModel: userId = getUserId()
     activate listOfItemsDataModel
     deactivate listOfItemsDataModel
 
-    ASM -> listOfItemsDataModel: getName()
+    ASM -> listOfItemsDataModel: name = getName()
     activate listOfItemsDataModel
     deactivate listOfItemsDataModel
 
-    ASM -> listOfItemsDataModel: getGenreId()
+    ASM -> listOfItemsDataModel: genreId = getGenreId()
     activate listOfItemsDataModel
     deactivate listOfItemsDataModel
 
     ASM -> FACTORY: createListOfItems(listOfItemsId, userId, name, genreId)
     activate FACTORY
     create "listOfItems\n:ListOfItems"
-    FACTORY -->> "listOfItems\n:ListOfItems": create(listOfItemsId, userId, name, genreId)
+    FACTORY -->> "listOfItems\n:ListOfItems": <<create>>
     FACTORY --> ASM: listOfItems
     deactivate FACTORY
 

@@ -18,7 +18,7 @@ autoactivate off
 participant ":IGenreRepo" as REPO
 participant ":IGenreSpringDataRepo" as JPA
 
-REPO -> JPA: findAll()
+REPO -> JPA: findAllKeys()
 activate JPA
 
 database "DB" as DB
@@ -30,6 +30,10 @@ deactivate DB
 JPA --> REPO: Iterable<GenreDataModel>
 deactivate JPA
 
+
+create "result:List<GenreId>"
+REPO -> "result:List<GenreId>": <<create>>
+
 loop for each GenreDataModel
 
     REPO -> genreDataModel: getId()
@@ -38,6 +42,10 @@ loop for each GenreDataModel
 
     create "genreId:GenreId"
     REPO -->> "genreId:GenreId": <<create>>(id)
+
+    REPO -> "result:List<GenreId>": add(genreId)
+    activate "result:List<GenreId>"
+    deactivate "result:List<GenreId>"
 
 end
 
