@@ -5,9 +5,11 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.ItemAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import MITELOVERS.persistence.springdata.IItemSpringDataRepo;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestClassOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,26 +18,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class JpaItemRepoTest {
 
+    // SUT
+    @InjectMocks
+    private JpaItemRepo _jpaItemRepo;
+
+    @Mock
     private IItemSpringDataRepo _itemSpringDataRepoDouble;
+
+    @Mock
     private ItemAssembler _itemAssemblerDouble;
 
-    @BeforeEach
-    void setUp() {
-
-        _itemSpringDataRepoDouble = mock(IItemSpringDataRepo.class);
-        _itemAssemblerDouble = mock(ItemAssembler.class);
-
-    }
-
-    @Test
-    void testConstructor() {
-
-        //Act + SUT
-        new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
-    }
+    @Mock
+    private ItemDataModel _itemDataModelDouble;
 
     @Test
     void saveShouldReturnDomainItem() {
@@ -48,11 +45,8 @@ class JpaItemRepoTest {
         when(_itemSpringDataRepoDouble.save(itemDataModelDouble)).thenReturn(itemDataModelDouble);
         when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
 
-        //SUT
-        JpaItemRepo repo =  new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        Item result = repo.save(itemDouble);
+        Item result = _jpaItemRepo.save(itemDouble);
 
         //Assert
         assertEquals(itemDouble, result);
@@ -71,11 +65,8 @@ class JpaItemRepoTest {
         when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
         when(itemDataModelDouble.getId()).thenReturn("ABC123DEF0");
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        List<ItemId> result = repo.findAllKeys();
+        List<ItemId> result = _jpaItemRepo.findAllKeys();
 
         //Assert
         assertEquals(1, result.size());
@@ -94,11 +85,8 @@ class JpaItemRepoTest {
         when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
         when(itemDataModelDouble.getId()).thenReturn("ABC123DEF0");
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        List<ItemId> result = repo.findAllKeys();
+        List<ItemId> result = _jpaItemRepo.findAllKeys();
         ItemId firstItemId = result.get(0);
 
         //Assert
@@ -116,11 +104,8 @@ class JpaItemRepoTest {
         when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
         when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        Iterable<Item> result = repo.findAll();
+        Iterable<Item> result = _jpaItemRepo.findAll();
         List<Item> resultList = new ArrayList<>();
 
         for (Item item : result) {
@@ -145,11 +130,8 @@ class JpaItemRepoTest {
         when(_itemSpringDataRepoDouble.findById(itemIdDouble.getValue())).thenReturn(Optional.of(itemDataModelDouble));
         when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        Optional<Item> result = repo.ofIdentity(itemIdDouble);
+        Optional<Item> result = _jpaItemRepo.ofIdentity(itemIdDouble);
 
         //Assert
         assertEquals(itemDouble, result.get());
@@ -162,13 +144,8 @@ class JpaItemRepoTest {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.getValue())).thenReturn(true);
-
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act + Assert
-        assertThrows(IllegalArgumentException.class , () -> repo.ofIdentity(itemIdDouble));
+        assertThrows(IllegalArgumentException.class , () -> _jpaItemRepo.ofIdentity(itemIdDouble));
 
     }
 
@@ -180,11 +157,8 @@ class JpaItemRepoTest {
 
         when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(true);
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        boolean result = repo.containsOfIdentity(itemIdDouble);
+        boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
 
         //Assert
         assertTrue(result);
@@ -199,11 +173,8 @@ class JpaItemRepoTest {
 
         when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(false);
 
-        //SUT
-        JpaItemRepo repo = new JpaItemRepo(_itemSpringDataRepoDouble, _itemAssemblerDouble);
-
         //Act
-        boolean result = repo.containsOfIdentity(itemIdDouble);
+        boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
 
         //Assert
         assertFalse(result);
