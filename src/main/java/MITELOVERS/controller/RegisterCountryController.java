@@ -3,7 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.Objects;
 
@@ -19,15 +19,14 @@ import java.util.Objects;
  * persistence to {@link ICountryRepo}.
  * </p>
  */
+@Controller
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
     private final CountryFactory _countryFactory;
-    private final UserId _userAdmin;
 
-    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory, UserId userAdmin) {
+    public RegisterCountryController(ICountryRepo iCountryRepo, CountryFactory countryFactory) {
         _iCountryRepo = Objects.requireNonNull(iCountryRepo, "Country repository is required");
         _countryFactory = Objects.requireNonNull(countryFactory, "Country factory is required");
-        _userAdmin = Objects.requireNonNull(userAdmin, "Admin user is required");
     }
 
     public Country registerCountry(String countryName) {

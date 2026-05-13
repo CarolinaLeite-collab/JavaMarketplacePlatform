@@ -32,20 +32,19 @@ package "domain" {
           + identity() : CountryId
           + name() : CountryName
           + sameAs(object : Object) : boolean
-          + getCountryName() : String
         }
 
         class CountryFactory <<Factory>> {
-          + createCountry(countryName : String) : Country
+          +createCountry(String countryName) : Country
+          +createCountry(countryId : CountryID, String countryName) : Country
         }
     }
 
     package "valueobject" {
         class CountryId <<Value Object>> #lightpink {
-            - _code : String
+            -_id : Name
         }
         class CountryName <<Value Object>> {
-            - _value : String
         }
     }
 
@@ -55,20 +54,21 @@ package "domain" {
     }
 }
 
-package "persistence" {
-    package "mem" {
-        class MemoCountryRepo <<Repo>> {
-        }
-    }
-}
-
-package "ddd" {
+Package "ddd" {
     interface "IRepository<ID, T>" as IRepository <<Interface>> {
-        + save(T) : T
-        + findAll() : Iterable<T>
-        + ofIdentity(ID) : Optional<T>
-        + containsOfIdentity(ID) : boolean
-        + findAllKeys() : List<ID>
+        +save(entity: T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface AggregateRoot <ID >{
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(Object) : boolean
     }
 }
 
@@ -77,17 +77,13 @@ RegisterCountryUI -[hidden]down- controller
 controller -[hidden]down- domain
 country -[hidden]right- valueobject
 valueobject -[hidden]right- repository
-domain -[hidden]down- persistence
 
 '==== Connections ====
 RegisterCountryUI "1" .> "1" RegisterCountryController : invokes
 
-RegisterCountryController "1" --> "1" ICountryRepo : uses
-RegisterCountryController "1" --> "1" CountryFactory : uses
-RegisterCountryController "1" ..> "*" Country : <<manages>>
-
-MemoCountryRepo ..|> ICountryRepo
-MemoCountryRepo "1" --> "*" Country : persists
+RegisterCountryController "1" ..> "1" ICountryRepo : <<use>>
+RegisterCountryController "1" --> "1" CountryFactory : invokes
+RegisterCountryController "1" ..> "*" Country : <<use>>
 
 CountryFactory "1" ..> "*" Country : <<create>>
 
@@ -95,5 +91,9 @@ Country "1" --> "1" CountryId : has
 Country "1" *-- "1" CountryName : has
 
 ICountryRepo --|> IRepository
+ICountryRepo "1" -> "*" Country : persists
+
+Country "1" .|> "1" AggregateRoot
+AggregateRoot --|> DomainEntity
 
 @enduml
