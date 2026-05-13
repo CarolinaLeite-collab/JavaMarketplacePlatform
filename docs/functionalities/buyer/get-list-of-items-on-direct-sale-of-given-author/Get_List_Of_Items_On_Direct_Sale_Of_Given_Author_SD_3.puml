@@ -13,8 +13,8 @@ autonumber
 autoactivate off
 
 actor Buyer
-participant ":GetDirectSaleItemsByAuthorUI" as UI
-participant ":GetDirectSaleItemsByAuthorController" as CTL
+participant ":GetDirectSale\nItemsByAuthorUI" as UI
+participant ":GetDirectSale\nItemsByAuthorController" as CTL
 participant ":IAuthorRepo" as AR
 participant ":IDirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DirectSale
@@ -25,16 +25,18 @@ participant "edition:Edition" as Edition
 participant ":IPublicationRepo" as PR
 participant "publication:Publication" as Publication
 
-
+'==== UI interaction ====
 Buyer -> UI: I want the list of items \non direct sale of a given author
 activate UI
+
+'==== Use case execution ====
 UI -> CTL : findAllKeys()
 activate CTL
-CTL -> AR : findAllKeys()
-activate AR
+ref over CTL
+[[sd-ref-diagrams/Get_Authors_Ids.puml Retrieves the list of all Authors Ids]]
+end ref
 
-AR --> CTL : authorIds
-deactivate AR
+
 
 CTL --> UI : authorIds
 deactivate CTL
@@ -46,6 +48,9 @@ activate UI
 
 UI -> CTL: getDirectSaleItemsByAuthorId(authorId)
 activate CTL
+ref over CTL
+Get_DirectSale_Items.puml]
+end ref
 
 CTL -> DSR: findAll()
 activate DSR
