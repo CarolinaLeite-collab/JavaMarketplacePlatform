@@ -4,9 +4,8 @@ on:
   pull_request:
     branches: [ main, b3, b4 ]
 
-# This env is placed to eliminate a node.js warning
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+permissions:
+  pull-requests: write
 
 jobs:
   build-and-test-with-coverage:
@@ -28,3 +27,11 @@ jobs:
         with:
           name: jacoco-report
           path: target/site/jacoco/
+      - name: Post coverage comment
+        if: always()
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
