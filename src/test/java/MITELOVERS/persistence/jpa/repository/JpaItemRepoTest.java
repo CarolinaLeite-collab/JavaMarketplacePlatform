@@ -139,13 +139,18 @@ class JpaItemRepoTest {
     }
 
     @Test
-    void ofIdentityShouldThrowWhenItemDoesNotExist() {
+    void ofIdentityShouldReturnEmptyWhenItemDoesNotExist() {
 
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        //Act + Assert
-        assertThrows(IllegalArgumentException.class , () -> _jpaItemRepo.ofIdentity(itemIdDouble));
+        when(_itemSpringDataRepoDouble.findById(itemIdDouble.getValue())).thenReturn(Optional.empty());
+
+        //Act
+        Optional<Item> result = _jpaItemRepo.ofIdentity(itemIdDouble);
+
+        //Assert
+        assertTrue(result.isEmpty());
 
     }
 
@@ -155,7 +160,7 @@ class JpaItemRepoTest {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(true);
+        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.getValue())).thenReturn(true);
 
         //Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
@@ -171,7 +176,7 @@ class JpaItemRepoTest {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(false);
+        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.getValue())).thenReturn(false);
 
         //Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);

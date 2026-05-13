@@ -79,16 +79,20 @@ public class JpaItemRepo implements IItemRepo {
     @Override
     public Optional<Item> ofIdentity(ItemId id) {
 
-        ItemDataModel savedItemDataModel = _itemSpringDataRepo.findById(id.getValue()).orElseThrow(() -> new IllegalArgumentException("Item not found!"));
+        Optional<ItemDataModel> itemDataModel = _itemSpringDataRepo.findById(id.getValue());
 
-        return Optional.of(_itemAssembler.toDomain(savedItemDataModel));
+        if (itemDataModel.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(_itemAssembler.toDomain(itemDataModel.get()));
 
     }
 
     @Override
     public boolean containsOfIdentity(ItemId id) {
 
-        return _itemSpringDataRepo.existsById(id.toString());
+        return _itemSpringDataRepo.existsById(id.getValue());
 
     }
 }
