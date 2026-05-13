@@ -22,45 +22,40 @@ hidefootbox
 autonumber
 
 participant ":GetDirectSale\nItemsByAuthorController" as CTL
-participant ":IItemRepo" as IITEMREPO
-participant "listOfItemsOnDirectSale\nByAuthor:List<ItemId>" as LIST
-participant ":ItemAssembler" as ASSMBLR
 
+participant ":JpaItemRepo" as JpaRepo
+participant ":IItemSpringDataRepo" as SpringRepo
+participant ":ImplJpaRepo" as JpaImpl
+database "DB" as DB
+participant ":ItemAssembler" as ASS
+
+CTL -> JpaRepo : getDirectSaleItemsByAuthorIdSortedByDescription(authorId)
 activate CTL
-
-CTL -> LIST : stream().map(ItemId::getValue).toList()
-activate LIST
-create "ids:List<String>" as IDS
-CTL -->> IDS : <<create>>
-
-loop for each itemId : listOfItemsOnDirectSaleByAuthor
-
-CTL -> itemId : getValue()
-activate itemId
-
-itemId --> CTL : stringId
-
-deactivate itemId
-
-CTL -> IDS : add(stringId)
-
+activate JpaRepo
+JpaRepo -> SpringRepo: findByIdInOrderByDescriptionAsc(ids)
+activate SpringRepo
+SpringRepo -> JpaImpl: findByIdInOrderByDescriptionAsc(ids)
+activate JpaImpl
+JpaImpl -> DB: SELECT * FROM ITEM
+activate DB
+DB -> JpaImpl: String based data
+deactivate DB
+JpaImpl -->SpringRepo: ascOrderedItemOnDirectSale\nByAuthorDataModels
+deactivate JpaImpl
+SpringRepo --> JpaRepo : ascOrderedItemOnDirectSale\nByAuthorDataModels
+deactivate SpringRepo
+JpaRepo -> ASS : toDomain(ascOrderedItemOnDirectSale\nByAuthorDataModels)
+activate ASS
+ref over ASS
+[[ converts Data Models to Item Objects ]]
 end
-create "ids:List<String>" as IDS
-LIST -->> IDS : <<create>>
-LIST --> CTL : ids
-
-deactivate LIST
-create "ids:List<String>" as IDS
-
-CTL -> IITEMREPO : findByIdInOrderByDescriptionAsc(ids)
-activate IITEMREPO
-IITEMREPO --> CTL : sortedItems
-deactivate IITEMREPO
+ASS --> JpaRepo : ListOfAscOrderedItems\nOnDirectSaleByAuthor
+deactivate ASS
+JpaRepo --> CTL : ListOfAscOrderedItems\nOnDirectSaleByAuthor
 
 ref over CTL
 [[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Author_SD_3.puml Back to Main Diagram]]
 end ref
 
-deactivate CTL
 
 @enduml

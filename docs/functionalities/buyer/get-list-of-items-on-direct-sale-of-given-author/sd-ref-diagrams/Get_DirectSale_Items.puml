@@ -16,7 +16,7 @@ autonumber
 participant ":GetDirectSale\nItemsByAuthorController" as CTL
 participant ":IDirectSaleRepo\n(JpaDirectSaleRepo)" as JpaRepo
 participant ":IDirectSale\nSpringDataRepo" as SpringRepo
-participant ":SimpleJpaRepository" as JpaImpl
+participant ":ImplJpaRepo" as JpaImpl
 database "DB" as DB
 participant ":DirectSaleAssembler" as Ass
 participant "directSaleDataModel:\nDirectSaleDataModel" as directSaleDataModel

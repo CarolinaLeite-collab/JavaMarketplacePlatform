@@ -17,7 +17,6 @@ participant ":GetDirectSale\nItemsByAuthorUI" as UI
 participant ":GetDirectSale\nItemsByAuthorController" as CTL
 participant ":IDirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DirectSale
-participant "IItemRepo"
 participant "listOfItemsOnDirectSale\nByAuthor:List<ItemId>" as LIST
 '==== UI interaction ====
 Buyer -> UI: I want the list of items \non direct sale of a given author
@@ -84,6 +83,10 @@ deactivate LIST
 end
 end
 end
+
+ref over CTL
+[[sd-ref-diagrams/Get_ListOfItemsOnDirectSale_by_Author.puml Retrieves the Strig list of DirecSale items by id author]]
+end ref
 
 ref over CTL
 [[sd-ref-diagrams/Query_Repo.puml Query repository ordered by description]]
