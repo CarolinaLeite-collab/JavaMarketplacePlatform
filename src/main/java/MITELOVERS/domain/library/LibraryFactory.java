@@ -1,6 +1,10 @@
 package MITELOVERS.domain.library;
 
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
+
+import java.util.List;
 
 /**
  * Factory responsible for creating instances of {@link Library}.
@@ -21,5 +25,12 @@ public class LibraryFactory {
 
         return new Library(userId);
 
+    }
+
+    // Reconstruction from persistence (assembler → domain)
+    public Library createLibrary(LibraryId libraryId,
+                                 List<ItemId> itemIds) {
+
+        return new  Library(libraryId, itemIds);
     }
 }

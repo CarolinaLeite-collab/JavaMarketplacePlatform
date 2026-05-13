@@ -24,14 +24,16 @@ public class SKU implements ValueObject {
         _value = generateRandomSKU();
     }
 
-    // Reconstruction from persisted value
+    // For reconstruction
     public SKU(String value) {
         if (value == null || value.isBlank()) {
             throw new IllegalArgumentException("SKU cannot be null or blank.");
         }
+
         if (!value.matches(_format)) {
-            throw new IllegalArgumentException("SKU must match format " + _format + ".");
+            throw new IllegalArgumentException("Invalid SKU format: " + value);
         }
+
         _value = value;
     }
 

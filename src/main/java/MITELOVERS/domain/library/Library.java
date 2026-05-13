@@ -40,6 +40,28 @@ public class Library implements AggregateRoot<LibraryId> {
 
     }
 
+    // Constructor for re-hidration
+    Library(LibraryId libraryId, List<ItemId> itemIds) {
+
+        if (libraryId == null) {
+            throw new IllegalArgumentException("LibraryId is required");
+        }
+
+        _libraryId = libraryId;
+
+        // Defensive copy + invariant enforcement
+        _itemIds = new ArrayList<>();
+        for (ItemId id : itemIds) {
+            if (id == null) {
+                throw new IllegalArgumentException("ItemId cannot be null");
+            }
+            if (_itemIds.contains(id)) {
+                throw new IllegalArgumentException("Duplicate ItemId in rehydration");
+            }
+            _itemIds.add(id);
+        }
+    }
+
     @Override
     public LibraryId identity() {
 
