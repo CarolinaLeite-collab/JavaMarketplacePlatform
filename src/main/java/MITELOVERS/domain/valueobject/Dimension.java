@@ -30,16 +30,20 @@ public class Dimension implements ValueObject {
         _unit = unit;
     }
 
-    public double get_width() {
+    public double getWidth() {
         return _width;
     }
 
-    public double get_height() {
+    public double getHeight() {
         return _height;
     }
 
-    public double get_thickness() {
+    public double getThickness() {
         return _thickness;
+    }
+
+    public DimensionUnit getUnit() {
+        return _unit;
     }
 
     @Override
