@@ -3,25 +3,42 @@ package MITELOVERS.domain.valueobject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AppraisalEntityIdTest {
 
     @Test
-    void shouldThrowExceptionWhenNameIsNull() {
+    void testAConstructorWithName() {
 
         // Arrange
-        String name = null;
+        Name name = mock(Name.class);
 
-        // Act & Assert & SUT
-        assertThrows(IllegalArgumentException.class, () -> new AppraisalEntityId(name));
+        // Act
+        new AppraisalEntityId(name);
 
+    }
+
+    @Test
+    void testAConstructorWithString() {
+
+        // Act
+        new AppraisalEntityId("livro");
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNameIsNull() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new AppraisalEntityId((Name) null));
     }
 
     @Test
     void shouldThrowExceptionWhenNameIsBlank() {
 
         // Arrange
-        String name = "   ";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("    ");
 
         // Act & Assert & SUT
         assertThrows(IllegalArgumentException.class,() -> new AppraisalEntityId(name));
@@ -32,7 +49,8 @@ class AppraisalEntityIdTest {
     void shouldGenerateCorrectIdSingleWord() {
 
         // Arrange
-        String name = "Library Inspectors";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Library Inspectors");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -46,7 +64,8 @@ class AppraisalEntityIdTest {
     void shouldGenerateCorrectIdMultipleWords() {
 
         // Arrange
-        String name = "The Book Watchers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("The Book Watchers");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -60,7 +79,8 @@ class AppraisalEntityIdTest {
     void shouldIgnoreExtraSpaces() {
 
         // Arrange
-        String name = "  The   Book   Watchers  ";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("  The   Book   Watchers  ");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -74,7 +94,8 @@ class AppraisalEntityIdTest {
     void shouldHandleMultipleSpacesBetweenWords() {
 
         // Arrange
-        String name = "The    Book     Watchers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("The    Book     Watchers");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -88,7 +109,8 @@ class AppraisalEntityIdTest {
     void shouldHandleTabsAndSpecialWhitespace() {
 
         // Arrange
-        String name = "\tThe Book Watchers\t";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("\tThe Book Watchers\t");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -102,7 +124,8 @@ class AppraisalEntityIdTest {
     void shouldNormalizeUpperCaseName() {
 
         // Arrange
-        String name = "BOOK LOVERS";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("BOOK LOVERS");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -116,7 +139,8 @@ class AppraisalEntityIdTest {
     void shouldNormalizeLowerCaseName() {
 
         // Arrange
-        String name = "book lovers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("book lovers");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -130,7 +154,8 @@ class AppraisalEntityIdTest {
     void shouldBeEqualWhenSameName() {
 
         // Arrange
-        String name = "The Book Watchers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("livro");
 
         // Act & SUT
         AppraisalEntityId id1 = new AppraisalEntityId(name);
@@ -144,8 +169,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldBeEqualToItself() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("livro");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Book Lovers");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertTrue(id.equals(id));
@@ -155,8 +184,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldNotBeEqualToNull() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("livro");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Book Lovers");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertFalse(id.equals(null));
@@ -166,8 +199,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldNotBeEqualToDifferentType() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("book lovers");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Book Lovers");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertFalse(id.equals("entity:BL-BookLovers"));
@@ -178,7 +215,8 @@ class AppraisalEntityIdTest {
     void shouldHaveSameHashCodeWhenEqual() {
 
         // Arrange
-        String name = "The Book Watchers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("livro");
 
         // Act & SUT
         AppraisalEntityId id1 = new AppraisalEntityId(name);
@@ -196,8 +234,10 @@ class AppraisalEntityIdTest {
     void shouldBeCaseInsensitiveInNameProcessing() {
 
         // Arrange
-        String name1 = "the book watchers";
-        String name2 = "THE BOOK WATCHERS";
+        Name name1 = mock(Name.class);
+        when(name1.toString()).thenReturn("the book watchers");
+        Name name2 = mock(Name.class);
+        when(name2.toString()).thenReturn("THE BOOK WATCHERS");
 
         // Act & SUT
         AppraisalEntityId id1 = new AppraisalEntityId(name1);
@@ -212,7 +252,8 @@ class AppraisalEntityIdTest {
     void shouldKeepFirstLetterUpperCaseInNormalizedPart() {
 
         // Arrange
-        String name = "book lovers";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("book-lovers");
 
         // Act & SUT
         AppraisalEntityId id = new AppraisalEntityId(name);
@@ -225,8 +266,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldHandleSingleWordName() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Book");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Book");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertEquals("entity:B-Book", id.toString());
@@ -236,8 +281,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldHandleSingleLetterName() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("A");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("A");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertEquals("entity:A-A", id.toString());
@@ -247,8 +296,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldHandleAccentedCharacters() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Coração Livre");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Coração Livre");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertEquals("entity:CL-CoraçãoLivre", id.toString());
@@ -258,8 +311,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldHandleHyphenatedWords() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Book-Watchers Society");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Book-Watchers Society");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertEquals("entity:BWS-BookWatchersSociety", id.toString());
@@ -269,8 +326,12 @@ class AppraisalEntityIdTest {
     @Test
     void shouldHandleNamesWithNumbers() {
 
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Team 42 Book Lovers");
+
         // Act & SUT
-        AppraisalEntityId id = new AppraisalEntityId("Team 42 Book Lovers");
+        AppraisalEntityId id = new AppraisalEntityId(name);
 
         // Assert
         assertEquals("entity:T4BL-Team42BookLovers", id.toString());
@@ -280,9 +341,15 @@ class AppraisalEntityIdTest {
     @Test
     void shouldBeEqualIfToStringIsEqual() {
 
+        // Arrange
+        Name name1 = mock(Name.class);
+        when(name1.toString()).thenReturn("livro");
+        Name name2 = mock(Name.class);
+        when(name2.toString()).thenReturn("livro");
+
         // Act & SUT
-        AppraisalEntityId id1 = new AppraisalEntityId("Book Lovers");
-        AppraisalEntityId id2 = new AppraisalEntityId("Book Lovers");
+        AppraisalEntityId id1 = new AppraisalEntityId(name1);
+        AppraisalEntityId id2 = new AppraisalEntityId(name2);
 
         // Assert
         assertEquals(id1.toString(), id2.toString());
@@ -293,9 +360,15 @@ class AppraisalEntityIdTest {
     @Test
     void equalObjectsMustHaveSameHashCode() {
 
+        // Arrange
+        Name name1 = mock(Name.class);
+        when(name1.toString()).thenReturn("livro");
+        Name name2 = mock(Name.class);
+        when(name2.toString()).thenReturn("livro");
+
         // Arrange & SUT
-        AppraisalEntityId id1 = new AppraisalEntityId("The Book Watchers");
-        AppraisalEntityId id2 = new AppraisalEntityId("The Book Watchers");
+        AppraisalEntityId id1 = new AppraisalEntityId(name1);
+        AppraisalEntityId id2 = new AppraisalEntityId(name2);
 
         // Act
         int hash1 = id1.hashCode();
@@ -309,9 +382,15 @@ class AppraisalEntityIdTest {
     @Test
     void differentNamesShouldHaveDifferentHashCodes() {
 
+        // Arrange
+        Name name1 = mock(Name.class);
+        when(name1.toString()).thenReturn("livro1");
+        Name name2 = mock(Name.class);
+        when(name2.toString()).thenReturn("livro2");
+
         // Arrange & SUT
-        AppraisalEntityId id1 = new AppraisalEntityId("Book Lovers");
-        AppraisalEntityId id2 = new AppraisalEntityId("Book Watchers");
+        AppraisalEntityId id1 = new AppraisalEntityId(name1);
+        AppraisalEntityId id2 = new AppraisalEntityId(name2);
 
         // Act
         int hash1 = id1.hashCode();

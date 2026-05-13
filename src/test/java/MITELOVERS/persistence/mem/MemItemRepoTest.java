@@ -1,10 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.item.ItemFactory;
-import MITELOVERS.domain.valueobject.Condition;
-import MITELOVERS.domain.valueobject.Description;
-import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import org.junit.jupiter.api.Test;
 

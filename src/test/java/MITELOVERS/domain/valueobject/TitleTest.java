@@ -16,7 +16,7 @@ class TitleTest {
         Title title = new Title(myTitle);
 
         //assert
-        assertEquals(myTitle, title.getTitle());
+        assertEquals(myTitle, title.toString());
 
     }
 
@@ -30,7 +30,7 @@ class TitleTest {
         Title title = new Title(myTitle);
 
         //assert
-        assertEquals("My Title", title.getTitle());
+        assertEquals("My Title", title.toString());
 
     }
 

@@ -175,4 +175,18 @@ class CountryTest {
         assertEquals(country.identity().hashCode(), country.hashCode());
     }
 
+    @Test
+    void constructorWithCountryIdPreservesProvidedId() {
+        // Arrange
+        CountryId countryId = new CountryId("PT");
+        String countryName = "Portugal";
+
+        // Act
+        Country country = new Country(countryId, countryName);
+
+        // Assert
+        assertEquals(countryId, country.identity());
+        assertEquals(new CountryName(countryName), country.name());
+    }
+
 }
