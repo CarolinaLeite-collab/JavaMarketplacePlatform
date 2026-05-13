@@ -48,11 +48,19 @@ To run tests only:
 mvn clean test
 ```
 
-To run the application locally:
+To run the application locally, there are two options:
 
 ```bash
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=mem
 ```
+
+- starts the app using an in-memory profile, meaning the database lives only in RAM and is wiped clean every time the app stops.
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=jpa,bootstrap
+```
+
+- starts the app with two profiles: jpa for file/persistent database configuration, and bootstrap to seed initial data on startup. Data survives restarts.
 
 The application will start on `http://localhost:8081`.
 
@@ -82,7 +90,7 @@ The H2 console is available at `http://localhost:8081/h2-console` with the follo
 
 ### Quality Gates
 - All tests must pass;
-- - Build must succeed with `mvn clean verify`.
+- Build must succeed with `mvn clean verify`.
 - JaCoCo instruction coverage must be ≥ 95%;
 
 ---
