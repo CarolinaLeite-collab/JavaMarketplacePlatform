@@ -1,0 +1,66 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to get the list of items on direct sale of a given author" - SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+hidefootbox
+autonumber
+
+participant ":GetDirectSale\nItemsByAuthorController" as CTL
+participant ":IItemRepo" as IITEMREPO
+participant "listOfItemsOnDirectSale\nByAuthor:List<ItemId>" as LIST
+participant ":ItemAssembler" as ASSMBLR
+
+activate CTL
+
+CTL -> LIST : stream().map(ItemId::getValue).toList()
+activate LIST
+create "ids:List<String>" as IDS
+CTL -->> IDS : <<create>>
+
+loop for each itemId : listOfItemsOnDirectSaleByAuthor
+
+CTL -> itemId : getValue()
+activate itemId
+
+itemId --> CTL : stringId
+
+deactivate itemId
+
+CTL -> IDS : add(stringId)
+
+end
+create "ids:List<String>" as IDS
+LIST -->> IDS : <<create>>
+LIST --> CTL : ids
+
+deactivate LIST
+create "ids:List<String>" as IDS
+
+CTL -> IITEMREPO : findByIdInOrderByDescriptionAsc(ids)
+activate IITEMREPO
+IITEMREPO --> CTL : sortedItems
+deactivate IITEMREPO
+
+ref over CTL
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Author_SD_3.puml Back to Main Diagram]]
+end ref
+
+deactivate CTL
+
+@enduml

@@ -15,16 +15,10 @@ autoactivate off
 actor Buyer
 participant ":GetDirectSale\nItemsByAuthorUI" as UI
 participant ":GetDirectSale\nItemsByAuthorController" as CTL
-participant ":IAuthorRepo" as AR
 participant ":IDirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DirectSale
-participant ":IItemRepo" as IR
-participant "item:Item" as Item
-participant ":IEditionRepo" as ER
-participant "edition:Edition" as Edition
-participant ":IPublicationRepo" as PR
-participant "publication:Publication" as Publication
-
+participant "IItemRepo"
+participant "listOfItemsOnDirectSale\nByAuthor:List<ItemId>" as LIST
 '==== UI interaction ====
 Buyer -> UI: I want the list of items \non direct sale of a given author
 activate UI
@@ -49,17 +43,12 @@ activate UI
 UI -> CTL: getDirectSaleItemsByAuthorId(authorId)
 activate CTL
 ref over CTL
-Get_DirectSale_Items.puml]
+[[sd-ref-diagrams/Get_DirectSale_Items.puml Retrieves the list of all Direct Sale Items by Authors Ids]]
 end ref
 
-CTL -> DSR: findAll()
-activate DSR
 
-DSR --> CTL: directSales
-deactivate DSR
-
-create "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
-CTL -->> "listOfItemsOnDirectSaleByAuthor:List<ItemId>" : <<Create>>
+create LIST
+CTL -->> LIST : <<create>>
 
 loop for directSale : directSales
 CTL -> DirectSale : getItemIds()
@@ -68,42 +57,41 @@ DirectSale --> CTL : itemIds
 deactivate DirectSale
 
 loop for itemId : itemIds
-CTL -> IR : ofIdentity(itemId)
-activate IR
-IR --> CTL : item
-deactivate IR
-CTL -> Item : getEditionId()
-activate Item
-Item --> CTL : editionId
-deactivate Item
 
-CTL -> ER : ofIdentity(editionId)
-activate ER
-ER --> CTL : edition
-deactivate ER
-CTL -> Edition : getPublicationId()
-activate Edition
-Edition --> CTL : publicationId
-deactivate Edition
+ref over CTL
+[[sd-ref-diagrams/Get_Item_by_id.puml Get each Item by Id and retrieve its Edition Id]]
+end ref
 
-CTL -> PR : ofIdentity(publicationId)
-activate PR
-PR --> CTL : publication
-deactivate PR
+
+
+ref over CTL
+[[sd-ref-diagrams/Get_Edition_by_Id.puml Get each Edition by Id and retrieve its Publication Id]]
+end ref
+
+
+ref over CTL
+[[sd-ref-diagrams/Get_Publication_by_Id.puml Retrieves each Publication by Id]]
+end ref
+
 
 CTL -> Publication : hasAuthorId = isByAuthorId(authorId)
 
 opt hasAuthorId
-CTL -> "listOfItemsOnDirectSaleByAuthor:List<ItemId>" : add(itemId)
-activate "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
-"listOfItemsOnDirectSaleByAuthor:List<ItemId>" --> CTL : true
-deactivate "listOfItemsOnDirectSaleByAuthor:List<ItemId>"
+CTL -> LIST : add(itemId)
+activate LIST
+LIST --> CTL : true
+deactivate LIST
 end
 end
 end
 
+ref over CTL
+[[sd-ref-diagrams/Query_Repo.puml Query repository ordered by description]]
+end ref
 
-CTL --> UI: listOfItemsOnDirectSaleByAuthor
+
+
+CTL --> UI: sortedlistOfItemsOnDirectSaleByAuthor
 deactivate CTL
 
 UI --> Buyer: Here's the list! Done!
