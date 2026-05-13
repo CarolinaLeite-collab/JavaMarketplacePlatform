@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
 class LibraryFactoryTest {
 
     @Test
-    void createLibrary_shouldReturnLibraryWithCorrectUser() {
+    void createLibraryShouldReturnLibraryWithCorrectUser() {
         // Arrange
         UserId userId = mock(UserId.class);
         LibraryId libraryIdDouble = mock(LibraryId.class);
@@ -39,7 +39,7 @@ class LibraryFactoryTest {
     }
 
     @Test
-    void createLibrary_shouldReturnLibraryUsingRehydrationConstructor() {
+    void createLibraryShouldReturnLibraryUsingRehydrationConstructor() {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         ItemId itemIdDouble = mock(ItemId.class);
