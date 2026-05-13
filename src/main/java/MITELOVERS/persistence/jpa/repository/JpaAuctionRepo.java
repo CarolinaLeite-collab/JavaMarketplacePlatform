@@ -17,7 +17,6 @@ import java.util.Optional;
 
 @Repository
 @Profile("jpa")
-@AllArgsConstructor
 public class JpaAuctionRepo implements IAuctionRepo{
 
     @Autowired
