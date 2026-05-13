@@ -3,16 +3,17 @@ package MITELOVERS.persistence.jpa.assembler;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.persistence.jpa.datamodel.DimensionDataModel;
 import MITELOVERS.persistence.jpa.datamodel.EditionDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PublicationIdDataModel;
+import MITELOVERS.persistence.jpa.datamodel.WeightDataModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -25,11 +26,14 @@ class EditionAssemblerTest {
     private PublicationTypeId _typeIdDouble;
     private ISBN _identifierDouble;
     private PublicationId _publicationIdDouble;
+    private PublicationIdDataModel _pubIdDmDouble;
     private Title _titleDouble;
     private AuthorId _authorIdDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
     private Dimension _dimensionDouble;
+    private DimensionDataModel _dimensionDmDouble;
     private Weight _weightDouble;
+    private WeightDataModel _weightDmDouble;
     private NumberOfPages _numberOfPagesDouble;
     private EditionNumber _editionNumberDouble;
 
@@ -44,11 +48,14 @@ class EditionAssemblerTest {
         _typeIdDouble = mock(PublicationTypeId.class);
         _identifierDouble = mock(ISBN.class);
         _publicationIdDouble = mock(PublicationId.class);
+        _pubIdDmDouble = mock(PublicationIdDataModel.class);
         _titleDouble = mock(Title.class);
         _authorIdDouble = mock(AuthorId.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
         _dimensionDouble = mock(Dimension.class);
+        _dimensionDmDouble = mock(DimensionDataModel.class);
         _weightDouble = mock(Weight.class);
+        _weightDmDouble = mock(WeightDataModel.class);
         _numberOfPagesDouble = mock(NumberOfPages.class);
         _editionNumberDouble = mock(EditionNumber.class);
 
@@ -68,6 +75,17 @@ class EditionAssemblerTest {
         when(_publishingCompanyIdDouble.toString()).thenReturn("PRENTICE HALL");
         when(_editionDouble.getPublishingYear()).thenReturn(Year.of(2008));
         when(_editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
+
+        when(_editionDataModel.getId()).thenReturn("E-ABC12345");
+        when(_editionDataModel.getPublishingCompanyId()).thenReturn("PUB-123");
+        when(_editionDataModel.getPublishingYear()).thenReturn(2008);
+        when(_editionDataModel.getPublicationIdDm()).thenReturn(_pubIdDmDouble);
+        when(_pubIdDmDouble.getTitle()).thenReturn("Clean Code");
+        when(_pubIdDmDouble.getAuthorId()).thenReturn("Martin R.U.-ABC123");
+        when(_pubIdDmDouble.getReleaseYear()).thenReturn(2008);
+        when(_editionDataModel.getEditionLanguage()).thenReturn(Language.ENGLISH);
+        when(_editionDataModel.getNumberOfPages()).thenReturn(300);
+
     }
 
     @Test
@@ -136,23 +154,53 @@ class EditionAssemblerTest {
     }
 
     @Test
+    void toDomainWithAllOptionalFieldsReturnsEdition() {
+        // Arrange
+        when(_editionDataModel.getTypeId()).thenReturn("BOOK");
+        when(_editionDataModel.getIdentifierType()).thenReturn("ISBN");
+        when(_editionDataModel.getIdentifier()).thenReturn("978-3-16-148410-0");
+        when(_editionDataModel.getBinding()).thenReturn(Binding.HARDCOVER);
+        when(_editionDataModel.getDimensionDm()).thenReturn(_dimensionDmDouble);
+        when(_dimensionDmDouble.getWidth()).thenReturn(20.0);
+        when(_dimensionDmDouble.getHeight()).thenReturn(30.0);
+        when(_dimensionDmDouble.getThickness()).thenReturn(5.0);
+        when(_dimensionDmDouble.getUnit()).thenReturn("cm");
+        when(_editionDataModel.getWeightDm()).thenReturn(_weightDmDouble);
+        when(_weightDmDouble.getValue()).thenReturn(1.5);
+        when(_weightDmDouble.getWeightUnit()).thenReturn("kg");
+        when(_editionDataModel.getEditionNumber()).thenReturn(1);
+
+        when(_editionFactoryDouble.createEdition(
+                any(EditionId.class),
+                any(PublicationTypeId.class),
+                any(ISBN.class),
+                any(PublicationId.class),
+                any(PublishingCompanyId.class),
+                any(Year.class),
+                any(Language.class),
+                any(Dimension.class),
+                any(Weight.class),
+                any(NumberOfPages.class),
+                any(EditionNumber.class),
+                eq(Binding.HARDCOVER)
+        )).thenReturn(_editionDouble);
+
+        // SUT
+        EditionAssembler editionAssembler = new EditionAssembler(_editionFactoryDouble);
+
+        // Act
+        Edition result = editionAssembler.toDomain(_editionDataModel);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
     void toDomainWithISBNReturnsEdition() {
         // Arrange
-        PublicationIdDataModel publicationIdDmDouble = mock(PublicationIdDataModel.class);
-
-        when(_editionDataModel.getId()).thenReturn("E-ABC12345");
         when(_editionDataModel.getTypeId()).thenReturn("BOOK");
         when(_editionDataModel.getIdentifier()).thenReturn("978-3-16-148410-0");
         when(_editionDataModel.getIdentifierType()).thenReturn("ISBN");
-        when(_editionDataModel.getPublishingCompanyId()).thenReturn("PUB-123");
-        when(_editionDataModel.getPublishingYear()).thenReturn(2008);
-        when(_editionDataModel.getPublicationIdDm()).thenReturn(publicationIdDmDouble);
-        when(publicationIdDmDouble.getTitle()).thenReturn("Clean Code");
-        when(publicationIdDmDouble.getAuthorId()).thenReturn("Martin R.U.-ABC123");
-        when(publicationIdDmDouble.getReleaseYear()).thenReturn(2008);
-        when(_editionDataModel.getEditionLanguage()).thenReturn(Language.ENGLISH);
-        when(_editionDataModel.getNumberOfPages()).thenReturn(300);
-
         when(_editionDataModel.getEditionNumber()).thenReturn(null);
         when(_editionDataModel.getBinding()).thenReturn(null);
         when(_editionDataModel.getDimensionDm()).thenReturn(null);
@@ -170,6 +218,80 @@ class EditionAssemblerTest {
 
         // Assert
         assertNotNull(result);
+    }
+
+    @Test
+    void toDomainWithISSNReturnsEdition() {
+        //Arrange
+        when(_editionDataModel.getTypeId()).thenReturn("MAGAZINE");
+        when(_editionDataModel.getIdentifier()).thenReturn("2156-5570");
+        when(_editionDataModel.getIdentifierType()).thenReturn("ISSN");
+        when(_editionDataModel.getEditionNumber()).thenReturn(null);
+        when(_editionDataModel.getBinding()).thenReturn(null);
+        when(_editionDataModel.getDimensionDm()).thenReturn(null);
+        when(_editionDataModel.getWeightDm()).thenReturn(null);
+
+        when(_editionFactoryDouble.createEdition(any(EditionId.class), any(PublicationTypeId.class), any(ISSN.class),
+                any(PublicationId.class), any(PublishingCompanyId.class), any(Year.class), any(Language.class),
+                isNull(), isNull(), any(NumberOfPages.class), isNull(), isNull())).thenReturn(_editionDouble);
+
+        // SUT
+        EditionAssembler editionAssembler = new EditionAssembler(_editionFactoryDouble);
+
+        // Act
+        Edition result = editionAssembler.toDomain(_editionDataModel);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void toDomainWithNoIdentifierReturnEdition() {
+
+        // Arrange
+        when(_editionDataModel.getTypeId()).thenReturn("MAGAZINE");
+        when(_editionDataModel.getIdentifier()).thenReturn(null);
+        when(_editionDataModel.getIdentifierType()).thenReturn("NoIdentifier");
+        when(_editionDataModel.getEditionNumber()).thenReturn(null);
+        when(_editionDataModel.getBinding()).thenReturn(null);
+        when(_editionDataModel.getDimensionDm()).thenReturn(null);
+        when(_editionDataModel.getWeightDm()).thenReturn(null);
+
+        when(_editionFactoryDouble.createEdition(any(EditionId.class), any(PublicationTypeId.class), any(NoIdentifier.class),
+                any(PublicationId.class), any(PublishingCompanyId.class), any(Year.class), any(Language.class),
+                isNull(), isNull(), any(NumberOfPages.class), isNull(), isNull())).thenReturn(_editionDouble);
+
+        // SUT
+        EditionAssembler editionAssembler = new EditionAssembler(_editionFactoryDouble);
+
+        // Act
+        Edition result = editionAssembler.toDomain(_editionDataModel);
+
+        // Assert
+        assertNotNull(result);
+
+    }
+
+    @Test
+    void toDomainWithUnknownIdentifierTypeThrowsException() {
+        // Arrange
+        when(_editionDataModel.getTypeId()).thenReturn("BOOK");
+        when(_editionDataModel.getIdentifier()).thenReturn("215");
+        when(_editionDataModel.getIdentifierType()).thenReturn("UNKNOWN");
+        when(_editionDataModel.getEditionNumber()).thenReturn(null);
+        when(_editionDataModel.getBinding()).thenReturn(null);
+        when(_editionDataModel.getDimensionDm()).thenReturn(null);
+        when(_editionDataModel.getWeightDm()).thenReturn(null);
+
+        when(_editionFactoryDouble.createEdition(any(EditionId.class), any(PublicationTypeId.class), any(NoIdentifier.class),
+                any(PublicationId.class), any(PublishingCompanyId.class), any(Year.class), any(Language.class),
+                isNull(), isNull(), any(NumberOfPages.class), isNull(), isNull())).thenReturn(_editionDouble);
+
+        // SUT
+        EditionAssembler editionAssembler = new EditionAssembler(_editionFactoryDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> editionAssembler.toDomain(_editionDataModel));
     }
 
 
