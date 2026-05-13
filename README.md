@@ -53,7 +53,7 @@ To run the application locally, there are two options:
 mvn spring-boot:run -Dspring-boot.run.profiles=mem
 ```
 
-- starts the app using an in-memory profile, meaning the database lives only in RAM and is wiped clean every time the app stops.
+- starts the app using an in-memory profile, meaning the database lives only in RAM and is wiped clean every time the app stops (Assuming tha the JDBC URL in `application.properties` is set to `jdbc:h2:mem:miteloversdb`).
 
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=jpa,bootstrap
