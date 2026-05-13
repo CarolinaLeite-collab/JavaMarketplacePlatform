@@ -80,11 +80,8 @@ public class JpaPublishingCompanyRepo implements IPublishingCompanyRepo {
     @Override
     public Optional<PublishingCompany> ofIdentity(PublishingCompanyId publishingCompanyId) {
 
-        PublishingCompanyDataModel savedPublishingCompanyDataModel =
-                _publishingCompanySpringDataRepo.findById(publishingCompanyId.toString())
-                        .orElseThrow(() -> new IllegalArgumentException("PublishingCompany not found!"));
-
-        return Optional.of(_publishingCompanyAssembler.toDomain(savedPublishingCompanyDataModel));
+        return _publishingCompanySpringDataRepo.findById(publishingCompanyId.toString())
+                .map(_publishingCompanyAssembler::toDomain);
     }
 
     @Override

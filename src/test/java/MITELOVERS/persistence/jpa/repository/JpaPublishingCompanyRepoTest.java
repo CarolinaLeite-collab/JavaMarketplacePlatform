@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension .class)
+@ExtendWith(MockitoExtension.class)
 class JpaPublishingCompanyRepoTest {
 
     @Mock
@@ -145,7 +145,7 @@ class JpaPublishingCompanyRepoTest {
     }
 
     @Test
-    void ofIdentityShouldThrowExceptionWhenNotFound() {
+    void ofIdentityShouldReturnEmptyOptionalWhenNotFound() {
         // Arrange
 
         PublishingCompanyId id =
@@ -154,11 +154,12 @@ class JpaPublishingCompanyRepoTest {
         when(_publishingCompanySpringDataRepoDouble.findById("PORTO EDITORA"))
                 .thenReturn(Optional.empty());
 
-        // Act + Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> _jpaPublishingCompanyRepoDouble.ofIdentity(id)
-        );
+        // Act
+        Optional<PublishingCompany> result =
+                _jpaPublishingCompanyRepoDouble.ofIdentity(id);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
