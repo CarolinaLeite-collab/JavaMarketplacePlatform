@@ -217,7 +217,9 @@ jobs:
 
 ### Notify Discord on PR Merge
 
-This GitHub workflow has a complementary action to the first one. It is triggered whenever a Pull Request is merged on a certain branch and notifies the team to integrate these new changes in their local working branches:
+This GitHub workflow presents a complementary action to the first one.
+
+It is triggered whenever a Pull Request is merged on a certain branch and notifies the team to integrate these new changes in their local working branches:
 
 ```yaml
 name: Notify Discord on PR Merge
@@ -260,7 +262,7 @@ On each Pull Request trigger, the pipeline runs `mvn clean verify` which compile
 
 To follow good DevOps practices, it also archives the JaCoCo coverage report in HTML format. 
 
-To fishing, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage:
+To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
 
 ![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
 
