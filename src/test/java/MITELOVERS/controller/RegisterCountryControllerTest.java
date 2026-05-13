@@ -6,27 +6,27 @@ import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(RegisterCountryController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class RegisterCountryControllerTest {
 
-    @MockBean
+    @Mock
     ICountryRepo _iCountryRepoDouble;
 
-    @MockBean
+    @Mock
     CountryFactory _countryFactoryDouble;
 
-    @Autowired
+    @InjectMocks
     RegisterCountryController _registerCountryController;
 
     private Country _countryDouble;
@@ -35,8 +35,6 @@ class RegisterCountryControllerTest {
     @BeforeEach
     void setUp() throws InstantiationException {
 
-
-        MockitoAnnotations.openMocks(this);
         _countryDouble = mock(Country.class);
         _countryIdDouble = mock(CountryId.class);
 
