@@ -95,7 +95,7 @@ ItemFactory "1" ..> "*" Item : <<create>>
 Item "*" --> "1" Condition : has
 Item "1" --> "1" Description : has
 Item "1" --> "1" EditionID : references
-Item "1" --> "1" ItemID : has
+Item "1" *-- "1" ItemID : has
 Item "1" --> "1" SaleStatus : has
 
 IItemRepo --|> IRepository
