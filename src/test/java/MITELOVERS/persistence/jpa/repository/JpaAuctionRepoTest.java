@@ -31,7 +31,7 @@ class JpaAuctionRepoTest {
 
     @Test
     void testConstructor() {
-        assertDoesNotThrow(() -> new JpaAuctionRepo(springDataRepo, assemblerDouble));
+        assertDoesNotThrow(() -> new JpaAuctionRepo());
     }
 
     @Test
