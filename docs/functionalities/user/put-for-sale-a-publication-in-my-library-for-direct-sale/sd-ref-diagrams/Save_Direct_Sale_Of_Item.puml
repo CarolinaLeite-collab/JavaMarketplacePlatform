@@ -29,6 +29,9 @@ activate JpaDirectSaleRepo
 JpaDirectSaleRepo -> Assembler: domain2DM(directSale)
 activate Assembler
 create "directSaleDM %n():DirectSaleDataModel"
+note right Assembler
+Abstraction of how a DirectSale object %n()is turned into a DirectSaleDataModel object
+end note
 Assembler -->> "directSaleDM %n():DirectSaleDataModel": <<create>>
 Assembler --> JpaDirectSaleRepo: directSaleDM
 deactivate Assembler
