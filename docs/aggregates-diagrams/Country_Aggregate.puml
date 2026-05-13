@@ -70,7 +70,7 @@ Package "ddd" {
 
 ' ===== Relations =====
 
-Country "1" ..> "1" CountryId : has
+Country "1" --> "1" CountryId : references
 Country "1" --> "1" CountryName : has
 
 ICountryRepo -|> IRepository
