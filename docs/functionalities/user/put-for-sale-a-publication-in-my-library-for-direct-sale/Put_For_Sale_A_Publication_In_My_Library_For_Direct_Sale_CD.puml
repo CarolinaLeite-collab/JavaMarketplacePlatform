@@ -115,8 +115,9 @@ Library "1" --> "*" ItemId : has
 Library "1" ..> "1" UserId : uses
 Library "1" --> "1" LibraryId : has
 
-IDirectSaleRepo "1     " ..|> "1" IRepository
-IItemRepo "1" ..|> "1" IRepository
+IDirectSaleRepo  ..|>  IRepository
+IItemRepo  ..|>  IRepository
+ILibraryRepo ..|> IRepository
 PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : <<use>>
 DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
