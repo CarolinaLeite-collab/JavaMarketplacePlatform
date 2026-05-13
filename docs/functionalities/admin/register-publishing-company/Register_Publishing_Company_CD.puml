@@ -30,7 +30,6 @@ package "domain" {
         }
         class PublishingCompanyFactory <<Factory>> {
                 + createPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
-                + createPublishingCompany(publishingCompanyId: PublishingCompanyId) : \nPublishingCompany
         }
 
     }
@@ -68,7 +67,7 @@ RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: inv
 RegisterPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo: calls
 RegisterPublishingCompanyController "1" --> "1" PublishingCompanyFactory : invokes
 RegisterPublishingCompanyController "1" ..> "*" PublishingCompany : <<use>>
-IPublishingCompanyRepo --|> IRepository
+IPublishingCompanyRepo ..|> IRepository
 PublishingCompanyFactory "1" ..> "1" PublishingCompany: <<create>>
 IPublishingCompanyRepo "1" --> "1" PublishingCompany: persists
 PublishingCompany "1" --> "1" PublishingCompanyId: has

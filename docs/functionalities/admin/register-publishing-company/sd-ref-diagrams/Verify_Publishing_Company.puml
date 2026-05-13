@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title "As an Administrator, I want to register a Publishing Company in the system" SD
+title "Verify the existence of a Publishing Company in persistence" SD
 
 
 '==== basic style ====
@@ -31,14 +31,14 @@ PC --> CTL : publishingCompanyId
 deactivate PC
 CTL -> IREPO: containsOfIdentity\n(publishingCompanyId)
 activate IREPO
-IREPO -> SDREPO : containsOfIdentity\n(publishingCompanyId.toString())
-activate SDREPO
-SDREPO -> DB : select
+IREPO -> REPO : containsOfIdentity\n(publishingCompanyId.toString())
+activate REPO
+REPO -> DB : select
 activate DB
-DB --> SDREPO : false
+DB --> REPO : false
 deactivate DB
-SDREPO --> IREPO : false
-deactivate SDREPO
+REPO --> IREPO : false
+deactivate REPO
 IREPO --> CTL : false
 deactivate IREPO
 
