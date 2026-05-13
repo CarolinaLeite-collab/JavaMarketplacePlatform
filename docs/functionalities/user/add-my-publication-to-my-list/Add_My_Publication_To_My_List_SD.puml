@@ -42,9 +42,9 @@ UI -> Ctl : getMyLists(userId)
 activate Ctl
 Ctl -> IListRepo : findListsByUserId(userId)
 activate IListRepo
-IListRepo --> Ctl : Map<ListOfItemsId, String>
+IListRepo --> Ctl : list
 deactivate IListRepo
-Ctl --> UI : Map<ListOfItemsId, String>
+Ctl --> UI : list
 deactivate Ctl
 
 UI --> "User" : Select which list you wish to add it to

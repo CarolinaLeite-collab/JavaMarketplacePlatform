@@ -28,6 +28,9 @@ package "domain" {
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
             - _isPrivate : boolean
+            + getUserID() : UserID
+            + getName() : String
+            + getGenreID() : GenreID
             + addItem(itemId : ItemId) : void
             + getItemIds() : List<ItemId>
         }

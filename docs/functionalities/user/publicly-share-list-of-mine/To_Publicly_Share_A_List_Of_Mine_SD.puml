@@ -25,11 +25,11 @@ activate UI
 
 UI -> Ctl : findListsByUserId(userId)
 activate Ctl
-Ctl -> IListRepo : findListsByUserId(userId)
+Ctl -> IListRepo : findAll()
 activate IListRepo
-IListRepo --> Ctl : Map<ListOfItemsId, String>
+IListRepo --> Ctl :  list
 deactivate IListRepo
-Ctl --> UI : Map<ListOfItemsId, String>
+Ctl --> UI : list
 deactivate Ctl
 
 UI --> "User" : What list do you want to share?

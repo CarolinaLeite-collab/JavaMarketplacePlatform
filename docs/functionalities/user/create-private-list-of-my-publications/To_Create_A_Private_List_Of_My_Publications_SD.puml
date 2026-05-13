@@ -17,7 +17,7 @@ autoactivate off
 
 actor "User"
 participant ":CreatePrivateListOfItemsUI" as UI
-participant ":CreateListOfItemsController" as Ctl
+participant ":CreatePrivateListOfItemsController" as Ctl
 participant ":IGenreRepo" as IGenreRepo
 participant ":ListOfItemsFactory" as Factory
 participant ":IListOfItemsRepo" as IRepo
@@ -29,7 +29,7 @@ deactivate UI
 "User" -> UI : name
 activate UI
 
-UI -> Ctl : getAllGenres()
+UI -> Ctl : getListOfOfficialGenres
 activate Ctl
 Ctl -> IGenreRepo : getListOfOfficialGenres()
 activate IGenreRepo

@@ -42,7 +42,7 @@ IRepo --> Ctl : false
 deactivate IRepo
 
 ref over Ctl
-[[../Create_ListOfItems_SD.puml Back to Main Diagram]]
+[[../To_Create_A_Private_List_Of_My_Publications_SD.puml Back to Main Diagram]]
 end ref
 
 @enduml
