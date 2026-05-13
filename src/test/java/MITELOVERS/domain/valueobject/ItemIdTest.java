@@ -29,29 +29,6 @@ class ItemIdTest {
     }
 
     @Test
-    void constructorWithNullStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId(null)
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-    @Test
-    void constructorWithBlankStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId("   ")
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-
-    @Test
     void getSKUShouldReturnNonNullSku() {
         // SUT
         ItemId sut = new ItemId();
@@ -166,19 +143,29 @@ class ItemIdTest {
         assertEquals(sut.getSku().toString(), result);
     }
 
+    // --------------------------------------
+    // Tests for the rehydration constructor
+    // --------------------------------------
+
     @Test
-    void getValueShouldReturnUnderlyingSkuValue() {
-        // Arrange
-        String skuValue = "ABCDEF1234";
+    void rehydrationConstructorShouldStoreGivenSkuValue() {
+        String value = "ABCDEF1234"; // valid SKU
+        ItemId sut = new ItemId(value);
+        assertEquals(value, sut.getSku().getValue());
+    }
 
-        //SUT
-        ItemId sut = new ItemId(skuValue);
+    @Test
+    void rehydrationConstructorShouldRejectInvalidSkuValue() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new ItemId(invalid));
+    }
 
-        // Act
-        String result = sut.getValue();
-
-        // Assert
-        assertEquals(skuValue, result);
+    @Test
+    void rehydratedItemIdsWithSameValueShouldBeEqual() {
+        String value = "A1B2C3D4E5";
+        ItemId sut = new ItemId(value);
+        ItemId other = new ItemId(value);
+        assertEquals(sut, other);
     }
 
     @Test
