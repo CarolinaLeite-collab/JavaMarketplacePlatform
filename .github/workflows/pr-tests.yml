@@ -4,10 +4,6 @@ on:
   pull_request:
     branches: [ main, b3, b4 ]
 
-# This env is placed to eliminate a node.js warning
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
