@@ -3,7 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 /**
@@ -18,7 +18,7 @@ import java.util.Objects;
  * persistence to {@link ICountryRepo}.
  * </p>
  */
-@RestController
+@Component
 public class RegisterCountryController {
     private final ICountryRepo _iCountryRepo;
     private final CountryFactory _countryFactory;

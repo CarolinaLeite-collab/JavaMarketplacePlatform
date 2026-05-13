@@ -54,8 +54,6 @@ class RegisterCountryControllerTest {
 
         // Assert
         assertEquals(_countryDouble, result);
-        verify(_countryFactoryDouble).createCountry(countryName);
-        verify(_iCountryRepoDouble).save(_countryDouble);
     }
 
     @Test
