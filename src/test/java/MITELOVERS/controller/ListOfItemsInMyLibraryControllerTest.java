@@ -74,6 +74,7 @@ class ListOfItemsInMyLibraryControllerTest {
         Author authorDouble = mock(Author.class);
 
         Title titleDouble = mock(Title.class);
+        Name nameDouble = mock(Name.class);
         ISBN isbnMock = mock(ISBN.class);
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
@@ -112,7 +113,8 @@ class ListOfItemsInMyLibraryControllerTest {
                     .thenReturn(authorIdDouble);
 
             when(publicationDouble.getTitle()).thenReturn(titleDouble);
-
+            when(nameDouble.toString()).thenReturn("J.D. Salinger");
+            when(authorDouble.getName()).thenReturn(nameDouble);
             when(editionDouble.getIdentifier()).thenReturn(isbnMock);
 
             when(_iPublicationTypeRepoDouble.ofIdentity(publicationTypeIdDouble))
@@ -162,6 +164,7 @@ class ListOfItemsInMyLibraryControllerTest {
         Author authorDouble = mock(Author.class);
 
         Title titleDouble = mock(Title.class);
+        Name nameDouble = mock(Name.class);
         LibraryId libraryIdDouble = mock(LibraryId.class);
         Library libraryDouble = mock(Library.class);
 
@@ -208,6 +211,8 @@ class ListOfItemsInMyLibraryControllerTest {
             when(titleDouble.toString())
                     .thenReturn("The Catcher in the Rye");
 
+            when(nameDouble.toString()).thenReturn("J.D. Salinger");
+
             when(publicationDouble.getAuthorId())
                     .thenReturn(authorIdDouble);
 
@@ -218,7 +223,7 @@ class ListOfItemsInMyLibraryControllerTest {
                     .thenReturn(Optional.of(authorDouble));
 
             when(authorDouble.getName())
-                    .thenReturn("J.D. Salinger");
+                    .thenReturn(nameDouble);
 
             when(publicationTypeDouble.toString())
                     .thenReturn("Book");
