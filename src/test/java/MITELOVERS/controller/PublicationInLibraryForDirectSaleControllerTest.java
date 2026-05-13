@@ -10,11 +10,14 @@ import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
-import java.time.Instant;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,37 +25,43 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class PublicationInLibraryForDirectSaleControllerTest {
 
-    private ILibraryRepo _iLibraryRepoDouble;
-    private IDirectSaleRepo _iDirectSaleRepoDouble;
-    private IItemRepo _iItemRepoDouble;
+    @Mock
+    ILibraryRepo _iLibraryRepoDouble;
+
+    @Mock
+    IDirectSaleRepo _iDirectSaleRepoDouble;
+
+    @Mock
+    IItemRepo _iItemRepoDouble;
+
+    @Mock
+    DirectSaleFactory _directSaleFactory;
+
+    @InjectMocks
+    RegisterNewUserController _registerNewUserController;
+
     private UserId _userIdDouble;
     private Library _libraryDouble;
     private List<ItemId> _itemsId;
     private ItemId _itemIdDouble;
     private Price _priceDouble;
     private Duration _timeLimitDouble;
-    private Instant _creationDate;
     private Item _itemDouble;
-    private DirectSaleFactory _directSaleFactory;
+
 
     @BeforeEach
     void setUp() {
-        _directSaleFactory = mock(DirectSaleFactory.class);
-        _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
-        _iItemRepoDouble = mock(IItemRepo.class);
         _userIdDouble = mock(UserId.class);
         _libraryDouble = mock(Library.class);
         _itemIdDouble = mock(ItemId.class);
-
         _itemsId = new ArrayList<>();
         _itemsId.add(_itemIdDouble);
-
         _priceDouble = mock(Price.class);
         _timeLimitDouble = Duration.ofDays(30);
-
         _itemDouble = mock(Item.class);
     }
 
@@ -148,7 +157,6 @@ class PublicationInLibraryForDirectSaleControllerTest {
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
                     .thenReturn(_libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
             when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
             when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
             when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
@@ -176,7 +184,6 @@ class PublicationInLibraryForDirectSaleControllerTest {
             mocked.when(() -> LibraryId.fromUserId(_userIdDouble))
                     .thenReturn(_libraryIdDouble);
 
-            when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
             when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
             when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
             when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble))
@@ -205,7 +212,6 @@ class PublicationInLibraryForDirectSaleControllerTest {
 
         DirectSale directSaleDouble = mock(DirectSale.class);
 
-        when(_iLibraryRepoDouble.ofIdentity(_libraryIdDouble)).thenReturn(Optional.ofNullable(_libraryDouble));
         LibraryId libraryId = mock(LibraryId.class);
 
         when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble)).thenReturn(directSaleDouble);
@@ -263,8 +269,6 @@ class PublicationInLibraryForDirectSaleControllerTest {
     void putItemIdOnDirectSaleShouldThrowIfDirectSaleAlreadyExists() {
         // Arrange
         DirectSale directSaleDouble = mock(DirectSale.class);
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
         when(_directSaleFactory.createDirectSale(_itemsId, _priceDouble, _timeLimitDouble)).thenReturn(directSaleDouble);
         when(_iDirectSaleRepoDouble.containsOfIdentity(directSaleDouble.identity())).thenReturn(true);
 
