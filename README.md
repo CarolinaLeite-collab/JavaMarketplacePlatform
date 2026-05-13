@@ -27,8 +27,7 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
     * [Run Tests on Pull Request](#run-tests-on-pull-request)
-  * [SpringBoot Active Profile](#springboot-active-profile)
-  * [application.properties](#applicationproperties)
+  * [SpringBoot application.properties](#springboot-applicationproperties)
 <!-- TOC -->
 
 ___
@@ -65,7 +64,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=jpa,bootstrap
 The application will start on `http://localhost:8081`.
 
 The H2 console is available at `http://localhost:8081/h2-console` with the following settings:
-- JDBC URL: `jdbc:h2:mem:miteloversdb`
+- JDBC URL: `jdbc:h2:file:./data/miteloversdb`
 - Username: `sa`
 - Password: *(leave blank)*
 
