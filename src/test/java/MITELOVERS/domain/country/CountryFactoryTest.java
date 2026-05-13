@@ -1,5 +1,6 @@
 package MITELOVERS.domain.country;
 
+import MITELOVERS.domain.valueobject.CountryId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -21,6 +22,31 @@ class CountryFactoryTest {
         // Act
         try (MockedConstruction<Country> mocked = mockConstruction(Country.class)) {
             result = factory.createCountry(countryName);
+
+            constructedCount = mocked.constructed().size();
+            mockedInstance = mocked.constructed().get(0);
+        }
+
+        // Assert
+        assertEquals(1, constructedCount);
+        assertSame(mockedInstance, result);
+    }
+
+    @Test
+    void shouldSuccessfullyCreateCountryWithCountryId() {
+        // Arrange
+        String countryName = "Portugal";
+        CountryFactory factory = new CountryFactory(); // SUT
+        Country result;
+        int constructedCount;
+        Country mockedInstance;
+
+        // Act
+        try (MockedConstruction<CountryId> mockedId = mockConstruction(CountryId.class);
+             MockedConstruction<Country> mocked = mockConstruction(Country.class)) {
+
+            CountryId countryId = new CountryId("PT");
+            result = factory.createCountry(countryId, countryName);
 
             constructedCount = mocked.constructed().size();
             mockedInstance = mocked.constructed().get(0);
