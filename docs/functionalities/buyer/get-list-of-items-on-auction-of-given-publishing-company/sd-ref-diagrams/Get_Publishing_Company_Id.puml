@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on auction of a given publisher" - SD
+title "Get Auction Id" - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,13 +16,38 @@ autoactivate off
 hidefootbox
 
 participant ":GetItemsOnAuctionOfA\nGivenPublishingCompanyController" as CTL
-participant ":IPublishingCompanyRepo" as REPO
+participant ":JpaPublishingCompanyRepo" as JPAREPO
+participant ":IPublishingCompanySpringdataRepo" as SPRINGREPO
+database "DB" as DB
 
 activate CTL
-CTL -> REPO : findAllKeys()
-activate REPO
-REPO --> CTL : publishingCompanyIds
-deactivate REPO
+CTL -> JPAREPO : findAll()
+activate JPAREPO
+
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> DB : findAll()
+activate DB
+
+DB --> SPRINGREPO : savedPublishingCompanyDms
+deactivate DB
+SPRINGREPO --> JPAREPO : savedPublishingCompanyDms
+deactivate SPRINGREPO
+
+loop for savedPublishingCompanyDm : savedPublishingCompanyDms
+    JPAREPO -> "savedPublishingCompanyDm:PublishingCompanyDataModel" : getPublishingCompanyId()
+    JPAREPO -> "publishingCompanyId:PublishingCompanyId" : <<create>>(stringPublishingCompanyId)
+end
+
+create "publishingCompanyIds:List<PublishingCompanyId>"
+JPAREPO -> "publishingCompanyIds:List<PublishingCompanyId>" : <<create>>
+JPAREPO -> "publishingCompanyIds:List<PublishingCompanyId>" : add(stringPublishingCompanyId)
+"publishingCompanyIds:List<PublishingCompanyId>" --> JPAREPO : true
+
+JPAREPO --> CTL : publishingCompanyIds
+deactivate JPAREPO
 
 ref over CTL
 [[../Get_List_Of_Items_on_Auction_Of_Given_Publishing_Company_SD.puml Back to Main Diagram]]
