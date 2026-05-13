@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on auction of a given author" - SD
+title "Get Auction Id" - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,13 +16,38 @@ autoactivate off
 hidefootbox
 
 participant ":GetItemsOnAuctionOfA\nGivenAuthorController" as CTL
-participant ":IAuthorRepo" as REPO
+participant ":JpaAuthorRepo" as JPAREPO
+participant ":IAuthorSpringdataRepo" as SPRINGREPO
+database "DB" as DB
 
 activate CTL
-CTL -> REPO : findAllKeys()
-activate REPO
-REPO --> CTL : authorIds
-deactivate REPO
+CTL -> JPAREPO : findAll()
+activate JPAREPO
+
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> DB : findAll()
+activate DB
+
+DB --> SPRINGREPO : savedAuthorDms
+deactivate DB
+SPRINGREPO --> JPAREPO : savedAuthorDms
+deactivate SPRINGREPO
+
+loop for savedAuthorDm : savedAuthorDms
+    JPAREPO -> "savedAuthorDm:AuthorDataModel" : getAuthorId()
+    JPAREPO -> "authorId:AuthorId" : <<create>>(stringAuthorId)
+end
+
+create "authorIds:List<AuthorId>"
+JPAREPO -> "authorIds:List<AuthorId>" : <<create>>
+JPAREPO -> "authorIds:List<AuthorId>" : add(stringAuthorId)
+"authorIds:List<AuthorId>" --> JPAREPO : true
+
+JPAREPO --> CTL : authorIds
+deactivate JPAREPO
 
 ref over CTL
 [[../Get_List_Of_Items_on_Auction_Of_Given_Author_SD.puml Back to Main Diagram]]
