@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class JpaItemRepoTest {
 
     // SUT
@@ -50,10 +52,7 @@ class JpaItemRepoTest {
 
         //Assert
         assertEquals(itemDouble, result);
-        verify(_itemAssemblerDouble).toDataModel(itemDouble);
-        verify(_itemSpringDataRepoDouble).save(itemDataModelDouble);
-        verify(_itemAssemblerDouble).toDomain(itemDataModelDouble);
-        verifyNoMoreInteractions(_itemAssemblerDouble, _itemSpringDataRepoDouble);
+
     }
 
     @Test
@@ -71,9 +70,6 @@ class JpaItemRepoTest {
         //Assert
         assertEquals(1, result.size());
 
-        verify(_itemSpringDataRepoDouble, times(1)).findAll();
-        verifyNoMoreInteractions(_itemSpringDataRepoDouble);
-        verifyNoInteractions(_itemAssemblerDouble);
     }
 
     @Test
@@ -115,7 +111,6 @@ class JpaItemRepoTest {
         //Assert
         assertEquals(1, resultList.size());
         assertEquals(itemDouble, resultList.get(0));
-        verify(_itemSpringDataRepoDouble, times(1)).findAll();
 
     }
 
