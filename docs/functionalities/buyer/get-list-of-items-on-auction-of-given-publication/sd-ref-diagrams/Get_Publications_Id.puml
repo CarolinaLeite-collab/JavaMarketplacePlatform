@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on auction of a given publication" - Level 2 SD
+title "Get Auction Id" - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,13 +16,38 @@ autoactivate off
 hidefootbox
 
 participant ":GetItemsOnAuctionOfA\nGivenPublicationController" as CTL
-participant "IPublicationRepo" as REPO
+participant ":JpaPublicationRepo" as JPAREPO
+participant ":IPublicationSpringdataRepo" as SPRINGREPO
+database "DB" as DB
 
 activate CTL
-CTL -> REPO : findAllKeys()
-activate REPO
-REPO --> CTL : publicationIds
-deactivate REPO
+CTL -> JPAREPO : findAll()
+activate JPAREPO
+
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> DB : findAll()
+activate DB
+
+DB --> SPRINGREPO : savedPublicationDms
+deactivate DB
+SPRINGREPO --> JPAREPO : savedPublicationrDms
+deactivate SPRINGREPO
+
+loop for savedPublicationDm : savedPublicationDms
+    JPAREPO -> "savedPublicationDm:PublicationDataModel" : getPublicationId()
+    JPAREPO -> "publicationId:PublicationId" : <<create>>(stringPublicationId)
+end
+
+create "publicationIds:List<PublicationId>"
+JPAREPO -> "publicationIds:List<PublicationId>" : <<create>>
+JPAREPO -> "publicationIds:List<PublicationId>" : add(stringPublicationId)
+"publicationIds:List<PublicationId>" --> JPAREPO : true
+
+JPAREPO --> CTL : publicationIds
+deactivate JPAREPO
 
 ref over CTL
 [[../Get_List_Of_Items_on_Auction_Of_Given_Publication_SD_2.puml Back to Main Diagram]]
