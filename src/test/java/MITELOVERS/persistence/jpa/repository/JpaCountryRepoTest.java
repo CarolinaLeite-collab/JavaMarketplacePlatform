@@ -96,19 +96,21 @@ class JpaCountryRepoTest {
         Optional<Country> result = jpaCountryRepo.ofIdentity(countryIdDouble);
 
         // Assert
+        assertTrue(result.isPresent());
         assertEquals(_countryDouble, result.get());
     }
 
     @Test
-    void testOfIdentityShouldThrowWhenNotFound() {
+    void testOfIdentityShouldReturnEmptyWhenNotFound() {
         // Arrange
         CountryId countryIdDouble = mock(CountryId.class);
         when(_springRepoDouble.findById(countryIdDouble.toString())).thenReturn(Optional.empty());
 
+        // Act
+        Optional<Country> result = jpaCountryRepo.ofIdentity(countryIdDouble);
+
         // Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            jpaCountryRepo.ofIdentity(countryIdDouble);
-        });
+        assertTrue(result.isEmpty());
     }
 
     @Test

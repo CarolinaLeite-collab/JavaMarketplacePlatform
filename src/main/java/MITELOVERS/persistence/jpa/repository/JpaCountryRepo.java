@@ -61,9 +61,8 @@ public class JpaCountryRepo implements ICountryRepo {
 
     @Override
     public Optional<Country> ofIdentity(CountryId countryId) {
-        CountryDataModel savedDM = _iCountrySpringDataRepo.findById(countryId.toString())
-                .orElseThrow(() -> new IllegalArgumentException("Country not found!"));
-        return Optional.of(_assembler.toDomain(savedDM));
+        return _iCountrySpringDataRepo.findById(countryId.toString())
+        .map(_assembler::toDomain);
     }
 
     @Override
