@@ -79,17 +79,21 @@ class JpaCountryRepoTest {
         when(_dataModelDouble.getCountryId()).thenReturn("PT");
 
         // Act
-        List<CountryId> result = jpaCountryRepo.findAllKeys();
+        Iterable<CountryId> result = jpaCountryRepo.findAllKeys();
 
         // Assert
-        assertEquals(1, result.size());
+        List<CountryId> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
+        assertEquals(1, resultList.size());
+        assertEquals(new CountryId("PT"), resultList.get(0));
     }
 
     @Test
     void testOfIdentityShouldReturnCountryOfACertainId() {
         // Arrange
         CountryId countryIdDouble = mock(CountryId.class);
-        when(_springRepoDouble.findById(countryIdDouble.toString())).thenReturn(Optional.of(_dataModelDouble));
+        when(countryIdDouble.toString()).thenReturn("PT");
+        when(_springRepoDouble.findById("PT")).thenReturn(Optional.of(_dataModelDouble));
         when(_assemblerDouble.toDomain(_dataModelDouble)).thenReturn(_countryDouble);
 
         // Act
@@ -104,7 +108,8 @@ class JpaCountryRepoTest {
     void testOfIdentityShouldReturnEmptyWhenNotFound() {
         // Arrange
         CountryId countryIdDouble = mock(CountryId.class);
-        when(_springRepoDouble.findById(countryIdDouble.toString())).thenReturn(Optional.empty());
+        when(countryIdDouble.toString()).thenReturn("PT");
+        when(_springRepoDouble.findById("PT")).thenReturn(Optional.empty());
 
         // Act
         Optional<Country> result = jpaCountryRepo.ofIdentity(countryIdDouble);

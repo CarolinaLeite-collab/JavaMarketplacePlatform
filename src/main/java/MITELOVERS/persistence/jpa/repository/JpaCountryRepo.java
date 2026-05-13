@@ -51,7 +51,7 @@ public class JpaCountryRepo implements ICountryRepo {
     }
 
     @Override
-    public List<CountryId> findAllKeys() {
+    public Iterable<CountryId> findAllKeys() {
         List<CountryId> keys = new ArrayList<>();
         for (CountryDataModel dm : _iCountrySpringDataRepo.findAll()) {
             keys.add(new CountryId(dm.getCountryId()));
