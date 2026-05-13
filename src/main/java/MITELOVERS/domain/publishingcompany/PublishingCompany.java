@@ -1,7 +1,10 @@
 package MITELOVERS.domain.publishingcompany;
 
 import MITELOVERS.ddd.AggregateRoot;
+import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
+
+import java.util.Objects;
 
 /**
  * Represents the organization or company that formally releases the work of one edition.
@@ -20,7 +23,13 @@ public class PublishingCompany implements AggregateRoot<PublishingCompanyId> {
     private final PublishingCompanyId _id;
 
     PublishingCompany(String publishingCompanyName) {
-        _id = new PublishingCompanyId(publishingCompanyName);
+
+        _id = new PublishingCompanyId(new Name(publishingCompanyName).toString());
+    }
+
+    PublishingCompany(PublishingCompanyId publishingCompanyid) {
+
+        _id = publishingCompanyid;
     }
 
     @Override
