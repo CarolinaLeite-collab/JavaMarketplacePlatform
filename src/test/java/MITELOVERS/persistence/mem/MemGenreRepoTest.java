@@ -1,10 +1,11 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.valueobject.GenreId;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,14 +14,40 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@Tag("unit")
 class MemGenreRepoTest {
 
     @Test
     void constructorOfGenreRepoShouldCreateGenreRepo() {
+        // Arrange
+        MemGenreRepo _sut;
 
-        //SUT
-        new MemGenreRepo();
+        // SUT
+        _sut = new MemGenreRepo();
 
+        // Act
+        MemGenreRepo result = _sut;
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void classShouldBeAnnotatedWithRepositoryAndMemProfile() {
+        // Arrange
+        Class<MemGenreRepo> repoClass = MemGenreRepo.class;
+
+        // SUT
+        Class<MemGenreRepo> _sut = repoClass;
+
+        // Act
+        Repository repository = _sut.getAnnotation(Repository.class);
+        Profile profile = _sut.getAnnotation(Profile.class);
+
+        // Assert
+        assertNotNull(repository);
+        assertNotNull(profile);
+        assertArrayEquals(new String[]{"mem"}, profile.value());
     }
 
     @Test
@@ -31,10 +58,10 @@ class MemGenreRepoTest {
         when(genreDouble.identity()).thenReturn(genreIdDouble);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
+        MemGenreRepo _sut = new MemGenreRepo();
 
         // Act
-        Genre result = repo.save(genreDouble);
+        Genre result = _sut.save(genreDouble);
 
         // Assert
         assertSame(genreDouble, result);
@@ -51,12 +78,12 @@ class MemGenreRepoTest {
         when(genre2Double.identity()).thenReturn(id2Double);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
-        repo.save(genre1Double);
-        repo.save(genre2Double);
+        MemGenreRepo _sut = new MemGenreRepo();
+        _sut.save(genre1Double);
+        _sut.save(genre2Double);
 
         // Act
-        Iterable<Genre> result = repo.findAll();
+        Iterable<Genre> result = _sut.findAll();
 
         // Assert
         assertNotNull(result);
@@ -65,11 +92,14 @@ class MemGenreRepoTest {
 
     @Test
     void findAllEmptyRepoReturnsEmptyIterable() {
-        // Arrange & SUT
+        // Arrange
         MemGenreRepo repo = new MemGenreRepo();
 
+        // SUT
+        MemGenreRepo _sut = repo;
+
         // Act
-        Iterable<Genre> result = repo.findAll();
+        Iterable<Genre> result = _sut.findAll();
 
         // Assert
         assertFalse(result.iterator().hasNext());
@@ -86,14 +116,13 @@ class MemGenreRepoTest {
         when(genre2Double.identity()).thenReturn(id2Double);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
+        MemGenreRepo _sut = new MemGenreRepo();
 
         // Act
-        repo.save(genre1Double);
-        repo.save(genre2Double);
+        _sut.save(genre1Double);
+        _sut.save(genre2Double);
 
-
-        List<GenreId> result = repo.findAllKeys();
+        List<GenreId> result = _sut.findAllKeys();
 
         // Assert
         assertEquals(2, result.size());
@@ -103,10 +132,14 @@ class MemGenreRepoTest {
 
     @Test
     void findAllKeysEmptyRepoReturnsEmptyList() {
-        // Arrange & SUT
+        // Arrange
         MemGenreRepo repo = new MemGenreRepo();
 
-        List<GenreId> result = repo.findAllKeys();
+        // SUT
+        MemGenreRepo _sut = repo;
+
+        // Act
+        List<GenreId> result = _sut.findAllKeys();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -120,11 +153,11 @@ class MemGenreRepoTest {
         when(genreDouble.identity()).thenReturn(genreIdDouble);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
-        repo.save(genreDouble);
+        MemGenreRepo _sut = new MemGenreRepo();
+        _sut.save(genreDouble);
 
         // Act
-        Optional<Genre> result = repo.ofIdentity(genreIdDouble);
+        Optional<Genre> result = _sut.ofIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result.isPresent());
@@ -137,10 +170,10 @@ class MemGenreRepoTest {
         GenreId genreIdDouble = mock(GenreId.class);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
+        MemGenreRepo _sut = new MemGenreRepo();
 
         // Act
-        Optional<Genre> result = repo.ofIdentity(genreIdDouble);
+        Optional<Genre> result = _sut.ofIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -154,11 +187,11 @@ class MemGenreRepoTest {
         when(genreDouble.identity()).thenReturn(genreIdDouble);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
-        repo.save(genreDouble);
+        MemGenreRepo _sut = new MemGenreRepo();
+        _sut.save(genreDouble);
 
         // Act
-        boolean result = repo.containsOfIdentity(genreIdDouble);
+        boolean result = _sut.containsOfIdentity(genreIdDouble);
 
         // Assert
         assertTrue(result);
@@ -170,10 +203,10 @@ class MemGenreRepoTest {
         GenreId genreIdDouble = mock(GenreId.class);
 
         // SUT
-        MemGenreRepo repo = new MemGenreRepo();
+        MemGenreRepo _sut = new MemGenreRepo();
 
         // Act
-        boolean result = repo.containsOfIdentity(genreIdDouble);
+        boolean result = _sut.containsOfIdentity(genreIdDouble);
 
         // Assert
         assertFalse(result);

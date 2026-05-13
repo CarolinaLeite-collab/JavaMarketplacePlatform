@@ -1,0 +1,80 @@
+@startuml
+title Domain class persistence with Spring Data JPA (general)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+skinparam PackageBorderColor #4B9DA9
+top to bottom direction
+
+package "domain" {
+  package "class" {
+    class Class
+    class ClassFactory {
+      + createClass(...) : Class
+      + recreateClass(...) : Class
+    }
+  }
+
+  package "repository" {
+    interface IClassRepo {
+      + save(class : Class) : Class
+      + ofIdentity(id : String) : Optional<Class>
+      + findAll() : Iterable<Class>
+      + containsOfIdentity(id : String) : boolean
+    }
+  }
+}
+
+package "persistence.jpa.datamodel" {
+  class ClassDataModel {
+  }
+}
+
+package "persistence.jpa.assembler" {
+  class ClassAssembler {
+    + toDomain (classDataModel : ClassDataModel) : Class
+    + toDataModel (class : Class) : ClassDataModel
+  }
+}
+
+package "persistence.springdata" {
+  interface IClassSpringDataRepo {
+  }
+}
+
+package "persistence.mem" {
+    class MemClassRepo {
+    }
+}
+
+package "persistence.jpa.repository" {
+  class JpaClassRepo {
+  }
+}
+
+interface JpaRepository<T, ID>
+
+IClassSpringDataRepo ---|> JpaRepository
+JpaClassRepo .|> IClassRepo
+MemClassRepo .|> IClassRepo
+
+JpaClassRepo ---> IClassSpringDataRepo : delegates
+JpaClassRepo ---> ClassAssembler : delegates mapping
+
+ClassAssembler ---> ClassFactory : uses
+ClassAssembler .> Class : creates/reconstructs
+ClassAssembler .> ClassDataModel : maps
+
+IClassSpringDataRepo .> ClassDataModel : persists
+JpaClassRepo .> Class : returns/accepts
+MemClassRepo ---> Class : stores in memory
+
+@enduml

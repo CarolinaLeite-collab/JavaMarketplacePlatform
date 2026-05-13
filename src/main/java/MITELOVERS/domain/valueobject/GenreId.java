@@ -44,3 +44,4 @@ public class GenreId implements DomainId {
         return _id;
     }
 }
+

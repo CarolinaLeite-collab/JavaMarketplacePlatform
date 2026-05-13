@@ -1,18 +1,16 @@
 package MITELOVERS.domain.item;
 
-import MITELOVERS.domain.valueobject.Condition;
-import MITELOVERS.domain.valueobject.Description;
-import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ItemFactoryTest {
 
     @Test
-    void shouldSuccessfullyCreateItem() {
+    void shouldSuccessfullyCreateNewItem() {
         //Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
@@ -22,17 +20,39 @@ class ItemFactoryTest {
         ItemFactory factory = new ItemFactory();
 
         try (MockedConstruction<Item> mocked =
-                     mockConstruction(Item.class,
-                             (mock, context) -> {
-                                 when(mock.getCondition())
-                                         .thenReturn(condition);
-                                 when(mock.getDescription())
-                                         .thenReturn(descriptionDouble);
-                             })) {
+                     mockConstruction(Item.class)) {
             //Act
             Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
+
             //Assert
-            assertEquals(condition, newItem.getCondition());
+            assertNotNull(newItem);
+            assertEquals(1, mocked.constructed().size());
         }
     }
+
+    @Test
+    void shouldSuccessfullyReconstructExistingItem() {
+        //Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        Description descriptionDouble = mock(Description.class);
+        Condition condition = Condition.POOR;
+        SaleStatus saleStatus = SaleStatus.OnAuction;
+
+        //SUT
+        ItemFactory factory = new ItemFactory();
+
+        try (MockedConstruction<Item> mocked =
+                     mockConstruction(Item.class)) {
+
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus);
+
+            //Assert
+            assertNotNull(reconstitutedItem);
+            assertEquals(1, mocked.constructed().size());
+
+        }
+
+    }
+
 }
