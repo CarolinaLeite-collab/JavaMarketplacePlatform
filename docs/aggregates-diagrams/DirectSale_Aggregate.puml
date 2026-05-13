@@ -84,6 +84,7 @@ DirectSale "1" o--  "1..*" ItemId : aggregates
 ' ===== Factory =====
 DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
+IDirectSaleRepo "*" --> "1" DirectSale : persists
 
 ' ===== Repository =====
 AggregateRoot ..|> DomainEntity

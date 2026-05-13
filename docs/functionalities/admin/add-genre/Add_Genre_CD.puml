@@ -13,93 +13,66 @@ skinparam ArrowFontColor #3B4953
 skinparam ActivationBackgroundColor black
 skinparam classAttributeIconSize 0
 
-'==== Classes ====
+' ===== UI & Controller =====
 class AddGenreUI {
-
 }
 
 package "controller" {
-
     class AddGenreController {
-    + addGenre(genreName : String) : Genre
+        + addGenre(genreName : String) : Genre
     }
 }
 
+' ===== Domain =====
 package "domain" {
-
-
-
-    package "valueobject" {
-
-        class GenreId <<ValueObject>> #lightpink {
-        -_id : String
+    package "repository" {
+        interface IGenreRepo <<Interface>> {
         }
-
     }
 
-    package "repository" {
-
-             interface IGenreRepo <<Interface>>{
-             }
-         }
-
     package "genre" #b0c4d4 {
-
-        class Genre  <<Root>> <<Entity>> {
-            - _genre : String
-
+        class Genre <<Root>> <<Entity>>{
+            + identity() : GenreId
+            + sameAs(Object) : boolean
+            + getGenre() : String
         }
 
         class GenreFactory <<Factory>> {
-            + createGenre(genreName : String) : Genre
-        }
+            + createGenre(genreName : String) : Genre        }
     }
 
-
-}
-
-package "persistence"  {
-    package "mem" {
-
-        class MemGenreRepo {
+    package "valueobject" {
+        class GenreId <<ValueObject>> #LightPink {
+            -_id : String
         }
     }
 }
 
-package ddd {
-
-     interface IRepository<ID, T> <<Interface>> {
-        save(entity:T) : T
+package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        save(T) : T
         findAll() : Iterable<T>
-        findAllKeys () : List <ID>
-        ofIdentity(id: ID) : Optional <T>
-        containsOfIdentity(id: ID) : boolean
-        }
+        findAllKeys() : List<ID>
+        ofIdentity(ID) : Optional <T>
+        containsOfIdentity(ID) : boolean
+    }
 
-        interface AggregateRoot <ID >{
-         }
-        interface DomainEntity<ID, T> <<Interface>> {
-                +identity() : ID
-                +sameAs(object:Object) : boolean
-        }
-
+    interface AggregateRoot<ID>
 }
-'==== Relationships ====
-AddGenreUI "1" .> "1" AddGenreController : invokes
 
-AddGenreController "1" .> "1" IGenreRepo : <<use>>
-AddGenreController  "1".....> "*" Genre : <<use>>
+'==== Interactions ====
+AddGenreUI "1" ..> "1" AddGenreController : invokes
 
+AddGenreController "1" --> "1" IGenreRepo : calls
+AddGenreController "1" --> "1" GenreFactory : invokes
+AddGenreController "1" ..> "*" Genre : <<use>>
 
-MemGenreRepo .|> IGenreRepo
-AddGenreController "1" -> " 1" GenreFactory : invokes
-MemGenreRepo "1" --> "*" Genre : persists
 GenreFactory "1" ..> "*" Genre : <<create>>
-Genre "1" ---> "1" GenreId: has
 
-IGenreRepo --|> IRepository
+Genre "1" --> "1" GenreId : has
+Genre "*" <- "1" IGenreRepo : persists
 
-AggregateRoot -|> DomainEntity
-Genre .|> AggregateRoot
+IGenreRepo -|> IRepository
+Genre ..|> AggregateRoot
 
 @enduml

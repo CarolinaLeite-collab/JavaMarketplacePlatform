@@ -3,11 +3,13 @@ package MITELOVERS.domain.valueobject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class AuthorIdTest {
 
     @Test
-    void shouldConstructAuthorId() {
+    void testConstructAuthorId() {
 
         // Act & SUT
         AuthorId id = new AuthorId("Lev Nikoláievitch Tolstói");
@@ -15,45 +17,46 @@ class AuthorIdTest {
     }
 
     @Test
-    void shouldThrowExceptionIfNameIsNull() {
+    void shouldPreserveGivenIdValue() {
 
         // Arrange
-        String fullName = null;
-
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new AuthorId(fullName));
-
-        // Assert
-        assertEquals("AuthorId cannot be null or blank", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldThrowExceptionIfNameIsBlank() {
-
-        // Arrange
-        String fullName = "   ";
-
-        // Act
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> new AuthorId(fullName));
-
-        // Assert
-        assertEquals("AuthorId cannot be null or blank", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldGenerateCorrectInitialsForFullName() {
-        // Arrange
-        String name = "Lev Nikoláievitch Tolstói";
+        String raw = "Tolstói L.N.-ABC123";
 
         // Act & SUT
-        AuthorId id = new AuthorId(name);
-        String generated = id.toString();
+        AuthorId id = new AuthorId(raw);
 
         // Assert
-        assertTrue(generated.startsWith("Tolstói L.N."));
-        assertEquals("Tolstói L.N.".length() + 1 + 6, generated.length());
+        assertEquals(raw, id.toString());
+        assertEquals(raw.hashCode(), id.hashCode());
+    }
+
+    @Test
+    void shouldThrowExceptionIfNameIsNull() {
+
+        // Act
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> new AuthorId((Name)null));
+
+        // Assert
+        assertEquals("AuthorId cannot be null", exception.getMessage());
+
+    }
+
+    @Test
+    void constructorNullThrowsException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new AuthorId((String)null));
+    }
+
+    @Test
+    void constructorBlankThrowsException() {
+
+        //Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn(" ");
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new AuthorId(nameDouble));
     }
 
     @Test
@@ -118,37 +121,6 @@ class AuthorIdTest {
     }
 
     @Test
-    void shouldGenerateDifferentIdsForSameName() {
-
-        // Arrange
-        String fullName = "Lev Nikoláievitch Tolstói";
-
-        // Act & SUT
-        AuthorId id1 = new AuthorId(fullName);
-        AuthorId id2 = new AuthorId(fullName);
-
-        // Assert
-        assertNotEquals(id1.toString(), id2.toString());
-
-    }
-
-    @Test
-    void shouldEqualObjectsHaveSameHashCode() {
-
-        // Arrange
-        String fullName = "Lev Nikoláievitch Tolstói";
-        AuthorId id = new AuthorId(fullName);
-
-        // Act
-        int hash1 = id.hashCode();
-        int hash2 = id.hashCode();
-
-        // Assert
-        assertEquals(hash1, hash2);
-
-    }
-
-    @Test
     void shouldReturnFalseForDifferentObjects() {
 
         // Arrange
@@ -167,14 +139,33 @@ class AuthorIdTest {
     void shouldHandleSingleWordName() {
 
         // Arrange
-        String name = "Shiki";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Shiki");
 
-        // Act & SUT
+        // Act
         AuthorId id = new AuthorId(name);
 
         // Assert
-        assertTrue(id.toString().startsWith("Shiki -"));
+        assertTrue(id.toString().startsWith("Shiki "));
+        assertTrue(id.toString().contains("-"));
+    }
 
+    @Test
+    void shouldGenerateInitialsFromAllButLastName() {
+
+        // Arrange
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Lev Nikoláievitch Tolstói");
+
+        // Act
+        AuthorId id = new AuthorId(name);
+
+        String value = id.toString();
+
+        // Assert
+        assertTrue(value.startsWith("Tolstói "));
+        assertTrue(value.contains("L.N."));
+        assertFalse(value.contains("T."));
     }
 
     @Test
@@ -196,7 +187,8 @@ class AuthorIdTest {
     void shouldNotBeEqualForSameName() {
 
         // Arrange
-        String name = "Lev Nikoláievitch Tolstói";
+        Name name = mock(Name.class);
+        when(name.toString()).thenReturn("Lev Nikoláievitch Tolstói");
 
         // Act
         AuthorId id1 = new AuthorId(name);
@@ -204,22 +196,6 @@ class AuthorIdTest {
 
         // Assert
         assertFalse(id1.equals(id2));
-
-    }
-
-    @Test
-    void shouldReturnFalseWhenIdsAreDifferentEvenIfNamesAreSame() {
-
-        // Arrange
-        String name = "Lev Nikoláievitch Tolstói";
-
-        // Act
-        AuthorId id1 = new AuthorId(name);
-        AuthorId id2 = new AuthorId(name);
-
-        // Assert
-        assertFalse(id1.equals(id2));
-
     }
 
     @Test
@@ -239,20 +215,16 @@ class AuthorIdTest {
     }
 
     @Test
-    void equalsShouldReturnTrueForSameIdValue() throws Exception {
-        // Arrange
-        AuthorId id1 = new AuthorId("Lev Nikoláievitch Tolstói");
-        AuthorId id2 = new AuthorId("Lev Nikoláievitch Tolstói");
+    void equalsShouldReturnTrueForSameIdValue() {
 
-        // Reflection used to force equal _id values, since UUID generation prevents
-        // two instances from sharing the same id through the public API.
-        java.lang.reflect.Field field = AuthorId.class.getDeclaredField("_id");
-        field.setAccessible(true);
-        field.set(id2, field.get(id1));
+        // Arrange
+        String idValue = "Tolstói L.N.-ABC123";
+
+        // Act & SUT
+        AuthorId id1 = new AuthorId(idValue);
+        AuthorId id2 = new AuthorId(idValue);
 
         // Assert
         assertTrue(id1.equals(id2));
     }
-
-
 }

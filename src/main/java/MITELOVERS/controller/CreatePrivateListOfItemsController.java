@@ -10,6 +10,14 @@ import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 
+/**
+ * Controller responsible for handling the creation of private lists of items for a user.
+ * <p>
+ * This class delegates the actual creation logic to {@link IListOfItemsRepo}
+ * and providing access to official genres from {@link IGenreRepo}.
+ * </p>
+ */
+
 public class CreatePrivateListOfItemsController {
 
     private final IListOfItemsRepo _iListOfItemsRepo;

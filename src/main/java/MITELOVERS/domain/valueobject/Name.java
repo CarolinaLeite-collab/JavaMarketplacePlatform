@@ -36,7 +36,7 @@ public class Name implements ValueObject {
         _name = normalized;
     }
 
-    public String get_Name() {
+    public String getName() {
             return _name;
         }
 
@@ -59,6 +59,47 @@ public class Name implements ValueObject {
 
     private static String normalize(String raw) {
 
-        return raw.trim().replaceAll("\\s+", " ");
+        String trimmed = raw.trim();
+
+        String[] parts = trimmed.split("\\s+");
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i].toLowerCase();
+
+            if (part.isEmpty()) {
+                continue;
+            }
+
+            result.append(capitalizeWord(part));
+
+            if (i < parts.length - 1) {
+                result.append(" ");
+            }
+        }
+
+        return result.toString();
+    }
+
+    private static String capitalizeWord(String word) {
+
+        word = word.toLowerCase();
+
+        StringBuilder result = new StringBuilder();
+        boolean capitalizeNext = true;
+
+        for (char c : word.toCharArray()) {
+            if (c == '-' || c == '\'') {
+                result.append(c);
+                capitalizeNext = true;
+            } else if (capitalizeNext) {
+                result.append(Character.toUpperCase(c));
+                capitalizeNext = false;
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
     }
 }

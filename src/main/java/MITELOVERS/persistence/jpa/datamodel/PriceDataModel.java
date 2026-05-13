@@ -1,6 +1,7 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import jakarta.persistence.Embeddable;
+import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
  * enabling its persistence as part of a JPA entity.
  */
 
+@Generated
 @Getter
 @NoArgsConstructor
 @Embeddable

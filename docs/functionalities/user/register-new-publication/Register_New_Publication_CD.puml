@@ -51,15 +51,11 @@ package "domain"{
 
         class PublicationFactory <<Factory>> {
             + createPublication(Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
+            + createPublication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
         }
     }
 }
-    package "persistence"  {
-       package "mem" {
-          class MemPublicationRepo{
-          }
-       }
-    }
+
 
 
   package ddd {
@@ -87,9 +83,8 @@ RegisterPublicationUI "1" ..> "1" RegisterNewPublicationController : invokes
 RegisterNewPublicationController "1" ..> "1" IPublicationRepo: <<use>>
 RegisterNewPublicationController "1" ..> "*" Publication : <<use>>
 
-MemPublicationRepo .|> IPublicationRepo
 RegisterNewPublicationController "1" ---> "1" PublicationFactory : invokes
-MemPublicationRepo "1" -----> "*" Publication : persists
+IPublicationRepo "1" -----> "*" Publication : persists
 
 PublicationFactory "1" ..> "*" Publication : <<create>>
 

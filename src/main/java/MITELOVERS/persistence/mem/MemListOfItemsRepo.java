@@ -2,14 +2,12 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.UserId;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * In-memory repository responsible for managing {@link ListOfItems} instances.

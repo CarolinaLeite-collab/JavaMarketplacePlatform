@@ -33,7 +33,7 @@ public class ItemDetailsMapper {
 
         return new ItemDetailsDTO(
                 publication.getTitle().toString(),
-                author.getName(),
+                author.getName().toString(),
                 publicationType.toString(),
                 edition.getIdentifier().toString()
         );
