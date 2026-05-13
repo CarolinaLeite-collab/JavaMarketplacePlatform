@@ -29,6 +29,7 @@ public final class DirectSaleId implements DomainId {
         _dsId = "DS-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
+    public DirectSaleId(String directSaleId){}
 
     @Override
     public boolean equals(Object o) {

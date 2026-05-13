@@ -4,12 +4,14 @@ import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for handling the registration of a {@link User}.
  * Delegates creation/persistence to {@link IUserRepo}.
  */
 
+@Controller
 public class RegisterNewUserController {
 
     private final IUserRepo _iUserRepo;

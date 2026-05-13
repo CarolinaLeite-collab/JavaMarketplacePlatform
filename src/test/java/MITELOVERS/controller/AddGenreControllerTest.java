@@ -4,81 +4,67 @@ import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-public class AddGenreControllerTest {
+@Tag("unit")
+@ExtendWith(MockitoExtension.class)
+class AddGenreControllerTest {
 
+    @InjectMocks
+    private AddGenreController _sut;
+
+    @Mock
     private IGenreRepo _iGenreRepoDouble;
-    private Genre _genreDouble;
-    private UserId _adminIdDouble;
+
+    @Mock
     private GenreFactory _genreFactoryDouble;
-    private GenreId _genreIdDouble;
-
-    @BeforeEach
-    void setUp() {
-        _iGenreRepoDouble = mock(IGenreRepo.class);
-        _genreDouble = mock(Genre.class);
-        _adminIdDouble = mock(UserId.class);
-        _genreFactoryDouble = mock(GenreFactory.class);
-        _genreIdDouble = mock(GenreId.class);
-    }
-
-    @Test
-    void constructorAddGenreControllerShouldCreateController() {
-
-        //SUT
-        new AddGenreController(_iGenreRepoDouble, _genreFactoryDouble, _adminIdDouble);
-    }
 
 
     @Test
     void addGenreShouldReturnGenreFromRepo() {
-        //arrange
+        // Arrange
         String genreName = "Action";
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble);
-        when(_genreDouble.identity()).thenReturn(_genreIdDouble);
-        when(_iGenreRepoDouble.containsOfIdentity(_genreDouble.identity())).thenReturn(false);
-        when(_iGenreRepoDouble.save(_genreDouble)).thenReturn(_genreDouble);
+        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        // SUT
-        AddGenreController addGenreController = new AddGenreController(_iGenreRepoDouble, _genreFactoryDouble, _adminIdDouble);
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
+        when(genreDouble.identity()).thenReturn(genreIdDouble);
+        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(false);
+        when(_iGenreRepoDouble.save(genreDouble)).thenReturn(genreDouble);
 
         // Act
-        Genre genreAdded = addGenreController.addGenre(genreName);
+        Genre genreAdded = _sut.addGenre(genreName);
 
         // Assert
         assertNotNull(genreAdded);
-        assertEquals(_genreDouble, genreAdded);
+        assertEquals(genreDouble, genreAdded);
+        verify(_iGenreRepoDouble).save(genreDouble);
     }
 
     @Test
     void addGenreThrowsWhenAlreadyExistsInRepo() {
         // Arrange
         String genreName = "Action";
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(_genreDouble);
-        when(_genreDouble.identity()).thenReturn(_genreIdDouble);
-        when(_iGenreRepoDouble.containsOfIdentity(_genreDouble.identity())).thenReturn(false).thenReturn(true);
-        when(_iGenreRepoDouble.save(_genreDouble)).thenReturn(_genreDouble);
+        Genre genreDouble = mock(Genre.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
+        when(genreDouble.identity()).thenReturn(genreIdDouble);
+        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
 
-        // SUT
-        AddGenreController _addGenreController = new AddGenreController(_iGenreRepoDouble, _genreFactoryDouble, _adminIdDouble);
+        // Act // Assert
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> _sut.addGenre(genreName));
 
-        //act
-        Genre firstAddedGenre = _addGenreController.addGenre(genreName);
-
-        //assert
-        // Second attempt to add the same genre
-        IllegalArgumentException secondAttemptThrows = assertThrows(IllegalArgumentException.class,  () -> _addGenreController.addGenre(genreName));
-
-        assertNotNull(firstAddedGenre);
-        assertEquals("Genre already exists in the repository", secondAttemptThrows.getMessage());
+        assertEquals("Genre already exists in the repository", exception.getMessage());
+        verify(_iGenreRepoDouble, never()).save(any());
     }
-
 }
