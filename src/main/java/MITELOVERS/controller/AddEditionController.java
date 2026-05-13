@@ -5,6 +5,7 @@ import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.valueobject.*;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import java.time.Year;
 
@@ -15,7 +16,7 @@ import java.time.Year;
  * </p>
  */
 
-@Component
+@Controller
 public class AddEditionController {
 
     private final IEditionRepo _iRepo;
