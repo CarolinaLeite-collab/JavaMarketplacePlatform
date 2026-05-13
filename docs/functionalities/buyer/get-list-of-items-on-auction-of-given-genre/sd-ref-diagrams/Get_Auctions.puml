@@ -1,7 +1,6 @@
 @startuml
-title "As a Buyer, I want to get the list of items on auction of a given genre" - SD
+title "Get Auctions" - SD
 
-'==== basic style ====
 skinparam monochrome false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
@@ -16,13 +15,73 @@ autoactivate off
 hidefootbox
 
 participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
-participant ":IAuctionRepo" as REPO
+participant ":JpaAuctionRepo" as JPAREPO
+participant ":IAuctionSpringdataRepo" as SPRINGREPO
+participant "auctionAssembler:AuctionAssembler" as ASM
+database "DB" as DB
 
 activate CTL
-CTL -> REPO : findAll()
-activate REPO
-REPO --> CTL : listOfAuctions
-deactivate REPO
+CTL -> JPAREPO : findAll()
+activate JPAREPO
+
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> DB : findAll()
+activate DB
+
+DB --> SPRINGREPO : savedAuctionDms
+deactivate DB
+SPRINGREPO --> JPAREPO : savedAuctionDms
+deactivate SPRINGREPO
+
+loop for savedAuctionDm : savedAuctionDms
+  JPAREPO -> ASM : toDomain(savedAuctionDm)
+  activate ASM
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringAuctionId = getAuctionId()
+  ASM -> "auctionId:AuctionId" : <<create>>(stringAuctionId)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringItemsId = getItemsId()
+  ASM -> "itemsId:List<ItemId>" : <<create>>(stringItemsId)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringStartingPrice = getStartingPrice()
+  ASM -> "startingPrice:Price" : <<create>>(stringStartingPrice)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringReservePrice = getReservePrice()
+  ASM -> "reservePrice:Price" : <<create>>(stringReservePrice)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringOutrightPrice = getOutrightPrice()
+  ASM -> "outrightPrice:Price" : <<create>>(stringOutrightPrice)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringAuctionStartDate = getAuctionStartDate()
+  ASM -> "auctionStartDate:ZoneDateTime" : <<create>>(stringAuctionStartDate)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringAuctionEndDate = getAuctionEndDate()
+  ASM -> "auctionEndDate:ZoneDateTime" : <<create>>(stringAuctionEndDate)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringUserId = getUserId()
+  ASM -> "userId:UserId" : <<create>>(stringUserId)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringFinalPrice = getFinalPrice()
+  ASM -> "finalPrice:Price" : <<create>>(stringFinalPrice)
+
+  ASM -> "savedAuctionDm:AuctionDataModel" : stringBids = getBids()
+  ASM -> "bids:List<Bid>" : <<create>>(stringBids)
+
+  ASM -> ":AuctionFactory" : createAuction(auctionId, itemsId, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate, userId, finalPrice, bids)
+
+  ":AuctionFactory" -->> "reconstructedAuction:Auction" : <<create>>(auctionId, itemsId, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate, userId, finalPrice, bids)
+  ":AuctionFactory" --> ASM : reconstructedAuction
+  ASM --> JPAREPO : reconstructedAuction
+  deactivate ASM
+end
+
+
+  JPAREPO --> CTL : reconstructedAuctions
+  deactivate JPAREPO
+
+
 
 ref over CTL
 [[../Get_List_Of_Items_on_Auction_Of_Given_Genre_SD.puml Back to Main Diagram]]
