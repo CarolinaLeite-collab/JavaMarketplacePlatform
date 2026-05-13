@@ -48,6 +48,18 @@ class AuthorIdTest {
     }
 
     @Test
+    void constructorBlankThrowsException() {
+
+        //Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn(" ");
+
+        //Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new AuthorId(nameDouble));
+    }
+
+    @Test
     void shouldBeEqualToItself() {
 
         // Arrange

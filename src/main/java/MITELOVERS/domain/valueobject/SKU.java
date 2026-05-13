@@ -34,7 +34,7 @@ public class SKU implements ValueObject {
             throw new IllegalArgumentException("Invalid SKU format: " + value);
         }
 
-        this._value = value;
+        _value = value;
     }
 
     // Internal and controlled creation

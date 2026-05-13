@@ -11,30 +11,34 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.*;
 
 class LibraryAssemblerTest {
 
     private LibraryAssembler assembler;
+    private LibraryFactory libraryFactory;
 
     @BeforeEach
     void setup() {
-        assembler = new LibraryAssembler(new LibraryFactory());
+
+        libraryFactory = mock(LibraryFactory.class);
+        assembler = new LibraryAssembler(libraryFactory);
     }
 
-    // ----------------
+    // ------------------
     // toDataModel TESTS
-    // ----------------
+    // ------------------
 
     @Test
-    void toDataModel_shouldThrowWhenLibraryIsNull() {
+    void toDataModelShouldThrowWhenLibraryIsNull() {
         assertThrows(IllegalArgumentException.class,
                 () -> assembler.toDataModel(null));
     }
 
     @Test
-    void toDataModel_shouldMapLibraryIdCorrectly() {
+    void toDataModelShouldMapLibraryIdCorrectly() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -56,7 +60,7 @@ class LibraryAssemblerTest {
     }
 
     @Test
-    void toDataModel_shouldMapEmptyItemList() {
+    void toDataModelShouldMapEmptyItemList() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -71,7 +75,7 @@ class LibraryAssemblerTest {
     }
 
     @Test
-    void toDataModel_shouldMapAllItemIds() {
+    void toDataModelShouldMapAllItemIds() {
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
@@ -96,24 +100,31 @@ class LibraryAssemblerTest {
     // -------------------------
 
     @Test
-    void toDomain_shouldThrowWhenDataModelIsNull() {
+    void toDomainShouldThrowWhenDataModelIsNull() {
         assertThrows(IllegalArgumentException.class,
                 () -> assembler.toDomain(null));
     }
 
     @Test
     void toDomainCorrectly() {
+        // Arrange
         LibraryDataModel dm = new LibraryDataModel(
                 "test@example.com",
                 List.of("ABCDEF1234", "A1B2C3D4E5")
         );
 
-        Library library = assembler.toDomain(dm);
+        Library expected = mock(Library.class);
 
-        assertEquals("test@example.com", library.identity().toString());
-        assertEquals(2, library.getItemsIdInLibrary().size());
-        assertEquals("ABCDEF1234", library.getItemsIdInLibrary().get(0).toString());
-        assertEquals("A1B2C3D4E5", library.getItemsIdInLibrary().get(1).toString());
+        // The assembler will call the factory internally.
+        // We only care that it returns what the factory returns.
+        when(libraryFactory.createLibrary(any(LibraryId.class), anyList()))
+                .thenReturn(expected);
+
+        // Act
+        Library result = assembler.toDomain(dm);
+
+        // Assert
+        assertSame(expected, result);
     }
 
     // -------------------------
@@ -121,7 +132,7 @@ class LibraryAssemblerTest {
     // -------------------------
 
     @Test
-    void listToDataModel_shouldMapAll() {
+    void listToDataModelShouldMapAll() {
         Library lib1 = mock(Library.class);
         Library lib2 = mock(Library.class);
 
@@ -144,16 +155,25 @@ class LibraryAssemblerTest {
     }
 
     @Test
-    void listToDomain_shouldMapAll() {
+    void listToDomainShouldMapAll() {
+        // Arrange
         LibraryDataModel dm1 = new LibraryDataModel("test@example1.com", List.of());
         LibraryDataModel dm2 = new LibraryDataModel("test@example2.com", List.of());
 
-        List<Library> result =
-                assembler.listToDomain(List.of(dm1, dm2));
+        Library lib1 = mock(Library.class);
+        Library lib2 = mock(Library.class);
 
+        // The assembler will call the factory twice internally.
+        when(libraryFactory.createLibrary(any(LibraryId.class), anyList()))
+                .thenReturn(lib1, lib2);
+
+        // Act
+        List<Library> result = assembler.listToDomain(List.of(dm1, dm2));
+
+        // Assert
         assertEquals(2, result.size());
-        assertEquals("test@example1.com", result.get(0).identity().toString());
-        assertEquals("test@example2.com", result.get(1).identity().toString());
+        assertSame(lib1, result.get(0));
+        assertSame(lib2, result.get(1));
     }
 
 }

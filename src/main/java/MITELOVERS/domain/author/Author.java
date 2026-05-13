@@ -21,7 +21,7 @@ public class Author implements AggregateRoot<AuthorId> {
     Author (AuthorId authorId, Name name) {
 
         _name = Objects.requireNonNull(name, "Name cannot be null");
-        _authorId = authorId;
+        _authorId = Objects.requireNonNull(authorId);
     }
 
     Author (Name name) {
