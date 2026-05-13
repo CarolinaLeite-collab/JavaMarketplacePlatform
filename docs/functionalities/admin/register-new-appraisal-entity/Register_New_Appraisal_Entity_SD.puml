@@ -19,12 +19,10 @@ autonumber
 
 ' ==== Actor and participants ====
 actor Administrator
-participant ":RegisterNewAppraisalEntityUI" as UI
-participant ":RegisterNewAppraisalEntityController" as CTL
-participant ":IPublicationTypeRepo" as PTR
-participant ":IGenreRepo" as grRepo
-participant ":AppraisalEntityFactory" as Factory
-participant ":MemAppraisalEntityRepo" as aeRepo
+participant ":Register\nNewAppraisalEntity\nUI" as UI
+participant ":Register\nNewAppraisalEntity\nController" as CTL
+participant ":IAppraisalEntity\nRepo" as IREPO
+participant ":AppraisalEntity\nFactory" as Factory
 
 
 
@@ -39,11 +37,10 @@ activate UI
 '==== Use case execution ====
 UI -> CTL: getPublicationTypesId()
 activate CTL
-CTL -> PTR: findAllKeys()
-activate PTR
-PTR --> CTL: List<PublicationTypeId>
-deactivate PTR
-CTL --> UI: List<PublicationTypeId>
+ref over CTL
+[[sd-ref-diagrams/Get_Publication_Type_Ids.puml Retrieves the list of all Publication Type Ids]]
+end ref
+CTL --> UI: publicationTypeIds
 deactivate CTL
 
 UI --> Administrator: Here's the list of Publication Types, \n which one(s) can it appraise?
@@ -53,11 +50,16 @@ Administrator -> UI: publicationTypesId
 activate UI
 UI -> CTL: getGenresId()
 activate CTL
-CTL -> grRepo: findAllKeys()
-activate grRepo
-grRepo --> CTL: List<GenreId>
-deactivate grRepo
-CTL --> UI: List<GenreId>
+
+ref over CTL
+[[sd-ref-diagrams/Get_Genre_Ids.puml Retrieves the list of all genre Ids]]
+end ref
+
+'CTL -> grRepo: findAllKeys()
+'activate grRepo
+'grRepo --> CTL: List<GenreId>
+'deactivate grRepo
+CTL --> UI: genreIds
 deactivate CTL
 
 UI --> Administrator: Here's the list of Genres, which \n one(s) can it appraise?
@@ -65,31 +67,32 @@ deactivate UI
 
 Administrator -> UI: genresId
 activate UI
-UI -> CTL: registerNewAppraisalEntity(\nname, publicationTypeIds, genreIds)
+UI -> CTL: registerNewAppraisalEntity\n(name, publicationTypeIds, genreIds)
 activate CTL
 
-CTL -> Factory: createAppraisalEntity(name, publicationTypeIds, genreIds)
+CTL -> Factory: createAppraisalEntity\n(name, publicationTypeIds, genreIds)
 create "appraisalEntity:AppraisalEntity"
 
 activate Factory
-Factory -->> "appraisalEntity:AppraisalEntity": <<create>>
+Factory -->> "appraisalEntity:AppraisalEntity": <<create>>\n(name, publicationTypeIds, genreIds)
 Factory --> CTL: appraisalEntity
 deactivate Factory
 
-deactivate aeRepo
+ref over CTL
+[[sd-ref-diagrams/Verify_Appraisal_Entity.puml Verify the existence of appraisalEntity in persistence]]
+end ref
 
-CTL -> aeRepo : isRepeated = containsOfIdentity(appraisalEntity.identity())
+CTL -> IREPO : save(appraisalEntity)
+activate IREPO
 
-activate aeRepo
-opt !isRepeated == true
+ref over IREPO
+[[sd-ref-diagrams/Save_Appraisal_Entity.puml Save appraisalEntity and return saved domain object]]
+end ref
 
-        CTL -> aeRepo : save(appraisalEntity)
-        CTL <-- aeRepo : appraisalEntity
-        deactivate aeRepo
+CTL <-- IREPO : reconstructedAppraisalEntity
+deactivate IREPO
 
-    end
-
-CTL --> UI: appraisalEntity
+CTL --> UI: reconstructedAppraisalEntity
 deactivate CTL
 UI --> Administrator: Done!
 deactivate UI

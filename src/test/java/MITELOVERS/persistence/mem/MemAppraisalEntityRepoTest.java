@@ -2,9 +2,6 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.valueobject.AppraisalEntityId;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -21,20 +18,12 @@ class MemAppraisalEntityRepoTest {
 
     private AppraisalEntity _AppraisalEntityDouble;
     private AppraisalEntityId _AppraisalEntityIdDouble;
-    private Name _nameDouble;
-    private List<PublicationTypeId> _publicationTypeIds;
-    private List<GenreId> _genreIds;
-
 
     @BeforeEach
     void setUp() {
 
         _AppraisalEntityDouble = mock(AppraisalEntity.class);
         _AppraisalEntityIdDouble = mock(AppraisalEntityId.class);
-        _nameDouble = mock(Name.class);
-
-        _publicationTypeIds = List.of(mock(PublicationTypeId.class));
-        _genreIds = List.of(mock(GenreId.class));
 
     }
 

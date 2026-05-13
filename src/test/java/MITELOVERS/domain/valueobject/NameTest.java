@@ -10,15 +10,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for {@link Name}.
- *
- * <p>Validates construction rules: normalization of whitespace, allowed characters,
- * length boundaries, and rejection of invalid inputs.</p>
- *
- * <p>No Mockito doubles are used — {@link Name} is a pure Value Object.</p>
- */
-
 class NameTest {
 
     private static void assertValidName (String rawInput, String expectedNormalized) {
@@ -28,7 +19,7 @@ class NameTest {
 
         //Assert
         assertAll(
-                () -> assertEquals(expectedNormalized, name.get_Name()),
+                () -> assertEquals(expectedNormalized, name.getName()),
                 () -> assertEquals(expectedNormalized, name.toString())
         );
     }
@@ -45,13 +36,13 @@ class NameTest {
 
     private static Stream<org.junit.jupiter.params.provider.Arguments> validNames() {
         return Stream.of(
-                org.junit.jupiter.params.provider.Arguments.of("Jose Mourinho", "Jose Mourinho"),
-                org.junit.jupiter.params.provider.Arguments.of("José Mourinho", "José Mourinho"),
-                org.junit.jupiter.params.provider.Arguments.of("  José   Mourinho  ", "José Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("jose mourinho", "Jose Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("JOSE MOURINHO", "Jose Mourinho"),
+                org.junit.jupiter.params.provider.Arguments.of("  jOSe   mOuRiNhO  ", "Jose Mourinho"),
                 org.junit.jupiter.params.provider.Arguments.of("Ana-Maria", "Ana-Maria"),
                 org.junit.jupiter.params.provider.Arguments.of("D'Avila", "D'Avila"),
                 org.junit.jupiter.params.provider.Arguments.of("Al", "Al"),
-                org.junit.jupiter.params.provider.Arguments.of("A".repeat(80), "A".repeat(80))
+                org.junit.jupiter.params.provider.Arguments.of("A".repeat(80), "A" + "a".repeat(79))
         );
     }
 
@@ -96,6 +87,20 @@ class NameTest {
     @ValueSource(strings = {"-Jose", "Jose-", "'Jose", "Jose'"})
     void constructorStartOrEndWithSeparatorThrowsIllegalArgumentException(String bad) {
         assertInvalidName(bad);
+    }
+
+    @Test
+    void constructorNormalizesCapitalization() {
+        Name name = new Name("jOSe mOuRiNhO");
+
+        assertEquals("Jose Mourinho", name.getName());
+    }
+
+    @Test
+    void constructorNormalizesSpacesAndCapitalization() {
+        Name name = new Name("   jOSe   mOuRiNhO   ");
+
+        assertEquals("Jose Mourinho", name.getName());
     }
 
     @Test

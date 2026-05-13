@@ -4,10 +4,7 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.valueobject.ISBN;
-import MITELOVERS.domain.valueobject.ISSN;
-import MITELOVERS.domain.valueobject.NoIdentifier;
-import MITELOVERS.domain.valueobject.Title;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +17,6 @@ class ItemDetailsMapperTest {
 
     @Test
     void testItemDetailsMapperConstructor() {
-//Act
         //SUT
         new ItemDetailsMapper();
 
@@ -29,6 +25,9 @@ class ItemDetailsMapperTest {
     @Test
     void testItemDetailsMapperReturnsDTOWithISBN() {
         //Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn("nameDouble");
+
         Title titleDouble = mock(Title.class);
         when(titleDouble.toString()).thenReturn("titleDouble");
 
@@ -42,14 +41,14 @@ class ItemDetailsMapperTest {
         PublicationType publicationTypeDouble = mock(PublicationType.class);
         when(publicationTypeDouble.toString()).thenReturn("publicationTypeDouble");
         Author authorDouble = mock(Author.class);
-        when(authorDouble.getName()).thenReturn("authorDouble");
+        when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
         ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
-        assertEquals("authorDouble", dto.getAuthorName());
+        assertEquals("nameDouble", dto.getAuthorName());
         assertEquals("publicationTypeDouble", dto.getPublicationType());
         assertEquals("978-1-4028-9462-6", dto.getIdentifier());
 
@@ -58,6 +57,9 @@ class ItemDetailsMapperTest {
     @Test
     void testItemDetailsMapperReturnsDTOWithISSN() {
         //Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn("nameDouble");
+
         Title titleDouble = mock(Title.class);
         when(titleDouble.toString()).thenReturn("titleDouble");
 
@@ -71,14 +73,14 @@ class ItemDetailsMapperTest {
         PublicationType publicationTypeDouble = mock(PublicationType.class);
         when(publicationTypeDouble.toString()).thenReturn("publicationTypeDouble");
         Author authorDouble = mock(Author.class);
-        when(authorDouble.getName()).thenReturn("authorDouble");
+        when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
         ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
-        assertEquals("authorDouble", dto.getAuthorName());
+        assertEquals("nameDouble", dto.getAuthorName());
         assertEquals("publicationTypeDouble", dto.getPublicationType());
         assertEquals("2049-3630", dto.getIdentifier());
 
@@ -87,6 +89,9 @@ class ItemDetailsMapperTest {
     @Test
     void testItemDetailsMapperReturnsDTOWithNoIdentifier() {
         //Arrange
+        Name nameDouble = mock(Name.class);
+        when(nameDouble.toString()).thenReturn("nameDouble");
+
         Title titleDouble = mock(Title.class);
         when(titleDouble.toString()).thenReturn("titleDouble");
 
@@ -100,14 +105,14 @@ class ItemDetailsMapperTest {
         PublicationType publicationTypeDouble = mock(PublicationType.class);
         when(publicationTypeDouble.toString()).thenReturn("publicationTypeDouble");
         Author authorDouble = mock(Author.class);
-        when(authorDouble.getName()).thenReturn("authorDouble");
+        when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
         ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
-        assertEquals("authorDouble", dto.getAuthorName());
+        assertEquals("nameDouble", dto.getAuthorName());
         assertEquals("publicationTypeDouble", dto.getPublicationType());
         assertEquals("no identifier", dto.getIdentifier());
 

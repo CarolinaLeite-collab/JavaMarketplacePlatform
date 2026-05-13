@@ -1,0 +1,34 @@
+@startuml
+'==== Title ====
+title "As a User, I want to register a new publication in the system" - SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+participant ":Register\nNewPublication\nController" as CTL
+participant ":IGenre\nRepo" as IREPO
+
+activate CTL
+CTL -> IREPO: findAllKeys()
+activate IREPO
+IREPO --> CTL: genreIds
+deactivate IREPO
+
+ref over CTL
+[[../Register_New_Publication_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml

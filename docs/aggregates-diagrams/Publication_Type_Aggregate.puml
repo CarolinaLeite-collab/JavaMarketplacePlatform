@@ -16,16 +16,6 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-package "persistence" {
-
-    package "mem" {
-
-        class MemPublicationTypeRepo <<Repo>> {
-
-        }
-
-    }
-}
 
 package "domain" {
 
@@ -49,6 +39,7 @@ package "domain" {
 
         class PublicationTypeFactory <<Factory>> {
         + createPublicationType(publicationTypeName : String) : PublicationType
+        + createPublicationType(id : PublicationTypeId) : PublicationType
 
         }
 
@@ -75,9 +66,9 @@ Package "ddd" {
 }
 
 
-MemPublicationTypeRepo ..|> IPublicationTypeRepo
+PublicationType "*" <-- "1"  IPublicationTypeRepo : persists
 IPublicationTypeRepo --|> IRepository
-MemPublicationTypeRepo "1" --> "*" PublicationType : persists
+
 
 PublicationType "1" --> "1" PublicationTypeId: has
 

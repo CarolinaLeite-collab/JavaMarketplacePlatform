@@ -1,0 +1,117 @@
+@startuml
+'==== Title ====
+title "As a User, I want to register a new publication in the system" - SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+participant ":Register\nNewPublication\nController" as CTL
+participant ":JPAPublication\nRepo" as JPAREPO
+participant ":Publication\nAssembler" as ASSMBLR
+participant ":IPublication\nSpringDataRepo" as SDREPO
+participant ":Publication\nFactory" as FACTORY
+participant "publication:Publication" as Pub
+database "DB" as DB
+
+activate CTL
+CTL -> JPAREPO : save(publication)
+activate JPAREPO
+JPAREPO -> ASSMBLR : toDataModel(publication)
+activate ASSMBLR
+
+ASSMBLR -> Pub : stringId = identity().toString()
+activate Pub
+deactivate Pub
+ASSMBLR -> Pub : stringTitle = getTitle().toString()
+activate Pub
+deactivate Pub
+ASSMBLR -> Pub : stringAuthorId = getAuthorId().toString()
+activate Pub
+deactivate Pub
+ASSMBLR -> Pub : stringReleaseYear = getReleaseYear().toString()
+activate Pub
+deactivate Pub
+ASSMBLR -> Pub : stringGenreId = getGenreId().toString()
+activate Pub
+deactivate Pub
+
+
+create "dmToSave:PublicationDataModel"
+ASSMBLR -->> "dmToSave:PublicationDataModel" : <<create>>(stringId, stringTitle, stringAuthorId, stringReleaseYear, stringGenreId)
+ASSMBLR --> JPAREPO : dmToSave
+deactivate ASSMBLR
+
+JPAREPO -> SDREPO : save(dmToSave)
+activate SDREPO
+SDREPO -> DB : save(dmToSave)
+DB --> SDREPO : string based data
+
+create "savedDM:PublicationDataModel"
+SDREPO -->> "savedDM:PublicationDataModel" : <<create>>
+
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+
+ASSMBLR -> "savedDM:PublicationDataModel" : stringId = getId()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "publicationId:PublicationId"
+ASSMBLR -> "publicationId:PublicationId" : <<create>>(stringId)
+
+ASSMBLR -> "savedDM:PublicationDataModel" : stringTitle = getTitle()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "title:Title"
+ASSMBLR -> "title:Title" : <<create>>(stringTitle)
+
+ASSMBLR -> "savedDM:PublicationDataModel" : stringAuthorId = getAuthorId()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "authorId:AuthorId"
+ASSMBLR -> "authorId:AuthorId" : <<create>>(authorId)
+
+ASSMBLR -> "savedDM:PublicationDataModel" : stringReleaseYear = getReleaseYear()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "releaseYear:Year"
+ASSMBLR -> "releaseYear:Year" : <<create>>(stringYear)
+
+ASSMBLR -> "savedDM:PublicationDataModel" : stringGenreId = getGenreStringId()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "genreId:GenreId"
+ASSMBLR -> "genreId:GenreId" : <<create>>(genreId)
+
+
+ASSMBLR -> FACTORY : createPublication(publicationId, title, authorId, releaseYear, genreId)
+activate FACTORY
+create "reconstructedPublication:Publication"
+FACTORY -->> "reconstructedPublication:Publication" : <<create>>(publicationId, title, authorId, releaseYear, genreId)
+FACTORY --> ASSMBLR : reconstructedPublication
+deactivate FACTORY
+ASSMBLR --> JPAREPO : reconstructedPublication
+deactivate ASSMBLR
+JPAREPO --> CTL : reconstructedPublication
+
+ref over CTL
+[[../Register_New_Publication_SD.puml Back to Main Diagram]]
+end ref
+
+'deactivate CTL
+
+@enduml
