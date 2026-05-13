@@ -150,7 +150,7 @@ class ItemAssemblerTest {
         ItemDataModel result = assembler.toDataModel(itemDouble);
 
         // Assert
-        assertEquals("Best book", result.getName());
+        assertEquals("Best Book", result.getName());
     }
 
     @Test
