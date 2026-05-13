@@ -1,8 +1,7 @@
 @startuml
-title As a user, I want to get a list (name and user) of the publicly published lists of a given genre - SD
+title As a user, I want to get a list of the publicly published lists of a given genre - SD
 hidefootbox
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -16,60 +15,73 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-
 actor User as U
-participant "UI:GetPublicListsByGenreControllerUI" as UI
+participant "UI:GetPublicListsByGenreUI" as UI
 participant "Ctl:GetPublicListsByGenreController" as CTL
-participant "IGenreRepo" as IGR
+participant ":IGenreRepo" as GR
 participant ":IListOfItemsRepo" as R
-participant ":ListOfItems" as loi
+participant "listOfItems:ListOfItems" as LOI
 
-
-U -> UI: I want to get a list (name and user) of the \npublicly published lists of a given genre
+U -> UI: I want to get a list of the publicly \npublished lists of a given genre
 activate UI
-UI -> CTL:findAllKeys()
-activate CTL
-CTL -> IGR:findAllKeys()
-activate IGR
-IGR --> CTL:genreIds
-deactivate IGR
 
-CTL --> UI:genreIds
+UI -> CTL: findAllKeys()
+activate CTL
+CTL -> GR: findAllKeys()
+activate GR
+
+ref over GR
+[[sd-ref-diagrams/Find_All_genreIds.puml Find all genreIds from persistence]]
+end ref
+
+GR --> CTL: Iterable<GenreId>
+deactivate GR
+
+CTL --> UI: Iterable<GenreId>
 deactivate CTL
 
-UI --> U: Select genreId
+UI --> U: Select a genre
 deactivate UI
 
 U -> UI: genreId
 activate UI
 
-UI -> CTL: getPublicListsByGenreId(GenreId)
+UI -> CTL: getPublicListsByGenre(genreId)
 activate CTL
 
 CTL -> R: findAll()
 activate R
 
-R --> CTL: listOfItemsRepo
+ref over R
+[[sd-ref-diagrams/Find_All_genreIds.puml Find all genreIds from persistence]]
+end ref
+
+R --> CTL: Iterable<ListOfItems>
 deactivate R
 
-create " publicListOfItemsByGenreId : List <ItemId>" as List
+create "publicListsByGenre:List<ListOfItems>" as List
 CTL -> List: <<create>>
 
+loop for listOfItems : allLists
+    CTL -> LOI: publicList = isPrivate()
+    activate LOI
 
-loop for listOfItems : allList
-    CTL -> loi: publicList = isPrivate()
-    CTL -> loi: genreId = getGenreId()
+    deactivate LOI
+
+    CTL -> LOI: genreId = getGenreId()
+    activate LOI
+
+    deactivate LOI
 
     opt publicList && genreId
-        CTL -> List : add
+        CTL -> List: add(listOfItems)
         activate List
-        List --> CTL : true
+        CTL <-- List: true
         deactivate List
     end
 end
-deactivate loi
 
-CTL --> UI: publicListOfItemsByGenreId
+CTL --> UI: publicListsByGenre
 deactivate CTL
 
 UI --> U: Here's your list!
