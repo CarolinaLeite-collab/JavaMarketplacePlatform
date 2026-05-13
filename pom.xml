@@ -30,6 +30,9 @@
         <!-- PIT -->
         <pitest.version>1.15.8</pitest.version>
         <pitest.junit5.plugin.version>1.2.2</pitest.junit5.plugin.version>
+
+        <!-- Prevents @{argLine} from being unresolved when JaCoCo is not active -->
+        <argLine>-XX:+EnableDynamicAgentLoading</argLine>
     </properties>
 
     <dependencies>
