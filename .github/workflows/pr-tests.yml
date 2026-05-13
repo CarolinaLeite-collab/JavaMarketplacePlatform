@@ -31,6 +31,9 @@ jobs:
         with:
           name: jacoco-report
           path: target/site/jacoco/
+      - name: Debug jacoco.xml
+        if: always()
+        run: cat target/site/jacoco/jacoco.xml | head -20
       - name: Post coverage comment
         if: always()
         uses: madrapps/jacoco-report@v1.7.1
