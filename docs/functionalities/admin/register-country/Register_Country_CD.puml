@@ -81,8 +81,8 @@ valueobject -[hidden]right- repository
 '==== Connections ====
 RegisterCountryUI "1" .> "1" RegisterCountryController : invokes
 
-RegisterCountryController "1" --> "1" ICountryRepo : <<use>>
-RegisterCountryController "1" ..> "1" CountryFactory : invokes
+RegisterCountryController "1" ..> "1" ICountryRepo : <<use>>
+RegisterCountryController "1" --> "1" CountryFactory : invokes
 RegisterCountryController "1" ..> "*" Country : <<use>>
 
 CountryFactory "1" ..> "*" Country : <<create>>
@@ -94,5 +94,6 @@ ICountryRepo --|> IRepository
 ICountryRepo "1" -> "*" Country : persists
 
 Country "1" .|> "1" AggregateRoot
+AggregateRoot --|> DomainEntity
 
 @enduml

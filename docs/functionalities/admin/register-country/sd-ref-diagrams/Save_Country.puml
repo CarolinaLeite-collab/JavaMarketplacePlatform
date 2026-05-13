@@ -59,12 +59,12 @@ UA -> "Factory" : createCountry(countryId, countryName)
 activate "Factory"
 create "country: Country"
 "Factory" -->> "country: Country" : <<create>>(countryId, countryName)
-"Factory" --> UA : country
+"Factory" --> UA : reconstructedCountry
 deactivate "Factory"
-UA --> IR : country
+UA --> IR : reconstructedCountry
 deactivate UA
 
-IR --> Ctl : country
+IR --> Ctl : reconstructedCountry
 deactivate IR
 
 ref over Ctl
