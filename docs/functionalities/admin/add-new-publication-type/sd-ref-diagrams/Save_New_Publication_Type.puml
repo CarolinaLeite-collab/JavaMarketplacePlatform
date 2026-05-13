@@ -1,0 +1,85 @@
+@startuml
+title Save newPublicationType and return saved domain object - SD
+hidefootbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+' --- Actor and participants ---
+participant ":AddPublicationTypeController" as CTL
+participant ":IPublicationTypeRepo" as REPO
+participant ":PublicationTypeAssembler" as PTA
+participant ":IPublicationTypeSpringDataRepo" as JPA
+participant ":PublicationTypeFactory" as FACTORY
+
+' --- System dialog ---
+
+CTL -> REPO: save(newPublicationType)
+activate REPO
+
+REPO -> PTA : toDataModel(newPublicationType)
+
+activate PTA
+create "publicationTypeDataModel\n:PublicationTypeDataModel "
+PTA -->> "publicationTypeDataModel\n:PublicationTypeDataModel " : create(newPublicationType)
+
+
+PTA --> REPO : publicationTypeDataModel
+deactivate PTA
+
+REPO -> JPA : save(publicationTypeDataModel)
+
+activate JPA
+database "DB" as DB
+
+JPA -> DB : insert
+activate DB
+DB --> JPA : string based data
+deactivate DB
+
+create "publicationTypeDataModel2\n:PublicationTypeDataModel "
+deactivate "publicationTypeDataModel2\n:PublicationTypeDataModel "
+JPA -->> "publicationTypeDataModel2\n:PublicationTypeDataModel " : create(string based data)
+
+JPA --> REPO : publicationTypeDataModel2
+deactivate JPA
+
+
+REPO -> PTA : toDomain(publicationTypeDataModel2)
+activate PTA
+
+PTA -> "publicationTypeDataModel2\n:PublicationTypeDataModel ": publicationTypeId = getPublicationTypeId()
+activate "publicationTypeDataModel2\n:PublicationTypeDataModel "
+
+deactivate "publicationTypeDataModel2\n:PublicationTypeDataModel "
+
+PTA -> "FACTORY" : createPublicationType(publicationTypeId)
+activate "FACTORY"
+create "publicationType\n:PublicationType"
+"FACTORY" -->> "publicationType\n:PublicationType" : createPublicationType(publicationTypeId)
+
+"FACTORY"--> PTA : publicationType
+deactivate "FACTORY"
+
+PTA --> REPO : publicationType
+deactivate PTA
+
+CTL <-- REPO: PublicationType
+deactivate "REPO"
+
+ref over CTL
+[[../Add_New_Publication_Type_SD.puml Back to main diagram]]
+end ref
+
+@enduml

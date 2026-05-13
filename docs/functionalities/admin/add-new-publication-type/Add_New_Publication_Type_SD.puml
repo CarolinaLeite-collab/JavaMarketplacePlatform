@@ -18,10 +18,10 @@ autoactivate off
 
 ' --- Actor and participants ---
 actor "Administrator" as Admin
-participant ":AddPublication%n()TypeUI" as UI
-participant ":AddPublication%n()TypeCtl" as Ctl
-participant ":PublicationType%n()Factory" as FACTORY
-participant ":MemPublication%n()TypeRepo" as REPO
+participant ":AddPublicationTypeUI" as UI
+participant ":AddPublicationTypeController" as Ctl
+participant ":PublicationTypeFactory" as FACTORY
+participant ":IPublicationTypeRepo" as REPO
 
 ' --- System dialog ---
 Admin -> UI: I want to add a %n()new publication type.
@@ -33,19 +33,27 @@ activate "UI"
 UI -> Ctl: addPublicationType %n() (publicationTypeName)
 activate "Ctl"
 Ctl -> FACTORY: createPublicationType%n()(publicationTypeName)
+
 activate FACTORY
-create "newPublicationType %n() :PublicationType" as instance
-FACTORY -->> instance: <<create>>
+create "newPublicationType\n:PublicationType" as instance
+FACTORY -->> instance: <<create>>(publicationTypeName)
 FACTORY --> Ctl: newPublicationType
 deactivate FACTORY
-note right of Ctl
-  assuming happy path:
-  containsOfIdentity(newPublicationType.identity())
-   == false
-end note
+
+ref over Ctl
+[[sd-ref-diagrams/Verify_New_Publication_Type.puml Verify the existence of newPublicationType in persistence]]
+end ref
+
 Ctl -> REPO: save(newPublicationType)
+activate REPO
+
+ref over REPO
+[[sd-ref-diagrams/Save_New_Publication_Type.puml Save newPublicationType and return saved domain object]]
+end ref
+
+Ctl <-- REPO: PublicationType
 deactivate "REPO"
-Ctl --> UI: newPublicationType
+Ctl --> UI: PublicationType
 deactivate "Ctl"
 UI --> Admin: Added successfully!
 deactivate "UI"

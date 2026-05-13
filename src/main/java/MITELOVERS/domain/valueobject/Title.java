@@ -29,8 +29,9 @@ public class Title implements ValueObject {
         return true;
     }
 
-    public String getTitle() {
-        return _title;
+    @Override
+    public String toString() {
+        return _title.trim();
     }
 
     public String getLowercaseTitle() {

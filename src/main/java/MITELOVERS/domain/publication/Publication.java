@@ -27,12 +27,16 @@ public class Publication implements AggregateRoot<PublicationId> {
     private final Year _releaseYear;
     private final GenreId _genreId;
 
-    Publication( Title title, AuthorId authorId, Year releaseYear, GenreId genreId ){
+    Publication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, GenreId genreId ){
         _title = Objects.requireNonNull(title, "Title is required");
         _authorId = Objects.requireNonNull(authorId, "AuthorId is required");
         _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
         _genreId = Objects.requireNonNull(genreId, "GenreId is required");
-        _publicationId = new PublicationId(_title, _authorId, _releaseYear);
+        _publicationId  = Objects.requireNonNull(publicationId, "PublicationId is required");
+    }
+
+    Publication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId ) {
+        this(new PublicationId(title, authorId, releaseYear), title, authorId, releaseYear, genreId);
     }
 
     public boolean isByAuthorId(AuthorId authorId) {
@@ -43,7 +47,6 @@ public class Publication implements AggregateRoot<PublicationId> {
         return Objects.equals(_genreId, genreId);
     }
 
-    public PublicationId getPublicationId() { return _publicationId; }
     public Title getTitle() { return _title; }
     public AuthorId getAuthorId() { return _authorId; }
     public Year getReleaseYear() { return _releaseYear; }

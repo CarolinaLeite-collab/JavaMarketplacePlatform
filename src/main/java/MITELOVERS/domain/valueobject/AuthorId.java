@@ -11,7 +11,7 @@ import java.util.UUID;
  * The identifier is automatically generated from the entity's full name and
  * a random code. The format is:
  * <pre>
- * LastName + InitialsOfOtherNames + "-" + Random6CharCode
+ * lastName + " " + InitialsOfOtherNames + "-" + Random6CharCode
  * </p>
  *
  * <p><b>Validation:</b> The full name cannot be null or blank.</p>
@@ -24,15 +24,17 @@ public class AuthorId implements DomainId {
 
     private final String _id;
 
-    public AuthorId(String name) {
+    public AuthorId(Name name) {
 
-        if ( name == null || name.isBlank() ) {
-
-            throw new IllegalArgumentException("AuthorId cannot be null or blank");
-
+        if ( name == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
         }
 
-        String[] parts = name.trim().split("\\s+");
+        if (name.toString().isBlank()) {
+            throw new IllegalArgumentException("AuthorId cannot be blank");
+        }
+
+        String[] parts = name.toString().split("\\s+");
         String lastName = parts[parts.length - 1];
 
         StringBuilder initials = new StringBuilder();
@@ -49,6 +51,15 @@ public class AuthorId implements DomainId {
 
         _id = lastName + " " + initials + "-" + code;
 
+    }
+
+    public AuthorId(String id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("AuthorId cannot be null");
+        }
+
+        _id = id;
     }
 
     @Override

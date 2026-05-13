@@ -19,51 +19,51 @@ hidefootbox
 actor Administrator as Admin
 participant ":RegisterCityUI" as UI
 participant ":RegisterCityController" as CTL
-participant "_cr:MemoCountryRepo" as CouR
-participant "_cir:MemoCityRepo" as CityR
+participant ":ICityRepo" as IREPO
 participant ":CityFactory" as FCT
 
 '==== UI interaction ====
 Admin -> UI: I want to register a new City.
 activate UI
 
+
+'==== Get Countries Id's ====
 UI -> CTL: getAllCountries()
 activate CTL
-CTL -> CouR: getAllCountries()
-activate CouR
-CTL <-- CouR: List.copyOfListOfCountries
-deactivate CouR
-UI <-- CTL: List.copyOfListOfCountries
+ref over CTL
+[[sd-ref-diagrams/Get_Country_Ids.puml Get All Country Ids]]
+end ref
+UI <-- CTL: countryIds
 deactivate CTL
 
+
+'==== Create City ====
 UI --> Admin: Please choose a country \n and provide the city name.
 deactivate UI
-
-Admin -> UI: country, cityName
+Admin -> UI: countryId, cityName
 activate UI
-
-UI -> CTL: registerCity(cityName, country)
+UI -> CTL: registerCity(cityName, countryId)
 activate CTL
+CTL -> FCT : creacteCity(cityName, countryId)
+activate FCT
+create city
+FCT -> city : creacteCity(cityName, countryId)
+FCT --> CTL : city
+deactivate FCT
+ref over CTL
+[[sd-ref-diagrams/Verify_City.puml Verify the existence of city in persistence]]
+end ref
 
-CTL -> CityR: registerCity(cityName, country)
-        activate CityR
-
-    opt existsCityInACountry(\n   cityName, country) == false
-
-        CityR -> FCT: createCity(cityName, country)
-        activate FCT
-        create "c1:City" as instance
-        FCT -->> instance: <<Create>>
-        FCT --> CityR: c1
-        deactivate FCT
-        CityR -> CityR: add(c1)
-    end
-
-    CityR --> CTL: c1
-    deactivate CityR
-
-CTL --> UI: c1
+'==== Save City ====
+CTL -> IREPO : save(city)
+activate IREPO
+ref over IREPO
+[[sd-ref-diagrams/Save_City.puml Save City and return saved domain object]]
+end ref
+IREPO --> CTL : reconstructedCity
+deactivate IREPO
+CTL --> UI : reconstructedCity
 deactivate CTL
-UI --> Admin: City registered successfully!
+UI --> Admin : done
 deactivate UI
 @enduml

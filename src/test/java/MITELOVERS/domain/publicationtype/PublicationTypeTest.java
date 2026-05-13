@@ -4,14 +4,26 @@ import MITELOVERS.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 class PublicationTypeTest {
 
     @Test
     void constructorShouldBuildPublicationTypeFromString() {
 
-        //Arrange and Act
-        new PublicationType("Book");
+        // SUT & Act
+        PublicationType type =  new PublicationType("Book");
+
+    }
+
+    @Test
+    void constructorShouldBuildPublicationTypeFromId() {
+
+        //Arrange
+        PublicationTypeId id = mock(PublicationTypeId.class);
+
+        // SUT
+        PublicationType type =  new PublicationType(id);
 
     }
 

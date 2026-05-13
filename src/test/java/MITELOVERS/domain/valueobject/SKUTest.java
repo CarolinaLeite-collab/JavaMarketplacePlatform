@@ -196,18 +196,47 @@ class SKUTest {
     }
 
     @Test
-    void shouldCreateSkuFromValidValue() {
-        //Arrange
-        String value = "ABC123DEF0";
+    void constructorWithStringShouldCreateSKUSuccessfully() {
+        // Arrange
+        String validSku = "ABCDEF1234";
 
-        //SUT
-        SKU sku = new SKU(value);
+        // SUT & Act
+        SKU sut = new SKU(validSku);
 
-        //Act
-        boolean result = value.equals(sku.toString());
+        // Assert
+        assertNotNull(sut);
+        assertEquals(validSku, sut.getValue());
+    }
 
-        //Assert
-        assertTrue(result);
+    @Test
+    void constructorWithStringShouldThrowWhenNull() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU(null));
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenInvalidFormat() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU("INVALID!!!"));
+    }
+
+    @Test
+    void constructorWithStringShouldThrowWhenTooShort() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new SKU("ABC123"));
+    }
+
+    @Test
+    void skuCreatedFromStringShouldEqualSkuWithSameValue() {
+        // Arrange
+        String value = "ABCDEF1234";
+
+        // SUT
+        SKU sku1 = new SKU(value);
+        SKU sku2 = new SKU(value);
+
+        // Assert
+        assertEquals(sku1, sku2);
     }
 
 }
