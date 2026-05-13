@@ -41,14 +41,14 @@ FACTORY --> Ctl: newPublicationType
 deactivate FACTORY
 
 ref over Ctl
-[[1.Verify.puml Verify the existence of newPublicationType in persistence]]
+[[sd-ref-diagrams/Verify_New_Publication_Type.puml Verify the existence of newPublicationType in persistence]]
 end ref
 
 Ctl -> REPO: save(newPublicationType)
 activate REPO
 
 ref over REPO
-[[2.Save.puml Save newPublicationType and return saved domain object]]
+[[sd-ref-diagrams/Save_New_Publication_Type.puml Save newPublicationType and return saved domain object]]
 end ref
 
 Ctl <-- REPO: PublicationType
