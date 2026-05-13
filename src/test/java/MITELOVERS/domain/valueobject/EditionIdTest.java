@@ -17,6 +17,26 @@ class EditionIdTest {
     }
 
     @Test
+    void shouldCreateEditionIdWithValidId() {
+
+        // Arrange
+        String id = "edition-123";
+
+        // Act
+        // SUT
+        EditionId editionId = new EditionId(id);
+
+        // Assert
+        assertEquals(id, editionId.toString());
+    }
+
+    @Test
+    void constructorNullThrowsException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new EditionId((String)null));
+    }
+
+    @Test
     void editionIdIsEqualToItself() {
         //Act
         //SUT
@@ -89,6 +109,34 @@ class EditionIdTest {
 
         //Assert
         assertFalse(editionId.equals(null));
+    }
+
+    @Test
+    void shouldReturnCorrectHashCode() {
+
+        // Arrange
+        String id = "edition-123";
+        EditionId editionId = new EditionId(id);
+
+        // Act
+        int result = editionId.hashCode();
+
+        // Assert
+        assertEquals(id.hashCode(), result);
+    }
+
+    @Test
+    void shouldReturnIdAsString() {
+
+        // Arrange
+        String id = "edition-123";
+        EditionId editionId = new EditionId(id);
+
+        // Act
+        String result = editionId.toString();
+
+        // Assert
+        assertEquals(id, result);
     }
 
 }
