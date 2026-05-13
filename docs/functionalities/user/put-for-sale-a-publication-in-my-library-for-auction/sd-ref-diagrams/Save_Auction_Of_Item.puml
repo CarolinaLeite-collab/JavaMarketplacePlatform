@@ -79,6 +79,8 @@ loop for each bid in auction.getBids()
     deactivate BidAssembler
 
     Assembler -> "bids:List<BidDataModel>": add(bidDM)
+    activate "bids:List<BidDataModel>"
+    deactivate "bids:List<BidDataModel>"
 end
 
 Assembler -> auction: itemIdString = getItemsId().get(0)
