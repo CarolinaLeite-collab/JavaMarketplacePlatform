@@ -7,6 +7,8 @@ import MITELOVERS.domain.item.Item;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * Assembler responsible for converting between {@link Item} domain objects
  * and {@link ItemDataModel} persistence objects.
@@ -20,6 +22,7 @@ public class ItemAssembler {
     private final ItemFactory _itemFactory;
 
     public ItemDataModel toDataModel(Item item) {
+        Objects.requireNonNull(item, "Item cannot be null");
 
         return new ItemDataModel(
               item.identity().getValue(),
@@ -33,6 +36,7 @@ public class ItemAssembler {
     }
 
     public Item toDomain(ItemDataModel itemDataModel) {
+        Objects.requireNonNull(itemDataModel, "ItemDataModel cannot be null");
 
         return _itemFactory.createItem(
                 new ItemId(itemDataModel.getId()),

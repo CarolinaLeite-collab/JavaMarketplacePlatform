@@ -180,4 +180,26 @@ class ItemAssemblerTest {
         assertEquals(itemDouble, result);
     }
 
+    @Test
+    void toDataModelShouldThrowWhenItemIsNull() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> assembler.toDataModel(null));
+        assertEquals("Item cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void toDomainShouldThrowWhenDataModelIsNull() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
+        assertEquals("ItemDataModel cannot be null", ex.getMessage());
+    }
+
 }
