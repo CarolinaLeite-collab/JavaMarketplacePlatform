@@ -40,6 +40,24 @@ class PublishingCompanyAssemblerTest {
     }
 
     @Test
+    void toDataModelShouldThrowExceptionWhenPublishingCompanyIsNull() {
+        // Arrange
+        PublishingCompanyFactory publishingCompanyFactoryDouble =
+                mock(PublishingCompanyFactory.class);
+
+        // SUT
+        PublishingCompanyAssembler assembler =
+                new PublishingCompanyAssembler(publishingCompanyFactoryDouble);
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> assembler.toDataModel(null)
+        );
+    }
+
+
+    @Test
     void toDomainShouldReturnPublishingCompanyWithSameIdentity() {
 
         // Arrange
@@ -74,6 +92,23 @@ class PublishingCompanyAssemblerTest {
 
         // Assert
         assertEquals("PORTO EDITORA", result.identity().toString());
+    }
+
+    @Test
+    void toDomainShouldThrowExceptionWhenDataModelIsNull() {
+        // Arrange
+        PublishingCompanyFactory publishingCompanyFactoryDouble =
+                mock(PublishingCompanyFactory.class);
+
+        // SUT
+        PublishingCompanyAssembler assembler =
+                new PublishingCompanyAssembler(publishingCompanyFactoryDouble);
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> assembler.toDomain(null)
+        );
     }
 
     @Test
