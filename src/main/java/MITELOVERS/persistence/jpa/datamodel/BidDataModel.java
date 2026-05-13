@@ -14,14 +14,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "bids")
 public class BidDataModel {
 
-    @Column(name = "userId", nullable = false)
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "offerPrice")
+    @Column(name = "offer_price")
     private PriceDataModel offerPrice;
 
-    @Column(name = "bidDate",  nullable = false)
+    @Column(name = "bid_date",  nullable = false)
     private String bidDate;
 
     @Id
