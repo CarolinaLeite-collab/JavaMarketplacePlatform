@@ -4,6 +4,7 @@ import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,8 +39,12 @@ class GetPublicListsByGenreControllerTest {
     @Mock
     private GenreId _otherGenreIdDouble;
 
+    @Mock
+    private Name _nameDouble;
+
     @InjectMocks
     private GetPublicListsByGenreController _controller;
+
 
 
     @Test
@@ -64,7 +69,9 @@ class GetPublicListsByGenreControllerTest {
     void controllerShouldReturnPublicListsByGenre() {
 
         // Arrange
-        when(_publicListOfItems.getName()).thenReturn("List A");
+        when(_nameDouble.toString()).thenReturn("List A");
+        when(_publicListOfItems.getName()).thenReturn(_nameDouble);
+
         when(_publicListOfItems.getGenreId()).thenReturn(_genreIdDouble);
         when(_publicListOfItems.isPrivate()).thenReturn(false);
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(_publicListOfItems));
@@ -74,7 +81,7 @@ class GetPublicListsByGenreControllerTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("List A", result.get(0).getName());
+        assertEquals("List A", result.get(0).getName().toString());
 
     }
 
@@ -110,9 +117,6 @@ class GetPublicListsByGenreControllerTest {
         // Arrange
         when(_publicListOfItems.getGenreId()).thenReturn(_genreIdDouble);
         when(_publicListOfItems.isPrivate()).thenReturn(false);
-
-        when(_privateListOfItems.getGenreId()).thenReturn(_genreIdDouble);
-        when(_privateListOfItems.isPrivate()).thenReturn(true);
 
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(_publicListOfItems, _privateListOfItems));
 
