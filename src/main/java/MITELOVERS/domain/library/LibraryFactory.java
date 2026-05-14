@@ -3,6 +3,7 @@ package MITELOVERS.domain.library;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -19,6 +20,8 @@ import java.util.List;
  * (such as non-null constraints) are enforced by the {@link Library} constructor.
  * </p>
  */
+
+@Component
 public class LibraryFactory {
 
     public Library createLibrary(UserId userId) {
