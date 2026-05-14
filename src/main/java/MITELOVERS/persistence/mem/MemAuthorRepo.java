@@ -3,6 +3,7 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
 
 import java.util.*;
 
@@ -66,4 +67,8 @@ public class MemAuthorRepo implements IAuthorRepo {
 
     }
 
+    @Override
+    public AuthorId findByName(String name) {
+        return null;
+    }
 }

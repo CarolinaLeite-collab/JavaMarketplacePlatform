@@ -6,6 +6,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -67,7 +68,43 @@ public class GetDirectSaleItemsByAuthorController {
                 }
             }
         }
+
+        List<String> ids = listOfItemsOnDirectSaleByAuthor.stream().map(ItemId::getValue).toList();
+
+        List<Item> itemsOrderByDescription = _iItemRepo.findByIdInOrderByDescriptionAsc(ids);
+
+
         return listOfItemsOnDirectSaleByAuthor;
+    }
+
+    public List<Item> getDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId) {
+        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+        List<ItemId> listOfItemsOnDirectSaleByAuthor = new ArrayList<>();
+
+        for(DirectSale directSale: directSales){
+            List<ItemId> itemIds = directSale.getItemsId();
+
+            for(ItemId itemId: itemIds) {
+                Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalStateException("Item not found"));
+
+                EditionId editionId = item.getEditionId();
+
+                Edition edition = _iEditionRepo.ofIdentity(editionId).orElseThrow(() -> new IllegalStateException("Edition not found"));
+
+                PublicationId publicationId = edition.getPublicationId();
+
+                Publication publication = _iPublicationRepo.ofIdentity(publicationId).orElseThrow(() -> new IllegalStateException("Publication not found"));
+
+                if (publication.isByAuthorId(authorId)) {
+                    listOfItemsOnDirectSaleByAuthor.add(itemId);
+                }
+            }
+        }
+
+        List<String> ids = listOfItemsOnDirectSaleByAuthor.stream().map(ItemId::getValue).toList();
+
+
+        return _iItemRepo.findByIdInOrderByDescriptionAsc(ids);
     }
 
 }
