@@ -13,16 +13,8 @@ autonumber
 autoactivate off
 
 actor Buyer
-participant ":GetItemsOnAuctionOfAGivenAuthorUI" as UI
-participant ":GetItemsOnAuctionOfAGivenAuthorController" as CTL
-participant ":IAuthorRepo" as AR
-participant ":IAuctionRepo" as DSR
-participant "auction:Auction" as Auction
-participant ":IItemRepo" as IR
-participant "item:Item" as Item
-participant ":IEditionRepo" as ER
-participant "edition:Edition" as Edition
-participant ":IPublicationRepo" as PR
+participant ":GetItemsOnAuctionOfA\nGivenAuthorUI" as UI
+participant ":GetItemsOnAuctionOfA\nGivenAuthorController" as CTL
 participant "publication:Publication" as Publication
 
 
@@ -30,11 +22,11 @@ Buyer -> UI: I want the list of items \non auction of a given author
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
-CTL -> AR : findAllKeys()
-activate AR
+ref over CTL
+[[sd-ref-diagrams/Get_Author_Ids.puml Get All Author Ids]]
+end ref
 
-AR --> CTL : authorIds
-deactivate AR
+
 
 CTL --> UI : authorIds
 deactivate CTL
@@ -44,47 +36,41 @@ Buyer -> UI: authorId
 activate UI
 
 
-UI -> CTL: getAuctionItemsByAuthorId(authorId)
+UI -> CTL: getAuctionItems\nByAuthorId(authorId)
 activate CTL
 
-CTL -> DSR: findAll()
-activate DSR
-
-DSR --> CTL: auction
-deactivate DSR
+ref over CTL
+[[sd-ref-diagrams/Get_Auctions.puml Get Auctions]]
+end ref
 
 create "listOfItemsOnAuctionByAuthor:List<ItemId>"
 CTL -->> "listOfItemsOnAuctionByAuthor:List<ItemId>" : <<Create>>
 
 loop for auction : auctions
-CTL -> Auction : getItemIds()
-activate Auction
-Auction --> CTL : itemIds
-deactivate Auction
+ref over CTL
+[[sd-ref-diagrams/Get_Items_Ids_Auction.puml Get Items Ids on Auction]]
+end ref
 
 loop for itemId : itemIds
-CTL -> IR : ofIdentity(itemId)
-activate IR
-IR --> CTL : item
-deactivate IR
-CTL -> Item : getEditionId()
-activate Item
-Item --> CTL : editionId
-deactivate Item
+ref over CTL
+[[sd-ref-diagrams/Get_Items.puml Get Items]]
+end ref
 
-CTL -> ER : ofIdentity(editionId)
-activate ER
-ER --> CTL : edition
-deactivate ER
-CTL -> Edition : getPublicationId()
-activate Edition
-Edition --> CTL : publicationId
-deactivate Edition
+ref over CTL
+[[sd-ref-diagrams/Get_Edition_Id_Item.puml Get Edition Ids on Item]]
+end ref
 
-CTL -> PR : ofIdentity(publicationId)
-activate PR
-PR --> CTL : publication
-deactivate PR
+ref over CTL
+[[sd-ref-diagrams/Get_Edition.puml Get Edition]]
+end ref
+
+ref over CTL
+[[sd-ref-diagrams/Get_Publication_Id.puml Get Publication Id]]
+end ref
+
+ref over CTL
+[[sd-ref-diagrams/Get_Publication.puml Get Publication]]
+end ref
 
 CTL -> Publication : hasAuthorId = isByAuthorId(authorId)
 

@@ -1,0 +1,55 @@
+@startuml
+title "Get Genre Id" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+autonumber
+autoactivate off
+hidefootbox
+
+participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
+participant ":JpaGenreRepo" as JPAREPO
+participant ":IGenreSpringdataRepo" as SPRINGREPO
+database "DB" as DB
+
+activate CTL
+CTL -> JPAREPO : findAll()
+activate JPAREPO
+
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> DB : findAll()
+activate DB
+
+DB --> SPRINGREPO : savedGenreDms
+deactivate DB
+SPRINGREPO --> JPAREPO : savedGenreDms
+deactivate SPRINGREPO
+
+loop for savedGenreDm : savedGenreDms
+    JPAREPO -> "savedGenreDm:GenreDataModel" : getGenreId()
+    JPAREPO -> "genreId:GenreId" : <<create>>(stringGenreId)
+end
+
+create "listOfGenreIds:List<GenreId>"
+JPAREPO -> "listOfGenreIds:List<GenreId>" : <<create>>
+JPAREPO -> "listOfGenreIds:List<GenreId>" : add(authorId)
+"listOfGenreIds:List<GenreId>" --> JPAREPO : true
+
+JPAREPO --> CTL : genreIds
+deactivate JPAREPO
+
+ref over CTL
+[[../Get_List_Of_Items_on_Auction_Of_Given_Genre_SD.puml Back to Main Diagram]]
+end ref
+@enduml

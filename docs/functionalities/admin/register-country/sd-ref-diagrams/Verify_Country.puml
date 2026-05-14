@@ -1,0 +1,54 @@
+@startuml
+title Verify the existence of newCountry in persistence
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":RegisterCountryController" as Ctl
+participant ":ICountryRepo" as IR
+participant ":ICountrySpringDataRepo" as jpa
+
+activate Ctl
+Ctl -> "newCountry:Country" : identity()
+
+
+activate "newCountry:Country"
+"newCountry:Country" --> Ctl : countryId
+deactivate "newCountry:Country"
+
+Ctl -> IR : containsOfIdentity(countryId)
+activate IR
+
+IR -> jpa : existsById(countryId.toString)
+activate jpa
+
+database "DB" as DB
+jpa -> DB : select
+activate DB
+DB --> jpa : false
+deactivate DB
+
+jpa --> IR : false
+deactivate jpa
+
+IR --> Ctl : false
+deactivate IR
+
+ref over Ctl
+[[../Register_Country_SD.puml Back to Main Diagram]]
+end ref
+
+
+
+@enduml

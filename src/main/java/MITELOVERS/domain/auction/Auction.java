@@ -6,6 +6,7 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.UserId;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,6 +92,54 @@ public class Auction implements AggregateRoot<AuctionId> {
         this(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
     }
 
+    Auction(AuctionId auctionId,
+            List<ItemId> itemsId,
+            Price startingPrice,
+            Price reservePrice,
+            Price outrightPrice,
+            ZonedDateTime auctionStartDate,
+            ZonedDateTime auctionEndDate,
+            UserId userId,
+            Price finalPrice,
+            List<Bid> bids) {
+
+        if (auctionId == null) {
+            throw new IllegalArgumentException("AuctionId cannot be null");
+        }
+
+        if (itemsId == null || itemsId.isEmpty()) {
+            throw new IllegalArgumentException("Items cannot be null or empty");
+        }
+
+        if (startingPrice == null) {
+            throw new IllegalArgumentException("Starting price cannot be null");
+        }
+
+        if (reservePrice == null) {
+            throw new IllegalArgumentException("Reserve price cannot be null");
+        }
+
+        if (auctionStartDate == null) {
+            throw new IllegalArgumentException("Auction start date cannot be null");
+        }
+
+        if (auctionEndDate == null) {
+            throw new IllegalArgumentException("Auction end date cannot be null");
+        }
+
+        _auctionId = auctionId;
+        _itemsId = new ArrayList<>(itemsId);
+        _startingPrice = startingPrice;
+        _reservePrice = reservePrice;
+        _outrightPrice = outrightPrice;
+        _auctionStartDate = auctionStartDate;
+        _auctionEndDate = auctionEndDate;
+        _userId = userId;
+        _finalPrice = finalPrice;
+        _bids = (bids == null) ? new ArrayList<>() : new ArrayList<>(bids);
+        _bidFactory = new BidFactory();
+    }
+
     @Override
     public AuctionId identity() {
         return _auctionId;
@@ -141,6 +190,18 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     public Price getFinalPrice() {
         return _finalPrice;
+    }
+
+    public Price getReservePrice() {
+        return _reservePrice;
+    }
+
+    public Instant getAuctionStartDate() {
+        return  _auctionStartDate.toInstant();
+    }
+
+    public Instant getAuctionEndDate() {
+        return  _auctionEndDate.toInstant();
     }
 
     public void finalizeAuction() {

@@ -19,9 +19,9 @@ skinparam classAttributeFontSize 11
 skinparam classAttributeFontStyle plain
 
 ' ===== Domain =====
-Package "edition" {
+package "edition" {
 
-    Package "edition" <<Folder>> #b0c4d4 {
+    package "edition" <<Folder>> #b0c4d4 {
 
         class Edition <<Root>> <<Entity>> {
             -_publishingYear : Year
@@ -38,22 +38,27 @@ Package "edition" {
             +getBinding() : Binding
             +getDimension() : Dimension
             +getWeight() : Weight
+            + isByPublishingCompanyId(publishingCompanyId : PublishingCompanyId) : boolean
+            + isByPublicationId(publicationId : PublicationId) : boolean
         }
 
 
         class EditionFactory <<Factory>> {
-            +createEdition : Edition
+            +createEdition(typeId : PublicationTypeId, identifier : Identifier, publicationId : PublicationId, \npublishingCompanyId : PublishingCompanyId, publishingYear : Year, editionLanguage : Language, \ndimension : Dimension, weight : Weight, numberOfPages : NumberOfPages, editionNumber : EditionNumber, \nbinding : Binding) : Edition
+
+            +createEdition(generatedId : EditionId, typeId : PublicationTypeId, identifier : Identifier, publicationId : PublicationId, \npublishingCompanyId : PublishingCompanyId, publishingYear : Year, editionLanguage : Language, dimension : Dimension, \nweight : Weight, numberOfPages : NumberOfPages,
+                editionNumber : EditionNumber, binding : Binding) : Edition
         }
 
     }
 
-    Package "valueobject" <<Folder>> {
+    package "valueobject" <<Folder>> {
 
         class EditionId <<ValueObject>> #LightPink {
-            +equals()
+            -_eId : String
         }
 
-        Interface Identifier <<ValueObject>> {
+        interface Identifier <<ValueObject>> {
             +getIdentifier()
         }
 
@@ -75,7 +80,8 @@ Package "edition" {
 
     Package "repository" <<Folder>> {
         interface IEditionRepo <<Interface>>{
-                }
+            +addEdition
+        }
     }
 
     edition -[hidden]right- repository
@@ -84,7 +90,7 @@ Package "edition" {
 
 }
 
-Package "ddd" {
+package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
         +save(entity: T) : T
         +findAll() : Iterable<T>
@@ -98,12 +104,6 @@ Package "ddd" {
     interface DomainEntity<ID, T> <<Interface>> {
         +identity() : ID
         +sameAs(Object) : boolean
-    }
-}
-
-Package "persistence" {
-    package "mem" {
-        class MemoEditionRepo <<Repo>>
     }
 }
 
@@ -129,12 +129,11 @@ Edition "*" --> "0..1" Binding : has
 
 
 IEditionRepo -|> IRepository
-MemoEditionRepo ..|> IEditionRepo
 Edition ..|> AggregateRoot
 AggregateRoot -|> DomainEntity
 
 EditionFactory ..> Edition : <<create>>
 
-Edition "*" <- "1" MemoEditionRepo : persists
+Edition "*" <- "1" IEditionRepo : persists
 
 @enduml

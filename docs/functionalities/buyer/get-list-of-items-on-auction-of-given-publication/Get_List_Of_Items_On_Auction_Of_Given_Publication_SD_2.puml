@@ -20,12 +20,7 @@ autoactivate off
 actor Buyer
 participant ":GetAuctionItemsByPublicationUI" as UI
 participant ":GetAuctionItemsByPublicationController" as CTL
-participant ":IPublicationRepo" as PR
-participant ":IAuctionRepo" as AUR
-participant "auction:Auction" as Auction
-participant ":IItemRepo" as IR
-participant "item:Item" as Item
-participant ":IEditionRepo" as ER
+
 participant "edition:Edition" as Edition
 
 
@@ -33,11 +28,9 @@ Buyer -> UI: I want the list of items %n() on auction of a given publication
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
-CTL -> PR : findAllKeys()
-activate PR
-
-PR --> CTL : publicationIds
-deactivate PR
+ref over CTL
+[[sd-ref-diagrams/Get_Publications_Id.puml Get All Publications Ids]]
+end ref
 
 CTL --> UI : publicationIds
 deactivate CTL
@@ -50,35 +43,30 @@ activate UI
 UI -> CTL: getAuctionItemsBy %n() PublicationId(publicationId)
 activate CTL
 
-CTL -> AUR: findAll()
-activate AUR
-
-AUR --> CTL: auctions
-deactivate AUR
+ref over CTL
+[[sd-ref-diagrams/Get_Auctions.puml Get All Auctions]]
+end ref
 
 create "listOfItemsOnAuction %n() ByPublication:List<ItemId>" as List
 CTL -->> List : <<Create>>
 
 loop for auction : auctions
-CTL -> Auction : getItemIds()
-activate Auction
-Auction --> CTL : itemIds
-deactivate Auction
+ref over CTL
+[[sd-ref-diagrams/Get_Item_Id.puml Get Items Id on Auction]]
+end ref
 
 loop for itemId : itemIds
-CTL -> IR : ofIdentity(itemId)
-activate IR
-IR --> CTL : item
-deactivate IR
-CTL -> Item : getEditionId()
-activate Item
-Item --> CTL : editionId
-deactivate Item
+ref over CTL
+[[sd-ref-diagrams/Get_Item.puml Get Items]]
+end ref
 
-CTL -> ER : ofIdentity(editionId)
-activate ER
-ER --> CTL : edition
-deactivate ER
+ref over CTL
+[[sd-ref-diagrams/Get_Edition_Id.puml Get Edition Id]]
+end ref
+
+ref over CTL
+[[sd-ref-diagrams/Get_Edition.puml Get Edition]]
+end ref
 
 CTL -> Edition : hasPublicationId = isByPublicationId(publicationId)
 

@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
@@ -7,9 +8,7 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibraryId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;
 
@@ -20,82 +19,75 @@ import java.util.List;
  * Controller responsible for retrieving detailed information about the items
  * contained in a user's library.
  *
- * <p>
  * This controller interacts with multiple repositories to reconstruct the full
  * domain context of each item stored in a {@link Library} associated with a
- * given {@link UserId}. It gathers data from {@link IItemRepo},
- * {@link IEditionRepo}, {@link IPublicationRepo}, {@link IAuthorRepo}, and
- * {@link IPublicationTypeRepo}.
- * </p>
+ * given {@link UserId}.
  *
- * <p>
- * The resulting domain objects are then mapped into {@link ItemDetailsDTO}
- * instances using {@link ItemDetailsMapper}, providing a structured
- * representation of the library contents for external use.
- * </p>
+ * The resulting domain objects are mapped into {@link ItemDetailsDTO}
+ * instances using {@link ItemDetailsMapper}.
  */
 
 public class ListOfItemsInMyLibraryController {
 
-    private final ILibraryRepo _iLibraryRepo;
-    private final IItemRepo _iItemRepo;
-    private final IEditionRepo _iEditionRepo;
-    private final IPublicationRepo _iPublicationRepo;
-    private final IAuthorRepo _iAuthorRepo;
-    private final IPublicationTypeRepo _iPublicationTypeRepo;
+    private final ILibraryRepo _libraryRepo;
+    private final IItemRepo _itemRepo;
+    private final IEditionRepo _editionRepo;
+    private final IPublicationRepo _publicationRepo;
+    private final IAuthorRepo _authorRepo;
+    private final IPublicationTypeRepo _publicationTypeRepo;
 
     public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo,
-                                            IItemRepo iItemRepo,
-                                            IEditionRepo iEditionRepo,
-                                            IPublicationRepo iPublicationRepo,
-                                            IAuthorRepo iAuthorRepo,
-                                            IPublicationTypeRepo iPublicationTypeRepo,
-                                            UserId userId) {
-        _iLibraryRepo = libraryRepo;
-        _iItemRepo = iItemRepo;
-        _iEditionRepo = iEditionRepo;
-        _iPublicationRepo = iPublicationRepo;
-        _iAuthorRepo = iAuthorRepo;
-        _iPublicationTypeRepo = iPublicationTypeRepo;
+                                            IItemRepo itemRepo,
+                                            IEditionRepo editionRepo,
+                                            IPublicationRepo publicationRepo,
+                                            IAuthorRepo authorRepo,
+                                            IPublicationTypeRepo publicationTypeRepo) {
+
+        _libraryRepo = libraryRepo;
+        _itemRepo = itemRepo;
+        _editionRepo = editionRepo;
+        _publicationRepo = publicationRepo;
+        _authorRepo = authorRepo;
+        _publicationTypeRepo = publicationTypeRepo;
+
     }
 
     public List<ItemDetailsDTO> getListOfItemInfoInMyLibrary(UserId userId) {
 
         LibraryId libraryId = LibraryId.fromUserId(userId);
 
-        List<ItemId> listOfItemIds =
-                _iLibraryRepo.ofIdentity(libraryId)
-                        .orElseThrow(() -> new IllegalStateException("Library not found for user!"))
-                        .getItemsIdInLibrary();
+        Library library = _libraryRepo.ofIdentity(libraryId)
+                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
 
-        List<ItemDetailsDTO> listOfItemDetailsDTOs = new ArrayList<>();
+        List<ItemId> itemIds = library.getItemsIdInLibrary();
+        List<ItemDetailsDTO> result = new ArrayList<>();
 
-        for  (ItemId itemId : listOfItemIds) {
+        for (ItemId itemId : itemIds) {
 
-            Item item = _iItemRepo.ofIdentity(itemId)
+            Item item = _itemRepo.ofIdentity(itemId)
                     .orElseThrow(() -> new IllegalStateException("Item not found!"));
 
-            Edition edition = _iEditionRepo.ofIdentity(item.getEditionId())
+            Edition edition = _editionRepo.ofIdentity(item.getEditionId())
                     .orElseThrow(() -> new IllegalStateException("Edition not found!"));
 
-            Publication publication = _iPublicationRepo.ofIdentity(edition.getPublicationId())
+            Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
                     .orElseThrow(() -> new IllegalStateException("Publication not found!"));
 
-            PublicationType publicationType = _iPublicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
+            PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
                     .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
 
-            Author author = _iAuthorRepo.ofIdentity(publication.getAuthorId())
+            Author author = _authorRepo.ofIdentity(publication.getAuthorId())
                     .orElseThrow(() -> new IllegalStateException("Author not found!"));
 
-            listOfItemDetailsDTOs.add(ItemDetailsMapper.toDTO(
+            result.add(ItemDetailsMapper.toDTO(
                     edition,
                     publication,
                     publicationType,
-                    author));
-
+                    author
+            ));
         }
 
-        return listOfItemDetailsDTOs;
-
+        return result;
     }
+
 }

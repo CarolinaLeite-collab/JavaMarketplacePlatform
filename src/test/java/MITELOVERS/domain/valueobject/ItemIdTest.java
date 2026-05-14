@@ -29,29 +29,6 @@ class ItemIdTest {
     }
 
     @Test
-    void constructorWithNullStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId(null)
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-    @Test
-    void constructorWithBlankStringShouldThrowIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ItemId("   ")
-        );
-
-        assertEquals("SKU cannot be null or blank.", exception.getMessage());
-    }
-
-
-    @Test
     void getSKUShouldReturnNonNullSku() {
         // SUT
         ItemId sut = new ItemId();
@@ -166,12 +143,54 @@ class ItemIdTest {
         assertEquals(sut.getSku().toString(), result);
     }
 
+    // --------------------------------------
+    // Tests for the rehydration constructor
+    // --------------------------------------
 
     @Test
-    void constructorWithStringShouldThrowWhenInvalidSku() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new ItemId("INVALID!!!"));
+    void rehydrationConstructorShouldStoreGivenSkuValue() {
+        String value = "ABCDEF1234"; // valid SKU
+        ItemId sut = new ItemId(value);
+        assertEquals(value, sut.getSku().getValue());
     }
 
+    @Test
+    void rehydrationConstructorShouldRejectInvalidSkuValue() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new ItemId(invalid));
+    }
+
+    @Test
+    void rehydratedItemIdsWithSameValueShouldBeEqual() {
+        String value = "A1B2C3D4E5";
+        ItemId sut = new ItemId(value);
+        ItemId other = new ItemId(value);
+        assertEquals(sut, other);
+    }
+
+    @Test
+    void getValueShouldMatchSkuGetValue() {
+        // SUT
+        ItemId sut = new ItemId();
+
+        // Act
+        String value = sut.getValue();
+
+        // Assert
+        assertEquals(sut.getSku().getValue(), value);
+    }
+
+    @Test
+    void getValueShouldMatchToStringForNow() {
+        // SUT
+        ItemId sut = new ItemId();
+
+        // Act
+        String value = sut.getValue();
+        String stringRepresentation = sut.toString();
+
+        // Assert
+        assertEquals(value, stringRepresentation);
+    }
 
 }

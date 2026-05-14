@@ -22,43 +22,63 @@ class CreateLibraryUI {
 package "controller" {
 
     class CreateLibraryController {
-      + createLibrary(userId : UserId) : boolean
+        + createLibrary(userId : UserId) : boolean
     }
 
 }
 
 package "domain" {
 
-package "repository" {
+    package "repository" {
 
-    interface ILibraryRepo <<Interface>> {
+        interface ILibraryRepo <<Interface>> {
+        }
+
     }
 
-}
+    package "valueobject" {
 
-package "valueobject" {
+        class LibraryId <<Value Object>> #lightpink {
+            +fromUserId(userId : UserId) : LibraryId
+        }
+        class UserId <<Value Object>>
 
-    class LibraryId <<Value Object>> #lightpink {
-    +fromUserId(userId : UserId) : LibraryId
-    }
-    class UserId <<Value Object>>
-
-}
-
-package "library" #b0c4d4 {
-
-    class Library <<Root>> <<Entity>> {
     }
 
-    class LibraryFactory <<Factory>> {
-    + createLibrary(userId : UserId) : Library
-    }
+    package "library" #b0c4d4 {
 
-}
+        class Library <<Root>> <<Entity>> {
+        }
+
+        class LibraryFactory <<Factory>> {
+            + createLibrary(userId : UserId) : Library
+            + createLibrary(id : LibraryId, items : List<ItemId>) : Library
+        }
+
+    }
 
 }
 
 package "persistence"  {
+    package "jpa" {
+
+            class JpaLibraryRepo {
+                - _iSpringDataRepo : ILibrarySpringDataRepo
+                - _libraryAssembler : LibraryAssembler
+            }
+
+            interface ILibrarySpringDataRepo <<Interface>> {}
+
+            class LibraryAssembler <<Component>> {
+                + toDataModel(library : Library) : LibraryDataModel
+                + toDomain(dm : LibraryDataModel) : Library
+            }
+
+            class LibraryDataModel <<Entity>> {
+                - libraryId : String
+                - itemIds : List<String>
+            }
+        }
 
     package "mem" {
 
@@ -105,6 +125,11 @@ LibraryId "1" .> "1" UserId: <<use>>
 ILibraryRepo --|> IRepository
 AggregateRoot --|> DomainEntity
 
+JpaLibraryRepo ..|> ILibraryRepo
+JpaLibraryRepo --> ILibrarySpringDataRepo : uses
+JpaLibraryRepo --> LibraryAssembler : uses
+LibraryAssembler ..> LibraryFactory : uses
+LibraryAssembler ..> LibraryDataModel : <<use>>
 
 
 @enduml

@@ -30,10 +30,18 @@ public class Weight implements ValueObject {
             return _abbreviation;
         }
 
+        public static WeightUnit fromAbbreviation(String abbreviation) {
+            for (WeightUnit unit : values()) {
+                if (unit._abbreviation.equalsIgnoreCase(abbreviation.trim()))
+                    return unit;
+            }
+            throw new IllegalArgumentException("Unknown weight unit: " + abbreviation);
+        }
+
         @Override
         public String toString() {
             return _abbreviation;
-    }
+        }
     }
 
     private final double _value;

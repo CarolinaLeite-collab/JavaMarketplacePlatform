@@ -1,5 +1,4 @@
 package MITELOVERS.persistence.jpa.datamodel;
-
 import jakarta.persistence.Embeddable;
 import lombok.Generated;
 import lombok.Getter;
@@ -14,7 +13,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Embeddable
+
 public class PriceDataModel {
+
     private double numericValue;
     private String currency;
 
