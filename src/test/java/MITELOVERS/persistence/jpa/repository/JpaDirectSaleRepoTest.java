@@ -22,27 +22,27 @@ class JpaDirectSaleRepoTest {
 
     //SUT
     @InjectMocks
-    private JpaDirectSaleRepo repo;
+    private JpaDirectSaleRepo _repoDouble;
 
     @Mock
-    private IDirectSaleSpringDataRepo iDirectSaleSpringDataRepo;
+    private IDirectSaleSpringDataRepo _iDirectSaleSpringDataRepoDouble;
 
     @Mock
-    private DirectSaleDataModel directSaleDataModel;
+    private DirectSaleDataModel _directSaleDataModelDouble;
 
     @Mock
     private DirectSaleDataModel dmOther;
 
     @Mock
-    private DirectSale directSaleEntity;
+    private DirectSale _directSaleEntityDouble;
 
     @Mock
-    private DirectSale directSaleEntityOther;
+    private DirectSale _directSaleEntityOtherDouble;
     @Mock
-    private DirectSaleAssembler assembler;
+    private DirectSaleAssembler _assemblerDouble;
 
     @Mock
-    private DirectSaleId id;
+    private DirectSaleId _idDouble;
 
     @Test
     void shouldSaveDirectSale() {
