@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,11 @@ class ShareListPubliclyControllerTest {
     @InjectMocks
     ShareListPubliclyController _controller;
 
+    private SharedDuration _durationDouble;
+
     @BeforeEach
-    void setUp() throws InstantiationException {
+    void setUp() {
+        _durationDouble = new SharedDuration(7);
     }
 
     @Test
@@ -56,7 +60,6 @@ class ShareListPubliclyControllerTest {
 
     @Test
     void findListsByUserIdShouldThrowWhenUserIdIsNull() {
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> _controller.findListsByUserId(null));
     }
@@ -83,11 +86,11 @@ class ShareListPubliclyControllerTest {
                 .thenReturn(Optional.of(listDouble));
 
         // Act
-        boolean result = _controller.shareListPublicly(listIdDouble);
+        boolean result = _controller.shareListPublicly(listIdDouble, _durationDouble);
 
         // Assert
         assertTrue(result);
-        verify(listDouble).makePublic();
+        verify(listDouble).makePublic(_durationDouble);
         verify(_iListOfItemsRepoDouble).save(listDouble);
     }
 
@@ -101,6 +104,6 @@ class ShareListPubliclyControllerTest {
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> _controller.shareListPublicly(listIdDouble));
+                () -> _controller.shareListPublicly(listIdDouble, _durationDouble));
     }
 }

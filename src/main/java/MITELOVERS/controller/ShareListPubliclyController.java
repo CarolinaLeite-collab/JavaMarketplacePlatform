@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
@@ -23,11 +24,11 @@ public class ShareListPubliclyController {
         return findListsByUserId(userId);
     }
 
-    public boolean shareListPublicly(ListOfItemsId listOfItemsId) {
+    public boolean shareListPublicly(ListOfItemsId listOfItemsId, SharedDuration duration) {
         ListOfItems list = _iListOfItemsRepo.ofIdentity(listOfItemsId)
                 .orElseThrow(() -> new IllegalStateException("List not found"));
 
-        list.makePublic();
+        list.makePublic(duration);
         _iListOfItemsRepo.save(list);
         return true;
     }
