@@ -15,14 +15,66 @@ autonumber
 autoactivate off
 hidefootbox
 
-participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
-participant ":IItemRepo" as REPO
+participant ":GetAuctionItemsByGenreController" as CTL
+participant "itemRepo:IItemRepo" as IRepo
+participant "item:Item" as Item
+participant "editionRepo:IEditionRepo" as ERepo
+participant "edition:Edition" as Edition
+participant "pubRepo:IPublicationRepo" as PRepo
+participant "publication:Publication" as Publication
 
+[-> CTL : getAuctionItemsByGenreId(genreId)
 activate CTL
-CTL -> REPO : ofIdentity(itemId)
-activate REPO
-REPO --> CTL : item
-deactivate REPO
+
+CTL -> IRepo : findAllKeys()
+activate IRepo
+IRepo --> CTL : allItemIds
+deactivate IRepo
+
+create "itemIdsOfGenre:List<ItemId>"
+CTL -->> "itemIdsOfGenre:List<ItemId>" : <<Create>>
+
+loop for each itemId in allItemIds
+    CTL -> IRepo : ofIdentity(itemId)
+    activate IRepo
+    IRepo --> CTL : item
+    deactivate IRepo
+
+    CTL -> Item : getEditionId()
+    activate Item
+    Item --> CTL : editionId
+    deactivate Item
+
+    CTL -> ERepo : ofIdentity(editionId)
+    activate ERepo
+    ERepo --> CTL : edition
+    deactivate ERepo
+
+    CTL -> Edition : getPublicationId()
+    activate Edition
+    Edition --> CTL : publicationId
+    deactivate Edition
+
+    CTL -> PRepo : ofIdentity(publicationId)
+    activate PRepo
+    PRepo --> CTL : publication
+    deactivate PRepo
+
+    CTL -> Publication : isByGenreId(genreId)
+    activate Publication
+    Publication --> CTL : result
+    deactivate Publication
+
+    opt result == true
+        CTL -> "itemIdsOfGenre:List<ItemId>" : add(itemId)
+        activate "itemIdsOfGenre:List<ItemId>"
+        "itemIdsOfGenre:List<ItemId>" --> CTL : true
+        deactivate "itemIdsOfGenre:List<ItemId>"
+    end
+end
+
+[<-- CTL : itemIdsOfGenre
+deactivate CTL
 
 ref over CTL
 [[../Get_List_Of_Items_on_Auction_Of_Given_Genre_SD.puml Back to Main Diagram]]

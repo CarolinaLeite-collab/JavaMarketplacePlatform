@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on auction of a given genre" - SD
+title "Get items on auction of a given genre, sorted ascendingly by deadline" - SD
 hidefootbox
 
 skinparam shadowing false
@@ -15,7 +15,9 @@ autoactivate off
 actor Buyer
 participant ":GetItemsOnAuctionOfA\nGivenGenreUI" as UI
 participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
+participant "itemRepo:IItemRepo" as IRepo
 participant "publication:Publication" as Publication
+participant "auctionRepo:IAuctionRepo" as ARepo
 
 
 Buyer -> UI: I want the list of items \non auction of a given genre
@@ -26,8 +28,6 @@ ref over CTL
 [[sd-ref-diagrams/Get_Genre_Ids.puml Get All Genre Ids]]
 end ref
 
-
-
 CTL --> UI : genreIds
 deactivate CTL
 UI --> Buyer: Select genreId
@@ -35,59 +35,25 @@ deactivate UI
 Buyer -> UI: genreId
 activate UI
 
-
-UI -> CTL: getAuctionItems\nByGenreId(authorId)
+UI -> CTL: getAuctionItems\nByGenreId(genreId)
 activate CTL
 
 ref over CTL
-[[sd-ref-diagrams/Get_Auctions.puml Get Auctions]]
+[[../sd-ref-diagrams/Get_Items.puml Get ItemIds of a Given Genre]]
 end ref
+note right of CTL: This ref returns 'itemIdsOfGenre'
 
-create "listOfItemsOnAuction\nByGenre:List<ItemId>"
-CTL -->> "listOfItemsOnAuction\nByGenre:List<ItemId>" : <<Create>>
+CTL -> ARepo : findByItemsIdSorted(itemIdsOfGenre)
+activate ARepo
+note right: Sorts results by AuctionEndDate Asc
+ARepo --> CTL : sortedItemsByDeadline
+deactivate ARepo
 
-loop for auction : auctions
-ref over CTL
-[[sd-ref-diagrams/Get_Items_Id_Auction.puml Get Items Ids on Auction]]
-end ref
-
-loop for itemId : itemIds
-ref over CTL
-[[sd-ref-diagrams/Get_Items.puml Get Items]]
-end ref
-
-ref over CTL
-[[sd-ref-diagrams/Get_Edition_Id_Item.puml Get Edition Ids on Item]]
-end ref
-
-ref over CTL
-[[sd-ref-diagrams/Get_Edition.puml Get Edition]]
-end ref
-
-ref over CTL
-[[sd-ref-diagrams/Get_Publication_Id.puml Get Publication Id]]
-end ref
-
-ref over CTL
-[[sd-ref-diagrams/Get_Publication.puml Get Publication]]
-end ref
-
-CTL -> Publication : hasGenreId = isByGenreId(GenreId)
-
-opt hasGenreId
-CTL -> "listOfItemsOnAuction\nByGenre:List<ItemId>" : add(itemId)
-activate "listOfItemsOnAuction\nByGenre:List<ItemId>"
-"listOfItemsOnAuction\nByGenre:List<ItemId>" --> CTL : true
-deactivate "listOfItemsOnAuction\nByGenre:List<ItemId>"
-end
-end
-end
-
-
-CTL --> UI: listOfItemsOnAuctionByGenre
+CTL --> UI: sortedItemsByDeadline
 deactivate CTL
 
-UI --> Buyer: Here's the list! Done!
+UI --> Buyer: Here's the sorted list!
 deactivate UI
+
 
 @enduml
