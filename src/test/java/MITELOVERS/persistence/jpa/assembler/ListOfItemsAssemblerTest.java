@@ -173,7 +173,7 @@ class ListOfItemsAssemblerTest {
     }
 
     @Test
-    void toDomainListShouldReturnCorrectSize() {
+    void toDomainListShouldReturnCorrectSizeAndItemIds() {
         // Arrange
         ListOfItemsDataModel dmDouble1 = mock(ListOfItemsDataModel.class);
         ListOfItemsDataModel dmDouble2 = mock(ListOfItemsDataModel.class);
@@ -202,6 +202,7 @@ class ListOfItemsAssemblerTest {
                 .thenReturn(_listDouble)
                 .thenReturn(listDouble2);
 
+        //SUT
         ListOfItemsAssembler assembler = new ListOfItemsAssembler(_factoryDouble);
 
         // Act
@@ -209,6 +210,8 @@ class ListOfItemsAssemblerTest {
 
         // Assert
         assertEquals(2, result.size());
+        assertTrue(result.contains(_listDouble));
+        assertTrue(result.contains(listDouble2));
     }
 
     @Test
