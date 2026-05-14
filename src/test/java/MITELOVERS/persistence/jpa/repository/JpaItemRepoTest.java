@@ -155,7 +155,7 @@ class JpaItemRepoTest {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.getValue())).thenReturn(true);
+        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(true);
 
         //Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
@@ -171,7 +171,7 @@ class JpaItemRepoTest {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.getValue())).thenReturn(false);
+        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(false);
 
         //Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
