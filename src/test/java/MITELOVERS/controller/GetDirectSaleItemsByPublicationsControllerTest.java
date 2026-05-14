@@ -112,8 +112,9 @@ public class GetDirectSaleItemsByPublicationsControllerTest {
         when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
         when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
-        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_editionDouble));
-        when(_editionDouble.getPublicationId()).thenReturn(_publicationIdDouble);
+        when(_itemDouble.getEditionId()).thenReturn(_editionIdDouble);
+        when(_iEditionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.of(_editionDouble));
+        when(_editionDouble.isByPublicationId(_publicationIdDouble)).thenReturn(false);
 
         // Act
         List<ItemId> result = _controller.getDirectSaleItemsByPublication(_publicationIdDouble);
