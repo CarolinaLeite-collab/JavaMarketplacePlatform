@@ -8,9 +8,11 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -19,27 +21,27 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@WebMvcTest(GetDirectSaleItemsByAuthorController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class GetDirectSaleItemsByAuthorControllerTest {
 
     //SUT
-    @Autowired
+    @InjectMocks
     private GetDirectSaleItemsByAuthorController _controller;
 
-    @MockBean
+    @Mock
     private IDirectSaleRepo _iDirectSaleRepoDouble;
 
-    @MockBean
+    @Mock
     private IItemRepo _iItemRepoDouble;
 
-    @MockBean
+    @Mock
     private IEditionRepo  _iEditionRepoDouble;
 
-    @MockBean
+    @Mock
     private IPublicationRepo _iPublicationRepoDouble;
 
-    @MockBean
+    @Mock
     private IAuthorRepo _iAuthorRepoDouble;
 
     private AuthorId _authorIdDouble;
@@ -190,6 +192,85 @@ class GetDirectSaleItemsByAuthorControllerTest {
                 () -> _controller.getDirectSaleItemsByAuthorId(_authorIdDouble));
     }
 
+    @Test
+    void shouldReturnDirectSaleItemsByAuthorIdSortedByDescription() {
 
+        //Arrange
+        ItemId itemId2 = mock(ItemId.class);
+        Item item2 = mock(Item.class);
+        EditionId editionId2 = mock(EditionId.class);
+        Edition edition2 = mock(Edition.class);
+        PublicationId publicationId2 = mock(PublicationId.class);
+        Publication publication2 = mock(Publication.class);
+
+        List<Item> expectedItems = List.of(_itemDouble, item2);
+
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
+
+        when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble, itemId2));
+
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+        when(_iItemRepoDouble.ofIdentity(itemId2)).thenReturn(Optional.of(item2));
+
+        when(_itemDouble.getEditionId()).thenReturn(_editionIdDouble);
+        when(item2.getEditionId()).thenReturn(editionId2);
+
+        when(_iEditionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.of(_editionDouble));
+        when(_iEditionRepoDouble.ofIdentity(editionId2)).thenReturn(Optional.of(edition2));
+
+        when(_editionDouble.getPublicationId()).thenReturn(_publicationIdDouble);
+        when(edition2.getPublicationId()).thenReturn(publicationId2);
+
+        when(_iPublicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(_publicationDouble));
+        when(_iPublicationRepoDouble.ofIdentity(publicationId2)).thenReturn(Optional.of(publication2));
+
+        when(_publicationDouble.isByAuthorId(_authorIdDouble)).thenReturn(true);
+        when(publication2.isByAuthorId(_authorIdDouble)).thenReturn(true);
+
+        when(_itemIdDouble.getValue()).thenReturn("1");
+        when(itemId2.getValue()).thenReturn("2");
+
+        when(_iItemRepoDouble.findByIdInOrderByDescriptionAsc(List.of("1", "2")))
+                .thenReturn(expectedItems);
+
+        //Act
+        List<Item> result =
+                _controller.getDirectSaleItemsByAuthorIdSortedByDescription(_authorIdDouble);
+
+        //Assert
+        assertEquals(expectedItems, result);
+    }
+
+    @Test
+    void shouldIgnoreItemsWhenPublicationIsNotByAuthorId() {
+
+        //Arrange
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(_directSaleDouble));
+
+        when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
+
+        when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
+
+        when(_itemDouble.getEditionId()).thenReturn(_editionIdDouble);
+
+        when(_iEditionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.of(_editionDouble));
+
+        when(_editionDouble.getPublicationId()).thenReturn(_publicationIdDouble);
+
+        when(_iPublicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(_publicationDouble));
+
+        when(_publicationDouble.isByAuthorId(_authorIdDouble)).thenReturn(false);
+
+        when(_iItemRepoDouble.findByIdInOrderByDescriptionAsc(List.of()))
+                .thenReturn(List.of());
+
+        //Act
+        List<Item> result =
+                _controller.getDirectSaleItemsByAuthorIdSortedByDescription(_authorIdDouble);
+
+        //Assert
+        assertTrue(result.isEmpty());
+
+    }
 
 }
