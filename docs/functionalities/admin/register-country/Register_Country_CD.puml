@@ -29,14 +29,10 @@ package "domain" {
 
     package "country" #b0c4d4 {
         class Country <<Root>> <<Entity>> {
-
-          + name() : CountryName
-
         }
 
         class CountryFactory <<Factory>> {
           +createCountry(String countryName) : Country
-
         }
     }
 
