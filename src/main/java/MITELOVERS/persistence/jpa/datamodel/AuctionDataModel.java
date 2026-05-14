@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
@@ -16,12 +15,12 @@ import java.util.List;
 public class AuctionDataModel {
 
     @Id
-    @Column(name = "id", nullable = false,  unique = true)
+    @Column(name = "id", nullable = false, unique = true)
     private String auctionId;
 
     @ElementCollection
     @CollectionTable(name = "auction_items", joinColumns = @JoinColumn(name = "auction_id"))
-    @Column(name = "items_id",  nullable = false)
+    @Column(name = "items_id", nullable = false)
     private List<String> itemsId;
 
     @Convert(converter = PriceConverter.class)
@@ -33,7 +32,7 @@ public class AuctionDataModel {
     private PriceDataModel reservePrice;
 
     @Convert(converter = PriceConverter.class)
-    @Column(name = "outright_price",  nullable = false)
+    @Column(name = "outright_price", nullable = true)
     private PriceDataModel outrightPrice;
 
     @Column(name = "start_date", nullable = false)
@@ -42,7 +41,7 @@ public class AuctionDataModel {
     @Column(name = "end_date", nullable = false)
     private Instant auctionEndDate;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = true)
     private String userId;
 
     @Convert(converter = PriceConverter.class)
@@ -52,5 +51,4 @@ public class AuctionDataModel {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "auction_id")
     private List<BidDataModel> bids;
-
 }

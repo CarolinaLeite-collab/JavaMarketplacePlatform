@@ -32,16 +32,18 @@ public class AuctionAssembler {
                 auction.getReservePrice().getValue(),
                 auction.getReservePrice().getCurrency().toString());
 
-        PriceDataModel outrightPrice = new PriceDataModel(
-                auction.getOutrightPrice().getValue(),
-                auction.getOutrightPrice().getCurrency().toString());
+        PriceDataModel outrightPrice = null;
+        if (auction.getOutrightPrice() != null) {
+            outrightPrice = new PriceDataModel(
+                    auction.getOutrightPrice().getValue(),
+                    auction.getOutrightPrice().getCurrency().toString());
+        }
 
         PriceDataModel finalPrice = null;
         if (auction.getFinalPrice() != null) {
             finalPrice = new PriceDataModel(
                     auction.getFinalPrice().getValue(),
-                    auction.getFinalPrice().getCurrency().toString()
-            );
+                    auction.getFinalPrice().getCurrency().toString());
         }
 
         List<BidDataModel> bids = new ArrayList<>();
@@ -79,6 +81,7 @@ public class AuctionAssembler {
         for (String itemIdStr : auctionDM.getItemsId()) {
             itemsId.add(new ItemId(itemIdStr));
         }
+
         Price startingPrice = new Price(
                 auctionDM.getStartingPrice().getNumericValue(),
                 Currency.valueOf(auctionDM.getStartingPrice().getCurrency()));
@@ -87,9 +90,12 @@ public class AuctionAssembler {
                 auctionDM.getReservePrice().getNumericValue(),
                 Currency.valueOf(auctionDM.getReservePrice().getCurrency()));
 
-        Price outrightPrice = new Price(
-                auctionDM.getOutrightPrice().getNumericValue(),
-                Currency.valueOf(auctionDM.getOutrightPrice().getCurrency()));
+        Price outrightPrice = null;
+        if (auctionDM.getOutrightPrice() != null) {
+            outrightPrice = new Price(
+                    auctionDM.getOutrightPrice().getNumericValue(),
+                    Currency.valueOf(auctionDM.getOutrightPrice().getCurrency()));
+        }
 
         ZonedDateTime auctionStartDate =
                 auctionDM.getAuctionStartDate().atZone(ZoneId.systemDefault());
