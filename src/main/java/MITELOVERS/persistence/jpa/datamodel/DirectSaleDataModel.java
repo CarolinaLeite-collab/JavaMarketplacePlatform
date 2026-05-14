@@ -31,8 +31,12 @@ public class DirectSaleDataModel {
     @Column(name = "item_id")
     private List<String> itemsId;
 
-    @Convert(converter=PriceConverter.class)
-    @Column(name="price")
+    //@Convert(converter=PriceConverter.class)
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "numericValue", column = @Column(name = "numeric_value")),
+            @AttributeOverride(name = "currency", column = @Column(name = "currency"))
+    })
     private PriceDataModel price;
     private Long timeLimit;
     private Instant creationDate;

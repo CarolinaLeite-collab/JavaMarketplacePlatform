@@ -6,9 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectSaleIdTest {
 
-    String exceptionMessageDirectSaleIdNull = "DirectSaleId cannot be null or blank";
-    String exceptionMessageDirectSaleIdInvalidFormat = "Invalid DirectSaleId format: ";
-
     @Test
     void testConstructor() {
 
@@ -69,36 +66,36 @@ class DirectSaleIdTest {
     @Test
     void shouldThrowWhenInvalidString() {
 
-        //Act
-        //SUT
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new DirectSaleId("invalid"));
-        //Assert
-        assertEquals(exceptionMessageDirectSaleIdInvalidFormat + "invalid", ex.getMessage());
+
+        // Assert
+        assertEquals("Invalid DirectSaleId format: invalid", ex.getMessage());
     }
 
     @Test
     void shouldThrowWhenIdNullString() {
 
-        //Act
-        //SUT
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new DirectSaleId(null));
-        //Assert
-        assertEquals(exceptionMessageDirectSaleIdNull, ex.getMessage());
+
+        // Assert
+        assertEquals("DirectSaleId cannot be null or empty", ex.getMessage());
     }
 
     @Test
     void shouldThrowWhenIdEmptyString() {
 
-        //Act
-        //SUT
+        // Act
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> new DirectSaleId(""));
-        //Assert
-        assertEquals(exceptionMessageDirectSaleIdNull, ex.getMessage());
+
+        // Assert
+        assertEquals("DirectSaleId cannot be null or empty", ex.getMessage());
     }
 }
