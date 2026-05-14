@@ -5,7 +5,6 @@ import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.persistence.jpa.assembler.AuthorAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -180,5 +180,39 @@ class JpaAuthorRepoTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void shouldFindAuthorIdByName() {
+
+        //Arrange
+        String name = "Rem Koolhaas";
+
+        AuthorDataModel dataModelDouble = mock(AuthorDataModel.class);
+        Author authorDouble = mock(Author.class);
+        AuthorId expectedAuthorId = mock(AuthorId.class);
+
+        when(_springDataRepoDouble.findByName(name)).thenReturn(List.of(dataModelDouble));
+        when(_assemblerDouble.toDomain(dataModelDouble)).thenReturn(authorDouble);
+        when(authorDouble.identity()).thenReturn(expectedAuthorId);
+
+        //Act
+        AuthorId result = _jpaRepoDouble.findByName(name);
+
+        //Assert
+        assertEquals(expectedAuthorId, result);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFindByNameReturnsEmptyList() {
+
+        //Arrange
+        String name = "Unknown Author";
+
+        when(_springDataRepoDouble.findByName(name)).thenReturn(List.of());
+
+        //Act & Assert
+        assertThrows(NoSuchElementException.class,
+                () -> _jpaRepoDouble.findByName(name));
     }
 }
