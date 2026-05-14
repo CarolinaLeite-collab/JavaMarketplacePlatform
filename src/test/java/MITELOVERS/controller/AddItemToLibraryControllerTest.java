@@ -1,14 +1,12 @@
 package MITELOVERS.controller;
 
-import MITELOVERS.ddd.IRepository;
-import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,10 +26,10 @@ import static org.mockito.Mockito.*;
 class AddItemToLibraryControllerTest {
 
     @Mock
-    private IRepository<LibraryId, Library> _libraryRepo;
+    private ILibraryRepo _libraryRepo;
 
     @Mock
-    private IRepository<ItemId, Item> _itemRepo;
+    private IItemRepo _itemRepo;
 
     @Mock
     private UserId _userId;

@@ -1,16 +1,17 @@
 
 package MITELOVERS.controller;
 
-import MITELOVERS.ddd.IRepository;
+
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
+import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,12 +31,12 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("jpa")
 class ListOfItemsInMyLibraryControllerTest {
 
-    @Mock private IRepository<LibraryId, Library> _libraryRepo;
-    @Mock private IRepository<ItemId, Item> _itemRepo;
-    @Mock private IRepository<EditionId, Edition> _editionRepo;
-    @Mock private IRepository<PublicationId, Publication> _publicationRepo;
-    @Mock private IRepository<AuthorId, Author> _authorRepo;
-    @Mock private IRepository<PublicationTypeId, PublicationType> _publicationTypeRepo;
+    @Mock private ILibraryRepo _libraryRepo;
+    @Mock private IItemRepo _itemRepo;
+    @Mock private IEditionRepo _editionRepo;
+    @Mock private IPublicationRepo _publicationRepo;
+    @Mock private IAuthorRepo _authorRepo;
+    @Mock private IPublicationTypeRepo _publicationTypeRepo;
 
     @Mock private UserId _userId;
 

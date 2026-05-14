@@ -29,19 +29,19 @@ import java.util.List;
 
 public class ListOfItemsInMyLibraryController {
 
-    private final IRepository<LibraryId, Library> _libraryRepo;
-    private final IRepository<ItemId, Item> _itemRepo;
-    private final IRepository<EditionId, Edition> _editionRepo;
-    private final IRepository<PublicationId, Publication> _publicationRepo;
-    private final IRepository<AuthorId, Author> _authorRepo;
-    private final IRepository<PublicationTypeId, PublicationType> _publicationTypeRepo;
+    private final ILibraryRepo _libraryRepo;
+    private final IItemRepo _itemRepo;
+    private final IEditionRepo _editionRepo;
+    private final IPublicationRepo _publicationRepo;
+    private final IAuthorRepo _authorRepo;
+    private final IPublicationTypeRepo _publicationTypeRepo;
 
-    public ListOfItemsInMyLibraryController(IRepository<LibraryId, Library> libraryRepo,
-                                            IRepository<ItemId, Item> itemRepo,
-                                            IRepository<EditionId, Edition> editionRepo,
-                                            IRepository<PublicationId, Publication> publicationRepo,
-                                            IRepository<AuthorId, Author> authorRepo,
-                                            IRepository<PublicationTypeId, PublicationType> publicationTypeRepo) {
+    public ListOfItemsInMyLibraryController(ILibraryRepo libraryRepo,
+                                            IItemRepo itemRepo,
+                                            IEditionRepo editionRepo,
+                                            IPublicationRepo publicationRepo,
+                                            IAuthorRepo authorRepo,
+                                            IPublicationTypeRepo publicationTypeRepo) {
 
         _libraryRepo = libraryRepo;
         _itemRepo = itemRepo;

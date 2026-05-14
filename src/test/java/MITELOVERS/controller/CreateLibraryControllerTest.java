@@ -1,12 +1,13 @@
 package MITELOVERS.controller;
 
-import MITELOVERS.ddd.IRepository;
+
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.library.LibraryFactory;
+import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
+
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.when;
 class CreateLibraryControllerTest {
 
     @Mock
-    private IRepository<LibraryId, Library> _libraryRepo;
+    private ILibraryRepo _libraryRepo;
 
     @Mock
     private LibraryFactory _libraryFactory;

@@ -24,10 +24,10 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class CreateLibraryController {
 
-    private final IRepository<LibraryId, Library> _libraryRepo;
+    private final ILibraryRepo _libraryRepo;
     private final LibraryFactory _libraryFactory;
 
-    public CreateLibraryController(IRepository<LibraryId, Library> libraryRepo, LibraryFactory libraryFactory){
+    public CreateLibraryController(ILibraryRepo libraryRepo, LibraryFactory libraryFactory){
 
         _libraryRepo = libraryRepo;
         _libraryFactory = libraryFactory;

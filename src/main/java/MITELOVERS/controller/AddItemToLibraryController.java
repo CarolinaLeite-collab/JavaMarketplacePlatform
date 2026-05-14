@@ -3,6 +3,8 @@ package MITELOVERS.controller;
 import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
@@ -24,11 +26,11 @@ import java.util.List;
 @Controller
 public class AddItemToLibraryController {
 
-    private final IRepository<LibraryId, Library> _libraryRepo;
-    private final IRepository<ItemId, Item> _itemRepo;
+    private final ILibraryRepo _libraryRepo;
+    private final IItemRepo _itemRepo;
 
-    public AddItemToLibraryController(IRepository<LibraryId, Library> libraryRepo,
-                                      IRepository<ItemId, Item> itemRepo) {
+    public AddItemToLibraryController(ILibraryRepo libraryRepo,
+                                      IItemRepo itemRepo) {
 
         _libraryRepo = libraryRepo;
         _itemRepo = itemRepo;
