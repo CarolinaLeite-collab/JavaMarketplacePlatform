@@ -11,5 +11,6 @@ import java.util.Map;
 
 public interface IListOfItemsRepo extends IRepository<ListOfItemsId, ListOfItems> {
 
+    List<ListOfItems> findListOfItemsByUserId(UserId userId);
 }
 

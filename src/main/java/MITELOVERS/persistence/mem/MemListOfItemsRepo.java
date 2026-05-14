@@ -4,6 +4,7 @@ import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 
+import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +44,11 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
     @Override
     public boolean containsOfIdentity(ListOfItemsId id) {
         return _data.containsKey(id);
+    }
+
+    @Override
+    public List<ListOfItems> findListOfItemsByUserId(UserId userId){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

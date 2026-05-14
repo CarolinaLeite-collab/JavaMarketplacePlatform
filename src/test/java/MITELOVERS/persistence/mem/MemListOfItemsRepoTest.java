@@ -26,18 +26,10 @@ import static org.mockito.Mockito.when;
  */
 class MemListOfItemsRepoTest {
 
-    private UserId _userId1Double;
-    private UserId _userId2Double;
-    private GenreId _genreIdDouble;
-    private GenreId _genreId2Double;
     private ListOfItemsId _listIdDouble;
 
     @BeforeEach
     void setUp() {
-        _genreIdDouble = mock(GenreId.class);
-        _genreId2Double = mock(GenreId.class);
-        _userId1Double = mock(UserId.class);
-        _userId2Double = mock(UserId.class);
         _listIdDouble = mock(ListOfItemsId.class);
     }
 
@@ -252,4 +244,15 @@ class MemListOfItemsRepoTest {
         );
     }
 
+    @Test
+    void findByUserIdShowThrowUnsupportedOperation(){
+        //arrange
+        UserId userIdDouble =  mock(UserId.class);
+
+        //SUT
+        MemListOfItemsRepo repo = new MemListOfItemsRepo();
+
+        //act + assert
+        assertThrows(UnsupportedOperationException.class, () -> {repo.findListOfItemsByUserId(userIdDouble);});
+    }
 }
