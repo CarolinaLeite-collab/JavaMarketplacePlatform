@@ -20,12 +20,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class JpaDirectSaleRepoTest {
 
-    //SUT
     @InjectMocks
     private JpaDirectSaleRepo _repoDouble;
 
     @Mock
-    private IDirectSaleSpringDataRepo _iDirectSaleSpringDataRepoDouble;
+    private IDirectSaleSpringDataRepo _iDirectSaleSpringDataRepo;
 
     @Mock
     private DirectSaleDataModel _directSaleDataModelDouble;
@@ -38,8 +37,9 @@ class JpaDirectSaleRepoTest {
 
     @Mock
     private DirectSale _directSaleEntityOtherDouble;
+
     @Mock
-    private DirectSaleAssembler _assemblerDouble;
+    private DirectSaleAssembler _directSaleAssembler;
 
     @Mock
     private DirectSaleId _idDouble;
@@ -47,23 +47,22 @@ class JpaDirectSaleRepoTest {
     @Test
     void shouldSaveDirectSale() {
         //Arrange
-        when(_assemblerDouble.toDataModel(_directSaleEntityDouble)).thenReturn(_directSaleDataModelDouble);
-        when(_iDirectSaleSpringDataRepoDouble.save(_directSaleDataModelDouble)).thenReturn(_directSaleDataModelDouble);
-        when(_assemblerDouble.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
+        when(_directSaleAssembler.toDataModel(_directSaleEntityDouble)).thenReturn(_directSaleDataModelDouble);
+        when(_iDirectSaleSpringDataRepo.save(_directSaleDataModelDouble)).thenReturn(_directSaleDataModelDouble);
+        when(_directSaleAssembler.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
 
         //Act
         DirectSale result = _repoDouble.save(_directSaleEntityDouble);
 
         //Assert
-        assertSame(result,_directSaleEntityDouble);
-
+        assertSame(result, _directSaleEntityDouble);
     }
 
     @Test
     void shouldFindAllKeys() {
         //Arrange
         when(_directSaleDataModelDouble.getDirectSaleId()).thenReturn("DS-12345678");
-        when(_iDirectSaleSpringDataRepoDouble.findAll()).thenReturn(List.of(_directSaleDataModelDouble));
+        when(_iDirectSaleSpringDataRepo.findAll()).thenReturn(List.of(_directSaleDataModelDouble));
 
         //Act
         Iterable<DirectSaleId> result = _repoDouble.findAllKeys();
@@ -75,9 +74,9 @@ class JpaDirectSaleRepoTest {
     @Test
     void shouldFindAll() {
         //Arrange
-        when(_assemblerDouble.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
-        when(_assemblerDouble.toDomain(dmOther)).thenReturn(_directSaleEntityOtherDouble);
-        when(_iDirectSaleSpringDataRepoDouble.findAll()).thenReturn(List.of(_directSaleDataModelDouble,dmOther));
+        when(_directSaleAssembler.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
+        when(_directSaleAssembler.toDomain(dmOther)).thenReturn(_directSaleEntityOtherDouble);
+        when(_iDirectSaleSpringDataRepo.findAll()).thenReturn(List.of(_directSaleDataModelDouble, dmOther));
 
         //Act
         Iterable<DirectSale> result = _repoDouble.findAll();
@@ -90,8 +89,8 @@ class JpaDirectSaleRepoTest {
     void shouldReturnDirectSaleWhenOfIdentityExists() {
         //Arrange
         when(_idDouble.toString()).thenReturn("DS-12345678");
-        when(_iDirectSaleSpringDataRepoDouble.findById(_idDouble.toString())).thenReturn(Optional.of(_directSaleDataModelDouble));
-        when(_assemblerDouble.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
+        when(_iDirectSaleSpringDataRepo.findById(_idDouble.toString())).thenReturn(Optional.of(_directSaleDataModelDouble));
+        when(_directSaleAssembler.toDomain(_directSaleDataModelDouble)).thenReturn(_directSaleEntityDouble);
 
         //Act
         Optional<DirectSale> result = _repoDouble.ofIdentity(_idDouble);
@@ -101,10 +100,10 @@ class JpaDirectSaleRepoTest {
     }
 
     @Test
-    void shouldReturnEmptyWhenOfIdentityDoesNotExist(){
+    void shouldReturnEmptyWhenOfIdentityDoesNotExist() {
         //Arrange
         when(_idDouble.toString()).thenReturn("DS-12345678");
-        when(_iDirectSaleSpringDataRepoDouble.findById(_idDouble.toString())).thenReturn(Optional.empty());
+        when(_iDirectSaleSpringDataRepo.findById(_idDouble.toString())).thenReturn(Optional.empty());
 
         //Act
         Optional<DirectSale> result = _repoDouble.ofIdentity(_idDouble);
@@ -117,7 +116,7 @@ class JpaDirectSaleRepoTest {
     void shouldReturnTrueWhenContainsOfIdentityDoesNotExist() {
         //Arrange
         String stringId = "DS-12345678";
-        when(_iDirectSaleSpringDataRepoDouble.existsById(stringId)).thenReturn(true);
+        when(_iDirectSaleSpringDataRepo.existsById(stringId)).thenReturn(true);
         when(_idDouble.toString()).thenReturn(stringId);
 
         //Act
@@ -131,7 +130,7 @@ class JpaDirectSaleRepoTest {
     void shouldReturnFalseWhenContainsOfIdentityDoesNotExist() {
         //Arrange
         String stringId = "DS-12345678";
-        when(_iDirectSaleSpringDataRepoDouble.existsById(stringId)).thenReturn(false);
+        when(_iDirectSaleSpringDataRepo.existsById(stringId)).thenReturn(false);
         when(_idDouble.toString()).thenReturn(stringId);
 
         //Act
