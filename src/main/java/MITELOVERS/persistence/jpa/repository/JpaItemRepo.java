@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,5 +88,12 @@ public class JpaItemRepo implements IItemRepo {
 
         return _itemSpringDataRepo.existsById(id.toString());
 
+    }
+
+    @Override
+    public List<Item> findByIdInOrderByDescriptionAsc(Collection<String> ids) {
+
+        List<ItemDataModel> itemsDataModel = _itemSpringDataRepo.findByIdInOrderByDescriptionAsc(ids);
+        return itemsDataModel.stream().map(_itemAssembler::toDomain).toList();
     }
 }
