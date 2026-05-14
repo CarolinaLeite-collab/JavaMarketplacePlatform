@@ -5,6 +5,8 @@ import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -25,6 +27,8 @@ import java.util.*;
  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemLibraryRepo implements ILibraryRepo {
 
     private final Map<LibraryId, Library> DATA = new HashMap<LibraryId, Library>();

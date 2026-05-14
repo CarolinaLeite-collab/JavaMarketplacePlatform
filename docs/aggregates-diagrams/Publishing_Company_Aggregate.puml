@@ -16,16 +16,6 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-package "persistence" {
-
-    package "mem" {
-
-        class MemPublishingCompanyRepo <<Repo>> {
-        }
-
-    }
-}
-
 package "domain" {
 
     package "repository" {
@@ -50,6 +40,7 @@ package "domain" {
 
         class PublishingCompanyFactory <<Factory>> {
         + createPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
+        + createPublishingCompany(publishingCompanyId: String) : \nPublishingCompany
 
         }
 
@@ -74,10 +65,8 @@ Package "ddd" {
     }
 }
 
-
-MemPublishingCompanyRepo ..|> IPublishingCompanyRepo
 IPublishingCompanyRepo --|> IRepository
-MemPublishingCompanyRepo "1" --> "*" PublishingCompany : persists
+IPublishingCompanyRepo "1" --> "*" PublishingCompany : persists
 
 PublishingCompany "1" --> "1" PublishingCompanyId: has
 

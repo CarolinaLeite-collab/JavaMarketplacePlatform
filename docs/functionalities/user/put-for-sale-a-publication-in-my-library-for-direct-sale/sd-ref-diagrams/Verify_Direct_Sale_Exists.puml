@@ -1,0 +1,47 @@
+@startuml
+'==== Title ====
+title "Verify directSaleId is not already persisted (in JPA)" Reference SD
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":IDirectSaleRepo" as DirectSaleRepo
+participant ":JpaDirectSaleRepo" as JpaDirectSaleRepo
+participant ":IDirectSale%n()SpringDataRepo" as SpringDataDirectSaleRepo
+database "DB" as DB
+
+
+
+DirectSaleRepo -> JpaDirectSaleRepo : containsOfIdentity%n()(directSaleId)
+activate DirectSaleRepo
+activate JpaDirectSaleRepo
+
+JpaDirectSaleRepo -> SpringDataDirectSaleRepo : existsById(directSaleId.%n()toString())
+activate SpringDataDirectSaleRepo
+SpringDataDirectSaleRepo -> DB : select
+activate DB
+DB --> SpringDataDirectSaleRepo : false
+deactivate DB
+
+SpringDataDirectSaleRepo --> JpaDirectSaleRepo : false
+deactivate SpringDataDirectSaleRepo
+
+JpaDirectSaleRepo --> DirectSaleRepo : false
+deactivate JpaDirectSaleRepo
+
+deactivate DirectSaleRepo
+
+ref over DirectSaleRepo
+[[../Put_For_Sale_A_Publication_In_My_Library_For_Direct_Sale_SD.puml Return to main diagram]]
+end ref
+@enduml

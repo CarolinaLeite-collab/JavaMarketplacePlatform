@@ -19,33 +19,45 @@ autoactivate off
 ' --- Actor and participants ---
 actor "Admin" as Administrator
 participant ":RegisterPublishing%n()CompanyUI" as UI
-participant ":RegisterPublishing%n()CompanyCtl" as Ctl
+participant ":RegisterPublishing%n()CompanyCtl" as CTL
 participant ":PublishingCompany%n()Factory" as Factory
-participant ":MemPublishing%n()CompanyRepo" as Repo
+participant ":IPublishing%n()CompanyRepo" as Repo
 
 ' --- SD (Happy Path only)---
 
-Administrator -> "UI": I want to register %n()a publishing company.
-activate "UI"
-"UI" --> Administrator:Name of the %n()publishing company?
-Administrator -> "UI": publishingCompanyName
-"UI" -> "Ctl": registerPublishingCompany%n()(publishingCompanyName)
-activate "Ctl"
-"Ctl" -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
+Administrator -> UI: I want to register %n()a publishing company.
+activate UI
+UI --> Administrator:Name of the %n()publishing company?
+deactivate UI
+Administrator -> UI: publishingCompanyName
+
+activate UI
+UI -> CTL: registerPublishingCompany%n()(publishingCompanyName)
+activate CTL
+CTL -> "Factory" : createPublishingCompany%n()(publishingCompanyName)
 activate "Factory"
 create "newPublishingCompany:%n()PublishingCompany"
-"Factory" -->> "newPublishingCompany:%n()PublishingCompany": <<create>>
-"Factory" --> "Ctl": newPublishingCompany
+"Factory" -->> "newPublishingCompany:%n()PublishingCompany": <<create>>(publishingCompanyName)
+"Factory" --> CTL: newPublishingCompany
 deactivate "Factory"
-note right of Ctl
-    assuming happy path:
-    containsOfIdentity(newPublishingCompany.identity()) == false
-end note
-"Ctl" -> "Repo": save(newPublishingCompany);
+
+ref over CTL
+[[sd-ref-diagrams/Verify_Publishing_Company.puml Verify the existence of newPublishingCompany in persistence]]
+end ref
+
+CTL -> Repo: save(newPublishingCompany);
+activate Repo
+
+ref over Repo
+[[sd-ref-diagrams/Save_Publishing_Company.puml Save publishingCompany and return saved domain object]]
+end ref
+
+CTL <-- Repo : reconstructedPublishingCompany
 deactivate "Repo"
-"Ctl" --> "UI": newPublishingCompany
-deactivate "Ctl"
-"UI" --> Administrator: Registered successfully!
-deactivate "UI"
+
+CTL --> UI: reconstructedPublishingCompany
+deactivate CTL
+UI --> Administrator: Registered successfully!
+deactivate UI
 
 @enduml

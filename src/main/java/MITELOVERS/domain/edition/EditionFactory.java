@@ -1,6 +1,7 @@
 package MITELOVERS.domain.edition;
 
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Component;
 
 import java.time.Year;
 
@@ -11,6 +12,7 @@ import java.time.Year;
  * delegating validation of domain invariants to the aggregate itself.
  */
 
+@Component
 public final class EditionFactory {
     public Edition createEdition(PublicationTypeId typeId,
                                  Identifier identifier,
@@ -25,6 +27,35 @@ public final class EditionFactory {
                                  Binding binding) {
 
         return new Edition(
+                typeId,
+                identifier,
+                publicationId,
+                publishingCompanyId,
+                publishingYear,
+                editionLanguage,
+                dimension,
+                weight,
+                numberOfPages,
+                editionNumber,
+                binding
+        );
+    }
+
+    public Edition createEdition(EditionId generatedId,
+                                 PublicationTypeId typeId,
+                                 Identifier identifier,
+                                 PublicationId publicationId,
+                                 PublishingCompanyId publishingCompanyId,
+                                 Year publishingYear,
+                                 Language editionLanguage,
+                                 Dimension dimension,
+                                 Weight weight,
+                                 NumberOfPages numberOfPages,
+                                 EditionNumber editionNumber,
+                                 Binding binding) {
+
+        return new Edition(
+                generatedId,
                 typeId,
                 identifier,
                 publicationId,

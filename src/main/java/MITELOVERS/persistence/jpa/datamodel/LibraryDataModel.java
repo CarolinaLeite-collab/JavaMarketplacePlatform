@@ -29,9 +29,6 @@ public class LibraryDataModel {
     @Id
     private String libraryId;
 
-    @Column(nullable = false)
-    private String userId;
-
     @ElementCollection
     @CollectionTable(
             name = "LibraryItemIds",

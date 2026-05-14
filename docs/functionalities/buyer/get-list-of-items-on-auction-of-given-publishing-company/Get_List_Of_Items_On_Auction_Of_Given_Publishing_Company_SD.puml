@@ -15,12 +15,7 @@ autoactivate off
 actor Buyer
 participant ":GetAuctionItemsByPublishingCompanyUI" as UI
 participant ":GetAuctionItemsByPublishingCompanyController" as CTL
-participant ":IPublishingCompanyRepo" as PCR
-participant ":IAuctionRepo" as DSR
-participant "auction:Auction" as Auction
-participant ":IItemRepo" as IR
-participant "item:Item" as Item
-participant ":IEditionRepo" as ER
+
 participant "edition:Edition" as Edition
 
 
@@ -28,11 +23,9 @@ Buyer -> UI: I want the list of items \non auction of a given publishing company
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
-CTL -> PCR : findAllKeys()
-activate PCR
-
-PCR --> CTL : publishingCompanyIds
-deactivate PCR
+ref over CTL
+[[sd-ref-diagrams/Get_Publishing_Company_Id.puml Get All Publications Ids]]
+end ref
 
 CTL --> UI : publishingCompanyIds
 deactivate CTL
@@ -44,37 +37,30 @@ activate UI
 
 UI -> CTL: getAuctionItemsByPublishingCompanyId(publishingCompanyId)
 activate CTL
-
-CTL -> DSR: findAll()
-activate DSR
-
-DSR --> CTL: auctions
-deactivate DSR
+ref over CTL
+[[sd-ref-diagrams/Get_Auction.puml Get Auctions]]
+end ref
 
 create "listOfItemsOnAuctionByPublishingCompany:List<ItemId>"
 CTL -->> "listOfItemsOnAuctionByPublishingCompany:List<ItemId>" : <<Create>>
 
 loop for auction : auctions
-CTL -> Auction : getItemIds()
-activate Auction
-Auction --> CTL : itemIds
-deactivate Auction
+ref over CTL
+[[sd-ref-diagrams/Get_Item_Id.puml Get Items Id]]
+end ref
 
 loop for itemId : itemIds
-CTL -> IR : ofIdentity(itemId)
-activate IR
-IR --> CTL : item
-deactivate IR
-CTL -> Item : getEditionId()
-activate Item
-Item --> CTL : editionId
-deactivate Item
+ref over CTL
+[[sd-ref-diagrams/Get_Item.puml Get Item]]
+end ref
 
-CTL -> ER : ofIdentity(editionId)
-activate ER
-ER --> CTL : edition
-deactivate ER
+ref over CTL
+[[sd-ref-diagrams/Get_Edition_Id.puml Get Edition Id]]
+end ref
 
+ref over CTL
+[[sd-ref-diagrams/Get_Edition.puml Get Edition]]
+end ref
 
 CTL -> Edition : hasPublishingCompanyId = isByPublishingCompanyId(publishingCompanyId)
 

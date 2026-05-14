@@ -25,6 +25,7 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.POOR);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         // SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -48,6 +49,7 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.POOR);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         // SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -70,6 +72,7 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -92,6 +95,7 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book."));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -114,6 +118,7 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -126,15 +131,26 @@ class ItemAssemblerTest {
     }
 
     @Test
-    void toDataModelShouldThrowWhenItemIsNull() {
+    void toDataModelShouldMapNameCorrectly() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
+
+        Item itemDouble = mock(Item.class);
+        when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
+        when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
+        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
+        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDataModel(null));
+        // Act
+        ItemDataModel result = assembler.toDataModel(itemDouble);
+
+        // Assert
+        assertEquals("Best Book", result.getName());
     }
 
     @Test
@@ -150,7 +166,9 @@ class ItemAssemblerTest {
         when(dmDouble.getCondition()).thenReturn("POOR");
         when(dmDouble.getDescription()).thenReturn("Not a great book");
         when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
-        when(factoryDouble.createItem(any(), any(), any(), any(), any())).thenReturn(itemDouble);
+        when(dmDouble.getName()).thenReturn("Best book");
+
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any())).thenReturn(itemDouble);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -163,14 +181,25 @@ class ItemAssemblerTest {
     }
 
     @Test
-    void toDomainShouldThrowWhenDataModelIsNull() {
+    void toDataModelShouldThrowWhenItemIsNull() {
         // Arrange
         ItemFactory factoryDouble = mock(ItemFactory.class);
-
-        //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class, () -> assembler.toDomain(null));
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> assembler.toDataModel(null));
+        assertEquals("Item cannot be null", ex.getMessage());
     }
+
+    @Test
+    void toDomainShouldThrowWhenDataModelIsNull() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
+        assertEquals("ItemDataModel cannot be null", ex.getMessage());
+    }
+
 }
