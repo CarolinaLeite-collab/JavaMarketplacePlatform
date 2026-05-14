@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
@@ -19,30 +20,32 @@ public class ShareListPubliclyController {
         _iListOfItemsRepo = iListOfItemsRepo;
     }
 
-    public List<ListOfItems> getListOfLists(UserId userId) {
-        return findListsByUserId(userId);
-    }
-
-    public boolean shareListPublicly(ListOfItemsId listOfItemsId) {
+    public boolean shareListPublicly(ListOfItemsId listOfItemsId, SharedDuration duration) {
         ListOfItems list = _iListOfItemsRepo.ofIdentity(listOfItemsId)
                 .orElseThrow(() -> new IllegalStateException("List not found"));
 
-        list.makePublic();
-        _iListOfItemsRepo.save(list);
-        return true;
+        if (list.isPrivate()) {
+            list.makePublic(duration);
+            _iListOfItemsRepo.save(list);
+
+            return true;
+        }
+        else {
+            throw new IllegalStateException("List is already public");
+        }
     }
 
-    public List<ListOfItems> findListsByUserId(UserId userId) {
+    public List<ListOfItemsId> findListsByUserId(UserId userId) {
         if (userId == null)
             throw new IllegalArgumentException("UserId is mandatory");
 
-        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
-        List<ListOfItems> result = new ArrayList<>();
-        for (ListOfItems list : all) {
-            if (userId.equals(list.getUserId())) {
-                result.add(list);
-            }
+        List<ListOfItems> userLists = _iListOfItemsRepo.findListOfItemsByUserId(userId);
+
+        List<ListOfItemsId> listOfItemsIds = new ArrayList<>();
+
+        for (ListOfItems listOfItems : userLists) {
+            listOfItemsIds.add(listOfItems.identity());
         }
-        return result;
+        return listOfItemsIds;
     }
 }

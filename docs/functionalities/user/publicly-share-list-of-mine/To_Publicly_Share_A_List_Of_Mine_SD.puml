@@ -37,7 +37,12 @@ deactivate UI
 "User" -> UI : listOfItemsId
 activate UI
 
-UI -> Ctl : shareListPublicly(listOfItemsId)
+UI --> "User" : For how long?
+deactivate UI
+"User" -> UI : duration
+activate UI
+
+UI -> Ctl : shareListPublicly(listOfItemsId, duration)
 activate Ctl
 
 Ctl -> IListRepo : ofIdentity(listOfItemsId)
@@ -45,7 +50,7 @@ activate IListRepo
 IListRepo --> Ctl : list
 deactivate IListRepo
 
-Ctl -> "list:ListOfItems" : makePublic()
+Ctl -> "list:ListOfItems" : makePublic(duration)
 activate "list:ListOfItems"
 deactivate "list:ListOfItems"
 

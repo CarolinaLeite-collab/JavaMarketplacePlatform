@@ -3,9 +3,11 @@ package MITELOVERS.persistence.jpa.repository;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.assembler.ListOfItemsAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ListOfItemsDataModel;
-import MITELOVERS.persistence.jpa.springdata.IListOfItemsSpringDataRepo;
+import MITELOVERS.persistence.springdata.IListOfItemsSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -25,14 +27,12 @@ import java.util.Optional;
 @Profile("jpa")
 public class JpaListOfItemsRepo implements IListOfItemsRepo {
 
-    private final IListOfItemsSpringDataRepo _springDataRepo;
-    private final ListOfItemsAssembler _assembler;
+    @Autowired
+    private IListOfItemsSpringDataRepo _springDataRepo;
 
-    public JpaListOfItemsRepo(IListOfItemsSpringDataRepo springDataRepo,
-                              ListOfItemsAssembler assembler) {
-        _springDataRepo = springDataRepo;
-        _assembler = assembler;
-    }
+    @Autowired
+    private ListOfItemsAssembler _assembler;
+
 
     @Override
     public ListOfItems save(ListOfItems entity) {
@@ -73,4 +73,17 @@ public class JpaListOfItemsRepo implements IListOfItemsRepo {
         return _springDataRepo.existsById(id.toString());
     }
 
+    @Override
+    public List<ListOfItems> findListOfItemsByUserId(UserId userId){
+        List<ListOfItemsDataModel> listsDataModels = _springDataRepo.findListOfItemsByUserId(userId);
+
+        List<ListOfItems> userLists = new ArrayList<>();
+
+        for (ListOfItemsDataModel dm : listsDataModels){
+
+            userLists.add(_assembler.toDomain(dm));
+        }
+
+        return userLists;
+    }
 }

@@ -31,6 +31,7 @@ public class ListOfItemsAssembler {
                 listOfItems.getName().toString(),
                 listOfItems.getGenreId().toString(),
                 listOfItems.isPrivate(),
+                listOfItems.getSharedUntil(),
                 itemIds
         );
     }
@@ -42,10 +43,7 @@ public class ListOfItemsAssembler {
         GenreId genreId = new GenreId(dm.getGenreId());
 
         ListOfItems listOfItems = _listOfItemsFactory.createListOfItems(
-                listOfItemsId, userId, name, genreId);
-
-        if (!dm.isPrivate())
-            listOfItems.makePublic();
+                listOfItemsId, userId, name, genreId, dm.isPrivate(), dm.getSharedUntil());
 
         dm.getItemIds().stream()
                 .map(ItemId::new)
@@ -69,5 +67,4 @@ public class ListOfItemsAssembler {
         }
         return list;
     }
-
 }
