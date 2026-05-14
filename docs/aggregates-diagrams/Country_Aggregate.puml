@@ -27,7 +27,7 @@ Package "domain" {
 
         class CountryFactory <<Factory>> {
             +createCountry(String countryName) : Country
-
+            +createCountry(countryId : CountryID, String countryName) : Country
         }
     }
 
