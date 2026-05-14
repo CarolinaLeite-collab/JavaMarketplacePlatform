@@ -5,7 +5,7 @@ import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.valueobject.CountryId;
 import MITELOVERS.persistence.jpa.assembler.CountryAssembler;
 import MITELOVERS.persistence.jpa.datamodel.CountryDataModel;
-import MITELOVERS.persistence.jpa.springdata.ICountrySpringDataRepo;
+import MITELOVERS.persistence.springdata.ICountrySpringDataRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
