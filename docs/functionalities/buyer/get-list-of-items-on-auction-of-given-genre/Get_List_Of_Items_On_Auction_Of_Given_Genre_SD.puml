@@ -1,115 +1,93 @@
 @startuml
-'https://plantuml.com/sequence-diagram
-
-autonumber
 title "As a Buyer, I want to get the list of items on auction of a given genre" - SD
-
 hidefootbox
 
-'==== basic style ====
-skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
-skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ActivationBackgroundColor black
 
 autonumber
 autoactivate off
 
-' --- Actor and participants ---'
-
 actor Buyer
-participant "UI1: GetAuctionItemsByGenreUI" as UI
-participant "ctl: GetAuctionItemsByGenreController" as CTL
-participant "IGenreRepo" as GR
-participant "ar: IAuctionRepo" as AuctionRepo
-participant "auction: Auction" as Auction
-participant "IItemRepo" as IR
-participant "item: Item" as Item
-participant "IEditionRepo" as ER
-participant "edition: Edition" as Edition
-participant "IPublicationRepo" as PR
-participant "publication: Publication" as Pub
+participant ":GetItemsOnAuctionOfA\nGivenGenreUI" as UI
+participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
+participant "publication:Publication" as Publication
 
-Buyer -> UI: I want the list of items %n()on auction of a given genre
+
+Buyer -> UI: I want the list of items \non auction of a given genre
 activate UI
-UI -> CTL:findAllKeys()
+UI -> CTL : findAllKeys()
 activate CTL
-CTL -> GR:findAllKeys()
-activate GR
+ref over CTL
+[[sd-ref-diagrams/Get_Genre_Ids.puml Get All Genre Ids]]
+end ref
 
-GR --> CTL:genreIds
-deactivate GR
 
-CTL --> UI:genreIds
+
+CTL --> UI : genreIds
 deactivate CTL
 UI --> Buyer: Select genreId
 deactivate UI
-
 Buyer -> UI: genreId
 activate UI
 
-UI -> CTL: getAuctionItemsByGenreId(genreId)
+
+UI -> CTL: getAuctionItems\nByGenreId(authorId)
 activate CTL
 
-CTL -> AuctionRepo: findAll()
-activate AuctionRepo
+ref over CTL
+[[sd-ref-diagrams/Get_Auctions.puml Get Auctions]]
+end ref
 
-AuctionRepo --> CTL: auctions
-deactivate AuctionRepo
-
-create "listOfItemsOnAuctionByGenre : List<ItemId>" as List
-CTL -->> List : <<Create>>
+create "listOfItemsOnAuction\nByGenre:List<ItemId>"
+CTL -->> "listOfItemsOnAuction\nByGenre:List<ItemId>" : <<Create>>
 
 loop for auction : auctions
-CTL -> Auction : getItemsId()
-activate Auction
-Auction --> CTL : itemsId
-deactivate Auction
+ref over CTL
+[[sd-ref-diagrams/Get_Items_Id_Auction.puml Get Items Ids on Auction]]
+end ref
 
-loop for itemId : itemsId
-     CTL -> IR: ofIdentity(itemsId)
-     activate IR
-     IR --> CTL : item
-     deactivate IR
-     CTL -> Item : getEditionId()
-     activate Item
-     Item --> CTL : editionId
-     deactivate Item
+loop for itemId : itemIds
+ref over CTL
+[[sd-ref-diagrams/Get_Items.puml Get Items]]
+end ref
 
-     CTL -> ER : ofIdentity(editionId)
-     activate ER
-     ER --> CTL : edition
-     deactivate ER
-     CTL -> Edition : getPublicationId()
-     activate Edition
-     Edition --> CTL : publicationId
-     deactivate Edition
+ref over CTL
+[[sd-ref-diagrams/Get_Edition_Id_Item.puml Get Edition Ids on Item]]
+end ref
 
-     CTL -> PR : ofIdentity(publicationId)
-     activate PR
-     PR --> CTL : publication
-     deactivate PR
+ref over CTL
+[[sd-ref-diagrams/Get_Edition.puml Get Edition]]
+end ref
 
-     CTL -> Pub : hasGenreId = isByGenreId(genreId)
+ref over CTL
+[[sd-ref-diagrams/Get_Publication_Id.puml Get Publication Id]]
+end ref
 
-    opt hasGenreId
-        CTL -> List : add(itemId)
-        activate List
-        List --> CTL : true
-        deactivate List
-        end
-    end
+ref over CTL
+[[sd-ref-diagrams/Get_Publication.puml Get Publication]]
+end ref
+
+CTL -> Publication : hasGenreId = isByGenreId(GenreId)
+
+opt hasGenreId
+CTL -> "listOfItemsOnAuction\nByGenre:List<ItemId>" : add(itemId)
+activate "listOfItemsOnAuction\nByGenre:List<ItemId>"
+"listOfItemsOnAuction\nByGenre:List<ItemId>" --> CTL : true
+deactivate "listOfItemsOnAuction\nByGenre:List<ItemId>"
 end
+end
+end
+
 
 CTL --> UI: listOfItemsOnAuctionByGenre
 deactivate CTL
 
-UI --> Buyer: Here's your list!
+UI --> Buyer: Here's the list! Done!
 deactivate UI
 
 @enduml

@@ -1,0 +1,129 @@
+package MITELOVERS.persistence.jpa.repository;
+
+import MITELOVERS.domain.auction.Auction;
+import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.persistence.jpa.assembler.AuctionAssembler;
+import MITELOVERS.persistence.jpa.datamodel.AuctionDataModel;
+import MITELOVERS.persistence.springdata.IAuctionSpringDataRepo;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class JpaAuctionRepoTest {
+
+    @Mock
+    private IAuctionSpringDataRepo springDataRepo;
+
+    @Mock
+    private AuctionAssembler assemblerDouble;
+
+    @InjectMocks
+    private JpaAuctionRepo jpaAuctionRepo;
+
+    @Test
+    void testConstructor() {
+        assertDoesNotThrow(() -> new JpaAuctionRepo());
+    }
+
+    @Test
+    void testSaveReturnAuction() {
+        //Arrange
+        Auction auctionDouble = org.mockito.Mockito.mock(Auction.class);
+        AuctionDataModel dmDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
+        AuctionDataModel savedDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
+
+        when(assemblerDouble.toDataModel(auctionDouble)).thenReturn(dmDouble);
+        when(springDataRepo.save(dmDouble)).thenReturn(savedDouble);
+        when(assemblerDouble.toDomain(savedDouble)).thenReturn(auctionDouble);
+
+        //Act
+        Auction result = jpaAuctionRepo.save(auctionDouble);
+
+        //Assert
+        assertEquals(auctionDouble, result);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindAllReturnIterableOfAuctions() {
+
+        AuctionDataModel dm1Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        AuctionDataModel dm2Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        List<AuctionDataModel> dmList = List.of(dm1Double, dm2Double);
+
+        Auction auction1Double = org.mockito.Mockito.mock(Auction.class);
+        Auction auction2Double = org.mockito.Mockito.mock(Auction.class);
+        List<Auction> auctionList = List.of(auction1Double, auction2Double);
+
+        when(springDataRepo.findAll()).thenReturn(dmList);
+        when(assemblerDouble.toDomain(dm1Double)).thenReturn(auction1Double);
+        when(assemblerDouble.toDomain(dm2Double)).thenReturn(auction2Double);
+
+        Iterable<Auction> result = jpaAuctionRepo.findAll();
+
+        assertEquals(auctionList, result);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testFindAllKeysReturnIds() {
+
+        AuctionDataModel dm1Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        AuctionDataModel dm2Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        List<AuctionDataModel> dmList = List.of(dm1Double, dm2Double);
+
+        when(dm1Double.getAuctionId()).thenReturn("AU-1234ABCD");
+        when(dm2Double.getAuctionId()).thenReturn("AU-5678EFGH");
+        when(springDataRepo.findAll()).thenReturn(dmList);
+
+        List<AuctionId> result = jpaAuctionRepo.findAllKeys();
+
+        assertEquals(2, result.size());
+        assertEquals("AU-1234ABCD", result.get(0).toString());
+        assertEquals("AU-5678EFGH", result.get(1).toString());
+        assertNotNull(result);
+    }
+
+    @Test
+    void testOfIdentityReturnsAuction() {
+        //Arrange
+        AuctionId auctionIdDouble = org.mockito.Mockito.mock(AuctionId.class);
+        AuctionDataModel dmDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
+        Auction auctionDouble = org.mockito.Mockito.mock(Auction.class);
+
+        when(auctionIdDouble.toString()).thenReturn("AU-1234ABCD");
+        when(springDataRepo.findById("AU-1234ABCD")).thenReturn(Optional.of(dmDouble));
+        when(assemblerDouble.toDomain(dmDouble)).thenReturn(auctionDouble);
+
+        //Act
+        Optional<Auction> result = jpaAuctionRepo.ofIdentity(auctionIdDouble);
+
+        //Assert
+        assertTrue(result.isPresent());
+        assertEquals(auctionDouble, result.get());
+    }
+
+    @Test
+    void testContainsOfIdentityReturnsTrueWhenAuctionExists() {
+        //Arrange
+        AuctionId auctionIdDouble = org.mockito.Mockito.mock(AuctionId.class);
+
+        when(auctionIdDouble.toString()).thenReturn("AU-1234ABCD");
+        when(springDataRepo.existsById("AU-1234ABCD")).thenReturn(true);
+
+        //Act
+        boolean result = jpaAuctionRepo.containsOfIdentity(auctionIdDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+}

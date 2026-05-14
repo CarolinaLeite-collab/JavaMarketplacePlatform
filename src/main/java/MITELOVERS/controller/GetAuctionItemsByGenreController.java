@@ -6,6 +6,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetAuctionItemsByGenreController {
 
     private final IAuctionRepo _iAuctionRepo;
@@ -26,7 +28,7 @@ public class GetAuctionItemsByGenreController {
     private final IPublicationRepo _iPublicationRepo;
     private final IEditionRepo _iEditionRepo;
     public GetAuctionItemsByGenreController (IAuctionRepo iAuctionRepo, IItemRepo iItemRepo, IPublicationRepo iPublicationRepo,
-                                             IEditionRepo iEditionRepo, IGenreRepo iGenreRepo, UserId buyerId){
+                                             IEditionRepo iEditionRepo, IGenreRepo iGenreRepo){
 
         _iAuctionRepo = iAuctionRepo;
         _iItemRepo = iItemRepo;
