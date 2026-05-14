@@ -42,17 +42,6 @@ class ListOfItemsInMyLibraryControllerTest {
     @InjectMocks
     private ListOfItemsInMyLibraryController _controller;
 
-    @BeforeEach
-    void setUp() {
-        _controller = new ListOfItemsInMyLibraryController(
-                _libraryRepo,
-                _itemRepo,
-                _editionRepo,
-                _publicationRepo,
-                _authorRepo,
-                _publicationTypeRepo
-        );
-    }
 
     @Test
     void shouldReturnListOfItemDetailsDTO() {
@@ -182,9 +171,9 @@ class ListOfItemsInMyLibraryControllerTest {
         }
     }
 
-    // ---------------------------------------------------------
+    // ------------------
     // ERROR PATH TESTS
-    // ---------------------------------------------------------
+    // ------------------
 
     @Test
     void shouldThrowWhenItemNotFound() {

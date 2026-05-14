@@ -38,10 +38,6 @@ class CreateLibraryControllerTest {
     @InjectMocks
     private CreateLibraryController _controller;
 
-    @BeforeEach
-    void setUp() {
-        _controller = new CreateLibraryController(_libraryRepo, _libraryFactory);
-    }
 
     @Test
     void controllerShouldInstantiate() {

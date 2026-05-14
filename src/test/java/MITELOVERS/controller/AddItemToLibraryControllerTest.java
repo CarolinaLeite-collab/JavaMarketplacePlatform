@@ -48,14 +48,6 @@ class AddItemToLibraryControllerTest {
     @InjectMocks
     private AddItemToLibraryController _controller;
 
-    @BeforeEach
-    void setUp() {
-        _controller = new AddItemToLibraryController(_libraryRepo, _itemRepo);
-    }
-
-    // ---------------------------------------------------------
-    // getListOfAvailableItemIds()
-    // ---------------------------------------------------------
 
     @Test
     void shouldReturnAllAvailableItems() {
@@ -92,10 +84,6 @@ class AddItemToLibraryControllerTest {
 
         assertEquals(2, result.size());
     }
-
-    // ---------------------------------------------------------
-    // addItemIdToLibrary()
-    // ---------------------------------------------------------
 
     @Test
     void shouldSuccessfullyAddPublicationOnLibrary() {
