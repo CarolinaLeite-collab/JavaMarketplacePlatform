@@ -24,11 +24,16 @@ Package "domain" {
             + addItem(itemId : ItemId) : void
             + isPrivate() : boolean
             + makePublic() : void
+            - _sharedUntil : LocalDateTime
+            + makePublic(duration : SharedDuration) : void
+            + getSharedUntil() : LocalDateTime
         }
         Class ListOfItemsFactory <<Factory>> {
             + createListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
             + createListOfItems(listOfItemsId : ListOfItemsId, userId : UserId, name : Name, genreId : GenreId) : ListOfItems
             + createPublicListOfItems(userId : UserId, name : Name, genreId : GenreId) : ListOfItems
+            + createListOfItems(listOfItemsId : ListOfItemsId, userId : UserId, name : Name, genreId : GenreId, isPrivate : boolean, sharedUntil : LocalDateTime) : ListOfItems
+            + createPublicListOfItems(userId : UserId, name : Name, genreId : GenreId, duration : SharedDuration) : ListOfItems
         }
     }
 
@@ -43,6 +48,7 @@ Package "domain" {
         Class "GenreId" as GenreId <<ValueObject>> {}
         Class "Name" as Name <<ValueObject>> {}
         Class "ListOfItemsId" as Id <<ValueObject>> #LightPink {}
+        Class "SharedDuration" as SharedDuration <<ValueObject>> {}
     }
 }
 
@@ -68,6 +74,7 @@ ListOfItemsRoot "*" ..> "1" UserId : references
 ListOfItemsRoot "*" ..> "1" GenreId : references
 ListOfItemsRoot "1" ..> "1" Name : references
 ListOfItemsRoot "*" <- "1" IRepo : persists
+ListOfItemsRoot "*" ..> "1" SharedDuration : references
 
 
 

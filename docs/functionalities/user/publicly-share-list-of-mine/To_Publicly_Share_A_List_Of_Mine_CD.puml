@@ -19,6 +19,7 @@ package "controller" {
     class ShareListPubliclyController {
         + findListsByUser(userId : UserId) : Map<ListOfItemsId, String>
         + shareListPublicly(listOfItemsId : ListOfItemsId) : boolean
+        + shareListPublicly(listOfItemsId : ListOfItemsId, duration : SharedDuration) : boolean
     }
 }
 
@@ -33,6 +34,9 @@ package "domain" {
             + getItemIds() : List<ItemId>
             + makePublic() : void
             + isPrivate() : boolean
+            - _sharedUntil : LocalDateTime
+            + makePublic(duration : SharedDuration) : void
+            + getSharedUntil() : LocalDateTime
         }
     }
 
@@ -47,6 +51,7 @@ package "domain" {
         class ItemId <<ValueObject>> {}
         class Name <<ValueObject>> {}
         class GenreId <<ValueObject>> {}
+        class SharedDuration <<ValueObject>> {}
     }
 }
 
@@ -76,6 +81,7 @@ ListOfItems "1" --> "1" Name : has
 ListOfItems "*" --> "1" UserId : references
 ListOfItems "*" --> "*" ItemId : references
 ListOfItems "*" --> "1" GenreId : references
+ListOfItems "*" --> "1" SharedDuration : references
 
 
 ListOfItems .|> AggregateRoot

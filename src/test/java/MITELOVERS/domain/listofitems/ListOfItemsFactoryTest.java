@@ -3,8 +3,11 @@ package MITELOVERS.domain.listofitems;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -38,12 +41,13 @@ class ListOfItemsFactoryTest {
         UserId userIdDouble = mock(UserId.class);
         GenreId genreIdDouble = mock(GenreId.class);
         Name name = new Name("My List");
+        SharedDuration duration = new SharedDuration(7);
 
         // SUT
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
         // Act
-        ListOfItems list = factory.createPublicListOfItems(userIdDouble, name, genreIdDouble);
+        ListOfItems list = factory.createPublicListOfItems(userIdDouble, name, genreIdDouble, duration);
 
         // Assert
         assertNotNull(list);
@@ -51,6 +55,7 @@ class ListOfItemsFactoryTest {
         assertEquals(name, list.getName());
         assertEquals(genreIdDouble, list.getGenreId());
         assertFalse(list.isPrivate());
+        assertNotNull(list.getSharedUntil());
     }
 
     @Test
@@ -75,12 +80,14 @@ class ListOfItemsFactoryTest {
         GenreId genreIdDouble = mock(GenreId.class);
         ListOfItemsId listOfItemsId = mock(ListOfItemsId.class);
         Name name = new Name("My List");
+        LocalDateTime sharedUntil = LocalDateTime.now().plusDays(7);
 
         // SUT
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
         // Act
-        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble, name, genreIdDouble);
+        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble, name,
+                genreIdDouble, false, sharedUntil);
 
         // Assert
         assertNotNull(list);
@@ -88,7 +95,8 @@ class ListOfItemsFactoryTest {
         assertEquals(userIdDouble, list.getUserId());
         assertEquals(name, list.getName());
         assertEquals(genreIdDouble, list.getGenreId());
-        assertTrue(list.isPrivate());
+        assertFalse(list.isPrivate());
+        assertEquals(sharedUntil, list.getSharedUntil());
     }
 
     @Test
@@ -100,10 +108,10 @@ class ListOfItemsFactoryTest {
         ListOfItemsFactory factory = new ListOfItemsFactory();
 
         // Act
-        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble, new Name("My List"), genreIdDouble);
+        ListOfItems list = factory.createListOfItems(listOfItemsId, userIdDouble,
+                new Name("My List"), genreIdDouble, true, null);
 
         // Assert
         assertEquals(listOfItemsId, list.identity());
     }
-
 }

@@ -7,13 +7,13 @@ import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * Data model object representing {@link ListOfItems} information,
  * allowing its persistence in a database.
  */
-
 @Generated
 @Getter
 @NoArgsConstructor
@@ -37,6 +37,9 @@ public class ListOfItemsDataModel {
 
     @Column(name = "is_private", nullable = false)
     private boolean isPrivate;
+
+    @Column(name = "shared_until")
+    private LocalDateTime sharedUntil;
 
     @ElementCollection
     @CollectionTable(
