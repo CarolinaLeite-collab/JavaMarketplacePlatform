@@ -1,5 +1,6 @@
 package MITELOVERS.domain.appraisalentity;
 
+import MITELOVERS.domain.valueobject.AppraisalEntityId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
@@ -26,7 +27,7 @@ public class AppraisalEntityFactoryTest {
     }
 
     @Test
-    void shouldCreateAppraisalEntity(){
+    void shouldCreateAppraisalEntityWithConstructorWithoutId(){
 
         //Arrange
         Name _nameDouble = mock(Name.class);
@@ -46,6 +47,37 @@ public class AppraisalEntityFactoryTest {
 
             //Act
             AppraisalEntity appraisalEntityResult = factory.createAppraisalEntity(_nameDouble, _publicationTypeIds, _genreIds);
+
+            //Assert
+            assertNotNull(appraisalEntityResult);
+            assertEquals(1, mockedConstruction.constructed().size());
+
+        }
+
+    }
+
+    @Test
+    void shouldCreateAppraisalEntityWithConstructorWithId(){
+
+        //Arrange
+        Name _nameDouble = mock(Name.class);
+        AppraisalEntityId _appraisalEntityIdDouble = mock(AppraisalEntityId.class);
+
+        PublicationTypeId _publicationTypeIdDouble = mock(PublicationTypeId.class);
+        List<PublicationTypeId> _publicationTypeIds = new ArrayList<>();
+        _publicationTypeIds.add(_publicationTypeIdDouble);
+
+        GenreId _genreIdDouble = mock(GenreId.class);
+        List<GenreId> _genreIds = new ArrayList<>();
+        _genreIds.add(_genreIdDouble);
+
+        //SUT
+        AppraisalEntityFactory factory = new AppraisalEntityFactory();
+
+        try (MockedConstruction<AppraisalEntity> mockedConstruction = mockConstruction(AppraisalEntity.class)){
+
+            //Act
+            AppraisalEntity appraisalEntityResult = factory.createAppraisalEntity(_appraisalEntityIdDouble, _nameDouble, _publicationTypeIds, _genreIds);
 
             //Assert
             assertNotNull(appraisalEntityResult);

@@ -24,14 +24,13 @@ Package "domain" {
 
         class Publication <<Root>> <<Entity>> {
             -_releaseYear : Year
-            +isByAuthorId( a : AuthorId) : boolean
-            +isByGenreId(g : GenreId) : boolean
-            +identity() : PublicationId
-            +sameAs(Object) : boolean
+            +isByAuthorId(authorId : AuthorId) : boolean
+            +isByGenreId(genreId : GenreId) : boolean
         }
 
         class PublicationFactory <<Factory>> {
-            +createPublication(t : Title, a : AuthorId, y : Year, gId: GenreId) : Publication
+            +createPublication(title : Title, authorId : AuthorId, year : Year, genreId: GenreId) : Publication
+            +createPublication(publicationId : PublicationId, title : Title, authorId : AuthorId, year : Year, genreId: GenreId) : Publication
         }
 
     }
@@ -81,12 +80,6 @@ Package "ddd" {
     }
 }
 
-' ===== Persistence =====
-Package "persistence" {
-     package "mem"  {
-     class MemPublicationRepo <<Repo>>
-    }
-}
 
 ' ===== Relations =====
 Publication "1" --> "ID 1" PublicationId : has
@@ -98,8 +91,7 @@ PublicationId "*" --> "1" Title : uses
 PublicationId "*" -> "1" AuthorId : uses
 
 IPublicationRepo -|> IRepository
-MemPublicationRepo ..|> IPublicationRepo
-Publication "*" <-- "1" MemPublicationRepo : persists
+IPublicationRepo -> Publication : persists
 PublicationFactory ..> Publication : <<create>>
 
 AggregateRoot -|> DomainEntity

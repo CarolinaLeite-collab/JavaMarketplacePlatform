@@ -3,6 +3,8 @@ package MITELOVERS.persistence.jpa.repository;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.persistence.jpa.assembler.AuthorAssembler;
+import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;

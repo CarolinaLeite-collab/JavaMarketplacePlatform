@@ -20,41 +20,48 @@ autoactivate off
 
 ' ==== Actor and participants ====
 actor Administrator
+participant ":CreateAuthorUI" as UI
+participant ":CreateAuthorController" as CTL
+participant ":IAuthorRepo" as IA
+participant ":AuthorFactory" as factory
 
 
 '==== UI interaction ====
-Administrator -> ":CreateAuthorUI": I want to register an Author
-activate ":CreateAuthorUI"
+Administrator -> UI: I want to register an Author
+activate UI
 
-":CreateAuthorUI" --> Administrator: What is the author's name?
-deactivate ":CreateAuthorUI"
+UI --> Administrator: What is the author's name?
+deactivate UI
 
-Administrator -> ":CreateAuthorUI": authorName
-activate ":CreateAuthorUI"
+Administrator -> UI: authorName
+activate UI
 
-":CreateAuthorUI" -> ":CreateAuthorController": createAuthor(authorName)
+UI -> CTL: createAuthor(authorName)
 
-activate ":CreateAuthorController"
-":CreateAuthorController"-> ":CreateAuthorController": addAuthor(authorName)
+activate CTL
 
-":CreateAuthorController" -> ":AuthorFactory": createAuthor(authorName)
+CTL -> factory: createAuthor(authorName)
 
-activate ":AuthorFactory"
-create "author:Author"
-":AuthorFactory" -->> "author:Author": <<create>>
-":AuthorFactory" --> ":CreateAuthorController": author
-deactivate ":AuthorFactory"
+activate factory
+create "authorName:Author"
+factory -->> "authorName:Author": <<create>> (authorName)
+factory --> CTL: authorName
+deactivate factory
 
-":CreateAuthorController" -> ":MemAuthorRepo": save(author)
-activate ":MemAuthorRepo"
+CTL -> IA: save(authorName)
+activate IA
 
-":MemAuthorRepo" --> ":CreateAuthorController": author
-deactivate ":MemAuthorRepo"
+ref over IA
+[[sd-ref-diagrams/Save_Author.puml Save Author and return saved domain object]]
+end ref
 
-":CreateAuthorController" --> ":CreateAuthorUI": author
-deactivate ":CreateAuthorController"
+IA --> CTL: reconstructedAuthor
+deactivate IA
 
-":CreateAuthorUI" --> Administrator: Done!
-deactivate ":CreateAuthorUI"
+CTL --> UI: reconstructedAuthor
+deactivate CTL
+
+UI --> Administrator: Done!
+deactivate UI
 
 @enduml

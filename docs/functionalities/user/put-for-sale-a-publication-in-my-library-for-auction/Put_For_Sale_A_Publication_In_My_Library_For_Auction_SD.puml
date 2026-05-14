@@ -18,71 +18,104 @@ autoactivate off
 actor User
 participant ":PublicationInLibrary\nForAuctionUI" as UI
 participant ":PublicationInLibrary\nForAuctionController" as Ctl
+participant "libraryId:LibraryId" as libraryId
 participant ":ILibraryRepo" as LibraryRepo
-participant "listOfItemsId:List<ItemId>" as listOfItemsId
+participant "reconstructedLibrary%n():Library" as reconstructedLibrary
+participant ":IItemRepo" as itemRepo
+participant "reconstructedItem%n():Item" as reconstructedItem
 participant ":AuctionFactory" as AuctionFactory
 participant "auction:Auction" as auction
 participant ":IAuctionRepo" as AuctionRepo
-participant ":IItemRepo" as itemRepo
+
 participant "item:Item" as item
 
-User -> UI: I want to put for auction\nan item in my library!
+User -> UI: I want to put an item in my %n()library for sale in an auction
 activate UI
 
-UI -> Ctl: getItemsIdInLibraryByUserId\n(userId)
+UI -> Ctl: getLibraryItemsIdList%n()(userId)
 activate Ctl
-
-Ctl -> LibraryRepo: getItemsIdInLibraryByUserId\n(userId)
+Ctl -> libraryId : fromUserId(userId)
+activate libraryId
+libraryId --> Ctl : libraryId
+deactivate libraryId
+Ctl -> LibraryRepo: ofIdentity(libraryId)
 activate LibraryRepo
-create listOfItemsId
-LibraryRepo --> listOfItemsId : <<create>>
-LibraryRepo --> Ctl: listOfItemsId
+ref over LibraryRepo
+[[sd-ref-diagrams/Retrieve_Library.puml Retrieve Library from persistence (via JPA)]]
+end ref
+LibraryRepo --> Ctl: reconstructedLibrary
 deactivate LibraryRepo
 
-Ctl --> UI: listOfItemIds
+Ctl -> reconstructedLibrary : getItemsIdInLibrary();
+activate reconstructedLibrary
+reconstructedLibrary --> Ctl : itemIds
+deactivate reconstructedLibrary
+Ctl --> UI : itemIds
 deactivate Ctl
-UI --> User: Which items\nwould you like to sell?
+UI --> User: Which item?
 deactivate UI
-
-User -> UI: itemsId
+User -> UI: itemId
 activate UI
 
-UI --> User: What is the price \nand time limit for this sale?
+UI --> User: Please provide the start price, %n()reserve price, outright price, start %n()date, and end date
 deactivate UI
-User -> UI: price, time limit
+User -> UI: startPrice, reservePrice, outrightPrice, %n()startDate, endDate
 activate UI
 
-UI -> Ctl: putItemIdOnAuction\n(itemsId, startPrice, reservePrice,\n outrightPrice, startDate, endDate)
+note right UI
+The below method accepts List<ItemId> %n()as its first argument (for if a user wants to %n()put a **collection** of items up for auction) %n()%n() For the purpose of this functionality, a user%n() is only putting **one item for sale in an auction**
+end note
+UI -> Ctl: putItemOnAuction\n(itemId, startPrice, reservePrice,\n outrightPrice, startDate, endDate)
 activate Ctl
 
-Ctl -> AuctionFactory: createAuction\n(itemsId, startPrice, reservePrice,\n outrightPrice, startDate, endDate)
+Ctl -> itemRepo : ofIdentity(itemId)
+activate itemRepo
+ref over itemRepo
+    [[sd-ref-diagrams/Retrieve_Item.puml Retrieve Item from persistence (via JPA)]]
+    end ref
+itemRepo --> Ctl : reconstructedItem
+deactivate itemRepo
+Ctl -> reconstructedItem: getSaleStatus()
+activate reconstructedItem
+reconstructedItem --> Ctl: NotOnSale
+deactivate reconstructedItem
+
+Ctl -> AuctionFactory: createAuction\n(itemId, startPrice, reservePrice,\n outrightPrice, startDate, endDate)
 activate AuctionFactory
 create auction
 AuctionFactory -->> auction: <<create>>
 AuctionFactory --> Ctl: auction
 deactivate AuctionFactory
+Ctl -> auction : identity()
+activate auction
+auction --> Ctl : auctionId
+deactivate auction
 
-Ctl -> AuctionRepo : exists = containsOfIdentity(auction.identity())
-
-opt !exists
-
-loop itemId : listOfItemsId
-    Ctl -> itemRepo : ofIdentity(itemId)
-    activate itemRepo
-    itemRepo --> Ctl : item
-    deactivate itemRepo
-    Ctl -> item: notOnSale = getSaleStatus()
-    opt notOnSale
-        Ctl -> item : markAsAuction()
-    end
-end
-
-
+Ctl -> AuctionRepo : containsOfIdentity(auctionId)
+activate AuctionRepo
+ref over AuctionRepo
+[[sd-ref-diagrams/Verify_Auction_Exists.puml Verify auctionId is not already persisted (in JPA)]]
+end ref
+AuctionRepo --> Ctl : false
+deactivate AuctionRepo
 Ctl -> AuctionRepo : save(auction)
 activate AuctionRepo
-AuctionRepo --> Ctl : auction
+ref over AuctionRepo
+[[sd-ref-diagrams/Save_Auction_Of_Item.puml Save auction of an item]]
+end ref
+AuctionRepo --> Ctl : reconstructedAuction
 deactivate AuctionRepo
-end
+
+Ctl -> itemRepo : ofIdentity(itemId).get()
+activate itemRepo
+itemRepo --> Ctl : item
+deactivate itemRepo
+
+Ctl -> item : markAsAuction()
+activate item
+item --> Ctl : auction
+deactivate item
+
 Ctl --> UI: auction
 deactivate Ctl
 UI --> User: Your item was\nsuccessfully put up on an auction!

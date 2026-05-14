@@ -1,0 +1,54 @@
+@startuml
+'==== Title ====
+title "Retrieve Item from persistence (via JPA)" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":IItemRepo" as ItemRepo
+participant ":JpaItemRepo" as JpaItemRepo
+participant ":IItemSpring%n()DataRepo" as SpringDataItemRepo
+participant ":ItemAssembler" as Assembler
+database "DB" as DB
+
+
+ItemRepo -> JpaItemRepo : ofIdentity(itemId)
+activate ItemRepo
+activate JpaItemRepo
+
+JpaItemRepo -> SpringDataItemRepo : findById(libraryId%n().getValue())
+activate SpringDataItemRepo
+SpringDataItemRepo -> DB : retrieve item by id
+activate DB
+DB --> SpringDataItemRepo : itemDataModel
+deactivate DB
+
+SpringDataItemRepo --> JpaItemRepo : itemDataModel
+deactivate SpringDataItemRepo
+
+JpaItemRepo -> Assembler : toDomain(itemDataModel)
+activate Assembler
+Assembler --> JpaItemRepo : reconstructedItem
+deactivate Assembler
+
+JpaItemRepo --> ItemRepo : reconstructedItem
+deactivate JpaItemRepo
+
+deactivate JpaItemRepo
+deactivate ItemRepo
+
+ref over ItemRepo
+[[../Put_For_Sale_A_Publication_In_My_Library_For_Direct_Sale_SD.puml Return to main diagram]]
+end ref
+@enduml

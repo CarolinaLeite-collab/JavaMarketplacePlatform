@@ -2,9 +2,11 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +14,33 @@ import java.util.List;
 /**
  * Controller responsible for retrieving public lists of publications filtered by genre.
  * <p>
- * This controller interacts with the {@link IListOfItemsRepo} to obtain
- * {@link ListOfItems} instances that are public and match a specific {@link Genre}.
+ * This controller interacts with {@link IGenreRepo} to retrieve the available genres,
+ * and with {@link IListOfItemsRepo} to obtain {@link ListOfItems} instances
+ * that are public and match a specific {@link Genre}.
  * </p>
  */
 
+@Controller
 public class GetPublicListsByGenreController {
+
+    private final IGenreRepo _iGenreRepo;
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public GetPublicListsByGenreController(IListOfItemsRepo iListOfPubRepo, UserId userId) {
-        _iListOfItemsRepo = iListOfPubRepo;
+    public GetPublicListsByGenreController(IGenreRepo iGenreRepo, IListOfItemsRepo iListOfItemsRepo) {
+
+        _iGenreRepo = iGenreRepo;
+        _iListOfItemsRepo = iListOfItemsRepo;
+
+    }
+
+    public Iterable<GenreId> findAllKeys() {
+
+        return _iGenreRepo.findAllKeys();
+
     }
 
     public List<ListOfItems> getPublicListsByGenre(GenreId genreId) {
+
         if (genreId == null) {
             throw new IllegalArgumentException("Genre is mandatory");
         }
@@ -33,11 +49,10 @@ public class GetPublicListsByGenreController {
 
     public List<ListOfItems> findPublicListsByGenre(GenreId genreId) {
 
-        // 1. Get all lists from the repo
         Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
 
-        // 2. Filter them in the controller
         List<ListOfItems> result = new ArrayList<>();
+
         for (ListOfItems list : all) {
             if (!list.isPrivate() && genreId.equals(list.getGenreId())) {
                 result.add(list);

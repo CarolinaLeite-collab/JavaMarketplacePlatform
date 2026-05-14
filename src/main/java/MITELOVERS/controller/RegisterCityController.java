@@ -2,11 +2,10 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.city.City;
 import MITELOVERS.domain.city.CityFactory;
-import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.repository.ICityRepo;
 import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for handling the registration of a new {@link City} (US008).
@@ -15,6 +14,7 @@ import MITELOVERS.domain.valueobject.UserId;
  * → duplicate check → persistence via repository.</p>
  */
 
+@Controller
 public class RegisterCityController {
 
     private final ICityRepo _iCityRepo;
@@ -24,8 +24,7 @@ public class RegisterCityController {
 
     public RegisterCityController(ICityRepo iCityRepo,
                                   ICountryRepo iCountryRepo,
-                                  CityFactory cityFactory,
-                                  UserId adminId) {
+                                  CityFactory cityFactory) {
         _iCityRepo = iCityRepo;
         _iCountryRepo = iCountryRepo;
         _cityFactory = cityFactory;

@@ -6,6 +6,7 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.ItemAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import MITELOVERS.persistence.springdata.IItemSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -14,20 +15,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JPA implementation of {@link IItemRepo} for storing {@link Item} instances.
+ * <p>
+ * Active only when the {@code jpa} Spring profile is enabled.
+ * </p>
+ */
+
 @Repository
 @Profile("jpa")
 public class JpaItemRepo implements IItemRepo {
 
-    private final IItemSpringDataRepo _itemSpringDataRepo;
+    @Autowired
+    IItemSpringDataRepo _itemSpringDataRepo;
 
-    private final ItemAssembler _itemAssembler;
-
-    public JpaItemRepo(IItemSpringDataRepo springRepo, ItemAssembler assembler) {
-
-        _itemSpringDataRepo = springRepo;
-        _itemAssembler = assembler;
-
-    }
+    @Autowired
+    ItemAssembler _itemAssembler;
 
     @Override
     public Item save(Item item) {
@@ -77,9 +80,13 @@ public class JpaItemRepo implements IItemRepo {
     @Override
     public Optional<Item> ofIdentity(ItemId id) {
 
-        ItemDataModel savedItemDataModel = _itemSpringDataRepo.findById(id.getValue()).orElseThrow(() -> new IllegalArgumentException("Item not found!"));
+        Optional<ItemDataModel> itemDataModel = _itemSpringDataRepo.findById(id.getValue());
 
-        return Optional.of(_itemAssembler.toDomain(savedItemDataModel));
+        if (itemDataModel.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(_itemAssembler.toDomain(itemDataModel.get()));
 
     }
 

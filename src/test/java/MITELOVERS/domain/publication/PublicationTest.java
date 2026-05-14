@@ -30,12 +30,24 @@ class PublicationTest {
     }
 
     @Test
-    void constructorAllFieldsCreatesPublication() {
+    void constructorAllFieldsNoIdCreatesPublication() {
         // Act & SUT
         Publication p = new Publication(_titleDouble, _authorIdDouble, _yearDouble,
                 _genreIdDouble);
 
         // Assert
+        assertNotNull(p);
+    }
+
+    @Test
+    void constructorAllFieldsWithIdCreatesPublication() {
+        //arrange
+        PublicationId pubId = mock(PublicationId.class);
+
+        //act+SUT
+        Publication p = new Publication(pubId, _titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
+
+        //assert
         assertNotNull(p);
     }
 
@@ -53,7 +65,7 @@ class PublicationTest {
                  _genreIdDouble);
 
         // Assert
-        assertNotNull(p.getPublicationId());
+        assertNotNull(p.identity());
     }
 
     @Test
@@ -63,7 +75,7 @@ class PublicationTest {
         Publication p2 = new Publication(_titleDouble, _authorIdDouble, _yearDouble, _genreIdDouble);
 
         // Assert
-        assertEquals(p1.getPublicationId(), p2.getPublicationId());
+        assertEquals(p1.identity(), p2.identity());
     }
 
     @Test

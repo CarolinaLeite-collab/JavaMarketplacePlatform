@@ -2,46 +2,52 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class ShareListPubliclyControllerTest {
 
-    private IListOfItemsRepo _iListOfItemsRepoDouble;
-    private UserId _userIdDouble;
+    @Mock
+    IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @Mock
+    UserId _userIdDouble;
+
+    @InjectMocks
+    ShareListPubliclyController _controller;
 
     @BeforeEach
-    void setUp() {
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _userIdDouble = mock(UserId.class);
+    void setUp() throws InstantiationException {
     }
 
     @Test
     void returnListFromRepo() {
         // Arrange
         UserId otherUser = mock(UserId.class);
-
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
 
         when(list1.getUserId()).thenReturn(_userIdDouble);
         when(list2.getUserId()).thenReturn(otherUser);
-
-        when(_iListOfItemsRepoDouble.findAll())
-                .thenReturn(List.of(list1, list2));
-
-        ShareListPubliclyController controller =
-                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list1, list2));
 
         // Act
-        List<ListOfItems> result = controller.getListOfLists(_userIdDouble);
+        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -50,11 +56,9 @@ class ShareListPubliclyControllerTest {
 
     @Test
     void findListsByUserIdShouldThrowWhenUserIdIsNull() {
-        ShareListPubliclyController controller =
-                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
-
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.findListsByUserId(null));
+                () -> _controller.findListsByUserId(null));
     }
 
     @Test
@@ -62,14 +66,41 @@ class ShareListPubliclyControllerTest {
         // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
-        ShareListPubliclyController controller =
-                new ShareListPubliclyController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getListOfLists(_userIdDouble);
+        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void shareListPubliclyShouldCallMakePublicAndSave() {
+        // Arrange
+        ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
+        ListOfItems listDouble = mock(ListOfItems.class);
+
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
+                .thenReturn(Optional.of(listDouble));
+
+        // Act
+        boolean result = _controller.shareListPublicly(listIdDouble);
+
+        // Assert
+        assertTrue(result);
+        verify(listDouble).makePublic();
+        verify(_iListOfItemsRepoDouble).save(listDouble);
+    }
+
+    @Test
+    void shareListPubliclyShouldThrowWhenListNotFound() {
+        // Arrange
+        ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
+
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalStateException.class,
+                () -> _controller.shareListPublicly(listIdDouble));
+    }
 }

@@ -1,19 +1,19 @@
 @startuml
-title As a user, I want to get a list (name and user) \n of the publicly published lists of a given genre - CD
+title As a user, I want to get a list \n of the publicly published lists of a given genre - CD
 
 skinparam defaultFontName Futura
 skinparam backgroundColor CornSilk
 skinparam classBackgroundColor WhiteSmoke
 skinparam classAttributeIconSize 0
 
-
 class GetPublicListsByGenreUI {}
 
 package "controller" {
     class GetPublicListsByGenreController {
-        +findAllKeys() : List<GenreId>
-        +getPublicListsByGenreId(genreId: GenreId): List<ItemId>
-        +findPublicListsByGenre(genreId: GenreId): List<ItemId>
+        +findAllKeys() : Iterable
+        +getPublicListsByGenre(genreId: GenreId): List
+        +findPublicListsByGenre(genreId : GenreId) : List
+
     }
 }
 
@@ -23,15 +23,15 @@ package "ddd" {
 
 package "domain" {
     package "repository" {
-        interface IGenreRepo <<Interface>> {
-            +findAllKeys() : List<GenreId>
-        }
         interface IListOfItemsRepo <<Interface>> {
             +findAll() : Iterable<ListOfItems>
         }
+        interface IGenreRepo <<Interface>> {
+                    +findAllKeys() : Iterable<GenreId>
+                }
     }
     package "valueobject" {
-        class ItemId <<Value Object>>
+        class GenreId <<Value Object>>
     }
     package "listofitems" #b0c4d4 {
         class ListOfItems <<Root>> <<Entity>> {
@@ -41,13 +41,15 @@ package "domain" {
     }
 }
 
-
-GetPublicListsByGenreUI "1"..> "1" GetPublicListsByGenreController : invokes
+GetPublicListsByGenreUI "1" ..> "1" GetPublicListsByGenreController : invokes
 GetPublicListsByGenreController "1" ..> "1" IListOfItemsRepo : <<use>>
+GetPublicListsByGenreController "1" ..> "1" GenreId : <<use>>
 GetPublicListsByGenreController "1" ..> "1" IGenreRepo : <<use>>
-
 IListOfItemsRepo --|> IRepository
-IListOfItemsRepo "1"--> "*" ListOfItems : manages
-ListOfItems "1" --> "1" ItemId : has
+IGenreRepo --|> IRepository
+
+IListOfItemsRepo "1" --> "*" ListOfItems : manages
+ListOfItems "1" --> "1" GenreId : has
+
 
 @enduml

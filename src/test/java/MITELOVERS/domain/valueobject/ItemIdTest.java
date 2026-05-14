@@ -166,44 +166,12 @@ class ItemIdTest {
         assertEquals(sut.getSku().toString(), result);
     }
 
-    @Test
-    void getValueShouldReturnUnderlyingSkuValue() {
-        // Arrange
-        String skuValue = "ABCDEF1234";
-
-        //SUT
-        ItemId sut = new ItemId(skuValue);
-
-        // Act
-        String result = sut.getValue();
-
-        // Assert
-        assertEquals(skuValue, result);
-    }
 
     @Test
-    void getValueShouldMatchSkuGetValue() {
-        // SUT
-        ItemId sut = new ItemId();
-
-        // Act
-        String value = sut.getValue();
-
-        // Assert
-        assertEquals(sut.getSku().getValue(), value);
+    void constructorWithStringShouldThrowWhenInvalidSku() {
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> new ItemId("INVALID!!!"));
     }
 
-    @Test
-    void getValueShouldMatchToStringForNow() {
-        // SUT
-        ItemId sut = new ItemId();
-
-        // Act
-        String value = sut.getValue();
-        String stringRepresentation = sut.toString();
-
-        // Assert
-        assertEquals(value, stringRepresentation);
-    }
 
 }

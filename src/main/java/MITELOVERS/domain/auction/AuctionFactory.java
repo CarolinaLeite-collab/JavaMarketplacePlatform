@@ -2,6 +2,7 @@ package MITELOVERS.domain.auction;
 
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.List;
  * centralizing object creation and isolating clients from constructor
  * details.
  */
+
+@Component
 public class AuctionFactory {
 
     public Auction createAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
