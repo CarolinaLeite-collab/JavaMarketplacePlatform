@@ -5,7 +5,7 @@ import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
 import MITELOVERS.persistence.jpa.assembler.CountryAssembler;
 import MITELOVERS.persistence.jpa.datamodel.CountryDataModel;
-import MITELOVERS.persistence.jpa.springdata.ICountrySpringDataRepo;
+import MITELOVERS.persistence.springdata.ICountrySpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
