@@ -8,15 +8,16 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,28 +27,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class ListOfItemsInMyLibraryControllerTest {
 
-    @Mock private IRepository<LibraryId, Library> libraryRepo;
-    @Mock private IRepository<ItemId, Item> itemRepo;
-    @Mock private IRepository<EditionId, Edition> editionRepo;
-    @Mock private IRepository<PublicationId, Publication> publicationRepo;
-    @Mock private IRepository<AuthorId, Author> authorRepo;
-    @Mock private IRepository<PublicationTypeId, PublicationType> publicationTypeRepo;
+    @Mock private IRepository<LibraryId, Library> _libraryRepo;
+    @Mock private IRepository<ItemId, Item> _itemRepo;
+    @Mock private IRepository<EditionId, Edition> _editionRepo;
+    @Mock private IRepository<PublicationId, Publication> _publicationRepo;
+    @Mock private IRepository<AuthorId, Author> _authorRepo;
+    @Mock private IRepository<PublicationTypeId, PublicationType> _publicationTypeRepo;
 
-    @Mock private UserId userId;
+    @Mock private UserId _userId;
 
-    private ListOfItemsInMyLibraryController controller;
+    @InjectMocks
+    private ListOfItemsInMyLibraryController _controller;
 
     @BeforeEach
     void setUp() {
-        controller = new ListOfItemsInMyLibraryController(
-                libraryRepo,
-                itemRepo,
-                editionRepo,
-                publicationRepo,
-                authorRepo,
-                publicationTypeRepo
+        _controller = new ListOfItemsInMyLibraryController(
+                _libraryRepo,
+                _itemRepo,
+                _editionRepo,
+                _publicationRepo,
+                _authorRepo,
+                _publicationTypeRepo
         );
     }
 
@@ -79,25 +82,25 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
             when(edition.getPublicationId()).thenReturn(publicationId);
             when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
             when(edition.getIdentifier()).thenReturn(isbn);
 
-            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(_publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
             when(publication.getAuthorId()).thenReturn(authorId);
             when(publication.getTitle()).thenReturn(title);
 
-            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
-            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
+            when(_publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
+            when(_authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
 
             when(title.toString()).thenReturn("The Catcher in the Rye");
             when(name.toString()).thenReturn("J.D. Salinger");
@@ -106,7 +109,7 @@ class ListOfItemsInMyLibraryControllerTest {
             when(isbn.toString()).thenReturn("978-0316769488");
 
             // Act
-            List<ItemDetailsDTO> dtos = controller.getListOfItemInfoInMyLibrary(userId);
+            List<ItemDetailsDTO> dtos = _controller.getListOfItemInfoInMyLibrary(_userId);
 
             // Assert
             assertEquals(1, dtos.size());
@@ -141,25 +144,25 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
             when(edition.getPublicationId()).thenReturn(publicationId);
             when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
             when(edition.getIdentifier()).thenReturn(isbn);
 
-            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(_publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
             when(publication.getAuthorId()).thenReturn(authorId);
             when(publication.getTitle()).thenReturn(title);
 
-            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
-            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
+            when(_publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
+            when(_authorRepo.ofIdentity(authorId)).thenReturn(Optional.of(author));
 
             when(title.toString()).thenReturn("The Catcher in the Rye");
             when(name.toString()).thenReturn("J.D. Salinger");
@@ -168,7 +171,7 @@ class ListOfItemsInMyLibraryControllerTest {
             when(isbn.toString()).thenReturn("978-0316769488");
 
             // Act
-            List<ItemDetailsDTO> dtos = controller.getListOfItemInfoInMyLibrary(userId);
+            List<ItemDetailsDTO> dtos = _controller.getListOfItemInfoInMyLibrary(_userId);
             ItemDetailsDTO dto = dtos.get(0);
 
             // Assert
@@ -192,14 +195,14 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.getListOfItemInfoInMyLibrary(userId));
+                    () -> _controller.getListOfItemInfoInMyLibrary(_userId));
         }
     }
 
@@ -215,18 +218,18 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.empty());
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.getListOfItemInfoInMyLibrary(userId));
+                    () -> _controller.getListOfItemInfoInMyLibrary(_userId));
         }
     }
 
@@ -246,21 +249,21 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
             when(edition.getPublicationId()).thenReturn(publicationId);
 
-            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.empty());
+            when(_publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.getListOfItemInfoInMyLibrary(userId));
+                    () -> _controller.getListOfItemInfoInMyLibrary(_userId));
         }
     }
 
@@ -283,23 +286,23 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
             when(edition.getPublicationId()).thenReturn(publicationId);
             when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
 
-            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
-            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.empty());
+            when(_publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(_publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.getListOfItemInfoInMyLibrary(userId));
+                    () -> _controller.getListOfItemInfoInMyLibrary(_userId));
         }
     }
 
@@ -325,26 +328,26 @@ class ListOfItemsInMyLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
             when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
 
-            when(itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+            when(_itemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
             when(item.getEditionId()).thenReturn(editionId);
 
-            when(editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
+            when(_editionRepo.ofIdentity(editionId)).thenReturn(Optional.of(edition));
             when(edition.getPublicationId()).thenReturn(publicationId);
             when(edition.getPublicationTypeId()).thenReturn(publicationTypeId);
 
-            when(publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
-            when(publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
+            when(_publicationRepo.ofIdentity(publicationId)).thenReturn(Optional.of(publication));
+            when(_publicationTypeRepo.ofIdentity(publicationTypeId)).thenReturn(Optional.of(publicationType));
 
             when(publication.getAuthorId()).thenReturn(authorId);
-            when(authorRepo.ofIdentity(authorId)).thenReturn(Optional.empty());
+            when(_authorRepo.ofIdentity(authorId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.getListOfItemInfoInMyLibrary(userId));
+                    () -> _controller.getListOfItemInfoInMyLibrary(_userId));
         }
     }
 
