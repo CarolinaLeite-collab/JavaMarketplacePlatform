@@ -11,9 +11,11 @@ import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,31 +24,33 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class AddItemToLibraryControllerTest {
 
     @Mock
-    private IRepository<LibraryId, Library> libraryRepo;
+    private IRepository<LibraryId, Library> _libraryRepo;
 
     @Mock
-    private IRepository<ItemId, Item> itemRepo;
+    private IRepository<ItemId, Item> _itemRepo;
 
     @Mock
-    private UserId userId;
+    private UserId _userId;
 
     @Mock
-    private ItemId itemId1;
+    private ItemId _itemId1;
 
     @Mock
-    private ItemId itemId2;
+    private ItemId _itemId2;
 
     @Mock
-    private Library library;
+    private Library _library;
 
-    private AddItemToLibraryController controller;
+    @InjectMocks
+    private AddItemToLibraryController _controller;
 
     @BeforeEach
     void setUp() {
-        controller = new AddItemToLibraryController(libraryRepo, itemRepo);
+        _controller = new AddItemToLibraryController(_libraryRepo, _itemRepo);
     }
 
     // ---------------------------------------------------------
@@ -56,24 +60,24 @@ class AddItemToLibraryControllerTest {
     @Test
     void shouldReturnAllAvailableItems() {
 
-        when(itemRepo.findAllKeys()).thenReturn(List.of(itemId1, itemId2));
-        when(libraryRepo.findAll()).thenReturn(List.of(library));
-        when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId1));
+        when(_itemRepo.findAllKeys()).thenReturn(List.of(_itemId1, _itemId2));
+        when(_libraryRepo.findAll()).thenReturn(List.of(_library));
+        when(_library.getItemsIdInLibrary()).thenReturn(List.of(_itemId1));
 
-        List<ItemId> result = controller.getListOfAvailableItemIds();
+        List<ItemId> result = _controller.getListOfAvailableItemIds();
 
         assertEquals(1, result.size());
-        assertEquals(itemId2, result.get(0));
+        assertEquals(_itemId2, result.get(0));
     }
 
     @Test
     void shouldReturnEmptyListWhenNoAvailableItemsExist() {
 
-        when(itemRepo.findAllKeys()).thenReturn(List.of(itemId1, itemId2));
-        when(libraryRepo.findAll()).thenReturn(List.of(library));
-        when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId1, itemId2));
+        when(_itemRepo.findAllKeys()).thenReturn(List.of(_itemId1, _itemId2));
+        when(_libraryRepo.findAll()).thenReturn(List.of(_library));
+        when(_library.getItemsIdInLibrary()).thenReturn(List.of(_itemId1, _itemId2));
 
-        List<ItemId> result = controller.getListOfAvailableItemIds();
+        List<ItemId> result = _controller.getListOfAvailableItemIds();
 
         assertEquals(0, result.size());
     }
@@ -81,10 +85,10 @@ class AddItemToLibraryControllerTest {
     @Test
     void shouldReturnAllItemsWhenNoLibrariesExist() {
 
-        when(itemRepo.findAllKeys()).thenReturn(List.of(itemId1, itemId2));
-        when(libraryRepo.findAll()).thenReturn(List.of());
+        when(_itemRepo.findAllKeys()).thenReturn(List.of(_itemId1, _itemId2));
+        when(_libraryRepo.findAll()).thenReturn(List.of());
 
-        List<ItemId> result = controller.getListOfAvailableItemIds();
+        List<ItemId> result = _controller.getListOfAvailableItemIds();
 
         assertEquals(2, result.size());
     }
@@ -100,14 +104,14 @@ class AddItemToLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.findAll()).thenReturn(List.of(library));
-            when(library.getItemsIdInLibrary()).thenReturn(List.of());
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(library));
-            when(library.addItemIdToLibrary(itemId1)).thenReturn(true);
+            when(_libraryRepo.findAll()).thenReturn(List.of(_library));
+            when(_library.getItemsIdInLibrary()).thenReturn(List.of());
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.of(_library));
+            when(_library.addItemIdToLibrary(_itemId1)).thenReturn(true);
 
-            boolean result = controller.addItemIdToLibrary(itemId1, userId);
+            boolean result = _controller.addItemIdToLibrary(_itemId1, _userId);
 
             assertTrue(result);
         }
@@ -120,12 +124,12 @@ class AddItemToLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.empty());
+            when(_libraryRepo.ofIdentity(libraryId)).thenReturn(Optional.empty());
 
             assertThrows(IllegalStateException.class,
-                    () -> controller.addItemIdToLibrary(itemId1, userId));
+                    () -> _controller.addItemIdToLibrary(_itemId1, _userId));
         }
     }
 
@@ -136,12 +140,12 @@ class AddItemToLibraryControllerTest {
 
         try (MockedStatic<LibraryId> mocked = mockStatic(LibraryId.class)) {
 
-            mocked.when(() -> LibraryId.fromUserId(userId)).thenReturn(libraryId);
+            mocked.when(() -> LibraryId.fromUserId(_userId)).thenReturn(libraryId);
 
-            when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId1));
-            when(libraryRepo.findAll()).thenReturn(List.of(library));
+            when(_library.getItemsIdInLibrary()).thenReturn(List.of(_itemId1));
+            when(_libraryRepo.findAll()).thenReturn(List.of(_library));
 
-            boolean result = controller.addItemIdToLibrary(itemId1, userId);
+            boolean result = _controller.addItemIdToLibrary(_itemId1, _userId);
 
             assertFalse(result);
         }
