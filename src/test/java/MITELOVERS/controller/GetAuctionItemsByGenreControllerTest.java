@@ -64,145 +64,189 @@ class GetAuctionItemsByGenreControllerTest {
     }
 
     @Test
-    void shouldReturnsItemsMatchingGenreIds() {
-        //Arrange
-        Auction auctionDouble = mock(Auction.class);
+    void shouldReturnEmptyListWhenNoItemsMatchGenre() {
+
+        GenreId genreId = mock(GenreId.class);
+
+        ItemId item1 = mock(ItemId.class);
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
 
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble));
-        when(auctionDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(item1));
+        when(_iItemRepoDouble.ofIdentity(item1)).thenReturn(Optional.of(itemDouble));
+
+        when(itemDouble.getEditionId()).thenReturn(mock(EditionId.class));
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+
+        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(publicationDouble.isByGenreId(genreIdDouble1)).thenReturn(true);
 
-        //Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreIdDouble1);
-
-        //Assert
-        assertEquals(1, result.size());
-        assertTrue(result.contains(itemIdDouble));
-    }
-
-    @Test
-    void shouldReturnsEmptyListWhenNoItemsMatchGenre() {
-        // Arrange
-        Auction auctionDouble = mock(Auction.class);
-        Item itemDouble = mock(Item.class);
-        Edition editionDouble = mock(Edition.class);
-        Publication publicationDouble = mock(Publication.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
-
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble));
-        when(auctionDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
-        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(publicationDouble.isByGenreId(genreIdDouble1)).thenReturn(false);
+        when(publicationDouble.isByGenreId(genreId)).thenReturn(false);
 
         // Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreIdDouble1);
+        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldAggregatesItemsFromMultipleAuctions() {
-        // Arrange
-        Auction auctionDouble1 = mock(Auction.class);
-        Auction auctionDouble2 = mock(Auction.class);
+    void shouldPassAllFilteredItemsToAuctionRepo() {
+
+        GenreId genreId = mock(GenreId.class);
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
 
-        ItemId itemIdDouble1 = mock(ItemId.class);
-        ItemId itemIdDouble2 = mock(ItemId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
-
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble1, auctionDouble2));
-        when(auctionDouble1.getItemsId()).thenReturn(List.of(itemIdDouble1));
-        when(auctionDouble2.getItemsId()).thenReturn(List.of(itemIdDouble2));
-
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(item1, item2));
         when(_iItemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+
+        when(itemDouble.getEditionId()).thenReturn(mock(EditionId.class));
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+
+        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(publicationDouble.isByGenreId(genreIdDouble1)).thenReturn(true);
+
+        when(publicationDouble.isByGenreId(genreId)).thenReturn(true);
+
+        when(_iAuctionRepoDouble.findByItemsIdSorted(List.of(item1, item2)))
+                .thenReturn(List.of(item1, item2));
 
         // Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreIdDouble1);
+        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
         assertEquals(2, result.size());
     }
 
     @Test
-    void shouldThrowsExceptionWhenItemNotFound() {
-        // Arrange
-        Auction auctionDouble = mock(Auction.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
+    void shouldThrowExceptionWhenEditionNotFound() {
 
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble));
-        when(auctionDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreIdDouble1));
-    }
-
-    @Test
-    void shouldThrowsExceptionWhenEditionNotFound() {
-        // Arrange
-        Auction auctionDouble = mock(Auction.class);
+        GenreId genreId = mock(GenreId.class);
+        ItemId itemId = mock(ItemId.class);
         Item itemDouble = mock(Item.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
 
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble));
-        when(auctionDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
-        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.empty());
+        EditionId editionId = mock(EditionId.class);
 
-        // Act & Assert
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(itemId));
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(itemDouble));
+
+        when(itemDouble.getEditionId()).thenReturn(editionId);
+        when(_iEditionRepoDouble.ofIdentity(editionId)).thenReturn(Optional.empty());
+
         assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreIdDouble1));
+                () -> controller.getAuctionItemsByGenreId(genreId));
+
+        verify(_iAuctionRepoDouble, never()).findByItemsIdSorted(any());
     }
 
     @Test
-    void shouldThrowsExceptionWhenPublicationNotFound() {
-        // Arrange
-        Auction auctionDouble = mock(Auction.class);
+    void shouldThrowExceptionWhenPublicationNotFound() {
+
+        GenreId genreId = mock(GenreId.class);
+
+        ItemId itemId = mock(ItemId.class);
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
 
-        ItemId itemIdDouble = mock(ItemId.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        GenreId genreIdDouble1 = mock(GenreId.class);
+        EditionId editionId = mock(EditionId.class);
+        PublicationId publicationId = mock(PublicationId.class);
 
-        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(auctionDouble));
-        when(auctionDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
-        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
-        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble)).thenReturn(Optional.empty());
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(itemId));
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(itemDouble));
+
+        when(itemDouble.getEditionId()).thenReturn(editionId);
+        when(_iEditionRepoDouble.ofIdentity(editionId)).thenReturn(Optional.of(editionDouble));
+
+        when(editionDouble.getPublicationId()).thenReturn(publicationId);
+        when(_iPublicationRepoDouble.ofIdentity(publicationId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreIdDouble1));
+                () -> controller.getAuctionItemsByGenreId(genreId));
     }
+
+    @Test
+    void shouldThrowExceptionWhenItemNotFound() {
+
+        GenreId genreId = mock(GenreId.class);
+        ItemId itemId = mock(ItemId.class);
+
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(itemId));
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class,
+                () -> controller.getAuctionItemsByGenreId(genreId));
+    }
+
+    @Test
+    void shouldCallAuctionRepoWithFilteredItemIds() {
+
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(item1, item2));
+
+        when(_iItemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(itemDouble.getEditionId()).thenReturn(mock(EditionId.class));
+
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
+
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(publicationDouble.isByGenreId(genreId)).thenReturn(true);
+
+        when(_iAuctionRepoDouble.findByItemsIdSorted(List.of(item1, item2)))
+                .thenReturn(List.of(item1, item2));
+
+        // Act
+        controller.getAuctionItemsByGenreId(genreId);
+
+        // Assert
+        verify(_iAuctionRepoDouble).findByItemsIdSorted(List.of(item1, item2));
+        verify(_iAuctionRepoDouble, never()).findAll();
+    }
+
+    @Test
+    void shouldReturnEmptyListAndNotCallAuctionRepoWhenNoItemsMatchGenre() {
+
+        GenreId genreId = mock(GenreId.class);
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+
+        when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(item1, item2));
+
+        when(_iItemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(itemDouble.getEditionId()).thenReturn(mock(EditionId.class));
+
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
+
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(publicationDouble.isByGenreId(genreId)).thenReturn(false);
+
+        // Act
+        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
 }
