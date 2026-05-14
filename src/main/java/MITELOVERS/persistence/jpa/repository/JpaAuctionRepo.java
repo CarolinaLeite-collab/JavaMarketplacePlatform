@@ -3,6 +3,7 @@ package MITELOVERS.persistence.jpa.repository;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.AuctionAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AuctionDataModel;
 import MITELOVERS.persistence.springdata.IAuctionSpringDataRepo;
@@ -17,13 +18,24 @@ import java.util.Optional;
 
 @Repository
 @Profile("jpa")
+@AllArgsConstructor
 public class JpaAuctionRepo implements IAuctionRepo{
 
-    @Autowired
     private IAuctionSpringDataRepo springDataRepo;
-
-    @Autowired
     private AuctionAssembler assembler;
+
+    @Override
+    public List<ItemId> findByItemsIdSorted(List<ItemId> itemIds) {
+
+        List<String> ids = itemIds.stream()
+                .map(ItemId::toString)
+                .toList();
+
+        return springDataRepo.findAllByItemsIdOrderByAuctionEndDateAsc(ids).stream()
+                .map(assembler::toDomain)
+                .flatMap(a -> a.getItemsId().stream().filter(itemIds::contains))
+                .toList();
+    }
 
     @Override
     public Auction save(Auction auction){
@@ -63,7 +75,5 @@ public class JpaAuctionRepo implements IAuctionRepo{
     public boolean containsOfIdentity(AuctionId auctionId) {
         return springDataRepo.existsById(auctionId.toString());
     }
-
-
 
 }

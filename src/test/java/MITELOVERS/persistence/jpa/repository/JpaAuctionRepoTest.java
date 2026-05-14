@@ -2,6 +2,7 @@ package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.AuctionAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AuctionDataModel;
 import MITELOVERS.persistence.springdata.IAuctionSpringDataRepo;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,16 +32,11 @@ class JpaAuctionRepoTest {
     private JpaAuctionRepo jpaAuctionRepo;
 
     @Test
-    void testConstructor() {
-        assertDoesNotThrow(() -> new JpaAuctionRepo());
-    }
-
-    @Test
     void testSaveReturnAuction() {
         //Arrange
-        Auction auctionDouble = org.mockito.Mockito.mock(Auction.class);
-        AuctionDataModel dmDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
-        AuctionDataModel savedDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
+        Auction auctionDouble = mock(Auction.class);
+        AuctionDataModel dmDouble = mock(AuctionDataModel.class);
+        AuctionDataModel savedDouble = mock(AuctionDataModel.class);
 
         when(assemblerDouble.toDataModel(auctionDouble)).thenReturn(dmDouble);
         when(springDataRepo.save(dmDouble)).thenReturn(savedDouble);
@@ -56,12 +53,12 @@ class JpaAuctionRepoTest {
     @Test
     void testFindAllReturnIterableOfAuctions() {
 
-        AuctionDataModel dm1Double = org.mockito.Mockito.mock(AuctionDataModel.class);
-        AuctionDataModel dm2Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        AuctionDataModel dm1Double = mock(AuctionDataModel.class);
+        AuctionDataModel dm2Double = mock(AuctionDataModel.class);
         List<AuctionDataModel> dmList = List.of(dm1Double, dm2Double);
 
-        Auction auction1Double = org.mockito.Mockito.mock(Auction.class);
-        Auction auction2Double = org.mockito.Mockito.mock(Auction.class);
+        Auction auction1Double = mock(Auction.class);
+        Auction auction2Double = mock(Auction.class);
         List<Auction> auctionList = List.of(auction1Double, auction2Double);
 
         when(springDataRepo.findAll()).thenReturn(dmList);
@@ -77,8 +74,8 @@ class JpaAuctionRepoTest {
     @Test
     void testFindAllKeysReturnIds() {
 
-        AuctionDataModel dm1Double = org.mockito.Mockito.mock(AuctionDataModel.class);
-        AuctionDataModel dm2Double = org.mockito.Mockito.mock(AuctionDataModel.class);
+        AuctionDataModel dm1Double = mock(AuctionDataModel.class);
+        AuctionDataModel dm2Double = mock(AuctionDataModel.class);
         List<AuctionDataModel> dmList = List.of(dm1Double, dm2Double);
 
         when(dm1Double.getAuctionId()).thenReturn("AU-1234ABCD");
@@ -96,9 +93,9 @@ class JpaAuctionRepoTest {
     @Test
     void testOfIdentityReturnsAuction() {
         //Arrange
-        AuctionId auctionIdDouble = org.mockito.Mockito.mock(AuctionId.class);
-        AuctionDataModel dmDouble = org.mockito.Mockito.mock(AuctionDataModel.class);
-        Auction auctionDouble = org.mockito.Mockito.mock(Auction.class);
+        AuctionId auctionIdDouble = mock(AuctionId.class);
+        AuctionDataModel dmDouble = mock(AuctionDataModel.class);
+        Auction auctionDouble = mock(Auction.class);
 
         when(auctionIdDouble.toString()).thenReturn("AU-1234ABCD");
         when(springDataRepo.findById("AU-1234ABCD")).thenReturn(Optional.of(dmDouble));
@@ -115,7 +112,7 @@ class JpaAuctionRepoTest {
     @Test
     void testContainsOfIdentityReturnsTrueWhenAuctionExists() {
         //Arrange
-        AuctionId auctionIdDouble = org.mockito.Mockito.mock(AuctionId.class);
+        AuctionId auctionIdDouble = mock(AuctionId.class);
 
         when(auctionIdDouble.toString()).thenReturn("AU-1234ABCD");
         when(springDataRepo.existsById("AU-1234ABCD")).thenReturn(true);
@@ -126,4 +123,42 @@ class JpaAuctionRepoTest {
         //Assert
         assertTrue(result);
     }
+
+    @Test
+    void findByItemsIdSortedShouldDelegateToSpringRepo() {
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
+        when(item1.toString()).thenReturn("i1");
+        when(item2.toString()).thenReturn("i2");
+
+        AuctionDataModel dm = mock(AuctionDataModel.class);
+        Auction auction = mock(Auction.class);
+
+        when(springDataRepo.findAllByItemsIdOrderByAuctionEndDateAsc(List.of("i1", "i2")))
+                .thenReturn(List.of(dm));
+
+        when(assemblerDouble.toDomain(dm)).thenReturn(auction);
+        when(auction.getItemsId()).thenReturn(List.of(item1, item2));
+
+        List<ItemId> result = jpaAuctionRepo.findByItemsIdSorted(List.of(item1, item2));
+
+        assertEquals(List.of(item1, item2), result);
+    }
+
+    @Test
+    void findByItemsIdSortedShouldReturnEmptyListWhenNoAuctionsMatch() {
+
+        ItemId item1 = mock(ItemId.class);
+        when(item1.toString()).thenReturn("i1");
+
+        when(springDataRepo.findAllByItemsIdOrderByAuctionEndDateAsc(List.of("i1")))
+                .thenReturn(List.of());
+
+        List<ItemId> result = jpaAuctionRepo.findByItemsIdSorted(List.of(item1));
+
+        assertTrue(result.isEmpty());
+    }
+
 }
