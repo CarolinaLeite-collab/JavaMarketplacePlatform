@@ -16,9 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -115,7 +112,7 @@ class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
         when(_directSaleDouble.getItemsId()).thenReturn(List.of(_itemIdDouble));
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.of(_itemDouble));
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_editionDouble));
-        when(_editionDouble.getPublishingCompanyId()).thenReturn(_publishingCompanyIdDouble);
+        when(_editionDouble.isByPublishingCompanyId(_publishingCompanyIdDouble)).thenReturn(false);
 
         // Act
         List<ItemId> result = _controller.getDirectSaleItemsByPublishingCompany(_publishingCompanyIdDouble);
