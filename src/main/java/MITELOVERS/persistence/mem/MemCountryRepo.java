@@ -3,6 +3,8 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -12,6 +14,8 @@ import java.util.*;
  * This repository is strictly responsible for persistence concerns.
  * </p>
  */
+@Repository
+@Profile("mem")
 public class MemCountryRepo implements ICountryRepo {
     private final Map<CountryId, Country> DATA = new HashMap<>();
 
