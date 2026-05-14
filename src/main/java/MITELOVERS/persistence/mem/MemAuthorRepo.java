@@ -3,7 +3,6 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
-import MITELOVERS.persistence.springdata.IAuthorSpringDataRepo;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -75,6 +74,8 @@ public class MemAuthorRepo implements IAuthorRepo {
 
     @Override
     public AuthorId findByName(String name) {
-        return null;
+
+        throw new UnsupportedOperationException();
+
     }
 }
