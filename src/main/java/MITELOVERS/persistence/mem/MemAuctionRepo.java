@@ -3,6 +3,8 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.valueobject.AuctionId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -15,6 +17,8 @@ import java.util.*;
  * </p>
  */
 
+@Repository
+@Profile("mem")
 public class MemAuctionRepo implements IAuctionRepo {
 
     private final Map<AuctionId, Auction> DATA = new HashMap<>();

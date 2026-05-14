@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -299,4 +300,68 @@ class LibraryTest {
 
         assertFalse(result);
     }
+
+    // ----------------------
+    // Tests for rehydration
+    // ----------------------
+
+    @Test
+    void rehydrationConstructorShouldCreateLibraryWhenArgumentsAreValid() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        List<ItemId> items = List.of(itemIdDouble);
+
+        // Act
+        Library sut = new Library(libraryIdDouble, items);
+
+        // Assert
+        assertNotNull(sut);
+    }
+
+    @Test
+    void rehydrationConstructorShouldThrowWhenLibraryIdIsNull() {
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+        List<ItemId> items = List.of(itemIdDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new Library(null, items));
+    }
+
+    @Test
+    void rehydrationConstructorShouldThrowWhenItemListContainsNull() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        List<ItemId> items = Arrays.asList(mock(ItemId.class), null);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new Library(libraryIdDouble, items));
+    }
+
+    @Test
+    void rehydrationConstructorShouldThrowWhenItemListContainsDuplicates() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        List<ItemId> items = List.of(itemIdDouble, itemIdDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> new Library(libraryIdDouble, items));
+    }
+
+    @Test
+    void rehydrationConstructorShouldStoreItems() {
+        // Arrange
+        LibraryId libraryIdDouble = mock(LibraryId.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        List<ItemId> items = List.of(itemIdDouble);
+
+        // Act
+        Library sut = new Library(libraryIdDouble, items);
+
+        // Assert
+        assertEquals(1, sut.getItemsIdInLibrary().size());
+    }
+
 }

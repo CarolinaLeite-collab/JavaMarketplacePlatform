@@ -10,16 +10,63 @@ public class PublishingCompanyTest {
     @Test
     void constructorShouldBuildPublishingCompanyFromString() {
 
-        //Arrange + Act
-        new PublishingCompany("Penguin Random House");
+        // Arrange
+        String name = "Penguin Random House";
+
+        //Act
+        PublishingCompany publishingCompany = new PublishingCompany(name);
+
+        // Assert
+        assertNotNull(publishingCompany);
     }
 
     @Test
-    void identityShouldReturnUnderlyingId() {
+    void constructorShouldThrowExceptionWhenNameIsNull() {
+        // Arrange
+        String name = null;
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublishingCompany(name));
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenNameIsBlank() {
+        // Arrange
+        String name = "   ";
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublishingCompany(name));
+    }
+
+    @Test
+    void constructorShouldThrowExceptionWhenNameHasInvalidCharacters() {
+        // Arrange
+        String name = "Porto Editora 123";
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new PublishingCompany(name));
+    }
+
+    @Test
+    void constructorShouldReconstructPublishingCompanyFromId() {
+        // Arrange
+        PublishingCompanyId publishingCompanyId = new PublishingCompanyId("Test Company");
+
+        // Act
+        PublishingCompany publishingCompany = new PublishingCompany(publishingCompanyId);
+
+        // Assert
+        assertEquals(publishingCompanyId, publishingCompany.identity());
+    }
+
+    @Test
+    void identityShouldReturnPublishingCompanyId() {
 
         //Arrange
-        String pubType = "Pendant Publishing";
-        PublishingCompany publishingCompany = new PublishingCompany(pubType);
+        PublishingCompany publishingCompany = new PublishingCompany("Pendant Publishing");
 
         // Act
         PublishingCompanyId pubCoId = publishingCompany.identity();
@@ -36,9 +83,11 @@ public class PublishingCompanyTest {
         PublishingCompany pubCo = new PublishingCompany("Porto Editora");
         PublishingCompany pubCo2 = new PublishingCompany("PORTO EDITORA");
 
-        //Act + Assert
-        assertTrue(pubCo.sameAs(pubCo2));
+        // Act
+        boolean result = pubCo.sameAs(pubCo2);
 
+        // Assert
+        assertTrue(result);
     }
 
     @Test
@@ -48,9 +97,11 @@ public class PublishingCompanyTest {
         PublishingCompany pubCo = new PublishingCompany("Porto Editora");
         PublishingCompany pubCo2 = new PublishingCompany("PORTUGAL EDITORA");
 
-        //Act + Assert
-        assertFalse(pubCo.sameAs(pubCo2));
+        // Act
+        boolean result = pubCo.sameAs(pubCo2);
 
+        // Assert
+        assertFalse(result);
     }
 
     @Test

@@ -1,18 +1,28 @@
 package MITELOVERS.domain.publishingcompany;
 
+import MITELOVERS.domain.valueobject.PublishingCompanyId;
+import org.springframework.stereotype.Component;
+
 /**
  * Factory responsible for creating {@link PublishingCompany} instances.
  * <p>
- * IllegalArgumentException is thrown if publishingCompanyName is invalid (as defined by {@link MITELOVERS.domain.valueobject.PublishingCompanyId}'s constructor)
+ * IllegalArgumentException is thrown if publishingCompanyName is invalid
+ * (as defined by {@link MITELOVERS.domain.valueobject.PublishingCompanyId}'s constructor)
  * </p>
  */
 
+@Component
 public class PublishingCompanyFactory {
 
     public PublishingCompany createPublishingCompany(String publishingCompanyName) {
 
         return new PublishingCompany(publishingCompanyName);
 
+    }
+
+    public PublishingCompany createPublishingCompany( PublishingCompanyId publishingCompanyId ) {
+
+        return new PublishingCompany(publishingCompanyId);
     }
 
 }

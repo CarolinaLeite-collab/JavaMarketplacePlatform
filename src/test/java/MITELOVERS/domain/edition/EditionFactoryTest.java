@@ -12,8 +12,10 @@ import static org.mockito.Mockito.when;
 
 class EditionFactoryTest {
 
-    private PublicationTypeId _bookTypeId;
-    private Identifier _bookIdentifier;
+    private EditionId _editionIdDouble;
+
+    private PublicationTypeId _bookTypeIdDouble;
+    private Identifier _bookIdentifierDouble;
 
     private PublicationId _publicationIdDouble;
     private PublishingCompanyId _companyIdDouble;
@@ -30,10 +32,12 @@ class EditionFactoryTest {
 
     @BeforeEach
     void setUp() {
-        _bookTypeId = mock(PublicationTypeId.class);
-        when(_bookTypeId.isBook()).thenReturn(true);
+        _editionIdDouble = mock(EditionId.class);
 
-        _bookIdentifier = mock(ISBN.class);
+        _bookTypeIdDouble = mock(PublicationTypeId.class);
+        when(_bookTypeIdDouble.isBook()).thenReturn(true);
+
+        _bookIdentifierDouble = mock(ISBN.class);
 
         _publicationIdDouble = mock(PublicationId.class);
         _companyIdDouble = mock(PublishingCompanyId.class);
@@ -49,7 +53,7 @@ class EditionFactoryTest {
     }
 
     @Test
-    void shouldCreateEditionWithGivenMandatoryArguments() {
+    void shouldCreateEditionWithEditionId() {
 
         //Arrange
         EditionFactory factory = new EditionFactory();
@@ -57,8 +61,9 @@ class EditionFactoryTest {
         //Act
         //SUT
         Edition result = factory.createEdition(
-                _bookTypeId,
-                _bookIdentifier,
+                _editionIdDouble,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _companyIdDouble,
                 _publishingYear,
@@ -68,8 +73,42 @@ class EditionFactoryTest {
 
         //Assert
         assertNotNull(result);
-        assertSame(_bookTypeId, result.getPublicationTypeId());
-        assertSame(_bookIdentifier, result.getIdentifier());
+        assertSame(_editionIdDouble, result.getEditionId());
+        assertSame(_bookTypeIdDouble, result.getPublicationTypeId());
+        assertSame(_bookIdentifierDouble, result.getIdentifier());
+        assertSame(_publicationIdDouble, result.getPublicationId());
+        assertSame(_companyIdDouble, result.getPublishingCompanyId());
+        assertEquals(_publishingYear, result.getPublishingYear());
+        assertSame(_languageDouble, result.getEditionLanguage());
+        assertNull(result.getDimension());
+        assertNull(result.getWeight());
+        assertNull(result.getNumberOfPages());
+        assertNull(result.getEditionNumber());
+        assertNull(result.getBinding());
+    }
+
+    @Test
+    void shouldCreateEditionWithGivenMandatoryArguments() {
+
+        //Arrange
+        EditionFactory factory = new EditionFactory();
+
+        //Act
+        //SUT
+        Edition result = factory.createEdition(
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
+                _publicationIdDouble,
+                _companyIdDouble,
+                _publishingYear,
+                _languageDouble,
+                null, null, null, null, null
+        );
+
+        //Assert
+        assertNotNull(result);
+        assertSame(_bookTypeIdDouble, result.getPublicationTypeId());
+        assertSame(_bookIdentifierDouble, result.getIdentifier());
         assertSame(_publicationIdDouble, result.getPublicationId());
         assertSame(_companyIdDouble, result.getPublishingCompanyId());
         assertEquals(_publishingYear, result.getPublishingYear());
@@ -88,8 +127,8 @@ class EditionFactoryTest {
 
         //Act
         Edition result = factory.createEdition(
-                _bookTypeId,
-                _bookIdentifier,
+                _bookTypeIdDouble,
+                _bookIdentifierDouble,
                 _publicationIdDouble,
                 _companyIdDouble,
                 _publishingYear,

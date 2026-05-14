@@ -1,8 +1,9 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
-
+@Converter(autoApply=true)
 public class PriceConverter implements AttributeConverter<PriceDataModel,String> {
 
     private static final String separator = "_";

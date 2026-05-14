@@ -21,17 +21,22 @@ public class PublishingCompanyId implements DomainId {
     private final String _id;
 
     public PublishingCompanyId(String publishingCompanyName) {
+
         if (publishingCompanyName == null || publishingCompanyName.isBlank()) {
-            throw new IllegalArgumentException("PublishingCompanyId cannot be null, blank, or empty");
+            throw new IllegalArgumentException(
+                    "PublishingCompanyId cannot be null, blank, or empty");
         }
-        _id = publishingCompanyName.trim().replaceAll("\\s+", " ").toUpperCase();
+
+        _id = publishingCompanyName.toUpperCase();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PublishingCompanyId)) return false;
+
         PublishingCompanyId pubCoId = (PublishingCompanyId) o;
+
         return _id.equals(pubCoId._id);
     }
 

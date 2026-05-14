@@ -89,7 +89,7 @@ class SKUTest {
                 () -> new SKU(invalidValue)
         );
 
-        assertEquals("SKU must match format ^[A-F0-9]{10}$.", exception.getMessage());
+        assertEquals("Invalid SKU format: invalid!", exception.getMessage());
     }
 
     @Test
@@ -195,48 +195,29 @@ class SKUTest {
         assertEquals(firstHash, secondHash);
     }
 
-    @Test
-    void constructorWithStringShouldCreateSKUSuccessfully() {
-        // Arrange
-        String validSku = "ABCDEF1234";
-
-        // SUT & Act
-        SKU sut = new SKU(validSku);
-
-        // Assert
-        assertNotNull(sut);
-        assertEquals(validSku, sut.getValue());
-    }
+    //--------------------------------------
+    // Tests for the rehydration constructor
+    //--------------------------------------
 
     @Test
-    void constructorWithStringShouldThrowWhenNull() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new SKU(null));
-    }
-
-    @Test
-    void constructorWithStringShouldThrowWhenInvalidFormat() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new SKU("INVALID!!!"));
-    }
-
-    @Test
-    void constructorWithStringShouldThrowWhenTooShort() {
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new SKU("ABC123"));
-    }
-
-    @Test
-    void skuCreatedFromStringShouldEqualSkuWithSameValue() {
-        // Arrange
+    void rehydrationConstructorShouldStoreGivenValue() {
         String value = "ABCDEF1234";
+        SKU sut = new SKU(value);
+        assertEquals(value, sut.getValue());
+    }
 
-        // SUT
-        SKU sku1 = new SKU(value);
-        SKU sku2 = new SKU(value);
+    @Test
+    void rehydrationConstructorShouldRejectInvalidFormat() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new SKU(invalid));
+    }
 
-        // Assert
-        assertEquals(sku1, sku2);
+    @Test
+    void rehydratedSKUShouldBeEqualToOriginalValue() {
+        String value = "A1B2C3D4E5";
+        SKU sut = new SKU(value);
+        SKU other = new SKU(value);
+        assertEquals(sut, other);
     }
 
 }

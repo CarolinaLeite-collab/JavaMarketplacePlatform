@@ -192,4 +192,51 @@ public class WeightTest {
         assertNotEquals(fiveKg, other);
         assertNotEquals(fiveKg.hashCode(), other.hashCode());
     }
+
+    @Test
+    void fromAbbreviationShouldReturnGramUnitWhenAbbreviationIsG() {
+        // Act
+        Weight.WeightUnit result = Weight.WeightUnit.fromAbbreviation("g");
+
+        // Assert
+        assertEquals(Weight.WeightUnit.GRAMS, result);
+    }
+
+    @Test
+    void fromAbbreviationShouldReturnKilogramUnitWhenAbbreviationIsKg() {
+        // Act
+        Weight.WeightUnit result = Weight.WeightUnit.fromAbbreviation("kg");
+
+        // Assert
+        assertEquals(Weight.WeightUnit.KILOGRAMS, result);
+    }
+
+    @Test
+    void fromAbbreviationShouldIgnoreCase() {
+        // Act
+        Weight.WeightUnit result = Weight.WeightUnit.fromAbbreviation("KG");
+
+        // Assert
+        assertEquals(Weight.WeightUnit.KILOGRAMS, result);
+    }
+
+    @Test
+    void fromAbbreviationShouldIgnoreLeadingAndTrailingSpaces() {
+        // Act
+        Weight.WeightUnit result = Weight.WeightUnit.fromAbbreviation("  g  ");
+
+        // Assert
+        assertEquals(Weight.WeightUnit.GRAMS, result);
+    }
+
+    @Test
+    void fromAbbreviationShouldThrowExceptionWhenAbbreviationIsUnknown() {
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> Weight.WeightUnit.fromAbbreviation("xx")
+        );
+
+        assertEquals("Unknown weight unit: xx", exception.getMessage());
+    }
 }

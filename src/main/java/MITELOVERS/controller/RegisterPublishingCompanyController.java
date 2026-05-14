@@ -3,6 +3,7 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
+import org.springframework.stereotype.Component;
 
 /**
  * Controller responsible for handling the registration of a new {@link PublishingCompany}.
@@ -11,6 +12,7 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
  * Validates uniqueness.
  */
 
+@Component
 public class RegisterPublishingCompanyController {
 
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;

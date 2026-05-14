@@ -64,39 +64,51 @@ class DimensionTest {
     }
 
     @Test
-    void get_WidthShouldReturnValuePassedInConstructor() {
+    void getWidthShouldReturnValuePassedInConstructor() {
         // Arrange
         Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
 
         // Act
-        double result = dimension.get_width();
+        double result = dimension.getWidth();
 
         // Assert
         assertEquals(10, result);
     }
 
     @Test
-    void get_HeightShouldReturnValuePassedInConstructor() {
+    void getHeightShouldReturnValuePassedInConstructor() {
         // Arrange
         Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
 
         // Act
-        double result = dimension.get_height();
+        double result = dimension.getHeight();
 
         // Assert
         assertEquals(20, result);
     }
 
     @Test
-    void get_ThicknessShouldReturnValuePassedInConstructor() {
+    void getThicknessShouldReturnValuePassedInConstructor() {
         // Arrange
         Dimension dimension = new Dimension(10, 20, 5, DimensionUnit.CENTIMETERS);
 
         // Act
-        double result = dimension.get_thickness();
+        double result = dimension.getThickness();
 
         // Assert
         assertEquals(5, result);
+    }
+
+    @Test
+    void getDimensionUnitShouldReturnValuePassedInConstructor() {
+        // Arrange
+        Dimension dimension = new Dimension(10, 20, 2, DimensionUnit.CENTIMETERS);
+
+        // Act
+        DimensionUnit result = dimension.getUnit();
+
+        // Assert
+        assertEquals(DimensionUnit.CENTIMETERS, result);
     }
 
     @Test
