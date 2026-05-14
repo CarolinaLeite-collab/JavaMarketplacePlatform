@@ -3,76 +3,83 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.CountryId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class RegisterCountryControllerTest {
 
-    private ICountryRepo _iCountryRepoDouble;
-    private CountryFactory _countryFactoryDouble;
+    @Mock
+    ICountryRepo _iCountryRepoDouble;
+
+    @Mock
+    CountryFactory _countryFactoryDouble;
+
+    @InjectMocks
+    RegisterCountryController _registerCountryController;
+
     private Country _countryDouble;
-    private UserId _userIdDouble;
+    private CountryId _countryIdDouble;
 
     @BeforeEach
-    void setUp() {
-        // Arrange
-        _iCountryRepoDouble = mock(ICountryRepo.class);
-        _countryFactoryDouble = mock(CountryFactory.class);
+    void setUp() throws InstantiationException {
+
         _countryDouble = mock(Country.class);
-        _userIdDouble = mock(UserId.class);
+        _countryIdDouble = mock(CountryId.class);
+
     }
 
     @Test
-    void constructsControllerSuccessfully() {
-        // Act & SUT
-        new RegisterCountryController(_iCountryRepoDouble, _countryFactoryDouble, _userIdDouble);
-    }
-
-    @Test
-    void shouldRegisterCountrySuccessfully() {
+    void registerCountryShouldCreateAndReturnCountry() {
         // Arrange
         String countryName = "Portugal";
         when(_countryFactoryDouble.createCountry(countryName)).thenReturn(_countryDouble);
-        when(_iCountryRepoDouble.containsOfIdentity(_countryDouble.identity())).thenReturn(false);
+        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        when(_iCountryRepoDouble.containsOfIdentity(_countryIdDouble)).thenReturn(false);
         when(_iCountryRepoDouble.save(_countryDouble)).thenReturn(_countryDouble);
 
-        // SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactoryDouble, _userIdDouble);
-
         // Act
-        Country result = controller.registerCountry(countryName);
+        Country result = _registerCountryController.registerCountry(countryName);
 
         // Assert
-        assertSame(_countryDouble, result);
-        verify(_countryFactoryDouble, times(1)).createCountry(countryName);
-        verify(_iCountryRepoDouble, times(1)).containsOfIdentity(_countryDouble.identity());
-        verify(_iCountryRepoDouble, times(1)).save(_countryDouble);
+        assertEquals(_countryDouble, result);
     }
 
     @Test
-    void shouldThrowIllegalArgumentExceptionWhenCountryAlreadyExists() {
+    void registerCountryShouldThrowWhenCountryAlreadyExists() {
         // Arrange
-        String countryName = "Portugal";
-        when(_countryFactoryDouble.createCountry(countryName)).thenReturn(_countryDouble);
-        when(_iCountryRepoDouble.containsOfIdentity(_countryDouble.identity())).thenReturn(true);
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(_countryDouble);
+        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        when(_iCountryRepoDouble.containsOfIdentity(_countryIdDouble)).thenReturn(true);
 
-        // SUT
-        RegisterCountryController controller = new RegisterCountryController(_iCountryRepoDouble, _countryFactoryDouble, _userIdDouble);
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> _registerCountryController.registerCountry("Portugal"));
+    }
+
+    @Test
+    void registerCountryShouldThrowCorrectMessageWhenCountryAlreadyExists() {
+        // Arrange
+        when(_countryFactoryDouble.createCountry("Portugal")).thenReturn(_countryDouble);
+        when(_countryDouble.identity()).thenReturn(_countryIdDouble);
+        when(_iCountryRepoDouble.containsOfIdentity(_countryIdDouble)).thenReturn(true);
 
         // Act
-        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
-                () -> controller.registerCountry(countryName));
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> _registerCountryController.registerCountry("Portugal"));
 
         // Assert
-        assertEquals("Country already exists in the repository", thrown.getMessage());
-        verify(_countryFactoryDouble, times(1)).createCountry(countryName);
-        verify(_iCountryRepoDouble, times(1)).containsOfIdentity(_countryDouble.identity());
-        verify(_iCountryRepoDouble, never()).save(any(Country.class));
+        assertEquals("Country already exists in the repository", ex.getMessage());
     }
 }

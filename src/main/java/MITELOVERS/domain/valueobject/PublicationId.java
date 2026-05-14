@@ -31,6 +31,18 @@ public class PublicationId implements DomainId {
        _releaseYear =  Objects.requireNonNull(releaseYear, "Release year is required");
     }
 
+    public Title getTitle() {
+        return _title;
+    }
+
+    public AuthorId getAuthorId() {
+        return _authorId;
+    }
+
+    public Year getReleaseYear() {
+        return _releaseYear;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

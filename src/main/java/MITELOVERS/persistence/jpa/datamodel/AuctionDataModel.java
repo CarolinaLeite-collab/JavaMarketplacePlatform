@@ -1,0 +1,56 @@
+package MITELOVERS.persistence.jpa.datamodel;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.List;
+
+@Entity
+@Generated
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Table(name = "auctions")
+public class AuctionDataModel {
+
+    @Id
+    @Column(name = "id", nullable = false,  unique = true)
+    private String auctionId;
+
+    @ElementCollection
+    @CollectionTable(name = "auction_items", joinColumns = @JoinColumn(name = "auction_id"))
+    @Column(name = "items_id",  nullable = false)
+    private List<String> itemsId;
+
+    @Convert(converter = PriceConverter.class)
+    @Column(name = "starting_price", nullable = false)
+    private PriceDataModel startingPrice;
+
+    @Convert(converter = PriceConverter.class)
+    @Column(name = "reserve_price", nullable = false)
+    private PriceDataModel reservePrice;
+
+    @Convert(converter = PriceConverter.class)
+    @Column(name = "outright_price",  nullable = false)
+    private PriceDataModel outrightPrice;
+
+    @Column(name = "start_date", nullable = false)
+    private Instant auctionStartDate;
+
+    @Column(name = "end_date", nullable = false)
+    private Instant auctionEndDate;
+
+    @Column(name = "user_id", nullable = false)
+    private String userId;
+
+    @Convert(converter = PriceConverter.class)
+    @Column(name = "final_price")
+    private PriceDataModel finalPrice;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auction_id")
+    private List<BidDataModel> bids;
+
+}

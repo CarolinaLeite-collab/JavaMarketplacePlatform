@@ -12,10 +12,10 @@ class PublishingCompanyIdTest {
         String name = "Penguin Random House";
 
         // Act
-        PublishingCompanyId publicationTypeId = new PublishingCompanyId(name);
+        PublishingCompanyId publishingCompanyId = new PublishingCompanyId(name);
 
         // Assert
-        assertNotNull(publicationTypeId);
+        assertNotNull(publishingCompanyId);
     }
 
     @Test
@@ -28,7 +28,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
+        assertEquals("PublishingCompanyId cannot be null, blank, or empty", exception.getMessage());
     }
 
     @Test
@@ -41,7 +41,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
+        assertEquals("PublishingCompanyId cannot be null, blank, or empty", exception.getMessage());
     }
 
     @Test
@@ -54,7 +54,7 @@ class PublishingCompanyIdTest {
                 new PublishingCompanyId(name));
 
         // Assert
-        assertEquals(exception.getMessage(), "PublishingCompanyId cannot be null, blank, or empty");
+        assertEquals("PublishingCompanyId cannot be null, blank, or empty", exception.getMessage());
     }
 
     @Test
@@ -121,7 +121,7 @@ class PublishingCompanyIdTest {
     @Test
     void toStringReturnsNormalisedName() {
         // Arrange
-        String name = " PEnguIN RANdom    houSE   ";
+        String name = "penguin random house";
 
         // Act
         PublishingCompanyId publishingCompanyId = new PublishingCompanyId(name);
@@ -133,7 +133,19 @@ class PublishingCompanyIdTest {
     @Test
     void equalsDifferentTypeReturnsFalse() {
         PublishingCompanyId id = new PublishingCompanyId("Penguin");
-        assertNotEquals(id, "Penguin");
+        assertNotEquals("Penguin", id);
+    }
+
+    @Test
+    void constructorNameWithExtraSpacesReturnsSanitizedName() {
+        // Arrange
+        String name = " PEnguIN RANdom    houSE   ";
+
+        // Act
+        Name result = new Name(name);
+
+        // Assert
+        assertEquals("Penguin Random House", result.toString());
     }
 
 }

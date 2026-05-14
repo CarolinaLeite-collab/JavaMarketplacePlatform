@@ -11,6 +11,7 @@ import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetAuctionItemsByPublishingCompanyController {
 
     private final IAuctionRepo _iAuctionRepo;
@@ -30,7 +32,10 @@ public class GetAuctionItemsByPublishingCompanyController {
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
     private final IEditionRepo _iEditionRepo;
 
-    public GetAuctionItemsByPublishingCompanyController(IPublishingCompanyRepo pcr, IItemRepo ir, IEditionRepo er, IAuctionRepo auctionRepo, UserId buyerId) {
+    public GetAuctionItemsByPublishingCompanyController(IPublishingCompanyRepo pcr,
+                                                        IItemRepo ir,
+                                                        IEditionRepo er,
+                                                        IAuctionRepo auctionRepo) {
         _iPublishingCompanyRepo = pcr;
         _iItemRepo = ir;
         _iEditionRepo = er;

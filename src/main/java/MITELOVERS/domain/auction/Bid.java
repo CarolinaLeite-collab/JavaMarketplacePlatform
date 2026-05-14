@@ -46,6 +46,16 @@ public class Bid implements DomainEntity<BidId> {
         _bidId = BidId.newId();
     }
 
+    Bid(UserId userId, Price offerPrice, Instant bidDate, BidId bidId) {
+        validateBidder(userId);
+        validateOfferPrice(offerPrice);
+
+        _userId = userId;
+        _offerPrice = offerPrice;
+        _bidDate = Objects.requireNonNull(bidDate, "Bid date cannot be null");
+        _bidId = Objects.requireNonNull(bidId, "BidId cannot be null");
+    }
+
     public UserId getUserId() {
         return _userId;
     }

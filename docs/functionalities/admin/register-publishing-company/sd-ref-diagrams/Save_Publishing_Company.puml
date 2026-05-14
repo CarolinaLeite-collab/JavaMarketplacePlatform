@@ -1,0 +1,83 @@
+@startuml
+title "Save Publishing Company" SD
+
+hide footbox
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+'==== participants ====
+participant ":RegisterPublishing%n()CompanyCtl" as CTL
+participant ":JPAPublishing%n()CompanyRepo" as JPAREPO
+participant ":PublishingCompany%n()Assembler" as ASSMBLR
+participant "newPublishingCompany:%n()PublishingCompany" as PC
+participant ":IPublishingCompany%n()SpringDataRepo" as SDREPO
+participant ":PublishingCompany%n()Factory" as FACTORY
+database "DB" as DB
+
+activate CTL
+
+CTL -> JPAREPO : save(newPublishingCompany)
+activate JPAREPO
+
+JPAREPO -> ASSMBLR : toDataModel(newPublishingCompany)
+activate ASSMBLR
+
+ASSMBLR -> PC : stringId = identity().toString()
+activate PC
+PC --> ASSMBLR : stringId
+deactivate PC
+
+create "dmToSave:%n()PublishingCompanyDataModel"
+ASSMBLR -> "dmToSave:%n()PublishingCompanyDataModel" : <<create>>(stringId)
+ASSMBLR --> JPAREPO : dmToSave
+deactivate ASSMBLR
+
+JPAREPO -> SDREPO : savedDm = save(dmToSave)
+activate SDREPO
+SDREPO -> DB : save string based data
+DB --> SDREPO : saved data
+SDREPO --> JPAREPO : savedDm
+deactivate SDREPO
+
+JPAREPO -> ASSMBLR : toDomain(savedDm)
+activate ASSMBLR
+
+ASSMBLR -> "dmToSave:%n()PublishingCompanyDataModel" : stringId = getPublishingCompanyId()
+activate "dmToSave:%n()PublishingCompanyDataModel"
+"dmToSave:%n()PublishingCompanyDataModel" --> ASSMBLR : stringId
+deactivate "dmToSave:%n()PublishingCompanyDataModel"
+
+create "publishingCompanyId:%n()PublishingCompanyId"
+ASSMBLR -> "publishingCompanyId:%n()PublishingCompanyId" : <<create>>(stringId)
+
+ASSMBLR -> FACTORY : createPublishingCompany(publishingCompanyId)
+activate FACTORY
+
+create "reconstructedPublishingCompany:%n()PublishingCompany"
+FACTORY -->> "reconstructedPublishingCompany:%n()PublishingCompany" : <<create>>(publishingCompanyId)
+FACTORY --> ASSMBLR : reconstructedPublishingCompany
+deactivate FACTORY
+
+ASSMBLR --> JPAREPO : reconstructedPublishingCompany
+deactivate ASSMBLR
+
+JPAREPO --> CTL : reconstructedPublishingCompany
+deactivate JPAREPO
+
+ref over CTL
+[[../Register_Publishing_Company_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml
