@@ -12,6 +12,10 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,24 +29,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@WebMvcTest(GetItemsOnDirectSaleOfAGivenPublishingCompanyController.class)
+@ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class GetItemsOnDirectSaleOfAGivenPublishingCompanyControllerTest {
 
     //SUT
-    @Autowired
+    @InjectMocks
     private GetItemsOnDirectSaleOfAGivenPublishingCompanyController _controller;
 
-    @MockBean
+    @Mock
     private IDirectSaleRepo _iDirectSaleRepoDouble;
 
-    @MockBean
+    @Mock
     private IItemRepo _iItemRepoDouble;
 
-    @MockBean
+    @Mock
     private IEditionRepo _iEditionRepoDouble;
 
-    @MockBean
+    @Mock
     private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
 
     private ItemId _itemIdDouble;
