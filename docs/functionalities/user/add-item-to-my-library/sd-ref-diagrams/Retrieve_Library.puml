@@ -1,0 +1,83 @@
+@startuml
+'==== Title ====
+title "Retrieve Library from Persistence via JPA" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":ILibraryRepo" as IREPO
+participant ":JpaLibraryRepo" as JPAREPO
+participant ":ILibrarySpringDataRepo" as SDREPO
+participant ":LibraryAssembler" as ASB
+participant ":LibraryFactory" as FACTORY
+database "DB" as DB
+
+[-> IREPO : ofIdentity(libraryId)
+activate IREPO
+
+IREPO -> JPAREPO : ofIdentity(libraryId)
+activate JPAREPO
+
+JPAREPO -> SDREPO : findById(libraryId.toString())
+activate SDREPO
+SDREPO -> DB : select
+activate DB
+DB --> SDREPO : result set
+deactivate DB
+
+create "dm:LibraryDataModel"
+SDREPO -->> "dm:LibraryDataModel" : <<create>>
+SDREPO --> JPAREPO : Optional<dm>
+deactivate SDREPO
+
+alt dm present
+    JPAREPO -> ASB : toDomain(dm)
+    activate ASB
+
+    ASB -> "dm:LibraryDataModel" : idStr = getLibraryId()
+    activate "dm:LibraryDataModel"
+    deactivate "dm:LibraryDataModel"
+
+    ASB -> "dm:LibraryDataModel" : itemIdStrs = getItemIds()
+    activate "dm:LibraryDataModel"
+    deactivate "dm:LibraryDataModel"
+
+    create "libId:LibraryId"
+    ASB -->> "libId:LibraryId" : <<create>>(idStr)
+
+    loop for each itemIdStr in itemIdStrs
+        create "itemId:ItemId"
+        ASB -->> "itemId:ItemId" : <<create>>(itemIdStr)
+        ASB -> ASB : itemIds.add(itemId)
+    end loop
+
+    ASB -> FACTORY : createLibrary(libId, itemIds)
+    activate FACTORY
+    create "myLibrary:Library"
+    FACTORY -->> "myLibrary:Library" : <<create>>(libId, itemIds)
+    FACTORY --> ASB : myLibrary
+    deactivate FACTORY
+
+    ASB --> JPAREPO : myLibrary
+    deactivate ASB
+    JPAREPO --> IREPO : Optional.of(myLibrary)
+else dm empty
+    JPAREPO --> IREPO : Optional.empty()
+end
+
+[<-- IREPO : Optional<Library>
+deactivate JPAREPO
+deactivate IREPO
+
+@enduml

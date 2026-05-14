@@ -38,6 +38,60 @@ public class Edition implements AggregateRoot<EditionId> {
     private final EditionNumber _editionNumber;
     private final Binding _binding;
 
+    Edition (EditionId generatedId,
+                          PublicationTypeId typeId,
+                          Identifier identifier,
+                          PublicationId publicationId,
+                          PublishingCompanyId publishingCompanyId,
+                          Year publishingYear,
+                          Language editionLanguage,
+                          Dimension dimension,
+                          Weight weight,
+                          NumberOfPages numberOfPages,
+                          EditionNumber editionNumber,
+                          Binding binding) {
+
+        if (typeId == null)
+            throw new IllegalArgumentException("Publication Type Id is required");
+        _typeId = typeId;
+
+        if (identifier == null)
+            throw new IllegalArgumentException("Identifier is required");
+        _identifier = identifier;
+
+        if (publicationId == null)
+            throw new IllegalArgumentException("Publication Id is required");
+        _publicationId = publicationId;
+
+        if (publishingCompanyId == null)
+            throw new IllegalArgumentException("Publishing Company is required");
+        _publishingCompanyId = publishingCompanyId;
+
+        if (publishingYear == null)
+            throw new IllegalArgumentException("Publishing Year is required");
+        _publishingYear = publishingYear;
+
+        if (editionLanguage == null)
+            throw new IllegalArgumentException("Language is required");
+        _editionLanguage = editionLanguage;
+
+        if (generatedId == null)
+            throw new IllegalArgumentException("EditionId is required");
+        _generatedId = generatedId;
+
+
+        if (!isValidIdentifier(typeId, identifier, publishingYear))
+            throw new IllegalArgumentException("Invalid identifier for given type and year");
+
+
+        _dimension = dimension;
+        _weight = weight;
+        _numberOfPages = numberOfPages;
+        _editionNumber = editionNumber;
+        _binding = binding;
+
+    }
+
     Edition(PublicationTypeId typeId,
             Identifier identifier,
             PublicationId publicationId,
@@ -50,39 +104,19 @@ public class Edition implements AggregateRoot<EditionId> {
             EditionNumber editionNumber,
             Binding binding) {
 
-        if (identifier == null)
-            throw new IllegalArgumentException("Identifier is required");
 
-        if (typeId == null)
-            throw new IllegalArgumentException("Publication Type Id is required");
-
-        if (publicationId == null)
-            throw new IllegalArgumentException("Publication Id is required");
-
-        if (publishingCompanyId == null)
-            throw new IllegalArgumentException("Publishing Company is required");
-
-        if (publishingYear == null)
-            throw new IllegalArgumentException("Publishing Year is required");
-
-        if (editionLanguage == null)
-            throw new IllegalArgumentException("Language is required");
-
-        if (!isValidIdentifier(typeId, identifier, publishingYear))
-            throw new IllegalArgumentException("Invalid identifier for given type and year");
-
-        _typeId = typeId;
-        _identifier = identifier;
-        _publicationId = publicationId;
-        _publishingCompanyId = publishingCompanyId;
-        _publishingYear = publishingYear;
-        _editionLanguage = editionLanguage;
-        _dimension = dimension;
-        _weight = weight;
-        _numberOfPages = numberOfPages;
-        _editionNumber = editionNumber;
-        _binding = binding;
-        _generatedId = new EditionId();
+        this(new EditionId(),
+                typeId,
+                identifier,
+                publicationId,
+                publishingCompanyId,
+                publishingYear,
+                editionLanguage,
+                dimension,
+                weight,
+                numberOfPages,
+                editionNumber,
+                binding);
     }
 
     //Constructor without optional fields
@@ -178,6 +212,10 @@ public class Edition implements AggregateRoot<EditionId> {
         }
 
         return false;
+    }
+
+    public EditionId getEditionId() {
+        return _generatedId;
     }
 
     public PublicationTypeId getPublicationTypeId() {

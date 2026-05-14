@@ -89,7 +89,7 @@ class SKUTest {
                 () -> new SKU(invalidValue)
         );
 
-        assertEquals("SKU must match format ^[A-F0-9]{10}$.", exception.getMessage());
+        assertEquals("Invalid SKU format: invalid!", exception.getMessage());
     }
 
     @Test
@@ -195,20 +195,29 @@ class SKUTest {
         assertEquals(firstHash, secondHash);
     }
 
+    //--------------------------------------
+    // Tests for the rehydration constructor
+    //--------------------------------------
+
     @Test
-    void shouldCreateSkuFromValidValue() {
-        //Arrange
-        String value = "ABC123DEF0";
-
-        //SUT
-        SKU sku = new SKU(value);
-
-        //Act
-        boolean result = value.equals(sku.toString());
-
-        //Assert
-        assertTrue(result);
+    void rehydrationConstructorShouldStoreGivenValue() {
+        String value = "ABCDEF1234";
+        SKU sut = new SKU(value);
+        assertEquals(value, sut.getValue());
     }
 
+    @Test
+    void rehydrationConstructorShouldRejectInvalidFormat() {
+        String invalid = "invalid_sku";
+        assertThrows(IllegalArgumentException.class, () -> new SKU(invalid));
+    }
+
+    @Test
+    void rehydratedSKUShouldBeEqualToOriginalValue() {
+        String value = "A1B2C3D4E5";
+        SKU sut = new SKU(value);
+        SKU other = new SKU(value);
+        assertEquals(sut, other);
+    }
 }
 

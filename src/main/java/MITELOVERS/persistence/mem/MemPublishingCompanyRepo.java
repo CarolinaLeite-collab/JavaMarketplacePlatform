@@ -1,9 +1,10 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
-import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
@@ -17,6 +18,8 @@ import java.util.*;
  *
  */
 
+@Repository
+@Profile("mem")
 public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
 
     private final Map<PublishingCompanyId, PublishingCompany> DATA = new HashMap<PublishingCompanyId, PublishingCompany>();
@@ -39,7 +42,7 @@ public class MemPublishingCompanyRepo implements IPublishingCompanyRepo {
     @Override
     public Optional<PublishingCompany> ofIdentity(PublishingCompanyId publishingCompanyId) {
 
-        if(!containsOfIdentity(publishingCompanyId)) {
+        if (!containsOfIdentity(publishingCompanyId)) {
 
             return Optional.empty();
 

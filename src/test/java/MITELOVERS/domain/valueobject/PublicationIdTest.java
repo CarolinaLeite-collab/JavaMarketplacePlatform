@@ -160,4 +160,64 @@ class PublicationIdTest {
         assertTrue(result.contains("2020"));
     }
 
+    @Test
+    void getTitleShouldReturnTitle() {
+        // Arrange
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
+
+        PublicationId publicationId = new PublicationId(
+                titleDouble,
+                authorIdDouble,
+                releaseYear
+        );
+
+        // Act
+        Title result = publicationId.getTitle();
+
+        // Assert
+        assertEquals(titleDouble, result);
+    }
+
+    @Test
+    void getAuthorIdShouldReturnAuthorId() {
+        // Arrange
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
+
+        PublicationId publicationId = new PublicationId(
+                titleDouble,
+                authorIdDouble,
+                releaseYear
+        );
+
+        // Act
+        AuthorId result = publicationId.getAuthorId();
+
+        // Assert
+        assertEquals(authorIdDouble, result);
+    }
+
+    @Test
+    void getReleaseYearShouldReturnReleaseYear() {
+        // Arrange
+        Title titleDouble = mock(Title.class);
+        AuthorId authorIdDouble = mock(AuthorId.class);
+        Year releaseYear = Year.of(2020);
+
+        PublicationId publicationId = new PublicationId(
+                titleDouble,
+                authorIdDouble,
+                releaseYear
+        );
+
+        // Act
+        Year result = publicationId.getReleaseYear();
+
+        // Assert
+        assertEquals(releaseYear, result);
+    }
+
 }

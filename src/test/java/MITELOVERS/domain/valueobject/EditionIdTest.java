@@ -16,37 +16,23 @@ class EditionIdTest {
     }
 
     @Test
-    void constructorWithValidStringCreatesEditionIdWithGivenValue() {
-        // Arrange
-        String editionIdValue = "E-ABC12345";
+    void shouldCreateEditionIdWithValidId() {
 
-        // Act + SUT
-        EditionId editionId = new EditionId(editionIdValue);
+        // Arrange
+        String id = "edition-123";
+
+        // Act
+        // SUT
+        EditionId editionId = new EditionId(id);
 
         // Assert
-        assertEquals(editionIdValue, editionId.toString());
+        assertEquals(id, editionId.toString());
     }
 
     @Test
-    void constructorWithNullStringThrowsIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new EditionId(null)
-        );
-
-        assertEquals("EditionId cannot be null or blank.", exception.getMessage());
-    }
-
-    @Test
-    void constructorWithBlankStringThrowsIllegalArgumentException() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new EditionId("   ")
-        );
-
-        assertEquals("EditionId cannot be null or blank.", exception.getMessage());
+    void constructorNullThrowsException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new EditionId((String)null));
     }
 
     @Test

@@ -18,13 +18,6 @@ skinparam classAttributeIconSize 0
 class RegisterPublishingCompanyUI {
 }
 
-package "persistence" {
-    package "mem" {
-        class MemPublishingCompanyRepo {
-        }
-    }
-}
-
 package "controller" {
     class RegisterPublishingCompanyController {
     + registerPublishingCompany(publishingCompanyName: String) : PublishingCompany
@@ -36,7 +29,7 @@ package "domain" {
         class PublishingCompany <<Root>> <<Entity>> {
         }
         class PublishingCompanyFactory <<Factory>> {
-        + createPublishingCompany(publishingCompanyName : String) : PublishingCompany
+                + createPublishingCompany(publishingCompanyName : String) : \nPublishingCompany
         }
 
     }
@@ -45,7 +38,7 @@ package "domain" {
         }
     }
 
-    package "valueobject" {
+    package "valueObject" {
         class PublishingCompanyId <<Value Object>> #LightPink {
         }
     }
@@ -54,7 +47,10 @@ package "domain" {
 
 package "ddd" {
     interface IRepository <ID, T> <<Interface>> {
-        save(entity : T) : T
+        +save(entity : T) : T
+        +findAll() : Iterable<T>
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional <T>
         containsOfIdentity(id : ID) : boolean
     }
 
@@ -63,17 +59,17 @@ package "ddd" {
 
     interface DomainEntity<ID, T> <<Interface>> {
        +identity() : ID
+       +sameAs(object : Object) : boolean
     }
 }
 
 RegisterPublishingCompanyUI "1" ..> "1" RegisterPublishingCompanyController: invokes
-RegisterPublishingCompanyController "1" --> "1" IPublishingCompanyRepo: calls
+RegisterPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo: calls
 RegisterPublishingCompanyController "1" --> "1" PublishingCompanyFactory : invokes
-RegisterPublishingCompanyController "1" ..> "1" PublishingCompany : <<use>>
-MemPublishingCompanyRepo ..|> IPublishingCompanyRepo
-IPublishingCompanyRepo --|> IRepository
+RegisterPublishingCompanyController "1" ..> "*" PublishingCompany : <<use>>
+IPublishingCompanyRepo ..|> IRepository
 PublishingCompanyFactory "1" ..> "1" PublishingCompany: <<create>>
-MemPublishingCompanyRepo "1" --> "1" PublishingCompany: persists
+IPublishingCompanyRepo "1" --> "1" PublishingCompany: persists
 PublishingCompany "1" --> "1" PublishingCompanyId: has
 AggregateRoot -|> DomainEntity
 PublishingCompany .|> AggregateRoot

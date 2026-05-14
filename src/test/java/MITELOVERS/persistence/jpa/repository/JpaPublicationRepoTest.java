@@ -1,5 +1,6 @@
 package MITELOVERS.persistence.jpa.repository;
 
+import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.persistence.jpa.assembler.PublicationAssembler;
@@ -13,9 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -109,5 +112,26 @@ class JpaPublicationRepoTest {
 
         //assert
         assertTrue(result);
+    }
+
+    @Test
+    void shouldCorrectlyReturnAllPublications() {
+        //arrange
+        when(_publicationSpringdataRepoDouble.findAll()).thenReturn(List.of(_publicationDataModelDouble));
+        when(_publicationAssemblerDouble.toDomain(_publicationDataModelDouble)).thenReturn(_publicationDouble);
+
+        //act
+        Iterable<Publication> result = _repo.findAll();
+        List<Publication> resultList = new ArrayList<>();
+
+        for (Publication publication : result) {
+
+            resultList.add(publication);
+
+        }
+
+        //assert
+        assertEquals(1, resultList.size());
+        assertEquals(_publicationDouble, resultList.get(0));
     }
 }

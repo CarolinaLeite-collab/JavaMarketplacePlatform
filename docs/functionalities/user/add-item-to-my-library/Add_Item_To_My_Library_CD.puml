@@ -1,6 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
-title "As a user, I want to add a publication to my library" CD
+title "As a user, I want to add an item to my library" CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,48 +16,43 @@ skinparam classAttributeIconSize 0
 
 top to bottom direction
 
-class AddPublicationOnLibraryUI {
+class AddItemOnLibraryUI {
 }
 
 package "controller" {
 
-    class AddPublicationOnLibraryController {
+    class AddItemOnLibraryController {
       + getListOfAvailableItemsId() : List<ItemId>
       + addItemIdToLibrary(selectedItemId : ItemId, userId : UserId) : boolean
-      - isItemIdAlreadyInAnyLibrary(itemId : ItemId, libraries : Iterable<Library>) : boolean
     }
 
 }
 
 package "domain" {
 
-package "repository" {
+    package "repository" {
 
-    interface ILibraryRepo <<Interface>> {
+        interface ILibraryRepo <<Interface>> {}
+
+        interface IItemRepo <<Interface>> {}
+
     }
 
-    interface IItemRepo <<Interface>> {
-    }
+    package "valueobject" {
 
-}
-
-package "valueobject" {
-
-    together {
-        class LibraryId <<Value Object>> #lightpink {
-        +fromUserId(userId : UserId) : LibraryId
+        together {
+            class LibraryId <<Value Object>> #lightpink {
+            +fromUserId(userId : UserId) : LibraryId
+            }
+            class UserId <<Value Object>>
         }
-        class UserId <<Value Object>>
-    }
-    class ItemId <<Value Object>> {
-    }
+    class ItemId <<Value Object>> {}
 
-}
+    }
 
 package "library" #b0c4d4 {
 
     class Library <<Root>> <<Entity>> {
-      +getItemIdsInLibrary() : List<ItemId>
       +addItemIdToLibrary(itemId : ItemId) : boolean
     }
 
@@ -73,6 +68,14 @@ package "item" #b0c4d4 {
 }
 
 package "persistence"  {
+
+    class JpaLibraryRepo{}
+
+    class LibraryAssembler{}
+
+    class LibraryDataModel <<Entity>>{}
+
+    interface ILibrarySpringDataRepo <<Interface>>{}
 
     package "mem" {
 
@@ -103,13 +106,13 @@ Package "ddd" {
 
 }
 
-AddPublicationOnLibraryUI "1" .>  "1" AddPublicationOnLibraryController : invokes
-AddPublicationOnLibraryController "1"  ..> "1" ILibraryRepo : calls
-AddPublicationOnLibraryController  "1"..> "1" IItemRepo : calls
-AddPublicationOnLibraryController "1"..> "*" Library : <<use>>
-AddPublicationOnLibraryController "1"..> "*" UserId : <<use>>
-AddPublicationOnLibraryController "1"..> "1" ItemId : <<use>>
-AddPublicationOnLibraryController "1"..> "1" Item : <<use>>
+AddItemOnLibraryUI "1" .>  "1" AddItemOnLibraryController : invokes
+AddItemOnLibraryController "1"  ..> "1" ILibraryRepo : calls
+AddItemOnLibraryController  "1"..> "1" IItemRepo : calls
+AddItemOnLibraryController "1"..> "*" Library : <<use>>
+AddItemOnLibraryController "1"..> "*" UserId : <<use>>
+AddItemOnLibraryController "1"..> "1" ItemId : <<use>>
+AddItemOnLibraryController "1"..> "1" Item : <<use>>
 
 MemLibraryRepo ..|> ILibraryRepo
 MemLibraryRepo "1" -> "*" Library: persists
@@ -122,6 +125,10 @@ Library "1" o-- "*" ItemId : aggregates
 ILibraryRepo --|> IRepository
 IItemRepo --|> IRepository
 MemItemRepo ..|> IItemRepo
+
+JpaLibraryRepo ..|> ILibraryRepo
+JpaLibraryRepo --> LibraryAssembler : uses
+JpaLibraryRepo --> ILibrarySpringDataRepo : uses
 
 Item "1" --> "1" ItemId : has
 Library ..|> AggregateRoot
