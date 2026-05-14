@@ -90,8 +90,11 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
      * @return true if the list is private or the sharing has expired.
      */
     public boolean isPrivate() {
-        if (_isPrivate) return true;
-        return _sharedUntil != null && LocalDateTime.now().isAfter(_sharedUntil);
+        if (!_isPrivate && _sharedUntil != null && LocalDateTime.now().isAfter(_sharedUntil)) {
+            _isPrivate = true;
+            _sharedUntil = null;
+        }
+        return _isPrivate;
     }
 
     /**
