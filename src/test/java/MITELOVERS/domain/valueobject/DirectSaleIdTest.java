@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectSaleIdTest {
 
     @Test
-    void testConstructot() {
+    void testConstructor() {
 
         //Act
         DirectSaleId id = new DirectSaleId(); //SUT
@@ -53,4 +53,49 @@ class DirectSaleIdTest {
         assertFalse((id.toString()).equals("DS-ABC12345"));
     }
 
+    @Test
+    void shouldCreateIdFromValidString() {
+
+        //Act
+        DirectSaleId id = new DirectSaleId("DS-ABCDEF12"); //SUT
+
+        //Assert
+        assertEquals("DS-ABCDEF12", id.toString());
+    }
+
+    @Test
+    void shouldThrowWhenInvalidString() {
+
+        // Act
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId("invalid"));
+
+        // Assert
+        assertEquals("Invalid DirectSaleId format: invalid", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenIdNullString() {
+
+        // Act
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId(null));
+
+        // Assert
+        assertEquals("DirectSaleId cannot be null or empty", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowWhenIdEmptyString() {
+
+        // Act
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSaleId(""));
+
+        // Assert
+        assertEquals("DirectSaleId cannot be null or empty", ex.getMessage());
+    }
 }

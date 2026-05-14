@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -226,4 +225,16 @@ public class MemAuthorRepoTest {
 
     }
 
+    @Test
+    void shouldThrowExceptionWhenFindByNameIsCalled() {
+
+        // Arrange
+        MemAuthorRepo repo = new MemAuthorRepo();
+
+        // Act + assert
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> repo.findByName("John Doe")
+        );
+    }
 }

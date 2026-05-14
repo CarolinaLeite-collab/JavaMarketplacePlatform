@@ -1,6 +1,5 @@
 package MITELOVERS.persistence.jpa.assembler;
 
-
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.valueobject.Currency;
@@ -15,18 +14,22 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.time.Period;
 
 @Component
 public class DirectSaleAssembler {
+
     @Autowired
     private final DirectSaleFactory factory;
 
-    public DirectSaleAssembler(DirectSaleFactory factory){
+    public DirectSaleAssembler(DirectSaleFactory factory) {
         this.factory = factory;
     }
 
-    public DirectSaleDataModel domain2DM(DirectSale directSale){
+    public DirectSaleDataModel toDataModel(DirectSale directSale) {
+
+        long timeLimit = directSale.getTimeLimit() != null
+                ? directSale.getTimeLimit().toDays()
+                : 0L;
 
         DirectSaleDataModel dm = new DirectSaleDataModel(
                 directSale.identity().toString(),
@@ -34,13 +37,17 @@ public class DirectSaleAssembler {
                 new PriceDataModel(
                         directSale.getPrice().getValue(),
                         directSale.getPrice().getCurrency().toString()),
-                directSale.getTimeLimit().toDays(),
+                timeLimit,
                 directSale.getCreationDate());
 
         return dm;
     }
 
-    public DirectSale DM2Domain(DirectSaleDataModel dm){
+    public DirectSale toDomain(DirectSaleDataModel dm) {
+
+        Duration timeLimit = dm.getTimeLimit() == 0
+                ? null
+                : Duration.ofDays(dm.getTimeLimit());
 
         DirectSale directSale = factory.createDirectSale(
                 new DirectSaleId(dm.getDirectSaleId()),
@@ -48,30 +55,26 @@ public class DirectSaleAssembler {
                 new Price(
                         dm.getPrice().getNumericValue(),
                         Currency.valueOf(dm.getPrice().getCurrency())),
-                Duration.ofDays(dm.getTimeLimit()),
+                timeLimit,
                 dm.getCreationDate()
-
         );
 
         return directSale;
     }
 
-    private List<String> mapItemsToString(List<ItemId> itemsId){
+    private List<String> mapItemsToString(List<ItemId> itemsId) {
         List<String> result = new ArrayList<>();
-
         for (ItemId item : itemsId) {
             result.add(item.toString());
         }
         return result;
     }
 
-    private List<ItemId> mapStringToItems(List<String> itemsId){
+    private List<ItemId> mapStringToItems(List<String> itemsId) {
         List<ItemId> result = new ArrayList<>();
-
         for (String item : itemsId) {
             result.add(new ItemId(item));
         }
         return result;
     }
-
 }

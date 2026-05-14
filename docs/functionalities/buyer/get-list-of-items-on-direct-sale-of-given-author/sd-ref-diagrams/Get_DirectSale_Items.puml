@@ -1,0 +1,116 @@
+@startuml
+title "As a Buyer, I want to get the list of items on direct sale of a given author" - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":GetDirectSale\nItemsByAuthorController" as CTL
+participant ":IDirectSaleRepo\n(JpaDirectSaleRepo)" as JpaRepo
+participant ":IDirectSale\nSpringDataRepo" as SpringRepo
+participant ":ImplJpaRepo" as JpaImpl
+database "DB" as DB
+participant ":DirectSaleAssembler" as Ass
+participant "directSaleDataModel:\nDirectSaleDataModel" as directSaleDataModel
+participant ":DirectSaleFactory" as factory
+participant "Currency" as Currency
+participant "Duration" as Duration
+
+activate CTL
+
+CTL -> JpaRepo : findAll()
+activate JpaRepo
+
+JpaRepo -> SpringRepo : findAll()
+activate SpringRepo
+
+SpringRepo -> JpaImpl : findAll()
+activate JpaImpl
+
+JpaImpl -> DB : SELECT * FROM DIRECT_SALES
+activate DB
+DB --> JpaImpl : direct sale rows
+deactivate DB
+
+JpaImpl --> SpringRepo : Iterable<DirectSaleDataModel>
+deactivate JpaImpl
+
+SpringRepo --> JpaRepo : Iterable<DirectSaleDataModel>
+deactivate SpringRepo
+
+loop for each DirectSaleDataModel
+    JpaRepo -> Ass : toDomain(directSaleDataModel)
+    activate Ass
+
+    Ass -> directSaleDataModel : stringId = getDirectSaleId()
+    activate directSaleDataModel
+    deactivate directSaleDataModel
+
+    create "directSaleId: DirectSaleId"
+    Ass -->> "directSaleId: DirectSaleId" : <<create>>(stringId)
+
+    Ass -> directSaleDataModel : itemsIdStrings = getItemsId()
+    activate directSaleDataModel
+    deactivate directSaleDataModel
+
+    Ass -> Ass : items = mapStringToItems(itemsIdStrings)
+
+    Ass -> directSaleDataModel : priceDM = getPrice()
+    activate directSaleDataModel
+    deactivate directSaleDataModel
+
+    Ass -> priceDM : numericValue = getNumericValue()
+    activate priceDM
+    deactivate priceDM
+
+    Ass -> priceDM : currencyString = getCurrency()
+    activate priceDM
+    deactivate priceDM
+
+    Ass -> Currency : valueOf(currencyString)
+    activate Currency
+    Currency --> Ass : currency
+    deactivate Currency
+
+    create "price : Price"
+    Ass -->> "price : Price" : <<create>>(numericValue, currency)
+
+    Ass -> directSaleDataModel : timeLimitDays = getTimeLimit()
+    activate directSaleDataModel
+    deactivate directSaleDataModel
+
+    Ass -> Duration : ofDays(timeLimitDays)
+    activate Duration
+    Duration --> Ass : duration
+    deactivate Duration
+
+    Ass -> directSaleDataModel : creationDate = getCreationDate()
+    activate directSaleDataModel
+    deactivate directSaleDataModel
+
+    Ass -> factory : createDirectSale(directSaleEntityId, items, price, duration, creationDate)
+    activate factory
+    factory --> Ass : directSale
+    deactivate factory
+
+    Ass --> JpaRepo : directSale
+    deactivate Ass
+end
+
+JpaRepo --> CTL : directSales
+deactivate JpaRepo
+deactivate CTL
+
+ref over CTL
+[[../Get_List_of_Items_On_Direct_Sale_Of_Given_Author_SD_3.puml Back to Main Diagram]]
+end ref
+
+@enduml
