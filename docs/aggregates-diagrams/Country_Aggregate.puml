@@ -20,9 +20,7 @@ Package "domain" {
 
     Package "country" <<Folder>> #b0c4d4 {
         class Country <<Entity>> <<Root>> {
-
             +name() : CountryName
-
         }
 
         class CountryFactory <<Factory>> {
