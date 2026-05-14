@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,20 +43,18 @@ class ShareListPubliclyControllerTest {
     @Test
     void returnListFromRepo() {
         // Arrange
-        UserId otherUser = mock(UserId.class);
         ListOfItems list1 = mock(ListOfItems.class);
-        ListOfItems list2 = mock(ListOfItems.class);
+        ListOfItemsId listIdDouble1 = mock(ListOfItemsId.class);
 
-        when(list1.getUserId()).thenReturn(_userIdDouble);
-        when(list2.getUserId()).thenReturn(otherUser);
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list1, list2));
+        when(_iListOfItemsRepoDouble.findListOfItemsByUserId(_userIdDouble)).thenReturn(List.of(list1));
+        when(list1.identity()).thenReturn(listIdDouble1);
 
         // Act
-        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
+        List<ListOfItemsId> result = _controller.findListsByUserId(_userIdDouble);
 
         // Assert
         assertEquals(1, result.size());
-        assertSame(list1, result.get(0));
+        assertSame(listIdDouble1, result.get(0));
     }
 
     @Test
@@ -67,10 +66,10 @@ class ShareListPubliclyControllerTest {
     @Test
     void returnEmptyListWhenUserHasNoLists() {
         // Arrange
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
+        when(_iListOfItemsRepoDouble.findListOfItemsByUserId(_userIdDouble)).thenReturn(List.of());
 
         // Act
-        List<ListOfItems> result = _controller.getListOfLists(_userIdDouble);
+        List<ListOfItemsId> result = _controller.findListsByUserId(_userIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -82,16 +81,33 @@ class ShareListPubliclyControllerTest {
         ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
         ListOfItems listDouble = mock(ListOfItems.class);
 
-        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
-                .thenReturn(Optional.of(listDouble));
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble)).thenReturn(Optional.of(listDouble));
+        when(listDouble.isPrivate()).thenReturn(true);
 
         // Act
         boolean result = _controller.shareListPublicly(listIdDouble, _durationDouble);
+
 
         // Assert
         assertTrue(result);
         verify(listDouble).makePublic(_durationDouble);
         verify(_iListOfItemsRepoDouble).save(listDouble);
+    }
+
+    @Test
+    void shareListPubliclyShouldThrowWhenAlreadyPublic() {
+        // Arrange
+        ListOfItemsId listIdDouble = mock(ListOfItemsId.class);
+        ListOfItems listDouble = mock(ListOfItems.class);
+
+        when(_iListOfItemsRepoDouble.ofIdentity(listIdDouble))
+                .thenReturn(Optional.of(listDouble));
+
+        when(listDouble.isPrivate()).thenReturn(false);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _controller.shareListPublicly(listIdDouble, _durationDouble));
     }
 
     @Test
