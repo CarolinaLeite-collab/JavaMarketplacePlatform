@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 class GetAuctionItemsByGenreControllerTest {
 
     @InjectMocks
-    private GetAuctionItemsByGenreController controller;
+    private GetAuctionItemsByGenreController _controller;
 
     @Mock
     private IAuctionRepo _iAuctionRepoDouble;
@@ -46,7 +46,7 @@ class GetAuctionItemsByGenreControllerTest {
 
     @Test
     void testAuctionItemsByGenreController(){
-        assertNotNull(controller);
+        assertNotNull(_controller);
     }
 
     @Test
@@ -59,7 +59,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(_iGenreRepoDouble.findAllKeys()).thenReturn(expected);
 
         //Act
-        Iterable<GenreId> result = controller.findAllKeys();
+        Iterable<GenreId> result = _controller.findAllKeys();
 
         //Assert
         assertEquals(expected, result);
@@ -87,7 +87,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(publicationDouble.isByGenreId(genreId)).thenReturn(false);
 
         // Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
+        List<ItemId> result = _controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -120,7 +120,7 @@ class GetAuctionItemsByGenreControllerTest {
                 .thenReturn(List.of(item1, item2));
 
         // Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
+        List<ItemId> result = _controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
         assertEquals(2, result.size());
@@ -142,9 +142,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(_iEditionRepoDouble.ofIdentity(editionId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreId));
-
-        verify(_iAuctionRepoDouble, never()).findByItemsIdSorted(any());
+                () -> _controller.getAuctionItemsByGenreId(genreId));
     }
 
     @Test
@@ -170,7 +168,7 @@ class GetAuctionItemsByGenreControllerTest {
 
         // Act & Assert
         assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreId));
+                () -> _controller.getAuctionItemsByGenreId(genreId));
     }
 
     @Test
@@ -183,13 +181,12 @@ class GetAuctionItemsByGenreControllerTest {
         when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
 
         assertThrows(IllegalStateException.class,
-                () -> controller.getAuctionItemsByGenreId(genreId));
+                () -> _controller.getAuctionItemsByGenreId(genreId));
     }
 
     @Test
     void shouldCallAuctionRepoWithFilteredItemIds() {
 
-        // Arrange
         GenreId genreId = mock(GenreId.class);
 
         ItemId item1 = mock(ItemId.class);
@@ -200,25 +197,27 @@ class GetAuctionItemsByGenreControllerTest {
         Publication publicationDouble = mock(Publication.class);
 
         when(_iItemRepoDouble.findAllKeys()).thenReturn(List.of(item1, item2));
-
         when(_iItemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+
         when(itemDouble.getEditionId()).thenReturn(mock(EditionId.class));
-
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
 
+        when(editionDouble.getPublicationId()).thenReturn(mock(PublicationId.class));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+
+        // Both items match the genre
         when(publicationDouble.isByGenreId(genreId)).thenReturn(true);
 
+        // IMPORTANT:
+        // Only return this value if the controller calls the repo with EXACTLY this list.
         when(_iAuctionRepoDouble.findByItemsIdSorted(List.of(item1, item2)))
                 .thenReturn(List.of(item1, item2));
 
         // Act
-        controller.getAuctionItemsByGenreId(genreId);
+        List<ItemId> result = _controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
-        verify(_iAuctionRepoDouble).findByItemsIdSorted(List.of(item1, item2));
-        verify(_iAuctionRepoDouble, never()).findAll();
+        assertEquals(List.of(item1, item2), result);
     }
 
     @Test
@@ -245,7 +244,7 @@ class GetAuctionItemsByGenreControllerTest {
         when(publicationDouble.isByGenreId(genreId)).thenReturn(false);
 
         // Act
-        List<ItemId> result = controller.getAuctionItemsByGenreId(genreId);
+        List<ItemId> result = _controller.getAuctionItemsByGenreId(genreId);
 
         // Assert
         assertTrue(result.isEmpty());

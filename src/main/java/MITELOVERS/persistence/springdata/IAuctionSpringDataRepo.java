@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-@Profile("jpa")
 public interface IAuctionSpringDataRepo extends JpaRepository<AuctionDataModel, String> {
 
     List<AuctionDataModel> findAllByItemsIdOrderByAuctionEndDateAsc(List<String> itemsId);
