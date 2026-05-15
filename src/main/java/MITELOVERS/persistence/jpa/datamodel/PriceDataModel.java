@@ -1,8 +1,7 @@
 package MITELOVERS.persistence.jpa.datamodel;
+
 import jakarta.persistence.Embeddable;
-import lombok.Generated;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * Data model object representing {@link MITELOVERS.domain.valueobject.Price} value object,
@@ -10,17 +9,12 @@ import lombok.NoArgsConstructor;
  */
 
 @Generated
+@EqualsAndHashCode
 @Getter
 @NoArgsConstructor
-@Embeddable
-
+@AllArgsConstructor
 public class PriceDataModel {
-
     private double numericValue;
     private String currency;
 
-    public PriceDataModel(double numericValue, String currency){
-        this.numericValue = numericValue;
-        this.currency = currency;
-    }
 }

@@ -1,0 +1,56 @@
+@startuml
+title Find all genreIds from persistence - SD
+hidefootbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":IGenreRepo" as REPO
+participant ":IGenreSpringDataRepo" as JPA
+
+REPO -> JPA: findAllKeys()
+activate JPA
+
+database "DB" as DB
+JPA -> DB: select
+activate DB
+DB --> JPA: string based data
+deactivate DB
+
+JPA --> REPO: Iterable<GenreDataModel>
+deactivate JPA
+
+
+create "result:List<GenreId>"
+REPO -> "result:List<GenreId>": <<create>>
+
+loop for each GenreDataModel
+
+    REPO -> genreDataModel: getId()
+    activate genreDataModel
+    deactivate genreDataModel
+
+    create "genreId:GenreId"
+    REPO -->> "genreId:GenreId": <<create>>(id)
+
+    REPO -> "result:List<GenreId>": add(genreId)
+    activate "result:List<GenreId>"
+    deactivate "result:List<GenreId>"
+
+end
+
+ref over REPO
+[[../Get_A_List_Given_Genres_SD.puml Back to main diagram]]
+end ref
+
+@enduml

@@ -21,17 +21,17 @@ actor User
 participant ":MiteLovers" as System
 
 ' --- System dialog ---
-User -> System: I want to put for Direct Sale\nan item in my library!
+User -> System: I want to put an item in %n()my library on direct sale.
 activate "System"
-System --> User: Which item\nwould you like to sell?
+System --> User: Which item?
 deactivate "System"
-User -> System: Item
+User -> System: item
 activate "System"
-System --> User: What is the price \nand time limit for this sale?
+System --> User: What is the price and %n()time limit for this sale?
 deactivate "System"
-User -> System: price, time limit
+User -> System: price, timeLimit
 activate "System"
-System --> User: Your item was \nsuccessfully put up in a direct sale!
+System --> User: Your item was successfully %n()put up in a direct sale!
 deactivate "System"
 
 @enduml

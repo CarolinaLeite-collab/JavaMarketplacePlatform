@@ -1,0 +1,232 @@
+@startuml
+'==== Title ====
+title "Save auction of an item" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":IAuctionRepo" as AuctionRepo
+participant ":JpaAuctionRepo" as JpaAuctionRepo
+participant ":AuctionAssembler" as Assembler
+participant ":IAuctionSpringDataRepo" as AuctionSpringDataRepo
+participant ":AuctionFactory" as Factory
+
+AuctionRepo -> JpaAuctionRepo: save(auction)
+activate AuctionRepo
+activate JpaAuctionRepo
+
+JpaAuctionRepo -> Assembler: toDataModel(auction)
+activate Assembler
+
+Assembler -> auction: startingPriceValue = getStartingPrice().getValue()
+activate auction
+deactivate auction
+Assembler -> auction: startingPriceCurrency = getStartingPrice().getValue()
+activate auction
+deactivate auction
+create "startingPriceDM:PriceDataModel"
+Assembler -->> "startingPriceDM:PriceDataModel": createPriceDataModel(startingPriceValue, startingPriceCurrency)
+
+
+Assembler -> auction: reservePriceValue = getReservePrice().getValue()
+activate auction
+deactivate auction
+Assembler -> auction: reservePriceCurrency = getReservePrice().getValue()
+activate auction
+deactivate auction
+create "reservePriceDM:PriceDataModel"
+Assembler -->> "reservePriceDM:PriceDataModel": createPriceDataModel(reservePriceValue, reservePriceCurrency)
+
+Assembler -> auction: outrightPriceValue = getOutrightPrice().getValue()
+activate auction
+deactivate auction
+Assembler -> auction: outrightPriceCurrency = getOutrightPrice().getValue()
+activate auction
+deactivate auction
+create "outrightPriceDM:PriceDataModel"
+Assembler -->> "outrightPriceDM:PriceDataModel": createPriceDataModel(outrightPriceValue, outrightPriceCurrency)
+
+Assembler -> auction: finalPriceValue = getFinalPrice().getValue()
+activate auction
+deactivate auction
+Assembler -> auction: finalPriceCurrency = getFinalPrice().getValue()
+activate auction
+deactivate auction
+create "finalPriceDM:PriceDataModel"
+Assembler -->> "finalPriceDM:PriceDataModel": createPriceDataModel(finalPriceValue, finalPriceCurrency)
+
+create "bids:List<BidDataModel>"
+Assembler -->> "bids:List<BidDataModel>": new ArrayList<>()
+
+Assembler -> auction: getBids()
+activate auction
+deactivate auction
+loop for each bid in auction.getBids()
+    Assembler -> BidAssembler: toDataModel(bid)
+    activate BidAssembler
+    BidAssembler --> Assembler: bidDM
+    deactivate BidAssembler
+
+    Assembler -> "bids:List<BidDataModel>": add(bidDM)
+    activate "bids:List<BidDataModel>"
+    deactivate "bids:List<BidDataModel>"
+end
+
+Assembler -> auction: itemIdString = getItemsId().get(0)
+activate auction
+deactivate auction
+
+Assembler -> auction: userIdString = getUserId()
+activate auction
+deactivate auction
+
+Assembler -> auction: auctionIdString = auction.identity().toString()
+activate auction
+deactivate auction
+
+Assembler -> auction: auctionStartDate = auction.getAuctionStartDate()
+activate auction
+deactivate auction
+
+Assembler -> auction: auctionEndDate = auction.getAuctionEndDate
+activate auction
+deactivate auction
+
+create "auctionDM %n():AuctionDataModel"
+Assembler -->> "auctionDM %n():AuctionDataModel": createAuctionDataModel(auctionIdString, itemIdString, %n()startingPriceDM, reservePriceDM, outrightPriceDM, %n()auctionStartDate, auctionEndDate(), userIdString, %n()finalPriceDM, bids)
+
+Assembler --> JpaAuctionRepo: auctionDM
+deactivate Assembler
+
+JpaAuctionRepo -> AuctionSpringDataRepo: save(auctionDM)
+activate AuctionSpringDataRepo
+database "DB" as DB
+AuctionSpringDataRepo -> DB : insert
+activate DB
+DB --> AuctionSpringDataRepo : string based data
+deactivate DB
+create "auctionDM2%n():AuctionDataModel"
+AuctionSpringDataRepo -->> "auctionDM2%n():AuctionDataModel": <<create>>(string based data)
+AuctionSpringDataRepo --> JpaAuctionRepo : auctionDM2
+deactivate AuctionSpringDataRepo
+
+JpaAuctionRepo -> Assembler: toDomain(auctionDM2)
+activate Assembler
+
+Assembler -> "auctionDM2%n():AuctionDataModel": auctionIdString = getAuctionId()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+create "auctionId:AuctionId"
+Assembler -->> "auctionId:AuctionId" : createAuctionId(auctionIdString)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": itemIdString = getItemsId().get(0)
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+create "itemId:ItemId"
+Assembler -->> "itemId:ItemId" : createItemId(itemIdString)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": startingPriceNumeric = getStartingPrice().getNumericValue()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": startingPriceCurrency = getStartingPrice().getCurrency()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "startingPrice:Price"
+Assembler -->> "startingPrice:Price" : createPrice(startingPriceNumeric, startingPriceCurrency)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": reservePriceNumeric = getReservePrice().getNumericValue()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": reservePriceCurrency = getReservePrice().getCurrency()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "reservePrice:Price"
+Assembler -->> "reservePrice:Price" : createPrice(reservePriceNumeric, reservePriceCurrency)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": outrightPriceNumeric = getOutrightPrice().getNumericValue()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": outrightPriceCurrency = getOutrightPrice().getCurrency()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "outrightPrice:Price"
+Assembler -->> "outrightPrice:Price" : createPrice(outrightPriceNumeric, outrightPriceCurrency)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": auctionStartDate = getAuctionStartDate().atZone(ZoneId.systemDefault())
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": auctionEndDate = getAuctionEndDate().atZone(ZoneId.systemDefault())
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": userIdString = getUserId()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "email:Email"
+Assembler -->> "email:Email" : createEmail(userIdString)
+
+create "userId:UserId"
+Assembler -->> "userId:UserId":createUserId(email)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": finalPriceNumeric = getFinalPrice().getNumericValue()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+Assembler -> "auctionDM2%n():AuctionDataModel": finalPriceCurrency = getFinalPrice().getCurrency()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "finalPrice:Price"
+Assembler -->> "finalPrice:Price" : createPrice(finalPriceNumeric, finalPriceCurrency)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": bidDMs = getBids()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+loop for each bidDM in bidDMs
+    Assembler -> BidAssembler: toDomain(bidDM)
+    activate BidAssembler
+    BidAssembler --> Assembler: bid
+    deactivate BidAssembler
+
+    Assembler -> Assembler: bids.add(bid)
+end
+
+Assembler -> Factory: createAuction(auctionId, itemId, startingPrice, reservePrice, outrightPrice, %n()auctionStartDate, auctionEndDate, userId, finalPrice, bids)
+activate Factory
+create "reconstructedAuction\n: Auction" as reconstructedAuction
+Factory -->> reconstructedAuction: <<create>>
+Factory --> Assembler: reconstructedAuction
+deactivate Factory
+
+Assembler --> JpaAuctionRepo: reconstructedAuction
+deactivate Assembler
+
+JpaAuctionRepo --> AuctionRepo: reconstructedAuction
+deactivate JpaAuctionRepo
+
+deactivate AuctionRepo
+
+ref over AuctionRepo
+[[../Put_For_Sale_A_Publication_In_My_Library_For_Auction_SD.puml Return to main diagram]]
+end ref
+@enduml

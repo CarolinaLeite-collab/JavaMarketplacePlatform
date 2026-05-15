@@ -6,6 +6,8 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.List;
  * This controller acts as an application-layer entry point, delegating the
  * retrieval logic to the {@link IDirectSaleRepo}.
  */
-
+@Controller
 public class GetDirectSaleItemsByAuthorController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
@@ -27,7 +29,7 @@ public class GetDirectSaleItemsByAuthorController {
     private final IEditionRepo _iEditionRepo;
     private final IPublicationRepo _iPublicationRepo;
 
-    public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr, UserId buyerId){
+    public GetDirectSaleItemsByAuthorController(IAuthorRepo ar, IItemRepo ir, IEditionRepo er, IPublicationRepo pr, IDirectSaleRepo dsr){
 
         _iAuthorRepo = ar;
         _iItemRepo = ir;
@@ -38,9 +40,8 @@ public class GetDirectSaleItemsByAuthorController {
     }
 
     public Iterable<AuthorId> findAllKeys(){
-        Iterable<AuthorId> authorIds = _iAuthorRepo.findAllKeys();
 
-        return authorIds;
+        return _iAuthorRepo.findAllKeys();
     }
 
     public List<ItemId> getDirectSaleItemsByAuthorId(AuthorId authorId) {
@@ -67,7 +68,43 @@ public class GetDirectSaleItemsByAuthorController {
                 }
             }
         }
+
+        List<String> ids = listOfItemsOnDirectSaleByAuthor.stream().map(ItemId::getValue).toList();
+
+        List<Item> itemsOrderByDescription = _iItemRepo.findByIdInOrderByDescriptionAsc(ids);
+
+
         return listOfItemsOnDirectSaleByAuthor;
+    }
+
+    public List<Item> getDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId) {
+        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+        List<ItemId> listOfItemsOnDirectSaleByAuthor = new ArrayList<>();
+
+        for(DirectSale directSale: directSales){
+            List<ItemId> itemIds = directSale.getItemsId();
+
+            for(ItemId itemId: itemIds) {
+                Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalStateException("Item not found"));
+
+                EditionId editionId = item.getEditionId();
+
+                Edition edition = _iEditionRepo.ofIdentity(editionId).orElseThrow(() -> new IllegalStateException("Edition not found"));
+
+                PublicationId publicationId = edition.getPublicationId();
+
+                Publication publication = _iPublicationRepo.ofIdentity(publicationId).orElseThrow(() -> new IllegalStateException("Publication not found"));
+
+                if (publication.isByAuthorId(authorId)) {
+                    listOfItemsOnDirectSaleByAuthor.add(itemId);
+                }
+            }
+        }
+
+        List<String> ids = listOfItemsOnDirectSaleByAuthor.stream().map(ItemId::getValue).toList();
+
+
+        return _iItemRepo.findByIdInOrderByDescriptionAsc(ids);
     }
 
 }

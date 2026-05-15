@@ -3,6 +3,7 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -61,5 +62,10 @@ public class MemItemRepo implements IItemRepo {
 
         return new ArrayList<>(DATA.keySet());
 
+    }
+
+    @Override
+    public List<Item> findByIdInOrderByDescriptionAsc(Collection<String> ids) {
+        throw new UnsupportedOperationException();
     }
 }

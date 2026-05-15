@@ -19,16 +19,10 @@ class PublicationSaleAuctionUI {
 }
 
 package "controller" {
-    class PublicationSaleAuctionController {
-      - _iLibraryRepo: ILibraryRepo
-      - _iAuctionRepo: IAuctionRepo
-      - _auctionFactory: AuctionFactory
-      - _iItemRepo: IItemRepo
+    class PublicationInLibraryForAuctionController {
       + getLibraryItemsIdList(userId: UserId): List<ItemId>
-      + putItemIdOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,
+      + putItemOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,
         outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
-      + putItemIdOnAuction(itemId: ItemId, startPrice: Price, reservePrice: Price,
-              startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
       - addAuction(itemsId: List<ItemId>, startingPrice: Price, reservePrice: Price,
               outrightPrice: Price, auctionStartDate: ZonedDateTime, auctionEndDate: ZonedDateTime): Auction
     }
@@ -41,14 +35,14 @@ package "domain" {
         interface IItemRepo
     }
 
-    package "library" {
+    package "library" #b0c4d4{
         class Library {
           + getItemsIdInLibrary(): List<ItemId>
         }
     }
 
-    package "auction" {
-        class Auction <<Root>> <<Entity>> #b0c4d4 {
+    package "auction" #b0c4d4{
+        class Auction <<Root>> <<Entity>>  {
           - _auctionId: AuctionId
           - _itemsId: List<ItemId>
           - _startingPrice: Price
@@ -61,61 +55,65 @@ package "domain" {
         class AuctionFactory <<Factory>> {
           + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,
                 outrightPrice: Price, startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
-          + createAuction(itemId: ItemId, startingPrice: Price, reservePrice: Price,
-                startDate: ZonedDateTime, endDate: ZonedDateTime): Auction
         }
+
     }
+
+        package "item" #b0c4d4 {
+            class Item {
+              + getSaleStatus(): SaleStatus
+              + markAsAuction(): void
+            }
+        }
 
     package "valueobject" {
         class ItemId <<Value Object>> {
           - _itemId : ItemId
         }
+        class LibraryId {
+            -_email : Email
+            +fromUserId(userId : UserId)
+       }
     }
 }
 
 Package "ddd" {
 
     interface IRepository<ID, T> <<Interface>> {
-    save(T) : T
-'    findAll() : Iterable<T>
-'    ofIdentity(ID) : Optional <T>
-'    containsOfIdentity(ID) : boolean
-    }
-    interface DomainEntity<ID> <<Interface>>{
-    +identity() : ID
-    +sameAs(Object) : boolean
-    }
-    interface AggregateRoot<ID> <<Interface>>{}
+        +save(entity : T) : T
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
+        }
+        interface AggregateRoot <ID >{
+         }
+        interface DomainEntity<ID, T> <<Interface>> {
+         +identity() : ID
+        }
 
-}
-
-package "persistence" {
-    class MemLibraryRepo
-
-    class MemAuctionRepo
 }
 
 
 '=== Relationships ===
-PublicationSaleAuctionUI "1" ..> "1" PublicationSaleAuctionController : invokes
+PublicationSaleAuctionUI "1" ..> "1" PublicationInLibraryForAuctionController : invokes
 
-PublicationSaleAuctionController "1" ..> "1" ILibraryRepo : <<use>>
-PublicationSaleAuctionController "1" ..> "1" IAuctionRepo : <<use>>
-PublicationSaleAuctionController "1" ..> "1" IItemRepo : <<use>>
-PublicationSaleAuctionController "1" -> "1" AuctionFactory : <<use>>
+PublicationInLibraryForAuctionController "1" --> "1" ILibraryRepo : calls
+PublicationInLibraryForAuctionController "1" --> "1" IAuctionRepo : calls
+PublicationInLibraryForAuctionController "1" --> "1" IItemRepo : calls
+PublicationInLibraryForAuctionController "1" -> "1" AuctionFactory : calls
 
-ILibraryRepo "1" <|... "1" MemLibraryRepo : implements
-IAuctionRepo "1" <|... "1" MemAuctionRepo : implements
-
-MemLibraryRepo "1" ---> "*" Library : persists
-MemAuctionRepo "1" ---> "*" Auction : persists
 Library "1" --> "*" ItemId : stores
+Library "1" --> "1" LibraryId : has
+Item "1" --> "1" ItemId : has
 
-ItemId "1" --> "0..1" Auction : references
+ItemId "1" <-- "0..1" Auction : references
 
 AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction ..|> AggregateRoot
-IAuctionRepo --|> IRepository
+Item .|> AggregateRoot
+Library .|> AggregateRoot
+IAuctionRepo ..|> IRepository
+ILibraryRepo ..|> IRepository
+IItemRepo ..|> IRepository
 AggregateRoot -|> DomainEntity
 
 @enduml

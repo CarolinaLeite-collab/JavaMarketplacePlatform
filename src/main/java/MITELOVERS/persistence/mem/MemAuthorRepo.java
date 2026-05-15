@@ -72,4 +72,10 @@ public class MemAuthorRepo implements IAuthorRepo {
 
     }
 
+    @Override
+    public AuthorId findByName(String name) {
+
+        throw new UnsupportedOperationException();
+
+    }
 }

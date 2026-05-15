@@ -8,6 +8,7 @@ import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
  * </ol>
  */
 
+@Controller
 public class PublicationSaleAuctionController {
 
     private final ILibraryRepo _iLibraryRepo;
@@ -29,7 +31,7 @@ public class PublicationSaleAuctionController {
     private IItemRepo _iItemRepo;
 
     public PublicationSaleAuctionController(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, AuctionFactory auctionFactory,
-                                            IItemRepo iItemRepo, UserId userId) {
+                                            IItemRepo iItemRepo) {
 
         _iLibraryRepo = iLibraryRepo;
         _iAuctionRepo = iAuctionRepo;

@@ -219,5 +219,6 @@ class SKUTest {
         SKU other = new SKU(value);
         assertEquals(sut, other);
     }
+
 }
 

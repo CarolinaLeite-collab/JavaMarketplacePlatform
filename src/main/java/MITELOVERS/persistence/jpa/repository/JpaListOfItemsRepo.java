@@ -1,0 +1,89 @@
+package MITELOVERS.persistence.jpa.repository;
+
+import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.persistence.jpa.assembler.ListOfItemsAssembler;
+import MITELOVERS.persistence.jpa.datamodel.ListOfItemsDataModel;
+import MITELOVERS.persistence.springdata.IListOfItemsSpringDataRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * JPA implementation of {@link IListOfItemsRepo} for storing {@link ListOfItems} instances.
+ * <p>
+ * Active only when the {@code jpa} Spring profile is enabled.
+ * Delegates persistence to {@link IListOfItemsSpringDataRepo} and
+ * mapping to {@link ListOfItemsAssembler}.
+ * </p>
+ */
+@Repository
+@Profile("jpa")
+public class JpaListOfItemsRepo implements IListOfItemsRepo {
+
+    @Autowired
+    private IListOfItemsSpringDataRepo _springDataRepo;
+
+    @Autowired
+    private ListOfItemsAssembler _assembler;
+
+
+    @Override
+    public ListOfItems save(ListOfItems entity) {
+        ListOfItemsDataModel dm = _assembler.toDataModel(entity);
+        ListOfItemsDataModel savedDm = _springDataRepo.save(dm);
+        return _assembler.toDomain(savedDm);
+    }
+
+    @Override
+    public Iterable<ListOfItems> findAll() {
+        Iterable<ListOfItemsDataModel> dms = _springDataRepo.findAll();
+        List<ListOfItems> list = new ArrayList<>();
+        for (ListOfItemsDataModel dm : dms) {
+            list.add(_assembler.toDomain(dm));
+        }
+        return list;
+    }
+
+    @Override
+    public List<ListOfItemsId> findAllKeys() {
+        Iterable<ListOfItemsDataModel> dms = _springDataRepo.findAll();
+        List<ListOfItemsId> keys = new ArrayList<>();
+        for (ListOfItemsDataModel dm : dms) {
+            keys.add(new ListOfItemsId(dm.getListOfItemsId()));
+        }
+        return keys;
+    }
+
+    @Override
+    public Optional<ListOfItems> ofIdentity(ListOfItemsId id) {
+        ListOfItemsDataModel dm = _springDataRepo.findById(id.toString())
+                .orElseThrow(() -> new IllegalArgumentException("ListOfItems not found!"));
+        return Optional.of(_assembler.toDomain(dm));
+    }
+
+    @Override
+    public boolean containsOfIdentity(ListOfItemsId id) {
+        return _springDataRepo.existsById(id.toString());
+    }
+
+    @Override
+    public List<ListOfItems> findListOfItemsByUserId(UserId userId){
+        List<ListOfItemsDataModel> listsDataModels = _springDataRepo.findListOfItemsByUserId(userId);
+
+        List<ListOfItems> userLists = new ArrayList<>();
+
+        for (ListOfItemsDataModel dm : listsDataModels){
+
+            userLists.add(_assembler.toDomain(dm));
+        }
+
+        return userLists;
+    }
+}

@@ -3,22 +3,23 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for handling the addition of a new {@link PublicationType}.
  * <p>
- * Delegates the creation to {@link MITELOVERS.domain.publicationtype.PublicationTypeFactory}
+ * Delegates the creation to {@link PublicationTypeFactory}
  * and storage to {@link IPublicationTypeRepo}. Validates uniqueness.
  * </p>
  */
 
+@Controller
 public class AddPublicationTypeController {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
     private final PublicationTypeFactory _publicationTypeFactory;
 
-    public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory publicationTypeFactory, UserId adminId) {
+    public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory publicationTypeFactory) {
 
         _iPublicationTypeRepo = iPublicationTypeRepo;
         _publicationTypeFactory = publicationTypeFactory;

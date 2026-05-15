@@ -2,47 +2,50 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller responsible for sharing publicly a list of of a {@link UserId}.
- * <p>
- * This controller depends on {@link IListOfItemsRepo} to access persisted lists.
- * </p>
+ * Controller responsible for sharing publicly a list of a {@link UserId}.
  */
-
 public class ShareListPubliclyController {
+
     private final IListOfItemsRepo _iListOfItemsRepo;
 
-    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo, UserId userId) {
+    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo) {
         _iListOfItemsRepo = iListOfItemsRepo;
     }
 
-    public List<ListOfItems> getListOfLists(UserId userId) {
+    public boolean shareListPublicly(ListOfItemsId listOfItemsId, SharedDuration duration) {
+        ListOfItems list = _iListOfItemsRepo.ofIdentity(listOfItemsId)
+                .orElseThrow(() -> new IllegalStateException("List not found"));
 
-        return findListsByUserId(userId);
+        if (list.isPrivate()) {
+            list.makePublic(duration);
+            _iListOfItemsRepo.save(list);
+
+            return true;
+        }
+        else {
+            throw new IllegalStateException("List is already public");
+        }
     }
 
-    // Method to be moved to future service layer and adapted accordingly
-    public List<ListOfItems> findListsByUserId(UserId userId) {
-
-        if (userId == null) {
+    public List<ListOfItemsId> findListsByUserId(UserId userId) {
+        if (userId == null)
             throw new IllegalArgumentException("UserId is mandatory");
+
+        List<ListOfItems> userLists = _iListOfItemsRepo.findListOfItemsByUserId(userId);
+
+        List<ListOfItemsId> listOfItemsIds = new ArrayList<>();
+
+        for (ListOfItems listOfItems : userLists) {
+            listOfItemsIds.add(listOfItems.identity());
         }
-
-        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
-
-        List<ListOfItems> result = new ArrayList<>();
-        for (ListOfItems list : all) {
-            if (userId.equals(list.getUserId())) {
-                result.add(list);
-            }
-        }
-
-        return result;
+        return listOfItemsIds;
     }
-
 }
