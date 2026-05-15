@@ -39,6 +39,27 @@ deactivate SpringDataLibraryRepo
 
 JpaLibraryRepo -> Assembler : toDomain(libraryDataModel)
 activate Assembler
+
+Assembler -> "libraryDataModel%n():LibraryDataModel": libraryIdString = getLibraryId()
+activate "libraryDataModel%n():LibraryDataModel"
+deactivate "libraryDataModel%n():LibraryDataModel"
+create "email:Email"
+Assembler -->> "email:Email" : createEmail(libraryIdString)
+create "libraryId:LibraryId"
+Assembler -->> "libraryId:LibraryId" : createLibraryId(email)
+
+    Assembler -> "libraryDataModel%n():LibraryDataModel" : itemIdStrings = getItemIds()
+    activate "libraryDataModel%n():LibraryDataModel"
+    deactivate "libraryDataModel%n():LibraryDataModel"
+
+    Assembler -> Assembler : itemIds = itemIdStrings.stream()%n().map(ItemId::new).toList()
+
+    Assembler -> Factory : reconstructedLibrary = createLibrary(libraryId, itemIds)
+    activate Factory
+    create "reconstructedLibrary%n():Library" as ReconstructedLibrary
+    Factory -> ReconstructedLibrary : <<create>>
+    Factory --> Assembler : reconstructedLibrary
+    deactivate Factory
 Assembler --> JpaLibraryRepo : reconstructedLibrary
 deactivate Assembler
 
