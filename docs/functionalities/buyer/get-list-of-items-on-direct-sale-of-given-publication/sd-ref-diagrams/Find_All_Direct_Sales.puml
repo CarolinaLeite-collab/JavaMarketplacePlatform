@@ -1,0 +1,113 @@
+@startuml
+title "Find all DirectSales from persistence (via JPA)" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+autonumber
+autoactivate off
+hidefootbox
+
+participant ":IDirectSaleRepo" as Repo
+participant ":JpaDirectSaleRepo" as JpaRepo
+participant ":IDirectSaleSpringDataRepo" as DirectSaleSpringRepo
+database "DB" as DB
+participant ":DirectSaleAssembler" as Assembler
+
+
+Repo -> JpaRepo : findAll()
+activate Repo
+activate JpaRepo
+
+
+JpaRepo -> DirectSaleSpringRepo : findAll()
+activate DirectSaleSpringRepo
+
+DirectSaleSpringRepo -> DB : retrieve Direct Sale %n()Data Models
+activate DB
+
+DB --> DirectSaleSpringRepo : directSaleDMs
+deactivate DB
+DirectSaleSpringRepo --> JpaRepo : directSaleDMs
+deactivate DirectSaleSpringRepo
+
+create "directSales%n():List<DirectSale>"
+JpaRepo -> "directSales%n():List<DirectSale>" : <<create>>
+
+
+loop for directSaleDM : directSaleDMs
+    JpaRepo -> Assembler : toDomain(directSaleDM)
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": timeLimitValue = getTimeLimit()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+
+    alt timeLimitValue != 0
+            Assembler -> Duration : timeLimit = ofDays(timeLimitValue)
+            activate Duration
+            deactivate Duration
+        else timeLimitValue == 0
+            note over Assembler : timeLimit = null
+    end
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": directSaleIdString = getDirectSaleId()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+    create "directSaleId:DirectSaleId"
+    Assembler -->> "directSaleId:DirectSaleId" : createDirectSaleId(directSaleIdString)
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": itemsIdString = getItemsId()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+    Assembler -> Assembler : items = mapStringToItems(itemsIdString)
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": priceNumeric = getPrice().getNumericValue()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": priceCurrencyString = getPrice().getCurrency()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+
+    Assembler -> Currency : priceCurrency = valueOf(priceCurrencyString)
+    activate Currency
+    deactivate Currency
+
+    create "price:Price"
+    Assembler -->> "price:Price" : createPrice(priceNumeric, priceCurrency)
+
+    Assembler -> "directSaleDM%n():DirectSaleDataModel": creationDate = getCreationDate()
+    activate "directSaleDM%n():DirectSaleDataModel"
+    deactivate "directSaleDM%n():DirectSaleDataModel"
+
+    Assembler -> DirectSaleFactory: createDirectSale(directSaleId, items, price, timeLimit, creationDate)
+    activate DirectSaleFactory
+    create "reconstructedDirectSale\n: DirectSale" as ReconstructedDirectSale
+    DirectSaleFactory -->> ReconstructedDirectSale: <<create>>
+    DirectSaleFactory --> Assembler: reconstructedDirectSale
+    deactivate DirectSaleFactory
+
+    Assembler --> JpaRepo : reconstructedDirectSale
+
+    JpaRepo -> "directSales%n():List<DirectSale>" : add(reconstructedDirectSale)
+    activate "directSales%n():List<DirectSale>"
+    deactivate "directSales%n():List<DirectSale>"
+
+end
+
+"directSales%n():List<DirectSale>" --> JpaRepo : directSales
+
+JpaRepo --> Repo : directSales
+deactivate JpaRepo
+
+ref over Repo
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publication_SD.puml Back to Main Diagram]]
+end ref
+@enduml
