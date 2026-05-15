@@ -1,14 +1,10 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
-import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.PublicationId;
-import MITELOVERS.domain.valueobject.Title;
 import jakarta.persistence.Embeddable;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.Year;
 
 /**
  * Data model object representing {@link PublicationId} value object,

@@ -3,7 +3,6 @@ package MITELOVERS.domain.auction;
 import MITELOVERS.domain.valueobject.BidId;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.persistence.jpa.datamodel.BidDataModel;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;

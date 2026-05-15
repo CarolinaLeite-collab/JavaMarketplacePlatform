@@ -5,10 +5,11 @@ import MITELOVERS.domain.city.CityFactory;
 import MITELOVERS.domain.valueobject.CountryId;
 import MITELOVERS.persistence.jpa.datamodel.CityDataModel;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CityAssemblerTest {
 

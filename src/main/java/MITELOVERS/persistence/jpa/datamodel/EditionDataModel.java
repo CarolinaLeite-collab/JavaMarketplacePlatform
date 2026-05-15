@@ -1,7 +1,8 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.edition.Edition;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.Binding;
+import MITELOVERS.domain.valueobject.Language;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;

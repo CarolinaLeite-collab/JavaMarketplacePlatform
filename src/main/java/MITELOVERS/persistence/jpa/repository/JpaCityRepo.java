@@ -7,7 +7,6 @@ import MITELOVERS.domain.valueobject.CountryId;
 import MITELOVERS.persistence.jpa.assembler.CityAssembler;
 import MITELOVERS.persistence.jpa.datamodel.CityDataModel;
 import MITELOVERS.persistence.springdata.ICitySpringDataRepo;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;

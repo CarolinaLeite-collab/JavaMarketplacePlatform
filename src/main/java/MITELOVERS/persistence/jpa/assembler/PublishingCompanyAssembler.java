@@ -1,10 +1,8 @@
 package MITELOVERS.persistence.jpa.assembler;
 
-import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
-import MITELOVERS.persistence.jpa.datamodel.AppraisalEntityDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PublishingCompanyDataModel;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;

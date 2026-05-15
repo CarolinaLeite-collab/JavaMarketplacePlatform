@@ -1,12 +1,7 @@
 package MITELOVERS.domain.listofitems;
 
 import MITELOVERS.ddd.AggregateRoot;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.SharedDuration;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

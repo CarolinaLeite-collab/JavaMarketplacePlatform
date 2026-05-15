@@ -8,7 +8,6 @@ import MITELOVERS.persistence.jpa.assembler.AuctionAssembler;
 import MITELOVERS.persistence.jpa.datamodel.AuctionDataModel;
 import MITELOVERS.persistence.springdata.IAuctionSpringDataRepo;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

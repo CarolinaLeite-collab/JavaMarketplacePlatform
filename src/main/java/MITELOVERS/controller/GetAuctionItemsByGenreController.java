@@ -1,11 +1,11 @@
 package MITELOVERS.controller;
 
-import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ItemId;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;

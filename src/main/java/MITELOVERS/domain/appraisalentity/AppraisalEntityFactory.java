@@ -4,8 +4,6 @@ import MITELOVERS.domain.valueobject.AppraisalEntityId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import jdk.jfr.Category;
-import org.hibernate.annotations.Comment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

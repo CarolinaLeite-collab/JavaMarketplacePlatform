@@ -1,6 +1,5 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
-import jakarta.persistence.Embeddable;
 import lombok.*;
 
 /**

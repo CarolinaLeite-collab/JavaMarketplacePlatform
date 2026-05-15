@@ -3,7 +3,10 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.Address;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.Phone;
 import org.springframework.stereotype.Controller;
 
 /**
