@@ -1,0 +1,43 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to get the list of items on direct sale of a given author" - SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+participant ":GetDirectSale\nItemsByAuthorController" as CTL
+participant ":IItemRepo" as IREPO
+participant "item:Item" as Item
+
+
+activate CTL
+CTL -> IREPO: ofIdentity(itemId)
+activate IREPO
+IREPO --> CTL: item
+deactivate IREPO
+
+CTL -> Item : getEditionId()
+activate Item
+Item --> CTL : editionId
+deactivate Item
+
+deactivate IREPO
+
+ref over CTL
+[[../Get_List_of_Items_On_Direct_Sale_Of_Given_Author_SD_3.puml Back to Main Diagram]]
+end ref
+
+@enduml

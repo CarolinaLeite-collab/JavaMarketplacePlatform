@@ -3,6 +3,7 @@ package MITELOVERS.domain.directsale;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DirectSaleTest {
 
@@ -26,6 +28,7 @@ class DirectSaleTest {
     @BeforeEach
     void setUp() {
 
+        _dsId = mock(DirectSaleId.class);
         _itemsId = new ArrayList<>();
         _itemIdDouble = mock(ItemId.class);
         _itemsId.add(_itemIdDouble);
@@ -37,6 +40,7 @@ class DirectSaleTest {
     @Test
     void constructorShouldRebuildDirectSaleWithDirectSaleID() {
         //Arrange
+
         //SUT
         DirectSale directSale = new DirectSale(_dsId, _itemsId, _priceDouble, _timeLimit, _creationDate);
 
@@ -247,5 +251,26 @@ class DirectSaleTest {
 
         //Assert
         assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnCreationDate() {
+        //Arrange
+        DirectSaleId directSaleId = new DirectSaleId("DS-ABCDEF12");
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
+
+        DirectSale directSale = new DirectSale(
+                directSaleId,
+                _itemsId,
+                _priceDouble,
+                _timeLimit,
+                creationDate
+        );
+
+        //Act
+        Instant result = directSale.getCreationDate();
+
+        //Assert
+        assertEquals(creationDate, result);
     }
 }

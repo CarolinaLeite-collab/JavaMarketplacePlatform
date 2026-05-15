@@ -18,74 +18,98 @@ autoactivate off
 actor User
 participant ":PublicationInLibrary\nForDirectSaleUI" as UI
 participant ":PublicationInLibrary\nForDirectSaleController" as Ctl
+participant "libraryId:LibraryId" as libraryId
 participant ":ILibraryRepo" as LibraryRepo
-participant "listOfItemsId:List<ItemId>" as listOfItemsId
+participant "reconstructedLibrary%n():Library" as Library
 participant ":DirectSaleFactory" as DirectSaleFactory
 participant "directSale:DirectSale" as directSale
 participant ":IDirectSaleRepo" as DirectSaleRepo
 participant ":IItemRepo" as itemRepo
-participant "item:Item" as item
+participant "reconstructed%n()Item:Item" as item
 
-User -> UI: I want to put for direct sale\nan item in my library!
+User -> UI: I want to put an item in %n() my library on direct sale.
 activate UI
 
 UI -> Ctl: getItemsIdInLibraryByUserId\n(userId)
 activate Ctl
 
-Ctl -> LibraryRepo: getItemsIdInLibraryByUserId\n(userId)
+Ctl -> libraryId : fromUserId(userId)
+activate libraryId
+libraryId --> Ctl : libaryId
+deactivate libraryId
+Ctl -> LibraryRepo : ofIdentity(libaryId)
 activate LibraryRepo
-create listOfItemsId
-LibraryRepo --> listOfItemsId : <<create>>
-LibraryRepo --> Ctl: listOfItemsId
+ref over LibraryRepo
+[[sd-ref-diagrams/Retrieve_Library.puml Retrieve Library from persistence (via JPA)]]
+end ref
+LibraryRepo --> Ctl: reconstructedLibrary
 deactivate LibraryRepo
-
-Ctl --> UI: listOfItemIds
+Ctl -> Library : getItemsIdInLibrary();
+activate Library
+Library --> Ctl : itemIds
+deactivate Library
+Ctl --> UI : itemIds
 deactivate Ctl
-UI --> User: Which items\nwould you like to sell?
+UI --> User: Which item?
 deactivate UI
 
-User -> UI: itemsId
+User -> UI: itemId
 activate UI
 
-UI --> User: What is the price \nand time limit for this sale?
+UI --> User: What is the price and %n()time limit for this sale?
 deactivate UI
-User -> UI: price, time limit
+User -> UI: price, timeLimit
 activate UI
 
-UI -> Ctl: putItemIdOnDirectSale\n(listOfItemsId, price, timeLimit)
+note right UI
+The below method accepts List<ItemId> %n()as its first argument (for if a user wants to %n()put a **collection** of items in a direct sale) %n()%n() For the purpose of this functionality, a user%n() is only putting **one item in a direct sale**
+end note
+UI -> Ctl: putItemIdOnDirectSale\n(itemId, price, timeLimit)
 activate Ctl
 
-Ctl -> DirectSaleFactory: createDirectSale\n(listOfItemsId, price, timeLimit)
+Ctl -> DirectSaleFactory: createDirectSale\n(itemId, price, timeLimit)
 activate DirectSaleFactory
 create directSale
 DirectSaleFactory -->> directSale: <<create>>
 DirectSaleFactory --> Ctl: directSale
 deactivate DirectSaleFactory
-
-Ctl -> DirectSaleRepo : exists = containsOfIdentity(directSale.identity())
-
-opt !exists
-
-loop itemId : listOfItemsId
+Ctl -> directSale : identity()
+activate directSale
+directSale --> Ctl : directSaleId
+deactivate directSale
+Ctl -> DirectSaleRepo : containsOfIdentity(directSaleId)
+activate DirectSaleRepo
+ref over DirectSaleRepo
+[[sd-ref-diagrams/Verify_Direct_Sale_Exists.puml Verify directSaleId is not already persisted (in JPA)]]
+end ref
+DirectSaleRepo --> Ctl : false
+deactivate DirectSaleRepo
     Ctl -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo --> Ctl : item
+    ref over itemRepo
+    [[sd-ref-diagrams/Retrieve_Item.puml Retrieve Item from persistence (via JPA)]]
+    end ref
+    itemRepo --> Ctl : reconstructedItem
     deactivate itemRepo
-    Ctl -> item: notOnSale = getSaleStatus()
-    opt notOnSale
-        Ctl -> item : markAsDirectSale()
-    end
-end
+    Ctl -> item: getSaleStatus()
+    activate item
+    item --> Ctl: NotOnSale
+    Ctl -> item : markAsDirectSale()
+    deactivate item
+
 
 
 Ctl -> DirectSaleRepo : save(directSale)
+ref over DirectSaleRepo
+[[sd-ref-diagrams/Save_Direct_Sale_Of_Item.puml Save direct sale of an item]]
+end ref
 activate DirectSaleRepo
-DirectSaleRepo --> Ctl : directSale
+DirectSaleRepo --> Ctl : reconstructedDirectSale
 deactivate DirectSaleRepo
-end
-Ctl --> UI: directSale
+
+Ctl --> UI: reconstructedDirectSale
 deactivate Ctl
-UI --> User: Your item was\nsuccessfully put up on a direct sale!
+UI --> User: Your item was successfully %n()put up in a direct sale!
 deactivate UI
 
 @enduml

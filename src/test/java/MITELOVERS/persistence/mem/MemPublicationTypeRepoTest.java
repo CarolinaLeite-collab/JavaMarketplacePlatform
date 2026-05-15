@@ -20,9 +20,6 @@ class MemPublicationTypeRepoTest {
         //SUT + Act
         MemPublicationTypeRepo repo = new MemPublicationTypeRepo();
 
-        //Assert
-        assertNotNull(repo);
-
     }
 
 

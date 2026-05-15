@@ -1,0 +1,84 @@
+@startuml
+title Save newList and return saved domain object
+hide footbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":CreateListOfItemsController" as Ctl
+participant ":IListOfItemsRepo" as IRepo
+participant ":ListOfItemsAssembler" as Assembler
+participant ":IListOfItemsSpringDataRepo" as jpa
+participant ":ListOfItemsFactory" as Factory
+
+"Ctl" -> IRepo : save(newList)
+activate IRepo
+activate Ctl
+
+IRepo -> Assembler : toDataModel(newList)
+activate Assembler
+create "dataModel:ListOfItemsDataModel"
+Assembler -->> "dataModel:ListOfItemsDataModel" : <<create>>(newList)
+Assembler --> IRepo : dataModel
+deactivate Assembler
+
+IRepo -> jpa : save(dataModel)
+activate jpa
+database "DB" as DB
+jpa -> DB : insert
+activate DB
+DB --> jpa : string based data
+deactivate DB
+create "savedDataModel:ListOfItemsDataModel"
+jpa -->> "savedDataModel:ListOfItemsDataModel" : <<create>>(string based data)
+jpa --> IRepo : savedDataModel
+deactivate jpa
+
+IRepo -> Assembler : toDomain(savedDataModel)
+activate Assembler
+
+Assembler -> "savedDataModel:ListOfItemsDataModel" : getListOfItemsId()
+activate "savedDataModel:ListOfItemsDataModel"
+deactivate "savedDataModel:ListOfItemsDataModel"
+
+Assembler -> "savedDataModel:ListOfItemsDataModel" : getUserId()
+activate "savedDataModel:ListOfItemsDataModel"
+deactivate "savedDataModel:ListOfItemsDataModel"
+
+Assembler -> "savedDataModel:ListOfItemsDataModel" : getName()
+activate "savedDataModel:ListOfItemsDataModel"
+deactivate "savedDataModel:ListOfItemsDataModel"
+
+Assembler -> "savedDataModel:ListOfItemsDataModel" : getGenreId()
+activate "savedDataModel:ListOfItemsDataModel"
+deactivate "savedDataModel:ListOfItemsDataModel"
+
+Assembler -> Factory : createListOfItems(listOfItemsId, userId, name, genreId)
+activate Factory
+create "savedList:ListOfItems"
+Factory -->> "savedList:ListOfItems" : <<create>>(listOfItemsId, userId, name, genreId)
+Factory --> Assembler : savedList
+deactivate Factory
+
+Assembler --> IRepo : savedList
+deactivate Assembler
+
+IRepo --> Ctl : savedList
+deactivate IRepo
+deactivate Ctl
+
+ref over Ctl
+[[../To_Create_A_Private_List_Of_My_Publications_SD.puml Back to Main Diagram]]
+end ref
+
+@enduml

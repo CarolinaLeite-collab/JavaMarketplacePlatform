@@ -3,6 +3,7 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
+import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
@@ -68,4 +69,8 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
         return DATA.containsKey(id);
     }
 
+    @Override
+    public List<ItemId> findDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId){
+        return new ArrayList<>();
+    }
 }

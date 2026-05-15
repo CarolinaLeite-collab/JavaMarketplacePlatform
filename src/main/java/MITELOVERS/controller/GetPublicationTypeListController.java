@@ -2,7 +2,7 @@ package MITELOVERS.controller;
 
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for retrieving the list of all publication types.
@@ -12,11 +12,12 @@ import MITELOVERS.domain.valueobject.UserId;
  * </p>
  */
 
+@Controller
 public class GetPublicationTypeListController {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
 
-    public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo, UserId userId) {
+    public GetPublicationTypeListController(IPublicationTypeRepo iPublicationTypeRepo) {
         _iPublicationTypeRepo = iPublicationTypeRepo;
     }
 

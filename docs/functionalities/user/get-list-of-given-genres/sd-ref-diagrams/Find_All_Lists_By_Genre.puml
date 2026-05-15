@@ -1,0 +1,72 @@
+@startuml
+title Find all lists of items from persistence - SD
+hidefootbox
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+
+autonumber
+autoactivate off
+
+participant ":IListOfItemsRepo" as REPO
+participant ":ListOfItemsAssembler" as ASM
+participant ":IListOfItemsSpringDataRepo" as JPA
+participant ":ListOfItemsFactory" as FACTORY
+
+REPO -> JPA: findAllKeys()
+activate JPA
+
+database "DB" as DB
+JPA -> DB: select
+activate DB
+DB --> JPA: string based data
+deactivate DB
+
+JPA --> REPO: Iterable<ListOfItemsDataModel>
+deactivate JPA
+
+loop for each ListOfItemsDataModel
+
+    REPO -> ASM: toDomain(listOfItemsDataModel)
+    activate ASM
+
+    ASM -> listOfItemsDataModel: listOfItemsId = getListOfItemsId()
+    activate listOfItemsDataModel
+    deactivate listOfItemsDataModel
+
+    ASM -> listOfItemsDataModel: userId = getUserId()
+    activate listOfItemsDataModel
+    deactivate listOfItemsDataModel
+
+    ASM -> listOfItemsDataModel: name = getName()
+    activate listOfItemsDataModel
+    deactivate listOfItemsDataModel
+
+    ASM -> listOfItemsDataModel: genreId = getGenreId()
+    activate listOfItemsDataModel
+    deactivate listOfItemsDataModel
+
+    ASM -> FACTORY: createListOfItems(listOfItemsId, userId, name, genreId)
+    activate FACTORY
+    create "listOfItems\n:ListOfItems"
+    FACTORY -->> "listOfItems\n:ListOfItems": <<create>>
+    FACTORY --> ASM: listOfItems
+    deactivate FACTORY
+
+    ASM --> REPO: listOfItems
+    deactivate ASM
+
+end
+
+ref over REPO
+[[../Get_A_List_Given_Genres_SD.puml Back to main diagram]]
+end ref
+
+@enduml

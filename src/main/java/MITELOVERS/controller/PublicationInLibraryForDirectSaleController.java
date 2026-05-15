@@ -8,6 +8,7 @@ import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.time.Duration;
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 /**
  * Controller responsible for managing items in a user's library for direct sale.
  */
+
+@Controller
 public class PublicationInLibraryForDirectSaleController {
 
     private final ILibraryRepo _iLibraryRepo;
@@ -22,7 +25,7 @@ public class PublicationInLibraryForDirectSaleController {
     private final IItemRepo _iItemRepo;
     private final DirectSaleFactory _directSaleFactory;
 
-    public PublicationInLibraryForDirectSaleController(DirectSaleFactory directSaleFactory, ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo, UserId userId) {
+    public PublicationInLibraryForDirectSaleController(DirectSaleFactory directSaleFactory, ILibraryRepo libraryRepo, IDirectSaleRepo directSaleRepo, IItemRepo iItemRepo) {
         _iLibraryRepo = libraryRepo;
         _iDirectSaleRepo = directSaleRepo;
         _iItemRepo = iItemRepo;
@@ -30,7 +33,7 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public List<ItemId> getItemsInLibraryByUser(UserId userId) {
+    public List<ItemId> getItemsIdInLibraryByUserId(UserId userId) {
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
 
@@ -42,10 +45,10 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public DirectSale putItemIdOnDirectSale (List<ItemId> itemsId, Price price, Duration timeLimit) {
+    public DirectSale putItemIdOnDirectSale (List<ItemId> itemIds, Price price, Duration timeLimit) {
 
 
-        DirectSale directSale =  _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+        DirectSale directSale =  _directSaleFactory.createDirectSale(itemIds, price, timeLimit);
 
         if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
 
@@ -53,7 +56,7 @@ public class PublicationInLibraryForDirectSaleController {
 
         }
 
-        for (ItemId itemId : itemsId) {
+        for (ItemId itemId : itemIds) {
             Item item = _iItemRepo.ofIdentity(itemId).orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
