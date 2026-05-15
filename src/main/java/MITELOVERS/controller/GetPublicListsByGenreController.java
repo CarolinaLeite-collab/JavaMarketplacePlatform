@@ -5,7 +5,6 @@ import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;

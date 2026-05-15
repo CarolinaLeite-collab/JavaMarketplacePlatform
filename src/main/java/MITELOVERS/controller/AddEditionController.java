@@ -4,7 +4,6 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.valueobject.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 
 import java.time.Year;

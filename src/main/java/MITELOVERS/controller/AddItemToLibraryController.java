@@ -1,7 +1,6 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.ddd.IRepository;
-import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;

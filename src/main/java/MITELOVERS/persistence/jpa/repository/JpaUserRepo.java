@@ -1,11 +1,11 @@
 package MITELOVERS.persistence.jpa.repository;
 
-import MITELOVERS.persistence.jpa.assembler.UserAssembler;
-import MITELOVERS.persistence.jpa.datamodel.UserDataModel;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.persistence.jpa.assembler.UserAssembler;
+import MITELOVERS.persistence.jpa.datamodel.UserDataModel;
 import MITELOVERS.persistence.springdata.IUserSpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;

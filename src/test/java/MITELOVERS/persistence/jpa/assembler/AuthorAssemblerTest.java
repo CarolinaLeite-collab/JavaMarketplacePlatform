@@ -7,10 +7,11 @@ import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.persistence.jpa.datamodel.AuthorDataModel;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 class AuthorAssemblerTest {
 

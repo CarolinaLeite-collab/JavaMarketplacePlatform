@@ -3,7 +3,6 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

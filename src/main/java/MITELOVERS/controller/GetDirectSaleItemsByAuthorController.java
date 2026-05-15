@@ -5,8 +5,10 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
+import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.PublicationId;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;

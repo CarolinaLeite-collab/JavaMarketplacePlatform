@@ -2,7 +2,10 @@ package MITELOVERS.persistence.jpa.assembler;
 
 import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.auction.BidFactory;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.BidId;
+import MITELOVERS.domain.valueobject.Currency;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.datamodel.BidDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
 import org.junit.jupiter.api.Test;
@@ -10,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
