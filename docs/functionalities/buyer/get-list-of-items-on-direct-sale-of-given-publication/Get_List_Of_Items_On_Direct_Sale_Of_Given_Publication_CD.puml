@@ -26,11 +26,9 @@ package "controller" {
 
 package "ddd" {
     interface IRepository<ID, T> <<Interface>> {
-        +save(entity : T) : T
         +findAll() : Iterable<T>
         +findAllKeys() : List<ID>
         +ofIdentity(id : ID) : Optional <T>
-        +containsOfIdentity(id : ID) : boolean
     }
     interface AggregateRoot<ID, T> <<Interface>>
 
