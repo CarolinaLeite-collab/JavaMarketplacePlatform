@@ -87,7 +87,9 @@ deactivate ER
 
 
 CTL -> Edition : isByPublicationId(publicationId)
+activate Edition
 Edition --> CTL : true
+deactivate Edition
 
 CTL -> "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>" : add(itemId)
 activate "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>"
