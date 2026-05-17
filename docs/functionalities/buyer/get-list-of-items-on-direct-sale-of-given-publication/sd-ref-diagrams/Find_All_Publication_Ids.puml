@@ -61,6 +61,7 @@ loop for publicationDM : publicationDMs
     activate Year
     deactivate Year
 
+    create "publicationId%n():PublicationId"
     JpaRepo -->> "publicationId%n():PublicationId" : createPublicationId(title, authorId, releaseYear)
 
     JpaRepo -> "publicationIds%n():List<PublicationId>" : add(publicationId)

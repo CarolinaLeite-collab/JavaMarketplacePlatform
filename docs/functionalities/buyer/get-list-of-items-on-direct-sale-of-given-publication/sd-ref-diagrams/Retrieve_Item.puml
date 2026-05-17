@@ -91,7 +91,7 @@ deactivate JpaItemRepo
 deactivate ItemRepo
 
 ref over ItemRepo
-[[../Put_For_Sale_A_Publication_In_My_Library_For_Direct_Sale_SD.puml Return to main diagram]]
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publication_SD.puml Return to main diagram]]
 
 end ref
 @enduml
