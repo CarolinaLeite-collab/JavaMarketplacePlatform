@@ -98,11 +98,11 @@ loop for directSaleDM : directSaleDMs
 
     JpaRepo -> "directSales%n():List<DirectSale>" : add(reconstructedDirectSale)
     activate "directSales%n():List<DirectSale>"
-    deactivate "directSales%n():List<DirectSale>"
 
 end
 
 "directSales%n():List<DirectSale>" --> JpaRepo : directSales
+deactivate "directSales%n():List<DirectSale>"
 
 JpaRepo --> Repo : directSales
 deactivate JpaRepo
