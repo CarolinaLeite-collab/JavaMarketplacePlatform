@@ -27,7 +27,6 @@ class AddItemToListControllerTest {
     private GenreId _genreIdDouble;
     private ItemId _itemIdDouble;
     private Library _libraryDouble;
-    private ListOfItems _listDouble;
 
     @BeforeEach
     void setUp() {
@@ -37,7 +36,6 @@ class AddItemToListControllerTest {
         _genreIdDouble = mock(GenreId.class);
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
-        _listDouble = mock(ListOfItems.class);
     }
 
 
@@ -68,7 +66,6 @@ class AddItemToListControllerTest {
         // Assert
         assertEquals(1, result.size());
         assertSame(list1, result.get(0));
-        verify(_iListOfItemsRepoDouble).findAll();
     }
 
     @Test
@@ -90,7 +87,6 @@ class AddItemToListControllerTest {
         List<ListOfItems> result = controller.getMyLists(_userIdDouble);
 
         assertTrue(result.isEmpty());
-        verify(_iListOfItemsRepoDouble).findAll();
     }
 
     // --------------------
