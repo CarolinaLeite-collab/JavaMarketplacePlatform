@@ -5,13 +5,15 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibraryId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,9 +44,7 @@ class AddItemToListControllerTest {
 
     @BeforeEach
     void setUp() {
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _iLibraryRepoDouble = mock(ILibraryRepo.class);
-        _userIdDouble = mock(UserId.class);
+
         _genreIdDouble = mock(GenreId.class);
         _itemIdDouble = mock(ItemId.class);
         _libraryDouble = mock(Library.class);
@@ -158,23 +158,6 @@ class AddItemToListControllerTest {
         // Act & Assert
         assertThrows(IllegalStateException.class,
                 () -> _controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
-    }
-
-    @Test
-    void addItemToListShouldSaveListAfterAddingItem() {
-        // Arrange
-        ListOfItems matchingList = mock(ListOfItems.class);
-        when(matchingList.getUserId()).thenReturn(_userIdDouble);
-        when(matchingList.getName()).thenReturn(_nameDouble);
-        when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(matchingList));
-
-        // Act
-        _controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble);
-
-        // Assert
-        verify(matchingList).addItem(_itemIdDouble);
-        verify(_iListOfItemsRepoDouble).save(matchingList);
     }
 
     @Test

@@ -5,10 +5,12 @@ import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Controller
 public class AddItemToListController {
 
     private final IListOfItemsRepo _iListOfItemsRepo;
