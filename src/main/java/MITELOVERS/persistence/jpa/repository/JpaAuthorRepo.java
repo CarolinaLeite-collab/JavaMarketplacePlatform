@@ -78,4 +78,12 @@ public class JpaAuthorRepo implements IAuthorRepo {
 
         return _springDataRepo.existsById(id.toString());
     }
+
+    @Override
+    public AuthorId findByName(String name) {
+
+        AuthorDataModel authorDataModel = _springDataRepo.findByName(name).getFirst();
+
+        return _assembler.toDomain(authorDataModel).identity();
+    }
 }

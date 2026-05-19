@@ -1,9 +1,7 @@
 @startuml
-'https://plantuml.com/sequence-diagram
+title "As a User, I want to add one of my publications to a list of mine" SD
 hide footbox
-title "As a User, I want to add one of my publications to a list of mine" - SD
 
-'==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -17,70 +15,68 @@ skinparam ActivationBackgroundColor black
 autonumber
 autoactivate off
 
-'==== Actor and Participants ===='
-actor User
-
+actor "User"
 participant ":AddItemToListUI" as UI
-participant ":AddItemToList\nController" as Ctl
+participant ":AddItemToListController" as Ctl
 participant ":ILibraryRepo" as ILibraryRepo
-participant "library:Library" as library
 participant ":IListOfItemsRepo" as IListRepo
-participant "lop:ListOfItems" as ListOfItems
 
-'==== Interactions ===='
-
-'==== User selects the item ===='
-User -> UI : I want to add one of my items\nto a list of mine
+"User" -> UI : I want to add one of my items to a list of mine
 activate UI
+
 UI -> Ctl : getItemsInMyLibrary(userId)
 activate Ctl
-Ctl -> ILibraryRepo : findLibraryByUser(userId)
+Ctl -> ILibraryRepo : getItemsInLibraryByUserId(userId)
 activate ILibraryRepo
-ILibraryRepo -> Ctl : libraryId
+ILibraryRepo --> Ctl : List<ItemId>
 deactivate ILibraryRepo
-Ctl -> ILibraryRepo: getItemsInLibrary(libraryId)
-activate ILibraryRepo
-ILibraryRepo -> library : getItemsInLibrary()
-activate library
-library --> ILibraryRepo : Map<ItemId, ItemSummary>
-deactivate library
-ILibraryRepo --> Ctl : Map<ItemId, ItemSummary>
-deactivate ILibraryRepo
-Ctl --> UI : Map<ItemId, ItemSummary>
+Ctl --> UI : List<ItemId>
 deactivate Ctl
-UI --> User : Select which Item\nyou wish to add
+
+UI --> "User" : Select which item you wish to add
 deactivate UI
-User -> UI: itemId
+"User" -> UI : itemId
 activate UI
 
-'==== User selects the destination list ===='
 UI -> Ctl : getMyLists(userId)
 activate Ctl
-Ctl -> IListRepo : findListsByUser(userId)
+Ctl -> IListRepo : findListsByUserId(userId)
 activate IListRepo
-IListRepo --> Ctl : Map<ListOfItemsId, String>
+IListRepo --> Ctl : list
 deactivate IListRepo
-Ctl --> UI : Map<ListOfItemsId, String>
+Ctl --> UI : list
 deactivate Ctl
-UI --> User : Select which list\nyou wish to add it to
+
+UI --> "User" : Select which list you wish to add it to
 deactivate UI
-User -> UI : listOfItemsId
+"User" -> UI : listOfItemsId
 activate UI
 
-'==== Use Case execution ===='
-UI -> Ctl : addItemToList\n(itemId, listOfItemsId)
+UI -> Ctl : addItemToList(itemId, listOfItemsId)
 activate Ctl
-Ctl  -> IListRepo : addItemToList\n(itemId, listOfItemsId)
+
+Ctl -> IListRepo : ofIdentity(listOfItemsId)
 activate IListRepo
-IListRepo -> IListRepo: findListById(listOfItemsId)
-IListRepo -> ListOfItems : addItem(itemId)
-IListRepo -> IListRepo: save(listOfItems)
-IListRepo --> Ctl: true
+IListRepo --> Ctl : list
 deactivate IListRepo
+
+Ctl -> "list:ListOfItems" : addItem(itemId)
+activate "list:ListOfItems"
+deactivate "list:ListOfItems"
+
+Ctl -> IListRepo : save(list)
+
+ref over IListRepo
+[[sd-ref-diagrams/Save_ListOfItems.puml Save list and return saved domain object]]
+end ref
+
+activate IListRepo
+IListRepo --> Ctl : savedList
+deactivate IListRepo
+
 Ctl --> UI : true
 deactivate Ctl
-UI --> User : Done!
+UI --> "User" : Done!
 deactivate UI
-
 
 @enduml

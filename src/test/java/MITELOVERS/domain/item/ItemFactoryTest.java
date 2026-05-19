@@ -4,8 +4,10 @@ import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 
 class ItemFactoryTest {
 
@@ -15,6 +17,7 @@ class ItemFactoryTest {
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.LIKE_NEW;
+        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -22,7 +25,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
             //Act
-            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, nameDouble);
 
             //Assert
             assertNotNull(newItem);
@@ -38,6 +41,7 @@ class ItemFactoryTest {
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.POOR;
         SaleStatus saleStatus = SaleStatus.OnAuction;
+        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -45,7 +49,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
 
-            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus);
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, nameDouble);
 
             //Assert
             assertNotNull(reconstitutedItem);

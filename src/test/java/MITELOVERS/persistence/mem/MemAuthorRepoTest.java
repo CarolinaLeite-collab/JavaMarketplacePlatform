@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.valueobject.AuthorId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MemAuthorRepoTest {
 
@@ -226,4 +226,16 @@ public class MemAuthorRepoTest {
 
     }
 
+    @Test
+    void shouldThrowExceptionWhenFindByNameIsCalled() {
+
+        // Arrange
+        MemAuthorRepo repo = new MemAuthorRepo();
+
+        // Act + assert
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> repo.findByName("John Doe")
+        );
+    }
 }

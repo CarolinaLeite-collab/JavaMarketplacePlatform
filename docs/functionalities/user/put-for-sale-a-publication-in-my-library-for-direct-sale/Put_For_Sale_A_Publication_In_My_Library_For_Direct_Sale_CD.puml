@@ -19,69 +19,122 @@ class PublicationInLibraryForDirectSaleUI {
 
 package "controller"{
 class PublicationInLibraryForDirectSaleController {
-  - libraryRepo: ILibraryRepo
-  - directSaleRepo: IdirectSaleRepo
   + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
-  + putItemIdOnDirectSale(itemId: ItemId, price: Price, timeLimit: Period): DirectSale
+  + putItemIdOnDirectSale(itemIds: List<ItemId>, price: Price, timeLimit: Duration): DirectSale
 }
 }
 
 package "ddd"{
-    interface IRepository<ID, T> <<Interface>>
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity : T) : T
+        +ofIdentity(id : ID) : Optional<T>
+        +containsOfIdentity(id : ID) : boolean
+    }
+    interface AggregateRoot <ID >{
+     }
+    interface DomainEntity<ID, T> <<Interface>> {
+           +identity() : ID
+    }
 }
 
 package "domain"{
     package "repository"{
         interface ILibraryRepo {
-          + getItemsIdInLibraryByUserId(userId: UserId): List<ItemId>
         }
         interface IDirectSaleRepo{
         }
+        interface IItemRepo{
+        }
     }
-    package "library"{
+    package "library" #b0c4d4 {
         class Library {
-          - _userId: UserId
-          - _itemsId: List<ItemId>
           + getItemsIdInLibrary(): List<ItemId>
         }
     }
 
-    package "directsale"{
+    package "directsale" #b0c4d4 {
         class DirectSaleFactory {
-          + createDirectSale(itemsId: List<ItemId>, price: Price, timeLimit: Period): DirectSale
+          + createDirectSale(itemIds: List<ItemId>, price: Price, timeLimit: Duration): DirectSale
         }
 
         class DirectSale {
-          - itemId: ItemId
           - price: Price
-          - timeLimit: Period
+          - timeLimit: Duration
         }
     }
 
+    package "item" #b0c4d4 {
+            class Item {
+              + getSaleStatus(): SaleStatus
+              + markAsDirectSale(): void
+            }
+        }
+
    package "valueobject"{
+       class LibraryId {
+        -_email : Email
+        +fromUserId(userId : UserId)
+       }
        class ItemId {
-       - _itemId : ItemId
+       - _sku : SKU
+       }
+       class UserId {
+       - _email : Email
+       }
+       class EditionId {
+       -_eId : String
+       }
+       enum Condition {
+       LIKE_NEW
+       GOOD
+       FAIR
+       POOR
+       }
+       class Description {
+       -_description : String
+       }
+       enum SaleStatus {
+       NotOnSale
+       OnAuction
+       OnDirectSale
+       Sold
+       }
+       class Name {
+       -_name : String
        }
    }
 }
 
 
 PublicationInLibraryForDirectSaleUI "1" ..> "1" PublicationInLibraryForDirectSaleController : invokes
-PublicationInLibraryForDirectSaleController "1" ..> "1" ILibraryRepo : calls
-PublicationInLibraryForDirectSaleController "1" ..> "1" IDirectSaleRepo : calls
+PublicationInLibraryForDirectSaleController "1" --> "1" ILibraryRepo : calls
+PublicationInLibraryForDirectSaleController "1" --> "1" IDirectSaleRepo : calls
+PublicationInLibraryForDirectSaleController "1" --> "1" IItemRepo : calls
 
 Library "1" --> "*" ItemId : has
-ILibraryRepo "1" ..|> "1" IRepository
+Library "1" ..> "1" UserId : uses
+Library "1" --> "1" LibraryId : has
 
-IDirectSaleRepo "1     " ..|> "1" IRepository
+IDirectSaleRepo  ..|>  IRepository
+IItemRepo  ..|>  IRepository
+ILibraryRepo ..|> IRepository
 PublicationInLibraryForDirectSaleController "1" --> "1    " DirectSaleFactory : <<use>>
 DirectSaleFactory "1" ..> "*" DirectSale : <<create>>
 
 IDirectSaleRepo "1" --> "*" DirectSale : persists
-ILibraryRepo "1" --> "*" Library : manages
+ILibraryRepo "1" --> "*" Library : persists
+IItemRepo "1" --> "*" Item : persists
 
-ItemId "*" --> "1" DirectSale : references
+Item "1" --> "1" ItemId : has
+Item "1" --> "1" EditionId : has
+Item "1" --> "1" Condition : has
+Item "1" --> "1" Description : has
+Item "1" --> "1" SaleStatus : has
+Item "1" --> "1" Name : has
+ItemId "1" <-- "1" DirectSale : references
 
-
-
+AggregateRoot -|> DomainEntity
+DirectSale .|> AggregateRoot
+Item .|> AggregateRoot
+Library .|> AggregateRoot
 @enduml

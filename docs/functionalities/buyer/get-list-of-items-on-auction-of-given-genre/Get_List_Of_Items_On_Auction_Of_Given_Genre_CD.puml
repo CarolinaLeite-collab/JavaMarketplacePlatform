@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-title "As a Buyer, I want to get the list of items on auction of a given genre" CD
+title "Get items on auction of a given genre, sorted ascendingly by deadline" CD
 
 '==== basic style ====
 skinparam monochrome false
@@ -30,20 +30,19 @@ package "ddd" {
 
 package "domain" {
     package "repository" {
-        interface IGenreRepo <<Interface>> {
-            +findAllKeys() : List<GenreId>
-        }
+        interface IGenreRepo <<Interface>>
         interface IAuctionRepo <<Interface>> {
-            +findAll() : Iterable<Auction>
+             +findByItemsIdSorted(itemIds : List<ItemId>) : List<ItemId>
         }
         interface IItemRepo <<Interface>> {
-            +ofIdentity(id : ItemId) : Optional<Item>
+             +findAllKeys() : List<ItemId>
+             +ofIdentity(id : ItemId) : Optional<Item>
         }
         interface IEditionRepo <<Interface>> {
             +ofIdentity(id : EditionId) : Optional<Edition>
         }
         interface IPublicationRepo <<Interface>> {
-            +ofIdentity(publicationId : PublicationId) : Optional<Publication>
+            +ofIdentity(id : PublicationId) : Optional<Publication>
         }
     }
 
@@ -56,7 +55,9 @@ package "domain" {
 
     package "auction" #b0c4d4 {
         class Auction <<Root>> <<Entity>> {
-            getItemsId() : List<ItemId>
+            -auctionEndDate: ZonedDateTime
+            +getItemsId() : List<ItemId>
+            +getAuctionEndDate() : Instant
         }
     }
 
@@ -81,29 +82,37 @@ package "domain" {
 
 GetAuctionItemsByGenreUI "1".>"1" GetAuctionItemsByGenreController : invokes
 
+'--- Controller Dependencies ---
 GetAuctionItemsByGenreController "1" ..> "1" IAuctionRepo : <<use>>
 GetAuctionItemsByGenreController "1" ..> "1" IItemRepo : <<use>>
 GetAuctionItemsByGenreController "1" ..> "1" IEditionRepo : <<use>>
 GetAuctionItemsByGenreController "1" ..> "1" IPublicationRepo : <<use>>
 GetAuctionItemsByGenreController "1" ..> "1" IGenreRepo : <<use>>
 
+'--- Repository Hierarchy ---
 IAuctionRepo ---|> IRepository
 IItemRepo ---|> IRepository
 IEditionRepo ---|> IRepository
 IPublicationRepo ---|> IRepository
 IGenreRepo ---|> IRepository
 
+'--- Management Relationships ---
 IAuctionRepo "1" --> "*" Auction : manages
 IItemRepo "1" --> "*" Item : manages
 IEditionRepo "1" --> "*" Edition : manages
 IPublicationRepo "1" --> "*" Publication : manages
 
-Auction "1" o-- "1..*" ItemId : aggregates
-Item "1" --> "1" EditionId : has
+'--- Domain Logic Links ---
+Auction "1" o-- "1..*" ItemId : references
 Item "1" --> "1" ItemId : has
-Edition "1" --> "1" PublicationId : has
+Edition "1" --> "1" PublicationId : references
 Edition "1" --> "1" EditionId : has
-Publication "1" --> "1" GenreId : has
+Publication "1" --> "1" GenreId : references
 Publication "1" --> "1" PublicationId : has
+
+note bottom of IAuctionRepo
+  findByItemsIdSorted returns ItemIds
+  ordered by Auction::auctionEndDate
+end note
 
 @enduml

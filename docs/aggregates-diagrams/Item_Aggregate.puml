@@ -34,14 +34,14 @@ skinparam interface {
 }
 
 
-package "DOMAIN" {
+package "domain" {
 
-  package "REPOSITORY" {
+  package "repository" {
     interface IItemRepo <<Interface>> {
     }
   }
 
-  package "ITEM" #AFC4D6 {
+  package "item" #AFC4D6 {
 
     class ItemFactory <<Factory>> {
       +createItem(editionID : EditionID, condition : %n()Condition, description : Description) : Item
@@ -60,7 +60,7 @@ package "DOMAIN" {
     }
   }
 
-  package "VALUE OBJECT" {
+  package "valueobject" {
     class Condition <<ValueObject>>
     class Description <<ValueObject>>
     class EditionID <<ValueObject>>
@@ -73,9 +73,10 @@ package "DOMAIN" {
   }
 }
 
-package DDD {
+package ddd {
     interface IRepository<ID, T> <<Interface>> {
         +save(entity : T) : T
+        +findAllKeys() : Iterable<ID>
         +findAll() : Iterable<T>
         +ofIdentity(id : ID) : Optional<T>
         +containsOfIdentity(id : ID) : boolean
@@ -94,7 +95,7 @@ ItemFactory "1" ..> "*" Item : <<create>>
 Item "*" --> "1" Condition : has
 Item "1" --> "1" Description : has
 Item "1" --> "1" EditionID : references
-Item "1" --> "1" ItemID : has
+Item "1" *-- "1" ItemID : has
 Item "1" --> "1" SaleStatus : has
 
 IItemRepo --|> IRepository

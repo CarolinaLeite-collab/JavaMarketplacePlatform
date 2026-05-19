@@ -14,7 +14,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +60,7 @@ class DirectSaleAssemblerTest {
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
 
         //Act
-        DirectSaleDataModel dm = assembler.domain2DM(directSale);
+        DirectSaleDataModel dm = assembler.toDataModel(directSale);
 
         //Assert
         assertEquals(expectedResult,dm.getTimeLimit());
@@ -77,7 +78,7 @@ class DirectSaleAssemblerTest {
         when(priceDM.getCurrency()).thenReturn("EUR");
 
         DirectSaleDataModel dm = mock(DirectSaleDataModel.class);
-        when(dm.getDirectSaleId()).thenReturn("DS1");
+        when(dm.getDirectSaleId()).thenReturn("DS-ABCDEF12");
         when(dm.getItemsId()).thenReturn(List.of("ABC123DEF0"));
         when(dm.getPrice()).thenReturn(priceDM);
         when(dm.getTimeLimit()).thenReturn(5L);
@@ -87,7 +88,7 @@ class DirectSaleAssemblerTest {
 
         DirectSaleFactory factory = mock(DirectSaleFactory.class);
         when(factory.createDirectSale(
-                new DirectSaleId("DS1"),
+                new DirectSaleId("DS-ABCDEF12"),
                 List.of(new ItemId("ABC123DEF0")),
                 new Price(10.0, Currency.EUR),
                 Duration.ofDays(5),
@@ -98,7 +99,7 @@ class DirectSaleAssemblerTest {
         DirectSaleAssembler assembler = new DirectSaleAssembler(factory);
 
         //Act
-        DirectSale result = assembler.DM2Domain(dm);
+        DirectSale result = assembler.toDomain(dm);
 
         //Assert
         assertSame(expected, result);

@@ -1,11 +1,10 @@
 package MITELOVERS.domain.listofitems;
 
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -30,10 +29,8 @@ class ListOfItemsTest {
 
     @Test
     void constructsListSuccessfully() {
-        // Arrange & Act
-        ListOfItems list = new ListOfItems(_user1IdDouble,"My favorite books", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("My favorite books"), _genre1IdDouble);
 
-        // Assert
         assertNotNull(list);
         assertTrue(list.isPrivate());
         assertTrue(list.getItemIds().isEmpty());
@@ -41,203 +38,261 @@ class ListOfItemsTest {
 
     @Test
     void throwsExceptionWhenListNameIsNull() {
-        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new ListOfItems(_user1IdDouble, null, _genre1IdDouble));
     }
 
     @Test
     void sameAsShouldReturnFalseForDifferentInstances() {
-        //Arrange
-        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
-        // Act & Assert
         assertFalse(list1.sameAs(list2));
     }
 
     @Test
     void equalsShouldReturnFalseForNull() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
-        // Act & Assert
         assertNotEquals(list, null);
     }
 
     @Test
     void equalsShouldReturnFalseForDifferentClass() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
-        String notAList = "not a ListOfItems";
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
-        // Act & Assert
-        assertNotEquals(list, notAList);
+        assertNotEquals(list, "not a ListOfItems");
     }
 
     @Test
     void listShouldBePrivateByDefault() {
-        // Arrange & Act
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 
-        // Assert
         assertTrue(list.isPrivate());
     }
 
     @Test
     void makePublicShouldMakeListPublic() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 
-        // Act
-        list.makePublic();
+        list.makePublic(new SharedDuration(7));
 
-        // Assert
         assertFalse(list.isPrivate());
     }
 
     @Test
     void makePublicShouldBeIdempotent() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 
-        // Act
-        list.makePublic();
-        list.makePublic();
+        list.makePublic(new SharedDuration(7));
+        list.makePublic(new SharedDuration(7));
 
-        // Assert
+        assertFalse(list.isPrivate());
+    }
+
+    @Test
+    void makePublicShouldThrowWhenDurationIsNull() {
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
+
+        assertThrows(IllegalArgumentException.class, () -> list.makePublic(null));
+    }
+
+    @Test
+    void makePublicShouldSetSharedUntil() {
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
+        LocalDateTime before = LocalDateTime.now().plusDays(7).minusSeconds(1);
+
+        list.makePublic(new SharedDuration(7));
+
+        assertTrue(list.getSharedUntil().isAfter(before));
+    }
+
+    @Test
+    void getSharedUntilShouldReturnNullByDefault() {
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
+
+        assertNull(list.getSharedUntil());
+    }
+
+    @Test
+    void isPrivateShouldReturnTrueAfterExpiry() {
+        LocalDateTime expired = LocalDateTime.now().minusDays(1);
+        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, new Name("Lista"),
+                _genre1IdDouble, false, expired);
+
+        assertTrue(list.isPrivate());
+    }
+
+    @Test
+    void isPrivateShouldReturnFalseWhenNotExpired() {
+        LocalDateTime future = LocalDateTime.now().plusDays(7);
+        ListOfItems list = new ListOfItems(_listIdDouble, _user1IdDouble, new Name("Lista"),
+                _genre1IdDouble, false, future);
+
         assertFalse(list.isPrivate());
     }
 
     @Test
     void addItemShouldAddSuccessfully() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
 
-        // Act
         list.addItem(_itemIdDouble);
 
-        // Assert
         assertEquals(1, list.getItemIds().size());
         assertEquals(_itemIdDouble, list.getItemIds().get(0));
     }
 
     @Test
     void addItemShouldThrowWhenNull() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 
-        // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> list.addItem(null));
     }
 
     @Test
     void addItemShouldThrowWhenDuplicate() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
-
         list.addItem(_itemIdDouble);
 
-        // Act & Assert
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> list.addItem(_itemIdDouble) // SUT
-        );
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> list.addItem(_itemIdDouble));
         assertEquals("Item already in list", ex.getMessage());
     }
 
     @Test
     void getItemIdsShouldReturnImmutableCopy() {
-        // Arrange
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
         list.addItem(_itemIdDouble);
 
-        // Act
         var items = list.getItemIds();
 
-        // Assert
         assertThrows(UnsupportedOperationException.class, () -> items.add(_itemIdDouble));
     }
 
     @Test
     void identityShouldReturnNonNullId() {
-        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
+
         assertNotNull(list.identity());
     }
 
     @Test
     void constructorShouldThrowWhenUserIdIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(null, "My List", _genre1IdDouble));
+                () -> new ListOfItems(null, new Name("My List"), _genre1IdDouble));
     }
 
     @Test
     void constructorShouldThrowWhenGenreIdIsNull() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ListOfItems(_user1IdDouble, "My List", null));
+                () -> new ListOfItems(_user1IdDouble, new Name("My List"), null));
     }
 
     @Test
     void equalsShouldReturnFalseForDifferentInstances() {
-        ListOfItemsId id2 = mock(ListOfItemsId.class);
-
-        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
         assertNotEquals(list1, list2);
     }
 
     @Test
     void modifyingReturnedListShouldNotAffectInternalState() {
-
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
         _itemIdDouble = mock(ItemId.class);
         list.addItem(_itemIdDouble);
 
         var copy = list.getItemIds();
         assertThrows(UnsupportedOperationException.class, () -> copy.remove(0));
-
-        // Ensure original list remains unchanged
         assertEquals(1, list.getItemIds().size());
     }
 
     @Test
     void makePublicShouldNotChangeOtherFields() {
-        ListOfItems list = new ListOfItems(_user1IdDouble, "Lista", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 
-        list.makePublic();
+        list.makePublic(new SharedDuration(7));
 
         assertEquals(_user1IdDouble, list.getUserId());
-        assertEquals("Lista", list.getName());
+        assertEquals(new Name("Lista"), list.getName());
         assertEquals(_genre1IdDouble, list.getGenreId());
     }
 
     @Test
     void hashCodeShouldDependOnIdObject() {
-        ListOfItems list1 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
         assertNotEquals(list1.hashCode(), list2.hashCode());
     }
 
     @Test
     void sameAsShouldReturnTrueForSameInstance() {
-        ListOfItems list = new ListOfItems(_user1IdDouble, "My List", _genre1IdDouble);
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("My List"), _genre1IdDouble);
 
         assertTrue(list.sameAs(list));
     }
 
     @Test
     void sameAsShouldReturnFalseForDifferentIds() {
-        ListOfItemsId id2 = mock(ListOfItemsId.class);
-
-        ListOfItems list1 = new ListOfItems(_user1IdDouble, "A", _genre1IdDouble);
-        ListOfItems list2 = new ListOfItems(_user1IdDouble, "A", _genre1IdDouble);
+        ListOfItems list1 = new ListOfItems(_user1IdDouble, new Name("My"), _genre1IdDouble);
+        ListOfItems list2 = new ListOfItems(_user1IdDouble, new Name("My"), _genre1IdDouble);
 
         assertFalse(list1.sameAs(list2));
     }
 
+    @Test
+    void reconstructionConstructorShouldConstructSuccessfully() {
+        ListOfItemsId id = mock(ListOfItemsId.class);
+
+        ListOfItems list = new ListOfItems(id, _user1IdDouble, new Name("My List"),
+                _genre1IdDouble, true, null);
+
+        assertNotNull(list);
+        assertEquals(id, list.identity());
+        assertTrue(list.isPrivate());
+        assertTrue(list.getItemIds().isEmpty());
+    }
+
+    @Test
+    void reconstructionConstructorShouldThrowWhenListOfItemsIdIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(null, _user1IdDouble, new Name("My List"),
+                        _genre1IdDouble, true, null));
+    }
+
+    @Test
+    void reconstructionConstructorShouldThrowWhenUserIdIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(_listIdDouble, null, new Name("My List"),
+                        _genre1IdDouble, true, null));
+    }
+
+    @Test
+    void reconstructionConstructorShouldThrowWhenNameIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(_listIdDouble, _user1IdDouble, null,
+                        _genre1IdDouble, true, null));
+    }
+
+    @Test
+    void reconstructionConstructorShouldThrowWhenGenreIdIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ListOfItems(_listIdDouble, _user1IdDouble, new Name("My List"),
+                        null, true, null));
+    }
+
+    @Test
+    void equalsShouldReturnTrueForSameId() {
+        ListOfItemsId id = mock(ListOfItemsId.class);
+        ListOfItems list1 = new ListOfItems(id, _user1IdDouble, new Name("My List"),
+                _genre1IdDouble, true, null);
+        ListOfItems list2 = new ListOfItems(id, _user1IdDouble, new Name("My List"),
+                _genre1IdDouble, true, null);
+
+        assertEquals(list1, list2);
+    }
 }

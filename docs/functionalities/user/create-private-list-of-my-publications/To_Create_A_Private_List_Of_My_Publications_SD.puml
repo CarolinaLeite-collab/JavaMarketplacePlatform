@@ -1,8 +1,7 @@
 @startuml
+title "As a User, I want to create a private list of my publications, give it a name and set a genre" SD
 hide footbox
-title "As a User, I want to create a private list of my publications, give it a name and set a genre" - SD
 
-'==== basic style ===='
 skinparam monochrome false
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -11,67 +10,66 @@ skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ArrowColor #57595BAA
+skinparam ActivationBackgroundColor black
 
 autonumber
 autoactivate off
 
-'==== Actor and Participants ===='
 actor "User"
-
 participant ":CreatePrivateListOfItemsUI" as UI
-participant ":CreatePrivateListOfItemsController" as CTL
-participant ":IListOfItemsRepo" as IRepo
-participant ":ListOfItemsFactory" as Factory
+participant ":CreatePrivateListOfItemsController" as Ctl
 participant ":IGenreRepo" as IGenreRepo
+participant ":ListOfItemsFactory" as Factory
+participant ":IListOfItemsRepo" as IRepo
 
-'==== UI interaction ===='
-"User" -> UI: I want to create a private list
+"User" -> UI : I want to create a private list
 activate UI
-
-"User" <-- UI: What is the list's name?
+UI --> "User" : What is the list's name?
 deactivate UI
-"User" -> UI: name
+"User" -> UI : name
 activate UI
 
-UI -> CTL: getListOfOfficialGenres()
-activate CTL
-CTL -> IGenreRepo: getListOfOfficialGenres()
+UI -> Ctl : getListOfOfficialGenres
+activate Ctl
+Ctl -> IGenreRepo : getListOfOfficialGenres()
 activate IGenreRepo
-CTL <-- IGenreRepo: copyListOfOfficialGenres
+IGenreRepo --> Ctl : genres
 deactivate IGenreRepo
-UI <-- CTL: copyListOfOfficialGenres
-deactivate CTL
+Ctl --> UI : genres
+deactivate Ctl
 
-"User" <-- UI: What genre?
+UI --> "User" : What genre?
 deactivate UI
-"User" -> UI: genreId
+"User" -> UI : genreId
 activate UI
 
-'==== Use case execution ===='
-UI -> CTL: createListOfItems\n(userId, name, genreId)
-activate CTL
-CTL -> Factory: createListOfItems\n(userId, name, genreId)
+UI -> Ctl : createListOfItems(userId, name, genreId)
+activate Ctl
+
+Ctl -> Factory : createListOfItems(userId, name, genreId)
 activate Factory
-create "listOfItems:ListOfItems" as listOfItems
-Factory -->> listOfItems: <<create>>
-Factory --> CTL : newList
+create "newList:ListOfItems"
+Factory -->> "newList:ListOfItems" : <<create>>(userId, name, genreId)
+Factory --> Ctl : newList
 deactivate Factory
 
-' Orchestration of duplicate check and persistence
-CTL -> IRepo : isRepeated = containsOfIdentity(newList.identity())
+ref over Ctl
+[[sd-ref-diagrams/Verify_ListOfItems.puml Verify the existence of newList in persistence]]
+end ref
+
+Ctl -> IRepo : save(newList)
+
+ref over IRepo
+[[sd-ref-diagrams/Save_ListOfItems.puml Save newList and return saved domain object]]
+end ref
+
 activate IRepo
+IRepo --> Ctl : savedList
+deactivate IRepo
 
-opt !isRepeated
-    CTL -> IRepo: save(newList)
-    IRepo --> CTL: newList
-    deactivate IRepo
-end
-
-
-UI <-- CTL: true
-deactivate CTL
-"User" <-- UI: Private list successfully created!
+Ctl --> UI : savedList
+deactivate Ctl
+UI --> "User" : Private list successfully created!
 deactivate UI
 
 @enduml

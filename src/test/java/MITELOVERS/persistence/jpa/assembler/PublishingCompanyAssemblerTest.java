@@ -6,7 +6,8 @@ import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import MITELOVERS.persistence.jpa.datamodel.PublishingCompanyDataModel;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

@@ -6,19 +6,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class ItemTest {
 
     private EditionId _editionIdDouble;
     private Condition _conditionDouble;
     private Description _descriptionDouble;
+    private Name _nameDouble;
 
     @BeforeEach
     void setUp() {
         _editionIdDouble = mock(EditionId.class);
         _conditionDouble = Condition.GOOD;
         _descriptionDouble = mock(Description.class);
+        _nameDouble = mock(Name.class);
     }
 
     // ------------------------------------------------------------
@@ -30,12 +31,13 @@ class ItemTest {
         // Arrange
 
         // Act
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Assert
-        assertSame(_editionIdDouble, sut.getEditionId());
+        assertEquals(_editionIdDouble, sut.getEditionId());
         assertEquals(_conditionDouble, sut.getCondition());
-        assertSame(_descriptionDouble, sut.getDescription());
+        assertEquals(_descriptionDouble, sut.getDescription());
+        assertEquals(_nameDouble, sut.getName());
     }
 
     @Test
@@ -44,14 +46,15 @@ class ItemTest {
         ItemId itemIdDouble = mock(ItemId.class);
 
         // Act
-        Item sut = new Item(itemIdDouble, _editionIdDouble, _conditionDouble, _descriptionDouble, SaleStatus.OnDirectSale);
+        Item sut = new Item(itemIdDouble, _editionIdDouble, _conditionDouble, _descriptionDouble, SaleStatus.OnDirectSale, _nameDouble);
 
         // Assert
-        assertSame(itemIdDouble, sut.identity());
-        assertSame(_editionIdDouble, sut.getEditionId());
+        assertEquals(itemIdDouble, sut.identity());
+        assertEquals(_editionIdDouble, sut.getEditionId());
         assertEquals(_conditionDouble, sut.getCondition());
-        assertSame(_descriptionDouble, sut.getDescription());
+        assertEquals(_descriptionDouble, sut.getDescription());
         assertEquals(SaleStatus.OnDirectSale, sut.getSaleStatus());
+        assertEquals(_nameDouble, sut.getName());
     }
 
     @Test
@@ -59,7 +62,7 @@ class ItemTest {
         // Arrange
 
         // Act
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Assert
         assertNotNull(sut.identity());
@@ -70,7 +73,7 @@ class ItemTest {
         // Arrange
 
         // Act
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Assert
         assertEquals(SaleStatus.NotOnSale, sut.getSaleStatus());
@@ -83,7 +86,7 @@ class ItemTest {
     @Test
     void markAsAuctionItemNotOnSaleChangesStatusToOnAuction() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         sut.markAsAuction();
@@ -95,7 +98,7 @@ class ItemTest {
     @Test
     void markAsAuctionItemAlreadyOnAuctionThrowsIllegalStateException() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsAuction();
 
         // Act
@@ -111,7 +114,7 @@ class ItemTest {
     @Test
     void markAsAuctionItemAlreadyOnDirectSaleThrowsIllegalStateException() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsDirectSale();
 
         // Act
@@ -131,7 +134,7 @@ class ItemTest {
     @Test
     void markAsDirectSaleItemNotOnSaleChangesStatusToOnDirectSale() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         sut.markAsDirectSale();
@@ -143,7 +146,7 @@ class ItemTest {
     @Test
     void markAsDirectSaleItemAlreadyOnDirectSaleThrowsIllegalStateException() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsDirectSale();
 
         // Act
@@ -159,7 +162,7 @@ class ItemTest {
     @Test
     void markAsDirectSaleItemAlreadyOnAuctionThrowsIllegalStateException() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsAuction();
 
         // Act
@@ -179,7 +182,7 @@ class ItemTest {
     @Test
     void markAsSoldItemOnAuctionChangesStatusToSold() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsAuction();
 
         // Act
@@ -192,7 +195,7 @@ class ItemTest {
     @Test
     void markAsSoldItemOnDirectSaleChangesStatusToSold() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsDirectSale();
 
         // Act
@@ -205,7 +208,7 @@ class ItemTest {
     @Test
     void markAsSoldItemNotOnSaleThrowsIllegalStateException() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         IllegalStateException exception = assertThrows(
@@ -224,7 +227,7 @@ class ItemTest {
     @Test
     void getEditionIdExistingItemReturnsAssignedEditionId() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         EditionId result = sut.getEditionId();
@@ -236,7 +239,7 @@ class ItemTest {
     @Test
     void getConditionExistingItemReturnsAssignedCondition() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         Condition result = sut.getCondition();
@@ -248,7 +251,7 @@ class ItemTest {
     @Test
     void getDescriptionExistingItemReturnsAssignedDescription() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         Description result = sut.getDescription();
@@ -260,7 +263,7 @@ class ItemTest {
     @Test
     void getSaleStatusNewItemReturnsNotOnSale() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         SaleStatus result = sut.getSaleStatus();
@@ -272,7 +275,7 @@ class ItemTest {
     @Test
     void getSaleStatusItemOnAuctionReturnsOnAuction() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
         sut.markAsAuction();
 
         // Act
@@ -282,6 +285,18 @@ class ItemTest {
         assertEquals(SaleStatus.OnAuction, result);
     }
 
+    @Test
+    void getNameExistingItemReturnsAssignedName() {
+        // Arrange
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
+
+        // Act
+        Name result = sut.getName();
+
+        // Assert
+        assertSame(_nameDouble, result);
+    }
+
     // ------------------------------------------------------------
     // identity
     // ------------------------------------------------------------
@@ -289,7 +304,7 @@ class ItemTest {
     @Test
     void identityExistingItemReturnsNonNullItemId() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         ItemId result = sut.identity();
@@ -300,7 +315,7 @@ class ItemTest {
     @Test
     void identityCalledTwiceReturnsSameItemIdInstance() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         ItemId first = sut.identity();
@@ -317,7 +332,7 @@ class ItemTest {
     @Test
     void sameAsSameObjectReturnsTrue() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.sameAs(sut);
@@ -329,8 +344,8 @@ class ItemTest {
     @Test
     void sameAsDifferentItemReturnsFalse() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
-        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
+        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.sameAs(otherItem);
@@ -342,7 +357,7 @@ class ItemTest {
     @Test
     void sameAsDifferentTypeReturnsFalse() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.sameAs("not-an-item");
@@ -358,7 +373,7 @@ class ItemTest {
     @Test
     void equalsSameObjectReturnsTrue() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.equals(sut);
@@ -370,7 +385,7 @@ class ItemTest {
     @Test
     void equalsNullReturnsFalse() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.equals(null);
@@ -382,7 +397,7 @@ class ItemTest {
     @Test
     void equalsDifferentTypeReturnsFalse() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.equals("not-an-item");
@@ -394,8 +409,8 @@ class ItemTest {
     @Test
     void equalsDifferentItemsWithSameAttributesReturnsFalse() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
-        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
+        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         boolean result = sut.equals(otherItem);
@@ -414,7 +429,8 @@ class ItemTest {
                 _editionIdDouble,
                 _conditionDouble,
                 _descriptionDouble,
-                SaleStatus.NotOnSale
+                SaleStatus.NotOnSale,
+                _nameDouble
         );
 
         Item second = new Item(
@@ -422,7 +438,8 @@ class ItemTest {
                 _editionIdDouble,
                 _conditionDouble,
                 _descriptionDouble,
-                SaleStatus.NotOnSale
+                SaleStatus.NotOnSale,
+                _nameDouble
         );
 
         // Act
@@ -435,7 +452,7 @@ class ItemTest {
     @Test
     void hashCodeSameObjectReturnsSameHashCode() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         int firstHash = sut.hashCode();
@@ -448,8 +465,8 @@ class ItemTest {
     @Test
     void hashCodeDifferentItemsReturnsDifferentHashCodes() {
         // Arrange
-        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
-        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble);
+        Item sut = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
+        Item otherItem = new Item(_editionIdDouble, _conditionDouble, _descriptionDouble, _nameDouble);
 
         // Act
         int sutHash = sut.hashCode();

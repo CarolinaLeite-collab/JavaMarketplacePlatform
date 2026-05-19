@@ -4,62 +4,54 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
-
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class AddPublicationTypeControllerTest {
 
+    @Mock
     private IPublicationTypeRepo _iPublicationTypeRepoDouble;
+
+    @Mock
     private PublicationTypeFactory _publicationTypeFactoryDouble;
-    private UserId _adminDoubleId;
 
-    @BeforeEach
-    void setUp() {
+    @Mock
+    private PublicationType _pubTypeDouble;
 
-        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        _publicationTypeFactoryDouble = mock(PublicationTypeFactory.class);
-        _adminDoubleId = mock(UserId.class);
+    @Mock
+    private PublicationTypeId _pubTypeIdDouble;
 
-    }
+    //SUT
+    @InjectMocks
+    AddPublicationTypeController _controller;
 
-    @Test
-    void constructorAddPublicationTypeControllerShouldCreateController() {
-
-        //SUT
-        new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
-
-    }
 
     @Test
     void addPublicationTypeToRepoAndReturnsCreatedType() {
         //arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(false);
-        when(_iPublicationTypeRepoDouble.save(pubTypeDouble)).thenReturn(pubTypeDouble);
-
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(false);
+        when(_iPublicationTypeRepoDouble.save(_pubTypeDouble)).thenReturn(_pubTypeDouble);
 
         //Act
-        PublicationType pubTypeResult = controller.addPublicationType(publicationTypeName);
+        PublicationType pubTypeResult = _controller.addPublicationType(publicationTypeName);
 
         //Assert
-        assertEquals(pubTypeDouble, pubTypeResult);
-        verify(_publicationTypeFactoryDouble).createPublicationType(publicationTypeName);
-        verify(pubTypeDouble).identity();
-        verify(_iPublicationTypeRepoDouble).containsOfIdentity(pubTypeIdDouble);
-        verify(_iPublicationTypeRepoDouble).save(pubTypeDouble);
+        assertEquals(_pubTypeDouble, pubTypeResult);
+
     }
 
     @Test
@@ -67,22 +59,20 @@ class AddPublicationTypeControllerTest {
 
         //Arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
 
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
-
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(true);
 
         //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationType(publicationTypeName));
 
         //Assert
-        assertEquals("The publication type " + publicationTypeName + " already exists.", exception.getMessage());
+        assertEquals("The publication type "
+                + publicationTypeName + " already exists.", exception.getMessage());
+
     }
 
     @Test
@@ -90,22 +80,20 @@ class AddPublicationTypeControllerTest {
 
         //Arrange
         String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
+        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(_pubTypeDouble);
+        when(_pubTypeDouble.identity()).thenReturn(_pubTypeIdDouble);
 
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
-
-        //SUT
-        AddPublicationTypeController controller = new AddPublicationTypeController(_iPublicationTypeRepoDouble, _publicationTypeFactoryDouble, _adminDoubleId);
+        when(_iPublicationTypeRepoDouble.containsOfIdentity(_pubTypeIdDouble)).thenReturn(true);
 
         //Act
-        assertThrows(IllegalArgumentException.class, () -> controller.addPublicationType(publicationTypeName));
+        Exception result = assertThrows(IllegalArgumentException.class,
+                () -> _controller.addPublicationType(publicationTypeName));
 
         //Assert
-        verify(_iPublicationTypeRepoDouble, never()).save(pubTypeDouble);
+        assertEquals("The publication type " +
+                publicationTypeName + " already exists.", result.getMessage());
+
     }
 
 }

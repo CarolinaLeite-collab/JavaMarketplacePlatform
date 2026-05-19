@@ -6,4 +6,6 @@ import MITELOVERS.domain.valueobject.AuthorId;
 
 public interface IAuthorRepo extends IRepository<AuthorId,Author> {
 
+    public AuthorId findByName(final String name);
+
 }

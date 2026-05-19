@@ -10,6 +10,7 @@ import MITELOVERS.domain.valueobject.Price;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a direct sale of an {@link Item} with a specified {@link Price} and optional time limit.
@@ -49,7 +50,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
     // rehydration
     DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Duration timeLimit,Instant creationDate) {
         this(itemsId, price, timeLimit);
-        _directSaleId = directSaleId;
+        _directSaleId = Objects.requireNonNull(directSaleId, "DirectSaleId cannot be null");
         _creationDate = creationDate;
 
     }

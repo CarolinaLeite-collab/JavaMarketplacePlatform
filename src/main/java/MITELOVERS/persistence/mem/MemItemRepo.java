@@ -62,4 +62,9 @@ public class MemItemRepo implements IItemRepo {
         return new ArrayList<>(DATA.keySet());
 
     }
+
+    @Override
+    public List<Item> findByIdInOrderByDescriptionAsc(Collection<String> ids) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -3,6 +3,7 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.domain.valueobject.ItemId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
@@ -32,6 +33,7 @@ public class MemAuctionRepo implements IAuctionRepo {
 
     @Override
     public Iterable<Auction> findAll() {
+
         return DATA.values();
     }
 
@@ -43,15 +45,23 @@ public class MemAuctionRepo implements IAuctionRepo {
 
     @Override
     public Optional<Auction> ofIdentity(AuctionId id) {
-        if (!containsOfIdentity(id)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(DATA.get(id));
-        }
+
+        return Optional.ofNullable(DATA.get(id));
     }
 
     @Override
     public boolean containsOfIdentity(AuctionId id) {
+
         return DATA.containsKey(id);
+    }
+
+    @Override
+    public List<ItemId> findByItemsIdSorted(List<ItemId> itemIds) {
+
+        return DATA.values().stream()
+                .filter(a -> a.getItemsId().stream().anyMatch(itemIds::contains))
+                .sorted(Comparator.comparing(Auction::getAuctionEndDate))
+                .flatMap(a -> a.getItemsId().stream().filter(itemIds::contains))
+                .toList();
     }
 }

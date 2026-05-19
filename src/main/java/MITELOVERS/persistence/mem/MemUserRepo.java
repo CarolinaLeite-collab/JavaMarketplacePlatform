@@ -2,7 +2,7 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

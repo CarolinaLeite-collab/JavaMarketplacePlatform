@@ -14,7 +14,7 @@ autonumber
 autoactivate off
 hidefootbox
 
-participant ":GetItemsOnAuctionOfA\nGivenGenreController" as CTL
+participant ":GetItemsOnAuctionOfA\nGivenAuthorController" as CTL
 participant ":JpaAuctionRepo" as JPAREPO
 participant ":IAuctionSpringdataRepo" as SPRINGREPO
 participant "auctionAssembler:AuctionAssembler" as ASM
@@ -84,6 +84,6 @@ end
 
 
 ref over CTL
-[[../Get_List_Of_Items_on_Auction_Of_Given_Genre_SD.puml Back to Main Diagram]]
+[[../Get_List_Of_Items_on_Auction_Of_Given_Author_SD.puml Back to Main Diagram]]
 end ref
 @enduml

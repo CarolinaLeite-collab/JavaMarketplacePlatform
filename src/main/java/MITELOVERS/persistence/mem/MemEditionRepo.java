@@ -2,7 +2,7 @@ package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.repository.IEditionRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.EditionId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 

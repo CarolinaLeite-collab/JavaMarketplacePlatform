@@ -11,7 +11,7 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
-import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
@@ -32,7 +33,7 @@ public class GetItemsOnDirectSaleOfAGivenPublishingCompanyController {
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
     private final IEditionRepo _iEditionRepo;
 
-    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IPublishingCompanyRepo pcr, IItemRepo ir, IEditionRepo er, IDirectSaleRepo directSaleRepo, UserId buyerId) {
+    public GetItemsOnDirectSaleOfAGivenPublishingCompanyController(IPublishingCompanyRepo pcr, IItemRepo ir, IEditionRepo er, IDirectSaleRepo directSaleRepo) {
         _iPublishingCompanyRepo = pcr;
         _iItemRepo = ir;
         _iEditionRepo = er;

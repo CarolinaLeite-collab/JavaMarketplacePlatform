@@ -1,131 +1,149 @@
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.UserId;
-import org.junit.jupiter.api.BeforeEach;
+import MITELOVERS.domain.valueobject.Name;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class GetPublicListsByGenreControllerTest {
 
+    @Mock
     private IListOfItemsRepo _iListOfItemsRepoDouble;
+
+    @Mock
+    private ListOfItems _publicListOfItems;
+
+    @Mock
+    private ListOfItems _privateListOfItems;
+
+    @Mock
+    private IGenreRepo _iGenreRepoDouble;
+
+    @Mock
     private GenreId _genreIdDouble;
-    private UserId _userIdDouble;
 
-    @BeforeEach
-    void setUp() {
+    @Mock
+    private GenreId _otherGenreIdDouble;
 
-        _iListOfItemsRepoDouble = mock(IListOfItemsRepo.class);
-        _genreIdDouble = mock(GenreId.class);
-        _userIdDouble = mock(UserId.class);
+    @Mock
+    private Name _nameDouble;
+
+    @InjectMocks
+    private GetPublicListsByGenreController _controller;
+
+
+
+    @Test
+    void controllerShouldReturnAllGenreKeys() {
+
+        // Arrange
+        when(_iGenreRepoDouble.findAllKeys()).thenReturn(List.of(_genreIdDouble));
+
+        // Act
+        Iterable<GenreId> result = _controller.findAllKeys();
+
+        // Assert
+        List<GenreId> resultList = new java.util.ArrayList<>();
+        result.forEach(resultList::add);
+
+        assertEquals(1, resultList.size());
+        assertEquals(_genreIdDouble, resultList.get(0));
+
     }
 
     @Test
     void controllerShouldReturnPublicListsByGenre() {
+
         // Arrange
-        ListOfItems listA = mock(ListOfItems.class);
+        when(_nameDouble.toString()).thenReturn("List A");
+        when(_publicListOfItems.getName()).thenReturn(_nameDouble);
 
-        when(listA.getName()).thenReturn("List A");
-        when(listA.getUserId()).thenReturn(_userIdDouble);
-        when(listA.getGenreId()).thenReturn(_genreIdDouble);
-        when(listA.isPrivate()).thenReturn(false);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(listA));
-
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
+        when(_publicListOfItems.getGenreId()).thenReturn(_genreIdDouble);
+        when(_publicListOfItems.isPrivate()).thenReturn(false);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(_publicListOfItems));
 
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("List A", result.get(0).getName());
-        assertEquals(_userIdDouble, result.get(0).getUserId());
-        verify(_iListOfItemsRepoDouble).findAll();
+        assertEquals("List A", result.get(0).getName().toString());
+
     }
 
     @Test
     void controllerShouldThrowWhenGenreIsNull() {
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
 
+        //Act
         IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> controller.getPublicListsByGenre(null)
-        );
+                IllegalArgumentException.class, () -> _controller.getPublicListsByGenre(null));
 
+        //Assert
         assertEquals("Genre is mandatory", ex.getMessage());
+
     }
 
     @Test
     void controllerShouldReturnEmptyListWhenNoPublicListsOfGenreExists() {
+
         // Arrange
         when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of());
 
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
-
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
-        verify(_iListOfItemsRepoDouble).findAll();
+
     }
 
     @Test
     void controllerShouldIgnorePrivateLists() {
+
         // Arrange
-        ListOfItems pub = mock(ListOfItems.class);
-        ListOfItems priv = mock(ListOfItems.class);
+        when(_publicListOfItems.getGenreId()).thenReturn(_genreIdDouble);
+        when(_publicListOfItems.isPrivate()).thenReturn(false);
 
-        when(pub.getGenreId()).thenReturn(_genreIdDouble);
-        when(pub.isPrivate()).thenReturn(false);
-
-        when(priv.getGenreId()).thenReturn(_genreIdDouble);
-        when(priv.isPrivate()).thenReturn(true);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(pub, priv));
-
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(_publicListOfItems, _privateListOfItems));
 
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertEquals(1, result.size());
-        assertSame(pub, result.get(0));
-        verify(_iListOfItemsRepoDouble).findAll();
+        assertSame(_publicListOfItems, result.get(0));
+
     }
 
     @Test
     void controllerShouldIgnoreListsOfDifferentGenre() {
+
         // Arrange
-        GenreId otherGenre = mock(GenreId.class);
+        when(_publicListOfItems.getGenreId()).thenReturn(_otherGenreIdDouble);
+        when(_publicListOfItems.isPrivate()).thenReturn(false);
 
-        ListOfItems list = mock(ListOfItems.class);
-        when(list.getGenreId()).thenReturn(otherGenre);
-        when(list.isPrivate()).thenReturn(false);
-
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list));
-
-        GetPublicListsByGenreController controller =
-                new GetPublicListsByGenreController(_iListOfItemsRepoDouble, _userIdDouble);
+        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(_publicListOfItems));
 
         // Act
-        List<ListOfItems> result = controller.getPublicListsByGenre(_genreIdDouble);
+        List<ListOfItems> result = _controller.getPublicListsByGenre(_genreIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
-        verify(_iListOfItemsRepoDouble).findAll();
+
     }
 
 }

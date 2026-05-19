@@ -1,0 +1,61 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to get the list of items on direct sale of a given author" - SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+hidefootbox
+autonumber
+
+participant ":GetDirectSale\nItemsByAuthorController" as CTL
+
+participant ":JpaItemRepo" as JpaRepo
+participant ":IItemSpringDataRepo" as SpringRepo
+participant ":ImplJpaRepo" as JpaImpl
+database "DB" as DB
+participant ":ItemAssembler" as ASS
+
+CTL -> JpaRepo : getDirectSaleItemsByAuthorIdSortedByDescription(authorId)
+activate CTL
+activate JpaRepo
+JpaRepo -> SpringRepo: findByIdInOrderByDescriptionAsc(ids)
+activate SpringRepo
+SpringRepo -> JpaImpl: findByIdInOrderByDescriptionAsc(ids)
+activate JpaImpl
+JpaImpl -> DB: SELECT * FROM ITEM
+activate DB
+DB -> JpaImpl: String based data
+deactivate DB
+JpaImpl -->SpringRepo: ascOrderedItemOnDirectSale\nByAuthorDataModels
+deactivate JpaImpl
+SpringRepo --> JpaRepo : ascOrderedItemOnDirectSale\nByAuthorDataModels
+deactivate SpringRepo
+JpaRepo -> ASS : toDomain(ascOrderedItemOnDirectSale\nByAuthorDataModels)
+activate ASS
+ref over ASS
+[[ converts Data Models to Item Objects ]]
+end
+ASS --> JpaRepo : ListOfAscOrderedItems\nOnDirectSaleByAuthor
+deactivate ASS
+JpaRepo --> CTL : ListOfAscOrderedItems\nOnDirectSaleByAuthor
+
+ref over CTL
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Author_SD_3.puml Back to Main Diagram]]
+end ref
+
+
+@enduml

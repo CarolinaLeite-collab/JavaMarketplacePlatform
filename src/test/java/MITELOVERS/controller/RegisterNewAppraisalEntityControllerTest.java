@@ -3,29 +3,27 @@ package MITELOVERS.controller;
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IAppraisalEntityRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.AppraisalEntityId;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.PublicationTypeId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")

@@ -5,7 +5,10 @@ import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.Title;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +24,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
