@@ -11,6 +11,11 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,23 +26,29 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("jpa")
 class GetDirectSaleItemsByGenreControllerTest {
 
+    @Mock
     private UserId _buyerIdDouble;
+
+    @Mock
     private IDirectSaleRepo _iDirectSaleRepoDouble;
+
+    @Mock
     private IItemRepo _iItemRepoDouble;
+
+    @Mock
     private IEditionRepo _iEditionRepoDouble;
+
+    @Mock
     private IPublicationRepo _iPublicationRepoDouble;
 
-    @BeforeEach
-    void setUp() {
-        _buyerIdDouble = mock(UserId.class);
-        _iDirectSaleRepoDouble = mock(IDirectSaleRepo.class);
-        _iItemRepoDouble = mock(IItemRepo.class);
-        _iEditionRepoDouble = mock(IEditionRepo.class);
-        _iPublicationRepoDouble = mock(IPublicationRepo.class);
+    // SUT
+    @InjectMocks
+    private GetDirectSaleItemsByGenreController _controller;
 
-    }
 
     @Test
     void testDirectSaleItemsByGenreController(){

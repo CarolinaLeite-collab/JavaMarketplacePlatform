@@ -11,6 +11,7 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetDirectSaleItemsByGenreController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
