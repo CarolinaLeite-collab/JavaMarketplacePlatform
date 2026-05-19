@@ -27,7 +27,7 @@ ItemRepo -> JpaItemRepo : ofIdentity(itemId)
 activate ItemRepo
 activate JpaItemRepo
 
-JpaItemRepo -> SpringDataItemRepo : findById(libraryId%n().getValue())
+JpaItemRepo -> SpringDataItemRepo : findById(itemId%n().getValue())
 activate SpringDataItemRepo
 SpringDataItemRepo -> DB : retrieve item by id
 activate DB
@@ -39,6 +39,53 @@ deactivate SpringDataItemRepo
 
 JpaItemRepo -> Assembler : toDomain(itemDataModel)
 activate Assembler
+
+Assembler -> "itemDataModel%n():ItemDataModel": itemIdString = getId()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+create "itemId:ItemId"
+Assembler -->> "itemId:ItemId" : createItemId(itemIdString)
+
+Assembler -> "itemDataModel%n():ItemDataModel": editionIdString = getEditionId()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+create "editionId:EditionId"
+Assembler -->> "editionId:EditionId" : createEditionId(editionIdString)
+
+Assembler -> "itemDataModel%n():ItemDataModel": conditionString = getCondition()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+Assembler -> Condition : condition = valueOf(conditionString)
+activate Condition
+deactivate Condition
+
+Assembler -> "itemDataModel%n():ItemDataModel": descriptionString = getDescription()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+create "description:Description"
+Assembler -->> "description:Description" : createDescription(descriptionString)
+
+Assembler -> "itemDataModel%n():ItemDataModel": saleStatusString = getSaleStatus()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+Assembler -> SaleStatus : saleStatus = valueOf(saleStatusString)
+activate SaleStatus
+deactivate SaleStatus
+
+Assembler -> "itemDataModel%n():ItemDataModel": nameString = getName()
+activate "itemDataModel%n():ItemDataModel"
+deactivate "itemDataModel%n():ItemDataModel"
+create "name:Name"
+Assembler -->> "name:Name" : createName(nameString)
+
+
+Assembler -> ":ItemFactory" : createItem(itemId, editionId, condition, description, saleStatus, name)
+activate ":ItemFactory"
+create "reconstructedItem:Item"
+":ItemFactory" -->> "reconstructedItem:Item" : <<create>>
+":ItemFactory" --> Assembler : reconstructedItem
+deactivate ":ItemFactory"
+
 Assembler --> JpaItemRepo : reconstructedItem
 deactivate Assembler
 
@@ -49,6 +96,6 @@ deactivate JpaItemRepo
 deactivate ItemRepo
 
 ref over ItemRepo
-[[../Put_For_Sale_A_Publication_In_My_Library_For_Direct_Sale_SD.puml Return to main diagram]]
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publication_SD.puml Return to main diagram]]
 end ref
 @enduml

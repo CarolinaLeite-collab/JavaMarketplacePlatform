@@ -26,7 +26,7 @@ DirectSaleRepo -> JpaDirectSaleRepo: save(directSale)
 activate DirectSaleRepo
 activate JpaDirectSaleRepo
 
-JpaDirectSaleRepo -> Assembler: domain2DM(directSale)
+JpaDirectSaleRepo -> Assembler: toDataModel(directSale)
 activate Assembler
 Assembler -> directSale: directSaleIdString = identity().toString()
 activate directSale
@@ -71,7 +71,7 @@ DirectSaleSpringDataRepo -->> "directSaleDM2%n():DirectSaleDataModel": <<create>
 DirectSaleSpringDataRepo --> JpaDirectSaleRepo : directSaleDM2
 deactivate DirectSaleSpringDataRepo
 
-JpaDirectSaleRepo -> Assembler: DM2Domain(directSaleDM2)
+JpaDirectSaleRepo -> Assembler: toDomain(directSaleDM2)
 activate Assembler
 
 Assembler -> "directSaleDM2%n():DirectSaleDataModel": directSaleIdString = getDirectSaleId()

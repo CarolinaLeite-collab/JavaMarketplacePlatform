@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title "Retrieve Item from persistence (via JPA)" Reference SD
+title "Retrieve Library from persistence (via JPA)" Reference SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -16,39 +16,63 @@ hidefootbox
 autonumber
 
 ' ==== Actor and participants ====
-participant ":IItemRepo" as ItemRepo
-participant ":JpaItemRepo" as JpaItemRepo
-participant ":IItemSpring%n()DataRepo" as SpringDataItemRepo
-participant ":ItemAssembler" as Assembler
+participant ":ILibraryRepo" as LibraryRepo
+participant ":JpaLibraryRepo" as JpaLibraryRepo
+participant ":ILibrarySpringDataRepo" as SpringDataLibraryRepo
+participant ":LibraryAssembler" as Assembler
 database "DB" as DB
+participant "libraryDataModel%n():LibraryDataModel" as LibraryDataModel
+participant ":LibraryFactory" as Factory
 
 
-ItemRepo -> JpaItemRepo : ofIdentity(itemId)
-activate ItemRepo
-activate JpaItemRepo
+LibraryRepo -> JpaLibraryRepo : ofIdentity(libraryId)
+activate LibraryRepo
+activate JpaLibraryRepo
 
-JpaItemRepo -> SpringDataItemRepo : findById(libraryId%n().getValue())
-activate SpringDataItemRepo
-SpringDataItemRepo -> DB : retrieve item by id
+JpaLibraryRepo -> SpringDataLibraryRepo : findById(libraryId.toString())
+activate SpringDataLibraryRepo
+SpringDataLibraryRepo -> DB : retrieve library by id
 activate DB
-DB --> SpringDataItemRepo : itemDataModel
+DB --> SpringDataLibraryRepo : libraryDataModel
 deactivate DB
 
-SpringDataItemRepo --> JpaItemRepo : itemDataModel
-deactivate SpringDataItemRepo
+SpringDataLibraryRepo --> JpaLibraryRepo : libraryDataModel
+deactivate SpringDataLibraryRepo
 
-JpaItemRepo -> Assembler : toDomain(itemDataModel)
+JpaLibraryRepo -> Assembler : toDomain(libraryDataModel)
 activate Assembler
-Assembler --> JpaItemRepo : reconstructedItem
+
+Assembler -> LibraryDataModel: libraryIdString = getLibraryId()
+activate LibraryDataModel
+deactivate LibraryDataModel
+create "email:Email"
+Assembler -->> "email:Email" : createEmail(libraryIdString)
+create "libraryId:LibraryId"
+Assembler -->> "libraryId:LibraryId" : createLibraryId(email)
+
+    Assembler -> LibraryDataModel : itemIdStrings = getItemIds()
+    activate LibraryDataModel
+    deactivate LibraryDataModel
+
+    Assembler -> Assembler : itemIds = itemIdStrings.stream()%n().map(ItemId::new).toList()
+
+    Assembler -> Factory : reconstructedLibrary = createLibrary(libraryId, itemIds)
+    activate Factory
+    create "reconstructedLibrary%n():Library" as ReconstructedLibrary
+    Factory -> ReconstructedLibrary : <<create>>
+    Factory --> Assembler : reconstructedLibrary
+    deactivate Factory
+Assembler --> JpaLibraryRepo : reconstructedLibrary
 deactivate Assembler
 
-JpaItemRepo --> ItemRepo : reconstructedItem
-deactivate JpaItemRepo
+JpaLibraryRepo --> LibraryRepo : reconstructedLibrary
+deactivate JpaLibraryRepo
 
-deactivate JpaItemRepo
-deactivate ItemRepo
+deactivate JpaLibraryRepo
+deactivate LibraryRepo
 
-ref over ItemRepo
+ref over LibraryRepo
 [[../Put_For_Sale_A_Publication_In_My_Library_For_Auction_SD.puml Return to main diagram]]
 end ref
+
 @enduml
