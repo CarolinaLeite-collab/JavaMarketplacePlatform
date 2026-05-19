@@ -1,0 +1,215 @@
+@startuml
+'==== Title ====
+title "Retrieve Edition from persistence (via JPA)" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":IEditionRepo" as EditionRepo
+participant ":JpaEditionRepo" as JpaEditionRepo
+participant ":IItemSpring%n()DataRepo" as SpringDataEditionRepo
+participant ":ItemAssembler" as Assembler
+database "DB" as DB
+
+
+EditionRepo -> JpaEditionRepo : ofIdentity(editionId)
+activate EditionRepo
+activate JpaEditionRepo
+
+JpaEditionRepo -> SpringDataEditionRepo : findById(editionId%n().toString())
+activate SpringDataEditionRepo
+SpringDataEditionRepo -> DB : retrieve edition by id
+activate DB
+DB --> SpringDataEditionRepo : editionDataModel
+deactivate DB
+
+SpringDataEditionRepo --> JpaEditionRepo : editionDataModel
+deactivate SpringDataEditionRepo
+
+JpaEditionRepo -> Assembler : toDomain(editionDataModel)
+activate Assembler
+
+Assembler -> "editionDataModel%n():EditionDataModel": editionIdString = getId()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+create "editionId:EditionId"
+Assembler -->> "editionId:EditionId" : createEditionId(editionIdString)
+
+Assembler -> "editionDataModel%n():EditionDataModel": publicationTypeIdString = getTypeId()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+create "publicationTypeId:PublicationTypeId"
+Assembler -->> "publicationTypeId:PublicationTypeId" : createPublicationTypeId(publicationTypeIdString)
+
+Assembler -> "editionDataModel%n():EditionDataModel": publicationIdDM = getPublicationIdDm()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+Assembler -> "publicationIdDm%n():PublicationIdDataModel" : titleString = getTitle()
+activate "publicationIdDm%n():PublicationIdDataModel"
+deactivate "publicationIdDm%n():PublicationIdDataModel"
+create "title:Title"
+Assembler -->> "title:Title" : createTitle(titleString)
+
+Assembler -> "editionDataModel%n():EditionDataModel": publicationIdDM = getPublicationIdDm()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+Assembler -> "publicationIdDm%n():PublicationIdDataModel" : authorIdString = getAuthorId()
+activate "publicationIdDm%n():PublicationIdDataModel"
+deactivate "publicationIdDm%n():PublicationIdDataModel"
+create "authorId:AuthorId"
+Assembler -->> "authorId:AuthorId" : createAuthorId(authorIdString)
+
+Assembler -> "editionDataModel%n():EditionDataModel": publicationIdDM = getPublicationIdDm()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+Assembler -> "publicationIdDm%n():PublicationIdDataModel" : releaseYearString = getReleaseYear()
+activate "publicationIdDm%n():PublicationIdDataModel"
+deactivate "publicationIdDm%n():PublicationIdDataModel"
+Assembler -> Year : year = of(releaseYearString)
+activate Year
+deactivate Year
+
+create "publicationId:PublicationId"
+Assembler -->> "publicationId:PublicationId" : createPublicationId(title, author, year)
+
+Assembler -> "editionDataModel%n():EditionDataModel": publishingCompanyIdString = getPublishingCompanyId()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+create "publishingCompanyId:PublishingCompanyId"
+Assembler -->> "publishingCompanyId:PublishingCompanyId" : createPublishingCompanyId(publishingCompanyIdString)
+
+Assembler -> "editionDataModel%n():EditionDataModel": pubYearString = getPublishingYear()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+Assembler -> Year : pubYear = of(pubYearString)
+activate Year
+deactivate Year
+
+Assembler -> "editionDataModel%n():EditionDataModel": language = getEditionLanguage()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+
+Assembler -> "editionDataModel%n():EditionDataModel" : identifierTypeString = getIdentifierType()
+activate "editionDataModel%n():EditionDataModel"
+deactivate "editionDataModel%n():EditionDataModel"
+
+alt identifierTypeString == "ISBN"
+    Assembler -> "editionDataModel%n():EditionDataModel" : identifierString = getIdentifier()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+    create "identifier:ISBN"
+    Assembler -->> "identifier:ISBN" : createISBN(identifierString)
+
+else identifierTypeString == "ISSN"
+    Assembler -> "editionDataModel%n():EditionDataModel" : identifierString = getIdentifier()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+    create "identifier:ISSN"
+    Assembler -->> "identifier:ISSN" : createISSN(identifierString)
+
+else identifierTypeString == "NoIdentifier"
+    create "identifier:NoIdentifier"
+    Assembler -->> "identifier:NoIdentifier" : createNoIdentifier()
+end
+
+opt editionDataModel.getNumberOfPages() != null
+    Assembler -> "editionDataModel%n():EditionDataModel" : numberOfPagesInt = getNumberOfPages()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+    create "numberOfPages:NumberOfPages"
+    Assembler -->> "numberOfPages:NumberOfPages" : createNumberOfPages(numberOfPagesInt)
+end
+
+opt editionDataModel.getEditionNumber() != null
+    Assembler -> "editionDataModel%n():EditionDataModel" : editionNumberInt = getEditionNumber()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+    create "editionNumber:EditionNumber"
+    Assembler -->> "editionNumber:EditionNumber" : createEditionNumber(editionNumberInt)
+end
+
+opt editionDataModel.getBinding() != null
+    Assembler -> "editionDataModel%n():EditionDataModel" : binding = getBinding()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+end
+
+opt editionDataModel.getDimensionDm() != null
+    Assembler -> "editionDataModel%n():EditionDataModel" : dimensionDm = getDimensionDm()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+
+    Assembler -> "dimensionDm%n():DimensionDataModel" : width = getWidth()
+    activate "dimensionDm%n():DimensionDataModel"
+    deactivate "dimensionDm%n():DimensionDataModel"
+
+    Assembler -> "dimensionDm%n():DimensionDataModel" : height = getHeight()
+    activate "dimensionDm%n():DimensionDataModel"
+    deactivate "dimensionDm%n():DimensionDataModel"
+
+    Assembler -> "dimensionDm%n():DimensionDataModel" : thickness = getThickness()
+    activate "dimensionDm%n():DimensionDataModel"
+    deactivate "dimensionDm%n():DimensionDataModel"
+
+    Assembler -> "dimensionDm%n():DimensionDataModel" : unitString = getUnit()
+    activate "dimensionDm%n():DimensionDataModel"
+    deactivate "dimensionDm%n():DimensionDataModel"
+
+    Assembler -> DimensionUnit : dimensionUnit = fromString(unitString)
+    activate DimensionUnit
+    deactivate DimensionUnit
+
+    create "dimension:Dimension"
+    Assembler -->> "dimension:Dimension" : createDimension(width, height, thickness, dimensionUnit)
+end
+
+opt editionDataModel.getWeightDm() != null
+    Assembler -> "editionDataModel%n():EditionDataModel" : weightDm = getWeightDm()
+    activate "editionDataModel%n():EditionDataModel"
+    deactivate "editionDataModel%n():EditionDataModel"
+
+    Assembler -> "weightDm%n():WeightDataModel" : value = getValue()
+    activate "weightDm%n():WeightDataModel"
+    deactivate "weightDm%n():WeightDataModel"
+
+    Assembler -> "weightDm%n():WeightDataModel" : weightUnitString = getWeightUnit()
+    activate "weightDm%n():WeightDataModel"
+    deactivate "weightDm%n():WeightDataModel"
+
+    Assembler -> "Weight.WeightUnit" : weightUnit = fromAbbreviation(weightUnitString)
+    activate "Weight.WeightUnit"
+    deactivate "Weight.WeightUnit"
+
+    create "weight:Weight"
+    Assembler -->> "weight:Weight" : createWeight(value, weightUnit)
+end
+
+Assembler -> ":EditionFactory" : createEdition(editionId, publicationTypeId, identifier, publicationId, publishingCompanyId, pubYear, language, dimension, weight, numberOfPages, editionNumber, binding)
+
+create "reconstructedEdition:Edition"
+":EditionFactory" -->> "reconstructedEdition:Edition" : <<create>>
+
+Assembler --> JpaEditionRepo : reconstructedEdition
+deactivate Assembler
+
+JpaEditionRepo --> EditionRepo : reconstructedEdition
+deactivate JpaEditionRepo
+
+deactivate JpaEditionRepo
+deactivate EditionRepo
+
+ref over EditionRepo
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publication_SD.puml Return to main diagram]]
+end ref
+@enduml
