@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on direct sale of a given genre" SD
+title "List of items on direct sale of a given genre, sorted" SD
 hidefootbox
 
 skinparam shadowing false
@@ -26,7 +26,7 @@ participant ":IPublicationRepo" as PR
 participant "publication:Publication" as Publication
 
 
-Buyer -> UI: I want the list of items on direct sale of a given genre
+Buyer -> UI: I want the list of items on direct sale of a given genre sorted (ASC)
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
@@ -38,13 +38,13 @@ deactivate AR
 
 CTL --> UI : genreIds
 deactivate CTL
-UI --> Buyer: Select author
+UI --> Buyer: Select genre
 deactivate UI
 Buyer -> UI: genreId
 activate UI
 
 
-UI -> CTL: getDirectSaleItemsByGenreId(genreId)
+UI -> CTL: getDirectSaleItemsByGenreAsc(genreId)
 activate CTL
 
 CTL -> DSR: findAll()
@@ -53,55 +53,59 @@ activate DSR
 DSR --> CTL: Collection<DirectSale>
 deactivate DSR
 
-create "itemsOnDSofGivenGenre:List<ItemId>"
-CTL -->> "itemsOnDSofGivenGenre:List<ItemId>" : <<Create>>
+loop for each DirectSale
+    CTL -> DS: getItemsId()
+    activate DS
+    DS --> CTL: List<ItemId>
+    deactivate DS
 
-loop for directSale : Collection<DirectSale>
-CTL -> DS : getItemIds()
-activate DS
-DS --> CTL : List<ItemId>
-deactivate DS
+    loop for each ItemId
+        CTL -> IR: ofIdentity(itemId)
+        activate IR
+        IR --> CTL: Item
+        deactivate IR
 
-loop for itemId : List<ItemId>
-CTL -> IR : ofIdentity(itemId)
-activate IR
-IR --> CTL : item
-deactivate IR
-CTL -> Item : getEditionId()
-activate Item
-Item --> CTL : editionId
-deactivate Item
+        CTL -> Item: getEditionId()
+        activate Item
+        Item --> CTL: editionId
+        deactivate Item
 
-CTL -> ER : ofIdentity(editionId)
-activate ER
-ER --> CTL : edition
-deactivate ER
-CTL -> Edition : getPublicationId()
-activate Edition
-Edition --> CTL : publicationId
-deactivate Edition
+        CTL -> ER: ofIdentity(editionId)
+        activate ER
+        ER --> CTL: Edition
+        deactivate ER
 
-CTL -> PR : ofIdentity(publicationId)
-activate PR
-PR --> CTL : publication
-deactivate PR
+        CTL -> Edition: getPublicationId()
+        activate Edition
+        Edition --> CTL: publicationId
+        deactivate Edition
 
-CTL -> Publication : hasAuthor = isByGenre(genreId)
+        CTL -> PR: ofIdentity(publicationId)
+        activate PR
+        PR --> CTL: Publication
+        deactivate PR
 
-opt hasAuthor
-CTL -> "itemsOnDSofGivenGenre:List<ItemId>" : add(itemId)
-activate "itemsOnDSofGivenGenre:List<ItemId>"
-"itemsOnDSofGivenGenre:List<ItemId>" --> CTL : true
-deactivate "itemsOnDSofGivenGenre:List<ItemId>"
+        CTL -> Publication: isByGenreId(genreId)
+        activate Publication
+        Publication --> CTL: boolean
+        deactivate Publication
+
+        alt matches genre
+            CTL -> CTL: add itemId to filtered list
+        end
+    end
 end
-end
-end
 
+CTL -> DSR: findByItemsIdSortedByPublicationDateAsc(filteredItemIds)
+activate DSR
+DSR --> CTL: sortedItemIds
+deactivate DSR
 
-CTL --> UI: itemsOnDSofGivenGenre
+CTL --> UI: sortedItemIds
 deactivate CTL
 
-UI --> Buyer: Here's the list! Done!
+UI --> Buyer: Here is your sorted list
 deactivate UI
+
 
 @enduml
