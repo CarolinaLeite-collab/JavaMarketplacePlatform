@@ -80,6 +80,11 @@ Assembler -->> "name:Name" : createName(nameString)
 
 
 Assembler -> ":ItemFactory" : createItem(itemId, editionId, condition, description, saleStatus, name)
+activate ":ItemFactory"
+create "reconstructedItem:Item"
+":ItemFactory" -->> "reconstructedItem:Item" : <<create>>
+":ItemFactory" --> Assembler : reconstructedItem
+deactivate ":ItemFactory"
 
 Assembler --> JpaItemRepo : reconstructedItem
 deactivate Assembler
