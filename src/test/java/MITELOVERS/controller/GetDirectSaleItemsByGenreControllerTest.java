@@ -21,17 +21,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class GetDirectSaleItemsByGenreControllerTest {
-
-    @Mock
-    private UserId _buyerIdDouble;
 
     @Mock
     private IDirectSaleRepo _iDirectSaleRepoDouble;
@@ -51,148 +48,159 @@ class GetDirectSaleItemsByGenreControllerTest {
 
 
     @Test
-    void testDirectSaleItemsByGenreController(){
-
+    void controllerShouldInstantiate() {
         // SUT
-        new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _buyerIdDouble);
-
+        new GetDirectSaleItemsByGenreController(
+                _iDirectSaleRepoDouble, _iItemRepoDouble, _iEditionRepoDouble, _iPublicationRepoDouble
+        );
     }
 
     @Test
-    void GetDirectSaleItemsByGenreControllerShouldReturnDirectSaleItemsOfAGivenAuthor() {
-        //Arrange
-        DirectSale directSaleDouble = mock(DirectSale.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+    void shouldReturnDirectSaleItemsOfGivenGenreAsc() {
 
-        when(_iDirectSaleRepoDouble.findAll()).thenReturn(Arrays.asList(directSaleDouble));
-        when(directSaleDouble.getItemsId()).thenReturn(Arrays.asList(itemIdDouble));
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+        GenreId genreId = mock(GenreId.class);
 
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.ofNullable(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
 
-        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.ofNullable(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getEditionId()).thenReturn(mock(EditionId.class));
 
-        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble)).thenReturn(Optional.ofNullable(publicationDouble));
-        when(publicationDouble.isByGenreId(genreIdDouble)).thenReturn(true);
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(edition.getPublicationId()).thenReturn(mock(PublicationId.class));
 
-        //SUT
-        GetDirectSaleItemsByGenreController ctl = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _buyerIdDouble);
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(publication.isByGenreId(genreId)).thenReturn(true);
 
+        // IMPORTANT: repo returns sorted list only if called with correct args
+        when(_iDirectSaleRepoDouble.findByItemsIdSortedByPublicationDateAsc(List.of(itemId)))
+                .thenReturn(List.of(itemId));
 
-        //Act
-        List<ItemId> result = ctl.getDirectSaleItemsByGenre(genreIdDouble);
+        List<ItemId> result = _controller.getDirectSaleItemsByGenreAsc(genreId);
 
-        //Assert
-        assertEquals(1, result.size());
+        assertEquals(List.of(itemId), result);
     }
 
     @Test
-    void GetDirectSaleItemsByGenreControllerShouldThrowWhenPublicationNotFound() {
-        //Arrange
-        DirectSale directSaleDouble = mock(DirectSale.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+    void shouldReturnDirectSaleItemsOfGivenGenreDesc() {
 
-        when(_iDirectSaleRepoDouble.findAll()).thenReturn(Arrays.asList(directSaleDouble));
-        when(directSaleDouble.getItemsId()).thenReturn(Arrays.asList(itemIdDouble));
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+        GenreId genreId = mock(GenreId.class);
 
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.ofNullable(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
 
-        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.ofNullable(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getEditionId()).thenReturn(mock(EditionId.class));
 
-        //SUT
-        GetDirectSaleItemsByGenreController ctl = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _buyerIdDouble);
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(edition.getPublicationId()).thenReturn(mock(PublicationId.class));
 
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(publication.isByGenreId(genreId)).thenReturn(true);
 
-        //Act + Assert
+        when(_iDirectSaleRepoDouble.findByItemsIdSortedByPublicationDateDesc(List.of(itemId)))
+                .thenReturn(List.of(itemId));
+
+        List<ItemId> result = _controller.getDirectSaleItemsByGenreDesc(genreId);
+
+        assertEquals(List.of(itemId), result);
+    }
+
+    @Test
+    void shouldThrowWhenItemNotFound() {
+
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        GenreId genreId = mock(GenreId.class);
+
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.empty());
+
         assertThrows(IllegalStateException.class,
-                () -> ctl.getDirectSaleItemsByGenre(genreIdDouble));
+                () -> _controller.getDirectSaleItemsByGenreAsc(genreId));
     }
 
     @Test
-    void GetDirectSaleItemsByGenreControllerShouldThrowWhenEditionNotFound() {
-        //Arrange
-        DirectSale directSaleDouble = mock(DirectSale.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+    void shouldThrowWhenEditionNotFound() {
 
-        when(_iDirectSaleRepoDouble.findAll()).thenReturn(Arrays.asList(directSaleDouble));
-        when(directSaleDouble.getItemsId()).thenReturn(Arrays.asList(itemIdDouble));
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        GenreId genreId = mock(GenreId.class);
 
-        when(_iItemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.ofNullable(itemDouble));
-        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
 
-        //SUT
-        GetDirectSaleItemsByGenreController ctl = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _buyerIdDouble);
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getEditionId()).thenReturn(mock(EditionId.class));
 
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // Act + Assert
         assertThrows(IllegalStateException.class,
-                () -> ctl.getDirectSaleItemsByGenre(genreIdDouble));
+                () -> _controller.getDirectSaleItemsByGenreAsc(genreId));
     }
 
     @Test
-    void GetDirectSaleItemsByGenreControllerShouldThrowWhenItemNotFound() {
-        //Arrange
-        DirectSale directSaleDouble = mock(DirectSale.class);
-        ItemId itemIdDouble = mock(ItemId.class);
-        Item itemDouble = mock(Item.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Edition editionDouble = mock(Edition.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
-        Publication publicationDouble = mock(Publication.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+    void shouldThrowWhenPublicationNotFound() {
 
-        when(_iDirectSaleRepoDouble.findAll()).thenReturn(Arrays.asList(directSaleDouble));
-        when(directSaleDouble.getItemsId()).thenReturn(Arrays.asList(itemIdDouble));
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        GenreId genreId = mock(GenreId.class);
 
-        //SUT
-        GetDirectSaleItemsByGenreController ctl = new GetDirectSaleItemsByGenreController(_iDirectSaleRepoDouble,
-                _iItemRepoDouble,
-                _iEditionRepoDouble,
-                _iPublicationRepoDouble,
-                _buyerIdDouble);
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
 
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getEditionId()).thenReturn(mock(EditionId.class));
 
-        // Act + Assert
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(edition.getPublicationId()).thenReturn(mock(PublicationId.class));
+
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
         assertThrows(IllegalStateException.class,
-                () -> ctl.getDirectSaleItemsByGenre(genreIdDouble));
+                () -> _controller.getDirectSaleItemsByGenreAsc(genreId));
     }
 
+    @Test
+    void shouldReturnEmptyListWhenNoItemsMatchGenre() {
+
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = mock(ItemId.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+        GenreId genreId = mock(GenreId.class);
+
+        when(_iDirectSaleRepoDouble.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getEditionId()).thenReturn(mock(EditionId.class));
+
+        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(edition.getPublicationId()).thenReturn(mock(PublicationId.class));
+
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(publication.isByGenreId(genreId)).thenReturn(false);
+
+        List<ItemId> result = _controller.getDirectSaleItemsByGenreAsc(genreId);
+
+        assertTrue(result.isEmpty());
+    }
 
 }
