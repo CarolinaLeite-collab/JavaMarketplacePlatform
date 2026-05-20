@@ -8,7 +8,9 @@ import MITELOVERS.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -242,4 +244,74 @@ class MemAuctionRepoTest {
         //Assert
         assertFalse(_repo.containsOfIdentity(unknownId));
     }
+
+    @Test
+    void findByItemsIdSortedShouldReturnItemsOrderedByAuctionEndDate() {
+
+        MemAuctionRepo repo = new MemAuctionRepo();
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
+        Auction auction1 = mock(Auction.class);
+        Auction auction2 = mock(Auction.class);
+
+        when(auction1.getItemsId()).thenReturn(List.of(item1));
+        when(auction2.getItemsId()).thenReturn(List.of(item2));
+
+        when(auction1.getAuctionEndDate()).thenReturn(Instant.now().plus(2, ChronoUnit.DAYS));
+        when(auction2.getAuctionEndDate()).thenReturn(Instant.now().plus(1, ChronoUnit.DAYS));
+
+        when(auction1.identity()).thenReturn(mock(AuctionId.class));
+        when(auction2.identity()).thenReturn(mock(AuctionId.class));
+
+        repo.save(auction1);
+        repo.save(auction2);
+
+        List<ItemId> result = repo.findByItemsIdSorted(List.of(item1, item2));
+
+        assertEquals(List.of(item2, item1), result);
+    }
+
+    @Test
+    void findByItemsIdSortedShouldReturnOnlyMatchingItems() {
+
+        MemAuctionRepo repo = new MemAuctionRepo();
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+        ItemId item3 = mock(ItemId.class);
+
+        Auction auction = mock(Auction.class);
+        when(auction.getItemsId()).thenReturn(List.of(item1, item2, item3));
+        when(auction.getAuctionEndDate()).thenReturn(Instant.now().plus(1, ChronoUnit.DAYS));
+        when(auction.identity()).thenReturn(mock(AuctionId.class));
+
+        repo.save(auction);
+
+        List<ItemId> result = repo.findByItemsIdSorted(List.of(item1, item3));
+
+        assertEquals(List.of(item1, item3), result);
+    }
+
+    @Test
+    void findByItemsIdSortedShouldReturnEmptyWhenNoAuctionMatches() {
+
+        MemAuctionRepo repo = new MemAuctionRepo();
+
+        ItemId item1 = mock(ItemId.class);
+        ItemId item2 = mock(ItemId.class);
+
+        Auction auction = mock(Auction.class);
+        when(auction.getItemsId()).thenReturn(List.of(mock(ItemId.class)));
+        when(auction.getAuctionEndDate()).thenReturn(Instant.now().plus(1, ChronoUnit.DAYS));
+        when(auction.identity()).thenReturn(mock(AuctionId.class));
+
+        repo.save(auction);
+
+        List<ItemId> result = repo.findByItemsIdSorted(List.of(item1, item2));
+
+        assertTrue(result.isEmpty());
+    }
+
 }

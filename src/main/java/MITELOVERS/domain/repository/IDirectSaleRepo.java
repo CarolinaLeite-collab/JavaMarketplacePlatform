@@ -12,4 +12,8 @@ import java.util.List;
 public interface IDirectSaleRepo extends IRepository<DirectSaleId, DirectSale> {
 
     List<ItemId> findDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId);
+
+    List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds);
+
+    List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds);
 }

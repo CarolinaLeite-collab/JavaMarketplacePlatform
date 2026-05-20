@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.mem;
 
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import org.springframework.context.annotation.Profile;

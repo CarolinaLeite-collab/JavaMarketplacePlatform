@@ -4,8 +4,6 @@ import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 
-import java.util.Objects;
-
 /**
  * Represents the organization or company that formally releases the work of one edition.
  *

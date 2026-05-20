@@ -1,7 +1,10 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.user.User;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;

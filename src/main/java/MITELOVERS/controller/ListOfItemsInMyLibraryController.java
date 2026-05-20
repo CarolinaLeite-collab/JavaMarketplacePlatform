@@ -1,6 +1,5 @@
 package MITELOVERS.controller;
 
-import MITELOVERS.ddd.IRepository;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
@@ -8,7 +7,9 @@ import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.ItemDetailsDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;
 

@@ -1,9 +1,9 @@
 package MITELOVERS.persistence.jpa.assembler;
 
+import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.item.ItemFactory;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
-import MITELOVERS.domain.item.Item;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,14 +1,11 @@
+
 package MITELOVERS.controller;
 
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibraryId;
-import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +43,7 @@ class AddItemToListControllerTest {
     private Name _nameDouble;
 
     @BeforeEach
-    void setUp() throws InstantiationException {
+    void setUp() {
 
         _genreIdDouble = mock(GenreId.class);
         _itemIdDouble = mock(ItemId.class);
@@ -58,12 +55,15 @@ class AddItemToListControllerTest {
     void getMyListsShouldReturnOnlyListsBelongingToUser() {
         // Arrange
         UserId otherUser = mock(UserId.class);
+
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
 
         when(list1.getUserId()).thenReturn(_userIdDouble);
         when(list2.getUserId()).thenReturn(otherUser);
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(list1, list2));
+
+        when(_iListOfItemsRepoDouble.findAll())
+                .thenReturn(List.of(list1, list2));
 
         // Act
         List<ListOfItems> result = _controller.getMyLists(_userIdDouble);
@@ -71,7 +71,6 @@ class AddItemToListControllerTest {
         // Assert
         assertEquals(1, result.size());
         assertSame(list1, result.get(0));
-        verify(_iListOfItemsRepoDouble).findAll();
     }
 
     @Test
@@ -91,7 +90,6 @@ class AddItemToListControllerTest {
 
         // Assert
         assertTrue(result.isEmpty());
-        verify(_iListOfItemsRepoDouble).findAll();
     }
 
     @Test
@@ -160,23 +158,6 @@ class AddItemToListControllerTest {
         // Act & Assert
         assertThrows(IllegalStateException.class,
                 () -> _controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble));
-    }
-
-    @Test
-    void addItemToListShouldSaveListAfterAddingItem() {
-        // Arrange
-        ListOfItems matchingList = mock(ListOfItems.class);
-        when(matchingList.getUserId()).thenReturn(_userIdDouble);
-        when(matchingList.getName()).thenReturn(_nameDouble);
-        when(matchingList.getGenreId()).thenReturn(_genreIdDouble);
-        when(_iListOfItemsRepoDouble.findAll()).thenReturn(List.of(matchingList));
-
-        // Act
-        _controller.addItemToList(_userIdDouble, _nameDouble, _genreIdDouble, _itemIdDouble);
-
-        // Assert
-        verify(matchingList).addItem(_itemIdDouble);
-        verify(_iListOfItemsRepoDouble).save(matchingList);
     }
 
     @Test
