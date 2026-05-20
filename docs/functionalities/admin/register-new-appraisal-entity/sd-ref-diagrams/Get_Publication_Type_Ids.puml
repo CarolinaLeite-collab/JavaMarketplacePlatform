@@ -1,35 +1,71 @@
 @startuml
-'==== Title ====
-title "As an Administrator, I want to register an Appraisal Entity, including the list of genres and publication types it can appraisal" SD
+title "Get All Publication Types" - SD
 
-
-'==== basic style ====
 skinparam monochrome false
-skinparam shadowing false
 skinparam defaultFontName Futura
 skinparam objectFontSize 20
 skinparam backgroundColor CornSilk
 skinparam objectBackgroundColor WhiteSmoke
 skinparam noteBackgroundColor #FFFFE0
 skinparam ArrowFontColor #3B4953
-skinparam ActivationBackgroundColor black
-hidefootbox
+skinparam ArrowColor #57595BAA
+
 autonumber
+autoactivate off
+hidefootbox
 
-
-' ==== Actor and participants ====
-participant ":Register\nNewAppraisalEntity\nController" as CTL
-participant ":IPublicationType\nRepo" as IREPO
-
+participant ":RegisterNew\nAppraisalEntityController" as CTL
+participant ":JpaPublicationTypeRepo" as JPAREPO
+participant ":IPublicationTypeSpringDataRepo" as SPRINGREPO
+participant ":ImplJpaPublicationTypeRepo" as IMPL
+database "DB" as DB
+participant "publicationTypeDm:PublicationTypeDataModel" as DM
 
 activate CTL
-CTL -> IREPO: findAllKeys()
-activate IREPO
-IREPO --> CTL: publicationTypeIds
-deactivate IREPO
+CTL -> JPAREPO : findAllKeys()
+activate JPAREPO
+
+JPAREPO -> SPRINGREPO : findAll()
+activate SPRINGREPO
+
+SPRINGREPO -> IMPL : findAll()
+activate IMPL
+
+IMPL -> DB : select
+activate DB
+
+DB --> IMPL : string based data
+deactivate DB
+
+IMPL --> SPRINGREPO : savedPublicationTypeDms
+deactivate IMPL
+
+SPRINGREPO --> JPAREPO : savedPublicationTypeDms
+deactivate SPRINGREPO
+
+create "publicationTypeIds:List<PublicationTypeId>"
+
+JPAREPO -->> "publicationTypeIds:List<PublicationTypeId>" : <<create>>
+
+    loop for savedPublicationTypeDm : savedPublicationTypeDms
+
+        JPAREPO -> DM : stringPublicationTypeId = getId()
+        activate DM
+        deactivate DM
+
+        create "publicationTypeId:PublicationTypeId"
+        JPAREPO -->> "publicationTypeId:PublicationTypeId" : <<create>>(stringPublicationTypeId)
+
+        JPAREPO -> "publicationTypeIds:List<PublicationTypeId>" : add(publicationTypeId)
+
+    end
+
+  JPAREPO --> CTL : PublicationTypeIds
+  deactivate JPAREPO
+
+
 
 ref over CTL
 [[../Register_New_Appraisal_Entity_SD.puml Back to Main Diagram]]
 end ref
-
 @enduml
