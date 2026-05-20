@@ -6,7 +6,11 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,33 +20,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class MemDirectSaleRepoTest {
 
+    @Mock
     private DirectSale _ds1Double;
+
+    @Mock
     private DirectSale _ds2Double;
-    private DirectSaleId _dsIdDouble;
-    private List<ItemId> _itemsId1;
-    private List<ItemId> _itemsId2;
+
+    @Mock
+    private DirectSaleId _dsIdDouble1;
+
+    @Mock
+    private DirectSaleId _dsIdDouble2;
+
+    @Mock
     private ItemId _itemIdDouble1;
+
+    @Mock
     private ItemId _itemIdDouble2;
-    private Period _periodDouble;
 
-    @BeforeEach
-    void setUp() {
-        _ds1Double = mock(DirectSale.class);
-        _ds2Double = mock(DirectSale.class);
-        _dsIdDouble = mock(DirectSaleId.class);
-        _itemsId1 = new ArrayList<>();
-        _itemsId2 = new ArrayList<>();
-        _itemIdDouble1 = mock(ItemId.class);
-        _itemIdDouble2 = mock(ItemId.class);
-        _itemsId1.add(_itemIdDouble1);
-        _itemsId2.add(_itemIdDouble2);
-
-        _periodDouble = mock(Period.class);
-
-
-    }
 
     @Test
     void constructorShouldBuildDirectSaleRepo() {
@@ -54,26 +52,21 @@ class MemDirectSaleRepoTest {
         assertNotNull(dsr);
     }
 
-
     @Test
-    void findAllKeysShouldCorrectlyReturnIds(){
-        //arrange
-        Price priceDouble = mock(Price.class);
-        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
-        DirectSaleId dsIdDouble2 = mock(DirectSaleId.class);
-        when(_ds2Double.identity()).thenReturn(dsIdDouble2);
+    void findAllKeysShouldCorrectlyReturnIds() {
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
-        //SUT
-        MemDirectSaleRepo dsr = new MemDirectSaleRepo();
-        //act
-        dsr.save(_ds1Double);
-        dsr.save(_ds2Double);
-        List<DirectSaleId> ids = dsr.findAllKeys();
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+        when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
 
-        //assert
+        repo.save(_ds1Double);
+        repo.save(_ds2Double);
+
+        List<DirectSaleId> ids = repo.findAllKeys();
+
         assertEquals(2, ids.size());
-        assertTrue(ids.contains(_dsIdDouble));
-        assertTrue(ids.contains(dsIdDouble2));
+        assertTrue(ids.contains(_dsIdDouble1));
+        assertTrue(ids.contains(_dsIdDouble2));
     }
 
     @Test
@@ -82,26 +75,25 @@ class MemDirectSaleRepoTest {
         MemDirectSaleRepo dsr = new MemDirectSaleRepo();
 
         //act
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+
         DirectSale ds = dsr.save(_ds1Double);
 
         //assert
-        assertSame(ds, _ds1Double);
+        assertSame(_ds1Double, ds);
     }
 
     @Test
-    void shouldReturnOptionalWhenDSIsPresent(){
-        //arrange
-        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+    void shouldReturnOptionalWhenPresent() {
 
-        //SUT
-        MemDirectSaleRepo dsr = new MemDirectSaleRepo();
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
-        //act
-        dsr.save(_ds1Double);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
 
-        Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble);
+        repo.save(_ds1Double);
 
-        //assert
+        Optional<DirectSale> result = repo.ofIdentity(_dsIdDouble1);
+
         assertTrue(result.isPresent());
         assertSame(_ds1Double, result.get());
     }
@@ -112,49 +104,42 @@ class MemDirectSaleRepoTest {
         MemDirectSaleRepo dsr = new MemDirectSaleRepo();
 
         //act
-        Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble);
+        Optional<DirectSale> result = dsr.ofIdentity(_dsIdDouble1);
 
         //assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldReturnTrueWhenContainsId(){
-        //arrange
-        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+    void shouldReturnTrueWhenContainsId() {
+        // SUT
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
-        //SUT
-        MemDirectSaleRepo dsr = new MemDirectSaleRepo();
+        //Act
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
 
-        //act
-        dsr.save(_ds1Double);
-        DirectSaleId dsId = mock(DirectSaleId.class);
+        repo.save(_ds1Double);
 
-        //assert
-        assertTrue(dsr.containsOfIdentity(_dsIdDouble));
+        //Assert
+        assertTrue(repo.containsOfIdentity(_dsIdDouble1));
     }
 
     @Test
-    void shouldReturnFalseWhenDoesNotContainId(){
-        //arrange
-        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+    void shouldReturnFalseWhenDoesNotContainId() {
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
-        //SUT
-        MemDirectSaleRepo dsr = new MemDirectSaleRepo();
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
 
-        //act
-        dsr.save(_ds1Double);
-        DirectSaleId dsId = mock(DirectSaleId.class);
+        repo.save(_ds1Double);
 
-        //assert
-        assertFalse(dsr.containsOfIdentity(dsId));
+        assertFalse(repo.containsOfIdentity(_dsIdDouble2));
     }
 
     @Test
     void shouldFindAll(){
         //arrange
         DirectSaleId dsIdDouble = mock(DirectSaleId.class);
-        when(_ds1Double.identity()).thenReturn(_dsIdDouble);
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
         when(_ds2Double.identity()).thenReturn(dsIdDouble);
 
         //SUT
@@ -174,6 +159,72 @@ class MemDirectSaleRepoTest {
         assertEquals(2, list.size());
         assertTrue(list.contains(_ds1Double));
         assertTrue(list.contains(_ds2Double));
+    }
+
+    @Test
+    void shouldReturnItemsSortedByPublicationDateAsc() {
+
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+        when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
+
+        when(_ds1Double.getCreationDate()).thenReturn(Instant.parse("2020-01-01T00:00:00Z"));
+        when(_ds2Double.getCreationDate()).thenReturn(Instant.parse("2020-01-02T00:00:00Z"));
+
+        when(_ds1Double.getItemsId()).thenReturn(List.of(_itemIdDouble1));
+        when(_ds2Double.getItemsId()).thenReturn(List.of(_itemIdDouble2));
+
+        repo.save(_ds1Double);
+        repo.save(_ds2Double);
+
+        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble1, _itemIdDouble2));
+
+        assertEquals(List.of(_itemIdDouble1, _itemIdDouble2), result);
+    }
+
+    @Test
+    void shouldReturnItemsSortedByPublicationDateDesc() {
+
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+        when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
+
+        when(_ds1Double.getCreationDate()).thenReturn(Instant.parse("2020-01-01T00:00:00Z"));
+        when(_ds2Double.getCreationDate()).thenReturn(Instant.parse("2020-01-02T00:00:00Z"));
+
+        when(_ds1Double.getItemsId()).thenReturn(List.of(_itemIdDouble1));
+        when(_ds2Double.getItemsId()).thenReturn(List.of(_itemIdDouble2));
+
+        repo.save(_ds1Double);
+        repo.save(_ds2Double);
+
+        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateDesc(List.of(_itemIdDouble1, _itemIdDouble2));
+
+        assertEquals(List.of(_itemIdDouble2, _itemIdDouble1), result);
+    }
+
+    @Test
+    void shouldReturnOnlyMatchingItems() {
+
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+        when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
+
+        when(_ds1Double.getCreationDate()).thenReturn(Instant.parse("2020-01-01T00:00:00Z"));
+        when(_ds2Double.getCreationDate()).thenReturn(Instant.parse("2020-01-02T00:00:00Z"));
+
+        when(_ds1Double.getItemsId()).thenReturn(List.of(_itemIdDouble1));
+        when(_ds2Double.getItemsId()).thenReturn(List.of(_itemIdDouble2));
+
+        repo.save(_ds1Double);
+        repo.save(_ds2Double);
+
+        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
+
+        assertEquals(List.of(_itemIdDouble2), result);
     }
 
 }

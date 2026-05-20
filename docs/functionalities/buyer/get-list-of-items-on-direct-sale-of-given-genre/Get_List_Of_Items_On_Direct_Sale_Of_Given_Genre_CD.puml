@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on direct sale of a given genre" CD
+title "List of items on direct sale of a given genre, sorted" CD
 
 skinparam shadowing false
 skinparam defaultFontName Futura
@@ -12,22 +12,24 @@ top to bottom direction
 
 class GetDirectSaleItemsByGenreUI
 
-
 package "controller" {
 
     class GetDirectSaleItemsByGenreController {
-        +findAllGenreIds() : List<GenreId>
-        +getDirectSaleItemsByGenreId(genreId : GenreId) : List<ItemId>
+        +getDirectSaleItemsByGenreAsc(genreId : GenreId) : List<ItemId>
+        +getDirectSaleItemsByGenreDesc(genreId : GenreId) : List<ItemId>
+        -filterItemsByGenre(genreId : GenreId) : List<ItemId>
     }
 }
-
 
 package "domain" {
 
     package "repository" {
 
         interface IGenreRepo <<Interface>>
-        interface IDirectSaleRepo <<Interface>>
+        interface IDirectSaleRepo <<Interface>> {
+            +findByItemsIdSortedByPublicationDateAsc(itemIds : List<ItemId>) : List<ItemId>
+            +findByItemsIdSortedByPublicationDateDesc(itemIds : List<ItemId>) : List<ItemId>
+        }
         interface IItemRepo <<Interface>>
         interface IEditionRepo <<Interface>>
         interface IPublicationRepo <<Interface>>
@@ -45,6 +47,7 @@ package "domain" {
 
         class DirectSale <<Root>> <<Entity>> {
             +getItemIds() : List<ItemId>
+            +getCreationDate() : Instant
         }
     }
 
@@ -81,18 +84,7 @@ package "ddd" {
 }
 
 
-'package "persistence" {
-'
-'    package "mem" {
-'
-'        class MemoGenreRepo
-'        class MemoDirectSaleRepo
-'        class MemoItemRepo
-'        class MemoEditionRepo
-'        class MemoPublicationRepo
-'    }
-'}
-
+' Relationships '
 
 GetDirectSaleItemsByGenreUI .> GetDirectSaleItemsByGenreController
 
@@ -114,16 +106,6 @@ IItemRepo -|> IRepository
 IEditionRepo -|> IRepository
 IPublicationRepo -|> IRepository
 
-
-'MemoGenreRepo ..|> IGenreRepo
-'MemoDirectSaleRepo ..|> IDirectSaleRepo
-'MemoDirectSaleRepo --> DirectSale
-'MemoItemRepo ..|> IItemRepo
-'MemoItemRepo --> Item
-'MemoEditionRepo ..|> IEditionRepo
-'MemoEditionRepo --> Edition
-'MemoPublicationRepo ..|> IPublicationRepo
-'MemoPublicationRepo --> Publication
 
 IDirectSaleRepo "1" --> "*" DirectSale : manages
 IItemRepo "1" --> "*" Item : manages

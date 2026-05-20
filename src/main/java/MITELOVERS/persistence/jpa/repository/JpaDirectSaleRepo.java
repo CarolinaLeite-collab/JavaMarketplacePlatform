@@ -92,4 +92,32 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
         return new ArrayList<>();
     }
 
+    @Override
+    public List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
+
+        List<String> idsAsString = itemIds.stream()
+                .map(ItemId::toString)
+                .toList();
+
+        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateAsc(idsAsString).stream()
+                .map(_directSaleAssembler::toDomain)
+                .flatMap(ds -> ds.getItemsId().stream())
+                .filter(itemIds::contains)
+                .toList();
+    }
+
+    @Override
+    public List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
+
+        List<String> idsAsString = itemIds.stream()
+                .map(ItemId::toString)
+                .toList();
+
+        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateDesc(idsAsString).stream()
+                .map(_directSaleAssembler::toDomain)
+                .flatMap(ds -> ds.getItemsId().stream())
+                .filter(itemIds::contains)
+                .toList();
+    }
+
 }
