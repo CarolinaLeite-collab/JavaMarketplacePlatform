@@ -1,0 +1,63 @@
+@startuml
+title "Find all PublishingCompanyIds from persistence (via JPA)" Reference SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ArrowColor #57595BAA
+
+autonumber
+autoactivate off
+hidefootbox
+
+participant ":IPublishingCompanyRepo" as Repo
+participant ":JpaPublishingCompanyRepo" as JpaRepo
+participant ":IPublishingCompanySpringDataRepo" as PublishingCompanySpringRepo
+database "DB" as DB
+
+
+Repo -> JpaRepo : findAllKeys()
+activate Repo
+activate JpaRepo
+
+
+JpaRepo -> PublishingCompanySpringRepo : findAll()
+activate PublishingCompanySpringRepo
+
+PublishingCompanySpringRepo -> DB : retrieve PublishingCompany %n()Data Models
+activate DB
+
+DB --> PublishingCompanySpringRepo : publishingCompanyDMs
+deactivate DB
+PublishingCompanySpringRepo --> JpaRepo : publishingCompanyDMs
+deactivate PublishingCompanySpringRepo
+
+create "publishingCompanyIds%n():List<PublishingCompanyId>"
+JpaRepo -> "publishingCompanyIds%n():List<PublishingCompanyId>" : <<create>>
+
+
+loop for publishingCompanyDM : PublishingCompanyDMs
+    JpaRepo -> "publishingCompanyDM%n():PublishingCompanyDataModel" : idString = getPublishingCompanyId()
+    activate "publishingCompanyDM%n():PublishingCompanyDataModel"
+    deactivate "publishingCompanyDM%n():PublishingCompanyDataModel"
+    create "publishingCompanyId:PublishingCompanyId"
+    JpaRepo -->> "publishingCompanyId:PublishingCompanyId" : createPublishingCompanyId(idString)
+
+    JpaRepo -> "publishingCompanyIds%n():List<PublishingCompanyId>" : add(publishingCompanyId)
+    activate "publishingCompanyIds%n():List<PublishingCompanyId>"
+    deactivate "publishingCompanyIds%n():List<PublishingCompanyId>"
+
+end
+
+JpaRepo --> Repo : publishingCompanyIds
+deactivate JpaRepo
+
+ref over Repo
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publishing_Company_SD.puml Back to Main Diagram]]
+end ref
+@enduml

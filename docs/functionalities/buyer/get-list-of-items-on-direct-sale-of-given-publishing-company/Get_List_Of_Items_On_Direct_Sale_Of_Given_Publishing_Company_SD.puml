@@ -24,19 +24,21 @@ participant ":IEditionRepo" as ER
 participant "edition:Edition" as Edition
 
 
-Buyer -> UI: I want the list of items \non direct sale of a given publishing company
+Buyer -> UI: I want the list of items on direct %n()sale of a given publishing company
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
 CTL -> PCR : findAllKeys()
 activate PCR
-
+ref over PCR
+[[sd-ref-diagrams/Find_All_Publishing_Company_Ids.puml Find all PublicationIds from persistence (via JPA)]]
+end ref
 PCR --> CTL : publishingCompanyIds
 deactivate PCR
 
 CTL --> UI : publishingCompanyIds
 deactivate CTL
-UI --> Buyer: Select publishingCompanyId
+UI --> Buyer: Which publishing company?
 deactivate UI
 Buyer -> UI: publishingCompanyId
 activate UI
@@ -47,12 +49,14 @@ activate CTL
 
 CTL -> DSR: findAll()
 activate DSR
-
+ref over DSR
+[[sd-ref-diagrams/Find_All_Direct_Sales.puml Final all DirectSales from persistence (via JPA)]]
+end ref
 DSR --> CTL: directSales
 deactivate DSR
 
 create "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
-CTL -->> "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" : <<Create>>
+CTL -->> "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" : <<create>>
 
 loop for directSale : directSales
 CTL -> DirectSale : getItemIds()
@@ -63,7 +67,10 @@ deactivate DirectSale
 loop for itemId : itemIds
 CTL -> IR : ofIdentity(itemId)
 activate IR
-IR --> CTL : item
+ref over IR
+    [[sd-ref-diagrams/Retrieve_Item.puml Retrieve Item from persistence (via JPA)]]
+end ref
+IR --> CTL : reconstructedItem
 deactivate IR
 CTL -> Item : getEditionId()
 activate Item
@@ -72,18 +79,21 @@ deactivate Item
 
 CTL -> ER : ofIdentity(editionId)
 activate ER
-ER --> CTL : edition
+ref over ER
+[[sd-ref-diagrams/Retrieve_Edition.puml Retrieve Edition from persistence (via JPA)]]
+end ref
+ER --> CTL : reconstructedEdition
 deactivate ER
 
 
-CTL -> Edition : hasPublishingCompanyId = isByPublishingCompanyId(publishingCompanyId)
+CTL -> Edition : isByPublishingCompanyId(publishingCompanyId)
+activate Edition
+Edition --> CTL : true
+deactivate Edition
 
-opt hasPublishingCompanyId
 CTL -> "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" : add(itemId)
 activate "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
-"listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>" --> CTL : true
 deactivate "listOfItemsOnDirectSaleByPublishingCompany:List<ItemId>"
-end
 end
 end
 
@@ -91,7 +101,7 @@ end
 CTL --> UI: listOfItemsOnDirectSaleByPublishingCompany
 deactivate CTL
 
-UI --> Buyer: Here's the list! Done!
+UI --> Buyer: Here's the list.
 deactivate UI
 
 @enduml

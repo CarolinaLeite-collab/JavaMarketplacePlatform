@@ -80,11 +80,6 @@ Assembler -->> "name:Name" : createName(nameString)
 
 
 Assembler -> ":ItemFactory" : createItem(itemId, editionId, condition, description, saleStatus, name)
-activate ":ItemFactory"
-create "reconstructedItem:Item"
-":ItemFactory" -->> "reconstructedItem:Item" : <<create>>
-":ItemFactory" --> Assembler : reconstructedItem
-deactivate ":ItemFactory"
 
 Assembler --> JpaItemRepo : reconstructedItem
 deactivate Assembler
@@ -96,6 +91,7 @@ deactivate JpaItemRepo
 deactivate ItemRepo
 
 ref over ItemRepo
-[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publication_SD.puml Return to main diagram]]
+[[../Get_List_Of_Items_On_Direct_Sale_Of_Given_Publishing_Company_SD.puml Return to main diagram]]
+
 end ref
 @enduml

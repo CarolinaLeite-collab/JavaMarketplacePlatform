@@ -21,6 +21,8 @@ participant ":JpaLibraryRepo" as JpaLibraryRepo
 participant ":ILibrarySpringDataRepo" as SpringDataLibraryRepo
 participant ":LibraryAssembler" as Assembler
 database "DB" as DB
+participant "libraryDataModel%n():LibraryDataModel" as LibraryDataModel
+participant ":LibraryFactory" as Factory
 
 
 LibraryRepo -> JpaLibraryRepo : ofIdentity(libraryId)
@@ -39,6 +41,27 @@ deactivate SpringDataLibraryRepo
 
 JpaLibraryRepo -> Assembler : toDomain(libraryDataModel)
 activate Assembler
+
+Assembler -> LibraryDataModel: libraryIdString = getLibraryId()
+activate LibraryDataModel
+deactivate LibraryDataModel
+create "email:Email"
+Assembler -->> "email:Email" : createEmail(libraryIdString)
+create "libraryId:LibraryId"
+Assembler -->> "libraryId:LibraryId" : createLibraryId(email)
+
+    Assembler -> LibraryDataModel : itemIdStrings = getItemIds()
+    activate LibraryDataModel
+    deactivate LibraryDataModel
+
+    Assembler -> Assembler : itemIds = itemIdStrings.stream()%n().map(ItemId::new).toList()
+
+    Assembler -> Factory : reconstructedLibrary = createLibrary(libraryId, itemIds)
+    activate Factory
+    create "reconstructedLibrary%n():Library" as ReconstructedLibrary
+    Factory -> ReconstructedLibrary : <<create>>
+    Factory --> Assembler : reconstructedLibrary
+    deactivate Factory
 Assembler --> JpaLibraryRepo : reconstructedLibrary
 deactivate Assembler
 

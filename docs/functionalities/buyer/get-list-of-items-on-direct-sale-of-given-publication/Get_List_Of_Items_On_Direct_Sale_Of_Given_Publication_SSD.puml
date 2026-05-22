@@ -23,13 +23,13 @@ actor Buyer
 participant ":MiteLovers" as System
 
 ' --- System dialog ---
-Buyer -> System: I want to get a list of items on direct sale of a given publication
+Buyer -> System: I want to get a list of items on %n()direct sale of a given publication
 activate "System"
-System --> Buyer: Select publicationId
+System --> Buyer: Which publication?
 deactivate "System"
 
 Buyer -> System: publicationId
 activate "System"
-System --> Buyer: Here's the list! Done!
+System --> Buyer: Here is the list.
 deactivate "System"
 @enduml
