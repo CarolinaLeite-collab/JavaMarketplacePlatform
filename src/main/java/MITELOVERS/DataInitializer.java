@@ -12,6 +12,8 @@ import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
+import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.item.ItemFactory;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.publication.Publication;
@@ -64,7 +66,9 @@ public class DataInitializer {
             IDirectSaleRepo directSaleRepo,
             DirectSaleFactory directSaleFactory,
             IAuctionRepo auctionRepo,
-            AuctionFactory auctionFactory) {
+            AuctionFactory auctionFactory,
+            IItemRepo itemRepo,
+            ItemFactory itemFactory) {
 
         return args -> {
 
@@ -230,15 +234,37 @@ public class DataInitializer {
             );
             listOfItemsRepo.save(list3);
 
+            // -------------------------------------------------------
+            // Items
+            ItemId itemId1 = new ItemId("3C5D126F8B");
+            Item item1 = itemFactory.createItem(
+                    itemId1,
+                    new EditionId("edition-123"),
+                    Condition.GOOD,
+                    new Description("Used copy in good condition"),
+                    SaleStatus.OnDirectSale,
+                    new Name("Book for sale")
+            );
+            itemRepo.save(item1);
+
+            ItemId itemId2 = new ItemId("3F9F4BFAB2");
+            Item item2 = itemFactory.createItem(
+                    itemId2,
+                    new EditionId("edition-456"),
+                    Condition.FAIR,
+                    new Description("Old copy"),
+                    SaleStatus.OnDirectSale,
+                    new Name("Rare Book for sale")
+            );
+            itemRepo.save(item2);
+
 
             // -------------------------------------------------------
             // Direct Sales
-            ItemId item1 = new ItemId();
-            ItemId item2 = new ItemId();
             ItemId item3 = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
-                    List.of(item1, item2),
+                    List.of(itemId1, itemId2),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
             );
