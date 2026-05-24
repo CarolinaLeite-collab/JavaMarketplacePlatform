@@ -10,16 +10,22 @@ import MITELOVERS.domain.city.City;
 import MITELOVERS.domain.city.CityFactory;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
+import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.item.ItemFactory;
+import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
+import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
@@ -68,7 +74,14 @@ public class DataInitializer {
             IAuctionRepo auctionRepo,
             AuctionFactory auctionFactory,
             IItemRepo itemRepo,
-            ItemFactory itemFactory) {
+            ItemFactory itemFactory,
+            ILibraryRepo libraryRepo,
+            LibraryFactory libraryFactory,
+            IPublishingCompanyRepo publishingCompanyRepo,
+            PublishingCompanyFactory publishingCompanyFactory,
+            IEditionRepo editionRepo,
+            EditionFactory editionFactory
+    ) {
 
         return args -> {
 
@@ -208,7 +221,43 @@ public class DataInitializer {
             appraisalEntityRepo.save(hugo);
             log.info("Appraisal entities saved: Booker Prize, Hugo Awards");
 
-            log.info("DataInitializer completed successfully.");
+
+            // -------------------------------------------------------
+            // Publishing Companies
+            PublishingCompany seckerWarburg = publishingCompanyFactory.createPublishingCompany("Secker and Warburg");
+            publishingCompanyRepo.save(seckerWarburg);
+
+            PublishingCompany gnomePress = publishingCompanyFactory.createPublishingCompany("Gnome Press");
+            publishingCompanyRepo.save(gnomePress);
+
+            log.info("Publishing companies saved: Secker & Warburg, Gnome Press");
+
+            // -------------------------------------------------------
+            // Editions
+            Edition edition1984 = editionFactory.createEdition(
+                    book.identity(),
+                    new NoIdentifier(),
+                    nineteenEightyFour.identity(),
+                    seckerWarburg.identity(),
+                    Year.of(1949),
+                    Language.ENGLISH,
+                    null, null, null, null, null
+            );
+            editionRepo.save(edition1984);
+
+            Edition editionFoundation = editionFactory.createEdition(
+                    book.identity(),
+                    new NoIdentifier(),
+                    foundationSeries.identity(),
+                    gnomePress.identity(),
+                    Year.of(1951),
+                    Language.ENGLISH,
+                    null, null, null, null, null
+            );
+            editionRepo.save(editionFoundation);
+
+            log.info("Editions saved: 1984, Foundation");
+
 
             // -------------------------------------------------------
             // Lists of Items
@@ -239,7 +288,7 @@ public class DataInitializer {
             ItemId itemId1 = new ItemId("3C5D126F8B");
             Item item1 = itemFactory.createItem(
                     itemId1,
-                    new EditionId("edition-123"),
+                    edition1984.identity(),
                     Condition.GOOD,
                     new Description("Used copy in good condition"),
                     SaleStatus.OnDirectSale,
@@ -250,7 +299,7 @@ public class DataInitializer {
             ItemId itemId2 = new ItemId("3F9F4BFAB2");
             Item item2 = itemFactory.createItem(
                     itemId2,
-                    new EditionId("edition-456"),
+                    editionFoundation.identity(),
                     Condition.FAIR,
                     new Description("Old copy"),
                     SaleStatus.OnDirectSale,
@@ -336,7 +385,25 @@ public class DataInitializer {
 
             auctionRepo.save(auctionWithBids);
             log.info("Auction with bids saved — winner: Ângelo Martins at 15.00 EUR");
+
+            // Libraries with items
+            Library libraryPedro = libraryFactory.createLibrary(user.identity());
+            libraryPedro.addItemIdToLibrary(itemId1);
+            libraryRepo.save(libraryPedro);
+
+            Library libraryAna = libraryFactory.createLibrary(user2.identity());
+            libraryAna.addItemIdToLibrary(itemId2);
+            libraryRepo.save(libraryAna);
+
+            Library libraryAngelo = libraryFactory.createLibrary(user3.identity());
+            libraryRepo.save(libraryAngelo);  // biblioteca vazia
+
+            log.info("Libraries saved: Pedro, Ana, Angelo");
+
+            log.info("DataInitializer completed successfully.");
+
         };
+
     }
 
 }
