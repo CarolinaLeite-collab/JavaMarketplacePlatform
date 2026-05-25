@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.AddEditionController;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.repository.IEditionRepo;

@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.RegisterNewPublicationController;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;

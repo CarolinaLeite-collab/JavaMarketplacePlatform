@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.GetDirectSaleItemsByGenreController;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
@@ -9,7 +10,6 @@ import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 

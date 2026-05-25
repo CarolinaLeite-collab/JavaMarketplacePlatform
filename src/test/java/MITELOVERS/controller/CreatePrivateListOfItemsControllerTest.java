@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.CreatePrivateListOfItemsController;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.listofitems.ListOfItemsFactory;

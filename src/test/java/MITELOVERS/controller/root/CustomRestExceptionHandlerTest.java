@@ -1,5 +1,5 @@
-import MITELOVERS.controller.root.ApiError;
-import MITELOVERS.controller.root.CustomRestExceptionHandler;
+import MITELOVERS.controllers.cli.root.ApiError;
+import MITELOVERS.controllers.cli.root.CustomRestExceptionHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

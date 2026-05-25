@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.RegisterCityController;
 import MITELOVERS.domain.city.City;
 import MITELOVERS.domain.city.CityFactory;
 import MITELOVERS.domain.country.Country;

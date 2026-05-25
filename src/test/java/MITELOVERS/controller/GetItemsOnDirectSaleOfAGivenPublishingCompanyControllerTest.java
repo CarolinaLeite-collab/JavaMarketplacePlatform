@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.GetItemsOnDirectSaleOfAGivenPublishingCompanyController;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;

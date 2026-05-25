@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.GetPublicationTypeListController;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 

@@ -1,6 +1,7 @@
 
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.AddItemToListController;
 import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.ILibraryRepo;

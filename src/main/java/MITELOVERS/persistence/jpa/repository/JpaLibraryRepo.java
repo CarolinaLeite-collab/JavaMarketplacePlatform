@@ -9,6 +9,7 @@ import MITELOVERS.persistence.jpa.datamodel.LibraryDataModel;
 import MITELOVERS.persistence.springdata.ILibrarySpringDataRepo;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ public class JpaLibraryRepo implements ILibraryRepo {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Iterable<Library> findAll() {
 
         List<LibraryDataModel> dms = _iSpringRepo.findAll();

@@ -1,5 +1,6 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.controllers.cli.GetAuctionItemsByGenreController;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
