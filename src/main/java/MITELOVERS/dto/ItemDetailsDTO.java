@@ -1,5 +1,7 @@
 package MITELOVERS.dto;
 
+import org.springframework.hateoas.RepresentationModel;
+
 /**
  * Data Transfer Object representing detailed information about an item.
  *
@@ -11,7 +13,7 @@ package MITELOVERS.dto;
  * </p>
  */
 
-public class ItemDetailsDTO {
+public class ItemDetailsDTO extends RepresentationModel<ItemDetailsDTO> {
 
     private final String _title;
     private final String _authorName;
