@@ -32,3 +32,4 @@ replay_pid*
 
 # Build outputs
 target/
+data/
