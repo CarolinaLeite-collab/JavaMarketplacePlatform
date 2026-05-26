@@ -1,10 +1,8 @@
 package MITELOVERS.controller;
 
+import MITELOVERS.applicationservices.GenreService;
 import MITELOVERS.controllers.cli.AddGenreController;
-import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.domain.genre.GenreFactory;
-import MITELOVERS.domain.repository.IGenreRepo;
-import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.dto.GenreResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,8 +10,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Tag("unit")
 @ExtendWith(MockitoExtension.class)
@@ -23,49 +24,37 @@ class AddGenreControllerTest {
     private AddGenreController _sut;
 
     @Mock
-    private IGenreRepo _iGenreRepoDouble;
-
-    @Mock
-    private GenreFactory _genreFactoryDouble;
-
+    private GenreService _genreService;
 
     @Test
-    void addGenreShouldReturnGenreFromRepo() {
+    void addGenreReturnsResponseDTOFromService() {
         // Arrange
-        String genreName = "Action";
-        Genre genreDouble = mock(Genre.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+        String genreName = "Sample";
+        GenreResponseDTO responseDTODouble = new GenreResponseDTO("SAMPLE", "Sample");
 
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
-        when(genreDouble.identity()).thenReturn(genreIdDouble);
-        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(false);
-        when(_iGenreRepoDouble.save(genreDouble)).thenReturn(genreDouble);
+        when(_genreService.registerGenre(genreName)).thenReturn(responseDTODouble);
 
         // Act
-        Genre genreAdded = _sut.addGenre(genreName);
+        GenreResponseDTO result = _sut.addGenre(genreName);
 
         // Assert
-        assertNotNull(genreAdded);
-        assertEquals(genreDouble, genreAdded);
-        verify(_iGenreRepoDouble).save(genreDouble);
+        assertSame(responseDTODouble, result);
+        verify(_genreService).registerGenre(genreName);
     }
 
     @Test
-    void addGenreThrowsWhenAlreadyExistsInRepo() {
+    void addGenreThrowsWhenServiceFails() {
         // Arrange
-        String genreName = "Action";
-        Genre genreDouble = mock(Genre.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+        String genreName = "Sample";
 
-        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
-        when(genreDouble.identity()).thenReturn(genreIdDouble);
-        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
+        when(_genreService.registerGenre(genreName))
+                .thenThrow(new IllegalStateException("Genre already exists in the repository"));
 
-        // Act // Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
                 () -> _sut.addGenre(genreName));
 
         assertEquals("Genre already exists in the repository", exception.getMessage());
-        verify(_iGenreRepoDouble, never()).save(any());
+        verify(_genreService).registerGenre(genreName);
     }
 }
