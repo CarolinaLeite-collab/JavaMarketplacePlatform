@@ -13,49 +13,53 @@ autonumber
 autoactivate off
 
 actor Buyer
-participant ":GetDirectSaleItemsByPublicationUI" as UI
-participant ":GetDirectSaleItemsByPublicationController" as CTL
+participant ":GetDirectSaleItemsByPublicationsUI" as UI
+participant ":GetDirectSaleItemsByPublicationsController" as CTL
 participant ":IPublicationRepo" as PR
 participant ":IDirectSaleRepo" as DSR
 participant "directSale:DirectSale" as DirectSale
 participant ":IItemRepo" as IR
-participant "item:Item" as Item
+participant "reconstructed%n()Item:Item" as Item
 participant ":IEditionRepo" as ER
-participant "edition:Edition" as Edition
+participant "reconstructed%n()Edition:Edition" as Edition
 
 
-Buyer -> UI: I want the list of items \non direct sale of a given publication
+Buyer -> UI: I want to get a list of items %n()on direct sale of a given publication
 activate UI
 UI -> CTL : findAllKeys()
 activate CTL
 CTL -> PR : findAllKeys()
 activate PR
-
+ref over PR
+[[sd-ref-diagrams/Find_All_Publication_Ids.puml Find all PublicationIds from persistence (via JPA)]]
+end ref
 PR --> CTL : publicationIds
 deactivate PR
 
 CTL --> UI : publicationIds
 deactivate CTL
-UI --> Buyer: Select publicationId
+UI --> Buyer: Which publication?
 deactivate UI
 Buyer -> UI: publicationId
 activate UI
 
 
-UI -> CTL: getDirectSaleItemsByPublicationId(publicationId)
+UI -> CTL: getDirectSaleItemsByPublication(publicationId)
 activate CTL
 
 CTL -> DSR: findAll()
 activate DSR
-
+ref over DSR
+[[sd-ref-diagrams/Find_All_Direct_Sales.puml Final all DirectSales from persistence (via JPA)]]
+end ref
 DSR --> CTL: directSales
 deactivate DSR
 
-create "listOfItemsOnDirectSaleByPublication:List<ItemId>"
-CTL -->> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : <<Create>>
+create "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>"
+CTL -->> "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>" : <<create>>
 
 loop for directSale : directSales
-CTL -> DirectSale : getItemIds()
+CTL -> DirectSale : getItemsId()
 activate DirectSale
 DirectSale --> CTL : itemIds
 deactivate DirectSale
@@ -63,7 +67,10 @@ deactivate DirectSale
 loop for itemId : itemIds
 CTL -> IR : ofIdentity(itemId)
 activate IR
-IR --> CTL : item
+ref over IR
+    [[sd-ref-diagrams/Retrieve_Item.puml Retrieve Item from persistence (via JPA)]]
+end ref
+IR --> CTL : reconstructedItem
 deactivate IR
 CTL -> Item : getEditionId()
 activate Item
@@ -72,17 +79,22 @@ deactivate Item
 
 CTL -> ER : ofIdentity(editionId)
 activate ER
-ER --> CTL : edition
+ref over ER
+[[sd-ref-diagrams/Retrieve_Edition.puml Retrieve Edition from persistence (via JPA)]]
+end ref
+ER --> CTL : reconstructedEdition
+deactivate ER
 
 
-CTL -> Edition : hasPublicationId = isByPublicationId(publicationId)
+CTL -> Edition : isByPublicationId(publicationId)
+activate Edition
+Edition --> CTL : true
+deactivate Edition
 
-opt hasPublicationId
-CTL -> "listOfItemsOnDirectSaleByPublication:List<ItemId>" : add(itemId)
-activate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
-"listOfItemsOnDirectSaleByPublication:List<ItemId>" --> CTL : true
-deactivate "listOfItemsOnDirectSaleByPublication:List<ItemId>"
-end
+CTL -> "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>" : add(itemId)
+activate "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>"
+
+deactivate "listOfItemsOnDirectSale%n()ByPublication:List<ItemId>"
 end
 end
 
@@ -90,7 +102,7 @@ end
 CTL --> UI: listOfItemsOnDirectSaleByPublication
 deactivate CTL
 
-UI --> Buyer: Here's the list! Done!
+UI --> Buyer: Here is the list.
 deactivate UI
 
 @enduml

@@ -11,6 +11,7 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
  * </p>
  */
 
+@Controller
 public class GetDirectSaleItemsByGenreController {
 
     private final IDirectSaleRepo _iDirectSaleRepo;
@@ -39,8 +41,7 @@ public class GetDirectSaleItemsByGenreController {
     public GetDirectSaleItemsByGenreController(IDirectSaleRepo iDirectSaleRepo,
                                                IItemRepo iItemRepo,
                                                IEditionRepo iEditionRepo,
-                                               IPublicationRepo iPublicationRepo,
-                                               UserId buyerId) {
+                                               IPublicationRepo iPublicationRepo) {
 
         _iDirectSaleRepo = iDirectSaleRepo;
         _iItemRepo = iItemRepo;
@@ -49,16 +50,13 @@ public class GetDirectSaleItemsByGenreController {
 
     }
 
-    public List<ItemId> getDirectSaleItemsByGenre(GenreId genreId) {
+    private List<ItemId> filterItemsByGenre(GenreId genreId) {
 
-        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
-        List<ItemId> directSaleItemsByGenre = new ArrayList<>();
+        List<ItemId> result = new ArrayList<>();
 
-        for (DirectSale directSale : directSales) {
+        for (DirectSale directSale : _iDirectSaleRepo.findAll()) {
 
-            List<ItemId> ItemIdsInDS = directSale.getItemsId();
-
-            for (ItemId itemId : ItemIdsInDS) {
+            for (ItemId itemId : directSale.getItemsId()) {
 
                 Item item = _iItemRepo.ofIdentity(itemId)
                         .orElseThrow(() -> new IllegalStateException("Item not found!"));
@@ -70,14 +68,33 @@ public class GetDirectSaleItemsByGenreController {
                         .orElseThrow(() -> new IllegalStateException("Publication not found!"));;
 
                 if (publication.isByGenreId(genreId)) {
-                    directSaleItemsByGenre.add(itemId);
+
+                    result.add(itemId);
                 }
 
             }
         }
 
-        return directSaleItemsByGenre;
+        return result;
 
+    }
+
+    public List<ItemId> getDirectSaleItemsByGenreAsc(GenreId genreId) {
+
+        List<ItemId> filtered = filterItemsByGenre(genreId);
+
+        if (filtered.isEmpty()) return List.of();
+
+        return _iDirectSaleRepo.findByItemsIdSortedByPublicationDateAsc(filtered);
+    }
+
+    public List<ItemId> getDirectSaleItemsByGenreDesc(GenreId genreId) {
+
+        List<ItemId> filtered = filterItemsByGenre(genreId);
+
+        if (filtered.isEmpty()) return List.of();
+
+        return _iDirectSaleRepo.findByItemsIdSortedByPublicationDateDesc(filtered);
     }
 
 }

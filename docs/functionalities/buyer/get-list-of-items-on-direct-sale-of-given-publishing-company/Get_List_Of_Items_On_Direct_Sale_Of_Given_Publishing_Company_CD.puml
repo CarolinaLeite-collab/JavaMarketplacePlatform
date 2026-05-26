@@ -25,22 +25,27 @@ package "controller" {
 }
 
 package "ddd" {
-    interface IRepository<ID, T> <<Interface>>
+    interface IRepository<ID, T> <<Interface>> {
+        +findAll() : Iterable<T>
+        +findAllKeys() : List<ID>
+        +ofIdentity(id : ID) : Optional <T>
+   }
+   interface AggregateRoot<ID, T> <<Interface>>
+
+   interface DomainEntity<ID> <<Interface>>{
+
+   }
 }
 
 package "domain" {
     package "repository" {
         interface IPublishingCompanyRepo <<Interface>> {
-            +findAllKeys() : List<PublishingCompanyId>
         }
         interface IDirectSaleRepo <<Interface>> {
-            +findAll() : Iterable<DirectSale>
         }
         interface IItemRepo <<Interface>> {
-            +ofIdentity(id : ItemId) : Optional<Item>
         }
         interface IEditionRepo <<Interface>> {
-            +ofIdentity(id : EditionId) : Optional<Edition>
         }
 
     }
@@ -57,13 +62,13 @@ package "domain" {
         }
     }
 
-    package "item" {
+    package "item" #b0c4d4{
         class Item <<Root>> <<Entity>> {
             +getEditionId() : EditionId
         }
     }
 
-    package "edition" {
+    package "edition" #b0c4d4{
         class Edition <<Root>> <<Entity>> {
             +isByPublishingCompanyId(publishingCompanyId : publishingCompanyId) : boolean
         }
@@ -78,10 +83,10 @@ GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IItemRepo : <<use>>
 GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IEditionRepo : <<use>>
 GetDirectSaleItemsByPublishingCompanyController "1" ..> "1" IPublishingCompanyRepo : <<use>>
 
-IDirectSaleRepo --|> IRepository
-IItemRepo --|> IRepository
-IEditionRepo --|> IRepository
-IPublishingCompanyRepo --|> IRepository
+IDirectSaleRepo ..|> IRepository
+IItemRepo ..|> IRepository
+IEditionRepo ..|> IRepository
+IPublishingCompanyRepo ..|> IRepository
 
 IDirectSaleRepo "1" --> "*" DirectSale : manages
 IItemRepo "1" --> "*" Item : manages
@@ -92,5 +97,10 @@ Item "1" --> "1" EditionId : has
 Item "1" --> "1" ItemId : has
 Edition "1" --> "1" EditionId : has
 Edition "1" --> "1" PublishingCompanyId : has
+
+AggregateRoot --|> DomainEntity
+DirectSale ..|> AggregateRoot
+Item ..|> AggregateRoot
+Edition ..|> AggregateRoot
 
 @enduml

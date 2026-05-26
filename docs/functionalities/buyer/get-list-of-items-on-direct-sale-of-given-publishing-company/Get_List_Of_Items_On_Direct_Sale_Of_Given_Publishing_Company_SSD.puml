@@ -1,5 +1,5 @@
 @startuml
-title "As a Buyer, I want to get the list of items on direct sale of a given publisher" - SSD
+title "As a Buyer, I want to get the list of items %n()on direct sale of a given publisher" - SSD
 hidefootbox
 
 '==== basic style ====
@@ -21,11 +21,11 @@ actor Buyer
 participant ":Mitelovers" as System
 
 ' --- System dialog ---
-Buyer -> System: I want to get a list of items on direct sale of given publishing company
+Buyer -> System: I want the list of items on direct %n()sale of a given publishing company
 activate "System"
-System --> Buyer: Select publishingCompanyId
+System --> Buyer: Which publishing company?
 Buyer -> System: publishingCompanyId
-System --> Buyer: Here's the list! Done!
+System --> Buyer: Here's the list.
 deactivate "System"
 
 @enduml

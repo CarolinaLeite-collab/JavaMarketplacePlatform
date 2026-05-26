@@ -1,0 +1,115 @@
+@startuml
+title "List of items on direct sale of a given genre, sorted" SD
+hidefootbox
+
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam ArrowFontColor #3B4953
+
+autonumber
+autoactivate off
+
+actor Buyer
+participant ":GetDirectSaleItemsByGenreUI" as UI
+participant ":GetDirectSaleItemsByGenreController" as CTL
+participant ":IGenreRepo" as AR
+participant ":IDirectSaleRepo" as DSR
+participant "directSale:DirectSale" as DS
+participant ":IItemRepo" as IR
+participant "item:Item" as Item
+participant ":IEditionRepo" as ER
+participant "edition:Edition" as Edition
+participant ":IPublicationRepo" as PR
+participant "publication:Publication" as Publication
+
+
+
+Buyer -> UI: I want the list of items on direct sale of a given genre sorted (ASC)
+activate UI
+UI -> CTL : findAllKeys()
+activate CTL
+CTL -> AR : findAllKeys()
+activate AR
+
+AR --> CTL : genreIds
+deactivate AR
+
+CTL --> UI : genreIds
+deactivate CTL
+UI --> Buyer: Select genre
+deactivate UI
+Buyer -> UI: genreId
+activate UI
+
+
+UI -> CTL: getDirectSaleItemsByGenreAsc(genreId)
+activate CTL
+
+CTL -> DSR: findAll()
+activate DSR
+
+DSR --> CTL: Collection<DirectSale>
+deactivate DSR
+
+loop for each DirectSale
+    CTL -> DS: getItemsId()
+    activate DS
+    DS --> CTL: List<ItemId>
+    deactivate DS
+
+    create "filteredList:FilteredList"
+            CTL -->>  "filteredList:FilteredList" <<create>>
+
+    loop for each ItemId
+        CTL -> IR: ofIdentity(itemId)
+        activate IR
+        IR --> CTL: Item
+        deactivate IR
+
+        CTL -> Item: getEditionId()
+        activate Item
+        Item --> CTL: editionId
+        deactivate Item
+
+        CTL -> ER: ofIdentity(editionId)
+        activate ER
+        ER --> CTL: Edition
+        deactivate ER
+
+        CTL -> Edition: getPublicationId()
+        activate Edition
+        Edition --> CTL: publicationId
+        deactivate Edition
+
+        CTL -> PR: ofIdentity(publicationId)
+        activate PR
+        PR --> CTL: Publication
+        deactivate PR
+
+        CTL -> Publication: isByGenreId(genreId)
+        activate Publication
+        Publication --> CTL: true
+        deactivate Publication
+
+
+        CTL -> "filteredList:FilteredList": add itemId to filtered list
+
+    end
+end
+
+CTL -> DSR: findByItemsIdSortedByPublicationDateAsc(filteredItemIds)
+activate DSR
+DSR --> CTL: sortedItemIds
+deactivate DSR
+
+CTL --> UI: sortedItemIds
+deactivate CTL
+
+UI --> Buyer: Here is your sorted list
+deactivate UI
+
+
+@enduml

@@ -21,6 +21,8 @@ import java.util.*;
  * layers from persistence concerns.
  * </p>
  */
+
+
 @Repository
 @Profile("mem")
 public class MemDirectSaleRepo implements IDirectSaleRepo {
@@ -70,4 +72,25 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
     public List<ItemId> findDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId){
         return new ArrayList<>();
     }
+
+    @Override
+    public List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
+
+        return DATA.values().stream()
+                .sorted(Comparator.comparing(DirectSale::getCreationDate))
+                .flatMap(ds -> ds.getItemsId().stream())
+                .filter(itemIds::contains)
+                .toList();
+    }
+
+    @Override
+    public List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
+
+        return DATA.values().stream()
+                .sorted(Comparator.comparing(DirectSale::getCreationDate).reversed())
+                .flatMap(ds -> ds.getItemsId().stream())
+                .filter(itemIds::contains)
+                .toList();
+    }
+
 }
