@@ -1,0 +1,33 @@
+package MITELOVERS.mapper;
+
+import MITELOVERS.domain.genre.Genre;
+import MITELOVERS.domain.genre.GenreFactory;
+import MITELOVERS.dto.GenreResponseDTO;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Tag("unit")
+class GenreResponseDTOMapperTest {
+
+    @Test
+    void toResponseDTOBuildsDtoWithSelfLink() {
+        // Arrange
+        GenreFactory factory = new GenreFactory();
+        Genre genre = factory.createGenre("Sample");
+        GenreResponseDTOMapper mapper = new GenreResponseDTOMapper();
+
+        // Act
+        GenreResponseDTO dto = mapper.toResponseDTO(genre);
+
+        // Assert
+        assertNotNull(dto);
+        assertEquals("SAMPLE", dto.get_genreId());
+        assertEquals("Sample", dto.get_genreName());
+        assertTrue(dto.getLink("self").isPresent());
+    }
+}
+
