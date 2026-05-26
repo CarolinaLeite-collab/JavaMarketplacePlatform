@@ -1,5 +1,5 @@
 @startuml
-title MiteLovers Logical View %n() Level 2
+title MiteLovers Logical View %n() Level 1
 
 skinparam monochrome false
 skinparam shadowing false
