@@ -245,16 +245,16 @@ public class DataInitializer {
             );
             editionRepo.save(edition1984);
 
-            Edition editionFoundation = editionFactory.createEdition(
+            Edition edition1984Modern = editionFactory.createEdition(
                     book.identity(),
-                    new NoIdentifier(),
-                    foundationSeries.identity(),
-                    gnomePress.identity(),
-                    Year.of(1951),
+                    new ISBN("9780451524935"),
+                    nineteenEightyFour.identity(),
+                    seckerWarburg.identity(),
+                    Year.of(2003),
                     Language.ENGLISH,
                     null, null, null, null, null
             );
-            editionRepo.save(editionFoundation);
+            editionRepo.save(edition1984Modern);
 
             log.info("Editions saved: 1984, Foundation");
 
@@ -288,7 +288,7 @@ public class DataInitializer {
             ItemId itemId1 = new ItemId("3C5D126F8B");
             Item item1 = itemFactory.createItem(
                     itemId1,
-                    edition1984.identity(),
+                    edition1984.identity(),        // ← edição antiga
                     Condition.GOOD,
                     new Description("Used copy in good condition"),
                     SaleStatus.OnDirectSale,
@@ -296,14 +296,15 @@ public class DataInitializer {
             );
             itemRepo.save(item1);
 
+
             ItemId itemId2 = new ItemId("3F9F4BFAB2");
             Item item2 = itemFactory.createItem(
                     itemId2,
-                    editionFoundation.identity(),
+                    edition1984Modern.identity(),  // ← edição moderna
                     Condition.FAIR,
-                    new Description("Old copy"),
+                    new Description("Modern edition"),
                     SaleStatus.OnDirectSale,
-                    new Name("Rare Book for sale")
+                    new Name("Modern Book for sale")
             );
             itemRepo.save(item2);
 
