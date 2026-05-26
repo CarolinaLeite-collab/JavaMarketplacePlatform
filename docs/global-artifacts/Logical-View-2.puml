@@ -14,11 +14,30 @@ skinparam classAttributeIconSize 0
 skinparam PackageBorderColor #4B9DA9
 top to bottom direction
 
-component "MiteLovers" as MiteLovers <<System>>
+component "MiteLovers" as MiteLovers <<System>> {
+    port " " as API_Port
+    port " " as UI_Port
+
+    component "Frontend" as FE {
+    port " " as FE_Port
+    }
+
+    component "Backend" as BE {
+        port " " as BE_Port
+        port " " as BE_Port_to_DB
+    }
+}
 
 interface "UI"
 interface "API"
+database "db"
 
-MiteLovers -- UI
-MiteLovers -- API
+UI -- UI_Port
+API -- API_Port
+UI_Port -- FE_Port
+API_Port -- BE_Port
+BE_Port_to_DB -( db
+BE_Port -u0)- FE
+
+
 @enduml
