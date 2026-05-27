@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.cli.root;
+package MITELOVERS.controllers.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
