@@ -4,6 +4,7 @@ import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.dto.AddItemToListRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.MakeListPublicRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ListOfItemsControllerTest {
+class ListOfItemsRestControllerTest {
     //SUT
     @InjectMocks
     private ListOfItemsRestController controller;
@@ -97,11 +98,12 @@ class ListOfItemsControllerTest {
     void makeListPublicReturnsUpdatedListOfItemsResponseDTO() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
+        MakeListPublicRequestDTO sharedUntil = mock(MakeListPublicRequestDTO.class);
 
-        when(service.makePublic("LOI-1234", 2)).thenReturn(dtoDouble);
+        when(service.makePublic("LOI-1234", sharedUntil)).thenReturn(dtoDouble);
 
         //act
-        ResponseEntity<Object> result = controller.makeListPublic("LOI-1234", 2);
+        ResponseEntity<Object> result = controller.makeListPublic("LOI-1234", sharedUntil);
 
         //assert
         assertEquals(HttpStatus.OK, result.getStatusCode());

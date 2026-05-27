@@ -144,9 +144,9 @@ class JpaListOfItemsRepoTest {
     @Test
     void findByUserIdShouldReturnListsOfGivenUserId(){
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ListOfItemsDataModel listDmDouble1 = mock(ListOfItemsDataModel.class);
         ListOfItemsDataModel listDmDouble2 = mock(ListOfItemsDataModel.class);
+        UserId userIdDouble = mock(UserId.class);
 
         List<ListOfItemsDataModel> dms = List.of(listDmDouble1, listDmDouble2);
 

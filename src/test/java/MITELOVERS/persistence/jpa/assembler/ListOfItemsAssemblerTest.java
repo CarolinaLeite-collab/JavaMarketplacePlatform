@@ -48,7 +48,7 @@ class ListOfItemsAssemblerTest {
 
         ListOfItemsDataModel result = assembler.toDataModel(_listDouble);
 
-        assertEquals("user@mitelovers.com", result.getUserId());
+        assertEquals("user@mitelovers.com", result.getUserId().toString());
     }
 
     @Test
@@ -88,9 +88,12 @@ class ListOfItemsAssemblerTest {
         // Arrange
         ListOfItemsDataModel dmDouble = mock(ListOfItemsDataModel.class);
         ListOfItems listDouble = mock(ListOfItems.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userIdDouble.toString()).thenReturn("user@cenas.com");
 
         when(dmDouble.getListOfItemsId()).thenReturn("LOI-ABC123");
-        when(dmDouble.getUserId()).thenReturn("user@mitelovers.com");
+        when(dmDouble.getUserId()).thenReturn(userIdDouble);
         when(dmDouble.getName()).thenReturn("My List");
         when(dmDouble.getGenreId()).thenReturn("FICTION");
         when(dmDouble.isPrivate()).thenReturn(true);
@@ -117,9 +120,12 @@ class ListOfItemsAssemblerTest {
         LocalDateTime sharedUntil = LocalDateTime.now().plusDays(7);
         ListOfItemsDataModel dmDouble = mock(ListOfItemsDataModel.class);
         ListOfItems listDouble = mock(ListOfItems.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userIdDouble.toString()).thenReturn("user@cenas.com");
 
         when(dmDouble.getListOfItemsId()).thenReturn("LOI-ABC123");
-        when(dmDouble.getUserId()).thenReturn("user@mitelovers.com");
+        when(dmDouble.getUserId()).thenReturn(userIdDouble);
         when(dmDouble.getName()).thenReturn("My List");
         when(dmDouble.getGenreId()).thenReturn("FICTION");
         when(dmDouble.isPrivate()).thenReturn(false);
@@ -179,9 +185,12 @@ class ListOfItemsAssemblerTest {
         ListOfItemsDataModel dmDouble1 = mock(ListOfItemsDataModel.class);
         ListOfItemsDataModel dmDouble2 = mock(ListOfItemsDataModel.class);
         ListOfItems listDouble2 = mock(ListOfItems.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userIdDouble.toString()).thenReturn("user@cenas.com");
 
         when(dmDouble1.getListOfItemsId()).thenReturn("LOI-ABC123");
-        when(dmDouble1.getUserId()).thenReturn("user@mitelovers.com");
+        when(dmDouble1.getUserId()).thenReturn(userIdDouble);
         when(dmDouble1.getName()).thenReturn("My List");
         when(dmDouble1.getGenreId()).thenReturn("FICTION");
         when(dmDouble1.isPrivate()).thenReturn(true);
@@ -189,7 +198,7 @@ class ListOfItemsAssemblerTest {
         when(dmDouble1.getItemIds()).thenReturn(List.of());
 
         when(dmDouble2.getListOfItemsId()).thenReturn("LOI-DEF456");
-        when(dmDouble2.getUserId()).thenReturn("user@mitelovers.com");
+        when(dmDouble2.getUserId()).thenReturn(userIdDouble);
         when(dmDouble2.getName()).thenReturn("My Second List");
         when(dmDouble2.getGenreId()).thenReturn("FICTION");
         when(dmDouble2.isPrivate()).thenReturn(true);

@@ -6,8 +6,10 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.dto.AddItemToListRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.MakeListPublicRequestDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,13 +110,17 @@ class ListOfItemsServiceTest {
         //arrange
         ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        AddItemToListRequestDTO requestDTODouble = mock(AddItemToListRequestDTO.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
+        when(requestDTODouble.getItemId()).thenReturn(itemIdDouble);
+        when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
         when(_itemRepoDouble.containsOfIdentity(any(ItemId.class))).thenReturn(true);
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.addItemToList("LOI-1234", "ABCDEF1234");
+        ListOfItemsResponseDTO result = _serviceDouble.addItemToList("LOI-1234", requestDTODouble);
 
         //assert
         assertEquals(responseDTODouble, result);
@@ -124,12 +132,14 @@ class ListOfItemsServiceTest {
         //arrange
         ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        MakeListPublicRequestDTO sharedUntil = mock(MakeListPublicRequestDTO.class);
 
+        when(sharedUntil.getSharedUntil()).thenReturn(2);
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.makePublic("LOI-1234", 3);
+        ListOfItemsResponseDTO result = _serviceDouble.makePublic("LOI-1234", sharedUntil);
 
         //assert
         assertEquals(responseDTODouble, result);

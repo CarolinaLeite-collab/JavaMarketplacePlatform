@@ -1,8 +1,10 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
+import MITELOVERS.dto.AddItemToListRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.MakeListPublicRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +59,8 @@ public class ListOfItemsRestController {
         }
     }
 
-    @PatchMapping("/{listId}")
-    public ResponseEntity<Object> addItemsToList (@PathVariable String listId, @RequestBody String itemId) {
+    @PostMapping("/{listId}")
+    public ResponseEntity<Object> addItemsToList (@PathVariable String listId, @RequestBody AddItemToListRequestDTO itemId) {
         try {
             ListOfItemsResponseDTO result = _listService.addItemToList(listId, itemId);
 
@@ -71,7 +73,7 @@ public class ListOfItemsRestController {
     }
 
     @PatchMapping("/{listId}/visibility")
-    public ResponseEntity<Object> makeListPublic(@PathVariable String listId, @RequestBody int sharedUntil) {
+    public ResponseEntity<Object> makeListPublic(@PathVariable String listId, @RequestBody MakeListPublicRequestDTO sharedUntil) {
         try {
             ListOfItemsResponseDTO result = _listService.makePublic(listId, sharedUntil);
 
