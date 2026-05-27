@@ -1,6 +1,6 @@
 @startuml
 '==== Title ====
-title "As a UServer, I want to use a Web UI to put for %n()sale a publication in my library in a direct sale." %n() SD
+title "As a User, I want to use a Web UI to put for %n()sale a publication in my library in a direct sale." %n() SD
 
 '==== basic style ====
 skinparam monochrome false
