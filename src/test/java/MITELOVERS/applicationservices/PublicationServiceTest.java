@@ -13,7 +13,7 @@ import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.PublicationResponseDTO;
 import MITELOVERS.mapper.PublicationResponseDTOMapper;
-import MITELOVERS.services.PublicationService;
+import MITELOVERS.applicationservices.PublicationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

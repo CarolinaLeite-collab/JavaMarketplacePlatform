@@ -5,7 +5,7 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.PublicationRequestDTO;
 import MITELOVERS.dto.PublicationResponseDTO;
-import MITELOVERS.services.PublicationService;
+import MITELOVERS.applicationservices.PublicationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
