@@ -1,5 +1,5 @@
 package MITELOVERS.controllers.cli.root;
-import MITELOVERS.controllers.cli.root.ApiError;
+import MITELOVERS.controllers.exception.ApiError;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
