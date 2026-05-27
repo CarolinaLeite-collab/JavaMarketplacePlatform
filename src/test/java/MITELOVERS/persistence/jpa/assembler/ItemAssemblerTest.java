@@ -6,8 +6,7 @@ import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -27,6 +26,8 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
+
 
         // SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -51,6 +52,7 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
 
         // SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -74,6 +76,7 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -97,6 +100,7 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book."));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -120,6 +124,7 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -143,6 +148,7 @@ class ItemAssemblerTest {
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -153,6 +159,55 @@ class ItemAssemblerTest {
         // Assert
         assertEquals("Best Book", result.getName());
     }
+
+    @Test
+    void toDataModelShouldMapPictureCorrectly() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        Item itemDouble = mock(Item.class);
+
+        when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
+        when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
+        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
+        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(new Picture("https://example.com/image.jpg"));
+
+        // SUT
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act
+        ItemDataModel result = assembler.toDataModel(itemDouble);
+
+        // Assert
+        assertEquals("https://example.com/image.jpg", result.getPicture());
+    }
+
+    @Test
+    void toDataModelShouldMapNullPictureAsNull() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        Item itemDouble = mock(Item.class);
+
+        when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
+        when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
+        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
+        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
+        when(itemDouble.getName()).thenReturn(new Name("Best book"));
+        when(itemDouble.getPicture()).thenReturn(null);
+
+        // SUT
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act
+        ItemDataModel result = assembler.toDataModel(itemDouble);
+
+        // Assert
+        assertNull(result.getPicture());
+    }
+
 
     @Test
     void toDomainShouldDelegateToFactory() {
@@ -168,10 +223,67 @@ class ItemAssemblerTest {
         when(dmDouble.getDescription()).thenReturn("Not a great book");
         when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
         when(dmDouble.getName()).thenReturn("Best book");
+        when(dmDouble.getPicture()).thenReturn(null);
 
-        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any())).thenReturn(itemDouble);
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(),any())).thenReturn(itemDouble);
 
         //SUT
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act
+        Item result = assembler.toDomain(dmDouble);
+
+        // Assert
+        assertEquals(itemDouble, result);
+    }
+
+    @Test
+    void toDomainShouldMapPictureCorrectly() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        ItemDataModel dmDouble = mock(ItemDataModel.class);
+        Item itemDouble = mock(Item.class);
+
+        when(dmDouble.getId()).thenReturn("ABCDEF1234");
+        when(dmDouble.getEditionId()).thenReturn("E-ED123456");
+        when(dmDouble.getCondition()).thenReturn("POOR");
+        when(dmDouble.getDescription()).thenReturn("Not a great book");
+        when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
+        when(dmDouble.getName()).thenReturn("Best book");
+        when(dmDouble.getPicture()).thenReturn("https://example.com/image.jpg");
+
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(itemDouble);
+
+        // SUT
+        ItemAssembler assembler = new ItemAssembler(factoryDouble);
+
+        // Act
+        Item result = assembler.toDomain(dmDouble);
+
+        // Assert
+        assertEquals(itemDouble, result);
+    }
+
+    @Test
+    void toDomainShouldHandleNullPicture() {
+        // Arrange
+        ItemFactory factoryDouble = mock(ItemFactory.class);
+        ItemDataModel dmDouble = mock(ItemDataModel.class);
+        Item itemDouble = mock(Item.class);
+
+        when(dmDouble.getId()).thenReturn("ABCDEF1234");
+        when(dmDouble.getEditionId()).thenReturn("E-ED123456");
+        when(dmDouble.getCondition()).thenReturn("POOR");
+        when(dmDouble.getDescription()).thenReturn("Not a great book");
+        when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
+        when(dmDouble.getName()).thenReturn("Best book");
+        when(dmDouble.getPicture()).thenReturn(null);
+
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(itemDouble);
+
+        // SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
 
         // Act

@@ -42,4 +42,7 @@ public class ItemDataModel {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "picture", nullable = true)
+    private String picture;
+
 }
