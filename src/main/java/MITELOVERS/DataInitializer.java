@@ -165,9 +165,11 @@ public class DataInitializer {
             Author orwell = authorFactory.createAuthor(new Name("George Orwell"));
             Author asimov = authorFactory.createAuthor(new Name("Isaac Asimov"));
             Author yuval = authorFactory.createAuthor(new Name("Yuval Noah Harari"));
+            Author helder = authorFactory.createAuthor(new Name("Helberto Helder"));
             authorRepo.save(orwell);
             authorRepo.save(asimov);
             authorRepo.save(yuval);
+            authorRepo.save(helder);
             log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari");
 
             // -------------------------------------------------------
