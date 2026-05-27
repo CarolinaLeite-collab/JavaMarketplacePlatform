@@ -26,6 +26,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getLocalizedMessage(),
                 ex.getMessage()
         );
-        return new ResponseEntity<>(apiError, apiError.getStatus());
+        return new ResponseEntity<> (apiError, apiError.getStatus());
     }
 }
