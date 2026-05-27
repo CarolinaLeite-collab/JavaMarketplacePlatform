@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
@@ -9,7 +8,7 @@ import MITELOVERS.dto.PublicationResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import MITELOVERS.services.PublicationService;
+import MITELOVERS.applicationservices.PublicationService;
 
 import java.time.Year;
 import java.util.List;
@@ -34,10 +33,10 @@ public class PublicationRestController {
             @RequestBody PublicationRequestDTO info) {
 
         PublicationResponseDTO publicationResponseDTO = _publicationService.registerPublication(
-                new Title(info.get_title()),
-                new AuthorId(info.get_authorId()),
-                Year.of(info.get_releaseYear()),
-                new GenreId(info.get_genreId())
+                new Title(info.getTitle()),
+                new AuthorId(info.getAuthorId()),
+                Year.of(info.getReleaseYear()),
+                new GenreId(info.getGenreId())
         );
 
         return new ResponseEntity<>(publicationResponseDTO, HttpStatus.CREATED);

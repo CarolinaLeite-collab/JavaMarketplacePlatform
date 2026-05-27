@@ -13,9 +13,9 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 public class PublicationResponseDTO extends RepresentationModel<PublicationResponseDTO> {
 
-    private String _title;
-    private String _authorName;
-    private int _releaseYear;
-    private String _genreName;
+    private String title;
+    private String authorName;
+    private int releaseYear;
+    private String genreName;
 
 }

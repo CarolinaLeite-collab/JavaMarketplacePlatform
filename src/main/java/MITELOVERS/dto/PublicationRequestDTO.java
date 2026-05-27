@@ -13,9 +13,9 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 public class PublicationRequestDTO {
 
-    private final String _title;
-    private final String _authorId;
-    private final int _releaseYear;
-    private final String _genreId;
+    private final String title;
+    private final String authorId;
+    private final int releaseYear;
+    private final String genreId;
 
 }

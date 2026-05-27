@@ -1,4 +1,4 @@
-package MITELOVERS.services;
+package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.genre.Genre;
