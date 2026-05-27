@@ -290,11 +290,13 @@ public class DataInitializer {
             ItemId itemId1 = new ItemId("3C5D126F8B");
             Item item1 = itemFactory.createItem(
                     itemId1,
-                    edition1984.identity(),        // ← edição antiga
+                    edition1984.identity(),
                     Condition.GOOD,
                     new Description("Used copy in good condition"),
                     SaleStatus.OnDirectSale,
-                    new Name("Book for sale")
+                    new Name("Book for sale"),
+                    new Picture("https://upload.wikimedia.org/wikipedia/commons/5/51/1984_first_edition_cover.jpg")
+
             );
             itemRepo.save(item1);
 
@@ -302,7 +304,7 @@ public class DataInitializer {
             ItemId itemId2 = new ItemId("3F9F4BFAB2");
             Item item2 = itemFactory.createItem(
                     itemId2,
-                    edition1984Modern.identity(),  // ← edição moderna
+                    edition1984Modern.identity(),
                     Condition.FAIR,
                     new Description("Modern edition"),
                     SaleStatus.OnDirectSale,
