@@ -1,6 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
+import MITELOVERS.dto.AddItemToListRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -79,11 +80,12 @@ class ListOfItemsControllerTest {
     void addItemsToListReturnsUpdatedListOfItemsResponseDTO() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
+        AddItemToListRequestDTO requestDTODouble = mock(AddItemToListRequestDTO.class);
 
-        when(service.addItemToList("LOI-1234", "ABCDE1234")).thenReturn(dtoDouble);
+        when(service.addItemToList(eq("LOI-1234"), any(AddItemToListRequestDTO.class))).thenReturn(dtoDouble);
 
         //act
-        ResponseEntity<Object> result = controller.addItemsToList("LOI-1234", "ABCDE1234");
+        ResponseEntity<Object> result = controller.addItemsToList("LOI-1234", requestDTODouble);
 
         //assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
