@@ -15,32 +15,13 @@ class ApiErrorTest {
         // Arrange
         HttpStatus status = HttpStatus.BAD_REQUEST;
         String message = "some message";
-        String error = "some error";
 
         // Act
-        ApiError apiError = new ApiError(status, message, error);
+        ApiError apiError = new ApiError(status, message);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, apiError.getStatus());
         assertEquals("some message", apiError.getMessage());
-        assertEquals(1, apiError.getErrors().size());
-        assertEquals("some error", apiError.getErrors().get(0));
-    }
-
-    @Test
-    void shouldCreateApiErrorWithMultipleErrors() {
-        // Arrange
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        String message = "some message";
-        List<String> errors = List.of("first error", "second error");
-
-        // Act
-        ApiError apiError = new ApiError(status, message, errors);
-
-        // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, apiError.getStatus());
-        assertEquals("some message", apiError.getMessage());
-        assertEquals(2, apiError.getErrors().size());
     }
 
     @Test
@@ -51,6 +32,5 @@ class ApiErrorTest {
         // Assert
         assertNull(apiError.getStatus());
         assertNull(apiError.getMessage());
-        assertNull(apiError.getErrors());
     }
 }

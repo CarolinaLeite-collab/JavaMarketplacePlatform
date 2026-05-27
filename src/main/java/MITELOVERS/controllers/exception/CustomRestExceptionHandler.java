@@ -13,7 +13,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleIllegalState(IllegalStateException ex) {
         ApiError apiError = new ApiError(
                 HttpStatus.NOT_FOUND,
-                ex.getLocalizedMessage(),
                 ex.getMessage()
         );
         return new ResponseEntity<>(apiError, apiError.getStatus());
@@ -23,7 +22,6 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex) {
         ApiError apiError = new ApiError(
                 HttpStatus.BAD_REQUEST,
-                ex.getLocalizedMessage(),
                 ex.getMessage()
         );
         return new ResponseEntity<> (apiError, apiError.getStatus());
