@@ -28,12 +28,17 @@ activate Server
 Server -> DB : select
 DB --> Server : data
 Server --> Client : 200 {...}
+note right of Client
+Populates the item dropdown inside
+the direct sale form with items
+from the user's library
+end note
 deactivate Server
-Client --> User : Displays library items
+Client --> User : Displays direct sale form
 deactivate Client
 
 
-User -> Client : I want to make a direct sale %n() with this itemId, price, and %n() time limit
+User -> Client : Submit itemId, price, and %n() time limit
 activate Client
 Client -> Server : POST /direct-sales {"itemId": "...", %n()"price": "...", "timeLimitDays": "..."}
 activate Server

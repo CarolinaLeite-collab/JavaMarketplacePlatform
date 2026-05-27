@@ -21,10 +21,10 @@ participant ":MiteLovers" as System
 
 U -> System : I want to put an item %n()in my library on direct sale
 activate System
-System --> U : Displays library items
+System --> U : Displays direct sale form
 deactivate System
 
-U -> System : I want to make a direct sale %n() with this itemId, price, and %n() time limit
+U -> System : Submit itemId, price, and %n() time limit
 
 activate System
 System --> U : Success
