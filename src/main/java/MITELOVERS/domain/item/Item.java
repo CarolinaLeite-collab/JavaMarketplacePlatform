@@ -28,18 +28,20 @@ public class Item implements AggregateRoot<ItemId> {
     private final ItemId _itemId;
     private SaleStatus _saleStatus;
     private Name _name;
+    private Picture _picture;
 
-    Item(ItemId itemId, EditionId editionId, Condition condition, Description description, SaleStatus saleStatus, Name name) {
+    Item(ItemId itemId, EditionId editionId, Condition condition, Description description, SaleStatus saleStatus, Name name, Picture picture) {
         _itemId = itemId;
         _editionId = editionId;
         _condition = condition;
         _description = description;
         _saleStatus = saleStatus;
         _name = name;
+        _picture = picture;
     }
 
-    Item(EditionId editionId, Condition condition, Description description, Name name) {
-        this(new ItemId(), editionId, condition, description, SaleStatus.NotOnSale, name);
+    Item(EditionId editionId, Condition condition, Description description, Name name, Picture picture) {
+        this(new ItemId(), editionId, condition, description, SaleStatus.NotOnSale, name, picture);
     }
 
     @Override
@@ -96,6 +98,8 @@ public class Item implements AggregateRoot<ItemId> {
     public Name getName() {
         return _name;
     }
+
+    public Picture getPicture() { return  _picture; }
 
     @Override
     public boolean equals(Object o) {
