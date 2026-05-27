@@ -94,8 +94,11 @@ public class DataInitializer {
             Genre genre2 = genreFactory.createGenre("Non-Fiction");
             genreRepo.save(genre2);
 
-            Genre genre3 = genreFactory.createGenre("Science Fiction");
+            Genre genre3 = genreFactory.createGenre("Science-Fiction");
             genreRepo.save(genre3);
+
+            Genre genre4 = genreFactory.createGenre("Prose");
+            genreRepo.save(genre4);
 
             // Fetch and log all genres
             log.info("Genres found with findAll():");
@@ -162,15 +165,16 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Authors
-            Author orwell = authorFactory.createAuthor(new Name("George Orwell"));
-            Author asimov = authorFactory.createAuthor(new Name("Isaac Asimov"));
-            Author yuval = authorFactory.createAuthor(new Name("Yuval Noah Harari"));
-            Author helder = authorFactory.createAuthor(new Name("Helberto Helder"));
+            Author orwell = authorFactory.createAuthor(new AuthorId("Orwell G.-F43DD6"), new Name("George Orwell"));
+            Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"),new Name("Isaac Asimov"));
+            Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"),new Name("Yuval Noah Harari"));
+            Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"),new Name("Helberto Helder"));
             authorRepo.save(orwell);
             authorRepo.save(asimov);
             authorRepo.save(yuval);
             authorRepo.save(helder);
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari");
+
+            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder");
 
             // -------------------------------------------------------
             // Publications
