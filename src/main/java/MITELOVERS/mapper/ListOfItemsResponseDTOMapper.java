@@ -1,6 +1,6 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.controllers.rest.ListOfItemsController;
+import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
@@ -13,6 +13,7 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Component
 public class ListOfItemsResponseDTOMapper implements RepresentationModelAssembler<ListOfItems, ListOfItemsResponseDTO> {
 
     @Override
@@ -26,7 +27,7 @@ public class ListOfItemsResponseDTOMapper implements RepresentationModelAssemble
 
         String listId = dto.getListId();
 
-        Link link = linkTo(methodOn(ListOfItemsController.class).getList(listId)).withSelfRel();
+        Link link = linkTo(methodOn(ListOfItemsRestController.class).getList(listId)).withSelfRel();
 
         dto.add(link);
 
