@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.GenreService;
-import MITELOVERS.controllers.cli.root.CustomRestExceptionHandler;
+import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.dto.GenreResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
