@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,7 @@ public class ListOfItemsService {
 
     @Transactional(readOnly = true)
     public List<ListOfItemsResponseDTO> getUserLists(String userId) {
+        Objects.requireNonNull(userId);
         Email email = new Email(userId);
         UserId newUserId = new UserId(email);
 
@@ -59,6 +61,9 @@ public class ListOfItemsService {
 
     @Transactional
     public ListOfItemsResponseDTO save(String userId, ListOfItemsRequestDTO dto) {
+        Objects.requireNonNull(userId);
+        Objects.requireNonNull(dto);
+
         Email email = new Email(userId);
         UserId recUserId = new UserId(email);
         Name name = new Name(dto.getName());
@@ -66,6 +71,10 @@ public class ListOfItemsService {
 
         if(!_genreRepo.containsOfIdentity(genreId)) {
             throw new IllegalArgumentException("Genre doesn't exist");
+        }
+
+        if (getUserLists(userId).contains(name.toString())) {
+            throw new IllegalArgumentException("List already exists");
         }
 
         ListOfItems newList = _listOfItemsRepo.save(_factory.createListOfItems(recUserId, name, genreId));
@@ -76,12 +85,16 @@ public class ListOfItemsService {
     }
 
     @Transactional
-    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemRequestDTO itemId) {
+    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemRequestDTO dto) {
         ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+
+        if (dto == null || dto.getItemId() == null) {
+            throw new IllegalArgumentException("ItemId is invalid");
+        }
 
         ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
-        ItemId recItemId = new ItemId(itemId.getItemId());
+        ItemId recItemId = new ItemId(dto.getItemId());
 
         if (!_itemRepo.containsOfIdentity(recItemId)) {
             throw new IllegalArgumentException("Item doesn't exist");
@@ -110,6 +123,28 @@ public class ListOfItemsService {
         _listOfItemsRepo.save(list);
 
         ListOfItemsResponseDTO result = _mapper.toModel(list);
+
+        return result;
+    }
+
+    @Transactional
+    public List<ListOfItemsResponseDTO> findByGenre(String genreId) {
+        GenreId recGenreId = new GenreId(genreId);
+
+        Iterable<ListOfItems> lists = _listOfItemsRepo.findAll();
+
+        List<ListOfItems> publicListsByGenre = new ArrayList<>();
+
+        for(ListOfItems list : lists) {
+            if(list.getGenreId().equals(recGenreId) && !list.isPrivate()) {
+                publicListsByGenre.add(list);
+            }
+        }
+
+        List<ListOfItemsResponseDTO> result = new ArrayList<>();
+        for(ListOfItems list : publicListsByGenre) {
+            result.add(_mapper.toModel(list));
+        }
 
         return result;
     }

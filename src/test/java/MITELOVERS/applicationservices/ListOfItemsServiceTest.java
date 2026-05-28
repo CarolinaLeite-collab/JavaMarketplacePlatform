@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ class ListOfItemsServiceTest {
 
     //SUT
     @InjectMocks
-    private ListOfItemsService _serviceDouble;
+    private ListOfItemsService _service;
 
     @Mock
     private IListOfItemsRepo _listOfItemsRepoDouble;
@@ -57,7 +58,7 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble2)).thenReturn(dto2);
 
         //act
-        List<ListOfItemsResponseDTO> result = _serviceDouble.getUserLists("user@cenas.com");
+        List<ListOfItemsResponseDTO> result = _service.getUserLists("user@cenas.com");
 
         //assert
         assertEquals(2, result.size());
@@ -75,7 +76,7 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(dto);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.getList("LOI-1234");
+        ListOfItemsResponseDTO result = _service.getList("LOI-1234");
 
         //assert
         assertEquals(dto, result);
@@ -97,7 +98,7 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.save("user@cenas.com", requestDTODouble);
+        ListOfItemsResponseDTO result = _service.save("user@cenas.com", requestDTODouble);
 
         //assert
         assertEquals(responseDTODouble, result);
@@ -116,7 +117,7 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.addItemToList("LOI-1234", requestDTODouble);
+        ListOfItemsResponseDTO result = _service.addItemToList("LOI-1234", requestDTODouble);
 
         //assert
         assertEquals(responseDTODouble, result);
@@ -135,9 +136,34 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _serviceDouble.makePublic("LOI-1234", sharedUntil);
+        ListOfItemsResponseDTO result = _service.makePublic("LOI-1234", sharedUntil);
 
         //assert
         assertEquals(responseDTODouble, result);
+    }
+
+    @Test
+    void findListsByGenreReturnsList() {
+        // arrange
+        ListOfItemsResponseDTO responseDTODouble1 = mock(ListOfItemsResponseDTO.class);
+        ListOfItemsResponseDTO responseDTODouble2 = mock(ListOfItemsResponseDTO.class);
+        ListOfItems listOfItemsDouble1 = mock(ListOfItems.class);
+        ListOfItems listOfItemsDouble2 = mock(ListOfItems.class);
+
+        when(listOfItemsDouble1.getGenreId()).thenReturn(new GenreId("FICTION"));
+        when(listOfItemsDouble2.getGenreId()).thenReturn(new GenreId("FICTION"));
+
+        when(_listOfItemsRepoDouble.findAll()).thenReturn(List.of(listOfItemsDouble1, listOfItemsDouble2));
+
+        when(_mapperDouble.toModel(listOfItemsDouble1)).thenReturn(responseDTODouble1);
+        when(_mapperDouble.toModel(listOfItemsDouble2)).thenReturn(responseDTODouble2);
+
+        // act
+        List<ListOfItemsResponseDTO> result = _service.findByGenre("FICTION");
+
+        // assert
+        assertEquals(2, result.size());
+        assertEquals(responseDTODouble1, result.get(0));
+        assertEquals(responseDTODouble2, result.get(1));
     }
 }
