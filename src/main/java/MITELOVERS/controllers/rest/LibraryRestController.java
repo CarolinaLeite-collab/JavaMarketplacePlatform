@@ -2,14 +2,16 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.dto.ItemDetailsDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import MITELOVERS.dto.AddItemRequestDTO;
+import MITELOVERS.dto.LibraryItemDetailsDTO;
+import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,45 +28,62 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/my-library")
 public class LibraryRestController {
 
-    @Autowired
-    private LibraryService libraryService;
+    private final LibraryService _libraryService;
 
-//    @Autowired
-//    private PublicationService publicationService;
+    public LibraryRestController(LibraryService libraryService) {
+        _libraryService = libraryService;
+    }
 
     @GetMapping("/publications")
-    public ResponseEntity<CollectionModel<ItemDetailsDTO>> getMyLibrary(
+    public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
             @RequestHeader("X-User-Id") String userId) {
 
         try {
             UserId uid = new UserId(new Email(userId));
-            List<ItemDetailsDTO> dtos = libraryService.getListOfItemInfoInMyLibrary(uid);
+            List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(uid);
 
-            for (ItemDetailsDTO dto : dtos) {
-                Link link = linkTo(methodOn(LibraryRestController.class)
-                        .getMyLibrary(userId))
-                        .withSelfRel();
-                dto.add(link);
-            }
-
-            CollectionModel<ItemDetailsDTO> result = CollectionModel.of(dtos,
+            CollectionModel<LibraryItemSummaryDTO> result = CollectionModel.of(dtos,
                     linkTo(methodOn(LibraryRestController.class)
                             .getMyLibrary(userId)).withSelfRel());
 
             return new ResponseEntity<>(result, HttpStatus.OK);
 
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.UNPROCESSABLE_ENTITY);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-//    @PostMapping("/items")
-//    public ResponseEntity<Void> registerAndAddToLibrary(
-//            @RequestBody RegisterPublicationRequest req,
-//            @RequestHeader("X-User-Id") String userId) {
-//
-//        ItemId itemId = publicationService.registerPublication(req);
-//        libraryService.addItemToLibrary(itemId, new UserId(new Email(userId)));
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).build();
-//    }
+
+        @GetMapping("/publications/{itemId}")
+        public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
+
+            try {
+                LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
+                return new ResponseEntity<>(dto, HttpStatus.OK);
+
+            } catch (IllegalStateException e) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            }
+        }
+
+    @PostMapping("/publications")
+    public ResponseEntity<Void> addItemToLibrary(
+            @RequestBody AddItemRequestDTO request,
+            @RequestHeader("X-User-Id") String userId) {
+
+        try {
+            UserId uid = new UserId(new Email(userId));
+            ItemId itemId = new ItemId(request.getItemId());
+            _libraryService.addItemToLibrary(itemId, uid);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+
+        } catch (IllegalStateException e) {
+
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
 }

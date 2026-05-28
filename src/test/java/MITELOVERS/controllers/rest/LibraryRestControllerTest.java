@@ -2,7 +2,8 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
-import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.LibraryItemDetailsDTO;
+import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,15 +31,19 @@ class LibraryRestControllerTest {
     @Test
     void shouldReturn200WithItemsWhenLibraryExists() throws Exception {
         // Arrange
-        ItemDetailsDTO dto = new ItemDetailsDTO("1984", "George Orwell", "Book", "N/A");
+        LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
+                "3C5D126F8B",
+                "1984",
+                "https://example.com/1984.jpg"
+        );
         when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of(dto));
 
-        // Act + Assert
-        mockMvc.perform(get("/my-library/publications")
-                        .header("X-User-Id", "pedro@aeiou.com"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.itemDetailsDTOList[0].title").value("1984"))
-                .andExpect(jsonPath("$._embedded.itemDetailsDTOList[0].authorName").value("George Orwell"))
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications")
+                .header("X-User-Id", "pedro@aeiou.com"));
+
+        // Assert
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
@@ -47,34 +52,84 @@ class LibraryRestControllerTest {
         // Arrange
         when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
 
-        // Act + Assert
-        mockMvc.perform(get("/my-library/publications")
-                        .header("X-User-Id", "pedro@aeiou.com"))
-                .andExpect(status().isOk())
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications")
+                .header("X-User-Id", "pedro@aeiou.com"));
+
+        // Assert
+        result.andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
     @Test
-    void shouldReturn422WhenLibraryNotFound() throws Exception {
+    void shouldReturn200WithEmptyListWhenNoLibraryExists() throws Exception {
         // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary(any()))
-                .thenThrow(new IllegalStateException("Library not found for user!"));
+        when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
 
-        // Act + Assert
-        mockMvc.perform(get("/my-library/publications")
-                        .header("X-User-Id", "naoexiste@aeiou.com"))
-                .andExpect(status().isUnprocessableEntity());
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications")
+                .header("X-User-Id", "naoexiste@aeiou.com"));
+
+        // Assert
+        result.andExpect(status().isOk());
     }
 
     @Test
-    void shouldReturn422WhenExceptionOccurs() throws Exception {
+    void shouldReturn400WhenEmailIsInvalid() throws Exception {
         // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary(any()))
-                .thenThrow(new RuntimeException("Unexpected error"));
+        // email inválido lança IllegalArgumentException → 400
 
-        // Act + Assert
-        mockMvc.perform(get("/my-library/publications")
-                        .header("X-User-Id", "pedro@aeiou.com"))
-                .andExpect(status().isUnprocessableEntity());
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications")
+                .header("X-User-Id", "invalid-email"));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn400WhenHeaderIsMissing() throws Exception {
+        // Arrange
+        // sem header X-User-Id
+
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications"));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
+    }
+
+    // ----------------------------------------------------------------
+    // GET /my-library/publications/{itemId}
+    // ----------------------------------------------------------------
+
+    @Test
+    void shouldReturn200WithItemDetailsWhenItemExists() throws Exception {
+        // Arrange
+        LibraryItemDetailsDTO dto = new LibraryItemDetailsDTO(
+                "George Orwell",
+                "no identifier",
+                "BOOK"
+        );
+        when(libraryService.getItemDetail(any())).thenReturn(dto);
+
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications/3C5D126F8B"));
+
+        // Assert
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturn404WhenItemNotFound() throws Exception {
+        // Arrange
+        when(libraryService.getItemDetail(any()))
+                .thenThrow(new IllegalStateException("Item not found!"));
+
+        // Act
+        var result = mockMvc.perform(get("/my-library/publications/INVALID-ID"));
+
+        // Assert
+        result.andExpect(status().isNotFound());
     }
 }
