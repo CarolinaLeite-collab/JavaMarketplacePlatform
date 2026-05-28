@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
 @RequestMapping("my-lists")
@@ -26,6 +25,10 @@ public class ListOfItemsRestController {
     @GetMapping ("/")
     public ResponseEntity<Object> getLists(@RequestHeader String userId) {
         List<ListOfItemsResponseDTO> result = _listService.getUserLists(userId);
+
+        if (result.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
