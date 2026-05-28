@@ -1,6 +1,5 @@
 import {
     Burger,
-    Box,
     Button,
     Divider,
     Drawer,
@@ -51,7 +50,7 @@ export function Header() {
                 onClose={closeDrawer}
                 size="100%"
                 padding="md"
-                title="Navigation"
+                title="MiteLovers"
                 hiddenFrom="sm"
                 zIndex={1000000}
             >
