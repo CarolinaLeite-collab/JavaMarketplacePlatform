@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.dto.AddItemToListRequestDTO;
+import MITELOVERS.dto.AddItemRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
 import MITELOVERS.dto.MakeListPublicRequestDTO;
@@ -60,7 +60,7 @@ public class ListOfItemsRestController {
     }
 
     @PostMapping("/{listId}")
-    public ResponseEntity<Object> addItemsToList (@PathVariable String listId, @RequestBody AddItemToListRequestDTO itemId) {
+    public ResponseEntity<Object> addItemsToList (@PathVariable String listId, @RequestBody AddItemRequestDTO itemId) {
         try {
             ListOfItemsResponseDTO result = _listService.addItemToList(listId, itemId);
 

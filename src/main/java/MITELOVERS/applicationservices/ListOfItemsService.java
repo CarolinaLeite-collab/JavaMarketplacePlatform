@@ -6,13 +6,12 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemToListRequestDTO;
+import MITELOVERS.dto.AddItemRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
 import MITELOVERS.dto.MakeListPublicRequestDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,12 +76,12 @@ public class ListOfItemsService {
     }
 
     @Transactional
-    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemToListRequestDTO itemId) {
+    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemRequestDTO itemId) {
         ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
 
         ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
-        ItemId recItemId = new ItemId(itemId.getItemId().toString());
+        ItemId recItemId = new ItemId(itemId.getItemId());
 
         if (!_itemRepo.containsOfIdentity(recItemId)) {
             throw new IllegalArgumentException("Item doesn't exist");

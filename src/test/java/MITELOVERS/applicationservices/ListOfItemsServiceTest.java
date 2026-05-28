@@ -6,7 +6,7 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemToListRequestDTO;
+import MITELOVERS.dto.AddItemRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
 import MITELOVERS.dto.MakeListPublicRequestDTO;
@@ -17,8 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
-import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,11 +108,9 @@ class ListOfItemsServiceTest {
         //arrange
         ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        AddItemToListRequestDTO requestDTODouble = mock(AddItemToListRequestDTO.class);
-        ItemId itemIdDouble = mock(ItemId.class);
+        AddItemRequestDTO requestDTODouble = mock(AddItemRequestDTO.class);
 
-        when(requestDTODouble.getItemId()).thenReturn(itemIdDouble);
-        when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
+        when(requestDTODouble.getItemId()).thenReturn("ABCDEF1234");
         when(_itemRepoDouble.containsOfIdentity(any(ItemId.class))).thenReturn(true);
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);

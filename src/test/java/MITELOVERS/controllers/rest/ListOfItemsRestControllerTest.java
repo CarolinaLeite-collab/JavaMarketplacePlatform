@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.dto.AddItemToListRequestDTO;
+import MITELOVERS.dto.AddItemRequestDTO;
 import MITELOVERS.dto.ListOfItemsRequestDTO;
 import MITELOVERS.dto.ListOfItemsResponseDTO;
 import MITELOVERS.dto.MakeListPublicRequestDTO;
@@ -81,9 +81,9 @@ class ListOfItemsRestControllerTest {
     void addItemsToListReturnsUpdatedListOfItemsResponseDTO() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
-        AddItemToListRequestDTO requestDTODouble = mock(AddItemToListRequestDTO.class);
+        AddItemRequestDTO requestDTODouble = mock(AddItemRequestDTO.class);
 
-        when(service.addItemToList(eq("LOI-1234"), any(AddItemToListRequestDTO.class))).thenReturn(dtoDouble);
+        when(service.addItemToList(eq("LOI-1234"), any(AddItemRequestDTO.class))).thenReturn(dtoDouble);
 
         //act
         ResponseEntity<Object> result = controller.addItemsToList("LOI-1234", requestDTODouble);
