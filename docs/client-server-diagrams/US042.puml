@@ -1,0 +1,68 @@
+@startuml
+'==== Title ====
+title "As a User, I want to add one of my publications to a list of mine." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+participant ":Client" as CLI
+participant ":Server" as SER
+database "DB" as DB
+
+CLI -> SER : GET /user-area/my-lists\nX-User-Id: pedro@mail.com
+activate CLI
+activate SER
+SER -> DB : select
+DB --> SER : data
+SER --> CLI : HTTP STATUS 200 {...}
+deactivate SER
+deactivate CLI
+
+CLI -> SER : GET /user-area/my-lists/{listId}\nX-User-Id: pedro@mail.com
+activate CLI
+activate SER
+SER -> DB : select
+DB --> SER : data
+SER --> CLI : HTTP STATUS 200 {...}
+deactivate SER
+deactivate CLI
+
+CLI -> SER : GET /library/items\nX-User-Id: pedro@mail.com
+activate CLI
+activate SER
+SER -> DB : select
+DB --> SER : data
+SER --> CLI : HTTP STATUS 200 {...}
+deactivate SER
+deactivate CLI
+
+CLI -> SER : POST /user-area/my-lists/{listId}/items\nX-User-Id: pedro@mail.com\n{ "itemIds": ["ITEM-001", "ITEM-002"] }
+activate CLI
+activate SER
+SER -> DB : insert
+DB --> SER : data
+SER --> CLI : HTTP STATUS 201 { "message": "Success" }
+deactivate SER
+deactivate CLI
+
+CLI -> SER : GET /user-area/my-lists/{listId}\nX-User-Id: pedro@mail.com
+activate CLI
+activate SER
+SER -> DB : select
+DB --> SER : data
+SER --> CLI : HTTP STATUS 200 {...}
+deactivate SER
+deactivate CLI
+
+@enduml
