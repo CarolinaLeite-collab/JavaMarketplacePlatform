@@ -1,82 +1,31 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.domain.library.Library;
-import MITELOVERS.domain.listofitems.ListOfItems;
-import MITELOVERS.domain.repository.ILibraryRepo;
-import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.dto.AddItemRequestDTO;
+import MITELOVERS.dto.ListOfItemsResponseDTO;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class AddItemToListController {
 
-    private final IListOfItemsRepo _iListOfItemsRepo;
-    private final ILibraryRepo _iLibraryRepo;
+    private final ListOfItemsService _service;
 
-    public AddItemToListController(IListOfItemsRepo iListRepo,
-                                   ILibraryRepo iLibraryRepo) {
-        _iListOfItemsRepo = iListRepo;
-        _iLibraryRepo = iLibraryRepo;
+    public AddItemToListController(ListOfItemsService service) {
+        _service = service;
     }
 
-    public List<ListOfItems> getMyLists(UserId userId) {
-        return findListsByUserId(userId);
+    public List<ListOfItemsResponseDTO> getMyLists(String userId) {
+        return _service.getUserLists(userId);
     }
 
-    public List<ItemId> getItemsInMyLibrary(UserId userId) {
-        LibraryId libraryId = LibraryId.fromUserId(userId);
-        Library lib = _iLibraryRepo.ofIdentity(libraryId)
-                .orElseThrow(() -> new IllegalStateException("Library Not Found for user!"));
-        return lib.getItemsIdInLibrary();
+    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemRequestDTO itemId) {
+        return _service.addItemToList(listOfItemsId, itemId);
     }
 
-    public boolean addItemToList(UserId userId, Name listName, GenreId genreId, ItemId itemId) {
-        if (listName == null)
-            throw new IllegalArgumentException("List name is mandatory");
-
-        ListOfItems myList = findByOwnerNameAndGenre(userId, listName, genreId);
-
-        if (myList == null)
-            throw new IllegalStateException("List not found");
-
-        myList.addItem(itemId);
-        _iListOfItemsRepo.save(myList);
-        return true;
-    }
-
-    public List<ListOfItems> findListsByUserId(UserId userId) {
-        if (userId == null)
-            throw new IllegalArgumentException("UserId is mandatory");
-
-        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
-        List<ListOfItems> result = new ArrayList<>();
-        for (ListOfItems list : all) {
-            if (userId.equals(list.getUserId())) {
-                result.add(list);
-            }
-        }
-        return result;
-    }
-
-    public ListOfItems findByOwnerNameAndGenre(UserId userId, Name name, GenreId genreId) {
-        if (userId == null)
-            throw new IllegalArgumentException("UserId is mandatory");
-        if (name == null)
-            throw new IllegalArgumentException("List name is mandatory");
-        if (genreId == null)
-            throw new IllegalArgumentException("GenreId is mandatory");
-
-        Iterable<ListOfItems> all = _iListOfItemsRepo.findAll();
-        for (ListOfItems list : all) {
-            if (userId.equals(list.getUserId())
-                    && list.getName().equals(name)
-                    && genreId.equals(list.getGenreId())) {
-                return list;
-            }
-        }
-        return null;
+    public List<ListOfItemsResponseDTO> findByGenre(String genreId) {
+        return _service.findByGenre(genreId);
     }
 }
