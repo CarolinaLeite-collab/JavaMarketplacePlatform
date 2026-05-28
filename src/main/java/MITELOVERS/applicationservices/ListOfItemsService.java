@@ -88,6 +88,7 @@ public class ListOfItemsService {
         }
 
         list.addItem(recItemId);
+        _listOfItemsRepo.save(list);
 
         ListOfItemsResponseDTO result = _mapper.toModel(list);
 
@@ -106,6 +107,7 @@ public class ListOfItemsService {
 
             list.makePublic(recSharedUntil);
         }
+        _listOfItemsRepo.save(list);
 
         ListOfItemsResponseDTO result = _mapper.toModel(list);
 
