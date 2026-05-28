@@ -6,6 +6,7 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.LibraryItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +45,8 @@ class ItemDetailsMapperTest {
         when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
-        ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
+        ItemDetailsMapper mapper = new ItemDetailsMapper();
+        ItemDetailsDTO dto = mapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
@@ -76,7 +78,8 @@ class ItemDetailsMapperTest {
         when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
-        ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
+        ItemDetailsMapper mapper = new ItemDetailsMapper();
+        ItemDetailsDTO dto = mapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
@@ -108,7 +111,8 @@ class ItemDetailsMapperTest {
         when(authorDouble.getName()).thenReturn(nameDouble);
 
         //Act + SUT
-        ItemDetailsDTO dto = ItemDetailsMapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
+        ItemDetailsMapper mapper = new ItemDetailsMapper();
+        ItemDetailsDTO dto = mapper.toDTO(editionDouble, publicationDouble, publicationTypeDouble, authorDouble);
 
         //Assert
         assertEquals("titleDouble", dto.getTitle());
