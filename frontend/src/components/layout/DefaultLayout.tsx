@@ -1,8 +1,9 @@
 import { Header } from '../header/Header';
 import { Footer } from '../footer/Footer';
 import { useComputedColorScheme } from '@mantine/core';
+import { PageContent } from "./PageContent.tsx";
 
-export function DefaultLayout({ children }) {
+export function DefaultLayout({ title, children }) {
     const colorScheme = useComputedColorScheme('light');
 
     return (
@@ -14,7 +15,7 @@ export function DefaultLayout({ children }) {
                     ? 'var(--mantine-color-gray-1)'
                     : 'var(--mantine-color-dark-6)'
             }}>
-                {children}
+                <PageContent title={title}>{children}</PageContent>
             </div>
             <Footer />
         </div>
