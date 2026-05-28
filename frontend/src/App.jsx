@@ -1,5 +1,14 @@
-import HomePage from './pages/Home/HomePage';
+import { MantineProvider } from '@mantine/core';
+import { BrowserRouter } from 'react-router-dom';
+import { AppRoutes } from './routes/AppRoutes';
+import '@mantine/core/styles.css';
 
 export default function App() {
-  return <HomePage />;
+  return (
+      <MantineProvider defaultColorScheme="auto">
+        <BrowserRouter>
+              <AppRoutes />
+        </BrowserRouter>
+      </MantineProvider>
+  );
 }
