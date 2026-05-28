@@ -10,7 +10,6 @@ import {
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from 'react-router-dom';
 import classes from './Header.module.css';
-import { SearchBar } from '../searchbar/SearchBar.tsx'
 import { ColorSchemeToggle } from "../colorscheme/ColorSchemeToggle.tsx";
 import { Logo } from "../logo/Logo.tsx";
 
@@ -23,7 +22,9 @@ export function Header() {
             <header className={classes.header}>
                 <Group justify="space-between" h="100%">
 
-                    <Logo></Logo>
+                    <Link to="/" aria-label="Go to home">
+                        <Logo />
+                    </Link>
 
                     <Group h="100%" gap={0} visibleFrom="sm">
                         <Link to="/" className={classes.link}>SALES</Link>
@@ -32,7 +33,6 @@ export function Header() {
                     </Group>
 
                     <Group visibleFrom="sm">
-                        {/*<SearchBar></SearchBar>*/}
                         <ColorSchemeToggle />
                         <Button color="indigo" radius="xl">LOG OUT</Button>
                     </Group>
