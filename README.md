@@ -320,6 +320,19 @@ Additionally, a permissions block was added:
 
 ---
 
+## Secret Detection (`Gitleaks`)
+
+Gitleaks scans every Pull Request targeting `main`, `b3`, and `b4` for
+secrets and sensitive data patterns (API keys, passwords, tokens, private keys).
+
+**Workflow:** `.github/workflows/secret-detection.yml`  
+**Trigger:** Pull Request  
+**Behaviour:** Pipeline fails automatically if any secret is detected.  
+**Artifact:** A full JSON scan report is uploaded and available for download
+from the GitHub Actions run page.
+
+---
+
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined:
