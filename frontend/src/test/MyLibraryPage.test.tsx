@@ -8,7 +8,7 @@ describe('MyLibraryPage', () => {
         render(<MyLibraryPage />);
     });
 
-    it('renders the page heading', () => {
+    it('renders the page title', () => {
         render(<MyLibraryPage />);
         expect(screen.getByRole('heading', { name: /my library/i })).toBeInTheDocument();
     });

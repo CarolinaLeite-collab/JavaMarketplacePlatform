@@ -2,8 +2,8 @@ import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
 
 export default function MyLibraryPage() {
     return (
-        <DefaultLayout>
-            <h1>My Library</h1>
+        <DefaultLayout title="My Library">
+            <p>Page content goes here.</p>
         </DefaultLayout>
     );
 }

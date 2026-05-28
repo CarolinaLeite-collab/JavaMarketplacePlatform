@@ -8,7 +8,7 @@ describe('MySalesPage', () => {
         render(<MySalesPage />);
     });
 
-    it('renders the page heading', () => {
+    it('renders the page title', () => {
         render(<MySalesPage />);
         expect(screen.getByRole('heading', { name: /my sales/i })).toBeInTheDocument();
     });
