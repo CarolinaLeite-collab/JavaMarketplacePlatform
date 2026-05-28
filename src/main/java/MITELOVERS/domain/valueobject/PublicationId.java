@@ -9,57 +9,55 @@ import java.util.Objects;
 /**
  * Represents the unique technical identifier of a {@link Publication}.
  * <p>
- * A {@code PublicationId} is composed of a {@link Title}, an {@link AuthorId},
- *  * and a release {@link Year}. Two publications are considered the same if they
- *  * share the same title, author, and release year.
- *  * </p>
- *  *
- *  * <p><b>Equality:</b> Two {@code PublicationId} instances are equal if all
- *  * three components are equal.</p>
- *  */
+ * A {@code PublicationId} wraps a single {@link String} value that uniquely identifies
+ * a publication. It can be created either from its components ({@link Title},
+ * {@link AuthorId}, and release {@link Year}), or directly from a pre-formatted string.
+ * </p>
+ * When created from components, the string is formatted as: title - authorId (releaseYear)
+ * For example: {@code "Clean-Code-MartinR.U.-ABC123(2008)"}
+ * </p>
+ * <p><b>Equality:</b> Two {@code PublicationId} instances are equal if they
+ * wrap the same underlying string value.</p>
+ */
 
 
 public class PublicationId implements DomainId {
 
-    private final Title _title;
-    private final AuthorId _authorId;
-    private final Year _releaseYear;
+    private final String _publicationId;
 
     public PublicationId(Title title, AuthorId authorId, Year releaseYear) {
-       _title = title;
-       _authorId = authorId;
-       _releaseYear =  Objects.requireNonNull(releaseYear, "Release year is required");
+
+        title = Objects.requireNonNull(title);
+        authorId = Objects.requireNonNull(authorId);
+        releaseYear = Objects.requireNonNull(releaseYear);
+
+        String cleanTitle = title.toString().trim().replaceAll("[^a-zA-Z0-9]", "-");
+
+        _publicationId = cleanTitle + "-" + authorId + "(" + releaseYear + ")";
     }
 
-    public Title getTitle() {
-        return _title;
-    }
+    public PublicationId(String publicationId) {
 
-    public AuthorId getAuthorId() {
-        return _authorId;
-    }
+        _publicationId = publicationId;
 
-    public Year getReleaseYear() {
-        return _releaseYear;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof PublicationId other)) return false;
-        return Objects.equals(_title, other._title)
-                && Objects.equals(_authorId, other._authorId)
-                && Objects.equals(_releaseYear, other._releaseYear);
+        return Objects.equals(_publicationId, other._publicationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_title, _authorId, _releaseYear);
+        return Objects.hash(_publicationId);
     }
 
     @Override
     public String toString() {
-        return _title + " - " + _authorId + " (" + _releaseYear + ")";
+        return _publicationId;
     }
+
 }
 
