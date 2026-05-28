@@ -75,7 +75,7 @@ class JpaPublicationRepoTest {
 
         assertNotNull(ids);
         assertEquals(1, ids.size());
-        assertEquals("exampleTitle - exampleAuthorId (2000)", ids.get(0).toString());
+        assertEquals("exampleTitle-exampleAuthorId(2000)", ids.get(0).toString());
     }
 
     @Test
