@@ -1,10 +1,13 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.MakeListPublicRequestDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,38 +17,16 @@ import java.util.List;
  */
 public class ShareListPubliclyController {
 
-    private final IListOfItemsRepo _iListOfItemsRepo;
+    private final ListOfItemsService _service;
 
-    public ShareListPubliclyController(IListOfItemsRepo iListOfItemsRepo) {
-        _iListOfItemsRepo = iListOfItemsRepo;
+    public ShareListPubliclyController(ListOfItemsService service) {
+        _service = service;
     }
 
-    public boolean shareListPublicly(ListOfItemsId listOfItemsId, SharedDuration duration) {
-        ListOfItems list = _iListOfItemsRepo.ofIdentity(listOfItemsId)
-                .orElseThrow(() -> new IllegalStateException("List not found"));
+    public ListOfItemsResponseDTO shareListPublicly(String listId, MakeListPublicRequestDTO dto) {
+        ListOfItemsResponseDTO result = _service.makePublic(listId, dto);
 
-        if (list.isPrivate()) {
-            list.makePublic(duration);
-            _iListOfItemsRepo.save(list);
-
-            return true;
-        }
-        else {
-            throw new IllegalStateException("List is already public");
-        }
+        return result;
     }
 
-    public List<ListOfItemsId> findListsByUserId(UserId userId) {
-        if (userId == null)
-            throw new IllegalArgumentException("UserId is mandatory");
-
-        List<ListOfItems> userLists = _iListOfItemsRepo.findListOfItemsByUserId(userId);
-
-        List<ListOfItemsId> listOfItemsIds = new ArrayList<>();
-
-        for (ListOfItems listOfItems : userLists) {
-            listOfItemsIds.add(listOfItems.identity());
-        }
-        return listOfItemsIds;
-    }
 }
