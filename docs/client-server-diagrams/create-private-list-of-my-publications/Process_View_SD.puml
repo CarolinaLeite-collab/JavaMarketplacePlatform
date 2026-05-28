@@ -16,44 +16,46 @@ hidefootbox
 autonumber
 
 ' ==== Actor and participants ====
+actor User
 participant ":Client" as CLI
 participant ":Server" as SER
 database "DB" as DB
 
-CLI -> SER : GET /user-area/my-lists {...}
+User -> CLI : Show me my lists of items
 activate CLI
+CLI -> SER : GET /my-lists {...}
 activate SER
 SER -> DB : select
 DB --> SER : data
 SER --> CLI : HTTP STATUS 200 {...}
 deactivate SER
+CLI --> User : display lists of items
 deactivate CLI
 
-CLI -> SER : GET /genres/ {...}
+User -> CLI : create a new list
 activate CLI
+CLI -> SER : GET /genres {...}
 activate SER
 SER -> DB : select
 DB --> SER : data
 SER --> CLI : HTTP STATUS 200 {...}
+note right of CLI
+Populates the item dropdown inside
+the create new list form with all available genres
+end note
 deactivate SER
+CLI --> User : displays available genres
 deactivate CLI
 
-CLI -> SER : POST /user-area/my-lists/ {...}
+User -> CLI : write name and select genre
 activate CLI
+CLI -> SER : POST /my-lists {"name": "Sci-fi books", "genreId": "SCIENCE FICTION"}
 activate SER
 SER -> DB : insert
 DB --> SER : data
 SER --> CLI : HTTP STATUS 201 {...}
 deactivate SER
-deactivate CLI
-
-CLI -> SER : GET /user-area/my-lists {...}
-activate CLI
-activate SER
-SER -> DB : select
-DB --> SER : data
-SER --> CLI : HTTP STATUS 200 {...}
-deactivate SER
+CLI --> User : Success!
 deactivate CLI
 
 @enduml
