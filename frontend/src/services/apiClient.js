@@ -9,11 +9,14 @@ async function getPublic(path) {
     if (!response.ok) {
         throw new Error(`${response.status}`);
     }
+    if (response.status === 204) {
+        return null;
+    }
 
     return response.json();
 }
 
-// GET autentication (with X-User-Id)
+// GET authentication (with X-User-Id)
 async function getPrivate(path) {
     const response = await fetch(`${BASE_URL}${path}`, {
         headers: {
@@ -23,6 +26,9 @@ async function getPrivate(path) {
 
     if (!response.ok) {
         throw new Error(`${response.status}`);
+    }
+    if (response.status === 204) {
+        return null;
     }
 
     return response.json();
@@ -41,6 +47,9 @@ async function post(path, body) {
     if (!response.ok) {
         throw new Error(`${response.status}`);
     }
+    if (response.status === 204) {
+        return null;
+    }
 
     return response.json();
 }
@@ -58,28 +67,34 @@ async function patch(path, body) {
     if (!response.ok) {
         throw new Error(`${response.status}`);
     }
+    if (response.status === 204) {
+        return null;
+    }
 
     return response.json();
 }
 
 // Contract endpoints
 export const apiClient = {
-    getMyLists: () =>
-        getPrivate('/my-lists/'),
-
     getGenres: () =>
         getPublic('/genres'),
 
-    createList: (body) =>
-        post('/my-lists/', body),
+    getMyLists: () =>
+        getPrivate('/my-lists/'),
 
-    shareList: (href, body) =>
-        patch(href, body),
+    getLibraryItem: (href) =>
+        getPrivate(href),
 
     getLibrary: () =>
         getPrivate('/my-library'),
 
-    getLibraryItem: (href) =>
-        getPrivate(href),
+    createList: (body) =>
+        post('/my-lists/', body),
+
+    createDirectSales: (body) =>
+        post('/direct-sales', body),
+
+    shareList: (href, body) =>
+        patch(href, body)
 
 };
