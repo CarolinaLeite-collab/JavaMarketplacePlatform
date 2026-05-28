@@ -1,9 +1,9 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.LibraryService;
-import MITELOVERS.controllers.cli.ListOfItemsInMyLibraryController;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.LibraryItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +29,7 @@ class ListOfItemsInMyLibraryControllerTest {
         // Arrange
         UserId userId = mock(UserId.class);
         ItemDetailsDTO dto = mock(ItemDetailsDTO.class);
-        when(_libraryService.getListOfItemInfoInMyLibrary(userId)).thenReturn(List.of(dto));
+        when(_libraryService.getListOfItemInfoInMyLibraryFull(userId)).thenReturn(List.of(dto));
 
         // Act
         List<ItemDetailsDTO> result = _controller.getListOfItemInfoInMyLibrary(userId);
@@ -43,7 +43,7 @@ class ListOfItemsInMyLibraryControllerTest {
     void shouldReturnEmptyListWhenLibraryIsEmpty() {
         // Arrange
         UserId userId = mock(UserId.class);
-        when(_libraryService.getListOfItemInfoInMyLibrary(userId)).thenReturn(List.of());
+        when(_libraryService.getListOfItemInfoInMyLibraryFull(userId)).thenReturn(List.of());
 
         // Act
         List<ItemDetailsDTO> result = _controller.getListOfItemInfoInMyLibrary(userId);
@@ -56,7 +56,7 @@ class ListOfItemsInMyLibraryControllerTest {
     void shouldPropagateExceptionFromService() {
         // Arrange
         UserId userId = mock(UserId.class);
-        when(_libraryService.getListOfItemInfoInMyLibrary(userId))
+        when(_libraryService.getListOfItemInfoInMyLibraryFull(userId))
                 .thenThrow(new IllegalStateException("Library not found for user!"));
 
         // Act + Assert

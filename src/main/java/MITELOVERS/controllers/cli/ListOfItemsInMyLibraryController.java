@@ -30,7 +30,7 @@ public class ListOfItemsInMyLibraryController {
     }
 
     public List<ItemDetailsDTO> getListOfItemInfoInMyLibrary(UserId userId) {
-        return _libraryService.getListOfItemInfoInMyLibrary(userId);
-    }
+        return _libraryService.getListOfItemInfoInMyLibraryFull(userId);
 
+    }
 }
