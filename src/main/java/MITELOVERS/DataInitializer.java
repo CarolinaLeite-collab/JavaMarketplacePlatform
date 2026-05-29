@@ -100,6 +100,9 @@ public class DataInitializer {
             Genre genre4 = genreFactory.createGenre("Prose");
             genreRepo.save(genre4);
 
+            Genre genre5 = genreFactory.createGenre("Architecture");
+            genreRepo.save(genre5);
+
             // Fetch and log all genres
             log.info("Genres found with findAll():");
             log.info("-------------------------------");
@@ -169,15 +172,24 @@ public class DataInitializer {
             Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"),new Name("Isaac Asimov"));
             Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"),new Name("Yuval Noah Harari"));
             Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"),new Name("Helberto Helder"));
+            Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"),new Name("Rem Koolhaas"));
             authorRepo.save(orwell);
             authorRepo.save(asimov);
             authorRepo.save(yuval);
             authorRepo.save(helder);
+            authorRepo.save(koolhaas);
 
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder");
+            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas");
 
             // -------------------------------------------------------
             // Publications
+            Publication novaYorkDelirante = publicationFactory.createPublication(
+                    new Title("Nova York Delirante"),
+                    koolhaas.identity(),
+                    Year.of(1978),
+                    genre5.identity()  // Architecture
+            );
+
             Publication nineteenEightyFour = publicationFactory.createPublication(
                     new Title("1984"),
                     orwell.identity(),
@@ -196,10 +208,12 @@ public class DataInitializer {
                     Year.of(2011),
                     genre2.identity()  // Non-Fiction
             );
+            publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
             publicationRepo.save(foundationSeries);
             publicationRepo.save(sapiens);
-            log.info("Publications saved: 1984, Foundation, Sapiens");
+
+            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante");
 
             // -------------------------------------------------------
             // Cities
@@ -236,10 +250,28 @@ public class DataInitializer {
             PublishingCompany gnomePress = publishingCompanyFactory.createPublishingCompany("Gnome Press");
             publishingCompanyRepo.save(gnomePress);
 
-            log.info("Publishing companies saved: Secker & Warburg, Gnome Press");
+            PublishingCompany gg = publishingCompanyFactory.createPublishingCompany("GG");
+            publishingCompanyRepo.save(gg);
+
+            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG");
 
             // -------------------------------------------------------
             // Editions
+            Edition editionNovaYorkDelirante = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9788425222481"),
+                    novaYorkDelirante.identity(),
+                    gg.identity(),
+                    Year.of(2008),
+                    Language.PORTUGUESE_BR,
+                    new Dimension(17.0, 24.0, 2.0, DimensionUnit.CENTIMETERS),
+                    null,
+                    new NumberOfPages(365),
+                    new EditionNumber(1),
+                    Binding.PUR
+            );
+            editionRepo.save(editionNovaYorkDelirante);
+
             Edition edition1984 = editionFactory.createEdition(
                     book.identity(),
                     new NoIdentifier(),
@@ -247,7 +279,10 @@ public class DataInitializer {
                     seckerWarburg.identity(),
                     Year.of(1949),
                     Language.ENGLISH,
-                    null, null, null, null, null
+                    null,
+                    null,
+                    null,
+                    null, Binding.PUR
             );
             editionRepo.save(edition1984);
 
@@ -262,7 +297,7 @@ public class DataInitializer {
             );
             editionRepo.save(edition1984Modern);
 
-            log.info("Editions saved: 1984, Foundation");
+            log.info("Editions saved: 1984, Foundation, Nova York Delirante");
 
 
             // -------------------------------------------------------
@@ -316,10 +351,21 @@ public class DataInitializer {
             );
             itemRepo.save(item2);
 
+            ItemId itemId3 = new ItemId("3F9F4BFAB5");
+            Item item3 = itemFactory.createItem(
+                    itemId3,
+                    editionNovaYorkDelirante.identity(),
+                    Condition.GOOD,
+                    new Description("Portuguese Edition of Delirious New York"),
+                    SaleStatus.OnDirectSale,
+                    new Name("Nova York Delirante - Architecture Classic"),
+                    new Picture("/images/deliriousNewYork.png")
+            );
+            itemRepo.save(item3);
 
             // -------------------------------------------------------
             // Direct Sales
-            ItemId item3 = new ItemId();
+            ItemId item4 = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
                     List.of(itemId1, itemId2),
@@ -329,7 +375,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(item3),
+                    List.of(item4),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
             );
