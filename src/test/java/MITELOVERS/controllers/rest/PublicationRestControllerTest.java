@@ -82,12 +82,26 @@ class PublicationRestControllerTest {
 
     @Test
     void getPublicationByIdReturnsOkResponse() {
-        // Act
+        //Act
         ResponseEntity<PublicationResponseDTO> response =
                 _controller.getPublicationById("PUB-001");
 
-        // Assert
+        //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    @Test
+    void getAllPublicationsReturnsNoContentWhenListIsEmpty() {
+        //Arrange
+        when(_publicationServiceDouble.getAllPublications())
+                .thenReturn(List.of());
+
+        //Act
+        ResponseEntity<List<PublicationResponseDTO>> response =
+                _controller.getAllPublications();
+
+        //Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 }

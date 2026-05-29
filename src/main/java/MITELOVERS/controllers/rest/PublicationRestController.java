@@ -5,13 +5,17 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.PublicationRequestDTO;
 import MITELOVERS.dto.PublicationResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import MITELOVERS.applicationservices.PublicationService;
 
 import java.time.Year;
 import java.util.List;
+import java.util.Set;
 
 /**
  * REST controller responsible for exposing publication-related endpoints
@@ -20,33 +24,44 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/publications")
+@Validated
 public class PublicationRestController {
 
     private final PublicationService _publicationService;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("title", "authorName", "releaseYear", "genreName");
 
     public PublicationRestController(PublicationService publicationService) {
         _publicationService = publicationService;
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
-            @RequestBody PublicationRequestDTO info) {
+            @Valid @RequestBody PublicationRequestDTO info) {
 
-        PublicationResponseDTO publicationResponseDTO = _publicationService.registerPublication(
-                new Title(info.getTitle()),
-                new AuthorId(info.getAuthorId()),
-                Year.of(info.getReleaseYear()),
-                new GenreId(info.getGenreId())
-        );
 
-        return new ResponseEntity<>(publicationResponseDTO, HttpStatus.CREATED);
+        PublicationResponseDTO publicationResponseDTO =
+                _publicationService.registerPublication(
+                        new Title(info.getTitle()),
+                        new AuthorId(info.getAuthorId()),
+                        Year.of(info.getReleaseYear()),
+                        new GenreId(info.getGenreId())
+                );
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(publicationResponseDTO);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PublicationResponseDTO>> getAllPublications() {
 
         List<PublicationResponseDTO> publications =
                 _publicationService.getAllPublications();
+
+        if (publications.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(publications);
     }
@@ -55,7 +70,10 @@ public class PublicationRestController {
     public ResponseEntity<PublicationResponseDTO> getPublicationById(
             @PathVariable String id) {
 
-        return ResponseEntity.ok().build();
+        PublicationResponseDTO publication =
+                _publicationService.getPublicationById(id);
+
+        return ResponseEntity.ok(publication);
     }
 
 }
