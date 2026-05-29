@@ -5,11 +5,12 @@ import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
+import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemRequestDTO;
-import MITELOVERS.dto.ListOfItemsRequestDTO;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
-import MITELOVERS.dto.MakeListPublicRequestDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
+import MITELOVERS.dto.request.ListOfItemsRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +41,8 @@ class ListOfItemsServiceTest {
     private IItemRepo _itemRepoDouble;
     @Mock
     private IGenreRepo _genreRepoDouble;
+    @Mock
+    private IUserRepo _userRepoDouble;
     @Mock
     private ListOfItemsResponseDTOMapper _mapperDouble;
 
@@ -67,7 +69,7 @@ class ListOfItemsServiceTest {
     }
 
     @Test
-    void getListReturnsListByListId() {
+    void getListReturnsListByListByIdId() {
         //arrange
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
         ListOfItemsResponseDTO dto = mock(ListOfItemsResponseDTO.class);
@@ -76,7 +78,7 @@ class ListOfItemsServiceTest {
         when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(dto);
 
         //act
-        ListOfItemsResponseDTO result = _service.getList("LOI-1234");
+        ListOfItemsResponseDTO result = _service.getListById("LOI-1234");
 
         //assert
         assertEquals(dto, result);

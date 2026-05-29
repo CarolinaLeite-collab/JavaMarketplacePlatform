@@ -6,10 +6,10 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemRequestDTO;
-import MITELOVERS.dto.ListOfItemsRequestDTO;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
-import MITELOVERS.dto.MakeListPublicRequestDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
+import MITELOVERS.dto.request.ListOfItemsRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class ListOfItemsService {
     }
 
     @Transactional(readOnly = true)
-    public ListOfItemsResponseDTO getList(String listId) {
+    public ListOfItemsResponseDTO getListById(String listId) {
         ListOfItemsId id = new ListOfItemsId(listId);
 
         ListOfItems list = _listOfItemsRepo.ofIdentity(id).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
@@ -109,12 +109,12 @@ public class ListOfItemsService {
     }
 
     @Transactional
-    public ListOfItemsResponseDTO makePublic(String listOfItemsId, MakeListPublicRequestDTO sharedUntil) {
+    public ListOfItemsResponseDTO makePublic(String listOfItemsId, MakeListPublicRequestDTO durationDays) {
         ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
 
         ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
-        SharedDuration recSharedUntil = new SharedDuration(sharedUntil.getSharedUntil());
+        SharedDuration recSharedUntil = new SharedDuration(durationDays.getSharedUntil());
 
         if (list.isPrivate()) {
 
