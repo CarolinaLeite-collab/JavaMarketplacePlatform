@@ -1,4 +1,4 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

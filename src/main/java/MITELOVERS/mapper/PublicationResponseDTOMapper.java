@@ -4,7 +4,7 @@ import MITELOVERS.controllers.rest.PublicationRestController;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.dto.PublicationResponseDTO;
+import MITELOVERS.dto.response.PublicationResponseDTO;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

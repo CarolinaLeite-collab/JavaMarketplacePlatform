@@ -3,8 +3,8 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
-import MITELOVERS.dto.PublicationRequestDTO;
-import MITELOVERS.dto.PublicationResponseDTO;
+import MITELOVERS.dto.request.PublicationRequestDTO;
+import MITELOVERS.dto.response.PublicationResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +15,6 @@ import MITELOVERS.applicationservices.PublicationService;
 
 import java.time.Year;
 import java.util.List;
-import java.util.Set;
 
 /**
  * REST controller responsible for exposing publication-related endpoints
@@ -28,9 +27,6 @@ import java.util.Set;
 public class PublicationRestController {
 
     private final PublicationService _publicationService;
-
-    private static final Set<String> ALLOWED_SORT_FIELDS =
-            Set.of("title", "authorName", "releaseYear", "genreName");
 
     public PublicationRestController(PublicationService publicationService) {
         _publicationService = publicationService;

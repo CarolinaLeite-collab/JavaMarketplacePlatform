@@ -11,7 +11,7 @@ import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.Title;
-import MITELOVERS.dto.PublicationResponseDTO;
+import MITELOVERS.dto.response.PublicationResponseDTO;
 import MITELOVERS.mapper.PublicationResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
