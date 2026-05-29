@@ -6,6 +6,8 @@ export function PageTitle({ children }) {
             order={1}
             ta="center"
             mb="xl"
+            fz={72}
+            fw={400}
             style={{ fontFamily: 'EB Garamond, serif' }}
         >
             {children}
