@@ -1,7 +1,6 @@
 package MITELOVERS.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Generated;
 import lombok.Getter;
 
 import java.util.List;
@@ -11,11 +10,10 @@ import java.util.List;
  */
 
 @Getter
-@Generated
 @AllArgsConstructor
 public class DirectSaleRequestDTO {
 
-    private final List<String> itemIds;
+    private final List<String> itemsId;
     private final Double priceValue;
     private final String priceCurrency;
     private final Long timeLimitSeconds; // null = unlimited
