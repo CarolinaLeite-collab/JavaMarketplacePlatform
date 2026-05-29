@@ -1,0 +1,43 @@
+name: SAST - Semgrep
+
+on:
+  pull_request:
+    branches: [ main, b3, b4 ]
+
+jobs:
+  semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan (JSON report)
+        run: |
+          semgrep scan \
+            --config=auto \
+            --error \
+            --json \
+            --json --output semgrep-report.json \
+            --sarif --output semgrep-report.sarif \
+            --severity ERROR
+
+      - name: Upload Semgrep JSON report
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: semgrep-sast-report
+          path: semgrep-report.json
+
+      - name: Upload SARIF to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep-report.sarif
