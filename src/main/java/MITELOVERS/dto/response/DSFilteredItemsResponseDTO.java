@@ -1,4 +1,4 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,5 +10,12 @@ import java.util.List;
 @AllArgsConstructor
 public class DSFilteredItemsResponseDTO extends RepresentationModel<DSFilteredItemsResponseDTO> {
 
-    private final List<String> itemsId;
+    private final List<ItemEntry> items;
+
+    @Getter
+    @AllArgsConstructor
+    public static class ItemEntry extends RepresentationModel<ItemEntry> {
+        private final String itemId;
+    }
+
 }

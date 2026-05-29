@@ -2,14 +2,17 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/direct-sales")
@@ -31,6 +34,12 @@ public class DirectSaleRestController {
         DirectSaleResponseDTO responseDTO =
                 _directSaleService.createDirectSale(requestDTO);
 
+        responseDTO.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(responseDTO.getDirectSaleId()))
+                        .withSelfRel()
+        );
+
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
@@ -44,6 +53,14 @@ public class DirectSaleRestController {
             return ResponseEntity.noContent().build();
         }
 
+        response.forEach(dto ->
+                dto.add(
+                        linkTo(methodOn(DirectSaleRestController.class)
+                                .getDirectSaleById(dto.getDirectSaleId()))
+                                .withSelfRel()
+                )
+        );
+
         return ResponseEntity.ok(response);
     }
 
@@ -56,6 +73,12 @@ public class DirectSaleRestController {
         DirectSaleResponseDTO responseDTO =
                 _directSaleService.getDirectSaleById(id);
 
+        responseDTO.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(id))
+                        .withSelfRel()
+        );
+
         return ResponseEntity.ok(responseDTO);
     }
 
@@ -65,8 +88,27 @@ public class DirectSaleRestController {
     public ResponseEntity<DSFilteredItemsResponseDTO> getDirectSaleItemsByGenre(
             @PathVariable String genreId) {
 
-        DSFilteredItemsResponseDTO dto =
-                _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+        List<String> itemIds = _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+
+        List<DSFilteredItemsResponseDTO.ItemEntry> entries = itemIds.stream()
+                .map(id -> {
+                    var entry = new DSFilteredItemsResponseDTO.ItemEntry(id);
+                    entry.add(
+                            linkTo(methodOn(ItemRestController.class)
+                                    .getItemById(id))
+                                    .withSelfRel()
+                    );
+                    return entry;
+                })
+                .toList();
+
+        DSFilteredItemsResponseDTO dto = new DSFilteredItemsResponseDTO(entries);
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleItemsByGenre(genreId))
+                        .withSelfRel()
+        );
 
         return ResponseEntity.ok(dto);
     }

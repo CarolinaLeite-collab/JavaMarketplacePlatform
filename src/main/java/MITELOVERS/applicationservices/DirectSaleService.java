@@ -8,8 +8,8 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
@@ -138,7 +138,7 @@ public class DirectSaleService {
         return result;
     }
 
-    public DSFilteredItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
+    public List<String> getDirectSaleItemsByGenreAsc(String genreId) {
 
         GenreId gid = new GenreId(genreId);
 
@@ -148,13 +148,11 @@ public class DirectSaleService {
             throw new IllegalStateException("No matching DirectSales");
         }
 
-        List<String> sorted = _iDirectSaleRepo
+        return _iDirectSaleRepo
                 .findByItemsIdSortedByPublicationDateAsc(filtered)
                 .stream()
                 .map(ItemId::toString)
                 .toList();
-
-        return new DSFilteredItemsResponseDTO(sorted);
     }
 
 }
