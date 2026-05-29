@@ -114,4 +114,18 @@ class DirectSaleRestControllerTest {
         );
     }
 
+    @Test
+    void getAllDirectSales_shouldReturnNoContentWhenListEmpty() {
+        // Arrange
+        when(_service.getAllDirectSales()).thenReturn(List.of());
+
+        // Act (SUT)
+        ResponseEntity<List<DirectSaleResponseDTO>> result =
+                _controller.getAllDirectSales();
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
 }

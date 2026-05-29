@@ -36,6 +36,10 @@ public class DirectSaleRestController {
         List<DirectSaleResponseDTO> response =
                 _directSaleService.getAllDirectSales();
 
+        if (response.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
         return ResponseEntity.ok(response);
     }
 
