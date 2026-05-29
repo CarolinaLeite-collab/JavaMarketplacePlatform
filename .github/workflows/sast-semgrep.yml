@@ -26,7 +26,6 @@ jobs:
             --config=auto \
             --error \
             --json --output semgrep-report.json \
-            --sarif --output semgrep-report.sarif \
             --severity ERROR
 
       - name: Upload Semgrep JSON report
@@ -34,9 +33,9 @@ jobs:
         with:
           name: semgrep-sast-report
           path: semgrep-report.json
-
-      - name: Upload SARIF to GitHub Security
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: semgrep-report.sarif
+#
+#      - name: Upload SARIF to GitHub Security
+#        uses: github/codeql-action/upload-sarif@v3
+#        if: always()
+#        with:
+#          sarif_file: semgrep-report.sarif
