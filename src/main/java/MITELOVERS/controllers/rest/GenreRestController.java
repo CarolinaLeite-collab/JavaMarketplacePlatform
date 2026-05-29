@@ -27,7 +27,7 @@ public class GenreRestController {
             @RequestBody GenreRequestDTO info) {
 
         GenreResponseDTO genreResponseDTO = _genreService.registerGenre(
-                info.get_genreName()
+                info.getGenreName()
         );
 
         return new ResponseEntity<>(genreResponseDTO, HttpStatus.CREATED);
@@ -37,6 +37,10 @@ public class GenreRestController {
     public ResponseEntity<List<GenreResponseDTO>> getAllGenres() {
 
         List<GenreResponseDTO> genres = _genreService.getAllGenres();
+
+        if (genres.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(genres);
     }

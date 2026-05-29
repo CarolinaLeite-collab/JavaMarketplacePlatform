@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class GenreRestControllerTest {
 
     @Autowired
-    private MockMvc _sut;
+    private MockMvc _mockMvc;
 
     @Autowired
     private GenreRestController _controller;
@@ -48,12 +48,12 @@ class GenreRestControllerTest {
         when(_genreService.registerGenre("Sample")).thenReturn(dto);
 
         // Act & Assert
-        _sut.perform(post("/genres")
+        _mockMvc.perform(post("/genres")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"_genreName\":\"Sample\"}"))
+                        .content("{\"genreName\":\"Sample\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$._genreId").value("SAMPLE"))
-                .andExpect(jsonPath("$._genreName").value("Sample"))
+                .andExpect(jsonPath("$.genreId").value("SAMPLE"))
+                .andExpect(jsonPath("$.genreName").value("Sample"))
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/genres/SAMPLE"));
     }
 
@@ -66,11 +66,21 @@ class GenreRestControllerTest {
         when(_genreService.getAllGenres()).thenReturn(List.of(dto));
 
         // Act & Assert
-        _sut.perform(get("/genres"))
+        _mockMvc.perform(get("/genres"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]._genreId").value("SAMPLE"))
-                .andExpect(jsonPath("$[0]._genreName").value("Sample"))
+                .andExpect(jsonPath("$[0].genreId").value("SAMPLE"))
+                .andExpect(jsonPath("$[0].genreName").value("Sample"))
                 .andExpect(jsonPath("$[0].links[0].href").value("http://localhost/genres/SAMPLE"));
+    }
+
+    @Test
+    void getAllGenresReturnsNoContentWhenEmpty() throws Exception {
+        // Arrange
+        when(_genreService.getAllGenres()).thenReturn(List.of());
+
+        // Act & Assert
+        _mockMvc.perform(get("/genres"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -79,7 +89,7 @@ class GenreRestControllerTest {
         String genreId = "SAMPLE";
 
         // Act & Assert
-        _sut.perform(get("/genres/{id}", genreId))
+        _mockMvc.perform(get("/genres/{id}", genreId))
                 .andExpect(status().isOk());
     }
 
