@@ -17,7 +17,6 @@ class ItemFactoryTest {
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.LIKE_NEW;
-        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -25,7 +24,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
             //Act
-            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, nameDouble);
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
 
             //Assert
             assertNotNull(newItem);
@@ -40,7 +39,6 @@ class ItemFactoryTest {
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.LIKE_NEW;
-        Name nameDouble = mock(Name.class);
         Picture pictureDouble = mock(Picture.class);
 
         // SUT
@@ -50,7 +48,7 @@ class ItemFactoryTest {
                      mockConstruction(Item.class)) {
 
             // Act
-            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, nameDouble, pictureDouble);
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, pictureDouble);
 
             // Assert
             assertNotNull(newItem);
@@ -66,7 +64,6 @@ class ItemFactoryTest {
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.POOR;
         SaleStatus saleStatus = SaleStatus.OnAuction;
-        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -74,7 +71,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
 
-            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, nameDouble);
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus);
 
             //Assert
             assertNotNull(reconstitutedItem);
@@ -93,7 +90,6 @@ class ItemFactoryTest {
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.POOR;
         SaleStatus saleStatus = SaleStatus.OnAuction;
-        Name nameDouble = mock(Name.class);
         Picture pictureDouble = mock(Picture.class);
 
         // SUT
@@ -103,7 +99,7 @@ class ItemFactoryTest {
                      mockConstruction(Item.class)) {
 
             // Act
-            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, nameDouble, pictureDouble);
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, pictureDouble);
 
             // Assert
             assertNotNull(reconstitutedItem);

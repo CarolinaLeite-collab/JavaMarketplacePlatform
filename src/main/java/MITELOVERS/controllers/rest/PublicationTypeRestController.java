@@ -1,6 +1,6 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.dto.request.PublicationTypeResponseDTO;
+import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.applicationservices.PublicationTypeService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,16 @@ public class PublicationTypeRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PublicationTypeResponseDTO>> getAllPublicationTypes() {
-        return null;
+
+        List<PublicationTypeResponseDTO> publicationTypes =
+                _publicationTypeService.getAllPublicationTypes();
+
+        if (publicationTypes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(publicationTypes);
+
     }
 
 }

@@ -32,7 +32,10 @@ public class PublicationRestController {
         _publicationService = publicationService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
             @Valid @RequestBody PublicationRequestDTO info) {
 
@@ -62,7 +65,9 @@ public class PublicationRestController {
         return ResponseEntity.ok(publications);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+            value = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationResponseDTO> getPublicationById(
             @PathVariable String id) {
 

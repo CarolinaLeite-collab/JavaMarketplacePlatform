@@ -1,8 +1,8 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.applicationservices.GenreService;
+import MITELOVERS.applicationservices.AuthorService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.AuthorResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,78 +25,78 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Tag("unit")
-@WebMvcTest(GenreRestController.class)
+@WebMvcTest(AuthorRestController.class)
 @Import(CustomRestExceptionHandler.class)
-class GenreRestControllerTest {
+class AuthorRestControllerTest {
 
     @Autowired
     private MockMvc _mockMvc;
 
     @Autowired
-    private GenreRestController _controller;
+    private AuthorRestController _controller;
 
     @MockBean
-    private GenreService _genreService;
+    private AuthorService _authorService;
 
     @Test
-    void registerGenreAndReturnDTO() throws Exception {
+    void registerAuthorAndReturnDTO() throws Exception {
         // Arrange
-        GenreResponseDTO dto = new GenreResponseDTO("SAMPLE", "Sample");
+        AuthorResponseDTO dto = new AuthorResponseDTO("SAMPLE", "Sample Name");
 
-        when(_genreService.registerGenre("Sample")).thenReturn(dto);
+        when(_authorService.registerAuthor("Sample Name")).thenReturn(dto);
 
         // Act & Assert
-        _mockMvc.perform(post("/genres")
+        _mockMvc.perform(post("/authors")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"genreName\":\"Sample\"}"))
+                        .content("{\"authorName\":\"Sample Name\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.genreId").value("SAMPLE"))
-                .andExpect(jsonPath("$.genreName").value("Sample"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/genres/SAMPLE"));
+                .andExpect(jsonPath("$.authorId").value("SAMPLE"))
+                .andExpect(jsonPath("$.authorName").value("Sample Name"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/authors/SAMPLE"));
     }
 
     @Test
-    void getAllGenresReturnsList() throws Exception {
+    void getAllAuthorsReturnsList() throws Exception {
         // Arrange
-        GenreResponseDTO dto = new GenreResponseDTO("SAMPLE", "Sample");
+        AuthorResponseDTO dto = new AuthorResponseDTO("SAMPLE", "Sample Name");
 
-        when(_genreService.getAllGenres()).thenReturn(List.of(dto));
+        when(_authorService.getAllAuthors()).thenReturn(List.of(dto));
 
         // Act & Assert
-        _mockMvc.perform(get("/genres"))
+        _mockMvc.perform(get("/authors"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].genreId").value("SAMPLE"))
-                .andExpect(jsonPath("$[0].genreName").value("Sample"))
-                .andExpect(jsonPath("$[0].links[0].href").value("http://localhost/genres/SAMPLE"));
+                .andExpect(jsonPath("$[0].authorId").value("SAMPLE"))
+                .andExpect(jsonPath("$[0].authorName").value("Sample Name"))
+                .andExpect(jsonPath("$[0].links[0].href").value("http://localhost/authors/SAMPLE"));
     }
 
     @Test
-    void getAllGenresReturnsNoContentWhenEmpty() throws Exception {
+    void getAllAuthorsReturnsNoContentWhenEmpty() throws Exception {
         // Arrange
-        when(_genreService.getAllGenres()).thenReturn(List.of());
+        when(_authorService.getAllAuthors()).thenReturn(List.of());
 
         // Act & Assert
-        _mockMvc.perform(get("/genres"))
+        _mockMvc.perform(get("/authors"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void getGenreByIdReturnsOkResponse() throws Exception {
+    void getAuthorByIdReturnsOkResponse() throws Exception {
         // Arrange
-        String genreId = "SAMPLE";
+        String authorId = "SAMPLE";
 
         // Act & Assert
-        _mockMvc.perform(get("/genres/{id}", genreId))
+        _mockMvc.perform(get("/authors/{id}", authorId))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void getGenreByIdReturnsResponseEntity() {
+    void getAuthorByIdReturnsResponseEntity() {
         // Arrange
-        String genreId = "SAMPLE";
+        String authorId = "SAMPLE";
 
         // Act
-        ResponseEntity<GenreResponseDTO> response = _controller.getGenreById(genreId);
+        ResponseEntity<AuthorResponseDTO> response = _controller.getAuthorById(authorId);
 
         // Assert
         assertNotNull(response);

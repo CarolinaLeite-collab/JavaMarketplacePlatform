@@ -1,12 +1,16 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.GenreService;
-import MITELOVERS.dto.GenreRequestDTO;
+import MITELOVERS.dto.request.GenreRequestDTO;
 import MITELOVERS.dto.GenreResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for exposing genre-related endpoints via HTTP endpoints.
@@ -30,6 +34,13 @@ public class GenreRestController {
                 info.getGenreName()
         );
 
+        genreResponseDTO.add(
+                linkTo(
+                        methodOn(GenreRestController.class)
+                                .getGenreById(genreResponseDTO.getGenreId())
+                ).withSelfRel()
+        );
+
         return new ResponseEntity<>(genreResponseDTO, HttpStatus.CREATED);
     }
 
@@ -40,6 +51,15 @@ public class GenreRestController {
 
         if (genres.isEmpty()) {
             return ResponseEntity.noContent().build();
+        }
+
+        for (GenreResponseDTO genre : genres) {
+            genre.add(
+                    linkTo(
+                            methodOn(GenreRestController.class)
+                                    .getGenreById(genre.getGenreId())
+                    ).withSelfRel()
+            );
         }
 
         return ResponseEntity.ok(genres);

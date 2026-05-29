@@ -1,9 +1,8 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemRequestDTO;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;

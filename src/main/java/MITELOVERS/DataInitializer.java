@@ -333,7 +333,6 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Used copy in good condition"),
                     SaleStatus.OnDirectSale,
-                    new Name("Book for sale"),
                     new Picture("https://upload.wikimedia.org/wikipedia/commons/5/51/1984_first_edition_cover.jpg")
 
             );
@@ -346,8 +345,7 @@ public class DataInitializer {
                     edition1984Modern.identity(),
                     Condition.FAIR,
                     new Description("Modern edition"),
-                    SaleStatus.OnDirectSale,
-                    new Name("Modern Book for sale")
+                    SaleStatus.OnDirectSale
             );
             itemRepo.save(item2);
 
@@ -358,7 +356,6 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Portuguese Edition of Delirious New York"),
                     SaleStatus.OnDirectSale,
-                    new Name("Nova York Delirante - Architecture Classic"),
                     new Picture("/images/deliriousNewYork.png")
             );
             itemRepo.save(item3);

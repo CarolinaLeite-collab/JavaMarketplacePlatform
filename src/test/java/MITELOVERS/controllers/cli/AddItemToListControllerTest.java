@@ -2,9 +2,8 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.AddItemRequestDTO;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

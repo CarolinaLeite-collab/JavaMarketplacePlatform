@@ -1,16 +1,9 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.domain.listofitems.ListOfItems;
-import MITELOVERS.domain.repository.IListOfItemsRepo;
-import MITELOVERS.domain.valueobject.ListOfItemsId;
-import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
-import MITELOVERS.dto.MakeListPublicRequestDTO;
-
-import java.util.ArrayList;
-import java.util.List;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 
 /**
  * Controller responsible for sharing publicly a list of a {@link UserId}.

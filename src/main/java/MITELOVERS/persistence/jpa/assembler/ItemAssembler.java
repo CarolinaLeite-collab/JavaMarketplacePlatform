@@ -38,7 +38,6 @@ public class ItemAssembler {
               item.getCondition().name(),
               item.getDescription().toString(),
                 item.getSaleStatus().name(),
-                item.getName().toString(),
                 pictureValue
         );
 
@@ -61,7 +60,6 @@ public class ItemAssembler {
                 Condition.valueOf(itemDataModel.getCondition()),
                 new Description(itemDataModel.getDescription()),
                 SaleStatus.valueOf(itemDataModel.getSaleStatus()),
-                new Name(itemDataModel.getName()),
                 picture
         );
 

@@ -25,7 +25,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.POOR);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
 
@@ -51,7 +50,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.POOR);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnDirectSale);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
         // SUT
@@ -75,7 +73,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
@@ -99,7 +96,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book."));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
@@ -123,7 +119,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
         //SUT
@@ -136,29 +131,7 @@ class ItemAssemblerTest {
         assertEquals("OnAuction", result.getSaleStatus());
     }
 
-    @Test
-    void toDataModelShouldMapNameCorrectly() {
-        // Arrange
-        ItemFactory factoryDouble = mock(ItemFactory.class);
 
-        Item itemDouble = mock(Item.class);
-        when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
-        when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
-        when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
-        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
-        when(itemDouble.getPicture()).thenReturn(null);
-
-        //SUT
-        ItemAssembler assembler = new ItemAssembler(factoryDouble);
-
-        // Act
-        ItemDataModel result = assembler.toDataModel(itemDouble);
-
-        // Assert
-        assertEquals("Best Book", result.getName());
-    }
 
     @Test
     void toDataModelShouldMapPictureCorrectly() {
@@ -171,7 +144,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(new Picture("https://example.com/image.jpg"));
 
         // SUT
@@ -195,7 +167,6 @@ class ItemAssemblerTest {
         when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
-        when(itemDouble.getName()).thenReturn(new Name("Best book"));
         when(itemDouble.getPicture()).thenReturn(null);
 
         // SUT
@@ -222,10 +193,9 @@ class ItemAssemblerTest {
         when(dmDouble.getCondition()).thenReturn("POOR");
         when(dmDouble.getDescription()).thenReturn("Not a great book");
         when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
-        when(dmDouble.getName()).thenReturn("Best book");
         when(dmDouble.getPicture()).thenReturn(null);
 
-        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(),any())).thenReturn(itemDouble);
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any())).thenReturn(itemDouble);
 
         //SUT
         ItemAssembler assembler = new ItemAssembler(factoryDouble);
@@ -249,10 +219,9 @@ class ItemAssemblerTest {
         when(dmDouble.getCondition()).thenReturn("POOR");
         when(dmDouble.getDescription()).thenReturn("Not a great book");
         when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
-        when(dmDouble.getName()).thenReturn("Best book");
         when(dmDouble.getPicture()).thenReturn("https://example.com/image.jpg");
 
-        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(), any()))
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any()))
                 .thenReturn(itemDouble);
 
         // SUT
@@ -277,10 +246,9 @@ class ItemAssemblerTest {
         when(dmDouble.getCondition()).thenReturn("POOR");
         when(dmDouble.getDescription()).thenReturn("Not a great book");
         when(dmDouble.getSaleStatus()).thenReturn("NotOnSale");
-        when(dmDouble.getName()).thenReturn("Best book");
         when(dmDouble.getPicture()).thenReturn(null);
 
-        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any(), any()))
+        when(factoryDouble.createItem(any(), any(), any(), any(), any(), any()))
                 .thenReturn(itemDouble);
 
         // SUT

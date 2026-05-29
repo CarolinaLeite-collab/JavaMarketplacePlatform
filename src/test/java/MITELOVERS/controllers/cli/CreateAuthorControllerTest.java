@@ -1,59 +1,59 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.CreateAuthorController;
-import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.author.AuthorFactory;
-import MITELOVERS.domain.repository.IAuthorRepo;
-import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.applicationservices.AuthorService;
+import MITELOVERS.dto.AuthorResponseDTO;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("jpa")
 class CreateAuthorControllerTest {
 
-    @Mock
-    IAuthorRepo _iAuthorRepoDouble;
-
-    @Mock
-    AuthorFactory _authorFactoryDouble;
-
     @InjectMocks
-    CreateAuthorController _createAuthorController;
+    private CreateAuthorController _controller;
 
-
-    @Test
-    void testCreateAuthorControllerConstructor() {
-
-        // SUT & Act
-        _createAuthorController = new CreateAuthorController(_iAuthorRepoDouble, _authorFactoryDouble);
-    }
+    @Mock
+    private AuthorService _authorService;
 
     @Test
-    void createAuthorShouldCreateAndSaveAuthor() {
-
+    void createAuthorReturnsResponseDTOFromService() {
         // Arrange
-        Author authorDouble = mock(Author.class);
-        Name nameDouble = mock(Name.class);
+        String authorName = "Sample Name";
+        AuthorResponseDTO responseDTODouble = new AuthorResponseDTO("SAMPLE", "Sample Name");
 
-        when(_authorFactoryDouble.createAuthor(nameDouble)).thenReturn(authorDouble);
-        when(_iAuthorRepoDouble.save(authorDouble)).thenReturn(authorDouble);
+        when(_authorService.registerAuthor(authorName)).thenReturn(responseDTODouble);
 
         // Act
-        Author result = _createAuthorController.createAuthor(nameDouble);
+        AuthorResponseDTO result = _controller.createAuthor(authorName);
 
         // Assert
-        assertEquals(authorDouble, result);
-        verify(_authorFactoryDouble).createAuthor(nameDouble);
-        verify(_iAuthorRepoDouble).save(authorDouble);
-
+        assertSame(responseDTODouble, result);
+        verify(_authorService).registerAuthor(authorName);
     }
 
+    @Test
+    void createAuthorThrowsWhenServiceFails() {
+        // Arrange
+        String authorName = "Sample Name";
+
+        when(_authorService.registerAuthor(authorName))
+                .thenThrow(new IllegalStateException("Author already exists in the repository"));
+
+        // Act & Assert
+        IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> _controller.createAuthor(authorName));
+
+        assertEquals("Author already exists in the repository", exception.getMessage());
+        verify(_authorService).registerAuthor(authorName);
+    }
 }

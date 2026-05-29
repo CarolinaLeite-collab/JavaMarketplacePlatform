@@ -33,3 +33,8 @@ replay_pid*
 # Build outputs
 target/
 data/
+
+# Security scan reports
+*.gitleaks.json
+gitleaks-report.json
+reports/
