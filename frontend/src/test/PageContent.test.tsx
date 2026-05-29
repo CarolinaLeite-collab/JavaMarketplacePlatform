@@ -33,4 +33,24 @@ describe('PageContent', () => {
 
         expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
     });
+
+    it('renders the subtitle when both title and subtitle are provided', () => {
+        render(
+            <PageContent title="Settings" subtitle="manage your account:">
+                <p>Body content</p>
+            </PageContent>
+        );
+
+        expect(screen.getByText('manage your account:')).toBeInTheDocument();
+    });
+
+    it('does not render subtitle when subtitle is not provided', () => {
+        render(
+            <PageContent title="Settings">
+                <p>Body content</p>
+            </PageContent>
+        );
+
+        expect(screen.queryByText('manage your account:')).not.toBeInTheDocument();
+    });
 });
