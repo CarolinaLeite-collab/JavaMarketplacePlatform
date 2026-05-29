@@ -12,16 +12,16 @@ import java.util.List;
 @AllArgsConstructor(onConstructor_ = @JsonCreator)
 public class DirectSaleRequestDTO {
 
-    @JsonProperty("_itemsId")
-    private final List<String> _itemsId;
+    @JsonProperty("itemIds")
+    private final List<String> itemIds;
 
-    @JsonProperty("_priceAmount")
-    private final Double _priceValue;
+    @JsonProperty("priceAmount")
+    private final Double priceValue;
 
-    @JsonProperty("_priceCurrency")
-    private final String _priceCurrency;
+    @JsonProperty("priceCurrency")
+    private final String priceCurrency;
 
-    @JsonProperty("_timeLimitSeconds")
-    private final Long _timeLimitSeconds; // null = unlimited
+    @JsonProperty("timeLimitSeconds")
+    private final Long timeLimitSeconds; // null = unlimited
 
 }
