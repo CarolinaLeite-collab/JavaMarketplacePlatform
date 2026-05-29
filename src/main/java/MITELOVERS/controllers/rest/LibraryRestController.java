@@ -4,7 +4,7 @@ import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.dto.AddItemRequestDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.LibraryItemDetailsDTO;
 import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.springframework.hateoas.CollectionModel;
