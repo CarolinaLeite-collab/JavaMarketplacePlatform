@@ -33,7 +33,7 @@ export function Header() {
 
                     <Group visibleFrom="sm">
                         <ColorSchemeToggle />
-                        <Button color="indigo" radius="xl">LOG OUT</Button>
+                        <Button color="var(--mantine-color-gray-7)" radius="xl">LOG OUT</Button>
                     </Group>
 
                     <Burger
