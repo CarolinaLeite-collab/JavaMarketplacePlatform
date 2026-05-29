@@ -1,5 +1,6 @@
 package MITELOVERS.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
@@ -13,6 +14,8 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 public class PublicationResponseDTO extends RepresentationModel<PublicationResponseDTO> {
 
+    @JsonIgnore
+    private String publicationId;
     private String title;
     private String authorName;
     private int releaseYear;
