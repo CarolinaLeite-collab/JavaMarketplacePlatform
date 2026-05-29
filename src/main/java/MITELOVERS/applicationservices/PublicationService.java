@@ -9,6 +9,7 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.PublicationResponseDTO;
 import MITELOVERS.mapper.PublicationResponseDTOMapper;
@@ -104,5 +105,30 @@ public class PublicationService {
 
         return response;
     }
+
+    public PublicationResponseDTO getPublicationById(String id) {
+
+        Publication publication = _iPublicationRepo
+                .ofIdentity(new PublicationId(id))
+                .orElseThrow(() ->
+                        new NoSuchElementException(
+                                "Publication with id '" + id + "' does not exist"));
+
+        Author author = _iAuthorRepo
+                .ofIdentity(publication.getAuthorId())
+                .orElseThrow(() ->
+                        new NoSuchElementException(
+                                "Author with id '" + publication.getAuthorId() + "' does not exist"));
+
+        Genre genre = _iGenreRepo
+                .ofIdentity(publication.getGenreId())
+                .orElseThrow(() ->
+                        new NoSuchElementException(
+                                "Genre with id '" + publication.getGenreId() + "' does not exist"));
+
+        return _publicationResponseDTOMapper
+                .toResponseDTO(publication, author, genre);
+    }
+
 }
 
