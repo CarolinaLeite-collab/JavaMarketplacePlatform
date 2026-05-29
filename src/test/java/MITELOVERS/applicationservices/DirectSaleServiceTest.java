@@ -2,8 +2,11 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
+import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
-import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.repository.ILibraryRepo;
+import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
@@ -13,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -28,16 +30,22 @@ import static org.mockito.Mockito.when;
 class DirectSaleServiceTest {
 
     @Mock
-    private IDirectSaleRepo repo;
+    private ILibraryRepo _iLibraryRepo;
 
     @Mock
-    private DirectSaleFactory factory;
+    private IItemRepo _iItemRepo;
 
     @Mock
-    private DirectSaleResponseDTOMapper mapper;
+    private IDirectSaleRepo _iDirectSaleRepo;
+
+    @Mock
+    private DirectSaleFactory _factory;
+
+    @Mock
+    private DirectSaleResponseDTOMapper _responseMapper;
 
     @InjectMocks
-    private DirectSaleService service;
+    private DirectSaleService _service;
 
     @Test
     void createDirectSale_shouldSaveAndReturnDTO() {
@@ -53,18 +61,18 @@ class DirectSaleServiceTest {
         DirectSale savedSale = mock(DirectSale.class);
         DirectSaleResponseDTO expectedDTO = mock(DirectSaleResponseDTO.class);
 
-        when(factory.createDirectSale(
-                anyList(),
-                any(Price.class),
-                any(Duration.class)
-        )).thenReturn(newSale);
+        when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
+        when(_iDirectSaleRepo.containsOfIdentity(any())).thenReturn(false);
 
-        when(repo.containsOfIdentity(any())).thenReturn(false);
-        when(repo.save(newSale)).thenReturn(savedSale);
-        when(mapper.toResponseDTO(savedSale)).thenReturn(expectedDTO);
+        Item mockItem = mock(Item.class);
+        when(mockItem.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_iItemRepo.ofIdentity(any())).thenReturn(Optional.of(mockItem));
 
-        // Act
-        DirectSaleResponseDTO result = service.createDirectSale(request);
+        when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
+        when(_responseMapper.toResponseDTO(savedSale)).thenReturn(expectedDTO);
+
+        // Act (SUT)
+        DirectSaleResponseDTO result = _service.createDirectSale(request);
 
         // Assert
         assertEquals(expectedDTO, result);
@@ -72,14 +80,17 @@ class DirectSaleServiceTest {
 
     @Test
     void getAllDirectSales_shouldReturnMappedList() {
+        // Arrange
         DirectSale ds = mock(DirectSale.class);
         DirectSaleResponseDTO dto = mock(DirectSaleResponseDTO.class);
 
-        when(repo.findAll()).thenReturn(List.of(ds));
-        when(mapper.toResponseDTO(ds)).thenReturn(dto);
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+        when(_responseMapper.toResponseDTO(ds)).thenReturn(dto);
 
-        List<DirectSaleResponseDTO> result = service.getAllDirectSales();
+        // Act (SUT)
+        List<DirectSaleResponseDTO> result = _service.getAllDirectSales();
 
+        // Assert
         assertEquals(List.of(dto), result);
     }
 
@@ -89,14 +100,13 @@ class DirectSaleServiceTest {
         DirectSale ds = mock(DirectSale.class);
         DirectSaleResponseDTO dto = mock(DirectSaleResponseDTO.class);
 
-        // Use a valid DirectSaleId format
         String validId = "DS-A1B2C3D4";
 
-        when(repo.ofIdentity(any())).thenReturn(Optional.of(ds));
-        when(mapper.toResponseDTO(ds)).thenReturn(dto);
+        when(_iDirectSaleRepo.ofIdentity(any())).thenReturn(Optional.of(ds));
+        when(_responseMapper.toResponseDTO(ds)).thenReturn(dto);
 
-        // Act
-        DirectSaleResponseDTO result = service.getDirectSaleById(validId);
+        // Act (SUT)
+        DirectSaleResponseDTO result = _service.getDirectSaleById(validId);
 
         // Assert
         assertEquals(dto, result);
@@ -105,13 +115,13 @@ class DirectSaleServiceTest {
     @Test
     void getDirectSaleById_shouldThrowIfNotFound() {
         // Arrange
-        when(repo.ofIdentity(any())).thenReturn(Optional.empty());
+        when(_iDirectSaleRepo.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // Use a valid DirectSaleId format
         String validId = "DS-A1B2C3D4";
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> service.getDirectSaleById(validId));
+                () -> _service.getDirectSaleById(validId));
     }
+
 }
