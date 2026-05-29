@@ -7,9 +7,9 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.DirectSaleRequestDTO;
+import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.FilteredDSItemsResponseDTO;
+import MITELOVERS.dto.DSFilteredItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +50,7 @@ public class DirectSaleService {
 
     public DirectSaleResponseDTO createDirectSale(DirectSaleRequestDTO request) {
 
-        List<ItemId> itemIds = request.getItemIds().stream()
+        List<ItemId> itemsId = request.getItemsId().stream()
                 .map(ItemId::new)
                 .toList();
 
@@ -64,13 +64,13 @@ public class DirectSaleService {
                 : null;
 
         DirectSale newDirectSale =
-                _directSaleFactory.createDirectSale(itemIds, price, timeLimit);
+                _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
 
         if (_iDirectSaleRepo.containsOfIdentity(newDirectSale.identity())) {
             throw new IllegalStateException("DirectSale already exists");
         }
 
-        for (ItemId itemId : itemIds) {
+        for (ItemId itemId : itemsId) {
             Item item = _iItemRepo.ofIdentity(itemId)
                     .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
 
@@ -138,7 +138,7 @@ public class DirectSaleService {
         return result;
     }
 
-    public FilteredDSItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
+    public DSFilteredItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
 
         GenreId gid = new GenreId(genreId);
 
@@ -154,7 +154,7 @@ public class DirectSaleService {
                 .map(ItemId::toString)
                 .toList();
 
-        return new FilteredDSItemsResponseDTO(sorted);
+        return new DSFilteredItemsResponseDTO(sorted);
     }
 
 }

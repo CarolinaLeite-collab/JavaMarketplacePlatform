@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
-import MITELOVERS.dto.DirectSaleRequestDTO;
+import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
 import MITELOVERS.dto.DSFilteredItemsResponseDTO;
 import org.junit.jupiter.api.Test;

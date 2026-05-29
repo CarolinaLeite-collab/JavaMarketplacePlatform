@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class FilteredDSItemsResponseDTO extends RepresentationModel<FilteredDSItemsResponseDTO> {
+public class DSFilteredItemsResponseDTO extends RepresentationModel<DSFilteredItemsResponseDTO> {
 
-    private final List<String> itemIds;
+    private final List<String> itemsId;
 }

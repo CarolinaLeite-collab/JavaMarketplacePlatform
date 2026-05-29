@@ -9,9 +9,9 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.SaleStatus;
-import MITELOVERS.dto.DirectSaleRequestDTO;
+import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.FilteredDSItemsResponseDTO;
+import MITELOVERS.dto.DSFilteredItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -159,11 +159,11 @@ class DirectSaleServiceTest {
                 .thenReturn(List.of(itemId));
 
         // Act
-        FilteredDSItemsResponseDTO result =
+        DSFilteredItemsResponseDTO result =
                 _service.getDirectSaleItemsByGenreAsc(genreId);
 
         // Assert
-        assertEquals(List.of("ABCDEF1234"), result.getItemIds());
+        assertEquals(List.of("ABCDEF1234"), result.getItemsId());
     }
 
     @Test

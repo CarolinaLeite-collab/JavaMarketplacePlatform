@@ -9,7 +9,6 @@ import MITELOVERS.dto.DirectSaleResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
@@ -44,7 +43,7 @@ class DirectSaleResponseDTOMapperTest {
         DirectSaleResponseDTO dto = mapper.toResponseDTO(directSale);
 
         assertEquals("DS-ABC12345", dto.getDirectSaleId());
-        assertEquals(List.of("ABCDEF1234"), dto.getItemIds());
+        assertEquals(List.of("ABCDEF1234"), dto.getItemsId());
         assertEquals(10.0, dto.getPriceValue());
         assertEquals("EUR", dto.getPriceCurrency());
         assertEquals(3600L, dto.getTimeLimitSeconds());

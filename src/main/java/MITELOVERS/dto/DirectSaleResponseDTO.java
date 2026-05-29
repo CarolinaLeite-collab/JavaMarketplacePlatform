@@ -12,7 +12,7 @@ import java.util.List;
 public class DirectSaleResponseDTO extends RepresentationModel<DirectSaleResponseDTO> {
 
     private final String directSaleId;
-    private final List<String> itemIds;
+    private final List<String> itemsId;
     private final Double priceValue;
     private final String priceCurrency;
     private final Long timeLimitSeconds;
