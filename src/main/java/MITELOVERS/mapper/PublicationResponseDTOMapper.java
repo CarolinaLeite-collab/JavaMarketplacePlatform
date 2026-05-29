@@ -22,6 +22,7 @@ public class PublicationResponseDTOMapper {
                                                 Genre genre) {
 
         PublicationResponseDTO dto = new PublicationResponseDTO(
+                    publication.identity().toString(),
                     publication.getTitle().toString(),
                     author.getName().toString(),
                     publication.getReleaseYear().getValue(),
