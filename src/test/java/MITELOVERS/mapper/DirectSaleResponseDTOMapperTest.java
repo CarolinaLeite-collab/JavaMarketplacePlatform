@@ -5,7 +5,7 @@ import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.dto.DirectSaleResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

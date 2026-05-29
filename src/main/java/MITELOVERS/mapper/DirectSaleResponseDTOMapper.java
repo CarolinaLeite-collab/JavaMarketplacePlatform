@@ -3,7 +3,7 @@ package MITELOVERS.mapper;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.dto.DirectSaleResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
