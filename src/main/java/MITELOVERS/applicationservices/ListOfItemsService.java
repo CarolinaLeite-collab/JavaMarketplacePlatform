@@ -166,4 +166,11 @@ public class ListOfItemsService {
         return result;
     }
 
+    @Transactional
+    public void deleteList(String listOfItemsId) {
+        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+
+        _listOfItemsRepo.deleteListOfItems(recListOfItemsId);
+    }
+
 }

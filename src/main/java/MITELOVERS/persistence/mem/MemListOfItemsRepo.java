@@ -51,4 +51,9 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void deleteListOfItems(ListOfItemsId listOfItemsId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

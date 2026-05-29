@@ -135,4 +135,17 @@ public class ListOfItemsRestController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping(path ="/{listId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteList(@PathVariable String listId) {
+        try {
+            _listService.deleteList(listId);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        catch (Exception ex) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
