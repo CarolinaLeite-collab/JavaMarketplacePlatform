@@ -32,8 +32,9 @@ public class PublicationId implements DomainId {
         releaseYear = Objects.requireNonNull(releaseYear);
 
         String cleanTitle = title.toString().trim().replaceAll("[^a-zA-Z0-9]", "-");
+        String cleanAuthorId = authorId.toString().trim().replaceAll("[^a-zA-Z0-9]", "-");
 
-        _publicationId = cleanTitle + "-" + authorId + "(" + releaseYear + ")";
+        _publicationId = cleanTitle + "-" + cleanAuthorId + "(" + releaseYear + ")";
     }
 
     public PublicationId(String publicationId) {
