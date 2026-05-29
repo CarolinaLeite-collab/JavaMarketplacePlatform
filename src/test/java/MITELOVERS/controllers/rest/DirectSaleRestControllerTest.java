@@ -3,6 +3,7 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
+import MITELOVERS.dto.FilteredDSItemsResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,10 +22,10 @@ import static org.mockito.Mockito.when;
 class DirectSaleRestControllerTest {
 
     @Mock
-    private DirectSaleService service;
+    private DirectSaleService _service;
 
     @InjectMocks
-    private DirectSaleRestController controller;
+    private DirectSaleRestController _controller;
 
     @Test
     void createDirectSale_shouldReturnCreated() {
@@ -32,11 +33,11 @@ class DirectSaleRestControllerTest {
         DirectSaleRequestDTO request = mock(DirectSaleRequestDTO.class);
         DirectSaleResponseDTO response = mock(DirectSaleResponseDTO.class);
 
-        when(service.createDirectSale(request)).thenReturn(response);
+        when(_service.createDirectSale(request)).thenReturn(response);
 
         // Act (SUT)
         ResponseEntity<DirectSaleResponseDTO> result =
-                controller.createDirectSale(request);
+                _controller.createDirectSale(request);
 
         // Assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
@@ -49,11 +50,11 @@ class DirectSaleRestControllerTest {
         List<DirectSaleResponseDTO> list =
                 List.of(mock(DirectSaleResponseDTO.class));
 
-        when(service.getAllDirectSales()).thenReturn(list);
+        when(_service.getAllDirectSales()).thenReturn(list);
 
         // Act (SUT)
         ResponseEntity<List<DirectSaleResponseDTO>> result =
-                controller.getAllDirectSales();
+                _controller.getAllDirectSales();
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -65,15 +66,52 @@ class DirectSaleRestControllerTest {
         // Arrange
         DirectSaleResponseDTO dto = mock(DirectSaleResponseDTO.class);
 
-        when(service.getDirectSaleById("DS1")).thenReturn(dto);
+        when(_service.getDirectSaleById("DS1")).thenReturn(dto);
 
         // Act (SUT)
         ResponseEntity<DirectSaleResponseDTO> result =
-                controller.getDirectSaleById("DS1");
+                _controller.getDirectSaleById("DS1");
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(dto, result.getBody());
+    }
+
+    @Test
+    void getDirectSaleItemsByGenre_shouldReturnOk() {
+        // Arrange
+        String genreId = "GEN-12345";
+
+        FilteredDSItemsResponseDTO dto =
+                new FilteredDSItemsResponseDTO(
+                        List.of("ABCDEF1234", "A1B2C3D4E5")
+                );
+
+        when(_service.getDirectSaleItemsByGenreAsc(genreId))
+                .thenReturn(dto);
+
+        // Act (SUT)
+        ResponseEntity<FilteredDSItemsResponseDTO> result =
+                _controller.getDirectSaleItemsByGenre(genreId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(dto, result.getBody());
+    }
+
+    @Test
+    void getDirectSaleItemsByGenre_shouldThrowWhenNoMatches() {
+        // Arrange
+        String genreId = "GEN-12345";
+
+        when(_service.getDirectSaleItemsByGenreAsc(genreId))
+                .thenThrow(new IllegalStateException("No matching DirectSales"));
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _controller.getDirectSaleItemsByGenre(genreId)
+        );
     }
 
 }
