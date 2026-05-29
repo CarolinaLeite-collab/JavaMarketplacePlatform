@@ -107,6 +107,7 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
     public void makePrivate(){
         if (!_isPrivate) {
             _isPrivate = true;
+            _sharedUntil = null;
         }
     }
 
