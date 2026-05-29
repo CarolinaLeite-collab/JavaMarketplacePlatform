@@ -3,7 +3,7 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.FilteredDSItemsResponseDTO;
+import MITELOVERS.dto.DSFilteredItemsResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -82,8 +82,8 @@ class DirectSaleRestControllerTest {
         // Arrange
         String genreId = "GEN-12345";
 
-        FilteredDSItemsResponseDTO dto =
-                new FilteredDSItemsResponseDTO(
+        DSFilteredItemsResponseDTO dto =
+                new DSFilteredItemsResponseDTO(
                         List.of("ABCDEF1234", "A1B2C3D4E5")
                 );
 
@@ -91,7 +91,7 @@ class DirectSaleRestControllerTest {
                 .thenReturn(dto);
 
         // Act (SUT)
-        ResponseEntity<FilteredDSItemsResponseDTO> result =
+        ResponseEntity<DSFilteredItemsResponseDTO> result =
                 _controller.getDirectSaleItemsByGenre(genreId);
 
         // Assert

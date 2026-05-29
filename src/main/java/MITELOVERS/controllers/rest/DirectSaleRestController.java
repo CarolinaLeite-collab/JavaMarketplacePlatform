@@ -3,8 +3,9 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
-import MITELOVERS.dto.FilteredDSItemsResponseDTO;
+import MITELOVERS.dto.DSFilteredItemsResponseDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,10 @@ public class DirectSaleRestController {
         _directSaleService = directSaleService;
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
@@ -30,7 +34,7 @@ public class DirectSaleRestController {
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DirectSaleResponseDTO>> getAllDirectSales() {
 
         List<DirectSaleResponseDTO> response =
@@ -43,7 +47,9 @@ public class DirectSaleRestController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(
+            value = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> getDirectSaleById(
             @PathVariable String id) {
 
@@ -53,11 +59,13 @@ public class DirectSaleRestController {
         return ResponseEntity.ok(responseDTO);
     }
 
-    @GetMapping("/genre/{genreId}")
-    public ResponseEntity<FilteredDSItemsResponseDTO> getDirectSaleItemsByGenre(
+    @GetMapping(
+            value = "/genre/{genreId}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DSFilteredItemsResponseDTO> getDirectSaleItemsByGenre(
             @PathVariable String genreId) {
 
-        FilteredDSItemsResponseDTO dto =
+        DSFilteredItemsResponseDTO dto =
                 _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
 
         return ResponseEntity.ok(dto);
