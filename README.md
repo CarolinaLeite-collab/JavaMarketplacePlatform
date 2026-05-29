@@ -320,6 +320,92 @@ Additionally, a permissions block was added:
 
 ---
 
+## Secret Detection  with `Gitleaks`
+
+To improve the security of the development workflow, a dedicated GitHub Actions workflow was added to detect accidentally committed secrets.
+
+The workflow is defined in:
+
+```text
+.github/workflows/secret-detection.yml
+```
+
+It is automatically triggered on every Pull Request targeting:
+
+```yaml
+main
+b3
+b4
+```
+
+The workflow performs the following steps:
+
+1. Checks out the complete repository history (`fetch-depth: 0`);
+2. Installs Gitleaks on the GitHub runner;
+3. Scans the repository for secrets and sensitive information;
+4. Generates a JSON report containing all findings;
+5. Uploads the report as a GitHub Actions artifact.
+
+Workflow definition:
+
+```yaml
+name: Secret Detection
+
+on:
+  pull_request:
+    branches:
+      - main
+      - b3
+      - b4
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.27.2/gitleaks_8.27.2_linux_x64.tar.gz
+          tar -xzf gitleaks_8.27.2_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+
+      - name: Run Gitleaks
+        run: |
+          gitleaks detect \
+            --source . \
+            --report-format json \
+            --report-path gitleaks-report.json \
+            --exit-code 1
+
+      - name: Upload Gitleaks report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+```
+
+The option `--exit-code 1` ensures that the workflow fails whenever a secret is detected, preventing insecure code from being merged.
+
+Examples of information that Gitleaks can detect include:
+
+- API keys;
+- Access tokens;
+- Passwords;
+- Private keys;
+- Cloud provider credentials;
+- Hardcoded secrets.
+
+A validation test was performed by introducing a fake secret into a temporary file. 
+Gitleaks correctly detected the secret and failed the pipeline. Even after the file was deleted, the pipeline continued to fail because the secret remained in the Git history. This confirmed that Gitleaks scans the full commit history (`fetch-depth: 0`) and not only the current contents of the repository.
+![Gitleaks Secret Detection Test](docs/readme-printscreens/gitleaks-secret-detection-test.png)
+---
+
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined:
