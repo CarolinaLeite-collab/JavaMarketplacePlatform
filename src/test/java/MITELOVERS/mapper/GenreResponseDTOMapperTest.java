@@ -25,9 +25,8 @@ class GenreResponseDTOMapperTest {
 
         // Assert
         assertNotNull(dto);
-        assertEquals("SAMPLE", dto.get_genreId());
-        assertEquals("Sample", dto.get_genreName());
+        assertEquals("SAMPLE", dto.getGenreId());
+        assertEquals("Sample", dto.getGenreName());
         assertTrue(dto.getLink("self").isPresent());
     }
 }
-

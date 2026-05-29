@@ -9,11 +9,11 @@ import org.springframework.hateoas.RepresentationModel;
 @Getter
 public class GenreResponseDTO extends RepresentationModel<GenreResponseDTO> {
 
-    private final String _genreId;
-    private final String _genreName;
+    private final String genreId;
+    private final String genreName;
 
     public GenreResponseDTO(String genreId, String genreName) {
-        this._genreId = genreId;
-        this._genreName = genreName;
+        this.genreId = genreId;
+        this.genreName = genreName;
     }
 }

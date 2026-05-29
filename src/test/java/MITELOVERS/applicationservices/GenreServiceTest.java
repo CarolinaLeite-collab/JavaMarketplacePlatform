@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class GenreServiceTest {
 
     @InjectMocks
-    private GenreService _sut;
+    private GenreService _genreService;
 
     @Mock
     private IGenreRepo _iGenreRepo;
@@ -52,7 +52,7 @@ class GenreServiceTest {
         when(_genreResponseDTOMapper.toResponseDTO(genreDouble)).thenReturn(responseDTODouble);
 
         // Act
-        GenreResponseDTO result = _sut.registerGenre(genreName);
+        GenreResponseDTO result = _genreService.registerGenre(genreName);
 
         // Assert
         assertSame(responseDTODouble, result);
@@ -71,7 +71,7 @@ class GenreServiceTest {
 
         // Act & Assert
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> _sut.registerGenre(genreName));
+                () -> _genreService.registerGenre(genreName));
 
         assertEquals("Genre already exists in the repository", exception.getMessage());
     }
@@ -89,7 +89,7 @@ class GenreServiceTest {
         when(_genreResponseDTOMapper.toResponseDTO(genreTwo)).thenReturn(dtoTwo);
 
         // Act
-        List<GenreResponseDTO> result = _sut.getAllGenres();
+        List<GenreResponseDTO> result = _genreService.getAllGenres();
 
         // Assert
         assertEquals(2, result.size());
