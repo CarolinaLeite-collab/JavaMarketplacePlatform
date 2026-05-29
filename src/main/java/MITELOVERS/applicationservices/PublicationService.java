@@ -21,6 +21,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+/**
+ * Application service responsible for retrieving publication information
+ * and converting domain objects into response DTOs.
+ */
+
 @Service
 public class PublicationService {
 
