@@ -2,7 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

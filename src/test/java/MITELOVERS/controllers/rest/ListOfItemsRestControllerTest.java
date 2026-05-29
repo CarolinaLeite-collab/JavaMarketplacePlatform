@@ -1,10 +1,10 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
-import MITELOVERS.dto.AddItemRequestDTO;
-import MITELOVERS.dto.ListOfItemsRequestDTO;
-import MITELOVERS.dto.ListOfItemsResponseDTO;
-import MITELOVERS.dto.MakeListPublicRequestDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
+import MITELOVERS.dto.request.ListOfItemsRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,7 +31,7 @@ class ListOfItemsRestControllerTest {
     private ListOfItemsService service;
 
     @Test
-    void getListsReturnsListOfItemsResponseDTOsByUserId() {
+    void getListsReturnsListByIdOfItemsResponseDTOsByUserId() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
         List<ListOfItemsResponseDTO> collection = List.of(dtoDouble);
@@ -47,14 +47,14 @@ class ListOfItemsRestControllerTest {
     }
 
     @Test
-    void getListReturnsListOfItemsResponseDTOsByListId() {
+    void getListReturnsListOfItemsResponseDTOsByListByIdId() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
 
-        when(service.getList("LOI-1234")).thenReturn(dtoDouble);
+        when(service.getListById("LOI-1234")).thenReturn(dtoDouble);
 
         //act
-        ResponseEntity<Object> result = controller.getList("LOI-1234");
+        ResponseEntity<Object> result = controller.getListById("LOI-1234");
 
         //assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -78,7 +78,7 @@ class ListOfItemsRestControllerTest {
     }
 
     @Test
-    void addItemsToListReturnsUpdatedListOfItemsResponseDTO() {
+    void addItemsToListReturnsUpdatedListOfItemResponseDTO() {
         //arrange
         ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
         AddItemRequestDTO requestDTODouble = mock(AddItemRequestDTO.class);
@@ -86,7 +86,7 @@ class ListOfItemsRestControllerTest {
         when(service.addItemToList(eq("LOI-1234"), any(AddItemRequestDTO.class))).thenReturn(dtoDouble);
 
         //act
-        ResponseEntity<Object> result = controller.addItemsToList("LOI-1234", requestDTODouble);
+        ResponseEntity<Object> result = controller.addItemToList("LOI-1234", requestDTODouble);
 
         //assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
