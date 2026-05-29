@@ -23,7 +23,7 @@ participant ":Client" as client
 participant ":Server" as server
 database "DB" as DB
 
-User -> client : access to "My Library" CONFIRMAR SSD
+User -> client : access to "My Library"
 activate client
 client -> server : GET /my-library
 activate server
