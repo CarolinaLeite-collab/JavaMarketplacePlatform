@@ -29,9 +29,6 @@ public class PublicationRestController {
 
     private final PublicationService _publicationService;
 
-    private static final Set<String> ALLOWED_SORT_FIELDS =
-            Set.of("title", "authorName", "releaseYear", "genreName");
-
     public PublicationRestController(PublicationService publicationService) {
         _publicationService = publicationService;
     }
