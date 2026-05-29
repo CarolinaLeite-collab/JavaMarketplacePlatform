@@ -25,7 +25,6 @@ jobs:
           semgrep scan \
             --config=auto \
             --error \
-            --json \
             --json --output semgrep-report.json \
             --sarif --output semgrep-report.sarif \
             --severity ERROR
