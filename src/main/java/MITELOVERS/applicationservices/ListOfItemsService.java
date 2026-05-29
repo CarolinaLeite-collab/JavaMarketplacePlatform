@@ -128,6 +128,23 @@ public class ListOfItemsService {
     }
 
     @Transactional
+    public ListOfItemsResponseDTO makePrivate(String listOfItemsId){
+        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+
+        ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
+
+        if (!list.isPrivate()) {
+
+            list.makePrivate();
+        }
+        _listOfItemsRepo.save(list);
+
+        ListOfItemsResponseDTO result = _mapper.toModel(list);
+
+        return result;
+    }
+
+    @Transactional
     public List<ListOfItemsResponseDTO> findByGenre(String genreId) {
         GenreId recGenreId = new GenreId(genreId);
 

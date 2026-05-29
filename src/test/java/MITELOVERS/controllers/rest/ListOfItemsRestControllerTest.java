@@ -109,4 +109,19 @@ class ListOfItemsRestControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(dtoDouble, result.getBody());
     }
+
+    @Test
+    void makeListPrivateReturnsUpdatedListOfItemsResponseDTO() {
+        //arrange
+        ListOfItemsResponseDTO dtoDouble = mock(ListOfItemsResponseDTO.class);
+
+        when(service.makePrivate("LOI-1234")).thenReturn(dtoDouble);
+
+        //act
+        ResponseEntity<Object> result = controller.makeListPrivate("LOI-1234");
+
+        //assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(dtoDouble, result.getBody());
+    }
 }

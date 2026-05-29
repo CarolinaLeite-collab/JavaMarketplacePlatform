@@ -108,6 +108,15 @@ class ListOfItemsTest {
     }
 
     @Test
+    void makePrivateShouldChangeVisibilityIfPublic(){
+        ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
+
+        list.makePrivate();
+
+        assertTrue(list.isPrivate());
+    }
+
+    @Test
     void getSharedUntilShouldReturnNullByDefault() {
         ListOfItems list = new ListOfItems(_user1IdDouble, new Name("Lista"), _genre1IdDouble);
 

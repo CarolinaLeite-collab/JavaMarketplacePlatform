@@ -118,4 +118,21 @@ public class ListOfItemsRestController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PatchMapping(path = "/{listId}/visibility", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> makeListPrivate(@PathVariable String listId) {
+        try {
+            ListOfItemsResponseDTO result = _listService.makePrivate(listId);
+
+            Link link = linkTo(methodOn(ListOfItemsRestController.class).getListById(listId)).withSelfRel();
+
+            result.add(link);
+
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
+        catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
