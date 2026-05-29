@@ -1,27 +1,23 @@
 package MITELOVERS.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * Data Transfer Object used to receive DirectSale data from client requests.
+ */
+
 @Getter
-@AllArgsConstructor(onConstructor_ = @JsonCreator)
+@Generated
+@AllArgsConstructor
 public class DirectSaleRequestDTO {
 
-    @JsonProperty("itemIds")
     private final List<String> itemIds;
-
-    @JsonProperty("priceAmount")
     private final Double priceValue;
-
-    @JsonProperty("priceCurrency")
     private final String priceCurrency;
-
-    @JsonProperty("timeLimitSeconds")
     private final Long timeLimitSeconds; // null = unlimited
 
 }
