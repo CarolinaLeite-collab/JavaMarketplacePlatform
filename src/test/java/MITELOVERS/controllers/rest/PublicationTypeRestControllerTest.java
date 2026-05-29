@@ -1,6 +1,7 @@
 package MITELOVERS.controllers.rest;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 class PublicationTypeRestControllerTest {
 
