@@ -3,7 +3,6 @@ package MITELOVERS.mapper;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
-import org.h2.command.dml.MergeUsing;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +24,7 @@ class PublicationTypeResponseDTOMapperTest {
         PublicationTypeResponseDTOMapper mapper = new PublicationTypeResponseDTOMapper();
 
         //Act
-        PublicationTypeResponseDTO dto = mapper.toResponseDTO(publicationType);
+        PublicationTypeResponseDTO dto = mapper.toModel(publicationType);
         //Assert
         assertEquals("BOOK", dto.getPublicationTypeId());
     }

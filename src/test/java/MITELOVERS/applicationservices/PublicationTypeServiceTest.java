@@ -47,8 +47,8 @@ class PublicationTypeServiceTest {
         when(publicationTypeRepo.findAll())
                 .thenReturn(List.of(publicationType1, publicationType2));
 
-        when(mapper.toResponseDTO(publicationType1)).thenReturn(dto1);
-        when(mapper.toResponseDTO(publicationType2)).thenReturn(dto2);
+        when(mapper.toModel(publicationType1)).thenReturn(dto1);
+        when(mapper.toModel(publicationType2)).thenReturn(dto2);
 
         //Act
         List<PublicationTypeResponseDTO> result =
@@ -84,7 +84,7 @@ class PublicationTypeServiceTest {
         when(publicationTypeRepo.ofIdentity(any()))
                 .thenReturn(Optional.of(publicationType));
 
-        when(mapper.toResponseDTO(publicationType))
+        when(mapper.toModel(publicationType))
                 .thenReturn(dto);
 
         //Act

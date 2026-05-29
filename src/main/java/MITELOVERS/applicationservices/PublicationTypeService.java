@@ -39,7 +39,7 @@ public class PublicationTypeService {
 
         for (PublicationType publicationType : publicationTypes) {
 
-            response.add (_mapper.toResponseDTO(publicationType));
+            response.add (_mapper.toModel(publicationType));
         }
 
         return response;
@@ -54,6 +54,6 @@ public class PublicationTypeService {
                         new NoSuchElementException(
                                 "PublicationType with id '" + id + "' does not exist"));
 
-        return _mapper.toResponseDTO(publicationType);
+        return _mapper.toModel(publicationType);
     }
 }
