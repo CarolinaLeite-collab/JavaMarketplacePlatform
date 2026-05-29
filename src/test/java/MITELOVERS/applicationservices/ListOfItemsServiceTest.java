@@ -127,7 +127,7 @@ class ListOfItemsServiceTest {
     }
 
     @Test
-    void makePublicReturnsPublicList() {
+    void changeVisibilityShouldMakeListPublicIfPrivate() {
         //arrange
         ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
@@ -139,6 +139,22 @@ class ListOfItemsServiceTest {
 
         //act
         ListOfItemsResponseDTO result = _service.makePublic("LOI-1234", sharedUntil);
+
+        //assert
+        assertEquals(responseDTODouble, result);
+    }
+
+    @Test
+    void changeVisibilityShouldMakeListPrivateIfPublic() {
+        //arrange
+        ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
+        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+
+        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
+        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
+
+        //act
+        ListOfItemsResponseDTO result = _service.makePrivate("LOI-1234");
 
         //assert
         assertEquals(responseDTODouble, result);

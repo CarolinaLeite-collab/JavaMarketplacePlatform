@@ -16,6 +16,9 @@ import MITELOVERS.applicationservices.PublicationService;
 import java.time.Year;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
  * REST controller responsible for exposing publication-related endpoints
  * via HTTP endpoints.
@@ -32,13 +35,9 @@ public class PublicationRestController {
         _publicationService = publicationService;
     }
 
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
             @Valid @RequestBody PublicationRequestDTO info) {
-
 
         PublicationResponseDTO publicationResponseDTO =
                 _publicationService.registerPublication(
@@ -47,6 +46,14 @@ public class PublicationRestController {
                         Year.of(info.getReleaseYear()),
                         new GenreId(info.getGenreId())
                 );
+        publicationResponseDTO.add(
+                linkTo(
+                        methodOn(PublicationRestController.class)
+                                .getPublicationById(
+                                        publicationResponseDTO.getPublicationId()
+                                )
+                ).withSelfRel()
+        );
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(publicationResponseDTO);

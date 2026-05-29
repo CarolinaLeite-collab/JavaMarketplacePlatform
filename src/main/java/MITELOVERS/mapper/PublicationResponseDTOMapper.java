@@ -1,14 +1,10 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.controllers.rest.PublicationRestController;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.dto.response.PublicationResponseDTO;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Assembles Publication domain objects into PublicationResponseDTO instances.
@@ -29,14 +25,6 @@ public class PublicationResponseDTOMapper {
                     genre.getGenre()
         );
 
-        dto.add(
-                linkTo(
-                        methodOn(PublicationRestController.class)
-                                .getPublicationById(
-                                        publication.identity().toString()
-                                )
-                ).withSelfRel()
-        );
         return dto;
     }
 }

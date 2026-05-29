@@ -5,10 +5,14 @@ import MITELOVERS.applicationservices.PublicationTypeService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for exposing publicationType-related endpoints
@@ -37,7 +41,32 @@ public class PublicationTypeRestController {
             return ResponseEntity.noContent().build();
         }
 
+        for (PublicationTypeResponseDTO publicationTypeDTO : publicationTypes) {
+
+            publicationTypeDTO.add(
+                    linkTo(
+                            methodOn(PublicationTypeRestController.class)
+                                    .getPublicationTypeById(
+                                            publicationTypeDTO.getPublicationTypeId()
+                                    )
+                    ).withSelfRel()
+            );
+        }
+
         return ResponseEntity.ok(publicationTypes);
+
+    }
+
+    @GetMapping(
+            value = "/{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PublicationTypeResponseDTO> getPublicationTypeById(
+            @PathVariable String id){
+
+        PublicationTypeResponseDTO publicationType =
+                _publicationTypeService.getPublicationTypeById(id);
+
+        return ResponseEntity.ok(publicationType);
 
     }
 

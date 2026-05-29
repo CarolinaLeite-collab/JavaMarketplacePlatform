@@ -43,6 +43,9 @@ class PublicationRestControllerTest {
         PublicationResponseDTO responseDTODouble =
                 mock(PublicationResponseDTO.class);
 
+        when(responseDTODouble.getPublicationId())
+                .thenReturn("PUB-001");
+
         when(_publicationServiceDouble.registerPublication(
                 any(Title.class),
                 any(AuthorId.class),
@@ -82,13 +85,20 @@ class PublicationRestControllerTest {
 
     @Test
     void getPublicationByIdReturnsOkResponse() {
+        //Arrange
+        PublicationResponseDTO responseDTODouble =
+                mock(PublicationResponseDTO.class);
+
+        when(_publicationServiceDouble.getPublicationById("PUB-001"))
+                .thenReturn(responseDTODouble);
+
         //Act
         ResponseEntity<PublicationResponseDTO> response =
                 _controller.getPublicationById("PUB-001");
 
         //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNull(response.getBody());
+        assertSame(responseDTODouble, response.getBody());
     }
 
     @Test
@@ -104,4 +114,6 @@ class PublicationRestControllerTest {
         //Assert
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
+
+
 }

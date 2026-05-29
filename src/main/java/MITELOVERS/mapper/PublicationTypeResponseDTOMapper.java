@@ -2,6 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,14 +10,13 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class PublicationTypeResponseDTOMapper {
+public class PublicationTypeResponseDTOMapper implements RepresentationModelAssembler<PublicationType, PublicationTypeResponseDTO> {
 
-    public PublicationTypeResponseDTO toResponseDTO(PublicationType publicationType){
+    @Override
+    public PublicationTypeResponseDTO toModel(PublicationType publicationType) {
 
         return new PublicationTypeResponseDTO(
                 publicationType.identity().toString()
         );
-
-
     }
 }
