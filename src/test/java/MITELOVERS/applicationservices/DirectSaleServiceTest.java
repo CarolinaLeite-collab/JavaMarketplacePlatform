@@ -2,13 +2,16 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
+import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.repository.IDirectSaleRepo;
-import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.repository.ILibraryRepo;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
+import MITELOVERS.dto.FilteredDSItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +37,12 @@ class DirectSaleServiceTest {
 
     @Mock
     private IItemRepo _iItemRepo;
+
+    @Mock
+    private IEditionRepo _iEditionRepo;
+
+    @Mock
+    private IPublicationRepo _iPublicationRepo;
 
     @Mock
     private IDirectSaleRepo _iDirectSaleRepo;
@@ -124,4 +133,108 @@ class DirectSaleServiceTest {
                 () -> _service.getDirectSaleById(validId));
     }
 
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldReturnSortedDTO() {
+        // Arrange
+        String genreId = "GEN-12345";
+        GenreId gid = new GenreId(genreId);
+
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = new ItemId("ABCDEF1234");
+
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(_iEditionRepo.ofIdentity(item.getEditionId())).thenReturn(Optional.of(edition));
+        when(_iPublicationRepo.ofIdentity(edition.getPublicationId())).thenReturn(Optional.of(publication));
+
+        when(publication.isByGenreId(gid)).thenReturn(true);
+
+        when(_iDirectSaleRepo.findByItemsIdSortedByPublicationDateAsc(List.of(itemId)))
+                .thenReturn(List.of(itemId));
+
+        // Act
+        FilteredDSItemsResponseDTO result =
+                _service.getDirectSaleItemsByGenreAsc(genreId);
+
+        // Assert
+        assertEquals(List.of("ABCDEF1234"), result.getItemIds());
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldThrowWhenNoMatches() {
+        // Arrange
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of());
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _service.getDirectSaleItemsByGenreAsc("GEN-12345")
+        );
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldThrowWhenItemNotFound() {
+        // Arrange
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = new ItemId("ABCDEF1234");
+
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _service.getDirectSaleItemsByGenreAsc("GEN-12345")
+        );
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldThrowWhenEditionNotFound() {
+        // Arrange
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = new ItemId("ABCDEF1234");
+        Item item = mock(Item.class);
+
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(_iEditionRepo.ofIdentity(item.getEditionId())).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _service.getDirectSaleItemsByGenreAsc("GEN-12345")
+        );
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldThrowWhenPublicationNotFound() {
+        // Arrange
+        DirectSale ds = mock(DirectSale.class);
+        ItemId itemId = new ItemId("ABCDEF1234");
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+        when(ds.getItemsId()).thenReturn(List.of(itemId));
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(_iEditionRepo.ofIdentity(item.getEditionId())).thenReturn(Optional.of(edition));
+        when(_iPublicationRepo.ofIdentity(edition.getPublicationId())).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _service.getDirectSaleItemsByGenreAsc("GEN-12345")
+        );
+    }
 }

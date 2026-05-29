@@ -2,13 +2,14 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
+import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.repository.IDirectSaleRepo;
-import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.repository.ILibraryRepo;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.DirectSaleRequestDTO;
 import MITELOVERS.dto.DirectSaleResponseDTO;
+import MITELOVERS.dto.FilteredDSItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,8 @@ public class DirectSaleService {
     private final ILibraryRepo _iLibraryRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
     private final IItemRepo _iItemRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final IEditionRepo _iEditionRepo;
     private final DirectSaleFactory _directSaleFactory;
     private final DirectSaleResponseDTOMapper _responseMapper;
 
@@ -31,12 +34,16 @@ public class DirectSaleService {
     public DirectSaleService(ILibraryRepo iLibraryRepo,
                              IDirectSaleRepo iDirectSaleRepo,
                              IItemRepo iItemRepo,
+                             IPublicationRepo iPublicationRepo,
+                             IEditionRepo iEditionRepo,
                              DirectSaleFactory directSaleFactory,
                              DirectSaleResponseDTOMapper responseMapper) {
 
         _iLibraryRepo = Objects.requireNonNull(iLibraryRepo);
         _iDirectSaleRepo = Objects.requireNonNull(iDirectSaleRepo);
         _iItemRepo = Objects.requireNonNull(iItemRepo);
+        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo);
+        _iEditionRepo = Objects.requireNonNull(iEditionRepo);
         _directSaleFactory = Objects.requireNonNull(directSaleFactory);
         _responseMapper = Objects.requireNonNull(responseMapper);
     }
@@ -100,6 +107,54 @@ public class DirectSaleService {
                 .orElseThrow(() -> new NoSuchElementException("DirectSale not found"));
 
         return _responseMapper.toResponseDTO(directSale);
+    }
+
+    //-----------------------
+    // Filtered Direct Sales
+    //-----------------------
+    private List<ItemId> filterItemsByGenre(GenreId genreId) {
+
+        List<ItemId> result = new ArrayList<>();
+
+        for (DirectSale directSale : _iDirectSaleRepo.findAll()) {
+
+            for (ItemId itemId : directSale.getItemsId()) {
+
+                Item item = _iItemRepo.ofIdentity(itemId)
+                        .orElseThrow(() -> new IllegalStateException("Item not found"));
+
+                Edition edition = _iEditionRepo.ofIdentity(item.getEditionId())
+                        .orElseThrow(() -> new IllegalStateException("Edition not found"));
+
+                Publication publication = _iPublicationRepo.ofIdentity(edition.getPublicationId())
+                        .orElseThrow(() -> new IllegalStateException("Publication not found"));
+
+                if (publication.isByGenreId(genreId)) {
+                    result.add(itemId);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public FilteredDSItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
+
+        GenreId gid = new GenreId(genreId);
+
+        List<ItemId> filtered = filterItemsByGenre(gid);
+
+        if (filtered.isEmpty()) {
+            throw new IllegalStateException("No matching DirectSales");
+        }
+
+        List<String> sorted = _iDirectSaleRepo
+                .findByItemsIdSortedByPublicationDateAsc(filtered)
+                .stream()
+                .map(ItemId::toString)
+                .toList();
+
+        return new FilteredDSItemsResponseDTO(sorted);
     }
 
 }
