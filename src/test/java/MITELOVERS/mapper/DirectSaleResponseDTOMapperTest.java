@@ -44,7 +44,7 @@ class DirectSaleResponseDTOMapperTest {
         DirectSaleResponseDTO dto = mapper.toResponseDTO(directSale);
 
         assertEquals("DS-ABC12345", dto.getDirectSaleId());
-        assertEquals(List.of("ABCDEF1234"), dto.getItemsId());
+        assertEquals(List.of("ABCDEF1234"), dto.getItemIds());
         assertEquals(10.0, dto.getPriceValue());
         assertEquals("EUR", dto.getPriceCurrency());
         assertEquals(3600L, dto.getTimeLimitSeconds());

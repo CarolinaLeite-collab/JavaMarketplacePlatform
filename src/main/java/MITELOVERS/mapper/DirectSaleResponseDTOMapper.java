@@ -28,6 +28,13 @@ public class DirectSaleResponseDTOMapper {
         dto.add(
                 linkTo(
                         methodOn(DirectSaleRestController.class)
+                                .createDirectSale(null)
+                ).withRel("createDirectSale")
+        );
+
+        dto.add(
+                linkTo(
+                        methodOn(DirectSaleRestController.class)
                                 .getDirectSaleById(directSale.identity().toString())
                 ).withSelfRel()
         );
