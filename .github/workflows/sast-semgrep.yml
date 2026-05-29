@@ -25,7 +25,9 @@ jobs:
           semgrep scan \
             --config=auto \
             --json --output semgrep-report.json \
-            --severity ERROR
+            --severity ERROR \
+            --error
+            src/ 
 
       - name: Upload Semgrep JSON report
         uses: actions/upload-artifact@v4.6.2
