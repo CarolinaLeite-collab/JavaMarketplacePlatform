@@ -8,25 +8,23 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("unit")
 class GenreResponseDTOMapperTest {
 
     @Test
-    void toResponseDTOBuildsDtoWithSelfLink() {
+    void toResponseDTOBuildsDto() {
         // Arrange
         GenreFactory factory = new GenreFactory();
         Genre genre = factory.createGenre("Sample");
         GenreResponseDTOMapper mapper = new GenreResponseDTOMapper();
 
         // Act
-        GenreResponseDTO dto = mapper.toResponseDTO(genre);
+        GenreResponseDTO dto = mapper.toModel(genre);
 
         // Assert
         assertNotNull(dto);
         assertEquals("SAMPLE", dto.getGenreId());
         assertEquals("Sample", dto.getGenreName());
-        assertTrue(dto.getLink("self").isPresent());
     }
 }

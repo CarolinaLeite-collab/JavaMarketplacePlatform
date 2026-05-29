@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +42,6 @@ class GenreRestControllerTest {
     void registerGenreAndReturnDTO() throws Exception {
         // Arrange
         GenreResponseDTO dto = new GenreResponseDTO("SAMPLE", "Sample");
-        dto.add(Link.of("http://localhost/genres/SAMPLE").withSelfRel());
 
         when(_genreService.registerGenre("Sample")).thenReturn(dto);
 
@@ -61,7 +59,6 @@ class GenreRestControllerTest {
     void getAllGenresReturnsList() throws Exception {
         // Arrange
         GenreResponseDTO dto = new GenreResponseDTO("SAMPLE", "Sample");
-        dto.add(Link.of("http://localhost/genres/SAMPLE").withSelfRel());
 
         when(_genreService.getAllGenres()).thenReturn(List.of(dto));
 

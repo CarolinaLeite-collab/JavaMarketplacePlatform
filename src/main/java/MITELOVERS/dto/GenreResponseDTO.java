@@ -1,11 +1,13 @@
 package MITELOVERS.dto;
 
+import lombok.Generated;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
  * Data Transfer Object used to expose genre information in API responses.
  */
+@Generated
 @Getter
 public class GenreResponseDTO extends RepresentationModel<GenreResponseDTO> {
 

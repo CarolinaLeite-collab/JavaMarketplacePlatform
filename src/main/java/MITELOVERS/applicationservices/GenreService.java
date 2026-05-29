@@ -36,7 +36,7 @@ public class GenreService {
 
         Genre savedGenre = _iGenreRepo.save(newGenre);
 
-        return _genreResponseDTOMapper.toResponseDTO(savedGenre);
+        return _genreResponseDTOMapper.toModel(savedGenre);
     }
 
     public List<GenreResponseDTO> getAllGenres() {
@@ -45,10 +45,9 @@ public class GenreService {
         List<GenreResponseDTO> response = new ArrayList<>();
 
         for (Genre genre : genres) {
-            response.add(_genreResponseDTOMapper.toResponseDTO(genre));
+            response.add(_genreResponseDTOMapper.toModel(genre));
         }
 
         return response;
     }
 }
-

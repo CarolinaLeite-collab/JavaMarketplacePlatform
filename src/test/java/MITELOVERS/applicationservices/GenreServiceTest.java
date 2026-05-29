@@ -49,7 +49,7 @@ class GenreServiceTest {
         when(genreDouble.identity()).thenReturn(genreIdDouble);
         when(_iGenreRepo.containsOfIdentity(genreIdDouble)).thenReturn(false);
         when(_iGenreRepo.save(genreDouble)).thenReturn(genreDouble);
-        when(_genreResponseDTOMapper.toResponseDTO(genreDouble)).thenReturn(responseDTODouble);
+        when(_genreResponseDTOMapper.toModel(genreDouble)).thenReturn(responseDTODouble);
 
         // Act
         GenreResponseDTO result = _genreService.registerGenre(genreName);
@@ -85,8 +85,8 @@ class GenreServiceTest {
         GenreResponseDTO dtoTwo = mock(GenreResponseDTO.class);
 
         when(_iGenreRepo.findAll()).thenReturn(List.of(genreOne, genreTwo));
-        when(_genreResponseDTOMapper.toResponseDTO(genreOne)).thenReturn(dtoOne);
-        when(_genreResponseDTOMapper.toResponseDTO(genreTwo)).thenReturn(dtoTwo);
+        when(_genreResponseDTOMapper.toModel(genreOne)).thenReturn(dtoOne);
+        when(_genreResponseDTOMapper.toModel(genreTwo)).thenReturn(dtoTwo);
 
         // Act
         List<GenreResponseDTO> result = _genreService.getAllGenres();
