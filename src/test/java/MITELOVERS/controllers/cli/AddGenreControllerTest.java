@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class AddGenreControllerTest {
 
     @InjectMocks
-    private AddGenreController _sut;
+    private AddGenreController _controller;
 
     @Mock
     private GenreService _genreService;
@@ -35,7 +35,7 @@ class AddGenreControllerTest {
         when(_genreService.registerGenre(genreName)).thenReturn(responseDTODouble);
 
         // Act
-        GenreResponseDTO result = _sut.addGenre(genreName);
+        GenreResponseDTO result = _controller.addGenre(genreName);
 
         // Assert
         assertSame(responseDTODouble, result);
@@ -52,7 +52,7 @@ class AddGenreControllerTest {
 
         // Act & Assert
         IllegalStateException exception = assertThrows(IllegalStateException.class,
-                () -> _sut.addGenre(genreName));
+                () -> _controller.addGenre(genreName));
 
         assertEquals("Genre already exists in the repository", exception.getMessage());
         verify(_genreService).registerGenre(genreName);
