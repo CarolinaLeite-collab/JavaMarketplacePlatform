@@ -1,7 +1,6 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.LibraryService;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.ItemDetailsDTO;
 import org.springframework.stereotype.Controller;
 
@@ -29,7 +28,7 @@ public class ListOfItemsInMyLibraryController {
         _libraryService = libraryService;
     }
 
-    public List<ItemDetailsDTO> getListOfItemInfoInMyLibrary(UserId userId) {
+    public List<ItemDetailsDTO> getListOfItemInfoInMyLibrary(String userId) {
         return _libraryService.getListOfItemInfoInMyLibraryFull(userId);
 
     }
