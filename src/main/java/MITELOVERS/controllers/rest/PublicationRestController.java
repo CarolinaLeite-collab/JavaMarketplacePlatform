@@ -1,5 +1,6 @@
 package MITELOVERS.controllers.rest;
 
+import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
@@ -30,7 +31,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PublicationRestController {
 
     private final PublicationService _publicationService;
-
     public PublicationRestController(PublicationService publicationService) {
         _publicationService = publicationService;
     }
@@ -39,13 +39,16 @@ public class PublicationRestController {
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
             @Valid @RequestBody PublicationRequestDTO info) {
 
-        PublicationResponseDTO publicationResponseDTO =
+        Publication publication =
                 _publicationService.registerPublication(
                         new Title(info.getTitle()),
                         new AuthorId(info.getAuthorId()),
                         Year.of(info.getReleaseYear()),
                         new GenreId(info.getGenreId())
                 );
+        PublicationResponseDTO publicationResponseDTO =
+                _publicationService.getPublicationResponseDTO(publication);
+
         publicationResponseDTO.add(
                 linkTo(
                         methodOn(PublicationRestController.class)
@@ -69,6 +72,14 @@ public class PublicationRestController {
             return ResponseEntity.noContent().build();
         }
 
+        publications.forEach(publication ->
+                publication.add(
+                        linkTo(methodOn(PublicationRestController.class)
+                                .getPublicationById(publication.getPublicationId()))
+                                .withSelfRel()
+                )
+        );
+
         return ResponseEntity.ok(publications);
     }
 
@@ -80,6 +91,12 @@ public class PublicationRestController {
 
         PublicationResponseDTO publication =
                 _publicationService.getPublicationById(id);
+
+        publication.add(
+                linkTo(methodOn(PublicationRestController.class)
+                        .getPublicationById(publication.getPublicationId()))
+                        .withSelfRel()
+        );
 
         return ResponseEntity.ok(publication);
     }

@@ -1,6 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.request.PublicationRequestDTO;
@@ -31,27 +32,32 @@ class PublicationRestControllerTest {
     PublicationService _publicationServiceDouble;
 
     @Test
-    void registerPublicationAndReturnDTOReturnsCreatedResponse() {
-        // Arrange
+    void registerPublicationAndReturnResponseDTO() {
+        //Arrange
         PublicationRequestDTO requestDTO = new PublicationRequestDTO(
                 "Photomaton & Vox",
                 "HERBERTO_HELDER",
                 1979,
-                "p4"
+                "PROSE"
         );
+
+        Publication publicationDouble = mock(Publication.class);
 
         PublicationResponseDTO responseDTODouble =
                 mock(PublicationResponseDTO.class);
-
-        when(responseDTODouble.getPublicationId())
-                .thenReturn("PUB-001");
 
         when(_publicationServiceDouble.registerPublication(
                 any(Title.class),
                 any(AuthorId.class),
                 any(Year.class),
                 any(GenreId.class)
-        )).thenReturn(responseDTODouble);
+        )).thenReturn(publicationDouble);
+
+        when(_publicationServiceDouble.getPublicationResponseDTO(publicationDouble))
+                .thenReturn(responseDTODouble);
+
+        when(responseDTODouble.getPublicationId())
+                .thenReturn("PUB-001");
 
         // Act
         ResponseEntity<PublicationResponseDTO> response =
