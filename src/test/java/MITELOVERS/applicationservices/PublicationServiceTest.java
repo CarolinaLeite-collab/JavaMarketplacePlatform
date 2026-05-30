@@ -62,23 +62,13 @@ class PublicationServiceTest {
 
     @Test
     void registerPublicationCallsRepoWithCorrectArguments() {
-
-        //Arrange
+        // Arrange
         Year yearDouble = mock(Year.class);
         Title titleDouble = mock(Title.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         GenreId genreIdDouble = mock(GenreId.class);
         Publication publicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
-        Author authorDouble = mock(Author.class);
-        Genre genreDouble = mock(Genre.class);
-        PublicationResponseDTO responseDTODouble = mock(PublicationResponseDTO.class);
-
-        when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                .thenReturn(Optional.of(authorDouble));
-
-        when(_iGenreRepoDouble.ofIdentity(genreIdDouble))
-                .thenReturn(Optional.of(genreDouble));
 
         when(_publicationFactoryDouble.createPublication(
                 titleDouble,
@@ -96,22 +86,16 @@ class PublicationServiceTest {
         when(_iPublicationRepoDouble.save(publicationDouble))
                 .thenReturn(publicationDouble);
 
-        when(_publicationResponseDTOMapper.toResponseDTO(
-                publicationDouble,
-                authorDouble,
-                genreDouble
-        )).thenReturn(responseDTODouble);
-
-        //Act
-        PublicationResponseDTO result = _service.registerPublication(
+        // Act
+        Publication result = _service.registerPublication(
                 titleDouble,
                 authorIdDouble,
                 yearDouble,
                 genreIdDouble
         );
 
-        //Assert
-        assertSame(responseDTODouble, result);
+        // Assert
+        assertSame(publicationDouble, result);
     }
 
     @Test
@@ -208,14 +192,6 @@ class PublicationServiceTest {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication publicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
-        Genre genreDouble = mock(Genre.class);
-        Author authorDouble = mock(Author.class);
-
-        when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                .thenReturn(Optional.of(authorDouble));
-
-        when(_iGenreRepoDouble.ofIdentity(genreIdDouble))
-                .thenReturn(Optional.of(genreDouble));
 
         when(_publicationFactoryDouble.createPublication(
                 titleDouble,
@@ -243,52 +219,6 @@ class PublicationServiceTest {
 
         //Assert
         assertEquals(publicationAlreadyExistsExceptionMessage, exception.getMessage());
-    }
-
-    @Test
-    void registerPublicationThrowsWhenGenreIdDoesntExists() {
-
-        //Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year yearDouble = mock(Year.class);
-        GenreId genreIdDouble = mock(GenreId.class);
-        Author authorDouble = mock(Author.class);
-
-        when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                .thenReturn(Optional.of(authorDouble));
-
-        when(_iGenreRepoDouble.ofIdentity(genreIdDouble))
-                .thenReturn(Optional.empty());
-
-        //Act
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble)
-        );
-
-        //Assert
-        assertEquals(genreIdDoesntExistExceptionMessage, exception.getMessage());
-    }
-
-    @Test
-    void registerPublicationThrowsWhenAuthorIdDoesntExists() {
-
-        //Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year yearDouble = mock(Year.class);
-        GenreId genreIdDouble = mock(GenreId.class);
-
-        when(_iAuthorRepoDouble.ofIdentity(authorIdDouble))
-                .thenReturn(Optional.empty());
-
-        //Act
-        NoSuchElementException exception = assertThrows(NoSuchElementException.class, () ->
-                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble)
-        );
-
-        //Assert
-        assertEquals(authorIdDoesntExistExceptionMessage, exception.getMessage());
     }
 
     @Test
@@ -373,10 +303,7 @@ class PublicationServiceTest {
         );
 
         // Assert
-        assertEquals(
-                "Author with id '" + authorIdDouble + "' does not exist",
-                exception.getMessage()
-        );
+        assertEquals(authorIdDoesntExistExceptionMessage, exception.getMessage());
     }
 
     @Test
@@ -411,10 +338,7 @@ class PublicationServiceTest {
         );
 
         // Assert
-        assertEquals(
-                "Genre with id '" + genreIdDouble + "' does not exist",
-                exception.getMessage()
-        );
+        assertEquals(genreIdDoesntExistExceptionMessage, exception.getMessage());
     }
 
     @Test
