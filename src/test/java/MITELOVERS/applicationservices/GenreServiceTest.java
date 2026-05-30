@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,13 +30,13 @@ class GenreServiceTest {
     private GenreService _genreService;
 
     @Mock
-    private IGenreRepo _iGenreRepo;
+    private IGenreRepo _iGenreRepoDouble;
 
     @Mock
-    private GenreFactory _genreFactory;
+    private GenreFactory _genreFactoryDouble;
 
     @Mock
-    private GenreResponseDTOMapper _genreResponseDTOMapper;
+    private GenreResponseDTOMapper _genreResponseDTOMapperDouble;
 
     @Test
     void registerGenreReturnsResponseDTO() {
@@ -45,11 +46,11 @@ class GenreServiceTest {
         GenreId genreIdDouble = mock(GenreId.class);
         GenreResponseDTO responseDTODouble = mock(GenreResponseDTO.class);
 
-        when(_genreFactory.createGenre(genreName)).thenReturn(genreDouble);
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
         when(genreDouble.identity()).thenReturn(genreIdDouble);
-        when(_iGenreRepo.containsOfIdentity(genreIdDouble)).thenReturn(false);
-        when(_iGenreRepo.save(genreDouble)).thenReturn(genreDouble);
-        when(_genreResponseDTOMapper.toModel(genreDouble)).thenReturn(responseDTODouble);
+        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(false);
+        when(_iGenreRepoDouble.save(genreDouble)).thenReturn(genreDouble);
+        when(_genreResponseDTOMapperDouble.toModel(genreDouble)).thenReturn(responseDTODouble);
 
         // Act
         GenreResponseDTO result = _genreService.registerGenre(genreName);
@@ -65,9 +66,9 @@ class GenreServiceTest {
         Genre genreDouble = mock(Genre.class);
         GenreId genreIdDouble = mock(GenreId.class);
 
-        when(_genreFactory.createGenre(genreName)).thenReturn(genreDouble);
+        when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
         when(genreDouble.identity()).thenReturn(genreIdDouble);
-        when(_iGenreRepo.containsOfIdentity(genreIdDouble)).thenReturn(true);
+        when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
 
         // Act & Assert
         IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -84,9 +85,9 @@ class GenreServiceTest {
         GenreResponseDTO dtoOne = mock(GenreResponseDTO.class);
         GenreResponseDTO dtoTwo = mock(GenreResponseDTO.class);
 
-        when(_iGenreRepo.findAll()).thenReturn(List.of(genreOne, genreTwo));
-        when(_genreResponseDTOMapper.toModel(genreOne)).thenReturn(dtoOne);
-        when(_genreResponseDTOMapper.toModel(genreTwo)).thenReturn(dtoTwo);
+        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(genreOne, genreTwo));
+        when(_genreResponseDTOMapperDouble.toModel(genreOne)).thenReturn(dtoOne);
+        when(_genreResponseDTOMapperDouble.toModel(genreTwo)).thenReturn(dtoTwo);
 
         // Act
         List<GenreResponseDTO> result = _genreService.getAllGenres();
@@ -95,5 +96,41 @@ class GenreServiceTest {
         assertEquals(2, result.size());
         assertSame(dtoOne, result.get(0));
         assertSame(dtoTwo, result.get(1));
+    }
+
+    @Test
+    void shouldReturnAllGenreIds(){
+        //Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        when(_iGenreRepoDouble.findAllKeys()).thenReturn(List.of(genreIdDouble));
+
+        //Act
+        Iterable<GenreId> result = _genreService.getGenresId();
+
+        List<GenreId> ids = new ArrayList<>();
+        for (GenreId genreId : result) {
+            ids.add(genreId);
+        }
+
+        //Assert
+        assertEquals(genreIdDouble, ids.get(0));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoGenreIdsExist() {
+        //Arrange
+        when(_iGenreRepoDouble.findAllKeys()).thenReturn(List.of());
+
+        //Act
+        Iterable<GenreId> result = _genreService.getGenresId();
+
+        List<GenreId> ids = new ArrayList<>();
+        for (GenreId genreId : result) {
+            ids.add(genreId);
+        }
+
+        //Assert
+        assertEquals(0, ids.size());
     }
 }
