@@ -29,9 +29,9 @@ import java.util.Objects;
 @Service
 public class PublicationService {
 
-    private IPublicationRepo _iPublicationRepo;
-    private PublicationFactory _publicationFactory;
-    private IGenreRepo _iGenreRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final PublicationFactory _publicationFactory;
+    private final IGenreRepo _iGenreRepo;
     private final IAuthorRepo _iAuthorRepo;
     private final PublicationResponseDTOMapper _publicationResponseDTOMapper;
 
