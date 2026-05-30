@@ -26,13 +26,6 @@ public class LibraryItemSummaryMapper {
                 pictureUrl
         );
 
-        dto.add(
-                linkTo(
-                        methodOn(LibraryRestController.class)
-                                .getItemDetail(item.identity().toString())
-                ).withSelfRel()
-        );
-
         return dto;
     }
 }
