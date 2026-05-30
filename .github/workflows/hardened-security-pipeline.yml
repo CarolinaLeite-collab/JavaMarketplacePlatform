@@ -62,6 +62,7 @@ jobs:
         run: |
           semgrep scan \
             --config=auto \
+            --config p/java \
             --json --output semgrep-report.json \
             --severity ERROR \
             --error \
