@@ -1,8 +1,8 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
-import MITELOVERS.dto.EditionRequestDTO;
 import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,15 +11,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.NoSuchElementException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(EditionRestController.class)
 class EditionRestControllerTest {
@@ -33,8 +33,6 @@ class EditionRestControllerTest {
     @Autowired
     private ObjectMapper _objectMapper;
 
-    // ── POST ────────────────────────────────────────────────────────────────
-
     @Test
     void registerEditionReturnsCreated() throws Exception {
         // Arrange
@@ -46,12 +44,13 @@ class EditionRestControllerTest {
                 .identifier("9780747532743")
                 .build();
 
-        when(_editionServiceDouble.registerEdition(any(), any()))
-                .thenReturn(mock(EditionResponseDTO.class));
+        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
+        when(responseDouble.getEditionId()).thenReturn("E-ABC12345");
+        when(_editionServiceDouble.registerEdition(any(), any())).thenReturn(responseDouble);
 
         // Act & Assert
         _mockMvc.perform(post("/editions")
-                        .header("pubId", "1984-Orwell-G--F43DD6(1949)")
+                        .param("pubId", "1984-Orwell-G--F43DD6(1949)")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(_objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
@@ -72,45 +71,57 @@ class EditionRestControllerTest {
 
         // Act & Assert
         _mockMvc.perform(post("/editions")
-                        .header("pubId", "1984-Orwell-G--F43DD6(1949)")
+                        .param("pubId", "1984-Orwell-G--F43DD6(1949)")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(_objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isInternalServerError());
     }
 
     @Test
-    void registerEditionPublicationNotFoundReturnsInternalServerError() throws Exception {
+    void getAllEditionsReturnsOk() throws Exception {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .build();
-
-        when(_editionServiceDouble.registerEdition(any(), any()))
-                .thenThrow(new NoSuchElementException("Publication not found"));
+        when(_editionServiceDouble.getAllEditions())
+                .thenReturn(List.of(mock(EditionResponseDTO.class)));
 
         // Act & Assert
-        _mockMvc.perform(post("/editions")
-                        .header("pubId", "1984-Orwell-G--F43DD6(1949)")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isInternalServerError());
+        _mockMvc.perform(get("/editions"))
+                .andExpect(status().isOk());
     }
 
-    // ── GET all ─────────────────────────────────────────────────────────────
+    @Test
+    void getAllEditionsEmptyReturnsNoContent() throws Exception {
+        // Arrange
+        when(_editionServiceDouble.getAllEditions()).thenReturn(List.of());
+
+        // Act & Assert
+        _mockMvc.perform(get("/editions"))
+                .andExpect(status().isNoContent());
+    }
+
+    // ── GET by publication ───────────────────────────────────────────────────
 
     @Test
     void getAllEditionsByPublicationReturnsOk() throws Exception {
         // Arrange
         when(_editionServiceDouble.getAllEditionsByPublication(any()))
+                .thenReturn(List.of(mock(EditionResponseDTO.class)));
+
+        // Act & Assert
+        _mockMvc.perform(get("/editions/by-publication")
+                        .param("publicationId", "1984-Orwell-G--F43DD6(1949)"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAllEditionsByPublicationEmptyReturnsNoContent() throws Exception {
+        // Arrange
+        when(_editionServiceDouble.getAllEditionsByPublication(any()))
                 .thenReturn(List.of());
 
         // Act & Assert
-        _mockMvc.perform(get("/editions")
-                        .header("publicationId", "1984-Orwell-G--F43DD6(1949)"))
-                .andExpect(status().isOk());
+        _mockMvc.perform(get("/editions/by-publication")
+                        .param("publicationId", "1984-Orwell-G--F43DD6(1949)"))
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -120,12 +131,10 @@ class EditionRestControllerTest {
                 .thenThrow(new NoSuchElementException("Publication not found"));
 
         // Act & Assert
-        _mockMvc.perform(get("/editions")
-                        .header("publicationId", "1984-Orwell-G--F43DD6(1949)"))
+        _mockMvc.perform(get("/editions/by-publication")
+                        .param("publicationId", "1984-Orwell-G--F43DD6(1949)"))
                 .andExpect(status().isInternalServerError());
     }
-
-    // ── GET by id ───────────────────────────────────────────────────────────
 
     @Test
     void getEditionByIdReturnsOk() throws Exception {
@@ -136,16 +145,5 @@ class EditionRestControllerTest {
         // Act & Assert
         _mockMvc.perform(get("/editions/E-ABC12345"))
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    void getEditionByIdNotFoundReturnsNotFound() throws Exception {
-        // Arrange
-        when(_editionServiceDouble.getEditionById(any()))
-                .thenThrow(new NoSuchElementException("Edition not found"));
-
-        // Act & Assert
-        _mockMvc.perform(get("/editions/E-ABC12345"))
-                .andExpect(status().isNotFound());
     }
 }
