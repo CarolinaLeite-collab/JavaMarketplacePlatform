@@ -7,8 +7,8 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.EditionRequestDTO;
 import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
 import org.springframework.stereotype.Service;
@@ -28,6 +28,7 @@ public class EditionService {
     private final IPublicationTypeRepo _iPublicationTypeRepo;
     private final EditionRequestDTOMapper _editionRequestDTOMapper;
     private final EditionResponseDTOMapper _editionResponseDTOMapper;
+
 
     public EditionService(IEditionRepo iEditionRepo, EditionFactory editionFactory,
                           IPublicationRepo iPublicationRepo, IPublishingCompanyRepo iPublishingCompanyRepo,
@@ -106,6 +107,19 @@ public class EditionService {
 
     }
 
+    public List<EditionResponseDTO> getAllEditions() {
+
+        Iterable<Edition> editions = _iEditionRepo.findAll();
+
+        List<EditionResponseDTO> response = new ArrayList<>();
+
+        for (Edition edition : editions) {
+            response.add(_editionResponseDTOMapper.toModel(edition));
+        }
+
+        return response;
+    }
+
     public List<EditionResponseDTO> getAllEditionsByPublication(String publicationId) {
 
         PublicationId pubId = new PublicationId(publicationId);
@@ -121,12 +135,10 @@ public class EditionService {
             if (edition.getPublicationId().equals(pubId)) {
                 response.add(_editionResponseDTOMapper.toModel(edition));
             }
-
         }
 
         return response;
     }
-
 
     public EditionResponseDTO getEditionById(String editionId) {
 

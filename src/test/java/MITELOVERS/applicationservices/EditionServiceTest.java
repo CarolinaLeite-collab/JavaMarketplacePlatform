@@ -12,8 +12,8 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.ISBN;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.EditionRequestDTO;
 import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -271,7 +271,6 @@ class EditionServiceTest {
         // Assert
         assertTrue(result.isEmpty());
     }
-
 
 
 
