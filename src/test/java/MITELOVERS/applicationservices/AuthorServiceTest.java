@@ -98,4 +98,20 @@ class AuthorServiceTest {
         assertSame(dtoOne, result.get(0));
         assertSame(dtoTwo, result.get(1));
     }
+
+    @Test
+    void getAuthorsIdReturnsAllAuthorIdsFromRepository() {
+        // Arrange
+        AuthorId authorIdOne = mock(AuthorId.class);
+        AuthorId authorIdTwo = mock(AuthorId.class);
+        List<AuthorId> authorIds = List.of(authorIdOne, authorIdTwo);
+
+        when(_iAuthorRepo.findAllKeys()).thenReturn(authorIds);
+
+        // Act
+        Iterable<AuthorId> result = _authorService.getAuthorsId();
+
+        // Assert
+        assertSame(authorIds, result);
+    }
 }
