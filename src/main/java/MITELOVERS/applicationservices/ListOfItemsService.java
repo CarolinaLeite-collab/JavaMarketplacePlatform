@@ -19,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Application service responsible for retrieving List of Items information
+ * and converting domain objects into response DTOs.
+ */
+
 @Service
 @AllArgsConstructor
 public class ListOfItemsService {

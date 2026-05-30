@@ -16,6 +16,10 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller responsible for exposing List of Items-related endpoints
+ * via HTTP endpoints.
+ */
 
 @RestController
 @RequestMapping("my-lists")
