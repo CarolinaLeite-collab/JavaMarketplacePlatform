@@ -44,7 +44,8 @@ class LibraryRestControllerTest {
 
         // Assert
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self").exists());
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._embedded.libraryItemSummaryDTOList[0]._links.self").exists());
     }
 
     @Test
@@ -71,13 +72,15 @@ class LibraryRestControllerTest {
                 .header("X-User-Id", "naoexiste@aeiou.com"));
 
         // Assert
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
     }
 
     @Test
     void shouldReturn400WhenEmailIsInvalid() throws Exception {
         // Arrange
-        // email inválido lança IllegalArgumentException → 400
+        when(libraryService.getListOfItemInfoInMyLibrary("invalid-email"))
+                .thenThrow(new IllegalArgumentException("Invalid email"));
 
         // Act
         var result = mockMvc.perform(get("/my-library/publications")
@@ -89,8 +92,6 @@ class LibraryRestControllerTest {
 
     @Test
     void shouldReturn400WhenHeaderIsMissing() throws Exception {
-        // Arrange
-        // sem header X-User-Id
 
         // Act
         var result = mockMvc.perform(get("/my-library/publications"));
@@ -98,10 +99,6 @@ class LibraryRestControllerTest {
         // Assert
         result.andExpect(status().isBadRequest());
     }
-
-    // ----------------------------------------------------------------
-    // GET /my-library/publications/{itemId}
-    // ----------------------------------------------------------------
 
     @Test
     void shouldReturn200WithItemDetailsWhenItemExists() throws Exception {
@@ -117,7 +114,8 @@ class LibraryRestControllerTest {
         var result = mockMvc.perform(get("/my-library/publications/3C5D126F8B"));
 
         // Assert
-        result.andExpect(status().isOk());
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
     }
 
     @Test
