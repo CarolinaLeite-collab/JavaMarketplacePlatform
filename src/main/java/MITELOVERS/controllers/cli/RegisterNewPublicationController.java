@@ -1,5 +1,8 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.AuthorService;
+import MITELOVERS.applicationservices.GenreService;
+import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
@@ -25,36 +28,37 @@ import java.util.Objects;
 @Controller
 public class RegisterNewPublicationController {
 
-    private IPublicationRepo _iPublicationRepo;
-    private PublicationFactory _publicationFactory;
-    private IAuthorRepo _iAuthorRepo;
-    private IGenreRepo _iGenreRepo;
+    private PublicationService _publicationService;
+    private final AuthorService _authorService;
+    private final GenreService _genreService;
 
-    public RegisterNewPublicationController(IPublicationRepo iPublicationRepo, PublicationFactory publicationFactory, IAuthorRepo iAuthorRepo, IGenreRepo iGenreRepo) {
-        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo, "publicationRepo is required");
-        _publicationFactory = Objects.requireNonNull(publicationFactory, "publicationFactory is required");
-        _iAuthorRepo =  Objects.requireNonNull(iAuthorRepo, "authorRepo is required");
-        _iGenreRepo = Objects.requireNonNull(iGenreRepo, "genreRepo is required");
+    public RegisterNewPublicationController(PublicationService publicationService,
+                                            AuthorService authorService,
+                                            GenreService genreService) {
+
+        _publicationService = Objects.requireNonNull(publicationService, "PublicationService is required");
+        _authorService = Objects.requireNonNull(authorService, "AuthorService is required");
+        _genreService = Objects.requireNonNull(genreService, "GenreService is required");
     }
 
-    public Iterable<AuthorId> getAuthorsId(){
-
-        return _iAuthorRepo.findAllKeys();
+    public Iterable<AuthorId> getAuthorsId() {
+        return _authorService.getAuthorsId();
     }
 
-    public Iterable <GenreId> getGenresId(){
-
-        return _iGenreRepo.findAllKeys();
+    public Iterable<GenreId> getGenresId() {
+        return _genreService.getGenresId();
     }
 
+    public Publication registerPublication(Title title,
+                                           AuthorId authorId,
+                                           Year releaseYear,
+                                           GenreId genreId) {
 
-    public Publication registerPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId) {
-
-        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
-
-        if (_iPublicationRepo.containsOfIdentity(newPublication.identity())){
-            throw new IllegalArgumentException("Publication already exists in the repository");
-        }
-        return _iPublicationRepo.save(newPublication);
+        return _publicationService.registerPublication(
+                title,
+                authorId,
+                releaseYear,
+                genreId
+        );
     }
 }
