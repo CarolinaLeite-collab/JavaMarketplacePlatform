@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.dto.EditionResponseDTO;
 import MITELOVERS.applicationservices.EditionService;
+import MITELOVERS.dto.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

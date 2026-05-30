@@ -9,7 +9,6 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 

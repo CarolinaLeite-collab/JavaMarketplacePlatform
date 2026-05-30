@@ -4,7 +4,6 @@ import MITELOVERS.applicationservices.ItemService;
 import MITELOVERS.domain.valueobject.Condition;
 import MITELOVERS.domain.valueobject.Description;
 import MITELOVERS.domain.valueobject.EditionId;
-import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.dto.ItemRequestDTO;
 import MITELOVERS.dto.ItemResponseDTO;
 import jakarta.validation.Valid;

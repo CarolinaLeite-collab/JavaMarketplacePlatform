@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.RegisterPublishingCompanyController;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;

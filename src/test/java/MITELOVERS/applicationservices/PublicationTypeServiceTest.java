@@ -3,7 +3,6 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
@@ -19,7 +18,8 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PublicationTypeServiceTest {

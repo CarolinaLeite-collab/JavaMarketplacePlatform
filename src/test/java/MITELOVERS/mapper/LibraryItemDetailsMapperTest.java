@@ -3,7 +3,10 @@ package MITELOVERS.mapper;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ISBN;
+import MITELOVERS.domain.valueobject.ISSN;
+import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.NoIdentifier;
 import MITELOVERS.dto.LibraryItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 

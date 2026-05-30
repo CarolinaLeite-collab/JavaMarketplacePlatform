@@ -1,8 +1,8 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.AuthorService;
-import MITELOVERS.dto.request.AuthorRequestDTO;
 import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.request.AuthorRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

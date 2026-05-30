@@ -7,9 +7,6 @@ import MITELOVERS.domain.valueobject.Picture;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

@@ -1,5 +1,6 @@
 package MITELOVERS.controllers.rest;
 
+import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import MITELOVERS.applicationservices.PublicationService;
 
 import java.time.Year;
 import java.util.List;

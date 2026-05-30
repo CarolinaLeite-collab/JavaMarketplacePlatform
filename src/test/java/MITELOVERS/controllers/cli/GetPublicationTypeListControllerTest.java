@@ -1,9 +1,7 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.GetPublicationTypeListController;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

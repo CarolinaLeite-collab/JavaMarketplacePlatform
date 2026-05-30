@@ -1,12 +1,12 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
-import MITELOVERS.applicationservices.PublicationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,9 +18,11 @@ import org.springframework.http.ResponseEntity;
 import java.time.Year;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PublicationRestControllerTest {

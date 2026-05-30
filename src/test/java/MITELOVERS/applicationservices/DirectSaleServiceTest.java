@@ -11,7 +11,6 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +22,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;

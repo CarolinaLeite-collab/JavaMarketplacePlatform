@@ -2,8 +2,8 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

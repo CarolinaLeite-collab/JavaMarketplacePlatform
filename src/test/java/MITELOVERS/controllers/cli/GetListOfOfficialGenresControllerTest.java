@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.GetListOfOfficialGenresController;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;

@@ -1,8 +1,6 @@
 package MITELOVERS.controllers.exception;
 
 import org.springframework.http.HttpStatus;
-import java.util.Arrays;
-import java.util.List;
 
 public class ApiError {
 

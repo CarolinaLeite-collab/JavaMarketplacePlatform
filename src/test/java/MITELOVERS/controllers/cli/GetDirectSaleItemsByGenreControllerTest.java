@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.GetDirectSaleItemsByGenreController;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
@@ -9,7 +8,10 @@ import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.PublicationId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

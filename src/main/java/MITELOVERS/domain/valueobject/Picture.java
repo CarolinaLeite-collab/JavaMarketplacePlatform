@@ -1,6 +1,5 @@
 package MITELOVERS.domain.valueobject;
 
-import MITELOVERS.ddd.DomainId;
 import MITELOVERS.ddd.ValueObject;
 
 /**
