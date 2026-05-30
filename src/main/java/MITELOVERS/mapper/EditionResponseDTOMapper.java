@@ -1,14 +1,10 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.controllers.rest.EditionRestController;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.dto.DimensionDTO;
 import MITELOVERS.dto.EditionResponseDTO;
 import MITELOVERS.dto.WeightDTO;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * Assembles Edition domain objects into EditionResponseDTO instances.
@@ -17,12 +13,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class EditionResponseDTOMapper {
 
-    public EditionResponseDTO toModel (Edition edition) {
+    public EditionResponseDTO toModel(Edition edition) {
 
         EditionResponseDTO dto = EditionResponseDTO.builder()
 
                 .editionId(edition.getEditionId().toString())
-                .typeId(edition.getPublicationTypeId().toString())
+                .publicationTypeId(edition.getPublicationTypeId().toString())
                 .identifier(edition.getIdentifier().toString())
                 .publicationId(edition.getPublicationId().toString())
                 .publishingCompanyId(edition.getPublishingCompanyId().toString())
@@ -46,13 +42,6 @@ public class EditionResponseDTOMapper {
                 .editionNumber(edition.getEditionNumber() != null ? edition.getEditionNumber().getValue() : null)
                 .binding(edition.getBinding() != null ? edition.getBinding().toString() : null)
                 .build();
-
-        dto.add(
-                linkTo(
-                        methodOn(EditionRestController.class)
-                                .getEditionById(edition.identity().toString())
-                ).withSelfRel()
-        );
 
         return dto;
 

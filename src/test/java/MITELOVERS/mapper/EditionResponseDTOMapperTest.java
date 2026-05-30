@@ -63,7 +63,7 @@ class EditionResponseDTOMapperTest {
         // Assert
         assertAll(
                 () -> assertEquals("E-ABC12345", result.getEditionId()),
-                () -> assertEquals("BOOK", result.getTypeId()),
+                () -> assertEquals("BOOK", result.getPublicationTypeId()),
                 () -> assertEquals("9780747532743", result.getIdentifier()),
                 () -> assertEquals("Clean Code - Martin R.U.-ABC123 (2008)", result.getPublicationId()),
                 () -> assertEquals("PRENTICE HALL", result.getPublishingCompanyId()),
@@ -184,16 +184,4 @@ class EditionResponseDTOMapperTest {
         assertEquals("Hardcover binding", result.getBinding());
     }
 
-    @Test
-    void toModelAddsSelfLink() {
-        //Arrange & SUT
-        EditionResponseDTOMapper _responseDTOMapper = new EditionResponseDTOMapper();
-
-        // Act
-        EditionResponseDTO result = _responseDTOMapper.toModel(_editionDouble);
-
-        // Assert
-        assertTrue(result.hasLinks());
-        assertTrue(result.getLink("self").isPresent());
-    }
 }

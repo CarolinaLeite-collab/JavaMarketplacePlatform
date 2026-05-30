@@ -14,7 +14,8 @@ import org.springframework.hateoas.RepresentationModel;
 @Builder
 public class EditionResponseDTO extends RepresentationModel<EditionResponseDTO> {
 
-    private final String typeId;
+
+    private final String publicationTypeId;
     private final String identifier;
     private final String publicationId;
     private final String publishingCompanyId;
