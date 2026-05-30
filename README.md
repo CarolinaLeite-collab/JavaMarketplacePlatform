@@ -173,6 +173,9 @@ The pipeline triggers automatically on:
 - Every pull request targeting `main`, `b3`, or `b4`
 
 For that, we defined three different GitHub worflows:
+  - Notify Discord on PR Creation
+  - Notify Discord on PR Merge
+  - Hardened Security Pipeline
 
 ___
 
@@ -255,35 +258,102 @@ jobs:
           ${{ secrets.DISCORD_WEBHOOK }}
 ```
 
-### Run Tests on Pull Request
+### Hardened Security Pipeline
 
-On each Pull Request trigger, the pipeline runs `mvn clean verify` which compiles the code, executes all tests and enforces the test line coverage threshold.
+This workflow, comprised of several jobs, seeks to enforce a propper running order for several tasks.
 
-To follow good DevOps practices, it also archives the JaCoCo coverage report in HTML format. 
+Its consists of: 
+  - Gitleaks - to ensure secret detection
+  - Semgrep - to implement a SAST scan
+  - Jacoco - to verify coverage on code tests
 
-To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
 
-![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
-
-The project's GitHub workflow:
-
+The full pipeline is configured as follows:
 ```yaml
-name: Run Tests on Pull Request
+name: Hardened Security Pipeline
 
 on:
   pull_request:
-    branches: [ main, b3, b4 ]
+    branches:
+      - main
+      - b3
+      - b4
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.27.2/gitleaks_8.27.2_linux_x64.tar.gz
+          tar -xzf gitleaks_8.27.2_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+          gitleaks version
+
+      - name: Run Gitleaks
+        run: |
+          gitleaks detect \
+            --source . \
+            --report-format json \
+            --report-path gitleaks-report.json \
+            --exit-code 1
+
+      - name: Upload Gitleaks report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+
+  semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    container:
+      image: semgrep/semgrep
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan (JSON report)
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config p/java \
+            --json --output semgrep-report.json \
+            --severity ERROR \
+            --error \
+            src/ 
+
+      - name: Upload Semgrep JSON report
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: semgrep-sast-report
+          path: semgrep-report.json
+
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
+    needs: semgrep-sast
+
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -313,22 +383,9 @@ jobs:
 
 Besides the steps already covered, we created an environment variable `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`, that forces all JavaScript-based actions (checkout, setup-java, upload-artifact) to run on Node.js 24 instead of the deprecated Node.js 20, removing the deprecation warning.
 
-Additionally, a permissions block was added:
+### Secret Detection with `Gitleaks`
 
-- `contents`: read — allows the workflow to clone/read the repository contents;
-- `pull-requests`: write — allows the workflow to post comments on the PR (needed for the JaCoCo coverage comment).
-
----
-
-## Secret Detection  with `Gitleaks`
-
-To improve the security of the development workflow, a dedicated GitHub Actions workflow was added to detect accidentally committed secrets.
-
-The workflow is defined in:
-
-```text
-.github/workflows/secret-detection.yml
-```
+To improve the security of the development workflow, a dedicated job was added to the Hardened Security Pipeline workflow, to detect accidentally committed secrets.
 
 It is automatically triggered on every Pull Request targeting:
 
@@ -338,7 +395,7 @@ b3
 b4
 ```
 
-The workflow performs the following steps:
+The job performs the following steps:
 
 1. Checks out the complete repository history (`fetch-depth: 0`);
 2. Installs Gitleaks on the GitHub runner;
@@ -346,19 +403,9 @@ The workflow performs the following steps:
 4. Generates a JSON report containing all findings;
 5. Uploads the report as a GitHub Actions artifact.
 
-Workflow definition:
+Job definition:
 
 ```yaml
-name: Secret Detection
-
-on:
-  pull_request:
-    branches:
-      - main
-      - b3
-      - b4
-
-jobs:
   gitleaks:
     runs-on: ubuntu-latest
 
@@ -390,7 +437,7 @@ jobs:
           path: gitleaks-report.json
 ```
 
-The option `--exit-code 1` ensures that the workflow fails whenever a secret is detected, preventing insecure code from being merged.
+The option `--exit-code 1` ensures that the job fails whenever a secret is detected, preventing insecure code from being merged.
 
 Examples of information that Gitleaks can detect include:
 
@@ -401,9 +448,115 @@ Examples of information that Gitleaks can detect include:
 - Cloud provider credentials;
 - Hardcoded secrets.
 
-A validation test was performed by introducing a fake secret into a temporary file. 
+A validation test was performed by introducing a fake secret into a temporary file.
 Gitleaks correctly detected the secret and failed the pipeline. Even after the file was deleted, the pipeline continued to fail because the secret remained in the Git history. This confirmed that Gitleaks scans the full commit history (`fetch-depth: 0`) and not only the current contents of the repository.
 ![Gitleaks Secret Detection Test](docs/readme-printscreens/gitleaks-secret-detection-test.png)
+---
+
+
+### Static Code Analysis and Security Checks with Semgrep
+
+Semgrep was integrated into the CI pipeline as a static application security testing (SAST) stage to automatically detect security issues and bad practices in the Java codebase on every pull request targeting main, b3 or b4.
+
+The workflow runs after the secret-detection job, using the official Semgrep container to scan only the `src/` directory with the `--config=auto`, as well as `--config p/java` rulesets, which applies a curated set of language-aware security and correctness rules, also applying specifically to Java.
+
+```yaml
+ semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    container:
+      image: semgrep/semgrep
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan (JSON report)
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config p/java \
+            --json --output semgrep-report.json \
+            --severity ERROR \
+            --error \
+            src/ 
+
+      - name: Upload Semgrep JSON report
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: semgrep-sast-report
+          path: semgrep-report.json
+```
+The scan is configured with `--severity ERROR` and `--error`, meaning any finding at error level causes the job to fail, turning security findings into a hard quality gate.
+
+Additionally, the job produces a JSON report (`semgrep-report.json`) that is uploaded as a pipeline artifact, which allows inspection of the detailed results for each run.
+
+By chaining Semgrep after Gitleaks and before the build-and-test stage, the pipeline ensures that obvious secret leaks, insecure coding patterns, and high‑severity vulnerabilities are caught early, making security an integral part of the DevSecOps workflow rather than a late, manual step.
+
+The job's validation was tested with the temporary addition of a file containing SQL injection, which caused the PR to fail during Semgrep scan:
+![semgrep-pr-fail.png](docs/readme-printscreens/semgrep-pr-fail.png)
+![semgrep-pr-fail-report.png](docs/readme-printscreens/semgrep-pr-fail-report.png)
+---
+
+### Run Tests on Pull Request
+
+On each Pull Request trigger, the pipeline runs `mvn clean verify` which compiles the code, executes all tests and enforces the test line coverage threshold.
+
+To follow good DevOps practices, it also archives the JaCoCo coverage report in HTML format. 
+
+To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
+
+![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
+
+The job presents as follows:
+
+```yaml
+  build-and-test-with-coverage:
+    runs-on: ubuntu-latest
+    needs: semgrep-sast
+    
+    permissions:
+      contents: read
+      pull-requests: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build and run unit tests with coverage
+        run: mvn clean verify
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+      - name: Post coverage comment
+        if: always()
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
+```
+
+Additionally, a permissions block was added:
+
+- `contents`: read — allows the workflow to clone/read the repository contents;
+- `pull-requests`: write — allows the workflow to post comments on the PR (needed for the JaCoCo coverage comment).
+
 ---
 
 ## SpringBoot application.properties
