@@ -1,42 +1,31 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.PublicationTypeService;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
-import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import org.springframework.stereotype.Controller;
 
 /**
- * Controller responsible for handling the addition of a new {@link PublicationType}.
+ * Controller responsible for registering new {@link PublicationType} instances.
  * <p>
- * Delegates the creation to {@link PublicationTypeFactory}
- * and storage to {@link IPublicationTypeRepo}. Validates uniqueness.
+ * Delegates publication type creation and validation to the application service
+ * layer, keeping the controller focused on coordinating the registration flow.
  * </p>
  */
 
 @Controller
 public class AddPublicationTypeController {
 
-    private final IPublicationTypeRepo _iPublicationTypeRepo;
-    private final PublicationTypeFactory _publicationTypeFactory;
+    private final PublicationTypeService _publicationTypeService;
 
-    public AddPublicationTypeController(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory publicationTypeFactory) {
+    public AddPublicationTypeController(PublicationTypeService publicationTypeService) {
 
-        _iPublicationTypeRepo = iPublicationTypeRepo;
-        _publicationTypeFactory = publicationTypeFactory;
+        _publicationTypeService = publicationTypeService;
 
     }
 
     public PublicationType addPublicationType(String publicationTypeName) {
 
-        PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
-
-        if (_iPublicationTypeRepo.containsOfIdentity(newPublicationType.identity())) {
-
-            throw new IllegalArgumentException("The publication type " + publicationTypeName + " already exists.");
-
-        }
-
-        return _iPublicationTypeRepo.save(newPublicationType);
+        return _publicationTypeService.addPublicationType(publicationTypeName);
 
     }
 

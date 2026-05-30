@@ -4,10 +4,6 @@ import MITELOVERS.applicationservices.AuthorService;
 import MITELOVERS.applicationservices.GenreService;
 import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.domain.publication.PublicationFactory;
-import MITELOVERS.domain.repository.IAuthorRepo;
-import MITELOVERS.domain.repository.IGenreRepo;
-import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
@@ -19,9 +15,15 @@ import java.util.Objects;
 /**
  * Controller responsible for registering new publications in the system.
  * <p>
- * This controller interacts with the {@link IPublicationRepo} that delegates to {@link PublicationFactory} the creation of
- * new {@link Publication} instances with details such as type, identifier, year,
- * title, author, publisher, edition, and genre. After a new {@link Publication} is instantiated it is stored back in {@link IPublicationRepo}.
+ * This controller coordinates publication registration through the
+ * {@link PublicationService}. It also provides access to available
+ * {@link AuthorId} and {@link GenreId} values through the
+ * {@link AuthorService} and {@link GenreService}, respectively.
+ * </p>
+ * <p>
+ * When a new publication is registered, the request is delegated to the
+ * application service layer, which validates the provided information,
+ * creates the corresponding {@link Publication} and persists it.
  * </p>
  */
 
