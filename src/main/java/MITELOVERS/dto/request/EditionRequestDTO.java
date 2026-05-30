@@ -1,5 +1,7 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.request;
 
+import MITELOVERS.dto.DimensionDTO;
+import MITELOVERS.dto.WeightDTO;
 import lombok.Builder;
 import lombok.Generated;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.Getter;
 @Getter
 @Generated
 @Builder
-public class EditionRequestDTO  {
+public class EditionRequestDTO {
 
     private final String  publicationTypeId;
     private final String  publishingCompanyId;
