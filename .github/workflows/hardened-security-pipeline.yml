@@ -1,4 +1,4 @@
-name: Hardened Security Pipelina
+name: Hardened Security Pipeline
 
 on:
   pull_request:
