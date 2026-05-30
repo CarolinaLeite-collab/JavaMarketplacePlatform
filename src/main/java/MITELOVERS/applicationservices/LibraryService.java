@@ -8,6 +8,7 @@ import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.domain.valueobject.UserId;
@@ -24,6 +25,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Application service responsible for managing the authenticated user's library.
+ *
+ * <p>
+ * Coordinates domain repositories and mappers to expose library-related
+ * use cases, including retrieving item summaries, item details, and
+ * adding items to a user's library.
+ * </p>
+ */
 
 @Service
 public class LibraryService {
@@ -63,9 +73,10 @@ public class LibraryService {
     }
 
     @Transactional(readOnly = true)
-    public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(UserId userId) {
+    public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(String userId) {
 
-        LibraryId libraryId = LibraryId.fromUserId(userId);
+        UserId uid = new UserId(new Email(userId));
+        LibraryId libraryId = LibraryId.fromUserId(uid);
 
         if (_libraryRepo.ofIdentity(libraryId).isEmpty()) {
             return Collections.emptyList();
@@ -119,14 +130,16 @@ public class LibraryService {
     }
 
     @Transactional
-    public void addItemToLibrary(ItemId itemId, UserId userId) {
+    public void addItemToLibrary(String itemId, String userId) {
 
-        LibraryId libraryId = LibraryId.fromUserId(userId);
+        ItemId itemId1 = new ItemId(itemId);
+        UserId uid = new UserId(new Email(userId));
+        LibraryId libraryId = LibraryId.fromUserId(uid);
 
         Library library = _libraryRepo.ofIdentity(libraryId)
-                .orElseGet(() -> _libraryFactory.createLibrary(userId));
+                .orElseGet(() -> _libraryFactory.createLibrary(uid));
 
-        boolean added = library.addItemIdToLibrary(itemId);
+        boolean added = library.addItemIdToLibrary(itemId1);
 
         if (!added) {
             throw new IllegalStateException("Item already exists in library");
@@ -136,9 +149,10 @@ public class LibraryService {
     }
 
     @Transactional(readOnly = true)
-    public List<ItemDetailsDTO> getListOfItemInfoInMyLibraryFull(UserId userId) {
+    public List<ItemDetailsDTO> getListOfItemInfoInMyLibraryFull(String userId) {
 
-        LibraryId libraryId = LibraryId.fromUserId(userId);
+        UserId uid = new UserId(new Email(userId));
+        LibraryId libraryId = LibraryId.fromUserId(uid);
 
         if (_libraryRepo.ofIdentity(libraryId).isEmpty()) {
             return Collections.emptyList();
@@ -176,10 +190,6 @@ public class LibraryService {
         return result;
     }
 
-
-//    public void addItemToLibrary(ItemId itemId, UserId userId) {
-//        _addItemToLibraryCtrl.addItemIdToLibrary(itemId, userId);
-//    }
 
 }
 

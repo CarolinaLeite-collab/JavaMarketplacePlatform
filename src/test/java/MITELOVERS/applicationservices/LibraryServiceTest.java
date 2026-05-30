@@ -62,11 +62,10 @@ class LibraryServiceTest {
     @Test
     void testGetListOfItemInfoInMyLibraryNoLibraryReturnsEmptyList() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
         // Act
-        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary(userIdDouble);
+        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com");
 
         // Assert
         assertNotNull(result);
@@ -76,14 +75,13 @@ class LibraryServiceTest {
     @Test
     void testGetListOfItemInfoInMyLibraryEmptyLibraryReturnsEmptyList() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         Library libraryDouble = mock(Library.class);
 
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
         when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
 
         // Act
-        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary(userIdDouble);
+        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com");
 
         // Assert
         assertNotNull(result);
@@ -93,7 +91,6 @@ class LibraryServiceTest {
     @Test
     void testGetListOfItemInfoInMyLibraryValidUserReturnsListWithOneItem() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ItemId itemIdDouble = mock(ItemId.class);
         Library libraryDouble = mock(Library.class);
         Item itemDouble = mock(Item.class);
@@ -109,7 +106,7 @@ class LibraryServiceTest {
         when(summaryMapperDouble.toDTO(itemDouble, publicationDouble)).thenReturn(summaryDTODouble);
 
         // Act
-        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary(userIdDouble);
+        List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com");
 
         // Assert
         assertNotNull(result);
@@ -120,7 +117,6 @@ class LibraryServiceTest {
     @Test
     void testGetListOfItemInfoInMyLibraryItemNotFoundThrowsIllegalStateException() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ItemId itemIdDouble = mock(ItemId.class);
         Library libraryDouble = mock(Library.class);
 
@@ -130,13 +126,12 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getListOfItemInfoInMyLibrary(userIdDouble));
+                libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
     }
 
     @Test
     void testGetListOfItemInfoInMyLibraryEditionNotFoundThrowsIllegalStateException() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ItemId itemIdDouble = mock(ItemId.class);
         Library libraryDouble = mock(Library.class);
         Item itemDouble = mock(Item.class);
@@ -148,13 +143,12 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getListOfItemInfoInMyLibrary(userIdDouble));
+                libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
     }
 
     @Test
     void testGetListOfItemInfoInMyLibraryPublicationNotFoundThrowsIllegalStateException() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ItemId itemIdDouble = mock(ItemId.class);
         Library libraryDouble = mock(Library.class);
         Item itemDouble = mock(Item.class);
@@ -168,7 +162,7 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getListOfItemInfoInMyLibrary(userIdDouble));
+                libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
     }
 
     // ----------------------------------------------------------------
