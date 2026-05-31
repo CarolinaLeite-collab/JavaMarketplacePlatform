@@ -2,50 +2,44 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
-import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class DirectSaleService {
 
-    private final ILibraryRepo _iLibraryRepo;
+    private final IGenreRepo _iGenreRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
     private final IItemRepo _iItemRepo;
-    private final IPublicationRepo _iPublicationRepo;
-    private final IEditionRepo _iEditionRepo;
     private final DirectSaleFactory _directSaleFactory;
     private final DirectSaleResponseDTOMapper _responseMapper;
+    private final DSFilteredItemsResponseMapper _filteredResponseMapper;
 
 
-    public DirectSaleService(ILibraryRepo iLibraryRepo,
+    public DirectSaleService(IGenreRepo iGenreRepo,
                              IDirectSaleRepo iDirectSaleRepo,
                              IItemRepo iItemRepo,
-                             IPublicationRepo iPublicationRepo,
-                             IEditionRepo iEditionRepo,
                              DirectSaleFactory directSaleFactory,
-                             DirectSaleResponseDTOMapper responseMapper) {
+                             DirectSaleResponseDTOMapper responseMapper,
+                             DSFilteredItemsResponseMapper filteredResponseMapper) {
 
-        _iLibraryRepo = Objects.requireNonNull(iLibraryRepo);
+        _iGenreRepo = Objects.requireNonNull(iGenreRepo);
         _iDirectSaleRepo = Objects.requireNonNull(iDirectSaleRepo);
         _iItemRepo = Objects.requireNonNull(iItemRepo);
-        _iPublicationRepo = Objects.requireNonNull(iPublicationRepo);
-        _iEditionRepo = Objects.requireNonNull(iEditionRepo);
-        _directSaleFactory = Objects.requireNonNull(directSaleFactory);
-        _responseMapper = Objects.requireNonNull(responseMapper);
+        _directSaleFactory = directSaleFactory;
+        _responseMapper = responseMapper;
+        _filteredResponseMapper = filteredResponseMapper;
     }
 
     public DirectSaleResponseDTO createDirectSale(DirectSaleRequestDTO request) {
@@ -112,47 +106,29 @@ public class DirectSaleService {
     //-----------------------
     // Filtered Direct Sales
     //-----------------------
-    private List<ItemId> filterItemsByGenre(GenreId genreId) {
 
-        List<ItemId> result = new ArrayList<>();
-
-        for (DirectSale directSale : _iDirectSaleRepo.findAll()) {
-
-            for (ItemId itemId : directSale.getItemsId()) {
-
-                Item item = _iItemRepo.ofIdentity(itemId)
-                        .orElseThrow(() -> new IllegalStateException("Item not found"));
-
-                Edition edition = _iEditionRepo.ofIdentity(item.getEditionId())
-                        .orElseThrow(() -> new IllegalStateException("Edition not found"));
-
-                Publication publication = _iPublicationRepo.ofIdentity(edition.getPublicationId())
-                        .orElseThrow(() -> new IllegalStateException("Publication not found"));
-
-                if (publication.isByGenreId(genreId)) {
-                    result.add(itemId);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    public List<String> getDirectSaleItemsByGenreAsc(String genreId) {
+    public DSFilteredItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
 
         GenreId gid = new GenreId(genreId);
 
-        List<ItemId> filtered = filterItemsByGenre(gid);
-
-        if (filtered.isEmpty()) {
-            throw new IllegalStateException("No matching DirectSales");
+        if (!_iGenreRepo.containsOfIdentity(gid)) {
+            throw new IllegalArgumentException("Genre not found: " + genreId);
         }
 
-        return _iDirectSaleRepo
-                .findByItemsIdSortedByPublicationDateAsc(filtered)
+        List<ItemId> filtered = _iItemRepo.findByGenreId(gid);
+
+        if (filtered.isEmpty()) {
+            return new DSFilteredItemsResponseDTO(List.of());
+        }
+
+        List<String> directSaleIds =
+                _iDirectSaleRepo.findByItemsIdSortedByPublicationDateAsc(filtered)
                 .stream()
-                .map(ItemId::toString)
+                .map(ds -> ds.identity().toString()) // Map to DirectSaleId
+                .distinct()
                 .toList();
+
+        return _filteredResponseMapper.toDTO(directSaleIds);
     }
 
 }
