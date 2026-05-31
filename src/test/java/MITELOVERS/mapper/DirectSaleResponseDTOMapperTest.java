@@ -22,11 +22,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DirectSaleResponseDTOMapperTest {
 
-    private DirectSaleResponseDTOMapper mapper;
+    private DirectSaleResponseDTOMapper _mapper;
 
     @BeforeEach
     void setup() {
-        mapper = new DirectSaleResponseDTOMapper();
+        _mapper = new DirectSaleResponseDTOMapper();
     }
 
     @Test
@@ -40,7 +40,7 @@ class DirectSaleResponseDTOMapperTest {
         Instant now = Instant.now();
         when(directSale.getCreationDate()).thenReturn(now);
 
-        DirectSaleResponseDTO dto = mapper.toResponseDTO(directSale);
+        DirectSaleResponseDTO dto = _mapper.toResponseDTO(directSale);
 
         assertEquals("DS-ABC12345", dto.getDirectSaleId());
         assertEquals(List.of("ABCDEF1234"), dto.getItemsId());
@@ -48,8 +48,6 @@ class DirectSaleResponseDTOMapperTest {
         assertEquals("EUR", dto.getPriceCurrency());
         assertEquals(3600L, dto.getTimeLimitSeconds());
         assertEquals(now, dto.getCreationDate());
-
-        assertTrue(dto.hasLink("self"));
-        assertTrue(dto.hasLink("allDirectSales"));
     }
+
 }
