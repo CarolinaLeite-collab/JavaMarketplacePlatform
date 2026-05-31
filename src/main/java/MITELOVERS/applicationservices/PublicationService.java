@@ -29,9 +29,9 @@ import java.util.Objects;
 @Service
 public class PublicationService {
 
-    private IPublicationRepo _iPublicationRepo;
-    private PublicationFactory _publicationFactory;
-    private IGenreRepo _iGenreRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final PublicationFactory _publicationFactory;
+    private final IGenreRepo _iGenreRepo;
     private final IAuthorRepo _iAuthorRepo;
     private final PublicationResponseDTOMapper _publicationResponseDTOMapper;
 
@@ -49,21 +49,11 @@ public class PublicationService {
     }
 
 
-    public PublicationResponseDTO registerPublication(Title title,
+    public Publication registerPublication(Title title,
                                                       AuthorId authorId,
                                                       Year releaseYear,
                                                       GenreId genreId
     ) {
-
-        Author author = _iAuthorRepo.ofIdentity(authorId)
-                .orElseThrow(() -> new NoSuchElementException(
-                        "Author does not exist in the repository"
-                ));
-
-        Genre genre = _iGenreRepo.ofIdentity(genreId)
-                .orElseThrow(() -> new NoSuchElementException(
-                        "Genre does not exist in the repository"
-                ));
 
         Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
 
@@ -72,13 +62,8 @@ public class PublicationService {
                     "Publication already exists in the repository");
         }
 
-        Publication savedPublication = _iPublicationRepo.save(newPublication);
+        return _iPublicationRepo.save(newPublication);
 
-        return _publicationResponseDTOMapper.toResponseDTO(
-                savedPublication,
-                author,
-                genre
-        );
     }
 
     public List<PublicationResponseDTO> getAllPublications() {
@@ -119,20 +104,26 @@ public class PublicationService {
                         new NoSuchElementException(
                                 "Publication with id '" + id + "' does not exist"));
 
-        Author author = _iAuthorRepo
-                .ofIdentity(publication.getAuthorId())
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Author with id '" + publication.getAuthorId() + "' does not exist"));
+        return getPublicationResponseDTO(publication);
+    }
 
-        Genre genre = _iGenreRepo
-                .ofIdentity(publication.getGenreId())
-                .orElseThrow(() ->
-                        new NoSuchElementException(
-                                "Genre with id '" + publication.getGenreId() + "' does not exist"));
+    public PublicationResponseDTO getPublicationResponseDTO(Publication publication) {
 
-        return _publicationResponseDTOMapper
-                .toResponseDTO(publication, author, genre);
+        Author author = _iAuthorRepo.ofIdentity(publication.getAuthorId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Author does not exist in the repository"
+                ));
+
+        Genre genre = _iGenreRepo.ofIdentity(publication.getGenreId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "Genre does not exist in the repository"
+                ));
+
+        return _publicationResponseDTOMapper.toResponseDTO(
+                publication,
+                author,
+                genre
+        );
     }
 
 }

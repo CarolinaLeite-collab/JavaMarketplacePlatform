@@ -3,6 +3,7 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.dto.GenreResponseDTO;
 import MITELOVERS.mapper.GenreResponseDTOMapper;
 import org.springframework.stereotype.Service;
@@ -50,4 +51,9 @@ public class GenreService {
 
         return response;
     }
+
+    public Iterable<GenreId> getGenresId() {
+        return _iGenreRepo.findAllKeys();
+    }
+
 }

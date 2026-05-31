@@ -1,14 +1,13 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.LibraryItemDetailsDTO;
 import MITELOVERS.dto.LibraryItemSummaryDTO;
+import MITELOVERS.dto.request.AddItemRequestDTO;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,14 +33,18 @@ public class LibraryRestController {
         _libraryService = libraryService;
     }
 
-    @GetMapping("/publications")
+    @GetMapping(path ="/publications", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
             @RequestHeader("X-User-Id") String userId) {
 
         try {
-            UserId uid = new UserId(new Email(userId));
-            List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(uid);
+            List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(userId);
 
+            for (LibraryItemSummaryDTO dto : dtos) {
+                Link link = linkTo(methodOn(LibraryRestController.class)
+                        .getItemDetail(dto.getItemId())).withSelfRel();
+                dto.add(link);
+            }
             CollectionModel<LibraryItemSummaryDTO> result = CollectionModel.of(dtos,
                     linkTo(methodOn(LibraryRestController.class)
                             .getMyLibrary(userId)).withSelfRel());
@@ -53,11 +56,16 @@ public class LibraryRestController {
         }
     }
 
-        @GetMapping("/publications/{itemId}")
+        @GetMapping(path ="/publications/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
 
             try {
                 LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
+
+                Link link = linkTo(methodOn(LibraryRestController.class)
+                        .getItemDetail(itemId)).withSelfRel();
+                dto.add(link);
+
                 return new ResponseEntity<>(dto, HttpStatus.OK);
 
             } catch (IllegalStateException e) {
@@ -65,15 +73,13 @@ public class LibraryRestController {
             }
         }
 
-    @PostMapping("/publications")
+    @PostMapping(path ="/publications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
 
         try {
-            UserId uid = new UserId(new Email(userId));
-            ItemId itemId = new ItemId(request.getItemId());
-            _libraryService.addItemToLibrary(itemId, uid);
+            _libraryService.addItemToLibrary(request.getItemId(), userId);
             return new ResponseEntity<>(HttpStatus.CREATED);
 
         } catch (IllegalStateException e) {

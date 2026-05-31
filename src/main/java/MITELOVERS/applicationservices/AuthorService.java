@@ -3,6 +3,7 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
+import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.dto.AuthorResponseDTO;
 import MITELOVERS.mapper.AuthorResponseDTOMapper;
@@ -52,4 +53,9 @@ public class AuthorService {
 
         return response;
     }
+
+    public Iterable<AuthorId> getAuthorsId() {
+        return _iAuthorRepo.findAllKeys();
+    }
+
 }

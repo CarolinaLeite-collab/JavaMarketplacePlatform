@@ -3,8 +3,8 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,6 +16,10 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller responsible for exposing List of Items-related endpoints
+ * via HTTP endpoints.
+ */
 
 @RestController
 @RequestMapping("my-lists")

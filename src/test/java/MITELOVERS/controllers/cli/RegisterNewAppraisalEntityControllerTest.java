@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.RegisterNewAppraisalEntityController;
 import MITELOVERS.domain.appraisalentity.AppraisalEntity;
 import MITELOVERS.domain.appraisalentity.AppraisalEntityFactory;
 import MITELOVERS.domain.genre.Genre;

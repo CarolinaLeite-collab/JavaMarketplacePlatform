@@ -1,7 +1,5 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.Action;
-
 import MITELOVERS.Link;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.dto.CountryDTO;

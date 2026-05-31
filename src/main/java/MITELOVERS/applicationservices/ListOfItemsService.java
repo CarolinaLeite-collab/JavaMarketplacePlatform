@@ -8,8 +8,8 @@ import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+/**
+ * Application service responsible for retrieving List of Items information
+ * and converting domain objects into response DTOs.
+ */
 
 @Service
 @AllArgsConstructor

@@ -17,7 +17,7 @@ public class PublicationResponseDTOMapper {
                                                 Author author,
                                                 Genre genre) {
 
-        PublicationResponseDTO dto = new PublicationResponseDTO(
+        return new PublicationResponseDTO(
                     publication.identity().toString(),
                     publication.getTitle().toString(),
                     author.getName().toString(),
@@ -25,6 +25,5 @@ public class PublicationResponseDTOMapper {
                     genre.getGenre()
         );
 
-        return dto;
     }
 }

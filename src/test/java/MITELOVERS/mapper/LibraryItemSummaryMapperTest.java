@@ -7,9 +7,6 @@ import MITELOVERS.domain.valueobject.Picture;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -20,9 +17,6 @@ class LibraryItemSummaryMapperTest {
     @Test
     void toDTOWithPictureReturnsCorrectDTO() {
         // Arrange
-        RequestContextHolder.setRequestAttributes(
-                new ServletRequestAttributes(new MockHttpServletRequest()));
-
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.toString()).thenReturn("3C5D126F8B");
 
@@ -44,17 +38,15 @@ class LibraryItemSummaryMapperTest {
         LibraryItemSummaryDTO dto = mapper.toDTO(itemDouble, publicationDouble);
 
         // Assert
+        assertEquals("3C5D126F8B", dto.getItemId());
         assertEquals("1984", dto.getTitle());
         assertEquals("https://example.com/1984.jpg", dto.getPicture());
-        assertTrue(dto.hasLinks());
+        assertFalse(dto.hasLinks());
     }
 
     @Test
     void toDTOWithNullPictureReturnsNullPicture() {
         // Arrange
-        RequestContextHolder.setRequestAttributes(
-                new ServletRequestAttributes(new MockHttpServletRequest()));
-
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.toString()).thenReturn("3F9F4BFAB2");
 
@@ -75,6 +67,7 @@ class LibraryItemSummaryMapperTest {
         // Assert
         assertEquals("1984", dto.getTitle());
         assertNull(dto.getPicture());
-        assertTrue(dto.hasLinks());
+        assertNull(dto.getPicture());
+        assertFalse(dto.hasLinks());
     }
 }

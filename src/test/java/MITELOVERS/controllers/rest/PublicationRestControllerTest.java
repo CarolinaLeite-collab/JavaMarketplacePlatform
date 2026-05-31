@@ -1,11 +1,12 @@
 package MITELOVERS.controllers.rest;
 
+import MITELOVERS.applicationservices.PublicationService;
+import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
-import MITELOVERS.applicationservices.PublicationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,9 +18,11 @@ import org.springframework.http.ResponseEntity;
 import java.time.Year;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PublicationRestControllerTest {
@@ -31,27 +34,32 @@ class PublicationRestControllerTest {
     PublicationService _publicationServiceDouble;
 
     @Test
-    void registerPublicationAndReturnDTOReturnsCreatedResponse() {
-        // Arrange
+    void registerPublicationAndReturnResponseDTO() {
+        //Arrange
         PublicationRequestDTO requestDTO = new PublicationRequestDTO(
                 "Photomaton & Vox",
                 "HERBERTO_HELDER",
                 1979,
-                "p4"
+                "PROSE"
         );
+
+        Publication publicationDouble = mock(Publication.class);
 
         PublicationResponseDTO responseDTODouble =
                 mock(PublicationResponseDTO.class);
-
-        when(responseDTODouble.getPublicationId())
-                .thenReturn("PUB-001");
 
         when(_publicationServiceDouble.registerPublication(
                 any(Title.class),
                 any(AuthorId.class),
                 any(Year.class),
                 any(GenreId.class)
-        )).thenReturn(responseDTODouble);
+        )).thenReturn(publicationDouble);
+
+        when(_publicationServiceDouble.getPublicationResponseDTO(publicationDouble))
+                .thenReturn(responseDTODouble);
+
+        when(responseDTODouble.getPublicationId())
+                .thenReturn("PUB-001");
 
         // Act
         ResponseEntity<PublicationResponseDTO> response =

@@ -1,13 +1,9 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.controllers.rest.LibraryRestController;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.dto.LibraryItemSummaryDTO;
 import org.springframework.stereotype.Component;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class LibraryItemSummaryMapper {
@@ -24,13 +20,6 @@ public class LibraryItemSummaryMapper {
                 item.identity().toString(),
                 publication.getTitle().toString(),
                 pictureUrl
-        );
-
-        dto.add(
-                linkTo(
-                        methodOn(LibraryRestController.class)
-                                .getItemDetail(item.identity().toString())
-                ).withSelfRel()
         );
 
         return dto;

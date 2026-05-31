@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.RegisterCountryController;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;

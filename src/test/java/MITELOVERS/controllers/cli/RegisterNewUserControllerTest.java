@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.RegisterNewUserController;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;

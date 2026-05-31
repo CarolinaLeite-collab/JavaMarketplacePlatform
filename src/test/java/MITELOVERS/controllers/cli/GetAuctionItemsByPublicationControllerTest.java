@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.controllers.cli.GetAuctionItemsByPublicationController;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;

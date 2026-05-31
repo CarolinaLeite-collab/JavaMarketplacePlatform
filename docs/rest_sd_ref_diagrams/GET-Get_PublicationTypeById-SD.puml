@@ -1,0 +1,50 @@
+@startuml
+title GET - Get Publication Type by ID - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":PublicationType\nRestController" as REST
+participant ":PublicationType\nService" as Service
+participant ":IPublicationType\nRepo" as REPO
+participant ":PublicationType\nResponseDTOMapper" as Mapper
+database DB
+
+activate REST
+REST -> Service : getPublicationTypeById(id)
+
+activate Service
+
+create publicationTypeId
+Service --> publicationTypeId : publicationTypeId = new PublicationTypeId(id)
+Service -> REPO : ofIdentity(publicationTypeId)
+activate REPO
+REPO -> DB : publicationType = findById(publicationTypeId)
+REPO --> Service : publicationType
+deactivate REPO
+
+Service -> Mapper : toModel(publicationType)
+activate Mapper
+Mapper --> Service : publicationTypeDTO
+deactivate Mapper
+
+Service --> REST : publicationTypeDTO
+deactivate Service
+
+REST -> REST : publicationTypeDTO.add(selfLink)
+
+REST --> REST : ResponseEntity.ok(publicationTypeDTO)
+ref over REST
+[[../a.puml Back to Main Diagram]]
+end
+
+@enduml

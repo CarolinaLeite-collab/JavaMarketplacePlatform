@@ -2,13 +2,14 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.DimensionDTO;
-import MITELOVERS.dto.EditionRequestDTO;
 import MITELOVERS.dto.WeightDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class EditionRequestDTOMapperTest {
+
 
     @Test
     void toPublicationTypeIdReturnsCorrectVO() {
@@ -20,10 +21,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        PublicationTypeId result = requestDTOMapper.toPublicationTypeId(dto);
+        PublicationTypeId result = mapper.toPublicationTypeId(dto);
 
         // Assert
         assertEquals("BOOK", result.toString());
@@ -41,10 +42,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(NoIdentifier.class, result);
@@ -62,10 +63,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(NoIdentifier.class, result);
@@ -83,10 +84,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(ISBN.class, result);
@@ -104,10 +105,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(NoIdentifier.class, result);
@@ -125,10 +126,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(ISSN.class, result);
@@ -146,16 +147,17 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Identifier result = requestDTOMapper.toIdentifier(dto);
+        Identifier result = mapper.toIdentifier(dto);
 
         // Assert
         assertInstanceOf(NoIdentifier.class, result);
 
     }
 
+    // ── toDimension ─────────────────────────────────────────────────────────
 
     @Test
     void toDimensionNullReturnsNull() {
@@ -168,10 +170,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Dimension result = requestDTOMapper.toDimension(dto);
+        Dimension result = mapper.toDimension(dto);
 
         // Assert
         assertNull(result);
@@ -179,31 +181,32 @@ class EditionRequestDTOMapperTest {
     }
 
     @Test
-    void toDimensionReturnsCorrectVO() {
+    void toDimensionReturnsDimension() {
 
         // Arrange
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
                 .publishingYear(2000)
-                .identifier("9780747532743")
-                .dimension(new DimensionDTO(20.0,40.0,5.0,"cm"))
+                .dimension(new DimensionDTO(20.0, 25.0, 3.0, "cm"))
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Dimension result = requestDTOMapper.toDimension(dto);
+        Dimension result = mapper.toDimension(dto);
 
-        //Assert
+        // Assert
+        assertNotNull(result);
         assertAll(
                 () -> assertEquals(20.0, result.getWidth()),
-                () -> assertEquals(40.0, result.getHeight()),
-                () -> assertEquals(5.0, result.getThickness()),
+                () -> assertEquals(25.0, result.getHeight()),
+                () -> assertEquals(3.0, result.getThickness()),
                 () -> assertEquals(DimensionUnit.CENTIMETERS, result.getUnit())
         );
 
     }
+
 
     @Test
     void toWeightNullReturnsNull() {
@@ -216,10 +219,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Weight result = requestDTOMapper.toWeight(dto);
+        Weight result = mapper.toWeight(dto);
 
         // Assert
         assertNull(result);
@@ -233,20 +236,24 @@ class EditionRequestDTOMapperTest {
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
                 .publishingYear(2000)
-                .weight(new WeightDTO(5.0,"kg"))
+                .weight(new WeightDTO(500.0, "g"))
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Weight result = requestDTOMapper.toWeight(dto);
+        Weight result = mapper.toWeight(dto);
 
         // Assert
-        assertEquals(5.0, result.getValue());
-        assertEquals(Weight.WeightUnit.KILOGRAMS, result.getWeightUnit());
+        assertNotNull(result);
+        assertAll(
+                () -> assertEquals(500.0, result.getValue()),
+                () -> assertEquals(Weight.WeightUnit.GRAMS, result.getWeightUnit())
+        );
 
     }
+
 
     @Test
     void toNumberOfPagesNullReturnsNull() {
@@ -259,13 +266,13 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        NumberOfPages result = requestDTOMapper.toNumberOfPages(dto);
+        NumberOfPages result = mapper.toNumberOfPages(dto);
 
         // Assert
-        assertEquals(null, result);
+        assertNull(result);
 
     }
 
@@ -276,19 +283,21 @@ class EditionRequestDTOMapperTest {
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
                 .publishingYear(2000)
-                .numberOfPages(20)
+                .numberOfPages(300)
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        NumberOfPages result = requestDTOMapper.toNumberOfPages(dto);
+        NumberOfPages result = mapper.toNumberOfPages(dto);
 
         // Assert
-        assertEquals(20, result.getNumberOfPages());
+        assertNotNull(result);
+        assertEquals(300, result.getNumberOfPages());
 
     }
+
 
     @Test
     void toEditionNumberNullReturnsNull() {
@@ -301,10 +310,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        EditionNumber result = requestDTOMapper.toEditionNumber(dto);
+        EditionNumber result = mapper.toEditionNumber(dto);
 
         // Assert
         assertNull(result);
@@ -322,16 +331,17 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        EditionNumber result = requestDTOMapper.toEditionNumber(dto);
+        EditionNumber result = mapper.toEditionNumber(dto);
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.getValue());
 
     }
+
 
     @Test
     void toBindingNullReturnsNull() {
@@ -344,10 +354,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Binding result = requestDTOMapper.toBinding(dto);
+        Binding result = mapper.toBinding(dto);
 
         // Assert
         assertNull(result);
@@ -365,10 +375,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Binding result = requestDTOMapper.toBinding(dto);
+        Binding result = mapper.toBinding(dto);
 
         // Assert
         assertEquals(Binding.HARDCOVER, result);
@@ -386,10 +396,10 @@ class EditionRequestDTOMapperTest {
                 .build();
 
         // SUT
-        EditionRequestDTOMapper requestDTOMapper = new EditionRequestDTOMapper();
+        EditionRequestDTOMapper mapper = new EditionRequestDTOMapper();
 
         // Act
-        Binding result = requestDTOMapper.toBinding(dto);
+        Binding result = mapper.toBinding(dto);
 
         // Assert
         assertEquals(Binding.HARDCOVER, result);

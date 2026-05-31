@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.applicationservices.PublicationTypeService;
+import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

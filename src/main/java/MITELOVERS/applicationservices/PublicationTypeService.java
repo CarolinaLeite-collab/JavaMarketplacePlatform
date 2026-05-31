@@ -1,8 +1,8 @@
 package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.publicationtype.PublicationType;
+import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
-
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
@@ -21,12 +21,13 @@ import java.util.NoSuchElementException;
 public class PublicationTypeService {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
-
+    private final PublicationTypeFactory _publicationTypeFactory;
     private final PublicationTypeResponseDTOMapper _mapper;
 
-    public PublicationTypeService(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeResponseDTOMapper mapper){
+    public PublicationTypeService(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory factory, PublicationTypeResponseDTOMapper mapper){
 
         _iPublicationTypeRepo = iPublicationTypeRepo;
+        _publicationTypeFactory = factory;
         _mapper = mapper;
 
     }
@@ -56,4 +57,20 @@ public class PublicationTypeService {
 
         return _mapper.toModel(publicationType);
     }
+
+    public PublicationType addPublicationType(String publicationTypeName) {
+
+        PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);
+
+        if (_iPublicationTypeRepo.containsOfIdentity(newPublicationType.identity())) {
+
+            throw new IllegalArgumentException("The publication type " + publicationTypeName + " already exists.");
+
+        }
+
+        return _iPublicationTypeRepo.save(newPublicationType);
+
+    }
+
+
 }

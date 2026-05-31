@@ -9,8 +9,8 @@ import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

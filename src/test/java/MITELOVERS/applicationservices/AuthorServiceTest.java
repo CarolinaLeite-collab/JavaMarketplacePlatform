@@ -16,9 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -97,5 +95,21 @@ class AuthorServiceTest {
         assertEquals(2, result.size());
         assertSame(dtoOne, result.get(0));
         assertSame(dtoTwo, result.get(1));
+    }
+
+    @Test
+    void getAuthorsIdReturnsAllAuthorIdsFromRepository() {
+        // Arrange
+        AuthorId authorIdOne = mock(AuthorId.class);
+        AuthorId authorIdTwo = mock(AuthorId.class);
+        List<AuthorId> authorIds = List.of(authorIdOne, authorIdTwo);
+
+        when(_iAuthorRepo.findAllKeys()).thenReturn(authorIds);
+
+        // Act
+        Iterable<AuthorId> result = _authorService.getAuthorsId();
+
+        // Assert
+        assertSame(authorIds, result);
     }
 }

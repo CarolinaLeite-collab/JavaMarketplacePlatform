@@ -1,13 +1,17 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.dto.EditionRequestDTO;
-import MITELOVERS.dto.EditionResponseDTO;
 import MITELOVERS.applicationservices.EditionService;
+import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for exposing publication-related endpoints
@@ -26,30 +30,50 @@ public class EditionRestController {
 
     }
 
-    @PostMapping
-    public ResponseEntity<Object> registerEdition(@RequestHeader String pubId, @RequestBody EditionRequestDTO dto) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> registerEdition(@RequestParam String pubId, @RequestBody EditionRequestDTO dto) {
 
         try {
 
             EditionResponseDTO result = _editionService.registerEdition(pubId, dto);
+
+            result.add(linkTo(methodOn(EditionRestController.class)
+                    .getEditionById(result.getEditionId()))
+                    .withSelfRel());
 
             return new ResponseEntity<>(result, HttpStatus.CREATED);
 
         }
 
         catch (Exception ex) {
-
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
 
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getAllEditionsByPublication(@RequestHeader String publicationId){
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAllEditions(){
 
-        try{
-        List<EditionResponseDTO> listOfEditionsDTO = _editionService.getAllEditionsByPublication(publicationId);
+        List<EditionResponseDTO> listOfEditionsDTO = _editionService.getAllEditions();
+
+        if (listOfEditionsDTO.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return ResponseEntity.ok(listOfEditionsDTO);
+
+    }
+
+    @GetMapping(path = "/by-publication", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getAllEditionsByPublication(@RequestParam String publicationId){
+
+        try {
+
+            List<EditionResponseDTO> listOfEditionsDTO = _editionService.getAllEditionsByPublication(publicationId);
+
+            if (listOfEditionsDTO.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
 
             return new ResponseEntity<>(listOfEditionsDTO, HttpStatus.OK);
 
@@ -63,22 +87,12 @@ public class EditionRestController {
 
     }
 
-    @GetMapping("/{editionId}")
-    public ResponseEntity<Object> getEditionById(@PathVariable String editionId){
+    @GetMapping(path = "/{editionId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EditionResponseDTO> getEditionById(@PathVariable String editionId){
 
-        try {
+        EditionResponseDTO dto = _editionService.getEditionById(editionId);
 
-            EditionResponseDTO result = _editionService.getEditionById(editionId);
-
-            return new ResponseEntity<>(result, HttpStatus.OK);
-
-        }
-
-        catch (Exception ex) {
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        }
+        return ResponseEntity.ok(dto);
 
     }
 

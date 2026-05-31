@@ -1,7 +1,5 @@
 package MITELOVERS.controllers.cli.root;
 
-import MITELOVERS.controllers.cli.root.RootController;
-import MITELOVERS.controllers.cli.root.RootLinkProvider;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Email;
@@ -14,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RootControllerTest {
 

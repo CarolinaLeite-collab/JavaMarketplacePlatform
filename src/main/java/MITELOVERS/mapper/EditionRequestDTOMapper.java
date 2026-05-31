@@ -1,7 +1,7 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.EditionRequestDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.Year;
