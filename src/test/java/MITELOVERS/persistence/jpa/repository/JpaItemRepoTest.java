@@ -252,18 +252,18 @@ class JpaItemRepoTest {
 
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(genreIdDouble.toString()).thenReturn("GENRE123");
+        when(genreIdDouble.toString()).thenReturn("ROMANCE");
 
-        when(_itemSpringDataRepoDouble.findItemIdsByGenre("GENRE123"))
-                .thenReturn(List.of("ID1", "ID2"));
+        when(_itemSpringDataRepoDouble.findItemIdsByGenre("ROMANCE"))
+                .thenReturn(List.of("A1B2C3D4E5", "F0E1D2C3B4"));
 
         // Act
         List<ItemId> result = _jpaItemRepo.findByGenreId(genreIdDouble);
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("ID1", result.get(0).getValue());
-        assertEquals("ID2", result.get(1).getValue());
+        assertEquals("A1B2C3D4E5", result.get(0).getValue());
+        assertEquals("F0E1D2C3B4", result.get(1).getValue());
     }
 
     @Test
@@ -271,9 +271,9 @@ class JpaItemRepoTest {
 
         // Arrange
         GenreId genreIdDouble = mock(GenreId.class);
-        when(genreIdDouble.toString()).thenReturn("GENRE123");
+        when(genreIdDouble.toString()).thenReturn("FICTION");
 
-        when(_itemSpringDataRepoDouble.findItemIdsByGenre("GENRE123"))
+        when(_itemSpringDataRepoDouble.findItemIdsByGenre("FICTION"))
                 .thenReturn(List.of());
 
         // Act

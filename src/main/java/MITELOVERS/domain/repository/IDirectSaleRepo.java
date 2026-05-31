@@ -13,7 +13,7 @@ public interface IDirectSaleRepo extends IRepository<DirectSaleId, DirectSale> {
 
     List<ItemId> findDirectSaleItemsByAuthorIdSortedByDescription(AuthorId authorId);
 
-    List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds);
+    List<DirectSale> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds);
 
-    List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds);
+    List<DirectSale> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds);
 }

@@ -82,7 +82,7 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public boolean containsOfIdentity(ItemId id) {
+    public boolean containsOfIdentity(DirectSaleId id) {
 
         return _iDirectSaleSpringDataRepo.existsById(id.toString());
     }

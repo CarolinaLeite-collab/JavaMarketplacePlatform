@@ -215,9 +215,6 @@ class MemDirectSaleRepoTest {
         when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
         when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
 
-        when(_ds1Double.getCreationDate()).thenReturn(Instant.parse("2020-01-01T00:00:00Z"));
-        when(_ds2Double.getCreationDate()).thenReturn(Instant.parse("2020-01-02T00:00:00Z"));
-
         when(_ds1Double.getItemsId()).thenReturn(List.of(_itemIdDouble1));
         when(_ds2Double.getItemsId()).thenReturn(List.of(_itemIdDouble2));
 
