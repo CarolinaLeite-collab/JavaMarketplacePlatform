@@ -262,10 +262,10 @@ jobs:
 
 This workflow, comprised of several jobs, seeks to enforce a propper running order for several tasks.
 
-Its consists of: 
-  - Gitleaks - to ensure secret detection
-  - Semgrep - to implement a SAST scan
-  - Jacoco - to verify coverage on code tests
+Its consists of the following jobs: 
+  - `gitleaks`: ensures secret detection
+  - `semgrep-sast`: implements a SAST scan
+  - `build-and-test-with-coverage`: build + tests + JaCoCo coverage + OWASP Dependency-Check (SCA) + SBOM generation
 
 
 The full pipeline is configured as follows:
@@ -558,6 +558,56 @@ Additionally, a permissions block was added:
 - `pull-requests`: write — allows the workflow to post comments on the PR (needed for the JaCoCo coverage comment).
 
 ---
+
+### Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)
+
+We first added **OWASP Dependency-Check** plugin to our `pom.xml`, right after the JaCoCo plugin and before PIT mutation coverage plugin:
+
+```
+<!-- OWASP Dependency-Check (SCA) -->
+<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>12.2.2</version>
+    <configuration>
+        <failBuildOnCVSS>7</failBuildOnCVSS>
+        <outputDirectory>${project.build.directory}</outputDirectory>
+        <format>ALL</format>
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+    </configuration>
+    <executions>
+        <execution>
+            <phase>verify</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+The first time running `mvn clean verified` resulted in a slow and rate-limited build, leading it to ultimately fail. As a result, we requested an **API Key** from NVD (as they recommend we do so) and exposed it to Maven as an environment variable to be used at runtime. 
+
+On the second run, the pipeline failed due to many CVEs being found, including 36 in `tomcat-embed-core`, 10 in the embedded **Swagger UI** library, and several others in Spring, Jackson, and Log4j. 
+
+**dependency-check-report.html**:
+![Dependency-Check_report_1.png](docs/readme-printscreens/Dependency-Check_report_1.png)
+
+We remediated most of these CVEs by updating the **Spring Boot parent** to version **4.0.6** in our pom.xml. Spring Boot 4.0.6 bundles Tomcat 11.0.21, but the remaining fixes require version **11.0.22**; as a result, we overrode the Tomcat version to 11.0.22 by adding the following to the `<properties>` section of our pom.xml:
+
+```
+<!-- Override Tomcat version to fix CVEs -->
+<tomcat.version>11.0.22</tomcat.version>
+```
+
+Following these two updates, the local build was successful, meaning there were no vulnerabilities found with a CVSS score of 7 or higher.
+
+![Dependency-Check_build_success.png](docs/readme-printscreens/Dependency-Check_build_success.png)
+
+**dependency-check-report.html**:
+![Dependency-Check_report_3.png](docs/readme-printscreens/Dependency-Check_report_3.png)
+
+
 
 ## SpringBoot application.properties
 
