@@ -607,7 +607,45 @@ Following these two updates, the local build was successful, meaning there were 
 **dependency-check-report.html**:
 ![Dependency-Check_report_3.png](docs/readme-printscreens/Dependency-Check_report_3.png)
 
+#### Dependency inventory (SBOM)
 
+To fulfil this task, we added the **CycloneDX SBOM** plugin to our pom.xml, right after the OWASP Dependency-Check plugin:
+
+```
+<!-- CycloneDX SBOM generation -->
+    <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+        <version>2.9.0</version>
+        <executions>
+            <execution>
+                <id>custom-sbom</id>
+                <phase>verify</phase>
+                <goals>
+                    <goal>makeAggregateBom</goal>
+                </goals>
+                <configuration>
+                    <schemaVersion>1.6</schemaVersion>
+                    <includeBomSerialNumber>true</includeBomSerialNumber>
+
+                    <includeCompileScope>true</includeCompileScope>
+                    <includeProvidedScope>true</includeProvidedScope>
+                    <includeRuntimeScope>true</includeRuntimeScope>
+                    <includeSystemScope>true</includeSystemScope>
+                    <includeTestScope>false</includeTestScope>
+
+                    <outputFormat>all</outputFormat>
+                    <outputName>bom</outputName>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+```
+
+After running this locally, it produced our CycloneDX SBOM as **bom.json** and **bom.xml** inside **target/**, where we can view every dependency in the project, including their versions, licenses, and all other meta data.
+
+![bom_files.png](docs/readme-printscreens/bom_files.png)
 
 ## SpringBoot application.properties
 
