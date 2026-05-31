@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>4.0.6</version>
         <relativePath/>
     </parent>
 
@@ -33,6 +33,10 @@
 
         <!-- Prevents @{argLine} from being unresolved when JaCoCo is not active -->
         <argLine>-XX:+EnableDynamicAgentLoading</argLine>
+
+        <!-- Override Tomcat version to fix CVEs -->
+        <tomcat.version>11.0.22</tomcat.version>
+
     </properties>
 
     <dependencies>
@@ -144,6 +148,27 @@
                                 </rule>
                             </rules>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- OWASP Dependency-Check (SCA) -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.2.2</version>
+                <configuration>
+                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <format>ALL</format>
+                    <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
