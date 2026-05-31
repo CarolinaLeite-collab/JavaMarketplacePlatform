@@ -74,22 +74,20 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
 
         return DATA.values().stream()
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .sorted(Comparator.comparing(DirectSale::getCreationDate))
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
                 .toList();
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
 
         return DATA.values().stream()
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .sorted(Comparator.comparing(DirectSale::getCreationDate).reversed())
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
                 .toList();
     }
 

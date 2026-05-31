@@ -162,7 +162,7 @@ class MemDirectSaleRepoTest {
     }
 
     @Test
-    void shouldReturnItemsSortedByPublicationDateAsc() {
+    void shouldReturnDirectSalesSortedByPublicationDateAsc() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
@@ -178,13 +178,14 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble1, _itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble1, _itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble1, _itemIdDouble2), result);
+        assertEquals(List.of(_ds1Double, _ds2Double), result);
     }
 
     @Test
-    void shouldReturnItemsSortedByPublicationDateDesc() {
+    void shouldReturnDirectSalesSortedByPublicationDateDesc() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
@@ -200,13 +201,14 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateDesc(List.of(_itemIdDouble1, _itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateDesc(List.of(_itemIdDouble1, _itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble2, _itemIdDouble1), result);
+        assertEquals(List.of(_ds2Double, _ds1Double), result);
     }
 
     @Test
-    void shouldReturnOnlyMatchingItems() {
+    void shouldReturnOnlyMatchingDirectSales() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
@@ -222,9 +224,10 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble2), result);
+        assertEquals(List.of(_ds2Double), result);
     }
 
 }
