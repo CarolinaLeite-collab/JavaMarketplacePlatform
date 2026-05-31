@@ -2,6 +2,7 @@ package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.ItemAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
@@ -102,5 +103,14 @@ public class JpaItemRepo implements IItemRepo {
 
         List<ItemDataModel> itemsDataModel = _itemSpringDataRepo.findByIdInOrderByDescriptionAsc(ids);
         return itemsDataModel.stream().map(_itemAssembler::toDomain).toList();
+    }
+
+    @Override
+    public List<ItemId> findByGenreId(GenreId genreId) {
+
+        return _itemSpringDataRepo.findItemIdsByGenre(genreId.toString())
+                .stream()
+                .map(ItemId::new)
+                .toList();
     }
 }
