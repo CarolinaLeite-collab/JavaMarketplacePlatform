@@ -388,6 +388,124 @@ public class DataInitializer {
             log.info("Direct sales saved: 3 direct sales");
 
             // -------------------------------------------------------
+            // Additional Items for missing genres
+            // -------------------------------------------------------
+
+            // Edition for Sapiens (Non-Fiction)
+            Edition editionSapiens = editionFactory.createEdition(
+                    book.identity(),                     // PublicationType: Book
+                    new ISBN("9780099590088"),           // Valid Sapiens ISBN
+                    sapiens.identity(),                  // Publication Sapiens
+                    gg.identity(),                       // Publishing Company GG
+                    Year.of(2014),                       // Year of edition
+                    Language.ENGLISH,                    // Language
+                    null,                                // Dimension
+                    null,                                // Weight
+                    new NumberOfPages(498),              // Pages
+                    new EditionNumber(1),                // Edition number
+                    Binding.PUR                          // Binding
+            );
+            editionRepo.save(editionSapiens);
+
+            // Edition for Foundation (Science-Fiction)
+            Edition editionFoundationSeries = editionFactory.createEdition(
+                    book.identity(),                     // PublicationType: Book
+                    new ISBN("9780553293357"),           // Valid Foundation ISBN
+                    foundationSeries.identity(),         // Publication Foundation
+                    gg.identity(),                       // Publishing Company GG
+                    Year.of(1991),                       // Year of edition
+                    Language.ENGLISH,                    // Language
+                    null,                                // Dimension
+                    null,                                // Weight
+                    new NumberOfPages(255),              // Pages
+                    new EditionNumber(1),                // Edition number
+                    Binding.PUR                          // Binding
+            );
+            editionRepo.save(editionFoundationSeries);
+
+            log.info("Two additional editions saved for DirectSales");
+
+            // Non-Fiction item
+            ItemId nfItemId = new ItemId("5E4D3C2B1A");
+            Item nfItem = itemFactory.createItem(
+                    nfItemId,
+                    editionSapiens.identity(), // Publication Sapiens → Non-Fiction
+                    Condition.GOOD,
+                    new Description("Non-Fiction test item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(nfItem);
+
+            // Science-Fiction item
+            ItemId sfItemId = new ItemId("F1A2B3C4D5");
+            Item sfItem = itemFactory.createItem(
+                    sfItemId,
+                    editionFoundationSeries.identity(), // Publication Foundation → Sci-Fi
+                    Condition.GOOD,
+                    new Description("Sci-Fi test item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(sfItem);
+
+            log.info("Two additional items saved for DirectSales");
+
+            // -------------------------------------------------------
+            // DirectSales for ALL genres
+            // -------------------------------------------------------
+
+            // Fiction — DirectSale #1 (existing items)
+            DirectSale fictionSale1 = directSaleFactory.createDirectSale(
+                    List.of(itemId1, itemId2),
+                    new Price(7.99, Currency.EUR),
+                    Duration.ofDays(15)
+            );
+            directSaleRepo.save(fictionSale1);
+
+            // Fiction — DirectSale #2 (new item)
+            ItemId fictionExtraId = new ItemId("0A1B2C3D4E");
+            Item fictionExtraItem = itemFactory.createItem(
+                    fictionExtraId,
+                    edition1984.identity(),
+                    Condition.FAIR,
+                    new Description("Extra Fiction item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(fictionExtraItem);
+
+            DirectSale fictionSale2 = directSaleFactory.createDirectSale(
+                    List.of(fictionExtraId),
+                    new Price(5.99, Currency.EUR),
+                    Duration.ofDays(10)
+            );
+            directSaleRepo.save(fictionSale2);
+
+            // Non-Fiction
+            DirectSale nonFictionSale = directSaleFactory.createDirectSale(
+                    List.of(nfItemId),
+                    new Price(8.49, Currency.EUR),
+                    Duration.ofDays(20)
+            );
+            directSaleRepo.save(nonFictionSale);
+
+            // Science-Fiction
+            DirectSale sciFiSale = directSaleFactory.createDirectSale(
+                    List.of(sfItemId),
+                    new Price(6.49, Currency.EUR),
+                    Duration.ofDays(25)
+            );
+            directSaleRepo.save(sciFiSale);
+
+           // Architecture (existing item3)
+            DirectSale architectureSale = directSaleFactory.createDirectSale(
+                    List.of(itemId3),
+                    new Price(12.99, Currency.EUR),
+                    Duration.ofDays(30)
+            );
+            directSaleRepo.save(architectureSale);
+
+            log.info("DirectSales of all genres");
+
+            // -------------------------------------------------------
             // Auctions
             Auction auction1 = auctionFactory.createAuction(
                     List.of(new ItemId()),
