@@ -82,7 +82,7 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public boolean containsOfIdentity(DirectSaleId id) {
+    public boolean containsOfIdentity(ItemId id) {
 
         return _iDirectSaleSpringDataRepo.existsById(id.toString());
     }
@@ -93,30 +93,32 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
 
         List<String> idsAsString = itemIds.stream()
                 .map(ItemId::toString)
                 .toList();
 
-        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateAsc(idsAsString).stream()
+        return _iDirectSaleSpringDataRepo
+                .findByItemsIdOrderByCreationDateAsc(idsAsString)
+                .stream()
                 .map(_directSaleAssembler::toDomain)
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .toList();
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
 
         List<String> idsAsString = itemIds.stream()
                 .map(ItemId::toString)
                 .toList();
 
-        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateDesc(idsAsString).stream()
+        return _iDirectSaleSpringDataRepo
+                .findByItemsIdOrderByCreationDateDesc(idsAsString)
+                .stream()
                 .map(_directSaleAssembler::toDomain)
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .toList();
     }
 
