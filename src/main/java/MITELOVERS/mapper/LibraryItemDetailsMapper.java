@@ -28,15 +28,14 @@ import org.springframework.stereotype.Component;
 public class LibraryItemDetailsMapper {
 
     public LibraryItemDetailsDTO toDTO(
-            Edition edition,
             Author author,
+            Edition edition,
             PublicationType publicationType) {
 
         return new LibraryItemDetailsDTO(
                 author.getName().toString(),
-                publicationType.toString(),
-                edition.getIdentifier().toString()
-
+                edition.getIdentifier().toString(),
+                publicationType.toString()
         );
     }
 }
