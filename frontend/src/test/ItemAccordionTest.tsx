@@ -28,7 +28,7 @@ describe('ItemAccordion', () => {
     });
 
     it('does not show the details before clicking', () => {
-        render(<ItemAccordion item={mockItem} />);
+        render(<ItemAccordion items={mockItems} />);
 
         expect(screen.queryByText('Type')).not.toBeInTheDocument();
         expect(screen.queryByText('Author')).not.toBeInTheDocument();
@@ -45,23 +45,31 @@ describe('ItemAccordion', () => {
     });
 
     it('render without errors when the list is empty', () => {
-        render(<LibraryAccordion items={[]} />);
+        render(<ItemAccordion items={[]} />);
 
         expect(screen.queryByText('Type')).not.toBeInTheDocument();
     });
 
     it('shows the image with the correct alt', () => {
-        render(<ItemAccordion item={mockItem} />);
+        render(<ItemAccordion items={mockItems} />);
 
         const img = screen.getByAltText('The War of the Worlds');
         expect(img).toBeInTheDocument();
     });
 
-    it('uses placeholder when imageUrl is null', () => {
-        render(<ItemAccordion item={{ ...mockItem, imageUrl: null }} />);
+    it('renders item without image', () => {
 
-        const img = screen.getByAltText('The War of the Worlds');
-        expect(img).toBeInTheDocument();
+        const itemsWithNullPicture = [
+            {
+                ...mockItems[0],
+                picture: null
+            },
+            mockItems[1]
+        ];
+
+        render(<ItemAccordion items={itemsWithNullPicture} />);
+
+        expect(screen.getByText('The War of the Worlds')).toBeInTheDocument();
     });
 
 });
