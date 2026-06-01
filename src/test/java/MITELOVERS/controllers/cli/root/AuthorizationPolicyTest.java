@@ -80,4 +80,121 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    @Test
+    void userCanViewLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canViewLibrary(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanViewLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canViewLibrary(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotViewLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canViewLibrary(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreateList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canCreateList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanCreateList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canCreateList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotCreateList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canCreateList(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanSell() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canSell(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanSell() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canSell(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotSell() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canSell(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
 }
