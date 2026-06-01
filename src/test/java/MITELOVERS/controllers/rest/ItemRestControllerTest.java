@@ -44,21 +44,33 @@ class ItemRestControllerTest {
         );
         when(itemService.registerItem(any(), any(), any())).thenReturn(dto);
 
-        // Act
-        var result = mockMvc.perform(post("/items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                            "editionId": "E-ABCDEF12",
-                            "condition": "GOOD",
-                            "description": "Nice copy"
-                        }
-                        """));
-
-        // Assert
-        result.andExpect(status().isCreated());
+        // Act + Assert
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "editionId": "E-ABCDEF12",
+                                    "condition": "GOOD",
+                                    "description": "Nice copy"
+                                }
+                                """))
+                .andExpect(status().isCreated());
     }
 
+    @Test
+    void shouldReturn422WhenConditionIsInvalid() throws Exception {
+        // Act + Assert
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "editionId": "E-ABCDEF12",
+                                    "condition": "AMAZING",
+                                    "description": "Nice copy"
+                                }
+                                """))
+                .andExpect(status().isUnprocessableEntity());
+    }
 
     @Test
     void shouldReturn404WhenEditionNotFound() throws Exception {
@@ -66,19 +78,17 @@ class ItemRestControllerTest {
         when(itemService.registerItem(any(), any(), any()))
                 .thenThrow(new NoSuchElementException("Edition not found"));
 
-        // Act
-        var result = mockMvc.perform(post("/items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                        {
-                            "editionId": "E-INVALID",
-                            "condition": "GOOD",
-                            "description": "Nice copy"
-                        }
-                        """));
-
-        // Assert
-        result.andExpect(status().isNotFound());
+        // Act + Assert
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "editionId": "E-INVALID",
+                                    "condition": "GOOD",
+                                    "description": "Nice copy"
+                                }
+                                """))
+                .andExpect(status().isNotFound());
     }
 
     // ----------------------------------------------------------------
@@ -90,11 +100,9 @@ class ItemRestControllerTest {
         // Arrange
         when(itemService.getAllItems()).thenReturn(List.of());
 
-        // Act
-        var result = mockMvc.perform(get("/items"));
-
-        // Assert
-        result.andExpect(status().isOk());
+        // Act + Assert
+        mockMvc.perform(get("/items"))
+                .andExpect(status().isOk());
     }
 
     // ----------------------------------------------------------------
@@ -111,11 +119,9 @@ class ItemRestControllerTest {
         );
         when(itemService.getItemById(any())).thenReturn(dto);
 
-        // Act
-        var result = mockMvc.perform(get("/items/3C5D126F8B"));
-
-        // Assert
-        result.andExpect(status().isOk());
+        // Act + Assert
+        mockMvc.perform(get("/items/3C5D126F8B"))
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -124,10 +130,8 @@ class ItemRestControllerTest {
         when(itemService.getItemById(any()))
                 .thenThrow(new NoSuchElementException("Item not found"));
 
-        // Act
-        var result = mockMvc.perform(get("/items/INVALID"));
-
-        // Assert
-        result.andExpect(status().isNotFound());
+        // Act + Assert
+        mockMvc.perform(get("/items/INVALID"))
+                .andExpect(status().isNotFound());
     }
 }

@@ -5,7 +5,7 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.response.ItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

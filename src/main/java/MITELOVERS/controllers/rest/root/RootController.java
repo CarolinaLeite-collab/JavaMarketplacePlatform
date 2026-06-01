@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.root;
+package MITELOVERS.controllers.rest.root;
 
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;

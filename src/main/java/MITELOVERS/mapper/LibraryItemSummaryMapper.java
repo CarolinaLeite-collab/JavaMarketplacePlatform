@@ -2,7 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.dto.LibraryItemSummaryDTO;
+import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.springframework.stereotype.Component;
 
 @Component

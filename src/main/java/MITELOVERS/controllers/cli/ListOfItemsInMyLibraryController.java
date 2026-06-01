@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.LibraryService;
-import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.response.ItemDetailsDTO;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;

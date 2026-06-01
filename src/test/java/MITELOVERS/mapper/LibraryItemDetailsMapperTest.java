@@ -7,7 +7,7 @@ import MITELOVERS.domain.valueobject.ISBN;
 import MITELOVERS.domain.valueobject.ISSN;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.NoIdentifier;
-import MITELOVERS.dto.LibraryItemDetailsDTO;
+import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

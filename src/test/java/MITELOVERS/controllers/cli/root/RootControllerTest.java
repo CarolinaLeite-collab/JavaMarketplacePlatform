@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.cli.root;
 
-import MITELOVERS.controllers.root.RootController;
-import MITELOVERS.controllers.root.RootLinkProvider;
+import MITELOVERS.controllers.rest.root.RootController;
+import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Email;

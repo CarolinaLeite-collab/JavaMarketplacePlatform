@@ -1,9 +1,12 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.dto.DimensionDTO;
 import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.WeightDTO;
+import MITELOVERS.dto.response.PublicationTypeResponseDTO;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class EditionResponseDTOMapper {
+public class EditionResponseDTOMapper implements RepresentationModelAssembler<Edition, EditionResponseDTO> {
 
     public EditionResponseDTO toModel(Edition edition) {
 

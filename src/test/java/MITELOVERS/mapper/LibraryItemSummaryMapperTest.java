@@ -5,7 +5,7 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Picture;
 import MITELOVERS.domain.valueobject.Title;
-import MITELOVERS.dto.LibraryItemSummaryDTO;
+import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
