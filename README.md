@@ -26,7 +26,11 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
-    * [Run Tests on Pull Request](#run-tests-on-pull-request)
+    * [Hardened Security Pipeline](#hardened-security-pipeline)
+      * [Secret Detection with Gitleaks](#secret-detection-with-gitleaks)
+      * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
+      * [Run Tests on Pull Request](#run-tests-on-pull-request)
+      * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
   * [SpringBoot application.properties](#springboot-applicationproperties)
 <!-- TOC -->
 
@@ -217,6 +221,8 @@ jobs:
           ${{ secrets.DISCORD_INCOMING_PR_WEBHOOK }}
 ```
 
+---
+
 ### Notify Discord on PR Merge
 
 This GitHub workflow presents a complementary action to the first one.
@@ -257,7 +263,7 @@ jobs:
             }')" \
           ${{ secrets.DISCORD_WEBHOOK }}
 ```
-
+---
 ### Hardened Security Pipeline
 
 This workflow, comprised of several jobs, seeks to enforce a propper running order for several tasks.
@@ -383,6 +389,8 @@ jobs:
 
 Besides the steps already covered, we created an environment variable `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`, that forces all JavaScript-based actions (checkout, setup-java, upload-artifact) to run on Node.js 24 instead of the deprecated Node.js 20, removing the deprecation warning.
 
+---
+
 ### Secret Detection with `Gitleaks`
 
 To improve the security of the development workflow, a dedicated job was added to the Hardened Security Pipeline workflow, to detect accidentally committed secrets.
@@ -506,25 +514,38 @@ The job's validation was tested with the temporary addition of a file containing
 
 ### Run Tests on Pull Request
 
-On each Pull Request trigger, the pipeline runs `mvn clean verify` which compiles the code, executes all tests and enforces the test line coverage threshold.
+On each Pull Request trigger, the `build-and-test-with-coverage` job runs `mvn clean verify` which:
 
-To follow good DevOps practices, it also archives the JaCoCo coverage report in HTML format. 
+- Compiles the code
+- Executes all tests
+- Enforces a 95% test line coverage threshold via JaCoCo
+- Runs OWASP Dependency-Check to scan for vulnerabilities (fails build if CVSS ≥ 7)
+- Generates a CycloneDX SBOM (Software Bill of Materials)
+
+Following good DevOps practices, the pipeline archives multiple security and quality reports as downloadable artifacts: 
+
+- JaCoCo coverage report (HTML format)
+- OWASP Dependency-Check vulnerability report (HTML format)
+- CycloneDX SBOM (XML format, machine-readable)
 
 To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
 
 ![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
 
-The job presents as follows:
+The `build-and-test-with-coverage` job is configured as follows:
 
 ```yaml
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
     needs: semgrep-sast
-    
+
     permissions:
       contents: read
       pull-requests: write
-      
+
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -534,14 +555,26 @@ The job presents as follows:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build and run unit tests with coverage
+      - name: Build, test, and run security scans
         run: mvn clean verify
-      - name: Upload coverage report
+      - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: target/site/jacoco/
+      - name: Upload Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: target/bom.xml
       - name: Post coverage comment
         if: always()
         uses: madrapps/jacoco-report@v1.7.1
@@ -561,11 +594,11 @@ Additionally, a permissions block was added:
 
 ### Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)
 
-As part of hardening the security pipeline, our `build-and-test-with-coverage` job now also performs a **Software Composition Analysis (SCA)** during `mvn clean verify`. The build runs the **OWASP Dependency-Check** Maven plugin, which analyzes third-party dependencies declared in our `pom.xml` against public vulnerability databases (like the **National Vulnerability Database**, or NVD). A build will fail if a vulnerability with CVSS (Common Vulnerability Scoring System) greater than or equal to **7** is detected. This threshold makes it so that a Pull Request cannot be merged if it introduces a dependency containing a known high-severity issue. Remediation of the known vulnerability is necessary for the pipeline to pass.
+As part of hardening the security pipeline, **Software Composition Analysis (SCA)** was integrated into the above referenced `build-and-test-with-coverage` job via the **OWASP Dependency-Check** Maven plugin, which analyzes third-party dependencies declared in our `pom.xml` against public vulnerability databases (like the **National Vulnerability Database**, or NVD). A build will fail if a vulnerability with **CVSS** (Common Vulnerability Scoring System) ≥ **7** is detected, preventing a Pull Request from being merged if it introduces a dependency containing a known high-severity issue. Remediation of the known vulnerability is necessary for the pipeline to pass.
 
-Also introduced in this step was the creation of a **Software Bill of Materials (SBOM)**, generated through the **CycloneDX** Maven plugin. The SBOM is a _machine-readable_ inventory of all third-party components and their versions used in the application. The SBOM is uploaded as a build artifact, together with the Dependency-Check HTML report. This artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check whether or not the affected library exists in the SBOM, allowing them to immediately assess the impact and figure out remediation steps without the need to rescan or manually inspect all application dependencies.
+A **Software Bill of Materials (SBOM)** is also generated through the **CycloneDX** plugin, creating a _machine-readable_ inventory of all third-party components in the application (101 in total). The SBOM artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check if the affected library exists in the SBOM, enabling rapid impact assessment and remediation without the need to rescan or manually inspect all application dependencies again.
 
-We first added **OWASP Dependency-Check** plugin to our `pom.xml`, right after the JaCoCo plugin and before PIT mutation coverage plugin:
+**OWASP Dependency-Check plugin configuration** (pom.xml):
 
 ```
 <!-- OWASP Dependency-Check (SCA) -->
@@ -590,30 +623,25 @@ We first added **OWASP Dependency-Check** plugin to our `pom.xml`, right after t
 </plugin>
 ```
 
-The first time running `mvn clean verified` resulted in a slow and rate-limited build, leading it to ultimately fail. As a result, we requested an **API Key** from NVD (as they recommend we do so) and exposed it to Maven as an environment variable to be used at runtime. 
+**Local testing and remediation**:
 
-On the second run, the pipeline failed due to many CVEs being found, including 36 in `tomcat-embed-core`, 10 in the embedded **Swagger UI** library, and several others in Spring, Jackson, and Log4j. 
+The first local run of `mvn clean verify` failed due to **36 CVEs** in `tomcat-embed-core`, 10 in Swagger UI, and several in Spring Framework, Jackson, and Log4j:
 
-**dependency-check-report.html**:
-![Dependency-Check_report_1.png](docs/readme-printscreens/Dependency-Check_report_1.png)
+There vulnerabilities were remediated by:
 
-We remediated most of these CVEs by updating the **Spring Boot parent** to version **4.0.6** in our pom.xml. Spring Boot 4.0.6 bundles Tomcat 11.0.21, but the remaining fixes require version **11.0.22**; as a result, we overrode the Tomcat version to 11.0.22 by adding the following to the `<properties>` section of our pom.xml:
+- Upgrading Spring Boot parent to **4.0.6**
 
+- Overriding Tomcat version to **11.0.22** (Spring Boot 4.0.6 bundles version 11.0.21):
+
+(pom.xml)
 ```
 <!-- Override Tomcat version to fix CVEs -->
 <tomcat.version>11.0.22</tomcat.version>
 ```
 
-Following these two updates, the local build was successful, meaning there were no vulnerabilities found with a CVSS score of 7 or higher.
+Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabilities.
 
-![Dependency-Check_build_success.png](docs/readme-printscreens/Dependency-Check_build_success.png)
-
-**dependency-check-report.html**:
-![Dependency-Check_report_3.png](docs/readme-printscreens/Dependency-Check_report_3.png)
-
-#### Dependency inventory (SBOM)
-
-To fulfil this task, we added the **CycloneDX SBOM** plugin to our pom.xml, right after the OWASP Dependency-Check plugin:
+**CycloneDX SBOM plugin configuration**:
 
 ```
 <!-- CycloneDX SBOM generation -->
@@ -647,82 +675,26 @@ To fulfil this task, we added the **CycloneDX SBOM** plugin to our pom.xml, righ
     </plugin>
 ```
 
-After running this locally, it produced our CycloneDX SBOM as **bom.json** and **bom.xml** inside **target/**, where we can view every dependency in the project, including their versions, licenses, and all other metadata.
+This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
 
-![bom_files.png](docs/readme-printscreens/bom_files.png)
+**CI Integration:**
 
-We then updated our workflow YAML (**hardened-security-pipeline.yml**) which is executed by GitHub Actions on Pull Requests. The **build-and-test-with-coverage** job was updated to the following:
+An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
 
-```
-  build-and-test-with-coverage:
-    runs-on: ubuntu-latest
-    needs: semgrep-sast
+The workflow now uploads three artifacts on each PR:
+- JaCoCo coverage report
+- Dependency-Check vulnerability report
+- CycloneDX SBOM
 
-    permissions:
-      contents: read
-      pull-requests: write
+**CI Pipeline Validation**: 
 
-    env:
-      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}  #NEW
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4.7.0
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-      - name: Build, test, and run security scans
-        run: mvn clean verify
-      - name: Upload JaCoCo coverage report
-        if: always()
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/
-      - name: Upload Dependency-Check report   #NEW
-        if: always()
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: dependency-check-report
-          path: target/dependency-check-report.html
-      - name: Upload SBOM                      #NEW
-        if: always()
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: sbom-cyclonedx
-          path: target/bom.xml
-      - name: Post coverage comment
-        if: always()
-        uses: madrapps/jacoco-report@v1.7.1
-        with:
-          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
-          min-coverage-overall: 0
-          min-coverage-changed-files: 0
-```
-
-Changes:
-- addition of `Upload Dependency-Check report` step
-- addition of `Upload SBOM` step
-- addition of an environment variable `NVD_API_KEY` (that will be added as a GitHub secret in the next step)
-
-We then added the previously made **NVD API key** as a GitHub secret.
-
-![GitHub_Secret_NVD_API_KEY.png](docs/readme-printscreens/GitHub_Secret_NVD_API_KEY.png)
-
-After pushing the updated **hardened-security-pipeline.yml** and configuring the GitHub Secret, our Hardened Security Pipeline executed successfully and produced the following expected artifacts:
-
-![artifacts_produced.png](docs/readme-printscreens/artifacts_produced.png)
-
-To ensure that the GitHub Actions workflow pipeline does fail if any dependency has a CVSS score of 7 or higher, we temporarily downgraded Tomcat back to 11.0.21 in our pom.xml, which triggered the pipeline to fail as expected:
+To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat was temporarily downgraded to 11.0.21 in a Pull Request. The CI pipeline failed as expected:
 
 ![SCA_failed_pipeline_test.png](docs/readme-printscreens/SCA_failed_pipeline_test.png)
 
-We restored the version of Tomcat to 11.0.22 following this test, which resulted in a passing pipeline.
+After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
 
+---
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined:
