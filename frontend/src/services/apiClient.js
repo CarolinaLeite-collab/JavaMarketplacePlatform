@@ -1,5 +1,5 @@
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8081';
 const USER_ID = 'pedro@mail.com';       // temporary until having authorization
 
 // GET generic (without authorization)
@@ -42,7 +42,7 @@ async function post(path, body) {
             'X-User-Id': USER_ID
         },
         body: JSON.stringify(body)
-    });
+});
 
     if (!response.ok) {
         throw new Error(`${response.status}`);
