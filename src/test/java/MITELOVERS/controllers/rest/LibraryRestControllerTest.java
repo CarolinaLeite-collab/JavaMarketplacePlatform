@@ -9,13 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -130,5 +133,34 @@ class LibraryRestControllerTest {
 
         // Assert
         result.andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn201WhenItemAddedToLibrary() throws Exception {
+        // Arrange
+        // Act
+        var result = mockMvc.perform(post("/my-library/publications")
+                .header("X-User-Id", "pedro@aeiou.com")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\": \"3C5D126F8B\"}"));
+
+        // Assert
+        result.andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldReturn409WhenItemAlreadyInLibrary() throws Exception {
+        // Arrange
+        doThrow(new IllegalStateException("Item already exists in library"))
+                .when(libraryService).addItemToLibrary(any(), any());
+
+        // Act
+        var result = mockMvc.perform(post("/my-library/publications")
+                .header("X-User-Id", "pedro@aeiou.com")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"itemId\": \"3C5D126F8B\"}"));
+
+        // Assert
+        result.andExpect(status().isConflict());
     }
 }
