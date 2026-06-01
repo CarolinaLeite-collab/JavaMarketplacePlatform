@@ -32,4 +32,18 @@ class ApiErrorTest {
         assertNull(apiError.getStatus());
         assertNull(apiError.getMessage());
     }
+
+    @Test
+    void shouldSetStatusAndMessage() {
+        // Arrange
+        ApiError sut = new ApiError();
+
+        // Act
+        sut.setStatus(HttpStatus.BAD_REQUEST);
+        sut.setMessage("updated message");
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, sut.getStatus());
+        assertEquals("updated message", sut.getMessage());
+    }
 }

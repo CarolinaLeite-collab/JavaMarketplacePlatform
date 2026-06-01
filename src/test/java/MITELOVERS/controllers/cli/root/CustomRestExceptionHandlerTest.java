@@ -42,4 +42,49 @@ class CustomRestExceptionHandlerTest {
         assertNotNull(apiError);
         assertEquals(HttpStatus.BAD_REQUEST, apiError.getStatus());
     }
+
+    @Test
+    void shouldReturn403WhenSecurityException() {
+        // Arrange
+        SecurityException ex = new SecurityException("access denied");
+
+        // Act
+        ResponseEntity<Object> response = handler.handleSecurity(ex);
+
+        // Assert
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        ApiError apiError = (ApiError) response.getBody();
+        assertNotNull(apiError);
+        assertEquals(HttpStatus.FORBIDDEN, apiError.getStatus());
+    }
+
+    @Test
+    void shouldReturn501WhenUnsupportedOperationException() {
+        // Arrange
+        UnsupportedOperationException ex = new UnsupportedOperationException("not implemented");
+
+        // Act
+        ResponseEntity<Object> response = handler.handleUnsupportedOperation(ex);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+        ApiError apiError = (ApiError) response.getBody();
+        assertNotNull(apiError);
+        assertEquals(HttpStatus.NOT_IMPLEMENTED, apiError.getStatus());
+    }
+
+    @Test
+    void shouldReturn500WhenRuntimeException() {
+        // Arrange
+        RuntimeException ex = new RuntimeException("unexpected error");
+
+        // Act
+        ResponseEntity<Object> response = handler.handleRuntime(ex);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        ApiError apiError = (ApiError) response.getBody();
+        assertNotNull(apiError);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, apiError.getStatus());
+    }
 }
