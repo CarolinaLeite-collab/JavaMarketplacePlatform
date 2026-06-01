@@ -1,8 +1,9 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
-import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,14 +55,27 @@ public class EditionRestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllEditions(){
 
-        List<EditionResponseDTO> listOfEditionsDTO = _editionService.getAllEditions();
+        List<EditionResponseDTO> result = _editionService.getAllEditions();
 
-        if (listOfEditionsDTO.isEmpty()) {
+        if (result.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return ResponseEntity.ok(listOfEditionsDTO);
+        result.forEach(EditionResponseDTO ->
+                EditionResponseDTO.add(
+                        linkTo(methodOn(EditionRestController.class)
+                                .getEditionById(EditionResponseDTO.getEditionId()))
+                                .withSelfRel()
+                )
+        );
 
+        CollectionModel<EditionResponseDTO> collection = CollectionModel.of(
+                result, linkTo(methodOn(EditionRestController.class)
+                            .getAllEditions())
+                            .withSelfRel()
+        );
+
+        return new ResponseEntity<>(collection, HttpStatus.OK);
     }
 
     @GetMapping(path = "/by-publication", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -74,6 +88,20 @@ public class EditionRestController {
             if (listOfEditionsDTO.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
+
+            listOfEditionsDTO.forEach(EditionResponseDTO ->
+                    EditionResponseDTO.add(
+                            linkTo(methodOn(EditionRestController.class)
+                                    .getEditionById(EditionResponseDTO.getEditionId()))
+                                    .withSelfRel()
+                    )
+            );
+
+            CollectionModel<EditionResponseDTO> collection = CollectionModel.of(
+                    listOfEditionsDTO, linkTo(methodOn(EditionRestController.class)
+                            .getAllEditions())
+                            .withSelfRel()
+            );
 
             return new ResponseEntity<>(listOfEditionsDTO, HttpStatus.OK);
 
@@ -91,6 +119,10 @@ public class EditionRestController {
     public ResponseEntity<EditionResponseDTO> getEditionById(@PathVariable String editionId){
 
         EditionResponseDTO dto = _editionService.getEditionById(editionId);
+
+        dto.add(linkTo(methodOn(EditionRestController.class)
+                .getEditionById(dto.getEditionId()))
+                .withSelfRel());
 
         return ResponseEntity.ok(dto);
 

@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
-import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
