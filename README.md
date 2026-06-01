@@ -51,16 +51,32 @@ To run tests only:
 mvn clean test
 ```
 
-To run the application locally, there are two options:
+To run the application locally, there are two options.
 
+**Option 1:**
+
+macOs/Linux:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=mem
 ```
 
+Windows:
+```
+mvn spring-boot:run "-Dspring-boot.run.profiles=mem"
+```
+
 - starts the app using an in-memory profile, meaning the database lives only in RAM and is wiped clean every time the app stops (Assuming tha the JDBC URL in `application.properties` is set to `jdbc:h2:mem:miteloversdb`).
 
+**Option 2:**
+
+macOs/Linux:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=jpa,bootstrap
+```
+
+Windows:
+```
+mvn spring-boot:run "-Dspring-boot.run.profiles=jpa,bootstrap"
 ```
 
 - starts the app with two profiles: jpa for file/persistent database configuration, and bootstrap to seed initial data on startup. Data survives restarts.
