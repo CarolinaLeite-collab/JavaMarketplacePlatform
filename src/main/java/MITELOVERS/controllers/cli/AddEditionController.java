@@ -1,72 +1,29 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.EditionService;
 import MITELOVERS.domain.edition.Edition;
-import MITELOVERS.domain.edition.EditionFactory;
-import MITELOVERS.domain.repository.IEditionRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.dto.response.EditionResponseDTO;
+import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.stereotype.Controller;
 
-import java.time.Year;
-
 /**
- * Controller responsible for creating new editions in the system.
+ * CLI controller responsible for creating new editions in the system.
  * <p>
- * This controller delegates the creation of {@link Edition} instances to the {@link IEditionRepo}.
+ * This controller is used for testing purposes and delegates
+ * the creation of {@link Edition} instances to the {@link EditionService}.
  * </p>
  */
 
 @Controller
 public class AddEditionController {
 
-    private final IEditionRepo _iRepo;
-    private final EditionFactory _editionFactory;
+    private final EditionService _editionService;
 
-
-    public AddEditionController(IEditionRepo iRepo, EditionFactory factory) {
-        _iRepo = iRepo;
-        _editionFactory = factory;
+    public AddEditionController(EditionService editionService) {
+        _editionService = editionService;
     }
 
-
-    public Edition addEdition(PublicationTypeId typeId,
-                              Identifier identifier,
-                              PublicationId publicationId,
-                              PublishingCompanyId publishingCompanyId,
-                              Year publishingYear,
-                              Language editionLanguage,
-                              Dimension dimension,
-                              Weight weight,
-                              NumberOfPages numberOfPages,
-                              EditionNumber editionNumber,
-                              Binding binding) {
-
-        Edition edition = _editionFactory.createEdition(
-                typeId,
-                identifier,
-                publicationId,
-                publishingCompanyId,
-                publishingYear,
-                editionLanguage,
-                dimension,
-                weight,
-                numberOfPages,
-                editionNumber,
-                binding
-        );
-
-        for (Edition existingEdition : _iRepo.findAll()) {
-            if (identifier != null && existingEdition.getIdentifier() != null) {
-                if (existingEdition.getPublicationTypeId().equals(typeId) &&
-                        existingEdition.getIdentifier().equals(identifier)) {
-                    throw new IllegalStateException("An Edition with this identifier already exists!");
-                }
-            } else {
-                if (existingEdition.sameAs(edition)) {
-                    throw new IllegalStateException("Edition already exists!");
-                }
-            }
-        }
-
-        return _iRepo.save(edition);
+    public EditionResponseDTO addEdition(String publicationId, EditionRequestDTO dto) {
+        return _editionService.registerEdition(publicationId, dto);
     }
 }
