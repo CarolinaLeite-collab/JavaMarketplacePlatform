@@ -1,6 +1,7 @@
 package MITELOVERS.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Generated;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
@@ -16,6 +17,7 @@ import org.springframework.hateoas.RepresentationModel;
  */
 
 @Getter
+@Generated
 @AllArgsConstructor
 public class LibraryItemDetailsDTO extends RepresentationModel<LibraryItemDetailsDTO> {
 

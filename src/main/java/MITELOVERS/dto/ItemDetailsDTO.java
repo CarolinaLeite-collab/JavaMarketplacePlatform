@@ -1,5 +1,6 @@
 package MITELOVERS.dto;
 
+import lombok.Generated;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.hateoas.RepresentationModel;
  * </p>
  */
 
+@Generated
 public class ItemDetailsDTO extends RepresentationModel<ItemDetailsDTO> {
 
     private final String _title;
