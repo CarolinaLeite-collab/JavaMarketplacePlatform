@@ -1,5 +1,7 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
+import MITELOVERS.dto.DimensionDTO;
+import MITELOVERS.dto.WeightDTO;
 import lombok.Builder;
 import lombok.Generated;
 import lombok.Getter;
