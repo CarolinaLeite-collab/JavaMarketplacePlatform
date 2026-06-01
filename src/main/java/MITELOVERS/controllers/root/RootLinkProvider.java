@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.cli.root;
+package MITELOVERS.controllers.root;
 
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
