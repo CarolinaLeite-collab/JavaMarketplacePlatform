@@ -6,7 +6,8 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 /**
- * Assembles PublicationType domain objects into PublicationTypeResponseDTO instances.
+ * Maps {@link PublicationType} domain objects into
+ * {@link PublicationTypeResponseDTO} instances.
  */
 
 @Component

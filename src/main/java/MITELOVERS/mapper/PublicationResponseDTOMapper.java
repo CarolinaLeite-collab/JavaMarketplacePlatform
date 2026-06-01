@@ -7,8 +7,9 @@ import MITELOVERS.dto.response.PublicationResponseDTO;
 import org.springframework.stereotype.Component;
 
 /**
- * Assembles Publication domain objects into PublicationResponseDTO instances.
-*/
+ * Maps {@link Publication} domain objects into
+ * {@link PublicationResponseDTO} instances.
+ */
 
 @Component
 public class PublicationResponseDTOMapper {
