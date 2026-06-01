@@ -360,6 +360,9 @@ jobs:
       contents: read
       pull-requests: write
 
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -369,14 +372,26 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build and run unit tests with coverage
+      - name: Build, test, and run security scans
         run: mvn clean verify
-      - name: Upload coverage report
+      - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: target/site/jacoco/
+      - name: Upload Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: target/bom.xml
       - name: Post coverage comment
         if: always()
         uses: madrapps/jacoco-report@v1.7.1
