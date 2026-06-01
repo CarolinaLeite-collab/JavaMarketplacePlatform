@@ -31,5 +31,14 @@ public class AuthorizationPolicy {
     public boolean canSell(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
+
+    /** Publication related authorization - can list Publication*/
+    public boolean canListPublications(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+    /** Publication related authorization - can register Publication*/
+    public boolean canCreatePublication(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
 }
 
