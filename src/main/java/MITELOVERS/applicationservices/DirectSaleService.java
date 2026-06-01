@@ -16,6 +16,19 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.*;
 
+/**
+ * Application service responsible for managing Direct Sales within the domain.
+ *
+ * <p>This service coordinates domain operations such as creating new direct
+ * sales, validating item availability, retrieving existing sales, and
+ * performing filtered queries (e.g., by genre). It acts as the orchestration
+ * layer between repositories, factories, and DTO mappers, ensuring that
+ * domain invariants are respected.</p>
+ *
+ * <p>All returned objects are mapped into DTOs suitable for exposure at the
+ * API layer, keeping domain objects internal to the application.</p>
+ */
+
 @Service
 public class DirectSaleService {
 

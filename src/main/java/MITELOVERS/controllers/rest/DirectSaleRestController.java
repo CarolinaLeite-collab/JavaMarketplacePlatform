@@ -14,6 +14,19 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller exposing Direct Sale operations to API clients.
+ *
+ * <p>Provides endpoints for creating direct sales, retrieving all sales,
+ * fetching a specific sale by its identifier, and obtaining filtered direct
+ * sales based on genre. Responses are enriched with HATEOAS links to support
+ * discoverability and navigability of the API.</p>
+ *
+ * <p>This controller delegates all business logic to
+ * {@link DirectSaleService}, ensuring a clean separation between HTTP
+ * concerns and domain/application logic.</p>
+ */
+
 @RestController
 @RequestMapping("/direct-sales")
 public class DirectSaleRestController {
