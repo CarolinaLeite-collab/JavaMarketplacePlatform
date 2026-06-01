@@ -56,7 +56,6 @@ class PublicationServiceTest {
     String genreRepoExceptionMessage = "GenreRepo is required";
     String authorRepoExceptionMessage = "AuthorRepo is required";
     String mapperExceptionMessage = "PublicationDTOAssembler is required";
-    String publicationAlreadyExistsExceptionMessage = "Publication already exists in the repository";
     String genreIdDoesntExistExceptionMessage = "Genre does not exist in the repository";
     String authorIdDoesntExistExceptionMessage = "Author does not exist in the repository";
 
@@ -184,13 +183,15 @@ class PublicationServiceTest {
     }
 
     @Test
-    void registerPublicationThrowsWhenPublicationAlreadyExists() {
-        //Arrange
+    void registerPublicationReturnsExistingPublicationWhenPublicationAlreadyExists() {
+        // Arrange
         Title titleDouble = mock(Title.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
-        Publication publicationDouble = mock(Publication.class);
+
+        Publication newPublicationDouble = mock(Publication.class);
+        Publication existingPublicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
 
         when(_publicationFactoryDouble.createPublication(
@@ -198,27 +199,27 @@ class PublicationServiceTest {
                 authorIdDouble,
                 yearDouble,
                 genreIdDouble
-        )).thenReturn(publicationDouble);
+        )).thenReturn(newPublicationDouble);
 
-        when(publicationDouble.identity())
+        when(newPublicationDouble.identity())
                 .thenReturn(publicationIdDouble);
 
         when(_iPublicationRepoDouble.containsOfIdentity(publicationIdDouble))
                 .thenReturn(true);
 
-        //Act
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
-                () -> _service.registerPublication(
-                        titleDouble,
-                        authorIdDouble,
-                        yearDouble,
-                        genreIdDouble
-                )
+        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
+                .thenReturn(Optional.of(existingPublicationDouble));
+
+        // Act
+        Publication result = _service.registerPublication(
+                titleDouble,
+                authorIdDouble,
+                yearDouble,
+                genreIdDouble
         );
 
-        //Assert
-        assertEquals(publicationAlreadyExistsExceptionMessage, exception.getMessage());
+        // Assert
+        assertSame(existingPublicationDouble, result);
     }
 
     @Test

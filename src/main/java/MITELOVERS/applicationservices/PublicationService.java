@@ -56,10 +56,14 @@ public class PublicationService {
     ) {
 
         Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
+        PublicationId publicationId = newPublication.identity();
 
-        if (_iPublicationRepo.containsOfIdentity(newPublication.identity())){
-            throw new IllegalStateException(
-                    "Publication already exists in the repository");
+        if (_iPublicationRepo.containsOfIdentity(publicationId)) {
+            return _iPublicationRepo
+                    .ofIdentity(publicationId)
+                    .orElseThrow(() -> new NoSuchElementException(
+                            "Publication with id '" + publicationId + "' does not exist"
+                    ));
         }
 
         return _iPublicationRepo.save(newPublication);
