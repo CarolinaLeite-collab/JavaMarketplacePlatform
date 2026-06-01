@@ -2,7 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.response.EditionResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

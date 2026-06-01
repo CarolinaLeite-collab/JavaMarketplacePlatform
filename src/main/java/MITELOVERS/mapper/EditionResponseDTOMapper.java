@@ -2,7 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.dto.DimensionDTO;
-import MITELOVERS.dto.EditionResponseDTO;
+import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.WeightDTO;
 import org.springframework.stereotype.Component;
 
