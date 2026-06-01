@@ -10,6 +10,7 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.Condition;
 import MITELOVERS.domain.valueobject.Description;
 import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -472,5 +473,34 @@ class ItemServiceTest {
 
         // Assert
         assertEquals(GENRE_NOT_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void registerItemContainsItemButOfIdentityEmptyThrowsNoSuchElementException() {
+        // Arrange
+        EditionId editionIdDouble     = mock(EditionId.class);
+        Edition editionDouble         = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble           = mock(Author.class);
+        Genre genreDouble             = mock(Genre.class);
+        Item itemDouble               = mock(Item.class);
+        ItemId itemIdDouble           = mock(ItemId.class);
+
+        when(itemIdDouble.toString()).thenReturn("TEST-ITEM-ID");
+        when(editionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(genreRepoDouble.ofIdentity(any())).thenReturn(Optional.of(genreDouble));
+        when(itemFactoryDouble.createItem(any(), any(), any())).thenReturn(itemDouble);
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemRepoDouble.containsOfIdentity(itemIdDouble)).thenReturn(true);
+        when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.empty());
+
+        // Act
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class, () ->
+                itemService.registerItem(editionIdDouble, Condition.GOOD, new Description("Nice copy")));
+
+        // Assert
+        assertEquals("Item with id 'TEST-ITEM-ID' does not exist", ex.getMessage());
     }
 }
