@@ -27,4 +27,4 @@ dist/
 .vite
 
 #Coverage Diretories
- coverage/
+coverage/
