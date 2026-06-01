@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.GenreService;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

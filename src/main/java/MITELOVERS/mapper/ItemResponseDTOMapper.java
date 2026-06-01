@@ -6,7 +6,7 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.dto.ItemResponseDTO;
+import MITELOVERS.dto.response.ItemResponseDTO;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

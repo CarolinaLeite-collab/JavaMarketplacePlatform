@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.GenreService;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import MITELOVERS.dto.request.GenreRequestDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

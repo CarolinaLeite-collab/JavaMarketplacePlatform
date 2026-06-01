@@ -10,7 +10,7 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.Condition;
 import MITELOVERS.domain.valueobject.Description;
 import MITELOVERS.domain.valueobject.EditionId;
-import MITELOVERS.dto.ItemResponseDTO;
+import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

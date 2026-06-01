@@ -1,7 +1,7 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.author.Author;
-import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.response.AuthorResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 

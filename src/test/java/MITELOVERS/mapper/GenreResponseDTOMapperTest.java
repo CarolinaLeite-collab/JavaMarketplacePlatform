@@ -2,7 +2,7 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

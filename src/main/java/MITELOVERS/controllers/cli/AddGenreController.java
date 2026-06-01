@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.GenreService;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import org.springframework.stereotype.Component;
 
 /**

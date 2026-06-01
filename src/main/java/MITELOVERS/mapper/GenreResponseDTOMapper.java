@@ -1,7 +1,7 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.genre.Genre;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 

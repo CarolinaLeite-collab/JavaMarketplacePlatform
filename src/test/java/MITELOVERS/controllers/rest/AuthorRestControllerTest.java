@@ -2,7 +2,7 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.AuthorService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
-import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.response.AuthorResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,7 +5,7 @@ import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.response.AuthorResponseDTO;
 import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.springframework.stereotype.Service;
 

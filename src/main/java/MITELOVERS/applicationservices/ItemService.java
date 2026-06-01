@@ -11,7 +11,7 @@ import MITELOVERS.domain.valueobject.Condition;
 import MITELOVERS.domain.valueobject.Description;
 import MITELOVERS.domain.valueobject.EditionId;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.dto.ItemResponseDTO;
+import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;

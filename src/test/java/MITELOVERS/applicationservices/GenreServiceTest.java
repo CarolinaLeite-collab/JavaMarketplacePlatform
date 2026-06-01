@@ -4,7 +4,7 @@ import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.dto.GenreResponseDTO;
+import MITELOVERS.dto.response.GenreResponseDTO;
 import MITELOVERS.mapper.GenreResponseDTOMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

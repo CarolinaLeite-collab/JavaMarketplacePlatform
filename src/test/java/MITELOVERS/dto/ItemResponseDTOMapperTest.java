@@ -6,6 +6,7 @@ import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;

@@ -4,7 +4,7 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.response.AuthorResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 

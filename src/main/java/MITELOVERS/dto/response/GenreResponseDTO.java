@@ -1,4 +1,4 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
 import lombok.Generated;
 import lombok.Getter;

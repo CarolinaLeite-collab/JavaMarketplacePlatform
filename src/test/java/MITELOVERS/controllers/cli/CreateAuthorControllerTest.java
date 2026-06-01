@@ -1,7 +1,7 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.AuthorService;
-import MITELOVERS.dto.AuthorResponseDTO;
+import MITELOVERS.dto.response.AuthorResponseDTO;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
