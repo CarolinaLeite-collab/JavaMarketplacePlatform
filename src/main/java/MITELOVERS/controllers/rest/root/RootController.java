@@ -6,10 +6,9 @@ import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,19 +37,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/api")
 public class RootController {
 
-    private final List<RootLinkProvider> linkProviders;
-    private final IUserRepo userRepo;
+    private final List<RootLinkProvider> _linkProviders;
+    private final IUserRepo _userRepo;
 
     public RootController(List<RootLinkProvider> linkProviders,
                           IUserRepo userRepo) {
-        this.linkProviders = linkProviders;
-        this.userRepo = userRepo;
+        _linkProviders = linkProviders;
+        _userRepo = userRepo;
     }
 
-    @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public RepresentationModel<?> root(@RequestParam String email){
 
-        User user = userRepo.ofIdentity(new UserId(new Email(email)))
+        User user = _userRepo.ofIdentity(new UserId(new Email(email)))
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
 
         RepresentationModel<?> root = new RepresentationModel<>();
@@ -60,7 +59,7 @@ public class RootController {
                         .withSelfRel()
         );
 
-        linkProviders.stream()
+        _linkProviders.stream()
                 .flatMap(provider -> provider.getLinks(user).stream())
                 .forEach(root::add);
 
