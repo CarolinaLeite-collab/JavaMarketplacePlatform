@@ -5,10 +5,11 @@ const AppContext = createContext({
         lists: {
             lists: [],
             genres: [],
+            createListHref: null,
             error: null,
+            loading: false,
         }
     },
     dispatch: () => {}
 });
-
 export default AppContext;

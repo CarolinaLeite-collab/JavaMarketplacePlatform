@@ -4,13 +4,15 @@ import {
     GET_GENRES_SUCCESS, GET_GENRES_ERROR,
     MAKE_LIST_PUBLIC_SUCCESS, MAKE_LIST_PUBLIC_ERROR,
     MAKE_LIST_PRIVATE_SUCCESS, MAKE_LIST_PRIVATE_ERROR,
-    DELETE_LIST_SUCCESS, DELETE_LIST_ERROR
+    DELETE_LIST_SUCCESS, DELETE_LIST_ERROR,
 } from './ListsActions';
 
 export const initialListsState = {
     lists: [],
     genres: [],
+    createListHref: null,
     error: null,
+    loading: false,
 };
 
 function mapList(item) {
@@ -49,8 +51,12 @@ function daysLeft(dateString) {
 export function listsReducer(state, action) {
     switch (action.type) {
         case GET_LISTS_SUCCESS: {
-            const lists = action.payload?._embedded?.listOfItemsResponseDTOList ?? [];
-            return { ...state, error: null, loading: false, lists: lists.map(mapList) };
+            const payload = action.payload;
+            const lists = Array.isArray(payload)
+                ? payload
+                : payload?._embedded?.listOfItemsResponseDTOList ?? [];
+            const createListHref = payload?._links?.['create-list']?.href ?? null;
+            return { ...state, error: null, loading: false, lists: lists.map(mapList), createListHref };
         }
         case GET_LISTS_ERROR:
             return { ...state, error: action.payload, loading: false };

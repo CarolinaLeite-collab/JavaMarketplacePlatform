@@ -37,9 +37,10 @@ export function getGenresError(error) {
     return { type: GET_GENRES_ERROR, payload: error };
 }
 
-export async function createList(dispatch, body) {
+
+export async function createList(dispatch, href, body) {
     try {
-        const result = await apiClient.createList(body);
+        const result = await apiClient.postByHref(href, body);
         dispatch(createListSuccess(result));
         await getMyLists(dispatch);
         return true;

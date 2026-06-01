@@ -4,7 +4,7 @@ import { Center, Group, ActionIcon, ScrollArea, Table, Text, TextInput, Unstyled
 import classes from './TableList.module.css';
 import { ShareListModal } from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../context/AppContext';
-import { getMyLists, deleteList } from '../../context/lists/ListsActions';
+import { getMyLists } from '../../context/lists/ListsActions';
 import { DeleteListModal } from '../deletelistmodal/DeleteListModal.tsx';
 
 

@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import AppContext from './AppContext.tsx';
+import AppContext from './AppContext';
 import { listsReducer, initialListsState } from './lists/ListsReducer';
 
 const initialState = {
