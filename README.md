@@ -641,7 +641,7 @@ There vulnerabilities were remediated by:
 
 Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabilities.
 
-**CycloneDX SBOM plugin configuration**:
+**CycloneDX SBOM plugin configuration** (pom.xml):
 
 ```
 <!-- CycloneDX SBOM generation -->
