@@ -25,7 +25,7 @@ class CorsConfigTest {
         // Arrange
         // Act
         var result = mockMvc.perform(
-                options("/my-library/publications")
+                options("/my-library/")
                         .header("Origin", "http://localhost:5173")
                         .header("Access-Control-Request-Method", "GET")
         );
@@ -41,7 +41,7 @@ class CorsConfigTest {
         // Arrange
         // Act
         var result = mockMvc.perform(
-                options("/my-library/publications")
+                options("/my-library/")
                         .header("Origin", "http://malicious-site.com")
                         .header("Access-Control-Request-Method", "GET")
         );

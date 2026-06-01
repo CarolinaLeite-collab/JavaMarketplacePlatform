@@ -43,7 +43,7 @@ class LibraryRestControllerTest {
         when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of(dto));
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications")
+        var result = mockMvc.perform(get("/my-library/")
                 .header("X-User-Id", "pedro@aeiou.com"));
 
         // Assert
@@ -58,7 +58,7 @@ class LibraryRestControllerTest {
         when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications")
+        var result = mockMvc.perform(get("/my-library/")
                 .header("X-User-Id", "pedro@aeiou.com"));
 
         // Assert
@@ -72,7 +72,7 @@ class LibraryRestControllerTest {
         when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications")
+        var result = mockMvc.perform(get("/my-library/")
                 .header("X-User-Id", "naoexiste@aeiou.com"));
 
         // Assert
@@ -87,7 +87,7 @@ class LibraryRestControllerTest {
                 .thenThrow(new IllegalArgumentException("Invalid email"));
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications")
+        var result = mockMvc.perform(get("/my-library/")
                 .header("X-User-Id", "invalid-email"));
 
         // Assert
@@ -98,7 +98,7 @@ class LibraryRestControllerTest {
     void shouldReturn400WhenHeaderIsMissing() throws Exception {
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications"));
+        var result = mockMvc.perform(get("/my-library/"));
 
         // Assert
         result.andExpect(status().isBadRequest());
@@ -115,7 +115,7 @@ class LibraryRestControllerTest {
         when(libraryService.getItemDetail(any())).thenReturn(dto);
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications/3C5D126F8B"));
+        var result = mockMvc.perform(get("/my-library/3C5D126F8B"));
 
         // Assert
         result.andExpect(status().isOk())
@@ -129,7 +129,7 @@ class LibraryRestControllerTest {
                 .thenThrow(new IllegalStateException("Item not found!"));
 
         // Act
-        var result = mockMvc.perform(get("/my-library/publications/INVALID-ID"));
+        var result = mockMvc.perform(get("/my-library/INVALID-ID"));
 
         // Assert
         result.andExpect(status().isNotFound());
@@ -139,7 +139,7 @@ class LibraryRestControllerTest {
     void shouldReturn201WhenItemAddedToLibrary() throws Exception {
         // Arrange
         // Act
-        var result = mockMvc.perform(post("/my-library/publications")
+        var result = mockMvc.perform(post("/my-library/")
                 .header("X-User-Id", "pedro@aeiou.com")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"itemId\": \"3C5D126F8B\"}"));
@@ -155,7 +155,7 @@ class LibraryRestControllerTest {
                 .when(libraryService).addItemToLibrary(any(), any());
 
         // Act
-        var result = mockMvc.perform(post("/my-library/publications")
+        var result = mockMvc.perform(post("/my-library/")
                 .header("X-User-Id", "pedro@aeiou.com")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"itemId\": \"3C5D126F8B\"}"));
