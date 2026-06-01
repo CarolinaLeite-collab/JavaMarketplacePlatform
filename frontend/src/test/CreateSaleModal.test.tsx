@@ -19,7 +19,7 @@ describe('CreateSaleModal', () => {
         await user.click(screen.getByRole('button', { name: /create a sale/i }));
 
         expect(
-            await screen.getByRole('heading', { name: /create new sale/i })
+            await screen.findByRole('heading', { name: /create new sale/i })
         ).toBeInTheDocument();
     });
 
