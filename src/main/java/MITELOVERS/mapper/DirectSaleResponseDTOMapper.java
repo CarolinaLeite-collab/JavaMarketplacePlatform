@@ -5,6 +5,15 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.springframework.stereotype.Component;
 
+/**
+ * Maps a {@link DirectSale} domain object into a {@link DirectSaleResponseDTO}
+ * suitable for exposure at the API layer.
+ *
+ * <p>This mapper performs a pure transformation from domain to DTO without
+ * adding HATEOAS links, which are handled exclusively at the controller
+ * level to preserve proper layering.</p>
+ */
+
 @Component
 public class DirectSaleResponseDTOMapper {
 

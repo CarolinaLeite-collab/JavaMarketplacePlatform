@@ -7,6 +7,15 @@ import org.springframework.hateoas.RepresentationModel;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Detailed DTO representation of a Direct Sale, used for controller responses
+ * where full sale information must be exposed to API clients.
+ *
+ * <p>Includes identifiers, pricing information, time limits, and creation
+ * metadata. Extends {@link RepresentationModel} to allow HATEOAS link
+ * enrichment at the controller layer.</p>
+ */
+
 @Getter
 @AllArgsConstructor
 public class DirectSaleResponseDTO extends RepresentationModel<DirectSaleResponseDTO> {
