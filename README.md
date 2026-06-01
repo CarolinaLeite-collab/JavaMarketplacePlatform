@@ -561,6 +561,10 @@ Additionally, a permissions block was added:
 
 ### Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)
 
+As part of hardening the security pipeline, our `build-and-test-with-coverage` job now also performs a **Software Composition Analysis (SCA)** during `mvn clean verify`. The build runs the **OWASP Dependency-Check** Maven plugin, which analyzes third-party dependencies declared in our `pom.xml` against public vulnerability databases (like the **National Vulnerability Database**, or NVD). A build will fail if a vulnerability with CVSS (Common Vulnerability Scoring System) greater than or equal to **7** is detected. This threshold makes it so that a Pull Request cannot be merged if it introduces a dependency containing a known high-severity issue. Remediation of the known vulnerability is necessary for the pipeline to pass.
+
+Also introduced in this step was the creation of a **Software Bill of Materials (SBOM)**, generated through the **CycloneDX** Maven plugin. The SBOM is a _machine-readable_ inventory of all third-party components and their versions used in the application. The SBOM is uploaded as a build artifact, together with the Dependency-Check HTML report. This artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check whether or not the affected library exists in the SBOM, allowing them to immediately assess the impact and figure out remediation steps without the need to rescan or manually inspect all application dependencies.
+
 We first added **OWASP Dependency-Check** plugin to our `pom.xml`, right after the JaCoCo plugin and before PIT mutation coverage plugin:
 
 ```
@@ -643,9 +647,81 @@ To fulfil this task, we added the **CycloneDX SBOM** plugin to our pom.xml, righ
     </plugin>
 ```
 
-After running this locally, it produced our CycloneDX SBOM as **bom.json** and **bom.xml** inside **target/**, where we can view every dependency in the project, including their versions, licenses, and all other meta data.
+After running this locally, it produced our CycloneDX SBOM as **bom.json** and **bom.xml** inside **target/**, where we can view every dependency in the project, including their versions, licenses, and all other metadata.
 
 ![bom_files.png](docs/readme-printscreens/bom_files.png)
+
+We then updated our workflow YAML (**hardened-security-pipeline.yml**) which is executed by GitHub Actions on Pull Requests. The **build-and-test-with-coverage** job was updated to the following:
+
+```
+  build-and-test-with-coverage:
+    runs-on: ubuntu-latest
+    needs: semgrep-sast
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}  #NEW
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build, test, and run security scans
+        run: mvn clean verify
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+      - name: Upload Dependency-Check report   #NEW
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+      - name: Upload SBOM                      #NEW
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: target/bom.xml
+      - name: Post coverage comment
+        if: always()
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
+```
+
+Changes:
+- addition of `Upload Dependency-Check report` step
+- addition of `Upload SBOM` step
+- addition of an environment variable `NVD_API_KEY` (that will be added as a GitHub secret in the next step)
+
+We then added the previously made **NVD API key** as a GitHub secret.
+
+![GitHub_Secret_NVD_API_KEY.png](docs/readme-printscreens/GitHub_Secret_NVD_API_KEY.png)
+
+After pushing the updated **hardened-security-pipeline.yml** and configuring the GitHub Secret, our Hardened Security Pipeline executed successfully and produced the following expected artifacts:
+
+![artifacts_produced.png](docs/readme-printscreens/artifacts_produced.png)
+
+To ensure that the GitHub Actions workflow pipeline does fail if any dependency has a CVSS score of 7 or higher, we temporarily downgraded Tomcat back to 11.0.21 in our pom.xml, which triggered the pipeline to fail as expected:
+
+![SCA_failed_pipeline_test.png](docs/readme-printscreens/SCA_failed_pipeline_test.png)
+
+We restored the version of Tomcat to 11.0.22 following this test, which resulted in a passing pipeline.
 
 ## SpringBoot application.properties
 
