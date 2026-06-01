@@ -35,7 +35,7 @@
         <argLine>-XX:+EnableDynamicAgentLoading</argLine>
 
         <!-- Override Tomcat version to fix CVEs -->
-        <tomcat.version>11.0.21</tomcat.version>
+        <tomcat.version>11.0.22</tomcat.version>
 
     </properties>
 
