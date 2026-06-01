@@ -6,18 +6,12 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.request.AddItemRequestDTO;
-import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.request.MakeListPublicRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Application service responsible for retrieving List of Items information
@@ -29,50 +23,34 @@ import java.util.Objects;
 public class ListOfItemsService {
     private IListOfItemsRepo _listOfItemsRepo;
     private ListOfItemsFactory _factory;
-    private ListOfItemsResponseDTOMapper _mapper;
     private IGenreRepo _genreRepo;
     private IItemRepo _itemRepo;
 
     @Transactional(readOnly = true)
-    public List<ListOfItemsResponseDTO> getUserLists(String userId) {
-        Objects.requireNonNull(userId);
-        Email email = new Email(userId);
-        UserId newUserId = new UserId(email);
+    public List<ListOfItems> getUserLists(UserId userId) {
 
-        Iterable<ListOfItems> lists = _listOfItemsRepo.findListOfItemsByUserId(newUserId);
+        Iterable<ListOfItems> lists = _listOfItemsRepo.findListOfItemsByUserId(userId);
 
-        List<ListOfItemsResponseDTO> result = new ArrayList<>();
+        List<ListOfItems> result = new ArrayList<>();
 
         for (ListOfItems list : lists) {
 
-            ListOfItemsResponseDTO listDTO = _mapper.toModel(list);
-
-            result.add(listDTO);
+            result.add(list);
         }
 
         return result;
     }
 
     @Transactional(readOnly = true)
-    public ListOfItemsResponseDTO getListById(String listId) {
-        ListOfItemsId id = new ListOfItemsId(listId);
+    public ListOfItems getListById(ListOfItemsId listId) {
 
-        ListOfItems list = _listOfItemsRepo.ofIdentity(id).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
+        ListOfItems list = _listOfItemsRepo.ofIdentity(listId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return list;
     }
 
     @Transactional
-    public ListOfItemsResponseDTO save(String userId, ListOfItemsRequestDTO dto) {
-        Objects.requireNonNull(userId);
-        Objects.requireNonNull(dto);
-
-        Email email = new Email(userId);
-        UserId recUserId = new UserId(email);
-        Name name = new Name(dto.getName());
-        GenreId genreId = new GenreId(dto.getGenreId());
+    public ListOfItems save(UserId userId, Name name, GenreId genreId) {
 
         if(!_genreRepo.containsOfIdentity(genreId)) {
             throw new IllegalArgumentException("Genre doesn't exist");
@@ -82,61 +60,48 @@ public class ListOfItemsService {
             throw new IllegalArgumentException("List already exists");
         }
 
-        ListOfItems newList = _listOfItemsRepo.save(_factory.createListOfItems(recUserId, name, genreId));
+        ListOfItems result = _listOfItemsRepo.save(_factory.createListOfItems(userId, name, genreId));
 
-        ListOfItemsResponseDTO savedDTO = _mapper.toModel(newList);
-
-        return savedDTO;
+        return result;
     }
 
     @Transactional
-    public ListOfItemsResponseDTO addItemToList(String listOfItemsId, AddItemRequestDTO dto) {
-        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+    public ListOfItems addItemToList(ListOfItemsId listOfItemsId, ItemId itemId) {
 
-        if (dto == null || dto.getItemId() == null) {
+        if (itemId == null) {
             throw new IllegalArgumentException("ItemId is invalid");
         }
 
-        ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
+        ListOfItems list = _listOfItemsRepo.ofIdentity(listOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
-        ItemId recItemId = new ItemId(dto.getItemId());
-
-        if (!_itemRepo.containsOfIdentity(recItemId)) {
+        if (!_itemRepo.containsOfIdentity(itemId)) {
             throw new IllegalArgumentException("Item doesn't exist");
         }
 
-        list.addItem(recItemId);
+        list.addItem(itemId);
         _listOfItemsRepo.save(list);
 
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return list;
     }
 
     @Transactional
-    public ListOfItemsResponseDTO makePublic(String listOfItemsId, MakeListPublicRequestDTO durationDays) {
-        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+    public ListOfItems makePublic(ListOfItemsId listOfItemsId, SharedDuration sharedDuration) {
 
-        ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
-
-        SharedDuration recSharedUntil = new SharedDuration(durationDays.getSharedUntil());
+        ListOfItems list = _listOfItemsRepo.ofIdentity(listOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
         if (list.isPrivate()) {
 
-            list.makePublic(recSharedUntil);
+            list.makePublic(sharedDuration);
         }
         _listOfItemsRepo.save(list);
 
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return list;
     }
 
     @Transactional
-    public ListOfItemsResponseDTO makePrivate(String listOfItemsId){
-        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+    public ListOfItems makePrivate(ListOfItemsId listOfItemsId){
 
-        ListOfItems list = _listOfItemsRepo.ofIdentity(recListOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
+        ListOfItems list = _listOfItemsRepo.ofIdentity(listOfItemsId).orElseThrow(() -> new IllegalArgumentException("ListOfItems not found"));
 
         if (!list.isPrivate()) {
 
@@ -144,38 +109,29 @@ public class ListOfItemsService {
         }
         _listOfItemsRepo.save(list);
 
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return list;
     }
 
     @Transactional
-    public List<ListOfItemsResponseDTO> findByGenre(String genreId) {
-        GenreId recGenreId = new GenreId(genreId);
+    public List<ListOfItems> findByGenre(GenreId genreId) {
 
         Iterable<ListOfItems> lists = _listOfItemsRepo.findAll();
 
         List<ListOfItems> publicListsByGenre = new ArrayList<>();
 
         for(ListOfItems list : lists) {
-            if(list.getGenreId().equals(recGenreId) && !list.isPrivate()) {
+            if(list.getGenreId().equals(genreId) && !list.isPrivate()) {
                 publicListsByGenre.add(list);
             }
         }
 
-        List<ListOfItemsResponseDTO> result = new ArrayList<>();
-        for(ListOfItems list : publicListsByGenre) {
-            result.add(_mapper.toModel(list));
-        }
-
-        return result;
+        return publicListsByGenre;
     }
 
     @Transactional
-    public void deleteList(String listOfItemsId) {
-        ListOfItemsId recListOfItemsId = new ListOfItemsId(listOfItemsId);
+    public void deleteList(ListOfItemsId listOfItemsId) {
 
-        _listOfItemsRepo.deleteListOfItems(recListOfItemsId);
+        _listOfItemsRepo.deleteListOfItems(listOfItemsId);
     }
 
 }
