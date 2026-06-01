@@ -33,7 +33,7 @@ public class LibraryRestController {
         _libraryService = libraryService;
     }
 
-    @GetMapping(path ="/publications", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path ="/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
             @RequestHeader("X-User-Id") String userId) {
 
@@ -56,7 +56,7 @@ public class LibraryRestController {
         }
     }
 
-        @GetMapping(path ="/publications/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+        @GetMapping(path ="/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
 
             try {
@@ -73,7 +73,7 @@ public class LibraryRestController {
             }
         }
 
-    @PostMapping(path ="/publications", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path ="/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
