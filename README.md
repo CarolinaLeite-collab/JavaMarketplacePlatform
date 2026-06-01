@@ -760,3 +760,100 @@ The `open-in-view=false` setting ensures database sessions are properly scoped t
 Two profiles are active: `bootstrap` and `jpa`, handling data seeding (through a `DataInitializer` class) and JPA configuration (All the Java Persistence API repos, that were established as the active profile) respectively. 
 
 The application runs on port 8081.
+
+
+## Quality & Security Gates (Authoritative Section)
+
+All pull requests targeting main, b3, or b4 must satisfy the following mandatory quality and security gates.
+These gates are fully automated and enforced through the Hardened Security Pipeline.
+A pull request cannot be merged unless every gate passes.
+
+### Purpose of the Gates
+
+These gates ensure that all contributions meet strict standards of code quality, security, and supply‑chain integrity.
+They enforce a shift‑left DevSecOps approach, catching issues early in the development lifecycle and making the entire process auditable, consistent, and secure for every team member.
+
+### Blocking Behaviour
+
+All gates listed below are blocking.
+If any gate fails, the CI pipeline fails and the pull request cannot be merged until the issue is resolved.
+
+### Quality Gates
+
+ - Build must succeed with mvn clean verify
+
+ - All unit tests must pass
+
+ - JaCoCo line coverage must be ≥ 95% (enforced in Maven verify)
+
+ - Mutation testing (PIT) must run without errors
+
+ - Code must follow secure and correct patterns (Semgrep SAST)
+
+### Security Gates
+
+ - Gitleaks must detect 0 secrets
+
+ - Semgrep must report 0 ERROR‑severity findings
+
+ - OWASP Dependency‑Check must report 0 vulnerabilities with CVSS ≥ 7
+
+ - CycloneDX SBOM must be generated successfully (supply‑chain integrity)
+
+ - The Hardened Security Pipeline must complete all stages without errors
+
+### Quality & Security Gates Summary Table
+
+| **Gate** | **Tool** | **Threshold / Condition** | **Enforcement Workflow** |
+| --- | --- | --- | --- |
+| **Build & Unit Tests** | Maven / JUnit | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **Line Coverage** | JaCoCo | ≥ 95% line coverage | Maven ``verify`` phase |
+| **Mutation Testing** | PIT | No errors during mutation analysis | Maven test lifecycle |
+| **Static Analysis (SAST)** | Semgrep | 0 ERROR findings | Hardened Security Pipeline → ``semgrep-sast`` |
+| **Secret Detection** | Gitleaks | 0 secrets detected | Hardened Security Pipeline → ``gitleaks`` |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **SBOM Generation** | CycloneDX | SBOM generated successfully | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **PR Notifications** | Discord Webhooks | Informational only | Notify PR Creation / Notify PR Merge |
+
+## Local Security & Quality Testing (Developer Guide)
+
+Developers can run the same checks locally before pushing a PR.
+
+1. Run full build + coverage + SCA ('mvn clean verify');
+
+2. Run Gitleaks locally ('gitleaks detect --source . --verbose');
+
+3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/');
+
+4. Generate SBOM locally ('mvn cyclonedx:makeAggregateBom');
+
+### How to fix Failing Gates
+
+#### Coverage < 95%
+
+1. Add missing unit tests
+2. Improve assertions
+3. Cover edge cases and error paths
+
+#### Semgrep ERROR finding
+
+1. Read the Semgrep report
+2. Fix insecure or incorrect code pattern
+3. Re-run Semgrep locally
+
+#### Gitleaks secret detected
+
+1. Remove the secret
+2. Rotate the credential
+3. Remove it from Git history (e.g., git filter-repo)
+
+#### Dependency‑Check CVSS ≥ 7
+
+1. Upgrade the vulnerable dependency
+2. Override the version in pom.xml
+3. Re-run mvn clean verify
+
+#### SBOM or build failure
+
+1. Fix dependency resolution issues
+2. Ensure Maven plugins run correctly
