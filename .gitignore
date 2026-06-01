@@ -32,3 +32,6 @@ replay_pid*
 
 # Build outputs
 target/
+
+#Spring Boot data Folder
+data/

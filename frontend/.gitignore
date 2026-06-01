@@ -25,3 +25,6 @@ dist-ssr
 
 dist/
 .vite
+
+#Coverage Diretories
+ coverage/
