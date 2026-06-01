@@ -1,6 +1,6 @@
 package MITELOVERS.controllers.cli.root;
 
-import MITELOVERS.controllers.root.AuthorizationPolicy;
+import MITELOVERS.Authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
 import org.junit.jupiter.api.Test;
