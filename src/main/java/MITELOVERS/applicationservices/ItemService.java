@@ -71,7 +71,16 @@ public class ItemService {
                         "Genre does not exist in the repository"));
 
         Item newItem = _itemFactory.createItem(editionId, condition, description);
-        Item savedItem = _iItemRepo.save(newItem);
+        ItemId itemId = newItem.identity();
+
+        Item savedItem;
+        if (_iItemRepo.containsOfIdentity(itemId)) {
+            savedItem = _iItemRepo.ofIdentity(itemId)
+                    .orElseThrow(() -> new NoSuchElementException(
+                            "Item with id '" + itemId + "' does not exist"));
+        } else {
+            savedItem = _iItemRepo.save(newItem);
+        }
 
         return _itemResponseDTOMapper.toResponseDTO(savedItem, edition, publication, author, genre);
     }
