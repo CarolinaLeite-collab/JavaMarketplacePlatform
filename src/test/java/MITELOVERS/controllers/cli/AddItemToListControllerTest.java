@@ -1,29 +1,42 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
+import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.ListOfItemsId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@ActiveProfiles("jpa")
 class AddItemToListControllerTest {
 
     static final String ITEM_ALREADY_IN_LIST = "Item already in list";
-    static final String LIST_DOES_NOT_EXIST  = "List does not exist";
+    static final String LIST_DOES_NOT_EXIST = "List does not exist";
+    static final String VALID_USER_ID = "user@cenas.com";
+    static final String VALID_LIST_ID = "LOI-12345";
+    static final String VALID_ITEM_ID = "3F9F4BFAB5";
+    static final String VALID_GENRE_ID = "FICTION";
 
     @Mock
     ListOfItemsService _service;
+
+    @Mock
+    ListOfItemsResponseDTOMapper _mapper;
 
     @InjectMocks
     AddItemToListController _controller;
@@ -31,26 +44,31 @@ class AddItemToListControllerTest {
     @Test
     void getMyListsShouldReturnOnlyListsBelongingToUser() {
         // Arrange
-        ListOfItemsResponseDTO list1 = mock(ListOfItemsResponseDTO.class);
-        ListOfItemsResponseDTO list2 = mock(ListOfItemsResponseDTO.class);
-        when(_service.getUserLists("user@cenas.com")).thenReturn(List.of(list1, list2));
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+        ListOfItemsResponseDTO response1 = mock(ListOfItemsResponseDTO.class);
+        ListOfItemsResponseDTO response2 = mock(ListOfItemsResponseDTO.class);
+
+        when(_service.getUserLists(any(UserId.class))).thenReturn(List.of(list1, list2));
+        when(_mapper.toModel(list1)).thenReturn(response1);
+        when(_mapper.toModel(list2)).thenReturn(response2);
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.getMyLists("user@cenas.com");
+        List<ListOfItemsResponseDTO> result = _controller.getMyLists(VALID_USER_ID);
 
         // Assert
         assertEquals(2, result.size());
-        assertSame(list1, result.get(0));
-        assertSame(list2, result.get(1));
+        assertSame(response1, result.get(0));
+        assertSame(response2, result.get(1));
     }
 
     @Test
     void getMyListsShouldReturnEmptyListWhenUserHasNoLists() {
         // Arrange
-        when(_service.getUserLists("user@cenas.com")).thenReturn(List.of());
+        when(_service.getUserLists(any(UserId.class))).thenReturn(List.of());
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.getMyLists("user@cenas.com");
+        List<ListOfItemsResponseDTO> result = _controller.getMyLists(VALID_USER_ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -59,38 +77,43 @@ class AddItemToListControllerTest {
     @Test
     void addItemToListShouldSucceedWithValidArguments() {
         // Arrange
-        AddItemRequestDTO dto              = mock(AddItemRequestDTO.class);
-        ListOfItemsResponseDTO expected    = mock(ListOfItemsResponseDTO.class);
-        when(_service.addItemToList("LOI-12345", dto)).thenReturn(expected);
+        AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
+        ListOfItems expected = mock(ListOfItems.class);
+        ListOfItemsResponseDTO response = mock(ListOfItemsResponseDTO.class);
+
+        when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
+        when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class))).thenReturn(expected);
+        when(_mapper.toModel(expected)).thenReturn(response);
 
         // Act
-        assertDoesNotThrow(() -> _controller.addItemToList("LOI-12345", dto));
+        ListOfItemsResponseDTO result = _controller.addItemToList(VALID_LIST_ID, dto);
 
         // Assert
-        verify(_service).addItemToList("LOI-12345", dto);
+        assertNotNull(result);
+        assertSame(response, result);
     }
 
     @Test
     void addItemToListShouldThrowWhenItemIdIsNull() {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
-        when(_service.addItemToList("LOI-12345", dto)).thenThrow(new IllegalArgumentException());
+        when(dto.getItemId()).thenReturn(null);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> _controller.addItemToList("LOI-12345", dto));
+        assertThrows(Exception.class, () -> _controller.addItemToList(VALID_LIST_ID, dto));
     }
 
     @Test
     void addItemToListShouldThrowWhenItemAlreadyInList() {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
-        doThrow(new IllegalStateException(ITEM_ALREADY_IN_LIST))
-                .when(_service).addItemToList("user@cenas.com", dto);
+        when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
+        when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class)))
+                .thenThrow(new IllegalStateException(ITEM_ALREADY_IN_LIST));
 
         // Act
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> _controller.addItemToList("user@cenas.com", dto));
+                () -> _controller.addItemToList(VALID_LIST_ID, dto));
 
         // Assert
         assertEquals(ITEM_ALREADY_IN_LIST, ex.getMessage());
@@ -100,12 +123,13 @@ class AddItemToListControllerTest {
     void addItemToListShouldThrowWhenListDoesNotExist() {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
-        when(_service.addItemToList("user@cenas.com", dto))
+        when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
+        when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class)))
                 .thenThrow(new IllegalStateException(LIST_DOES_NOT_EXIST));
 
         // Act
         IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> _controller.addItemToList("user@cenas.com", dto));
+                () -> _controller.addItemToList(VALID_LIST_ID, dto));
 
         // Assert
         assertEquals(LIST_DOES_NOT_EXIST, ex.getMessage());
@@ -114,26 +138,27 @@ class AddItemToListControllerTest {
     @Test
     void findByGenreShouldReturnListsWhenGenreHasResults() {
         // Arrange
-        String genreId                  = "FICTION";
-        ListOfItemsResponseDTO list1    = mock(ListOfItemsResponseDTO.class);
-        when(_service.findByGenre(genreId)).thenReturn(List.of(list1));
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItemsResponseDTO response = mock(ListOfItemsResponseDTO.class);
+
+        when(_service.findByGenre(any(GenreId.class))).thenReturn(List.of(list1));
+        when(_mapper.toModel(list1)).thenReturn(response);
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.findByGenre(genreId);
+        List<ListOfItemsResponseDTO> result = _controller.findByGenre(VALID_GENRE_ID);
 
         // Assert
         assertEquals(1, result.size());
-        assertSame(list1, result.get(0));
+        assertSame(response, result.get(0));
     }
 
     @Test
     void findByGenreShouldReturnEmptyWhenThereIsNoListByGenreId() {
         // Arrange
-        String genreId = "NON-FICTION";
-        when(_service.findByGenre(genreId)).thenReturn(List.of());
+        when(_service.findByGenre(any(GenreId.class))).thenReturn(List.of());
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.findByGenre(genreId);
+        List<ListOfItemsResponseDTO> result = _controller.findByGenre("NON-FICTION");
 
         // Assert
         assertTrue(result.isEmpty());
