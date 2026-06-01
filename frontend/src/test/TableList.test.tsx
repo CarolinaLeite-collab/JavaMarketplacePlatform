@@ -2,10 +2,10 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { MantineProvider } from '@mantine/core';
-import {TableList} from "../components/tablelist/TableList.tsx";
+import { TableList } from "../components/tablelist/TableList.tsx";
+import AppContext from '../context/AppContext';
 
-// Adjust this path to match where ShareListModal actually lives relative to TableList
-vi.mock('../sharelistmodal/ShareListModal', () => ({
+vi.mock('../components/sharelistmodal/ShareListModal', () => ({
     ShareListModal: ({ listName, visibility }: { listName: string; visibility: string }) => (
         <button data-testid={`share-${listName}`} data-visibility={visibility}>
             Share
@@ -13,8 +13,36 @@ vi.mock('../sharelistmodal/ShareListModal', () => ({
     ),
 }));
 
-const renderWithMantine = (ui: React.ReactElement) =>
-    render(<MantineProvider>{ui}</MantineProvider>);
+vi.mock('../components/deletelistmodal/DeleteListModal', () => ({
+    DeleteListModal: ({ listName }: { listName: string }) => (
+        <button data-testid={`delete-${listName}`}>Delete</button>
+    ),
+}));
+
+vi.mock('../context/lists/ListsActions', () => ({
+    getMyLists: vi.fn(),
+    deleteList: vi.fn(),
+}));
+
+const mockLists = [
+    { listId: '1', name: 'Fantasy Favourites', genre: 'Fantasy', visibility: 'public' as const, sharedUntil: 12, links: [{ rel: 'delete', href: '/my-lists/1' }, { rel: 'make-private', href: '/my-lists/1/visibility' }] },
+    { listId: '2', name: 'Secret Reads', genre: 'Mystery', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/2' }, { rel: 'make-public', href: '/my-lists/2/visibility' }] },
+    { listId: '3', name: 'Sci-Fi Shelf', genre: 'Science Fiction', visibility: 'public' as const, sharedUntil: 3, links: [{ rel: 'delete', href: '/my-lists/3' }, { rel: 'make-private', href: '/my-lists/3/visibility' }] },
+    { listId: '4', name: 'Classic Literature', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/4' }, { rel: 'make-public', href: '/my-lists/4/visibility' }] },
+    { listId: '5', name: 'Lista fixe', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/5' }, { rel: 'make-public', href: '/my-lists/5/visibility' }] },
+];
+
+const mockDispatch = vi.fn();
+
+const renderWithContext = (ui: React.ReactElement) =>
+    render(
+        <AppContext.Provider value={{
+            state: { lists: { lists: mockLists, genres: [], error: null, loading: false } },
+            dispatch: mockDispatch
+        }}>
+            <MantineProvider>{ui}</MantineProvider>
+        </AppContext.Provider>
+    );
 
 const getDataRows = () =>
     screen.getAllByRole('row').filter((r) => within(r).queryAllByRole('columnheader').length === 0);
@@ -24,12 +52,12 @@ const getCells = (row: HTMLElement) =>
 
 describe('TableList – rendering', () => {
     it('renders the search input', () => {
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         expect(screen.getByPlaceholderText(/search by name, genre or visibility/i)).toBeInTheDocument();
     });
 
     it('renders all six column headers', () => {
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const headers = ['List Name', 'Genre', 'Shared Until', 'Visibility', 'Add Items', 'Delete'];
         headers.forEach((h) =>
             expect(screen.getByRole('columnheader', { name: new RegExp(h, 'i') })).toBeInTheDocument()
@@ -37,22 +65,15 @@ describe('TableList – rendering', () => {
     });
 
     it('renders three buttons per data row (Share + Add + Delete)', () => {
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         getDataRows().forEach((row) => {
             expect(within(row).getAllByRole('button')).toHaveLength(3);
         });
     });
 
     it('passes correct visibility prop to ShareListModal for every row', () => {
-        renderWithMantine(<TableList />);
-        // Only works if the mock is picked up; if data-visibility is null the mock isn't active
+        renderWithContext(<TableList />);
         const shareButtons = screen.queryAllByTestId(/^share-/);
-        if (shareButtons.length === 0) {
-            // Mock not active — skip assertion about data-visibility attribute
-            // and just verify the visibility column cell exists per row
-            expect(getDataRows().length).toBeGreaterThan(0);
-            return;
-        }
         shareButtons.forEach((btn) => {
             expect(['public', 'private']).toContain(btn.getAttribute('data-visibility'));
         });
@@ -62,7 +83,7 @@ describe('TableList – rendering', () => {
 describe('TableList – empty state', () => {
     it('shows "Nothing found" when search matches no rows', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
             'zzzzzzz_no_match'
@@ -75,7 +96,7 @@ describe('TableList – empty state', () => {
 describe('TableList – search filtering', () => {
     it('filters rows by name (case-insensitive)', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
             'fantasy'
@@ -87,7 +108,7 @@ describe('TableList – search filtering', () => {
 
     it('filters rows by genre', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
             'mystery'
@@ -99,21 +120,20 @@ describe('TableList – search filtering', () => {
 
     it('filters rows by visibility — public shows fewer rows than total', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const totalRows = getDataRows().length;
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
             'public'
         );
         const filteredRows = getDataRows();
-        // There are public rows in the data, and fewer than the full set
         expect(filteredRows.length).toBeGreaterThan(0);
         expect(filteredRows.length).toBeLessThan(totalRows);
     });
 
     it('filters rows by visibility — private shows fewer rows than total', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const totalRows = getDataRows().length;
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
@@ -126,7 +146,7 @@ describe('TableList – search filtering', () => {
 
     it('restores all rows when search is cleared', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const input = screen.getByPlaceholderText(/search by name, genre or visibility/i);
         const initialCount = getDataRows().length;
         await user.type(input, 'fantasy');
@@ -142,7 +162,7 @@ describe('TableList – sorting', () => {
 
     it('sorts by List Name ascending on first click', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.click(screen.getByRole('button', { name: /list name/i }));
         const names = getColumnValues(0);
         expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
@@ -150,7 +170,7 @@ describe('TableList – sorting', () => {
 
     it('sorts by List Name descending on second click', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const btn = screen.getByRole('button', { name: /list name/i });
         await user.click(btn);
         await user.click(btn);
@@ -160,7 +180,7 @@ describe('TableList – sorting', () => {
 
     it('sorts by Genre ascending on first click', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.click(screen.getByRole('button', { name: /genre/i }));
         const genres = getColumnValues(1);
         expect(genres).toEqual([...genres].sort((a, b) => a.localeCompare(b)));
@@ -168,11 +188,11 @@ describe('TableList – sorting', () => {
 
     it('resets sort direction when switching sort column', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         const nameBtn = screen.getByRole('button', { name: /list name/i });
         await user.click(nameBtn);
-        await user.click(nameBtn); // now descending
-        await user.click(screen.getByRole('button', { name: /genre/i })); // should reset to asc
+        await user.click(nameBtn);
+        await user.click(screen.getByRole('button', { name: /genre/i }));
         const genres = getColumnValues(1);
         expect(genres).toEqual([...genres].sort((a, b) => a.localeCompare(b)));
     });
@@ -180,13 +200,13 @@ describe('TableList – sorting', () => {
 
 describe('TableList – Shared Until display', () => {
     it('shows "X days left" (plural) when sharedUntil > 1', () => {
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         expect(screen.getByText('12 days left')).toBeInTheDocument();
         expect(screen.getByText('3 days left')).toBeInTheDocument();
     });
 
     it('shows a dash for rows with no sharing expiry', () => {
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         expect(screen.getAllByText('—').length).toBeGreaterThan(0);
     });
 });
@@ -194,7 +214,7 @@ describe('TableList – Shared Until display', () => {
 describe('TableList – combined search + sort', () => {
     it('applies search on top of an active sort', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<TableList />);
+        renderWithContext(<TableList />);
         await user.click(screen.getByRole('button', { name: /list name/i }));
         await user.type(
             screen.getByPlaceholderText(/search by name, genre or visibility/i),
