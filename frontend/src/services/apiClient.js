@@ -1,6 +1,6 @@
 
 const BASE_URL = 'http://localhost:8081';
-const USER_ID = 'pedro@mail.com';       // temporary until having authorization
+const USER_ID = 'angelo@aeiou.com';       // temporary until having authorization
 
 // GET generic (without authorization)
 async function getPublic(path) {
@@ -42,10 +42,11 @@ async function post(path, body) {
             'X-User-Id': USER_ID
         },
         body: JSON.stringify(body)
-});
+    });
 
     if (!response.ok) {
-        throw new Error(`${response.status}`);
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
     }
     if (response.status === 204) {
         return null;
@@ -74,6 +75,54 @@ async function patch(path, body) {
     return response.json();
 }
 
+async function patchNoBody(path) {
+    const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'PATCH',
+        headers: {
+            'X-User-Id': USER_ID
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`${response.status}`);
+    }
+    if (response.status === 204) {
+        return null;
+    }
+
+    return response.json();
+}
+
+async function deleteReq(path) {
+    const response = await fetch(`${BASE_URL}${path}`, {
+        method: 'DELETE',
+        headers: {
+            'X-User-Id': USER_ID
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(`${response.status}`);
+    }
+
+    return null;
+}
+
+async function deleteByHref(href) {
+    const path = new URL(href).pathname;
+    return deleteReq(path);
+}
+
+async function patchByHref(href, body) {
+    const path = new URL(href).pathname;
+    return patch(path, body);
+}
+
+async function patchNoBodyByHref(href) {
+    const path = new URL(href).pathname;
+    return patchNoBody(path);
+}
+
 // Contract endpoints
 export const apiClient = {
     getGenres: () =>
@@ -94,7 +143,24 @@ export const apiClient = {
     createDirectSales: (body) =>
         post('/direct-sales', body),
 
-    shareList: (href, body) =>
-        patch(href, body)
+    makeListPublic: (listId, body) =>
+        patch(`/my-lists/${listId}/visibility`, body),
 
+    makeListPrivate: (listId) =>
+        patchNoBody(`/my-lists/${listId}/visibility`),
+
+    addItemToList: (listId, body) =>
+        post(`/my-lists/${listId}`, body),
+
+    deleteList: (listId) =>
+        deleteReq(`/my-lists/${listId}`),
+
+    deleteByHref: (href) =>
+        deleteByHref(href),
+
+    patchByHref: (href, body) =>
+        patchByHref(href, body),
+
+    patchNoBodyByHref: (href) =>
+        patchNoBodyByHref(href),
 };
