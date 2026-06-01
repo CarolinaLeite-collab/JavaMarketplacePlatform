@@ -1,6 +1,6 @@
 
 const BASE_URL = 'http://localhost:8081';
-const USER_ID = 'angelo@aeiou.com';       // temporary until having authorization
+const USER_ID = 'pedro@aeiou.com';       // temporary until having authorization
 
 // GET generic (without authorization)
 async function getPublic(path) {
@@ -131,11 +131,13 @@ export const apiClient = {
     getMyLists: () =>
         getPrivate('/my-lists/'),
 
-    getLibraryItem: (href) =>
-        getPrivate(href),
+    getLibraryItem: (href) => {
+        const path = new URL(href).pathname;
+        return getPrivate(path);
+    },
 
     getLibrary: () =>
-        getPrivate('/my-library'),
+        getPrivate('/my-library/'),
 
     createList: (body) =>
         post('/my-lists/', body),

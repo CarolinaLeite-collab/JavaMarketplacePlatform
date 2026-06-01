@@ -77,6 +77,52 @@ describe('apiClient', () => {
 
     });
 
+    describe('getLibraryItem', () => {
+
+        it('extracts the path from the full href and calls with X-User-Id', async () => {
+            const mockData = {
+                authorName: 'George Orwell',
+                identifier: null,
+                publicationType: 'BOOK'
+            };
+            mockFetch.mockReturnValueOnce(mockSuccess(mockData));
+
+            const fullHref = 'http://localhost:8081/my-library/3C5D126F8B';
+            await apiClient.getLibraryItem(fullHref);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/my-library/3C5D126F8B`,
+                expect.objectContaining({
+                    headers: expect.objectContaining({
+                        'X-User-Id': USER_ID
+                    })
+                })
+            );
+        });
+
+        it('returns item details on success', async () => {
+            const mockData = {
+                authorName: 'George Orwell',
+                publicationType: 'BOOK',
+                identifier: null
+            };
+            mockFetch.mockReturnValueOnce(mockSuccess(mockData));
+
+            const result = await apiClient.getLibraryItem('http://localhost:8081/my-library/3C5D126F8B');
+
+            expect(result).toEqual(mockData);
+        });
+
+        it('throws error on 404', async () => {
+            mockFetch.mockReturnValueOnce(mockError(404));
+
+            await expect(
+                apiClient.getLibraryItem('http://localhost:8081/my-library/INVALID')
+            ).rejects.toThrow('404');
+        });
+
+    });
+
     describe('getLibrary', () => {
 
         it('calls the correct URL with X-User-Id', async () => {
