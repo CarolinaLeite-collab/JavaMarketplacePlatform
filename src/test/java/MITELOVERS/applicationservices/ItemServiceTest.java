@@ -286,6 +286,78 @@ class ItemServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void getAllItemsEditionNotFoundThrowsNoSuchElementException() {
+        // Arrange
+        Item itemDouble = mock(Item.class);
+        when(itemRepoDouble.findAll()).thenReturn(List.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.getAllItems());
+
+        // Assert
+        assertEquals(EDITION_NOT_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void getAllItemsPublicationNotFoundThrowsNoSuchElementException() {
+        // Arrange
+        Item itemDouble        = mock(Item.class);
+        Edition editionDouble  = mock(Edition.class);
+        when(itemRepoDouble.findAll()).thenReturn(List.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.getAllItems());
+
+        // Assert
+        assertEquals(PUBLICATION_NOT_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void getAllItemsAuthorNotFoundThrowsNoSuchElementException() {
+        // Arrange
+        Item itemDouble               = mock(Item.class);
+        Edition editionDouble         = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        when(itemRepoDouble.findAll()).thenReturn(List.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.getAllItems());
+
+        // Assert
+        assertEquals(AUTHOR_NOT_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void getAllItemsGenreNotFoundThrowsNoSuchElementException() {
+        // Arrange
+        Item itemDouble               = mock(Item.class);
+        Edition editionDouble         = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble           = mock(Author.class);
+        when(itemRepoDouble.findAll()).thenReturn(List.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(genreRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.getAllItems());
+
+        // Assert
+        assertEquals(GENRE_NOT_FOUND, ex.getMessage());
+    }
+
     // ----------------------------------------------------------------
     // getItemById
     // ----------------------------------------------------------------
