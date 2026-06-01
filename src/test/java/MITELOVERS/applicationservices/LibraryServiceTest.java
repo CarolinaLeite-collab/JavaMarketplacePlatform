@@ -184,7 +184,7 @@ class LibraryServiceTest {
         when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
         when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
         when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
-        when(detailsMapperDouble.toDTO(editionDouble, authorDouble, publicationTypeDouble))
+        when(detailsMapperDouble.toDTO(authorDouble, editionDouble,  publicationTypeDouble))
                 .thenReturn(detailsDTODouble);
 
         // Act

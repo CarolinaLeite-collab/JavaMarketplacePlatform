@@ -126,7 +126,7 @@ public class LibraryService {
         PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
                 .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
 
-        return _detailsMapper.toDTO(edition, author, publicationType);
+        return _detailsMapper.toDTO(author, edition, publicationType);
     }
 
     @Transactional
