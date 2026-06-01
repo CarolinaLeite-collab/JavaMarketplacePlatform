@@ -2,8 +2,8 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
-import MITELOVERS.dto.LibraryItemDetailsDTO;
-import MITELOVERS.dto.LibraryItemSummaryDTO;
+import MITELOVERS.dto.response.LibraryItemDetailsDTO;
+import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

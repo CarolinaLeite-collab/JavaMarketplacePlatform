@@ -4,8 +4,8 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.dto.ItemDetailsDTO;
-import MITELOVERS.dto.LibraryItemDetailsDTO;
+import MITELOVERS.dto.response.ItemDetailsDTO;
+import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import org.springframework.stereotype.Component;
 
 /**

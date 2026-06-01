@@ -1,4 +1,4 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Generated;
@@ -10,7 +10,7 @@ import org.springframework.hateoas.RepresentationModel;
  *
  * <p>
  * This DTO aggregates display-ready information about a library item,
- * including its title, author name, publication type, and unique identifier.
+ * including its author name, publication type, and unique identifier.
  * It is used to transfer item data from the application layer to presentation
  * layers without exposing domain objects.
  * </p>
