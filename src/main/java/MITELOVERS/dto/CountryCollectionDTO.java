@@ -2,10 +2,12 @@ package MITELOVERS.dto;
 
 import MITELOVERS.Action;
 import MITELOVERS.Link;
+import lombok.Generated;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Generated
 public class CountryCollectionDTO {
 
     private final List<CountryDTO> _countries = new ArrayList<>();

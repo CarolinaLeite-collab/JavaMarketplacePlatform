@@ -2,10 +2,12 @@ package MITELOVERS.dto;
 
 import MITELOVERS.Action;
 import MITELOVERS.Link;
+import lombok.Generated;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Generated
 public class CountryDTO {
 
     private final String _id;
