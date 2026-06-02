@@ -553,12 +553,15 @@ On each Pull Request trigger, the `build-and-test-with-coverage` job runs `mvn c
 - Runs OWASP Dependency-Check to scan for vulnerabilities (fails build if CVSS ≥ 7)
 - Generates a CycloneDX SBOM (Software Bill of Materials)
 
-Following good DevOps practices, the pipeline archives multiple security and quality reports as downloadable artifacts: 
 
+Following good DevOps practices, the pipeline archives multiple security and quality artifacts. In addition to the quality and security reports, every successful pipeline execution generates a versioned application artifact (`.jar`). The artifact is archived by GitHub Actions and can be traced back to the originating commit through its commit SHA, ensuring reproducibility and traceability of validated builds.
+
+The following artifacts are published automatically:
+- Application artifact (.jar)
 - JaCoCo coverage report (HTML format)
 - OWASP Dependency-Check vulnerability report (HTML format)
 - CycloneDX SBOM (XML format, machine-readable)
-
+- 
 To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
 
 ![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
@@ -588,6 +591,12 @@ The `build-and-test-with-coverage` job is configured as follows:
           cache: maven
       - name: Build, test, and run security scans
         run: mvn clean verify
+      - name: Upload application artifact
+        if: success()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: mitelovers-application-${{ github.sha }}
+          path: target/*.jar
       - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
