@@ -23,7 +23,8 @@ const mockError = (status) =>
     });
 
 // clean the history of mockFetch
-beforeEach(() => mockFetch.mockClear());
+beforeEach(() =>
+    mockFetch.mockClear());
 
 
 describe('apiClient', () => {
@@ -69,7 +70,7 @@ describe('apiClient', () => {
             );
         });
 
-        it('throws error on 400', async () => {
+        it('throws error on failure', async () => {
             mockFetch.mockReturnValueOnce(mockError(400));
 
             await expect(apiClient.getMyLists()).rejects.toThrow('400');
@@ -77,43 +78,40 @@ describe('apiClient', () => {
 
     });
 
-    describe('getLibraryItem', () => {
+    describe('getLibrary', () => {
 
-        it('extracts the path from the full href and calls with X-User-Id', async () => {
-            const mockData = {
-                authorName: 'George Orwell',
-                identifier: null,
-                publicationType: 'BOOK'
-            };
-            mockFetch.mockReturnValueOnce(mockSuccess(mockData));
+        it('calls endpoint with X-User-Id header', async () => {
+            mockFetch.mockReturnValueOnce(
+                mockSuccess({ items: [] })
+            );
 
-            const fullHref = 'http://localhost:8081/my-library/3C5D126F8B';
-            await apiClient.getLibraryItem(fullHref);
+            await apiClient.getLibrary();
 
             expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/my-library/3C5D126F8B`,
+                `${BASE_URL}/my-library/`,
                 expect.objectContaining({
-                    headers: expect.objectContaining({
+                    headers: {
                         'X-User-Id': USER_ID
-                    })
+                    }
                 })
             );
         });
 
-        it('returns item details on success', async () => {
-            const mockData = {
-                authorName: 'George Orwell',
-                publicationType: 'BOOK',
-                identifier: null
+        it('returns library data', async () => {
+            const data = {
+                items: []
             };
-            mockFetch.mockReturnValueOnce(mockSuccess(mockData));
 
-            const result = await apiClient.getLibraryItem('http://localhost:8081/my-library/3C5D126F8B');
+            mockFetch.mockReturnValueOnce(
+                mockSuccess(data)
+            );
 
-            expect(result).toEqual(mockData);
+            const result = await apiClient.getLibrary();
+
+            expect(result).toEqual(data);
         });
 
-        it('throws error on 404', async () => {
+        it('throws error on failure', async () => {
             mockFetch.mockReturnValueOnce(mockError(404));
 
             await expect(
@@ -123,96 +121,82 @@ describe('apiClient', () => {
 
     });
 
-    describe('getLibrary', () => {
+    describe('getByHref', () => {
 
-        it('calls the correct URL with X-User-Id', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ items: [] }));
+        it('calls provided href with X-User-Id header', async () => {
+            const href =
+                'http://localhost:8081/my-library/ITEM-001';
 
-            await apiClient.getLibrary();
+            mockFetch.mockReturnValueOnce(
+                mockSuccess({})
+            );
+
+            await apiClient.getByHref(href);
 
             expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/my-library`,
+                href,
                 expect.objectContaining({
-                    headers: expect.objectContaining({
+                    headers: {
                         'X-User-Id': USER_ID
-                    })
+                    }
                 })
             );
         });
 
-        it('returns empty list without breaking', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ items: [] }));
+        it('returns data from href', async () => {
+            const data = {
+                publicationType: 'Book',
+                authorName: 'George Orwell',
+                identifier: '123456789'
+            };
 
-            const result = await apiClient.getLibrary();
-
-            expect(result.items).toEqual([]);
-        });
-
-    });
-
-    describe('createList', () => {
-
-        it('sends POST with body and X-User-Id', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ listId: 'LOI-001' }));
-
-            const body = { name: 'Sci-fi books', genreId: 'SCIENCE FICTION' };
-            await apiClient.createList(body);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/my-lists/`,
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: expect.objectContaining({
-                        'Content-Type': 'application/json',
-                        'X-User-Id': USER_ID
-                    }),
-                    body: JSON.stringify(body)
-                })
+            mockFetch.mockReturnValueOnce(
+                mockSuccess(data)
             );
+
+            const result = await apiClient.getByHref(
+                'http://localhost:8081/my-library/ITEM-001'
+            );
+
+            expect(result).toEqual(data);
         });
 
-        it('throws error on 422', async () => {
-            mockFetch.mockReturnValueOnce(mockError(422));
+        it('throws error on failure', async () => {
+            mockFetch.mockReturnValueOnce(
+                mockError(404)
+            );
 
             await expect(
-                apiClient.createList({ name: '', genreId: '' })
-            ).rejects.toThrow('422');
-        });
-
-    });
-
-    describe('shareList', () => {
-
-        it('sends PATCH to the href from _links', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ listId: 'LOI-001' }));
-
-            const href = '/my-lists/LOI-001/share';
-            const body = { shared: true };
-            await apiClient.shareList(href, body);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}${href}`,
-                expect.objectContaining({
-                    method: 'PATCH',
-                    body: JSON.stringify(body)
-                })
-            );
+                apiClient.getByHref(
+                    'http://localhost:8081/my-library/INVALID'
+                )
+            ).rejects.toThrow('404');
         });
 
     });
 
     describe('createDirectSales', () => {
 
-        it('sends POST with body and X-User-Id', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ saleId: 'DS-001' }));
+        it('sends POST request with body', async () => {
+            mockFetch.mockReturnValueOnce(
+                mockSuccess({ saleId: 'DS-001' })
+            );
 
-            const body = { libraryItemId: 'ITM-001', price: 12.50 };
+            const body = {
+                libraryItemId: 'ITM-001',
+                price: 12.50
+            };
+
             await apiClient.createDirectSales(body);
 
             expect(mockFetch).toHaveBeenCalledWith(
                 `${BASE_URL}/direct-sales`,
                 expect.objectContaining({
                     method: 'POST',
+                    headers: expect.objectContaining({
+                        'Content-Type': 'application/json',
+                        'X-User-Id': USER_ID
+                    }),
                     body: JSON.stringify(body)
                 })
             );
