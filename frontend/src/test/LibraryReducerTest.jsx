@@ -64,7 +64,7 @@ describe('libraryReducer', () => {
 
     it('stores item details on FETCH_DETAIL_SUCCESS', () => {
         const detail = {
-            publicationType: 'Book',
+            publicationType: 'BOOK',
             authorName: 'Frank Herbert',
             identifier: '9780441172719'
         };
@@ -79,8 +79,10 @@ describe('libraryReducer', () => {
 
         const result = libraryReducer(initialState, action);
 
-        expect(result.details).toEqual({
-            'ITM-001': detail
+        expect(result.details['ITM-001']).toEqual({
+            publicationType: 'Book',
+            authorName: 'Frank Herbert',
+            identifier: '9780441172719'
         });
     });
 
@@ -97,7 +99,7 @@ describe('libraryReducer', () => {
         };
 
         const newDetail = {
-            publicationType: 'Book',
+            publicationType: 'MAGAZINE',
             authorName: 'Isaac Asimov',
             identifier: '9780553293357'
         };
@@ -114,7 +116,11 @@ describe('libraryReducer', () => {
 
         expect(result.details).toEqual({
             'ITM-001': state.details['ITM-001'],
-            'ITM-002': newDetail
+            'ITM-002': {
+                publicationType: 'Magazine',
+                authorName: 'Isaac Asimov',
+                identifier: '9780553293357'
+            }
         });
     });
 

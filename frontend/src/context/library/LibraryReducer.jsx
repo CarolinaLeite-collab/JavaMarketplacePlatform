@@ -26,6 +26,13 @@ function mapItem(item) {
     };
 }
 
+function formatPublicationType(type) {
+    if (!type) return '';
+    return type
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+}
+
 export function libraryReducer(state, action) {
     switch (action.type) {
 
@@ -43,7 +50,10 @@ export function libraryReducer(state, action) {
                 ...state,
                 details: {
                     ...state.details,
-                    [action.payload.itemId]: action.payload.detail
+                    [action.payload.itemId]: {
+                        ...action.payload.detail,
+                        publicationType: formatPublicationType(action.payload.detail.publicationType)
+                    }
                 }
             };
 
