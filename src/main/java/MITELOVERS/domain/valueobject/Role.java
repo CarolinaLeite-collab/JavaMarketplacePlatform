@@ -12,5 +12,6 @@ package MITELOVERS.domain.valueobject;
 
 public enum Role {
         ADMIN,
-        USER
+        USER,
+        NONREGISTRED
 }
