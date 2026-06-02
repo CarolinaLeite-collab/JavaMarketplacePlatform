@@ -27,6 +27,21 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
+    /** Any authenticated user may see a private list. */
+    public boolean canSeeList(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may add an item to a private list. */
+    public boolean canAddItemTo(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may delete a private list. */
+    public boolean canDeleteList(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
     /** Any authenticated user may put items for sale. */
     public boolean canSell(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
