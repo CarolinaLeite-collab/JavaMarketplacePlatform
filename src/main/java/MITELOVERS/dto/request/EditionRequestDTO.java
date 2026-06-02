@@ -2,29 +2,30 @@ package MITELOVERS.dto.request;
 
 import MITELOVERS.dto.DimensionDTO;
 import MITELOVERS.dto.WeightDTO;
-import lombok.Builder;
-import lombok.Generated;
-import lombok.Getter;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 /**
  * Data Transfer Object used to expose Edition information in API requests.
  */
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Jacksonized
 @Getter
 @Generated
 @Builder
 public class EditionRequestDTO {
 
-    private final String  publicationTypeId;
-    private final String  publishingCompanyId;
-    private final Integer publishingYear;
-    private final String  language;
+    private String  publicationTypeId;
+    private String  publishingCompanyId;
+    private Integer publishingYear;
+    private String  language;
     // optional fields
-    private final String identifier;
-    private final DimensionDTO dimension;
-    private final WeightDTO weight;
-    private final Integer numberOfPages;
-    private final Integer editionNumber;
-    private final String  binding;
+    private String identifier;
+    private DimensionDTO dimension;
+    private WeightDTO weight;
+    private Integer numberOfPages;
+    private Integer editionNumber;
+    private String  binding;
 
 }
