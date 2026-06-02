@@ -40,5 +40,17 @@ public class AuthorizationPolicy {
     public boolean canCreatePublication(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
+
+    /** Any authenticated user may view their own library. */
+    public boolean canGetLibrary(User user) {
+        return user.hasRole(Role.USER);
+    }
+
+    /** Any authenticated user may add a publication to their library. */
+    public boolean canAddToLibrary(User user) {
+        return user.hasRole(Role.USER);
+    }
+
+
 }
 
