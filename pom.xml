@@ -180,6 +180,7 @@
                     <outputDirectory>${project.build.directory}</outputDirectory>
                     <format>ALL</format>
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+                    <suppressionFile>suppression.xml</suppressionFile>
                 </configuration>
                 <executions>
                     <execution>
