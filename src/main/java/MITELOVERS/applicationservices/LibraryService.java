@@ -190,6 +190,16 @@ public class LibraryService {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    public List<ItemId> getItemIdsInLibrary(String userId) {
+        UserId uid = new UserId(new Email(userId));
+        LibraryId libraryId = LibraryId.fromUserId(uid);
+
+        return _libraryRepo.ofIdentity(libraryId)
+                .map(Library::getItemsIdInLibrary)
+                .orElse(Collections.emptyList());
+    }
+
 
 }
 
