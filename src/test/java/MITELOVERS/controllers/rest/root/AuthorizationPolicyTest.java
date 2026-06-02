@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.cli.root;
+package MITELOVERS.controllers.rest.root;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
@@ -199,6 +199,58 @@ class AuthorizationPolicyTest {
     }
 
     @Test
+    void userCanListPublications() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canListPublications(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotListPublications() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canListPublications(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreatePublication() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canCreatePublication(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotCreatePublication() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canCreatePublication(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
     void userCanGetLibrary() {
         // Arrange
         User user = mock(User.class);
@@ -390,6 +442,87 @@ class AuthorizationPolicyTest {
 
         // Act
         boolean result = policy.canDeleteList(user);
+
+        // Assert
+        assertFalse(result);
+    }
+    // ------------------------------------------------------------------------
+    // Author Aggregate Authorization Tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    void userCanListAuthors() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canListAuthors(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanListAuthors() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canListAuthors(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotListAuthors() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canListAuthors(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreateAuthor() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canCreateAuthor(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanCreateAuthor() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canCreateAuthor(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotCreateAuthor() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canCreateAuthor(user);
 
         // Assert
         assertFalse(result);

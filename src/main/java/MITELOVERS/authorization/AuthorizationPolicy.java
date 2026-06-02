@@ -56,6 +56,16 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
+    /** Author related authorization - can list Authors */
+    public boolean canListAuthors(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Author related authorization - can create Authors */
+    public boolean canCreateAuthor(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
     /** Any authenticated user may view their own library. */
     public boolean canGetLibrary(User user) {
         return user.hasRole(Role.USER);
@@ -90,4 +100,3 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 }
-
