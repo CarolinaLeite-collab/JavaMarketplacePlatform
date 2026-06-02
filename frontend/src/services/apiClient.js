@@ -1,8 +1,8 @@
-const BASE_URL = 'http://localhost:8081';
-const USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
+export const BASE_URL = 'http://localhost:8081';
+export const USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
+
 
 // Entry point functions (hardcoded paths - initial discovery)
-
 async function getPublic(path) {
     const response = await fetch(`${BASE_URL}${path}`);
     if (!response.ok) throw new Error(`${response.status}`);
@@ -37,7 +37,6 @@ async function post(path, body) {
 }
 
 // HATEOAS functions (use full href from backend response links)
-
 async function getByHref(href) {
     const response = await fetch(href, {
         headers: { 'X-User-Id': USER_ID }
@@ -98,12 +97,11 @@ async function deleteByHref(href) {
 }
 
 // Contract endpoints
-
 export const apiClient = {
     // Entry points — hardcoded
     getGenres: () => getPublic('/genres'),
     getMyLists: () => getPrivate('/my-lists/'),
-    getLibrary: () => getPrivate('/my-library'),
+    getLibrary: () => getPrivate('/my-library/'),
     createDirectSales: (body) => post('/direct-sales', body),
 
     // HATEOAS — use full href from backend response links
