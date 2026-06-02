@@ -1,6 +1,6 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.Authorization.AuthorizationPolicy;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;

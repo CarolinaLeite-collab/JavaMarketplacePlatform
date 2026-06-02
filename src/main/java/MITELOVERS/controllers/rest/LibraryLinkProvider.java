@@ -1,6 +1,6 @@
 package MITELOVERS.controllers.rest;
 
-import MITELOVERS.Authorization.AuthorizationPolicy;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;

@@ -1,6 +1,6 @@
 package MITELOVERS.controllers.cli.root;
 
-import MITELOVERS.Authorization.AuthorizationPolicy;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
 import org.junit.jupiter.api.Test;
@@ -278,4 +278,120 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    @Test
+    void userCanSeeList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canSeeList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanSeeList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canSeeList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotSeeList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canSeeList(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanAddItemToList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canAddItemTo(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanAddItemToList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canAddItemTo(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotAddItemToList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canAddItemTo(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanDeleteList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canDeleteList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanDeleteList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canDeleteList(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotDeleteList() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canDeleteList(user);
+
+        // Assert
+        assertFalse(result);
+    }
 }

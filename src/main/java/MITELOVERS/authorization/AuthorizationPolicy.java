@@ -1,4 +1,4 @@
-package MITELOVERS.Authorization;
+package MITELOVERS.authorization;
 
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
