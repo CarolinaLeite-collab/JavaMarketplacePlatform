@@ -1,4 +1,5 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
+import { initialState } from './library/LibraryReducer';
 
 const AppContext = createContext({
     state: {
@@ -13,3 +14,10 @@ const AppContext = createContext({
     dispatch: () => {}
 });
 export default AppContext;
+
+export const LibraryContext = createContext({
+    state: initialState,
+    dispatch: () => {}
+});
+
+export const useLibrary = () => useContext(LibraryContext);
