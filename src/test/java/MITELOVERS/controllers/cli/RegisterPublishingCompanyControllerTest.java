@@ -1,110 +1,61 @@
 package MITELOVERS.controllers.cli;
 
-import MITELOVERS.domain.publishingcompany.PublishingCompany;
-import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
-import MITELOVERS.domain.repository.IPublishingCompanyRepo;
-import MITELOVERS.domain.valueobject.PublishingCompanyId;
+import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("jpa")
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class RegisterPublishingCompanyControllerTest {
 
-    @Mock
-    IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
-
-    @Mock
-    PublishingCompanyFactory _publishingCompanyFactoryDouble;
-
-    @InjectMocks
-    RegisterPublishingCompanyController _registerPublishingCompanyController;
-
-    private PublishingCompany _publishingCompanyDouble;
-    private PublishingCompanyId _publishingCompanyIdDouble;
+    private PublishingCompanyService _publishingCompanyServiceDouble;
 
     @BeforeEach
     void setUp() {
-
-        _publishingCompanyDouble = mock(PublishingCompany.class);
-        _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
-
+        _publishingCompanyServiceDouble = mock(PublishingCompanyService.class);
     }
 
     @Test
-    void constructorShouldInitializeController() {
-        assertNotNull(_registerPublishingCompanyController);
+    void registerPublishingCompanyReturnsDTO() {
+        // Arrange
+        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompanyResponseDTO responseDouble = mock(PublishingCompanyResponseDTO.class);
 
+        when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
+                .thenReturn(responseDouble);
+
+        // SUT
+        RegisterPublishingCompanyController controller =
+                new RegisterPublishingCompanyController(_publishingCompanyServiceDouble);
+
+        // Act
+        PublishingCompanyResponseDTO result = controller.registerPublishingCompany(dtoDouble);
+
+        // Assert
+        assertNotNull(result);
     }
 
     @Test
-    void shouldRegisterNewPublishingCompany() {
+    void registerPublishingCompanyServiceThrowsExceptionPropagates() {
+        // Arrange
+        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
 
-        //Arrange
-        String publishingCompanyName = "Bertrand Editora";
+        when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
+                .thenThrow(new IllegalStateException("Publishing company already exists"));
 
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
-        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
+        // SUT
+        RegisterPublishingCompanyController controller =
+                new RegisterPublishingCompanyController(_publishingCompanyServiceDouble);
 
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(false);
-
-        when(_iPublishingCompanyRepoDouble.save(_publishingCompanyDouble)).thenReturn(_publishingCompanyDouble);
-
-        //Act
-        PublishingCompany publishingCompanyResult =
-                _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName);
-
-        //Assert
-        assertEquals(_publishingCompanyDouble, publishingCompanyResult);
-
+        // Act & Assert
+        assertThrows(IllegalStateException.class, () ->
+                controller.registerPublishingCompany(dtoDouble));
     }
-
-    @Test
-    void shouldNotRegisterExistingPublishingCompany() {
-
-        //Arrange
-        String publishingCompanyName = "Pendant Publishing";
-
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
-        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
-
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(true);
-
-        //Act
-        IllegalArgumentException exception =
-                assertThrows(IllegalArgumentException.class,
-                        () -> _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName));
-
-        //Assert
-        assertEquals("Publishing Company with name " + publishingCompanyName + " already exists", exception.getMessage());
-    }
-
-    @Test
-    void shouldNotSaveWhenPublishingCompanyAlreadyExists() {
-
-        //Arrange
-        String publishingCompanyName = "Pendant Publishing";
-
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(publishingCompanyName)).thenReturn(_publishingCompanyDouble);
-        when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
-
-        when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(true);
-
-        //Act
-        assertThrows(IllegalArgumentException.class,
-                () -> _registerPublishingCompanyController.registerPublishingCompany(publishingCompanyName));
-
-        //Assert
-        verify(_iPublishingCompanyRepoDouble, never()).save(_publishingCompanyDouble);
-    }
-
 }
+
+

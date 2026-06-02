@@ -3,7 +3,9 @@ package MITELOVERS.controllers.cli;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
-import org.springframework.stereotype.Component;
+import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
+import org.springframework.stereotype.Controller;
 
 /**
  * Controller responsible for handling the registration of a new {@link PublishingCompany}.
@@ -12,30 +14,20 @@ import org.springframework.stereotype.Component;
  * Validates uniqueness.
  */
 
-@Component
+@Controller
 public class RegisterPublishingCompanyController {
 
-    private final IPublishingCompanyRepo _iPublishingCompanyRepo;
-    private final PublishingCompanyFactory _publishingCompanyFactory;
+    private final PublishingCompanyService _publishingCompanyService;
 
-    public RegisterPublishingCompanyController(IPublishingCompanyRepo iPublishingCompanyRepo, PublishingCompanyFactory publishingCompanyFactory) {
+    public RegisterPublishingCompanyController( PublishingCompanyService publishingCompanyFactory) {
 
-        _iPublishingCompanyRepo = iPublishingCompanyRepo;
-        _publishingCompanyFactory = publishingCompanyFactory;
+        _publishingCompanyService = publishingCompanyFactory;
 
     }
 
-    public PublishingCompany registerPublishingCompany(String publishingCompanyName) {
+    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyResponseDTO dto) {
 
-        PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyName);
-
-        if (_iPublishingCompanyRepo.containsOfIdentity(newPublishingCompany.identity())) {
-
-            throw new IllegalArgumentException("Publishing Company with name " + publishingCompanyName + " already exists");
-
-        }
-
-        return _iPublishingCompanyRepo.save(newPublishingCompany);
+        return _publishingCompanyService.registerPublishingCompany(dto);
 
     }
 
