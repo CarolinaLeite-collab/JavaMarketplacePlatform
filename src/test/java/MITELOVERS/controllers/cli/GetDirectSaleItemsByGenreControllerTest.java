@@ -34,17 +34,18 @@ class GetDirectSaleItemsByGenreControllerTest {
     @Test
     void shouldDelegateCallToService() {
         // Arrange
-        String genreId = "GEN-123";
-        DSFilteredItemsResponseDTO expected =
-                new DSFilteredItemsResponseDTO(
-                        List.of(new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-1"))
-                );
+        String genreId = "FICTION";
+
+        List<DirectSaleId> expected = List.of(
+                new DirectSaleId("DS-A1B2C3D4"),
+                new DirectSaleId("DS-A4B2C3D4")
+        );
 
         when(_directSaleService.getDirectSaleItemsByGenreAsc(genreId))
                 .thenReturn(expected);
 
         // Act
-        DSFilteredItemsResponseDTO result =
+        List<DirectSaleId> result =
                 _controller.getDirectSaleItemsByGenreAsc(genreId);
 
         // Assert

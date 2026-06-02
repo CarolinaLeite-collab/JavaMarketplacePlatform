@@ -1,8 +1,11 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.DirectSaleService;
+import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 
 /**
@@ -18,7 +21,7 @@ public class GetDirectSaleItemsByGenreController {
         _directSaleService = directSaleService;
     }
 
-    public DSFilteredItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
+    public List<DirectSaleId> getDirectSaleItemsByGenreAsc(String genreId) {
         return _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
     }
 
