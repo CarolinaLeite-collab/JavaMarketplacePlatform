@@ -86,4 +86,9 @@ public class JpaListOfItemsRepo implements IListOfItemsRepo {
 
         return userLists;
     }
+
+    @Override
+    public void deleteListOfItems(ListOfItemsId listOfItemsId) {
+        _springDataRepo.deleteById(listOfItemsId.toString());
+    }
 }

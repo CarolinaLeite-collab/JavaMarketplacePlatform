@@ -20,12 +20,35 @@ class PublicationIdTest {
         // SUT
         PublicationId publicationId = new PublicationId(titleDouble, authorIdDouble, releaseYear);
 
-        // Assert
-        assertNotNull(publicationId);
+    }
+
+    @Test
+    void constructorNullTitleThrowsException() {
+
+        //Arrange
+        AuthorId authorId = mock(AuthorId.class);
+
+        //SUT & Assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationId(null, authorId, Year.of(2020)));
+
+    }
+
+    @Test
+    void constructorNullAuthorIdThrowsException() {
+
+        //Arrange
+        Title title = mock(Title.class);
+
+        //SUT & Assert
+        assertThrows(NullPointerException.class, () ->
+                new PublicationId(title, null, Year.of(2020)));
+
     }
 
     @Test
     void constructorNullReleaseYearThrowsException() {
+
         // Arrange
         Title titleDouble = mock(Title.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
@@ -33,14 +56,19 @@ class PublicationIdTest {
         // SUT + Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationId(titleDouble, authorIdDouble, null));
+
     }
 
     @Test
-    void equalsSameTitleAuthorYearReturnsTrue() {
+    void equalsSameReturnsTrue() {
+
         // Arrange
         Title titleDouble = mock(Title.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year releaseYear = Year.of(2020);
+
+        when(titleDouble.toString()).thenReturn("Harry Potter");
+        when(authorIdDouble.toString()).thenReturn("Rowling JK-A1B2C3");
 
         // SUT
         PublicationId id1 = new PublicationId(titleDouble, authorIdDouble, releaseYear);
@@ -48,10 +76,12 @@ class PublicationIdTest {
 
         // Assert
         assertEquals(id1, id2);
+
     }
 
     @Test
     void equalsDifferentTitleReturnsFalse() {
+
         // Arrange
         Title title1Double = mock(Title.class);
         Title title2Double = mock(Title.class);
@@ -142,82 +172,56 @@ class PublicationIdTest {
     }
 
     @Test
-    void toStringValidFieldsContainsExpectedValues() {
+    void equalsSameStringReturnsTrue() {
         // Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year releaseYear = Year.of(2020);
+        PublicationId id1 = new PublicationId("Harry Potter - Rowling JK-A1B2C3 (1997)");
+        PublicationId id2 = new PublicationId("Harry Potter - Rowling JK-A1B2C3 (1997)");
 
-        when(titleDouble.toString()).thenReturn("Dune");
-        when(authorIdDouble.toString()).thenReturn("author-123");
-
-        // SUT & Act
-        String result = new PublicationId(titleDouble, authorIdDouble, releaseYear).toString();
+        // Act
+        boolean result = id1.equals(id2);
 
         // Assert
-        assertTrue(result.contains("Dune"));
-        assertTrue(result.contains("author-123"));
-        assertTrue(result.contains("2020"));
+        assertTrue(result);
     }
 
     @Test
-    void getTitleShouldReturnTitle() {
+    void equalsDifferentStringReturnsFalse() {
         // Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year releaseYear = Year.of(2020);
-
-        PublicationId publicationId = new PublicationId(
-                titleDouble,
-                authorIdDouble,
-                releaseYear
-        );
+        PublicationId id1 = new PublicationId("Harry Potter - Rowling JK-A1B2C3 (1997)");
+        PublicationId id2 = new PublicationId("The Hobbit - Tolkien JRR-B2C3D4 (1937)");
 
         // Act
-        Title result = publicationId.getTitle();
+        boolean result = id1.equals(id2);
 
         // Assert
-        assertEquals(titleDouble, result);
+        assertFalse(result);
     }
 
     @Test
-    void getAuthorIdShouldReturnAuthorId() {
+    void bothConstructorsProduceSameId() {
         // Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year releaseYear = Year.of(2020);
-
-        PublicationId publicationId = new PublicationId(
-                titleDouble,
-                authorIdDouble,
-                releaseYear
-        );
+        Title title = mock(Title.class);
+        AuthorId authorId = mock(AuthorId.class);
+        when(title.toString()).thenReturn("Harry-Potter");
+        when(authorId.toString()).thenReturn("Rowling-JK-A1B2C3");
 
         // Act
-        AuthorId result = publicationId.getAuthorId();
+        PublicationId fromComponents = new PublicationId(title, authorId, Year.of(1997));
+        PublicationId fromString = new PublicationId("Harry-Potter-Rowling-JK-A1B2C3(1997)");
 
         // Assert
-        assertEquals(authorIdDouble, result);
+        assertEquals(fromComponents, fromString);
     }
 
     @Test
-    void getReleaseYearShouldReturnReleaseYear() {
+    void toStringReturnsPublicationId() {
         // Arrange
-        Title titleDouble = mock(Title.class);
-        AuthorId authorIdDouble = mock(AuthorId.class);
-        Year releaseYear = Year.of(2020);
-
-        PublicationId publicationId = new PublicationId(
-                titleDouble,
-                authorIdDouble,
-                releaseYear
-        );
+        PublicationId id = new PublicationId("Harry-Potter-Rowling.JK-A1B2C3(1997)");
 
         // Act
-        Year result = publicationId.getReleaseYear();
+        String result = id.toString();
 
         // Assert
-        assertEquals(releaseYear, result);
+        assertEquals("Harry-Potter-Rowling.JK-A1B2C3(1997)", result);
     }
-
 }

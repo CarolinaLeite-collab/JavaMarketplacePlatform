@@ -12,12 +12,11 @@ import static org.mockito.Mockito.mockConstruction;
 class ItemFactoryTest {
 
     @Test
-    void shouldSuccessfullyCreateNewItem() {
+    void shouldSuccessfullyCreateNewItemWithoutPicture() {
         //Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.LIKE_NEW;
-        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -25,7 +24,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
             //Act
-            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, nameDouble);
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble);
 
             //Assert
             assertNotNull(newItem);
@@ -34,14 +33,37 @@ class ItemFactoryTest {
     }
 
     @Test
-    void shouldSuccessfullyReconstructExistingItem() {
+    void shouldSuccessfullyCreateNewItemWithPicture() {
+
+        // Arrange
+        EditionId editionIdDouble = mock(EditionId.class);
+        Description descriptionDouble = mock(Description.class);
+        Condition condition = Condition.LIKE_NEW;
+        Picture pictureDouble = mock(Picture.class);
+
+        // SUT
+        ItemFactory factory = new ItemFactory();
+
+        try (MockedConstruction<Item> mocked =
+                     mockConstruction(Item.class)) {
+
+            // Act
+            Item newItem = factory.createItem(editionIdDouble, condition, descriptionDouble, pictureDouble);
+
+            // Assert
+            assertNotNull(newItem);
+            assertEquals(1, mocked.constructed().size());
+        }
+    }
+
+    @Test
+    void shouldSuccessfullyReconstructExistingItemWithoutPicture() {
         //Arrange
         ItemId itemIdDouble = mock(ItemId.class);
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
         Condition condition = Condition.POOR;
         SaleStatus saleStatus = SaleStatus.OnAuction;
-        Name nameDouble = mock(Name.class);
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -49,7 +71,7 @@ class ItemFactoryTest {
         try (MockedConstruction<Item> mocked =
                      mockConstruction(Item.class)) {
 
-            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, nameDouble);
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus);
 
             //Assert
             assertNotNull(reconstitutedItem);
@@ -57,6 +79,32 @@ class ItemFactoryTest {
 
         }
 
+    }
+
+    @Test
+    void shouldSuccessfullyReconstructExistingItemWithPicture() {
+
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        Description descriptionDouble = mock(Description.class);
+        Condition condition = Condition.POOR;
+        SaleStatus saleStatus = SaleStatus.OnAuction;
+        Picture pictureDouble = mock(Picture.class);
+
+        // SUT
+        ItemFactory factory = new ItemFactory();
+
+        try (MockedConstruction<Item> mocked =
+                     mockConstruction(Item.class)) {
+
+            // Act
+            Item reconstitutedItem = factory.createItem(itemIdDouble, editionIdDouble, condition, descriptionDouble, saleStatus, pictureDouble);
+
+            // Assert
+            assertNotNull(reconstitutedItem);
+            assertEquals(1, mocked.constructed().size());
+        }
     }
 
 }

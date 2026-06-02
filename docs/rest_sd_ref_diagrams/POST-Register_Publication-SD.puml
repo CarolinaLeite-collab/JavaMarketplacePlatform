@@ -1,0 +1,101 @@
+@startuml
+'==== Title ====
+title POST - Register Publication - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":Publication\nRestController" as REST
+participant ":Publication\nService" as Service
+participant ":Publication\nFactory" as Factory
+participant ":IPublication\nRepo" as PubRepo
+participant ":IAuthor\nRepo" as AuthorRepo
+participant ":IGenre\nRepo" as GenreRepo
+participant ":Publication\nResponseDTOMapper" as Mapper
+database DB
+
+activate REST
+
+create "title:Title" as Title
+REST -->> Title : title = create(info.getTitle())
+
+create "authorId:AuthorId" as AuthorId
+REST -->> AuthorId : authorId = create(info.getAuthorId())
+
+create "releaseYear:Year" as ReleaseYear
+REST -->> ReleaseYear : releaseYear = create(info.getReleaseYear())
+
+create "genreId:GenreId" as GenreId
+REST -->> GenreId : genreId = create(info.getGenreId())
+
+REST -> Service : registerPublication\n(title, authorId, releaseYear, genreId)
+activate Service
+
+Service -> Factory : createPublication\n(title, authorId, releaseYear, genreId)
+activate Factory
+Factory --> Service : newPublication
+deactivate Factory
+
+Service -> PubRepo : containsOfIdentity\n(newPublication.identity())
+activate PubRepo
+PubRepo -> DB : exists= existsById(publicationId)
+PubRepo --> Service : exists
+deactivate PubRepo
+
+alt publication already exists
+    Service --> REST : IllegalStateException
+else publication does not exist
+    Service -> PubRepo : save(newPublication)
+    activate PubRepo
+    PubRepo -> DB : publication = save(newPublication)
+    DB --> PubRepo : publication
+    PubRepo --> Service : publication
+    deactivate PubRepo
+
+    Service --> REST : publication
+end
+
+deactivate Service
+
+REST -> Service : getPublicationResponseDTO(publication)
+activate Service
+
+Service -> AuthorRepo : ofIdentity\n(publication.getAuthorId())
+activate AuthorRepo
+AuthorRepo --> Service : author
+deactivate AuthorRepo
+
+Service -> GenreRepo : ofIdentity\n(publication.getGenreId())
+activate GenreRepo
+GenreRepo --> Service : genre
+deactivate GenreRepo
+
+Service -> Mapper : toResponseDTO\n(publication, author, genre)
+activate Mapper
+create "publicationResponseDTO\n:PublicationResponseDTO" as ResponseDTO
+Mapper -->> ResponseDTO : create(publication, author, genre)
+Mapper --> Service : publicationResponseDTO
+deactivate Mapper
+
+Service --> REST : publicationResponseDTO
+deactivate Service
+
+REST -> ResponseDTO : add(selfLink)
+
+REST --> REST : ResponseEntity.status(HttpStatus.CREATED)\n.body(publicationResponseDTO)
+
+ref over REST
+[[../a.puml Back to Main Diagram]]
+end
+
+@enduml

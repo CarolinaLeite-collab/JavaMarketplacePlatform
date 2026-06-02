@@ -1,5 +1,6 @@
 package MITELOVERS.dto;
 
+import MITELOVERS.dto.response.ItemDetailsDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
