@@ -20,7 +20,7 @@ export function ItemAccordion({ items }: Props) {
             w="60%"
             mx="auto"
         >
-            <Accordion chevronPosition="right" variant="separeted"
+            <Accordion chevronPosition="right" variant="separated"
                        styles={{
                            item: {
                                border: '1px solid light-dark(var(--mantine-color-gray-4), '
@@ -47,9 +47,9 @@ export function ItemAccordion({ items }: Props) {
                         <Accordion.Panel>
                             <ItemDetailTable
                                 item={{
-                                    publicationType: 'Book',        //item.publicationType
-                                    authorName: 'H.G. Wells',       //item.authorName
-                                    identifier: '9781784872113'     //item.identifier
+                                    publicationType: item.publicationType,
+                                    authorName: item.authorName,
+                                    identifier: item.identifier,
                                 }}
                             />
                         </Accordion.Panel>
