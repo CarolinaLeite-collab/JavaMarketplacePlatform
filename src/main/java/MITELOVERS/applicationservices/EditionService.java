@@ -92,11 +92,13 @@ public class EditionService {
             if (identifier != null && existingEdition.getIdentifier() != null) {
                 if (existingEdition.getPublicationTypeId().equals(typeId) &&
                         existingEdition.getIdentifier().equals(identifier)) {
-                    throw new IllegalStateException("An Edition with this identifier already exists!");
+
+                    return _editionResponseDTOMapper.toModel(existingEdition);
                 }
             } else {
                 if (existingEdition.sameAs(edition)) {
-                    throw new IllegalStateException("Edition already exists!");
+
+                    return _editionResponseDTOMapper.toModel(existingEdition);
                 }
             }
         }

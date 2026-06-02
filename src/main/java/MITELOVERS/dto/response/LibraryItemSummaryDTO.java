@@ -15,7 +15,6 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 public class LibraryItemSummaryDTO extends RepresentationModel<LibraryItemSummaryDTO> {
 
-    @JsonIgnore
     private String itemId;
     private String title;
     private String picture;

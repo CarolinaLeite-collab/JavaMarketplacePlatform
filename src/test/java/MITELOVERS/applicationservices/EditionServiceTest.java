@@ -167,7 +167,7 @@ class EditionServiceTest {
     }
 
     @Test
-    void registerEditionDuplicateIdentifierThrowsException() {
+    void registerEditionDuplicateIdentifierReturnsExistingEdition() {
         // Arrange
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
@@ -178,6 +178,7 @@ class EditionServiceTest {
                 .build();
 
         Edition existingEditionDouble = mock(Edition.class);
+        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
 
         when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
@@ -188,11 +189,10 @@ class EditionServiceTest {
         when(_requestMapperDouble.toNumberOfPages(dto)).thenReturn(null);
         when(_requestMapperDouble.toEditionNumber(dto)).thenReturn(null);
         when(_requestMapperDouble.toBinding(dto)).thenReturn(null);
-        when(_editionFactoryDouble.createEdition(any(), any(), any(), any(), any(), any(),
-                isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(mock(Edition.class));
         when(existingEditionDouble.getPublicationTypeId()).thenReturn(new PublicationTypeId("BOOK"));
         when(existingEditionDouble.getIdentifier()).thenReturn(new ISBN("9780747532743"));
         when(_iEditionRepoDouble.findAll()).thenReturn(List.of(existingEditionDouble));
+        when(_responseMapperDouble.toModel(existingEditionDouble)).thenReturn(responseDouble);
 
         // SUT
         EditionService service = new EditionService(
@@ -200,9 +200,11 @@ class EditionServiceTest {
                 _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
                 _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
 
-        // Act & Assert
-        assertThrows(IllegalStateException.class, () ->
-                service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto));
+        // Act
+        EditionResponseDTO result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
+
+        // Assert
+        assertNotNull(result);
     }
 
 

@@ -41,147 +41,128 @@ class ListOfItemsServiceTest {
     private IItemRepo _itemRepoDouble;
     @Mock
     private IGenreRepo _genreRepoDouble;
-    @Mock
-    private IUserRepo _userRepoDouble;
-    @Mock
-    private ListOfItemsResponseDTOMapper _mapperDouble;
 
     @Test
     void getUserListsReturnsListsByUserId() {
         //arrange
         ListOfItems listOfItemsDouble1 = mock(ListOfItems.class);
         ListOfItems listOfItemsDouble2 = mock(ListOfItems.class);
-
-        ListOfItemsResponseDTO dto1 = mock(ListOfItemsResponseDTO.class);
-        ListOfItemsResponseDTO dto2 = mock(ListOfItemsResponseDTO.class);
+        UserId userIdDouble =  mock(UserId.class);
 
         when(_listOfItemsRepoDouble.findListOfItemsByUserId(any(UserId.class))).thenReturn(List.of(listOfItemsDouble1, listOfItemsDouble2));
-        when(_mapperDouble.toModel(listOfItemsDouble1)).thenReturn(dto1);
-        when(_mapperDouble.toModel(listOfItemsDouble2)).thenReturn(dto2);
 
         //act
-        List<ListOfItemsResponseDTO> result = _service.getUserLists("user@cenas.com");
+        List<ListOfItems> result = _service.getUserLists(userIdDouble);
 
         //assert
         assertEquals(2, result.size());
-        assertEquals(dto1, result.get(0));
-        assertEquals(dto2, result.get(1));
+        assertEquals(listOfItemsDouble1, result.get(0));
+        assertEquals(listOfItemsDouble2, result.get(1));
     }
 
     @Test
     void getListReturnsListByListByIdId() {
         //arrange
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsResponseDTO dto = mock(ListOfItemsResponseDTO.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
 
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(dto);
-
         //act
-        ListOfItemsResponseDTO result = _service.getListById("LOI-1234");
+        ListOfItems result = _service.getListById(listOfItemsIdDouble);
 
         //assert
-        assertEquals(dto, result);
+        assertEquals(listOfItemsDouble, result);
     }
 
     @Test
     void saveReturnsNewlyCreatedAndSavedList() {
         //arrange
-        ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
-        ListOfItemsRequestDTO requestDTODouble = mock(ListOfItemsRequestDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        UserId userIdDouble =  mock(UserId.class);
+        Name nameDouble = mock(Name.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        when(requestDTODouble.getName()).thenReturn("nameDouble");
-        when(requestDTODouble.getGenreId()).thenReturn("FICTION");
         when(_genreRepoDouble.containsOfIdentity(any(GenreId.class))).thenReturn(true);
-        when(requestDTODouble.getName()).thenReturn("nameDouble");
         when(_factoryDouble.createListOfItems(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(listOfItemsDouble);
         when(_listOfItemsRepoDouble.save(any(ListOfItems.class))).thenReturn(listOfItemsDouble);
-        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _service.save("user@cenas.com", requestDTODouble);
+        ListOfItems result = _service.save(userIdDouble, nameDouble, genreIdDouble);
 
         //assert
-        assertEquals(responseDTODouble, result);
+        assertEquals(listOfItemsDouble, result);
     }
 
     @Test
     void addItemToListReturnsListWithAddedItem() {
         //arrange
-        ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        AddItemRequestDTO requestDTODouble = mock(AddItemRequestDTO.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
-        when(requestDTODouble.getItemId()).thenReturn("ABCDEF1234");
         when(_itemRepoDouble.containsOfIdentity(any(ItemId.class))).thenReturn(true);
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _service.addItemToList("LOI-1234", requestDTODouble);
+        ListOfItems result = _service.addItemToList(listOfItemsIdDouble, itemIdDouble);
 
         //assert
-        assertEquals(responseDTODouble, result);
+        assertEquals(listOfItemsDouble, result);
 
     }
 
     @Test
     void changeVisibilityShouldMakeListPublicIfPrivate() {
         //arrange
-        ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        MakeListPublicRequestDTO sharedUntil = mock(MakeListPublicRequestDTO.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+        SharedDuration sharedDurationDouble = mock(SharedDuration.class);
 
-        when(sharedUntil.getSharedUntil()).thenReturn(2);
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _service.makePublic("LOI-1234", sharedUntil);
+        ListOfItems result = _service.makePublic(listOfItemsIdDouble, sharedDurationDouble);
 
         //assert
-        assertEquals(responseDTODouble, result);
+        assertEquals(listOfItemsDouble, result);
     }
 
     @Test
     void changeVisibilityShouldMakeListPrivateIfPublic() {
         //arrange
-        ListOfItemsResponseDTO responseDTODouble = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
 
         when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(_mapperDouble.toModel(listOfItemsDouble)).thenReturn(responseDTODouble);
 
         //act
-        ListOfItemsResponseDTO result = _service.makePrivate("LOI-1234");
+        ListOfItems result = _service.makePrivate(listOfItemsIdDouble);
 
         //assert
-        assertEquals(responseDTODouble, result);
+        assertEquals(listOfItemsDouble, result);
     }
 
     @Test
     void findListsByGenreReturnsList() {
         // arrange
-        ListOfItemsResponseDTO responseDTODouble1 = mock(ListOfItemsResponseDTO.class);
-        ListOfItemsResponseDTO responseDTODouble2 = mock(ListOfItemsResponseDTO.class);
         ListOfItems listOfItemsDouble1 = mock(ListOfItems.class);
         ListOfItems listOfItemsDouble2 = mock(ListOfItems.class);
+        ListOfItemsId listOfItemsIdDouble1 = mock(ListOfItemsId.class);
+        ListOfItemsId listOfItemsIdDouble2 = mock(ListOfItemsId.class);
 
-        when(listOfItemsDouble1.getGenreId()).thenReturn(new GenreId("FICTION"));
-        when(listOfItemsDouble2.getGenreId()).thenReturn(new GenreId("FICTION"));
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        when(listOfItemsDouble1.getGenreId()).thenReturn(genreIdDouble);
+        when(listOfItemsDouble2.getGenreId()).thenReturn(genreIdDouble);
 
         when(_listOfItemsRepoDouble.findAll()).thenReturn(List.of(listOfItemsDouble1, listOfItemsDouble2));
 
-        when(_mapperDouble.toModel(listOfItemsDouble1)).thenReturn(responseDTODouble1);
-        when(_mapperDouble.toModel(listOfItemsDouble2)).thenReturn(responseDTODouble2);
-
         // act
-        List<ListOfItemsResponseDTO> result = _service.findByGenre("FICTION");
+        List<ListOfItems> result = _service.findByGenre(genreIdDouble);
 
         // assert
         assertEquals(2, result.size());
-        assertEquals(responseDTODouble1, result.get(0));
-        assertEquals(responseDTODouble2, result.get(1));
+        assertEquals(listOfItemsDouble1, result.get(0));
+        assertEquals(listOfItemsDouble2, result.get(1));
     }
 }

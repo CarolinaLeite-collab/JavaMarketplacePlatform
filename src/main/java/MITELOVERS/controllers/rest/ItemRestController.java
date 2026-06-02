@@ -30,7 +30,14 @@ public class ItemRestController {
         _itemService = itemService;
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    /**
+     * Registers a new item in the system for the given edition.
+     *
+     * @param info the request body containing edition, condition and description
+     * @return 201 Created with the registered item, or 404/422 on error
+     */
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> registerItem(@Valid @RequestBody ItemRequestDTO info) {
 
         try {
@@ -53,7 +60,14 @@ public class ItemRestController {
         }
     }
 
-    @GetMapping
+
+    /**
+     * Returns all items currently in the repository.
+     *
+     * @return 200 OK with the list of items
+     */
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponseDTO>> getAllItems() {
 
         List<ItemResponseDTO> items = _itemService.getAllItems();
@@ -61,7 +75,14 @@ public class ItemRestController {
         return ResponseEntity.ok(items);
     }
 
-    @GetMapping("/{id}")
+    /**
+     * Returns a single item by its identifier.
+     *
+     * @param id the item identifier
+     * @return 200 OK with the item, or 404 if not found
+     */
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable String id) {
 
         try {

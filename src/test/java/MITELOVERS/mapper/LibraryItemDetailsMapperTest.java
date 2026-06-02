@@ -36,7 +36,7 @@ class LibraryItemDetailsMapperTest {
 
         // Act
         LibraryItemDetailsMapper mapper = new LibraryItemDetailsMapper();
-        LibraryItemDetailsDTO dto = mapper.toDTO(editionDouble, authorDouble, publicationTypeDouble);
+        LibraryItemDetailsDTO dto = mapper.toDTO(authorDouble, editionDouble,  publicationTypeDouble);
 
         // Assert
         assertEquals("George Orwell", dto.getAuthorName());
@@ -64,7 +64,7 @@ class LibraryItemDetailsMapperTest {
 
         // Act
         LibraryItemDetailsMapper mapper = new LibraryItemDetailsMapper();
-        LibraryItemDetailsDTO dto = mapper.toDTO(editionDouble, authorDouble, publicationTypeDouble);
+        LibraryItemDetailsDTO dto = mapper.toDTO(authorDouble, editionDouble,  publicationTypeDouble);
 
         // Assert
         assertEquals("Jane Doe", dto.getAuthorName());
@@ -92,7 +92,7 @@ class LibraryItemDetailsMapperTest {
 
         // Act
         LibraryItemDetailsMapper mapper = new LibraryItemDetailsMapper();
-        LibraryItemDetailsDTO dto = mapper.toDTO(editionDouble, authorDouble, publicationTypeDouble);
+        LibraryItemDetailsDTO dto = mapper.toDTO(authorDouble, editionDouble,  publicationTypeDouble);
 
         // Assert
         assertEquals("George Orwell", dto.getAuthorName());

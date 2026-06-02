@@ -21,6 +21,13 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+/**
+ * Application service responsible for orchestrating item-related use cases,
+ * including item registration and retrieval.
+ * Resolves associated domain objects (Edition, Publication, Author, Genre)
+ * and delegates persistence to the respective repositories.
+ */
+
 @Service
 public class ItemService {
 
@@ -49,6 +56,17 @@ public class ItemService {
         _itemResponseDTOMapper = Objects.requireNonNull(mapper, "ItemResponseDTOMapper is required");
     }
 
+
+    /**
+     * Registers a new item for the given edition.
+     *
+     * @param editionId   the identifier of an existing edition
+     * @param condition   the physical condition of the item
+     * @param description a description of the item
+     * @return the registered item as a response DTO
+     * @throws NoSuchElementException if the edition, publication, author or genre does not exist
+     */
+
     @Transactional
     public ItemResponseDTO registerItem(EditionId editionId,
                                         Condition condition,
@@ -71,10 +89,26 @@ public class ItemService {
                         "Genre does not exist in the repository"));
 
         Item newItem = _itemFactory.createItem(editionId, condition, description);
-        Item savedItem = _iItemRepo.save(newItem);
+        ItemId itemId = newItem.identity();
+
+        Item savedItem;
+        if (_iItemRepo.containsOfIdentity(itemId)) {
+            savedItem = _iItemRepo.ofIdentity(itemId)
+                    .orElseThrow(() -> new NoSuchElementException(
+                            "Item with id '" + itemId + "' does not exist"));
+        } else {
+            savedItem = _iItemRepo.save(newItem);
+        }
 
         return _itemResponseDTOMapper.toResponseDTO(savedItem, edition, publication, author, genre);
     }
+
+    /**
+     * Returns all items in the repository.
+     *
+     * @return list of item response DTOs
+     * @throws NoSuchElementException if any referenced edition, publication, author or genre is missing
+     */
 
     public List<ItemResponseDTO> getAllItems() {
 
@@ -105,6 +139,14 @@ public class ItemService {
 
         return response;
     }
+
+    /**
+     * Returns a single item by its string identifier.
+     *
+     * @param itemId the item's SKU string
+     * @return the item as a response DTO
+     * @throws NoSuchElementException if the item or any of its references does not exist
+     */
 
     public ItemResponseDTO getItemById(String itemId) {
 

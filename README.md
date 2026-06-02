@@ -26,7 +26,11 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
-    * [Run Tests on Pull Request](#run-tests-on-pull-request)
+    * [Hardened Security Pipeline](#hardened-security-pipeline)
+      * [Secret Detection with Gitleaks](#secret-detection-with-gitleaks)
+      * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
+      * [Run Tests on Pull Request](#run-tests-on-pull-request)
+      * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
   * [SpringBoot application.properties](#springboot-applicationproperties)
 <!-- TOC -->
 
@@ -47,16 +51,32 @@ To run tests only:
 mvn clean test
 ```
 
-To run the application locally, there are two options:
+To run the application locally, there are two options.
 
+**Option 1:**
+
+macOs/Linux:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=mem
 ```
 
+Windows:
+```
+mvn spring-boot:run "-Dspring-boot.run.profiles=mem"
+```
+
 - starts the app using an in-memory profile, meaning the database lives only in RAM and is wiped clean every time the app stops (Assuming tha the JDBC URL in `application.properties` is set to `jdbc:h2:mem:miteloversdb`).
 
+**Option 2:**
+
+macOs/Linux:
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=jpa,bootstrap
+```
+
+Windows:
+```
+mvn spring-boot:run "-Dspring-boot.run.profiles=jpa,bootstrap"
 ```
 
 - starts the app with two profiles: jpa for file/persistent database configuration, and bootstrap to seed initial data on startup. Data survives restarts.
@@ -173,6 +193,9 @@ The pipeline triggers automatically on:
 - Every pull request targeting `main`, `b3`, or `b4`
 
 For that, we defined three different GitHub worflows:
+  - Notify Discord on PR Creation
+  - Notify Discord on PR Merge
+  - Hardened Security Pipeline
 
 ___
 
@@ -214,6 +237,8 @@ jobs:
           ${{ secrets.DISCORD_INCOMING_PR_WEBHOOK }}
 ```
 
+---
+
 ### Notify Discord on PR Merge
 
 This GitHub workflow presents a complementary action to the first one.
@@ -254,36 +279,106 @@ jobs:
             }')" \
           ${{ secrets.DISCORD_WEBHOOK }}
 ```
+---
+### Hardened Security Pipeline
 
-### Run Tests on Pull Request
+This workflow, comprised of several jobs, seeks to enforce a propper running order for several tasks.
 
-On each Pull Request trigger, the pipeline runs `mvn clean verify` which compiles the code, executes all tests and enforces the test line coverage threshold.
+Its consists of the following jobs: 
+  - `gitleaks`: ensures secret detection
+  - `semgrep-sast`: implements a SAST scan
+  - `build-and-test-with-coverage`: build + tests + JaCoCo coverage + OWASP Dependency-Check (SCA) + SBOM generation
 
-To follow good DevOps practices, it also archives the JaCoCo coverage report in HTML format. 
 
-To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
-
-![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
-
-The project's GitHub workflow:
-
+The full pipeline is configured as follows:
 ```yaml
-name: Run Tests on Pull Request
+name: Hardened Security Pipeline
 
 on:
   pull_request:
-    branches: [ main, b3, b4 ]
+    branches:
+      - main
+      - b3
+      - b4
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Gitleaks
+        run: |
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.27.2/gitleaks_8.27.2_linux_x64.tar.gz
+          tar -xzf gitleaks_8.27.2_linux_x64.tar.gz
+          sudo mv gitleaks /usr/local/bin/
+          gitleaks version
+
+      - name: Run Gitleaks
+        run: |
+          gitleaks detect \
+            --source . \
+            --report-format json \
+            --report-path gitleaks-report.json \
+            --exit-code 1
+
+      - name: Upload Gitleaks report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+
+  semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    container:
+      image: semgrep/semgrep
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan (JSON report)
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config p/java \
+            --json --output semgrep-report.json \
+            --severity ERROR \
+            --error \
+            src/ 
+
+      - name: Upload Semgrep JSON report
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: semgrep-sast-report
+          path: semgrep-report.json
+
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
+    needs: semgrep-sast
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -293,14 +388,26 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build and run unit tests with coverage
+      - name: Build, test, and run security scans
         run: mvn clean verify
-      - name: Upload coverage report
+      - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: target/site/jacoco/
+      - name: Upload Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: target/bom.xml
       - name: Post coverage comment
         if: always()
         uses: madrapps/jacoco-report@v1.7.1
@@ -313,22 +420,11 @@ jobs:
 
 Besides the steps already covered, we created an environment variable `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`, that forces all JavaScript-based actions (checkout, setup-java, upload-artifact) to run on Node.js 24 instead of the deprecated Node.js 20, removing the deprecation warning.
 
-Additionally, a permissions block was added:
-
-- `contents`: read — allows the workflow to clone/read the repository contents;
-- `pull-requests`: write — allows the workflow to post comments on the PR (needed for the JaCoCo coverage comment).
-
 ---
 
-## Secret Detection  with `Gitleaks`
+### Secret Detection with `Gitleaks`
 
-To improve the security of the development workflow, a dedicated GitHub Actions workflow was added to detect accidentally committed secrets.
-
-The workflow is defined in:
-
-```text
-.github/workflows/secret-detection.yml
-```
+To improve the security of the development workflow, a dedicated job was added to the Hardened Security Pipeline workflow, to detect accidentally committed secrets.
 
 It is automatically triggered on every Pull Request targeting:
 
@@ -338,7 +434,7 @@ b3
 b4
 ```
 
-The workflow performs the following steps:
+The job performs the following steps:
 
 1. Checks out the complete repository history (`fetch-depth: 0`);
 2. Installs Gitleaks on the GitHub runner;
@@ -346,19 +442,9 @@ The workflow performs the following steps:
 4. Generates a JSON report containing all findings;
 5. Uploads the report as a GitHub Actions artifact.
 
-Workflow definition:
+Job definition:
 
 ```yaml
-name: Secret Detection
-
-on:
-  pull_request:
-    branches:
-      - main
-      - b3
-      - b4
-
-jobs:
   gitleaks:
     runs-on: ubuntu-latest
 
@@ -390,7 +476,7 @@ jobs:
           path: gitleaks-report.json
 ```
 
-The option `--exit-code 1` ensures that the workflow fails whenever a secret is detected, preventing insecure code from being merged.
+The option `--exit-code 1` ensures that the job fails whenever a secret is detected, preventing insecure code from being merged.
 
 Examples of information that Gitleaks can detect include:
 
@@ -401,11 +487,245 @@ Examples of information that Gitleaks can detect include:
 - Cloud provider credentials;
 - Hardcoded secrets.
 
-A validation test was performed by introducing a fake secret into a temporary file. 
+A validation test was performed by introducing a fake secret into a temporary file.
 Gitleaks correctly detected the secret and failed the pipeline. Even after the file was deleted, the pipeline continued to fail because the secret remained in the Git history. This confirmed that Gitleaks scans the full commit history (`fetch-depth: 0`) and not only the current contents of the repository.
 ![Gitleaks Secret Detection Test](docs/readme-printscreens/gitleaks-secret-detection-test.png)
 ---
 
+
+### Static Code Analysis and Security Checks with Semgrep
+
+Semgrep was integrated into the CI pipeline as a static application security testing (SAST) stage to automatically detect security issues and bad practices in the Java codebase on every pull request targeting main, b3 or b4.
+
+The workflow runs after the secret-detection job, using the official Semgrep container to scan only the `src/` directory with the `--config=auto`, as well as `--config p/java` rulesets, which applies a curated set of language-aware security and correctness rules, also applying specifically to Java.
+
+```yaml
+ semgrep-sast:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    container:
+      image: semgrep/semgrep
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep scan (JSON report)
+        run: |
+          semgrep scan \
+            --config=auto \
+            --config p/java \
+            --json --output semgrep-report.json \
+            --severity ERROR \
+            --error \
+            src/ 
+
+      - name: Upload Semgrep JSON report
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: semgrep-sast-report
+          path: semgrep-report.json
+```
+The scan is configured with `--severity ERROR` and `--error`, meaning any finding at error level causes the job to fail, turning security findings into a hard quality gate.
+
+Additionally, the job produces a JSON report (`semgrep-report.json`) that is uploaded as a pipeline artifact, which allows inspection of the detailed results for each run.
+
+By chaining Semgrep after Gitleaks and before the build-and-test stage, the pipeline ensures that obvious secret leaks, insecure coding patterns, and high‑severity vulnerabilities are caught early, making security an integral part of the DevSecOps workflow rather than a late, manual step.
+
+The job's validation was tested with the temporary addition of a file containing SQL injection, which caused the PR to fail during Semgrep scan:
+![semgrep-pr-fail.png](docs/readme-printscreens/semgrep-pr-fail.png)
+![semgrep-pr-fail-report.png](docs/readme-printscreens/semgrep-pr-fail-report.png)
+---
+
+### Run Tests on Pull Request
+
+On each Pull Request trigger, the `build-and-test-with-coverage` job runs `mvn clean verify` which:
+
+- Compiles the code
+- Executes all tests
+- Enforces a 95% test line coverage threshold via JaCoCo
+- Runs OWASP Dependency-Check to scan for vulnerabilities (fails build if CVSS ≥ 7)
+- Generates a CycloneDX SBOM (Software Bill of Materials)
+
+Following good DevOps practices, the pipeline archives multiple security and quality reports as downloadable artifacts: 
+
+- JaCoCo coverage report (HTML format)
+- OWASP Dependency-Check vulnerability report (HTML format)
+- CycloneDX SBOM (XML format, machine-readable)
+
+To finish, another step was established, to post a coverage comment on the Pull Request itself, with invaluable data such as the line coverage per code class and the impact the worked-on classes had on the overall project's line coverage. A community made `madrapps/jacoco-report` action was used for this purpose:
+
+![post-coverage-comment.png](docs/readme-printscreens/post-coverage-comment.png)
+
+The `build-and-test-with-coverage` job is configured as follows:
+
+```yaml
+  build-and-test-with-coverage:
+    runs-on: ubuntu-latest
+    needs: semgrep-sast
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build, test, and run security scans
+        run: mvn clean verify
+      - name: Upload JaCoCo coverage report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+      - name: Upload Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: sbom-cyclonedx
+          path: target/bom.xml
+      - name: Post coverage comment
+        if: always()
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 0
+          min-coverage-changed-files: 0
+```
+
+Additionally, a permissions block was added:
+
+- `contents`: read — allows the workflow to clone/read the repository contents;
+- `pull-requests`: write — allows the workflow to post comments on the PR (needed for the JaCoCo coverage comment).
+
+---
+
+### Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)
+
+As part of hardening the security pipeline, **Software Composition Analysis (SCA)** was integrated into the above referenced `build-and-test-with-coverage` job via the **OWASP Dependency-Check** Maven plugin, which analyzes third-party dependencies declared in our `pom.xml` against public vulnerability databases (like the **National Vulnerability Database**, or NVD). A build will fail if a vulnerability with **CVSS** (Common Vulnerability Scoring System) ≥ **7** is detected, preventing a Pull Request from being merged if it introduces a dependency containing a known high-severity issue. Remediation of the known vulnerability is necessary for the pipeline to pass.
+
+A **Software Bill of Materials (SBOM)** is also generated through the **CycloneDX** plugin, creating a _machine-readable_ inventory of all third-party components in the application (101 in total). The SBOM artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check if the affected library exists in the SBOM, enabling rapid impact assessment and remediation without the need to rescan or manually inspect all application dependencies again.
+
+**OWASP Dependency-Check plugin configuration** (pom.xml):
+
+```
+<!-- OWASP Dependency-Check (SCA) -->
+<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>12.2.2</version>
+    <configuration>
+        <failBuildOnCVSS>7</failBuildOnCVSS>
+        <outputDirectory>${project.build.directory}</outputDirectory>
+        <format>ALL</format>
+        <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
+    </configuration>
+    <executions>
+        <execution>
+            <phase>verify</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+```
+
+**Local testing and remediation**:
+
+The first local run of `mvn clean verify` failed due to **36 CVEs** in `tomcat-embed-core`, 10 in Swagger UI, and several in Spring Framework, Jackson, and Log4j:
+
+There vulnerabilities were remediated by:
+
+- Upgrading Spring Boot parent to **4.0.6**
+
+- Overriding Tomcat version to **11.0.22** (Spring Boot 4.0.6 bundles version 11.0.21):
+
+(pom.xml)
+```
+<!-- Override Tomcat version to fix CVEs -->
+<tomcat.version>11.0.22</tomcat.version>
+```
+
+Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabilities.
+
+**CycloneDX SBOM plugin configuration** (pom.xml):
+
+```
+<!-- CycloneDX SBOM generation -->
+    <plugin>
+        <groupId>org.cyclonedx</groupId>
+        <artifactId>cyclonedx-maven-plugin</artifactId>
+        <version>2.9.0</version>
+        <executions>
+            <execution>
+                <id>custom-sbom</id>
+                <phase>verify</phase>
+                <goals>
+                    <goal>makeAggregateBom</goal>
+                </goals>
+                <configuration>
+                    <schemaVersion>1.6</schemaVersion>
+                    <includeBomSerialNumber>true</includeBomSerialNumber>
+
+                    <includeCompileScope>true</includeCompileScope>
+                    <includeProvidedScope>true</includeProvidedScope>
+                    <includeRuntimeScope>true</includeRuntimeScope>
+                    <includeSystemScope>true</includeSystemScope>
+                    <includeTestScope>false</includeTestScope>
+
+                    <outputFormat>all</outputFormat>
+                    <outputName>bom</outputName>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+```
+
+This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
+
+**CI Integration:**
+
+An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
+
+The workflow now uploads three artifacts on each PR:
+- JaCoCo coverage report
+- Dependency-Check vulnerability report
+- CycloneDX SBOM
+
+**CI Pipeline Validation**: 
+
+To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat was temporarily downgraded to 11.0.21 in a Pull Request. The CI pipeline failed as expected:
+
+![SCA_failed_pipeline_test.png](docs/readme-printscreens/SCA_failed_pipeline_test.png)
+
+After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
+
+---
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined:

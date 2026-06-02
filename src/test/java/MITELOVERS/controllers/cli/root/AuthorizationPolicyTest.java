@@ -198,4 +198,84 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    @Test
+    void userCanGetLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canGetLibrary(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCannotGetLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(false);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canGetLibrary(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotGetLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canGetLibrary(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanAddToLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canAddToLibrary(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCannotAddToLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(Role.USER)).thenReturn(false);
+        when(user.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // Act
+        boolean result = policy.canAddToLibrary(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotAddToLibrary() {
+        // Arrange
+        User user = mock(User.class);
+        when(user.hasRole(any())).thenReturn(false);
+
+        // Act
+        boolean result = policy.canAddToLibrary(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
 }

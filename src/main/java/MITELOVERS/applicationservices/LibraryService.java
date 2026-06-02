@@ -126,7 +126,7 @@ public class LibraryService {
         PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
                 .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
 
-        return _detailsMapper.toDTO(edition, author, publicationType);
+        return _detailsMapper.toDTO(author, edition, publicationType);
     }
 
     @Transactional
@@ -188,6 +188,16 @@ public class LibraryService {
         }
 
         return result;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemId> getItemIdsInLibrary(String userId) {
+        UserId uid = new UserId(new Email(userId));
+        LibraryId libraryId = LibraryId.fromUserId(uid);
+
+        return _libraryRepo.ofIdentity(libraryId)
+                .map(Library::getItemsIdInLibrary)
+                .orElse(Collections.emptyList());
     }
 
 

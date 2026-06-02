@@ -5,10 +5,10 @@ import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(ItemRestController.class)
 @Import(CustomRestExceptionHandler.class)
@@ -27,7 +29,7 @@ class ItemRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ItemService itemService;
 
     // ----------------------------------------------------------------
@@ -98,11 +100,17 @@ class ItemRestControllerTest {
     @Test
     void shouldReturn200WithListOfItems() throws Exception {
         // Arrange
-        when(itemService.getAllItems()).thenReturn(List.of());
+        ItemResponseDTO dto = new ItemResponseDTO(
+                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
+                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
+                "1984", "George Orwell", 1949, "Fiction"
+        );
+        when(itemService.getAllItems()).thenReturn(List.of(dto));
 
         // Act + Assert
         mockMvc.perform(get("/items"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
     }
 
     // ----------------------------------------------------------------
@@ -121,7 +129,8 @@ class ItemRestControllerTest {
 
         // Act + Assert
         mockMvc.perform(get("/items/3C5D126F8B"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap());
     }
 
     @Test

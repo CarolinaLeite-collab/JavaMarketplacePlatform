@@ -22,9 +22,8 @@ import org.springframework.hateoas.RepresentationModel;
 public class LibraryItemDetailsDTO extends RepresentationModel<LibraryItemDetailsDTO> {
 
     private final String authorName;
-    private final String publicationType;
     private final String identifier;
-
+    private final String publicationType;
 
     @Override
     public String toString() {

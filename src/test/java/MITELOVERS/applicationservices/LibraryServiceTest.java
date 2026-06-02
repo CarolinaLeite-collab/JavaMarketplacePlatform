@@ -9,6 +9,7 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;
@@ -184,7 +185,7 @@ class LibraryServiceTest {
         when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
         when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
         when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
-        when(detailsMapperDouble.toDTO(editionDouble, authorDouble, publicationTypeDouble))
+        when(detailsMapperDouble.toDTO(authorDouble, editionDouble,  publicationTypeDouble))
                 .thenReturn(detailsDTODouble);
 
         // Act
@@ -267,6 +268,51 @@ class LibraryServiceTest {
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
                 libraryService.getItemDetail("3C5D126F8B"));
+    }
+
+    @Test
+    void getItemIdsFromLibraryNoLibraryReturnsEmptyList() {
+        // Arrange
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act
+        List<ItemId> result = libraryService.getItemIdsInLibrary("pedro@aeiou.com");
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getItemIdsFromLibraryEmptyLibraryReturnsEmptyList() {
+        // Arrange
+        Library libraryDouble = mock(Library.class);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of());
+
+        // Act
+        List<ItemId> result = libraryService.getItemIdsInLibrary("pedro@aeiou.com");
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getItemIdsFromLibraryValidUserReturnsItemIds() {
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+        Library libraryDouble = mock(Library.class);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(itemIdDouble));
+
+        // Act
+        List<ItemId> result = libraryService.getItemIdsInLibrary("pedro@aeiou.com");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertSame(itemIdDouble, result.get(0));
     }
 }
 
