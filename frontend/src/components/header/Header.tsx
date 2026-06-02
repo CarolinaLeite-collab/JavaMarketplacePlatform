@@ -26,6 +26,7 @@ export function Header() {
                     </Link>
 
                     <Group h="100%" gap={0} visibleFrom="sm">
+                        <Link to="/marketplace" className={classes.link}>MARKETPLACE</Link>
                         <Link to="/" className={classes.link}>SALES</Link>
                         <Link to="/my-library" className={classes.link}>LIBRARY</Link>
                         <Link to="/my-lists" className={classes.link}>LISTS</Link>
@@ -59,7 +60,7 @@ export function Header() {
                         <Link to="/" className={classes.link}>My Sales</Link>
                         <Link to="/my-library" className={classes.link}>My Library</Link>
                         <Link to="/my-lists" className={classes.link}>My Lists</Link>
-                        {/*<Link to="/account" className={classes.link}>Account</Link>*/}
+                        <Link to="/marketplace" className={classes.link}>Marketplace</Link>
                     <Divider my="sm" />
                     <Group justify="center" grow pb="xl" px="md">
                         <Button>Log Out</Button>
