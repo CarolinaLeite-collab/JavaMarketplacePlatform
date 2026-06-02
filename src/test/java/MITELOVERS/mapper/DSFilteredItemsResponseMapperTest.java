@@ -17,6 +17,7 @@ class DSFilteredItemsResponseMapperTest {
 
     @BeforeEach
     void setup() {
+
         _mapper = new DSFilteredItemsResponseMapper();
     }
 
@@ -40,6 +41,16 @@ class DSFilteredItemsResponseMapperTest {
         DSFilteredItemsResponseDTO dto = _mapper.toDTO(List.of());
 
         // Assert
+        assertTrue(dto.getDirectSales().isEmpty());
+    }
+
+    @Test
+    void toDTO_shouldHandleNullList() {
+        // Act
+        DSFilteredItemsResponseDTO dto = _mapper.toDTO(null);
+
+        // Assert
+        assertNotNull(dto);
         assertTrue(dto.getDirectSales().isEmpty());
     }
 
