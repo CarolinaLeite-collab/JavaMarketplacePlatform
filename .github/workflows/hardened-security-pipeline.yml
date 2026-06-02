@@ -100,7 +100,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: mitelovers-${{ github.ref_name }}-${{ github.sha }}
+          name: mitelovers-${{ github.run_number }}
           path: target/*.jar
       - name: Upload JaCoCo coverage report
         if: always()
