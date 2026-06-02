@@ -96,6 +96,12 @@ jobs:
           cache: maven
       - name: Build, test, and run security scans
         run: mvn clean verify
+      - name: Upload application artifact
+        if: success()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: mitelovers-build-${{ github.ref_name }}-${{ github.sha }}
+          path: target/*.jar
       - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
