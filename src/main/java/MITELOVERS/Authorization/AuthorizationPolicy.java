@@ -51,6 +51,28 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER);
     }
 
+    // -----------------------
+    // DirectSale permissions
+    // -----------------------
 
+    /** Any authenticated user may list direct sales. */
+    public boolean canListDirectSales(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may create a direct sale. */
+    public boolean canCreateDirectSale(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may filter direct sales by genre. */
+    public boolean canFilterDirectSales(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may view a specific direct sale. */
+    public boolean canGetDirectSale(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
 }
 
