@@ -255,4 +255,16 @@ class MemListOfItemsRepoTest {
         //act + assert
         assertThrows(UnsupportedOperationException.class, () -> {repo.findListOfItemsByUserId(userIdDouble);});
     }
+
+    @Test
+    void deleteShouldShowThrowUnsupportedOperation(){
+        //arrange
+        ListOfItemsId listOfItemsIdDouble =  mock(ListOfItemsId.class);
+
+        //SUT
+        MemListOfItemsRepo repo = new MemListOfItemsRepo();
+
+        //act + assert
+        assertThrows(UnsupportedOperationException.class, () -> {repo.deleteListOfItems(listOfItemsIdDouble);});
+    }
 }

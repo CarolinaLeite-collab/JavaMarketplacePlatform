@@ -166,4 +166,16 @@ class JpaListOfItemsRepoTest {
         assertEquals(expectedList, result);
     }
 
+    @Test
+    void deleteListOfItemsShouldDelegateToSpringDataRepoWithStringId() {
+        // Arrange
+        when(_listIdDouble.toString()).thenReturn("LOI-ABC123");
+
+        // Act
+        _repo.deleteListOfItems(_listIdDouble);
+
+        // Assert
+        verify(_springDataRepoDouble).deleteById("LOI-ABC123");
+    }
+
 }
