@@ -42,6 +42,7 @@ public class PublicationLinkProvider implements RootLinkProvider {
                             .registerPublicationAndReturnDTO(null))
                             .withRel("create-publication")
             );
+
         }
 
         return links;

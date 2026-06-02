@@ -1,14 +1,15 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.user.User;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import MITELOVERS.domain.valueobject.Role;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Data model object representing {@link User} information,
@@ -31,6 +32,15 @@ public class UserDataModel {
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Set<Role> roles = new HashSet<>();
 
 }
 
