@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.cli.root;
+package MITELOVERS.controllers.rest.root;
 
 import MITELOVERS.controllers.exception.ApiError;
 import org.junit.jupiter.api.Test;
