@@ -21,7 +21,11 @@ describe('libraryReducer', () => {
         const items = [
             {
                 itemId: 'ITM-001',
-                title: 'Dune'
+                title: 'Dune',
+                picture: null,
+                _links: {
+                    self: { href: 'http://localhost:8081/my-library/ITM-001' }
+                }
             }
         ];
 
@@ -33,7 +37,17 @@ describe('libraryReducer', () => {
         const result = libraryReducer(initialState, action);
 
         expect(result.loading).toBe(false);
-        expect(result.items).toEqual(items);
+
+        expect(result.items).toEqual([
+            {
+                itemId: 'ITM-001',
+                title: 'Dune',
+                picture: null,
+                links: [
+                    { rel: 'self', href: 'http://localhost:8081/my-library/ITM-001' }
+                ]
+            }
+        ]);
     });
 
     it('stores error message on FETCH_LIBRARY_ERROR', () => {
