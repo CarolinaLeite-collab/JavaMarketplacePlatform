@@ -36,28 +36,22 @@ public class DirectSaleService {
     private final IDirectSaleRepo _iDirectSaleRepo;
     private final IItemRepo _iItemRepo;
     private final DirectSaleFactory _directSaleFactory;
-    private final DirectSaleResponseDTOMapper _responseMapper;
-    private final DSFilteredItemsResponseMapper _filteredResponseMapper;
-
 
     public DirectSaleService(IGenreRepo iGenreRepo,
                              IDirectSaleRepo iDirectSaleRepo,
                              IItemRepo iItemRepo,
-                             DirectSaleFactory directSaleFactory,
-                             DirectSaleResponseDTOMapper responseMapper,
-                             DSFilteredItemsResponseMapper filteredResponseMapper) {
+                             DirectSaleFactory directSaleFactory) {
 
         _iGenreRepo = Objects.requireNonNull(iGenreRepo);
         _iDirectSaleRepo = Objects.requireNonNull(iDirectSaleRepo);
         _iItemRepo = Objects.requireNonNull(iItemRepo);
-        _directSaleFactory = directSaleFactory;
-        _responseMapper = responseMapper;
-        _filteredResponseMapper = filteredResponseMapper;
+        _directSaleFactory = Objects.requireNonNull(directSaleFactory);
     }
 
-    public DirectSaleResponseDTO createDirectSale(DirectSaleRequestDTO request) {
+    public DirectSale createDirectSale(DirectSaleRequestDTO request) {
 
-        List<ItemId> itemsId = request.getItemsId().stream()
+        List<ItemId> itemsId = request.getItemsId()
+                .stream()
                 .map(ItemId::new)
                 .toList();
 
@@ -77,9 +71,11 @@ public class DirectSaleService {
             throw new IllegalStateException("DirectSale already exists");
         }
 
+        // Validate items
         for (ItemId itemId : itemsId) {
+
             Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalArgumentException("Item not found: " + itemId));
+                    .orElseThrow(() -> new IllegalArgumentException("Item not found!"));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
@@ -90,58 +86,71 @@ public class DirectSaleService {
 
         DirectSale saved = _iDirectSaleRepo.save(newDirectSale);
 
-        return _responseMapper.toResponseDTO(saved);
+        return saved;
     }
 
-    public List<DirectSaleResponseDTO> getAllDirectSales() {
+    public List<DirectSale> getAllDirectSales() {
 
-        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+        List<DirectSale> result = new ArrayList<>();
 
-        List<DirectSaleResponseDTO> response = new ArrayList<>();
+        _iDirectSaleRepo.findAll().forEach(result::add);
 
-        for (DirectSale ds : directSales) {
-            response.add(_responseMapper.toResponseDTO(ds));
-        }
-
-        return response;
+        return result;
     }
 
-    public DirectSaleResponseDTO getDirectSaleById(String id) {
+    public DirectSale getDirectSaleById(String id) {
 
         DirectSaleId directSaleId = new DirectSaleId(id);
 
-        DirectSale directSale = _iDirectSaleRepo.ofIdentity(directSaleId)
+        return _iDirectSaleRepo.ofIdentity(directSaleId)
                 .orElseThrow(() -> new NoSuchElementException("DirectSale not found"));
-
-        return _responseMapper.toResponseDTO(directSale);
     }
 
     //-----------------------
     // Filtered Direct Sales
     //-----------------------
 
-    public DSFilteredItemsResponseDTO getDirectSaleItemsByGenreAsc(String genreId) {
+    public List<DirectSaleId> getDirectSaleItemsByGenreAsc(String genreId) {
+
+        if (genreId == null || genreId.isBlank()) {
+            return new ArrayList<>();
+        }
 
         GenreId gid = new GenreId(genreId);
 
         if (!_iGenreRepo.containsOfIdentity(gid)) {
-            throw new IllegalArgumentException("Genre not found: " + genreId);
+            throw new IllegalArgumentException("Genre not found!");
         }
 
-        List<ItemId> filtered = _iItemRepo.findByGenreId(gid);
+        List<ItemId> filteredItems = _iItemRepo.findByGenreId(gid);
 
-        if (filtered.isEmpty()) {
-            return new DSFilteredItemsResponseDTO(List.of());
+        if (filteredItems == null || filteredItems.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        List<String> directSaleIds =
-                _iDirectSaleRepo.findByItemsIdSortedByPublicationDateAsc(filtered)
-                .stream()
-                .map(ds -> ds.identity().toString()) // Map to DirectSaleId
-                .distinct()
-                .toList();
+        //Fetch active DirectSales
+        Iterable<DirectSale> allSales = _iDirectSaleRepo.findAll();
 
-        return _filteredResponseMapper.toDTO(directSaleIds);
+        if (allSales == null) {
+            return new ArrayList<>();
+        }
+
+        Set<DirectSaleId> distinctSaleIds = new LinkedHashSet<>();
+
+        for (DirectSale ds : allSales) {
+
+            if (ds != null && ds.getItemsId() != null) {
+
+                boolean containsMatchingItem = ds.getItemsId()
+                        .stream()
+                        .anyMatch(filteredItems::contains);
+
+                if (containsMatchingItem && ds.identity() != null) {
+                    distinctSaleIds.add(ds.identity());
+                }
+            }
+        }
+        return new ArrayList<>(distinctSaleIds);
     }
 
 }
