@@ -29,7 +29,9 @@ public class PublishingCompanyAssembler {
         }
 
         return new PublishingCompanyDataModel(
-                publishingCompany.identity().toString());
+                publishingCompany.identity().toString(),
+                publishingCompany.getPublishingCompanyName()
+        );
     }
 
     public PublishingCompany toDomain(PublishingCompanyDataModel dataModel) {
@@ -38,10 +40,11 @@ public class PublishingCompanyAssembler {
             throw new IllegalArgumentException("PublishingCompanyDataModel cannot be null");
         }
 
-        PublishingCompanyId publishingCompanyId =
-                new PublishingCompanyId(dataModel.getPublishingCompanyId());
+        PublishingCompanyId publishingCompanyId = new PublishingCompanyId(dataModel.getPublishingCompanyId());
 
-        PublishingCompany publishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyId);
+        String pubCompName = dataModel.getPublishingCompanyName();
+
+        PublishingCompany publishingCompany = _publishingCompanyFactory.createPublishingCompany(publishingCompanyId, pubCompName);
 
         return publishingCompany;
     }

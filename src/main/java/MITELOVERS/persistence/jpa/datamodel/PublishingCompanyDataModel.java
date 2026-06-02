@@ -27,4 +27,6 @@ public class PublishingCompanyDataModel {
     @Column(name = "id", nullable = false, unique = true)
     private String publishingCompanyId;
 
+    private String publishingCompanyName;
+
 }

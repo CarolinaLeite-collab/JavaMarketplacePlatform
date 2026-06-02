@@ -68,9 +68,9 @@ class JpaPublishingCompanyRepoTest {
         // Arrange
 
         PublishingCompanyDataModel dm1 =
-                new PublishingCompanyDataModel("PORTO EDITORA");
+                new PublishingCompanyDataModel("PORTO EDITORA", "Porto Editora");
         PublishingCompanyDataModel dm2 =
-                new PublishingCompanyDataModel("LEYA");
+                new PublishingCompanyDataModel("LEYA", "Leya");
 
         when(_publishingCompanySpringDataRepoDouble.findAll())
                 .thenReturn(List.of(dm1, dm2));
@@ -82,6 +82,7 @@ class JpaPublishingCompanyRepoTest {
         List<PublishingCompanyId> ids = new ArrayList<>();
         result.forEach(ids::add);
 
+        // Assert
         assertEquals(2, ids.size());
         assertEquals("PORTO EDITORA", ids.get(0).toString());
         assertEquals("LEYA", ids.get(1).toString());
