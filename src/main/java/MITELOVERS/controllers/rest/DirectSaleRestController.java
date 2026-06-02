@@ -1,9 +1,13 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
+import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
+import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,17 +36,25 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class DirectSaleRestController {
 
     private final DirectSaleService _directSaleService;
+    private final DirectSaleResponseDTOMapper _responseMapper;
+    private final DSFilteredItemsResponseMapper _filteredResponseMapper;
 
-    public DirectSaleRestController(DirectSaleService directSaleService) {
+    public DirectSaleRestController(DirectSaleService directSaleService,
+                                    DirectSaleResponseDTOMapper responseMapper,
+                                    DSFilteredItemsResponseMapper filteredResponseMapper) {
+
         _directSaleService = directSaleService;
+        _responseMapper = responseMapper;
+        _filteredResponseMapper = filteredResponseMapper;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
-        DirectSaleResponseDTO responseDTO =
-                _directSaleService.createDirectSale(requestDTO);
+        DirectSale created = _directSaleService.createDirectSale(requestDTO);
+
+        DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
         responseDTO.add(
                 linkTo(methodOn(DirectSaleRestController.class)
@@ -56,12 +68,15 @@ public class DirectSaleRestController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DirectSaleResponseDTO>> getAllDirectSales() {
 
-        List<DirectSaleResponseDTO> response =
-                _directSaleService.getAllDirectSales();
+        List<DirectSale> sales = _directSaleService.getAllDirectSales();
 
-        if (response.isEmpty()) {
-            return ResponseEntity.noContent().build();
+        if (sales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
+
+        List<DirectSaleResponseDTO> response = sales.stream()
+                .map(_responseMapper::toResponseDTO)
+                .toList();
 
         response.forEach(dto ->
                 dto.add(
@@ -78,8 +93,9 @@ public class DirectSaleRestController {
     public ResponseEntity<DirectSaleResponseDTO> getDirectSaleById(
             @PathVariable String id) {
 
-        DirectSaleResponseDTO responseDTO =
-                _directSaleService.getDirectSaleById(id);
+        DirectSale directSale = _directSaleService.getDirectSaleById(id);
+
+        DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
         responseDTO.add(
                 linkTo(methodOn(DirectSaleRestController.class)
@@ -94,16 +110,16 @@ public class DirectSaleRestController {
     public ResponseEntity<DSFilteredItemsResponseDTO> getDirectSaleItemsByGenre(
             @PathVariable String genreId) {
 
+        List<DirectSaleId> ids = _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+
         DSFilteredItemsResponseDTO dto =
-                _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+                _filteredResponseMapper.toDTO(ids.stream().map(DirectSaleId::toString).toList());
 
         // 2. Add links to each entry
         dto.getDirectSales().forEach(entry ->
-                entry.add(
-                        linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSaleById(entry.getDirectSaleId()))
-                                .withSelfRel()
-                )
+                entry.add(linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(entry.getDirectSaleId()))
+                        .withSelfRel())
         );
 
         // 3. Add collection self link

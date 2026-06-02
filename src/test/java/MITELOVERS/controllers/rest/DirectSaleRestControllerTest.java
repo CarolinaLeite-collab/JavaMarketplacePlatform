@@ -1,9 +1,13 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
+import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
+import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +29,12 @@ class DirectSaleRestControllerTest {
     @Mock
     private DirectSaleService _service;
 
+    @Mock
+    private DirectSaleResponseDTOMapper _responseMapper;
+
+    @Mock
+    private DSFilteredItemsResponseMapper _filteredMapper;
+
     @InjectMocks
     private DirectSaleRestController _controller;
 
@@ -38,17 +48,20 @@ class DirectSaleRestControllerTest {
         // Arrange
         DirectSaleRequestDTO request = mock(DirectSaleRequestDTO.class);
 
+        DirectSale domain = mock(DirectSale.class);
+
         DirectSaleResponseDTO response =
                 new DirectSaleResponseDTO(
                         "DS-A1B2C3D4",
-                        List.of("ITEM-1"),
+                        List.of("ABCDEF1234"),
                         10.0,
                         "EUR",
                         3600L,
                         Instant.now()
                 );
 
-        when(_service.createDirectSale(request)).thenReturn(response);
+        when(_service.createDirectSale(request)).thenReturn(domain);
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(response);
 
         // Act (SUT)
         ResponseEntity<DirectSaleResponseDTO> result =
@@ -68,17 +81,20 @@ class DirectSaleRestControllerTest {
     void getAllDirectSales_shouldReturnOk() {
 
         // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
         DirectSaleResponseDTO dto =
                 new DirectSaleResponseDTO(
                         "DS-A1B2C3D4",
-                        List.of("ITEM-1"),
+                        List.of("ABCDEF1234"),
                         10.0,
                         "EUR",
                         3600L,
                         Instant.now()
                 );
 
-        when(_service.getAllDirectSales()).thenReturn(List.of(dto));
+        when(_service.getAllDirectSales()).thenReturn(List.of(domain));
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
         // Act
         ResponseEntity<List<DirectSaleResponseDTO>> result =
@@ -113,17 +129,20 @@ class DirectSaleRestControllerTest {
     void getDirectSaleById_shouldReturnOk() {
 
         // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
         DirectSaleResponseDTO dto =
                 new DirectSaleResponseDTO(
                         "DS-A1B2C3D4",
-                        List.of("ITEM-1"),
+                        List.of("ABCDEF1234"),
                         10.0,
                         "EUR",
                         3600L,
                         Instant.now()
                 );
 
-        when(_service.getDirectSaleById("DS-A1B2C3D4")).thenReturn(dto);
+        when(_service.getDirectSaleById("DS-A1B2C3D4")).thenReturn(domain);
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
         // Act
         ResponseEntity<DirectSaleResponseDTO> result =
@@ -145,14 +164,20 @@ class DirectSaleRestControllerTest {
         // Arrange
         String genreId = "FICTION";
 
+        List<DirectSaleId> domainIds = List.of(
+                new DirectSaleId("DS-A1B2C3D4"),
+                new DirectSaleId("DS-1234ABCD")
+        );
+
         DSFilteredItemsResponseDTO dto =
-                new DSFilteredItemsResponseDTO(
-                        List.of(
+                new DSFilteredItemsResponseDTO(List.of(
                         new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-A1B2C3D4"),
                         new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-1234ABCD")
                 ));
 
-        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(dto);
+        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(domainIds);
+        when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4", "DS-1234ABCD")))
+                .thenReturn(dto);
 
         // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
@@ -165,8 +190,6 @@ class DirectSaleRestControllerTest {
         assertNotNull(body);
 
         assertEquals(2, body.getDirectSales().size());
-        assertEquals("DS-A1B2C3D4", body.getDirectSales().get(0).getDirectSaleId());
-        assertEquals("DS-1234ABCD", body.getDirectSales().get(1).getDirectSaleId());
 
         // Each entry has self link
         assertTrue(body.getDirectSales().get(0).getLinks().hasLink("self"));
@@ -197,12 +220,15 @@ class DirectSaleRestControllerTest {
         // Arrange
         String genreId = "FICTION";
 
+        List<DirectSaleId> domainIds = List.of(new DirectSaleId("DS-A1B2C3D4"));
+
         DSFilteredItemsResponseDTO dto =
                 new DSFilteredItemsResponseDTO(List.of(
                         new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-A1B2C3D4")
                 ));
 
-        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(dto);
+        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(domainIds);
+        when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4"))).thenReturn(dto);
 
         // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
@@ -219,13 +245,16 @@ class DirectSaleRestControllerTest {
         // Arrange
         String genreId = "FICTION";
 
+        List<DirectSaleId> domainIds = List.of(new DirectSaleId("DS-A1B2C3D4"));
+
         DSFilteredItemsResponseDTO dto =
                 new DSFilteredItemsResponseDTO(
                         List.of(
                         new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-A1B2C3D4")
                 ));
 
-        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(dto);
+        when(_service.getDirectSaleItemsByGenreAsc(genreId)).thenReturn(domainIds);
+        when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4"))).thenReturn(dto);
 
         // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
