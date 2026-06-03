@@ -7,6 +7,7 @@ import AppContext from '../../context/AppContext';
 import { getMyLists, getListsOptions } from '../../context/lists/ListsActions';
 import { DeleteListModal } from '../deletelistmodal/DeleteListModal.tsx';
 import { AddItemToListDropDown } from '../addItemToListModal/AddItemToListDropDown.tsx';
+import { useUser } from '../../context/UserContext';
 
 
 interface RowData {
@@ -67,17 +68,15 @@ function sortData(data: RowData[], payload: { sortBy: keyof RowData | null; reve
 
 export function TableList() {
     const { state, dispatch } = useContext(AppContext);
-    const { lists, myListsHref } = state.lists;
+    const { lists } = state.lists;
+    const { myListsHref } = state.app;
     console.log('TableList render - myListsHref:', myListsHref, 'lists:', lists);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
     const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
     useEffect(() => {
-        const init = async () => {
-            await getListsOptions(dispatch);
-        };
-        init();
+        getListsOptions(dispatch);
     }, [dispatch]);
 
     useEffect(() => {
