@@ -1,9 +1,11 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canListDirectSales(user)) {
             links.add(
-                    linkTo(methodOn(DirectSaleRestController.class)
+                    WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
                             .getAllDirectSales())
                             .withRel("direct-sales")
             );

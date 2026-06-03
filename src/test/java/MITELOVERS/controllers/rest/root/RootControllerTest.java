@@ -2,8 +2,8 @@ package MITELOVERS.controllers.rest.root;
 
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
-import MITELOVERS.controllers.rest.AuthorLinkProvider;
-import MITELOVERS.controllers.rest.GenreLinkProvider;
+import MITELOVERS.controllers.linkprovider.AuthorLinkProvider;
+import MITELOVERS.controllers.linkprovider.GenreLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
 import org.junit.jupiter.api.Test;

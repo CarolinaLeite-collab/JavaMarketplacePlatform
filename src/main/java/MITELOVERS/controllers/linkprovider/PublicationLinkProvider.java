@@ -1,6 +1,7 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.PublicationRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
@@ -14,35 +15,37 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class GenreLinkProvider implements RootLinkProvider {
+public class PublicationLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
+    PublicationLinkProvider(
+            AuthorizationPolicy authorizationPolicy) {
 
-    public GenreLinkProvider(AuthorizationPolicy authorizationPolicy) {
         _authorizationPolicy = authorizationPolicy;
     }
 
     @Override
     public List<Link> getLinks(User user) {
+
         List<Link> links = new ArrayList<>();
 
-        if (_authorizationPolicy.canListGenres(user)) {
+        if (_authorizationPolicy.canListPublications(user)) {
             links.add(
-                    WebMvcLinkBuilder.linkTo(methodOn(GenreRestController.class)
-                                    .getAllGenres())
-                            .withRel("genres")
+                    WebMvcLinkBuilder.linkTo(methodOn(PublicationRestController.class)
+                                    .getAllPublications())
+                            .withRel("publications")
             );
         }
 
-        if (_authorizationPolicy.canAddGenre(user)) {
+        if (_authorizationPolicy.canCreatePublication(user)) {
             links.add(
-                    linkTo(methodOn(GenreRestController.class)
-                            .registerGenreAndReturnDTO(null))
-                            .withRel("create-genre")
+                    linkTo(methodOn(PublicationRestController.class)
+                            .registerPublicationAndReturnDTO(null))
+                            .withRel("create-publication")
             );
+
         }
 
         return links;
     }
 }
-

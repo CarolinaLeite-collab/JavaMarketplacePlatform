@@ -1,9 +1,11 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.LibraryRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canGetLibrary(user)) {
             links.add(
-                    linkTo(methodOn(LibraryRestController.class)
+                    WebMvcLinkBuilder.linkTo(methodOn(LibraryRestController.class)
                             .getMyLibrary(null))
                             .withRel("library")
             );

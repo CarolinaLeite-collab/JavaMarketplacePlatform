@@ -1,6 +1,7 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.GenreRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
@@ -14,11 +15,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class AuthorLinkProvider implements RootLinkProvider {
+public class GenreLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
 
-    public AuthorLinkProvider(AuthorizationPolicy authorizationPolicy) {
+    public GenreLinkProvider(AuthorizationPolicy authorizationPolicy) {
         _authorizationPolicy = authorizationPolicy;
     }
 
@@ -26,19 +27,19 @@ public class AuthorLinkProvider implements RootLinkProvider {
     public List<Link> getLinks(User user) {
         List<Link> links = new ArrayList<>();
 
-        if (_authorizationPolicy.canListAuthors(user)) {
+        if (_authorizationPolicy.canListGenres(user)) {
             links.add(
-                    WebMvcLinkBuilder.linkTo(methodOn(AuthorRestController.class)
-                                    .getAllAuthors())
-                            .withRel("authors")
+                    WebMvcLinkBuilder.linkTo(methodOn(GenreRestController.class)
+                                    .getAllGenres())
+                            .withRel("genres")
             );
         }
 
-        if (_authorizationPolicy.canCreateAuthor(user)) {
+        if (_authorizationPolicy.canAddGenre(user)) {
             links.add(
-                    linkTo(methodOn(AuthorRestController.class)
-                            .registerAuthorAndReturnDTO(null))
-                            .withRel("create-author")
+                    linkTo(methodOn(GenreRestController.class)
+                            .registerGenreAndReturnDTO(null))
+                            .withRel("create-genre")
             );
         }
 
