@@ -112,6 +112,22 @@ The H2 console is available at `http://localhost:8081/h2-console` with the follo
 - Build must succeed with `mvn clean verify`.
 - JaCoCo instruction coverage must be ≥ 95%;
 
+### Security Findings Severity Reporting
+
+Every Pull Request automatically receives comments summarising security findings from each tool:
+
+| Tool | Severity Levels | Blocking Threshold |
+|---|---|---|
+| Gitleaks | N/A (binary: secret found or not) | Any secret detected |
+| Semgrep | ERROR, WARNING, INFO | ERROR |
+| OWASP Dependency-Check | CRITICAL, HIGH, MEDIUM, LOW (CVSS) | CVSS ≥ 7 (HIGH) |
+
+- **Gitleaks** posts a comment listing every detected secret (rule, file, line) if any are found.
+- **Semgrep** posts a breakdown of findings grouped by severity (ERROR / WARNING / INFO).
+- **OWASP Dependency-Check** posts a table of vulnerable dependencies with CVE ID, CVSS score, and severity level.
+
+Findings above the defined threshold cause the pipeline to fail and block the PR from merging.
+
 ---
 
 ## Test Coverage
