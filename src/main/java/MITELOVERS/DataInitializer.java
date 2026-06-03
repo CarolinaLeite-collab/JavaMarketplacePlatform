@@ -172,8 +172,15 @@ public class DataInitializer {
             User user3 = userFactory.createUser(userName3, null, userEmail3, phone3);
             userRepo.save(user3);
 
+            Name userName4 = new Name("Guest");
+            Email userEmail4 = new Email("guest@aeiou.com");
+            User user4 = userFactory.createUser(userName4, null, userEmail4, null);
+            user4.removeRole(Role.USER);
+            user4.addRole(Role.NONREGISTRED);
+            userRepo.save(user4);
+
             log.info("Users found with findAll():");
-            log.info("Users saved: Pedro Silva, Ana Costa, Ângelo Martins");
+            log.info("Users saved: Pedro Silva, Ana Costa, Ângelo Martins, Guest");
             log.info("-------------------------------");
             for (User u : userRepo.findAll()) {
                 log.info(u.toString());
