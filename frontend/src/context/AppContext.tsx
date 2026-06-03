@@ -1,21 +1,23 @@
 import { createContext, useContext } from 'react';
 import { initialState } from './library/LibraryReducer';
-import { initialSalesState } from './sales/SalesReducer';
 
 const AppContext = createContext({
     state: {
+        app: {
+            myListsHref: null,
+            createListHref: null,
+            genresHref: null,
+            libraryHref: null,
+        },
         lists: {
             lists: [],
             genres: [],
-            createListHref: null,
-            myListsHref: null,
             error: null,
-            loading: false,
         },
-        sales: initialSalesState
     },
     dispatch: () => {}
 });
+
 export default AppContext;
 
 export const LibraryContext = createContext({
