@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,5 +51,18 @@ class CorsConfigTest {
 
         // Assert
         result.andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
+    }
+
+    @Test
+    void corsConfigurerIsNotNull() {
+        // Arrange
+        CorsConfig config = new CorsConfig();
+        ReflectionTestUtils.setField(config, "allowedOrigins", "http://localhost:5173");
+
+        // SUT
+        WebMvcConfigurer configurer = config.corsConfigurer();
+
+        // Assert
+        assertNotNull(configurer);
     }
 }
