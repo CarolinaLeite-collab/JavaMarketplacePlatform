@@ -1,9 +1,14 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.EditionLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +29,33 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class EditionRestController {
 
     private final EditionService _editionService;
+    private final EditionLinkProvider _editionLinkProvider;
+    private final UserService _userService;
 
-    public EditionRestController(EditionService editionService) {
+    public EditionRestController(EditionService editionService, EditionLinkProvider editionLinkProvider, UserService userService) {
 
         _editionService = editionService;
+        _editionLinkProvider = editionLinkProvider;
+        _userService = userService;
 
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        model.add(
+                linkTo(methodOn(EditionRestController.class)
+                        .options(email))
+                        .withSelfRel()
+        );
+
+        _editionLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

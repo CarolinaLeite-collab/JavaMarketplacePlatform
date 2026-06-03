@@ -1,8 +1,14 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
+import MITELOVERS.controllers.linkprovider.EditionLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +25,11 @@ import java.util.NoSuchElementException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import(JacksonAutoConfiguration.class)
+@Import({JacksonAutoConfiguration.class, CustomRestExceptionHandler.class})
 @WebMvcTest(EditionRestController.class)
 class EditionRestControllerTest {
 
@@ -35,6 +41,12 @@ class EditionRestControllerTest {
 
     @Autowired
     private ObjectMapper _objectMapper;
+
+    @MockitoBean
+    private EditionLinkProvider _editionLinkProviderDouble;
+
+    @MockitoBean
+    private UserService _userServiceDouble;
 
     @Test
     void registerEditionReturnsCreated() throws Exception {
@@ -149,5 +161,53 @@ class EditionRestControllerTest {
         // Act & Assert
         _mockMvc.perform(get("/editions/E-ABC12345"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userServiceDouble.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
+        when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of(
+                Link.of("/editions").withRel("editions"),
+                Link.of("/editions").withRel("edition-create")
+        ));
+
+        // Act & Assert
+        _mockMvc.perform(options("/editions")
+                        .param("email", "pedro@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.editions").exists())
+                .andExpect(jsonPath("$._links.edition-create").exists());
+    }
+
+    @Test
+    void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userServiceDouble.getUserByEmail("readonly@aeiou.com")).thenReturn(_userDouble);
+        when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of());
+
+        // Act & Assert
+        _mockMvc.perform(options("/editions")
+                        .param("email", "readonly@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
+    }
+
+    @Test
+    void optionsShouldReturn404WhenUserNotFound() throws Exception {
+        // Arrange
+        when(_userServiceDouble.getUserByEmail("naoexiste@aeiou.com"))
+                .thenThrow(new NoSuchElementException("User not found"));
+
+        // Act & Assert
+        _mockMvc.perform(options("/editions")
+                        .param("email", "naoexiste@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isNotFound());
     }
 }
