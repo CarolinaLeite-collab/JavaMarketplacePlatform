@@ -6,13 +6,7 @@ import { useContext } from 'react';
 import AppContext from '../../context/AppContext';
 import { deleteList } from '../../context/lists/ListsActions';
 
-interface DeleteListModalProps {
-    listName: string;
-    links: { rel: string; href: string }[];
-    myListsHref: string | null;
-}
-
-export function DeleteListModal({ listName, links }: DeleteListModalProps) {
+export function DeleteListModal({ listName, links } ) {
     const [opened, { open, close }] = useDisclosure(false);
     const { dispatch, state } = useContext(AppContext);
     const { myListsHref } = state.app;
