@@ -34,6 +34,35 @@ jobs:
             --report-format json \
             --report-path gitleaks-report.json \
             --exit-code 1
+          
+          - name: Post Gitleaks comment on PR
+            if: failure()
+            uses: actions/github-script@v7
+            with:
+              script: |
+                const fs = require('fs');
+                let body = '## Gitleaks – Secret Detection Failed\n\n';
+                try {
+                  const report = JSON.parse(fs.readFileSync('gitleaks-report.json', 'utf8'));
+                  if (report.length === 0) {
+                    body += 'No secrets found.';
+                  } else {
+                    body += `**${report.length} secret(s) detected:**\n\n`;
+                    body += '| Rule | File | Line |\n|---|---|---|\n';
+                    for (const finding of report) {
+                      body += `| \`${finding.RuleID}\` | \`${finding.File}\` | ${finding.StartLine} |\n`;
+                    }
+                    body += '\n> ⚠️ Remove the secret, rotate the credential, and purge it from Git history.';
+                  }
+                } catch (e) {
+                  body += '_Could not parse Gitleaks report._';
+                }
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body
+                });
 
       - name: Upload Gitleaks report
         if: always()
