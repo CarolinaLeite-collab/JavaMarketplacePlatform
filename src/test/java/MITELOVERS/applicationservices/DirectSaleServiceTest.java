@@ -2,26 +2,17 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
-import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.SaleStatus;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
-import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
-import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -30,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -173,6 +165,42 @@ class DirectSaleServiceTest {
         );
     }
 
+    @Test
+    void createDirectSale_shouldHandleNullTimeLimitAndVerifyMarkAsDirectSale() {
+
+        // Arrange
+        DirectSaleRequestDTO request = new DirectSaleRequestDTO(
+                List.of("ABCDEF1234"),
+                20.0,
+                "USD",
+                null
+        );
+
+        List<ItemId> itemIds = List.of(new ItemId("ABCDEF1234"));
+        DirectSale newSale = mock(DirectSale.class);
+        DirectSale savedSale = mock(DirectSale.class);
+        DirectSaleId dsId = new DirectSaleId("DS-A1B2C3D4");
+
+        // Use strict argument matchers to force PIT to fail when the null conditional is inverted
+        when(_iDirectSaleRepo.containsOfIdentity(dsId)).thenReturn(false);
+        when(_factory.createDirectSale(Mockito.eq(itemIds), any(Price.class), Mockito.isNull())).thenReturn(newSale);
+        when(newSale.identity()).thenReturn(dsId);
+
+        // A plain mock works perfectly here as long as we explicitly verify the void execution interaction path
+        Item itemMock = mock(Item.class);
+        when(itemMock.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+
+        when(_iItemRepo.ofIdentity(itemIds.get(0))).thenReturn(Optional.of(itemMock));
+        when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
+
+        // Act
+        DirectSale result = _service.createDirectSale(request);
+
+        // Assert
+        assertSame(savedSale, result);
+        Mockito.verify(itemMock, Mockito.times(1)).markAsDirectSale();
+    }
+
     // ------------------------------------------------------------
     // getAllDirectSales
     // ------------------------------------------------------------
@@ -311,4 +339,65 @@ class DirectSaleServiceTest {
         assertEquals(id2, result.get(1));
     }
 
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldReturnEmptyListWhenGenreIdIsNullOrEmpty() {
+
+        // Arrange
+        String nullGenre = null;
+        String emptyGenre = "";
+        String blankGenre = "   ";
+
+        // Act
+        List<DirectSaleId> resultNull = _service.getDirectSaleItemsByGenreAsc(nullGenre);
+        List<DirectSaleId> resultEmpty = _service.getDirectSaleItemsByGenreAsc(emptyGenre);
+        List<DirectSaleId> resultBlank = _service.getDirectSaleItemsByGenreAsc(blankGenre);
+
+        // Assert
+        assertNotNull(resultNull);
+        assertNotNull(resultEmpty);
+        assertNotNull(resultBlank);
+
+        assertDoesNotThrow(() -> resultNull.add(new DirectSaleId("DS-A1B2C3D4")));
+        assertDoesNotThrow(() -> resultEmpty.add(new DirectSaleId("DS-1234ABCD")));
+        assertDoesNotThrow(() -> resultBlank.add(new DirectSaleId("DS-E5F6G7H8")));
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldReturnMutableListWhenNoItemsFound() {
+
+        // Arrange
+        String genreId = "FICTION";
+        GenreId gid = new GenreId(genreId);
+        when(_iGenreRepo.containsOfIdentity(gid)).thenReturn(true);
+        when(_iItemRepo.findByGenreId(gid)).thenReturn(List.of());
+
+        // Act
+        List<DirectSaleId> result = _service.getDirectSaleItemsByGenreAsc(genreId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+        int initialSize = result.size();
+        result.add(new DirectSaleId("DS-A1B2C3D4"));
+        assertEquals(initialSize + 1, result.size());
+    }
+
+    @Test
+    void getDirectSaleItemsByGenreAsc_shouldReturnEmptyListWhenAllSalesIsNull() {
+
+        // Arrange
+        String genreId = "FICTION";
+        GenreId gid = new GenreId(genreId);
+        when(_iGenreRepo.containsOfIdentity(gid)).thenReturn(true);
+        when(_iItemRepo.findByGenreId(gid)).thenReturn(List.of(new ItemId("ABCDEF1234")));
+        when(_iDirectSaleRepo.findAll()).thenReturn(null);
+
+        // Act
+        List<DirectSaleId> result = _service.getDirectSaleItemsByGenreAsc(genreId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+        int initialSize = result.size();
+        result.add(new DirectSaleId("DS-A1B2C3D4"));
+        assertEquals(initialSize + 1, result.size());
+    }
 }
