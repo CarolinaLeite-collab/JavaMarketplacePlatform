@@ -27,7 +27,6 @@ export function Header() {
 
                     <Group h="100%" gap={0} visibleFrom="sm">
                         <Link to="/" className={classes.link}>MARKETPLACE</Link>
-                        <Link to="/my-sales" className={classes.link}>SALES</Link>
                         <Link to="/my-library" className={classes.link}>LIBRARY</Link>
                         <Link to="/my-lists" className={classes.link}>LISTS</Link>
                     </Group>
@@ -57,7 +56,6 @@ export function Header() {
             >
                 <ScrollArea h="calc(100vh - 80px)" mx="-md">
                     <Divider my="sm" />
-                        <Link to="/" className={classes.link}>My Sales</Link>
                         <Link to="/my-library" className={classes.link}>My Library</Link>
                         <Link to="/my-lists" className={classes.link}>My Lists</Link>
                         <Link to="/marketplace" className={classes.link}>Marketplace</Link>

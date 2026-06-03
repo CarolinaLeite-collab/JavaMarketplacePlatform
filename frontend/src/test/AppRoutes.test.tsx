@@ -8,9 +8,9 @@ describe('AppRoutes', () => {
         render(<AppRoutes />);
     });
 
-    it('renders MySalesPage on default route', () => {
+    it('renders Marketplace on default route', () => {
         render(<AppRoutes />);
-        expect(screen.getByRole('heading', { name: /my sales/i })).toBeInTheDocument();
+        expect(screen.getByRole('heading', { name: /marketplace/i })).toBeInTheDocument();
     });
 
     it('renders MyListsPage on /my-lists route', () => {
