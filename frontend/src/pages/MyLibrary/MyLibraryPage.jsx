@@ -1,43 +1,36 @@
+import {useEffect} from "react";
 import { useDisclosure } from '@mantine/hooks';
 import { Button, Group } from "@mantine/core";
-
+import {IconPlus} from "@tabler/icons-react";
 
 import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
 import {ItemAccordion} from "@/components/accordion/ItemAccordion.js";
 import {AddItemModal} from "@/components/addItemModal/AddItemModal.tsx";
-import {IconPlus} from "@tabler/icons-react";
-import {useState} from "react";
 
-
+import { useLibrary } from '../../context/AppContext';
+import { getLibrary } from '../../context/library/LibraryActions';
 
 export default function MyLibraryPage() {
 
+    const { state, dispatch } = useLibrary();
+
     const [opened, { open, close }] = useDisclosure(false);
 
-    const [items, setItems] = useState([
+    useEffect(() => {
+        getLibrary(dispatch);
+        }, [dispatch]);
 
-                    {
-                    itemId: 'ITEM-001',
-                    title: 'The War of the Worlds',
-                    imageUrl: null,
-                    publicationType: 'Book',
-                    authorName: 'H.G. Wells',
-                    identifier: '9781784872113'
-                },
-                {
-                    itemId: 'ITM-002',
-                    title: 'Duna',
-                    imageUrl: null,
-                    publicationType: 'Book',
-                    authorName: 'Frank Herbert',
-                    identifier: '9780593099322'
-                }
-    ])
+    if (state.loading) return <p>Loading...</p>;
+    if (state.error) return <p>Error: {state.error}
+    </p>;
 
 return (
     <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
-        <ItemAccordion items={items} />
-
+        <ItemAccordion
+            items={state.items}
+            details={state.details}
+            dispatch={dispatch}
+        />
 
             <Group justify="center" mt="xl">
                 <Button
@@ -53,9 +46,9 @@ return (
         <AddItemModal
             opened={opened}
             onClose={close}
-            onItemAdded={(newItem) => {
-                setItems((currentItems) => [...currentItems, newItem]);
+            onItemAdded={() => {
                 close();
+                getLibrary(dispatch);
             }}
             />
         </DefaultLayout>

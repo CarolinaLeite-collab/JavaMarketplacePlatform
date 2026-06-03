@@ -1,5 +1,7 @@
-import { axe, render, screen } from '@/test-utils';
+import { axe, render, screen, within } from '@/test-utils';
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
+import userEvent from "@testing-library/user-event";
+import { LibraryContext } from "../context/AppContext";
 
 describe('MyLibraryPage', () => {
     axe([<MyLibraryPage key="1" />]);
@@ -18,13 +20,6 @@ describe('MyLibraryPage', () => {
         expect(screen.getByText(/check out your items/i)).toBeInTheDocument();
     });
 
-    it('renders the initial library items', () => {
-        render(<MyLibraryPage />);
-
-        expect(screen.getByText(/the war of the worlds/i)).toBeInTheDocument();
-        expect(screen.getByText(/duna/i)).toBeInTheDocument();
-    });
-
     it('renders the add item button', () => {
         render(<MyLibraryPage />);
 
@@ -40,7 +35,49 @@ describe('MyLibraryPage', () => {
 
         await user.click(screen.getByRole('button', { name: /add item/i }));
 
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
+        const dialog = await within(document.body).findByRole('dialog');
+        expect(dialog).toBeInTheDocument();
     });
+
+    it('shows loading state', () => {
+        render(
+            <LibraryContext.Provider
+                value={{
+                    state: {
+                        items: [],
+                        details: {},
+                        loading: true,
+                        error: null
+                    },
+                    dispatch: vi.fn()
+                }}
+            >
+                <MyLibraryPage />
+            </LibraryContext.Provider>
+        );
+
+        expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    });
+
+    it('shows error state', () => {
+        render(
+            <LibraryContext.Provider
+                value={{
+                    state: {
+                        items: [],
+                        details: {},
+                        loading: false,
+                        error: 'Failed'
+                    },
+                    dispatch: vi.fn()
+                }}
+            >
+                <MyLibraryPage />
+            </LibraryContext.Provider>
+        );
+
+        expect(screen.getByText(/failed/i)).toBeInTheDocument();
+    });
+
 });
 
