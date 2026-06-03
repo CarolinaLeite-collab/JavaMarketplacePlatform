@@ -37,10 +37,14 @@ describe('apiClient', () => {
             await apiClient.getGenres();
 
             expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/genres`,
-                undefined
+                `${BASE_URL}/genres`
             );
+
+            const callArgs = mockFetch.mock.calls[0];
+            const headers = callArgs[1]?.headers ?? {};
+            expect(headers['X-User-Id']).toBeUndefined();
         });
+
 
         it('returns data on success', async () => {
             const mockData = { genres: [{ genreId: 'ROMANCE', name: 'Romance' }] };
@@ -115,7 +119,7 @@ describe('apiClient', () => {
             mockFetch.mockReturnValueOnce(mockError(404));
 
             await expect(
-                apiClient.getLibraryItem('http://localhost:8081/my-library/INVALID')
+                apiClient.getByHref('http://localhost:8081/my-library/INVALID')
             ).rejects.toThrow('404');
         });
 
