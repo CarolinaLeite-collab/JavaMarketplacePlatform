@@ -14,6 +14,8 @@ export const MAKE_LIST_PRIVATE_SUCCESS = 'MAKE_LIST_PRIVATE_SUCCESS';
 export const MAKE_LIST_PRIVATE_ERROR = 'MAKE_LIST_PRIVATE_ERROR';
 export const DELETE_LIST_SUCCESS = 'DELETE_LIST_SUCCESS';
 export const DELETE_LIST_ERROR = 'DELETE_LIST_ERROR';
+export const ADD_ITEM_TO_LIST_SUCCESS = 'ADD_ITEM_TO_LIST_SUCCESS';
+export const ADD_ITEM_TO_LIST_ERROR = 'ADD_ITEM_TO_LIST_ERROR';
 
 
 export function getListsSuccess(lists) {
@@ -103,6 +105,17 @@ export async function makeListPrivate(dispatch, links) {
         dispatch({ type: MAKE_LIST_PRIVATE_SUCCESS, payload: result });
     } catch (e) {
         dispatch({ type: MAKE_LIST_PRIVATE_ERROR, payload: String(e) });
+    }
+}
+
+export async function addItemToList(dispatch, links, itemId) {
+    const href = links?.find(l => l.rel === 'add-item')?.href;
+    if (!href) return;
+    try {
+        const result = await apiClient.postByHref(href, { itemId });
+        dispatch({ type: ADD_ITEM_TO_LIST_SUCCESS, payload: result });
+    } catch (e) {
+        dispatch({ type: ADD_ITEM_TO_LIST_ERROR, payload: String(e) });
     }
 }
 

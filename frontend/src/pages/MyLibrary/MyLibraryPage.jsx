@@ -1,5 +1,5 @@
-import {useEffect} from "react";
-import { useDisclosure } from '@mantine/hooks';
+import { useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { Button, Group } from "@mantine/core";
 import {IconPlus, IconTag} from "@tabler/icons-react";
 
