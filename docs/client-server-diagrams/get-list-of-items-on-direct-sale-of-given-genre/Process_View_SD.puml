@@ -1,0 +1,57 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to use a Web UI to get the list of items on\n direct sale of a given genre." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor Buyer
+participant ":MiteLovers" as CLI
+participant ":Server" as SER
+database "DB" as DB
+
+Buyer -> CLI : Request List of Items \n on Direct Sale \n of a given Genre
+activate Buyer
+
+CLI -> SER : GET /genres {...}
+activate CLI
+activate SER
+SER -> DB : select
+activate DB
+DB --> SER : data
+deactivate DB
+SER --> CLI : 200
+deactivate SER
+deactivate CLI
+CLI --> Buyer : Select the Genre
+deactivate Buyer
+Buyer -> CLI : Horror
+activate Buyer
+
+CLI -> SER : GET /direct-sales/items?genreId=HORROR {...}
+activate CLI
+activate SER
+SER -> DB : select
+activate DB
+DB --> SER : data
+deactivate DB
+SER --> CLI : 200
+deactivate SER
+deactivate CLI
+
+CLI --> Buyer : List of Items
+deactivate Buyer
+
+
+@enduml
