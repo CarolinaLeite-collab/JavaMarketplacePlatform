@@ -103,13 +103,19 @@ public class LibraryRestController {
         }
 
     @PostMapping(path ="/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addItemToLibrary(
+    public ResponseEntity<LibraryItemSummaryDTO> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
 
         try {
-            _libraryService.addItemToLibrary(request.getItemId(), userId);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+
+            LibraryItemSummaryDTO dto = _libraryService.addItemToLibrary(request.getItemId(), userId);
+
+            Link selfLink = linkTo(methodOn(LibraryRestController.class)
+                    .getItemDetail(dto.getItemId())).withSelfRel();
+            dto.add(selfLink);
+
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
         } catch (IllegalStateException e) {
 

@@ -149,21 +149,27 @@ class LibraryRestControllerTest {
     @Test
     void shouldReturn201WhenItemAddedToLibrary() throws Exception {
         // Arrange
-        // Act
-        var result = mockMvc.perform(post("/my-library/")
-                .header("X-User-Id", "pedro@aeiou.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemId\": \"3C5D126F8B\"}"));
+        LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
+                "3C5D126F8B",
+                "1984",
+                "https://example.com/1984.jpg"
+        );
+        when(libraryService.addItemToLibrary(any(), any())).thenReturn(dto);
 
-        // Assert
-        result.andExpect(status().isCreated());
+        // Act & Assert
+        mockMvc.perform(post("/my-library/")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemId\": \"3C5D126F8B\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self").exists());
     }
 
     @Test
     void shouldReturn409WhenItemAlreadyInLibrary() throws Exception {
         // Arrange
-        doThrow(new IllegalStateException("Item already exists in library"))
-                .when(libraryService).addItemToLibrary(any(), any());
+        when(libraryService.addItemToLibrary(any(), any()))
+                .thenThrow(new IllegalStateException("Item already exists in library"));
 
         // Act
         var result = mockMvc.perform(post("/my-library/")
@@ -211,7 +217,7 @@ class LibraryRestControllerTest {
     }
 
     @Test
-    void optionsShouldReturn500WhenUserNotFound() throws Exception {
+    void optionsShouldReturn404WhenUserNotFound() throws Exception {
         // Arrange
         when(userService.getUserByEmail("naoexiste@aeiou.com"))
                 .thenThrow(new NoSuchElementException("User not found"));
@@ -221,5 +227,19 @@ class LibraryRestControllerTest {
                         .param("email", "naoexiste@aeiou.com")
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn400WhenItemNotFound() throws Exception {
+        // Arrange
+        when(libraryService.addItemToLibrary(any(), any()))
+                .thenThrow(new IllegalArgumentException("Item not found"));
+
+        // Act & Assert
+        mockMvc.perform(post("/my-library/")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemId\": \"INVALID\"}"))
+                .andExpect(status().isBadRequest());
     }
 }
