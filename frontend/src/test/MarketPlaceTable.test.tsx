@@ -1,4 +1,5 @@
 import { render, screen } from '@/test-utils';
+import userEvent from '@testing-library/user-event';
 import { MarketPlaceTable } from '../components/marketPlaceTable/MarketPlaceTable';
 
 const items = [
@@ -50,8 +51,47 @@ describe('MarketPlaceTable', () => {
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
     });
 
+    it('shows only auctions when only auction is selected', () => {
+        renderTable({ showDirectSales: false, showAuctions: true });
+
+        expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Book 2')).toBeInTheDocument();
+        expect(screen.getByText('Book 3')).toBeInTheDocument();
+    });
+
+    it('shows all items when both sale type filters are selected', () => {
+        renderTable({ showDirectSales: true, showAuctions: true });
+
+        expect(screen.getByText('Book 1')).toBeInTheDocument();
+        expect(screen.getByText('Book 2')).toBeInTheDocument();
+        expect(screen.getByText('Book 3')).toBeInTheDocument();
+    });
+
     it('filters items by selected genre', () => {
         renderTable({ selectedGenre: 'ROMANCE' });
+
+        expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Book 2')).toBeInTheDocument();
+        expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
+    });
+
+    it('shows the empty state when no item matches the filters', () => {
+        renderTable({ selectedGenre: 'ROMANCE', showDirectSales: true, showAuctions: false });
+
+        expect(screen.getByText(/nothing found/i)).toBeInTheDocument();
+        expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
+        expect(screen.queryByText('Book 2')).not.toBeInTheDocument();
+        expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
+    });
+
+    it('filters items by search text', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        await user.type(
+            screen.getByPlaceholderText(/search by item, genre, type or price/i),
+            'Book 2'
+        );
 
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
