@@ -17,8 +17,8 @@ public class PublicationResponseDTO extends RepresentationModel<PublicationRespo
     @JsonIgnore
     private String publicationId;
     private String title;
-    private String authorName;
+    private String authorId;
     private int releaseYear;
-    private String genreName;
+    private String genreId;
 
 }
