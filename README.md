@@ -99,6 +99,16 @@ The H2 console is available at `http://localhost:8081/h2-console` with the follo
 - Direct pushes to `b3` and `b4` are reserved for exceptional cases;
 - Direct pushes to `main` are not allowed.
 
+### Branch Protection Rules
+
+Branch protection is enforced at repository level through GitHub Rulesets managed by the repository administrators.
+
+The development team does not have administrative permissions to view or modify the configured rulesets. Therefore, the exact configuration could not be independently verified by team members.
+
+The project's workflow was designed around the use of integration branches (`main`, `b3`, and `b4`), with all contributions being submitted through Pull Requests and validated by the CI/CD pipeline before merge.
+
+Administrative management of branch protection policies is the responsibility of the repository administrators and teaching staff.
+
 
 ### Development Flow
 1. Create a feature branch from `b3` or `b4`;
