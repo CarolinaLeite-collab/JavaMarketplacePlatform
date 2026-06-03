@@ -1,14 +1,14 @@
-import {useEffect} from "react";
-import { useDisclosure } from '@mantine/hooks';
+import { useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import { Button, Group } from "@mantine/core";
-import {IconPlus} from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 
-import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
-import {ItemAccordion} from "@/components/accordion/ItemAccordion.js";
-import {AddItemModal} from "@/components/addItemModal/AddItemModal.tsx";
+import { DefaultLayout } from "@/components/layout/DefaultLayout";
+import { ItemAccordion } from "@/components/accordion/ItemAccordion";
+import { AddItemModal } from "@/components/addItemModal/AddItemModal";
 
-import { useLibrary } from '../../context/AppContext';
-import { getLibrary } from '../../context/library/LibraryActions';
+import { useLibrary } from "@/context/AppContext";
+import { getLibrary } from "@/context/library/LibraryActions";
 
 export default function MyLibraryPage() {
 
