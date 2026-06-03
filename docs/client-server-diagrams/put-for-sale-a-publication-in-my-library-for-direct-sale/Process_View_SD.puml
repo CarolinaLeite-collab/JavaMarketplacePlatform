@@ -1,0 +1,64 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for %n()sale a publication in my library in a direct sale." %n() SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor "User"
+participant ":Client" as Client
+participant ":Server" as Server
+database "DB" as DB
+
+User -> Client : I want to put an item %n()in my library on direct sale
+activate Client
+Client -> Server : GET /my-library {...}
+activate Server
+Server -> DB : select
+DB --> Server : data
+Server --> Client : 200 {...}
+note right of Client
+Populates the item dropdown inside
+the direct sale form with items
+from the user's library
+end note
+deactivate Server
+Client --> User : Displays direct sale form
+deactivate Client
+
+
+User -> Client : Submit itemId, price, and %n() time limit
+activate Client
+Client -> Server : POST /direct-sales {"itemId": "...", %n()"price": "...", "timeLimitDays": "..."}
+activate Server
+note right of Server
+Creates DirectSale %n()and marks Item %n()as OnDirectSale
+end note
+Server -> DB : insert
+DB --> Server : data
+Server --> Client : 201 {...}
+deactivate Server
+Client --> User : Success
+deactivate Client
+
+/'Client -> Server : PATCH /my-library/{itemId} %n(){ "saleStatus" : "OnDirectSale"}
+activate Client
+activate Server
+Server -> DB : select
+DB --> Server : data
+Server --> Client : 200 {...}
+deactivate Server
+deactivate Client'/
+
+@enduml
