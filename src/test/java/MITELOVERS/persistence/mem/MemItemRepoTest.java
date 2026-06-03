@@ -1,7 +1,15 @@
 package MITELOVERS.persistence.mem;
 
+import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.repository.IEditionRepo;
+import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.PublicationId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -13,6 +21,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MemItemRepoTest {
+
+    private IEditionRepo _iEditionRepoDouble;
+    private IPublicationRepo _iPublicationRepoDouble;
+
+    @BeforeEach
+    void setup() {
+        _iEditionRepoDouble = mock(IEditionRepo.class);
+        _iPublicationRepoDouble = mock(IPublicationRepo.class);
+    }
 
     // ------------------------------------------------------------
     // save
@@ -27,7 +44,7 @@ class MemItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         Item result = sut.save(itemDouble);
@@ -45,7 +62,7 @@ class MemItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         sut.save(itemDouble);
@@ -64,7 +81,7 @@ class MemItemRepoTest {
     void findAllEmptyRepositoryReturnsEmptyIterable() {
 
         // SUT + Arrange
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         Iterable<Item> result = sut.findAll();
@@ -86,7 +103,7 @@ class MemItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -113,7 +130,7 @@ class MemItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
         sut.save(itemDouble);
 
         // Act
@@ -131,7 +148,7 @@ class MemItemRepoTest {
         ItemId unknownIdDouble = mock(ItemId.class);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         Optional<Item> result = sut.ofIdentity(unknownIdDouble);
@@ -144,7 +161,7 @@ class MemItemRepoTest {
     void ofIdentityNullIdReturnsEmptyOptional() {
 
         // SUT + Arrange
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         Optional<Item> result = sut.ofIdentity(null);
@@ -166,7 +183,7 @@ class MemItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
         sut.save(itemDouble);
 
         // Act
@@ -183,7 +200,7 @@ class MemItemRepoTest {
         ItemId unknownIdDouble = mock(ItemId.class);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         boolean result = sut.containsOfIdentity(unknownIdDouble);
@@ -200,7 +217,7 @@ class MemItemRepoTest {
     void findAllKeysShouldReturnEmptyListWhenRepoIsEmpty() {
 
         // SUT + Arrange
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
 
         // Act
         List<ItemId> result = sut.findAllKeys();
@@ -223,7 +240,7 @@ class MemItemRepoTest {
         when(item2Double.identity()).thenReturn(itemId2Double);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
         sut.save(item1Double);
         sut.save(item2Double);
 
@@ -245,7 +262,7 @@ class MemItemRepoTest {
         when(itemDouble.identity()).thenReturn(itemIdDouble);
 
         // SUT
-        MemItemRepo sut = new MemItemRepo();
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
         sut.save(itemDouble);
 
         // Act
@@ -257,4 +274,146 @@ class MemItemRepoTest {
         assertEquals(1, newResult.size());
         assertTrue(newResult.contains(itemIdDouble));
     }
+
+    // ------------------------------------------------------------
+    // findByIdInOrderByDescriptionAsc
+    // ------------------------------------------------------------
+
+    @Test
+    void findByIdInOrderByDescriptionAscAlwaysThrowsUnsupportedOperationException() {
+
+        // SUT + Arrange
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
+
+        // Act + Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> sut.findByIdInOrderByDescriptionAsc(List.of("a", "b")));
+    }
+
+    // ------------------------------------------------------------
+    // findByGenreId
+    // ------------------------------------------------------------
+
+    @Test
+    void findByGenreIdReturnsMatchingItems() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        Item itemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        PublicationId publicationIdDouble = mock(PublicationId.class);
+
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+
+        Publication publicationDouble = mock(Publication.class);
+        when(publicationDouble.isByGenreId(genreIdDouble)).thenReturn(true);
+
+        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.of(editionDouble));
+        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble)).thenReturn(Optional.of(publicationDouble));
+
+        // SUT
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
+        sut.save(itemDouble);
+
+        // Act
+        List<ItemId> result = sut.findByGenreId(genreIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(itemIdDouble));
+    }
+
+    @Test
+    void findByGenreIdSkipsItemsNotMatchingGenre() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        Item itemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        PublicationId publicationIdDouble = mock(PublicationId.class);
+
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+
+        Publication publicationDouble = mock(Publication.class);
+        when(publicationDouble.isByGenreId(genreIdDouble)).thenReturn(false);
+
+        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.of(editionDouble));
+        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble)).thenReturn(Optional.of(publicationDouble));
+
+        // SUT
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
+        sut.save(itemDouble);
+
+        // Act
+        List<ItemId> result = sut.findByGenreId(genreIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByGenreIdThrowsWhenEditionMissing() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        Item itemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+
+        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.empty());
+
+        // SUT
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
+        sut.save(itemDouble);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> sut.findByGenreId(genreIdDouble));
+    }
+
+    @Test
+    void findByGenreIdThrowsWhenPublicationMissing() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+
+        Item itemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        PublicationId publicationIdDouble = mock(PublicationId.class);
+
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getEditionId()).thenReturn(editionIdDouble);
+
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getPublicationId()).thenReturn(publicationIdDouble);
+
+        when(_iEditionRepoDouble.ofIdentity(editionIdDouble)).thenReturn(Optional.of(editionDouble));
+        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble)).thenReturn(Optional.empty());
+
+        // SUT
+        MemItemRepo sut = new MemItemRepo(_iEditionRepoDouble, _iPublicationRepoDouble);
+        sut.save(itemDouble);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> sut.findByGenreId(genreIdDouble));
+    }
+
 }

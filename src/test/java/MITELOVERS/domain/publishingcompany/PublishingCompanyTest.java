@@ -54,9 +54,10 @@ public class PublishingCompanyTest {
     void constructorShouldReconstructPublishingCompanyFromId() {
         // Arrange
         PublishingCompanyId publishingCompanyId = new PublishingCompanyId("Test Company");
+        String pubCompName = "Porto Editora";
 
         // Act
-        PublishingCompany publishingCompany = new PublishingCompany(publishingCompanyId);
+        PublishingCompany publishingCompany = new PublishingCompany(publishingCompanyId, pubCompName);
 
         // Assert
         assertEquals(publishingCompanyId, publishingCompany.identity());

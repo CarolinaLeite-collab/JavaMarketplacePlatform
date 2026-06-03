@@ -10,5 +10,6 @@ import java.util.List;
 public interface IListOfItemsRepo extends IRepository<ListOfItemsId, ListOfItems> {
 
     List<ListOfItems> findListOfItemsByUserId(UserId userId);
+    void deleteListOfItems(ListOfItemsId listOfItemsId);
 }
 

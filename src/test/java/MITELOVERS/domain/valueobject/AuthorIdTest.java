@@ -146,7 +146,7 @@ class AuthorIdTest {
         AuthorId id = new AuthorId(name);
 
         // Assert
-        assertTrue(id.toString().startsWith("Shiki "));
+        assertTrue(id.toString().startsWith("Shiki"));
         assertTrue(id.toString().contains("-"));
     }
 
@@ -163,7 +163,7 @@ class AuthorIdTest {
         String value = id.toString();
 
         // Assert
-        assertTrue(value.startsWith("Tolstói "));
+        assertTrue(value.startsWith("Tolstói"));
         assertTrue(value.contains("L.N."));
         assertFalse(value.contains("T."));
     }
@@ -218,7 +218,7 @@ class AuthorIdTest {
     void equalsShouldReturnTrueForSameIdValue() {
 
         // Arrange
-        String idValue = "Tolstói L.N.-ABC123";
+        String idValue = "Tolstói.L.N.-ABC123";
 
         // Act & SUT
         AuthorId id1 = new AuthorId(idValue);

@@ -41,4 +41,19 @@ class NoIdentifierTest {
         //Assert
         assertTrue(result);
     }
+
+    @Test
+    void toStringShouldReturnNoIdentifierValue() {
+        // Arrange
+        String expected = "no identifier";
+
+        // SUT
+        NoIdentifier noIdentifier = new NoIdentifier();
+
+        // Act
+        String result = noIdentifier.toString();
+
+        // Assert
+        assertEquals(expected, result);
+    }
 }

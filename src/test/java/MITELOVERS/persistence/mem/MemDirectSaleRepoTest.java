@@ -3,15 +3,12 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -162,7 +159,7 @@ class MemDirectSaleRepoTest {
     }
 
     @Test
-    void shouldReturnItemsSortedByPublicationDateAsc() {
+    void shouldReturnDirectSalesSortedByPublicationDateAsc() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
@@ -178,13 +175,14 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble1, _itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble1, _itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble1, _itemIdDouble2), result);
+        assertEquals(List.of(_ds1Double, _ds2Double), result);
     }
 
     @Test
-    void shouldReturnItemsSortedByPublicationDateDesc() {
+    void shouldReturnDirectSalesSortedByPublicationDateDesc() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
@@ -200,21 +198,19 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateDesc(List.of(_itemIdDouble1, _itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateDesc(List.of(_itemIdDouble1, _itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble2, _itemIdDouble1), result);
+        assertEquals(List.of(_ds2Double, _ds1Double), result);
     }
 
     @Test
-    void shouldReturnOnlyMatchingItems() {
+    void shouldReturnOnlyMatchingDirectSales() {
 
         MemDirectSaleRepo repo = new MemDirectSaleRepo();
 
         when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
         when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
-
-        when(_ds1Double.getCreationDate()).thenReturn(Instant.parse("2020-01-01T00:00:00Z"));
-        when(_ds2Double.getCreationDate()).thenReturn(Instant.parse("2020-01-02T00:00:00Z"));
 
         when(_ds1Double.getItemsId()).thenReturn(List.of(_itemIdDouble1));
         when(_ds2Double.getItemsId()).thenReturn(List.of(_itemIdDouble2));
@@ -222,9 +218,10 @@ class MemDirectSaleRepoTest {
         repo.save(_ds1Double);
         repo.save(_ds2Double);
 
-        List<ItemId> result = repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
+        List<DirectSale> result =
+                repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
 
-        assertEquals(List.of(_itemIdDouble2), result);
+        assertEquals(List.of(_ds2Double), result);
     }
 
 }
