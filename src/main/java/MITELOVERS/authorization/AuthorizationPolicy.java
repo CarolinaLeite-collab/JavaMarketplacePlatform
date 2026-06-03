@@ -117,4 +117,10 @@ public class AuthorizationPolicy {
 
     /** Any authenticated user may list items. */
     public boolean canListItems(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN); }
+
+    /** Any authenticated user may list publication types. */
+    public boolean canListPublicationTypes(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Only admins may add a new publication type. */
+    public boolean canCreatePublicationType(User user) { return user.hasRole(Role.ADMIN);}
 }
