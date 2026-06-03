@@ -194,33 +194,29 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Authors
-            Author orwell = authorFactory.createAuthor(new AuthorId("Orwell G.-F43DD6"), new Name("George Orwell"));
+            Author alexander = authorFactory.createAuthor(new AuthorId("Alexander C.-13B3C"), new Name("Cristopher Alexander"));
             Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"), new Name("Isaac Asimov"));
+            Author eg = authorFactory.createAuthor(new AuthorId("Gray E.A.-219812"), new Name("Eileen Gray"));
             Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"), new Name("Yuval Noah Harari"));
             Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"), new Name("Helberto Helder"));
             Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"), new Name("Rem Koolhaas"));
-            Author alexander = authorFactory.createAuthor(new AuthorId("Alexander C.-13B3C"), new Name("Cristopher Alexander"));
-            Author seneca = authorFactory.createAuthor(
-                    new AuthorId("Seneca L.A.-018812"),
-                    new Name("Lucius Annaeus Seneca")
-            );
-            Author eg = authorFactory.createAuthor(
-                    new AuthorId("Gray E.A.-219812"),
-                    new Name("Eileen Gray")
-            );
+            Author orwell = authorFactory.createAuthor(new AuthorId("Orwell G.-F43DD6"), new Name("George Orwell"));
+            Author scharmen = authorFactory.createAuthor(new AuthorId("Scharmen F.-10B3C"), new Name("Fred Scharmen"));
+            Author seneca = authorFactory.createAuthor(new AuthorId("Seneca L.A.-018812"), new Name("Lucius Annaeus Seneca"));
+            Author ruiTavares = authorFactory.createAuthor(new AuthorId("Tavares R.-483561"), new Name("Rui Tavares"));
 
-            authorRepo.save(seneca);
-            authorRepo.save(orwell);
-            authorRepo.save(asimov);
+            authorRepo.save(ruiTavares);
+            authorRepo.save(alexander);
+            authorRepo.save(eg);
             authorRepo.save(yuval);
             authorRepo.save(helder);
             authorRepo.save(koolhaas);
-            authorRepo.save(alexander);
+            authorRepo.save(orwell);
+            authorRepo.save(scharmen);
             authorRepo.save(seneca);
-            authorRepo.save(eg);
+            authorRepo.save(asimov);
 
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas,Cristopher Alexander, Seneca, Eileen Gray");
-
+            log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca");
             // -------------------------------------------------------
             // Publications
             Publication novaYorkDelirante = publicationFactory.createPublication(
@@ -270,6 +266,20 @@ public class DataInitializer {
                     genre1.identity() // Arts / Architecture
             );
 
+            Publication spaceSettlements = publicationFactory.createPublication(
+                    new Title("Space Settlements"),
+                    scharmen.identity(),
+                    Year.of(2019),
+                    genre1.identity() // Arts / Architecture
+            );
+
+            Publication hipocritoesEOlhigarcas = publicationFactory.createPublication(
+                    new Title("Hipocritões e Oligarcas"),
+                    ruiTavares.identity(),
+                    Year.of(2025),
+                    genre7.identity() // Non-Fiction
+            );
+
             publicationRepo.save(shortnessOfLife);
             publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
@@ -278,8 +288,10 @@ public class DataInitializer {
             publicationRepo.save(pattern);
             publicationRepo.save(shortnessOfLife);
             publicationRepo.save(e1027);
+            publicationRepo.save(spaceSettlements);
+            publicationRepo.save(hipocritoesEOlhigarcas);
 
-            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante, patternLanguage, E.1027");
+            log.info("Publications saved: 1984, E.1027, Foundation, Nova York Delirante, Sapiens, Space Settlements, A Pattern Language");
 
             // -------------------------------------------------------
             // Cities
@@ -310,6 +322,10 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Publishing Companies
+            PublishingCompany tintaDaChinaBrasil =
+                    publishingCompanyFactory.createPublishingCompany("Tinta da China");
+            publishingCompanyRepo.save(tintaDaChinaBrasil);
+
             PublishingCompany seckerWarburg = publishingCompanyFactory.createPublishingCompany("Secker and Warburg");
             publishingCompanyRepo.save(seckerWarburg);
 
@@ -327,11 +343,29 @@ public class DataInitializer {
             PublishingCompany editionsAlbertMorance =
                     publishingCompanyFactory.createPublishingCompany("Éditions Albert Morancé");
             publishingCompanyRepo.save(editionsAlbertMorance);
+            PublishingCompany columbia = publishingCompanyFactory.createPublishingCompany("Columbia Books");
+            publishingCompanyRepo.save(editionsAlbertMorance);
 
-            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG, Oxford University Press, Penguin Books, Éditions Albert Morancé");
+            log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China");
 
             // -------------------------------------------------------
             // Editions
+
+            Edition editionHipocritoesEOlhigarcas = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9786584835610"),
+                    hipocritoesEOlhigarcas.identity(),
+                    tintaDaChinaBrasil.identity(),
+                    Year.of(2025),
+                    Language.PORTUGUESE,
+                    null,
+                    null,
+                    new NumberOfPages(240),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
+            );
+            editionRepo.save(editionHipocritoesEOlhigarcas);
+
             Edition editionNovaYorkDelirante = editionFactory.createEdition(
                     book.identity(),
                     new ISBN("9788425222481"),
@@ -343,7 +377,22 @@ public class DataInitializer {
                     null,
                     new NumberOfPages(365),
                     new EditionNumber(1),
-                    Binding.PUR
+                    Binding.PAPERBACK
+            );
+            editionRepo.save(editionNovaYorkDelirante);
+
+            Edition spaceSetlements = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9781941332498"),
+                    spaceSettlements.identity(),
+                    columbia.identity(),
+                    Year.of(2019),
+                    Language.ENGLISH_US,
+                    null,
+                    null,
+                    new NumberOfPages(208),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
             );
             editionRepo.save(editionNovaYorkDelirante);
 
@@ -357,7 +406,8 @@ public class DataInitializer {
                     null,
                     null,
                     null,
-                    null, Binding.PUR
+                    null,
+                    Binding.PAPERBACK
             );
             editionRepo.save(edition1984);
 
@@ -368,7 +418,8 @@ public class DataInitializer {
                     seckerWarburg.identity(),
                     Year.of(2003),
                     Language.ENGLISH,
-                    null, null, null, null, null
+                    null, null, null, null,
+                    Binding.PAPERBACK
             );
             editionRepo.save(edition1984Modern);
 
@@ -398,7 +449,7 @@ public class DataInitializer {
                     null,
                     new NumberOfPages(112),
                     new EditionNumber(1),
-                    Binding.PUR
+                    Binding.PAPERBACK
             );
             editionRepo.save(editionShortnessOfLife);
 
@@ -413,7 +464,7 @@ public class DataInitializer {
                     null,
                     null,
                     new EditionNumber(1),
-                    Binding.PUR
+                    Binding.PAPERBACK
             );
             editionRepo.save(editionE1027Original);
             log.info("Editions saved: 1984, Foundation, Nova York Delirante, E.1027");
@@ -445,6 +496,30 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Items
+
+            ItemId hipocritoesItemId = new ItemId("6584835610");
+
+            Item hipocritoesItem = itemFactory.createItem(
+                    hipocritoesItemId,
+                    editionHipocritoesEOlhigarcas.identity(),
+                    Condition.GOOD,
+                    new Description("Paperback edition of Hipocritões e Oligarcas"),
+                    SaleStatus.OnDirectSale,
+                    new Picture("/images/hipocritoes.png")
+
+            );
+            itemRepo.save(hipocritoesItem);
+
+            ItemId spaceSetlementsItemId = new ItemId("1F9F4BFAD2");
+            Item spaceSetlementsItem = itemFactory.createItem(
+                    spaceSetlementsItemId,
+                    spaceSetlements.identity(),
+                    Condition.FAIR,
+                    new Description("Great book"),
+                    SaleStatus.Sold
+            );
+            itemRepo.save(spaceSetlementsItem);
+
             ItemId itemId1 = new ItemId("3C5D126F8B");
             Item item1 = itemFactory.createItem(
                     itemId1,
@@ -456,7 +531,6 @@ public class DataInitializer {
 
             );
             itemRepo.save(item1);
-
 
             ItemId itemId2 = new ItemId("3F9F4BFAB2");
             Item item2 = itemFactory.createItem(
@@ -516,6 +590,13 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Direct Sales
+            DirectSale hipocritoesSale = directSaleFactory.createDirectSale(
+                    List.of(hipocritoesItemId),
+                    new Price(14.99, Currency.EUR),
+                    Duration.ofDays(30)
+            );
+            directSaleRepo.save(hipocritoesSale);
+
             ItemId item5 = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
@@ -729,6 +810,10 @@ public class DataInitializer {
             Library libraryPedro = libraryFactory.createLibrary(user.identity());
             libraryPedro.addItemIdToLibrary(itemId1);
             libraryPedro.addItemIdToLibrary(itemId4);
+            libraryPedro.addItemIdToLibrary(itemIdE1027);
+            libraryPedro.addItemIdToLibrary(shortnessOfLifeItemId);
+            libraryPedro.addItemIdToLibrary(spaceSetlementsItemId);
+
             libraryRepo.save(libraryPedro);
 
             Library libraryAna = libraryFactory.createLibrary(user2.identity());
@@ -739,6 +824,26 @@ public class DataInitializer {
             libraryRepo.save(libraryAngelo);  // biblioteca vazia
 
             log.info("Libraries saved: Pedro, Ana, Angelo");
+
+            // -------------------------------------------------------
+            // List of Items
+            // Pedro Favourites
+            list1.addItem(itemId4);                 // A Pattern Language
+            list1.addItem(itemIdE1027);
+            list1.addItem(spaceSetlementsItemId);
+
+            // Ana Sci-Fi List
+            list2.addItem(sfItemId);                // Foundation
+            list1.addItem(itemId1);                 // 1984
+
+            // Angelo Non-Fiction
+            list3.addItem(nfItemId);                // Sapiens
+            list3.addItem(shortnessOfLifeItemId);   // On the Shortness of Life
+            list3.addItem(hipocritoesItemId);
+
+            listOfItemsRepo.save(list1);
+            listOfItemsRepo.save(list2);
+            listOfItemsRepo.save(list3);
 
             log.info("DataInitializer completed successfully.");
 
