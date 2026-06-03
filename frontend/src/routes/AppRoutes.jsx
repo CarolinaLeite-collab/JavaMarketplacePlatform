@@ -7,10 +7,10 @@ import Marketplace from "@/pages/Marketplace/Marketplace.jsx";
 export function AppRoutes() {
     return (
         <Routes>
-            <Route path="/" element={<MySalesPage />} />
+            <Route path="/" element={<Marketplace />} />
             <Route path="/my-lists" element={<MyListsPage />} />
             <Route path="/my-library" element={<MyLibraryPage />} />
-            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/my-sales" element={<MySalesPage />} />
         </Routes>
     );
 }

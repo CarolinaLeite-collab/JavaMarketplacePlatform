@@ -26,8 +26,8 @@ export function Header() {
                     </Link>
 
                     <Group h="100%" gap={0} visibleFrom="sm">
-                        <Link to="/marketplace" className={classes.link}>MARKETPLACE</Link>
-                        <Link to="/" className={classes.link}>SALES</Link>
+                        <Link to="/" className={classes.link}>MARKETPLACE</Link>
+                        <Link to="/my-sales" className={classes.link}>SALES</Link>
                         <Link to="/my-library" className={classes.link}>LIBRARY</Link>
                         <Link to="/my-lists" className={classes.link}>LISTS</Link>
                     </Group>
