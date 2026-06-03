@@ -1,5 +1,5 @@
 import { render, screen } from '@/test-utils';
-import {ItemDetailTable} from "../../components/itemDetailsTable/ItemDetailsTable.js";
+import {ItemDetailTable} from "../components/itemDetailsTable/ItemDetailsTable.tsx";
 
 describe('ItemDetailTable', () => {
 
