@@ -123,4 +123,10 @@ public class AuthorizationPolicy {
 
     /** Only admins may add a new publication type. */
     public boolean canCreatePublicationType(User user) { return user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may list editions. */
+    public boolean canListEditions(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may create an edition. */
+    public boolean canCreateEdition(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 }

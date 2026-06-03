@@ -143,6 +143,89 @@ class AuthorizationPolicyTest {
         assertFalse(policy.canCreatePublicationType(_userDouble));
     }
 
+    // ──────────── Edition ────────────
+
+    @Test
+    void userCanListEditions() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertTrue(policy.canListEditions(_userDouble));
+    }
+
+    @Test
+    void adminCanListEditions() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertTrue(policy.canListEditions(_userDouble));
+    }
+
+    @Test
+    void userWithNoRoleCannotListEditions() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.USER)).thenReturn(false);
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertFalse(policy.canListEditions(_userDouble));
+    }
+
+    @Test
+    void userCanCreateEdition() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertTrue(policy.canCreateEdition(_userDouble));
+    }
+
+    @Test
+    void adminCanCreateEdition() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertTrue(policy.canCreateEdition(_userDouble));
+    }
+
+    @Test
+    void userWithNoRoleCannotCreateEdition() {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(_userDouble.hasRole(Role.USER)).thenReturn(false);
+        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
+
+        // SUT
+        AuthorizationPolicy policy = new AuthorizationPolicy();
+
+        // Assert
+        assertFalse(policy.canCreateEdition(_userDouble));
+    }
+
+
 
 
 
