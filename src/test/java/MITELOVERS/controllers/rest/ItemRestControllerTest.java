@@ -20,17 +20,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-
 
 @WebMvcTest(ItemRestController.class)
 @Import(CustomRestExceptionHandler.class)
@@ -57,7 +53,6 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn201WhenItemIsCreated() throws Exception {
-        // Arrange
         ItemResponseDTO dto = new ItemResponseDTO(
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
@@ -65,7 +60,6 @@ class ItemRestControllerTest {
         );
         when(itemService.registerItem(any(), any(), any())).thenReturn(dto);
 
-        // Act + Assert
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -80,7 +74,6 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn422WhenConditionIsInvalid() throws Exception {
-        // Act + Assert
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -95,11 +88,9 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn404WhenEditionNotFound() throws Exception {
-        // Arrange
         when(itemService.registerItem(any(), any(), any()))
                 .thenThrow(new NoSuchElementException("Edition not found"));
 
-        // Act + Assert
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -118,7 +109,6 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn200WithListOfItems() throws Exception {
-        // Arrange
         ItemResponseDTO dto = new ItemResponseDTO(
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
@@ -126,7 +116,6 @@ class ItemRestControllerTest {
         );
         when(itemService.getAllItems()).thenReturn(List.of(dto));
 
-        // Act + Assert
         mockMvc.perform(get("/items"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
@@ -138,7 +127,6 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn200WhenItemExists() throws Exception {
-        // Arrange
         ItemResponseDTO dto = new ItemResponseDTO(
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
@@ -146,7 +134,6 @@ class ItemRestControllerTest {
         );
         when(itemService.getItemById(any())).thenReturn(dto);
 
-        // Act + Assert
         mockMvc.perform(get("/items/3C5D126F8B"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isMap());
@@ -154,11 +141,9 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn404WhenItemNotFound() throws Exception {
-        // Arrange
         when(itemService.getItemById(any()))
                 .thenThrow(new NoSuchElementException("Item not found"));
 
-        // Act + Assert
         mockMvc.perform(get("/items/INVALID"))
                 .andExpect(status().isNotFound());
     }
@@ -169,7 +154,6 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn200WithItemsFromMyLibrary() throws Exception {
-        // Arrange
         ItemResponseDTO dto = new ItemResponseDTO(
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
@@ -180,7 +164,6 @@ class ItemRestControllerTest {
         when(libraryService.getItemIdsInLibrary(any())).thenReturn(List.of(itemIdDouble));
         when(itemService.getItemById("3C5D126F8B")).thenReturn(dto);
 
-        // Act + Assert
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "pedro@aeiou.com"))
                 .andExpect(status().isOk())
@@ -190,10 +173,8 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn200WithEmptyListWhenLibraryIsEmpty() throws Exception {
-        // Arrange
         when(libraryService.getItemIdsInLibrary(any())).thenReturn(List.of());
 
-        // Act + Assert
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "pedro@aeiou.com"))
                 .andExpect(status().isOk())
@@ -202,26 +183,59 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn404WhenItemInLibraryNotFound() throws Exception {
-        // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.getValue()).thenReturn("INVALID-ID");
         when(libraryService.getItemIdsInLibrary(any())).thenReturn(List.of(itemIdDouble));
         when(itemService.getItemById("INVALID-ID"))
                 .thenThrow(new NoSuchElementException("Item not found"));
 
-        // Act + Assert
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "pedro@aeiou.com"))
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldReturn404WhenRegisterItemThrowsIllegalState() throws Exception {
+        when(itemService.registerItem(any(), any(), any()))
+                .thenThrow(new IllegalStateException("Duplicate item"));
+
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                            {
+                                "editionId": "E-ABCDEF12",
+                                "condition": "GOOD",
+                                "description": "Nice copy"
+                            }
+                            """))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void shouldReturn422WhenGetItemByIdThrowsIllegalArgument() throws Exception {
+        when(itemService.getItemById(any()))
+                .thenThrow(new IllegalArgumentException("Invalid id format"));
+
+        mockMvc.perform(get("/items/INVALID-FORMAT"))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void shouldReturn422WhenGetLibraryItemsThrowsIllegalArgument() throws Exception {
+        when(libraryService.getItemIdsInLibrary(any()))
+                .thenThrow(new IllegalArgumentException("Invalid user id"));
+
+        mockMvc.perform(get("/items/my-library")
+                        .header("X-User-Id", "invalid"))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
     // ----------------------------------------------------------------
-// OPTIONS /items
-// ----------------------------------------------------------------
+    // OPTIONS /items
+    // ----------------------------------------------------------------
 
     @Test
     void shouldReturn200WithLinksOnOptions() throws Exception {
-        // Arrange
         User userDouble = mock(User.class);
         when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of(
@@ -229,23 +243,32 @@ class ItemRestControllerTest {
                 Link.of("/items", "createItem")
         ));
 
-        // Act + Assert
         mockMvc.perform(options("/items")
                         .param("email", "pedro@aeiou.com"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.items").exists()); // ← mata linha 67
     }
 
     @Test
     void shouldReturn200WithSelfLinkOnlyWhenNoLinks() throws Exception {
-        // Arrange
         User userDouble = mock(User.class);
         when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
-        // Act + Assert
         mockMvc.perform(options("/items")
                         .param("email", "pedro@aeiou.com"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
     }
 
+    @Test
+    void shouldReturn404WhenUserNotFoundOnOptions() throws Exception {
+        when(userService.getUserByEmail(any()))
+                .thenThrow(new NoSuchElementException("User not found"));
+
+        mockMvc.perform(options("/items")
+                        .param("email", "unknown@aeiou.com"))
+                .andExpect(status().isNotFound());
+    }
 }
