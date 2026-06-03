@@ -1,7 +1,10 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
@@ -9,6 +12,7 @@ import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +35,30 @@ public class ListOfItemsRestController {
 
     private final ListOfItemsService _listService;
     private ListOfItemsResponseDTOMapper _mapper;
+    private final ListOfItemsLinkProvider _listOfItemsLinkProvider;
+    private final UserService _userService;
 
-    public ListOfItemsRestController(ListOfItemsService listService, ListOfItemsResponseDTOMapper mapper) {
+    public ListOfItemsRestController(ListOfItemsService listService,
+                                     ListOfItemsResponseDTOMapper mapper,
+                                     ListOfItemsLinkProvider listOfItemsLinkProvider,
+                                     UserService userService) {
+
         _listService = listService;
         _mapper = mapper;
+        _listOfItemsLinkProvider = listOfItemsLinkProvider;
+        _userService = userService;
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        _listOfItemsLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @GetMapping (path = "/", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,13 +1,22 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +28,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +49,32 @@ class ListOfItemsRestControllerTest {
 
     @MockitoBean
     private ListOfItemsResponseDTOMapper _mapper;
+
+    @MockitoBean
+    private ListOfItemsLinkProvider _linkProvider;
+
+    @MockitoBean
+    private UserService _userService;
+
+    @Test
+    void options_shouldReturnLinksForUser() throws Exception {
+
+        String email = "john@example.com";
+        User user = mock(User.class);
+
+        when(_userService.getUserByEmail(email)).thenReturn(user);
+
+        Link link1 = Link.of("/my-lists").withRel("self");
+        Link link2 = Link.of("/my-lists/create").withRel("create-list");
+
+        when(_linkProvider.getLinks(user)).thenReturn(List.of(link1, link2));
+
+        _mockMvc.perform(options("/my-lists")
+                        .param("email", email))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value("/my-lists"))
+                .andExpect(jsonPath("$._links['create-list'].href").value("/my-lists/create"));
+    }
 
     @Test
     void getLists_returnsOkWithEmbeddedBodyAndLinks_whenListsExist() throws Exception {
