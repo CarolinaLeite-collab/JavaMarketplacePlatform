@@ -456,6 +456,7 @@ public class DataInitializer {
                     new Description("First Edition"),
                     SaleStatus.NotOnSale,
                     new Picture("/images/patternLanguage.png")
+
             );
             itemRepo.save(item4);
 
@@ -669,6 +670,7 @@ public class DataInitializer {
             // Libraries with items
             Library libraryPedro = libraryFactory.createLibrary(user.identity());
             libraryPedro.addItemIdToLibrary(itemId1);
+            libraryPedro.addItemIdToLibrary(itemId4);
             libraryRepo.save(libraryPedro);
 
             Library libraryAna = libraryFactory.createLibrary(user2.identity());
