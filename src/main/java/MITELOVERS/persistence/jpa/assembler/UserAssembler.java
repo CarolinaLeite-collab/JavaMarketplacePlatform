@@ -47,9 +47,8 @@ public class UserAssembler {
 
         User user = _userFactory.createUser(userId, name, null, email, null);
 
-        for (Role role : userDataModel.getRoles()) {
-            user.addRole(role);
-        }
+        user.setRoles(userDataModel.getRoles());
+
         return user;
     }
 }
