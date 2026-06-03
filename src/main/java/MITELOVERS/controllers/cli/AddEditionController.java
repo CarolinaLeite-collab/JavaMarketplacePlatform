@@ -23,7 +23,7 @@ public class AddEditionController {
         _editionService = editionService;
     }
 
-    public EditionResponseDTO addEdition(String publicationId, EditionRequestDTO dto) {
+    public Edition addEdition(String publicationId, EditionRequestDTO dto) {
         return _editionService.registerEdition(publicationId, dto);
     }
 }
