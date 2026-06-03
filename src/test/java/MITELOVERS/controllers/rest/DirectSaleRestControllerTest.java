@@ -8,8 +8,10 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
+import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +47,9 @@ class DirectSaleRestControllerTest {
 
     @Mock
     private UserService _userService;
+
+    @Mock
+    private DirectSaleNoPriceResponseDTOMapper _noPriceMapper;
 
     @InjectMocks
     private DirectSaleRestController _controller;
@@ -306,6 +311,33 @@ class DirectSaleRestControllerTest {
 
         // Assert
         assertTrue(result.getBody().getLinks().hasLink("self"));
+    }
+
+    @Test
+    void getDirectSalesWithNoPriceShouldReturnNoPriceDto() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleNoPriceResponseDTO dto =
+                new DirectSaleNoPriceResponseDTO(
+                        "DS-A1B2C3D4",
+                        List.of("ABCDEF1234"),
+                        3600L,
+                        Instant.now()
+                );
+
+        when(_service.getAllDirectSales()).thenReturn(List.of(domain));
+        when(_noPriceMapper.toModel(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<List<DirectSaleNoPriceResponseDTO>> result =
+                _controller.getDirectSalesWithoutPrice();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(1, result.getBody().size());
+        assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
     }
 
 }
