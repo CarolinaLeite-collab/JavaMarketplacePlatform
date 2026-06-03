@@ -52,6 +52,14 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
             );
         }
 
+        if (_authorizationPolicy.canGetDirectSale(user)) {
+            links.add(
+                    WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
+                            .getDirectSaleById(null))
+                            .withRel("direct-sale")
+            );
+        }
+
         if (_authorizationPolicy.canCreateDirectSale(user)) {
             links.add(
                     linkTo(methodOn(DirectSaleRestController.class)
