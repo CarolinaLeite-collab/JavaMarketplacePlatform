@@ -15,7 +15,7 @@ interface DeleteListModalProps {
 export function DeleteListModal({ listName, links }: DeleteListModalProps) {
     const [opened, { open, close }] = useDisclosure(false);
     const { dispatch, state } = useContext(AppContext);
-    const { myListsHref } = state.lists;
+    const { myListsHref } = state.app;
 
 
     const handleDelete = async () => {
@@ -29,6 +29,7 @@ export function DeleteListModal({ listName, links }: DeleteListModalProps) {
                 opened={opened}
                 onClose={close}
                 title={`Delete "${listName}"`}
+                overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
                 centered
                 size="sm"
             >
