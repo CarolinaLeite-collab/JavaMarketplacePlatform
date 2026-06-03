@@ -120,6 +120,8 @@ export const apiClient = {
     getGenres: () => getPublic('/genres'),
     getLibrary: () => getPrivate('/my-library/'),
     createDirectSales: (body) => post('/direct-sales', body),
+    getDirectSales: () => getPublic('/direct-sales'),
+    getItemById: (itemId) => getPublic(`/items/${itemId}`),
 
     // HATEOAS — use full href from backend response links
     getByHref: (href) => getByHref(href),
