@@ -2,13 +2,17 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ItemService;
 import MITELOVERS.applicationservices.LibraryService;
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
+import MITELOVERS.controllers.linkprovider.ItemLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +29,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+
 
 @WebMvcTest(ItemRestController.class)
 @Import(CustomRestExceptionHandler.class)
@@ -38,6 +44,12 @@ class ItemRestControllerTest {
 
     @MockitoBean
     private LibraryService libraryService;
+
+    @MockitoBean
+    private ItemLinkProvider itemLinkProvider;
+
+    @MockitoBean
+    private UserService userService;
 
     // ----------------------------------------------------------------
     // POST /items
@@ -202,4 +214,38 @@ class ItemRestControllerTest {
                         .header("X-User-Id", "pedro@aeiou.com"))
                 .andExpect(status().isNotFound());
     }
+
+    // ----------------------------------------------------------------
+// OPTIONS /items
+// ----------------------------------------------------------------
+
+    @Test
+    void shouldReturn200WithLinksOnOptions() throws Exception {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of(
+                Link.of("/items", "items"),
+                Link.of("/items", "createItem")
+        ));
+
+        // Act + Assert
+        mockMvc.perform(options("/items")
+                        .param("email", "pedro@aeiou.com"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldReturn200WithSelfLinkOnlyWhenNoLinks() throws Exception {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of());
+
+        // Act + Assert
+        mockMvc.perform(options("/items")
+                        .param("email", "pedro@aeiou.com"))
+                .andExpect(status().isOk());
+    }
+
 }
