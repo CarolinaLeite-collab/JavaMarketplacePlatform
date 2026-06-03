@@ -106,14 +106,19 @@ jobs:
 
       - name: Run Semgrep scan JSON report
         run: |
+          TARGETS="src"
+
+          if [ -d "frontend" ]; then
+            TARGETS="$TARGETS frontend"
+          fi
+
           semgrep scan \
             --config=auto \
-            --config p/java \
             --json \
-            --output semgrep-report.json \
-            --severity ERROR \
+            --output=semgrep-report.json \
+            --severity=ERROR \
             --error \
-            src/
+            $TARGETS
 
       - name: Upload Semgrep JSON report
         if: always()
