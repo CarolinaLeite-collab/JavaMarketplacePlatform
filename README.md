@@ -513,7 +513,7 @@ Gitleaks correctly detected the secret and failed the pipeline. Even after the f
 
 Semgrep was integrated into the CI pipeline as a static application security testing (SAST) stage to automatically detect security issues and bad practices in the Java codebase on every pull request targeting main, b3 or b4.
 
-The workflow runs after the secret-detection job, using the official Semgrep container to scan only the `src/` directory with the `--config=auto`, as well as `--config p/java` rulesets, which applies a curated set of language-aware security and correctness rules, also applying specifically to Java.
+The workflow runs after the secret-detection job, using the official Semgrep container to scan `src/`, `.github/`, and `pom.xml` with the `--config=auto` ruleset, which applies a curated set of language-aware security and correctness rules. This covers both insecure code patterns and insecure configurations (e.g. hardcoded credentials, weak cipher usage, misconfigured security settings).
 
 ```yaml
  semgrep-sast:
@@ -825,7 +825,7 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 | **Build & Unit Tests** | Maven / JUnit | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
 | **Line Coverage** | JaCoCo | ≥ 95% line coverage | Maven ``verify`` phase |
 | **Mutation Testing** | PIT | No errors during mutation analysis | Maven test lifecycle |
-| **Static Analysis (SAST)** | Semgrep | 0 ERROR findings | Hardened Security Pipeline → ``semgrep-sast`` |
+| **Static Analysis (SAST) & Insecure Config Detection** | Semgrep | 0 ERROR findings | Hardened Security Pipeline → ``semgrep-sast`` |
 | **Secret Detection** | Gitleaks | 0 secrets detected | Hardened Security Pipeline → ``gitleaks`` |
 | **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
 | **SBOM Generation** | CycloneDX | SBOM generated successfully | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
@@ -839,7 +839,7 @@ Developers can run the same checks locally before pushing a PR.
 
 2. Run Gitleaks locally ('gitleaks detect --source . --verbose');
 
-3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/');
+3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/ .github/ pom.xml');
 
 4. Generate SBOM locally ('mvn cyclonedx:makeAggregateBom');
 

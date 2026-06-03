@@ -106,8 +106,8 @@ jobs:
 
       - name: Run Semgrep scan JSON report
         run: |
-          TARGETS="src"
-
+          TARGETS="src .github pom.xml"
+          
           if [ -d "frontend" ]; then
             TARGETS="$TARGETS frontend"
           fi
@@ -249,6 +249,10 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+<<<<<<< Updated upstream
+=======
+            
+>>>>>>> Stashed changes
 
       - name: Upload SBOM
         if: always()
