@@ -88,20 +88,40 @@ public class DataInitializer {
             // -------------------------------------------------------
             // Genre
             // Create and save a few Genres
-            Genre genre1 = genreFactory.createGenre("Fiction");
+            Genre genre1 = genreFactory.createGenre("Arts");
             genreRepo.save(genre1);
 
-            Genre genre2 = genreFactory.createGenre("Non-Fiction");
+            Genre genre2 = genreFactory.createGenre("Biography");
             genreRepo.save(genre2);
 
-            Genre genre3 = genreFactory.createGenre("Science-Fiction");
+            Genre genre3 = genreFactory.createGenre("Education");
             genreRepo.save(genre3);
 
-            Genre genre4 = genreFactory.createGenre("Prose");
+            Genre genre4 = genreFactory.createGenre("Fiction");
             genreRepo.save(genre4);
 
-            Genre genre5 = genreFactory.createGenre("Architecture");
+            Genre genre5 = genreFactory.createGenre("History");
             genreRepo.save(genre5);
+
+            Genre genre6 = genreFactory.createGenre("Literature");
+            genreRepo.save(genre6);
+
+            Genre genre7 = genreFactory.createGenre("Non-Fiction");
+            genreRepo.save(genre7);
+
+            Genre genre8 = genreFactory.createGenre("Other");
+            genreRepo.save(genre8);
+
+            Genre genre9 = genreFactory.createGenre("Science");
+            genreRepo.save(genre9);
+
+            Genre genre10 = genreFactory.createGenre("Science-Fiction");
+            genreRepo.save(genre10);
+
+            Genre genre11 = genreFactory.createGenre("Technology");
+            genreRepo.save(genre11);
+
+
 
             // Fetch and log all genres
             log.info("Genres found with findAll():");
@@ -173,13 +193,21 @@ public class DataInitializer {
             Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"),new Name("Yuval Noah Harari"));
             Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"),new Name("Helberto Helder"));
             Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"),new Name("Rem Koolhaas"));
+            Author alexander = authorFactory.createAuthor(new AuthorId("Alexander C.-13B3C"),new Name("Cristopher Alexander"));
+            Author seneca = authorFactory.createAuthor(
+                    new AuthorId("Seneca L.A.-018812"),
+                    new Name("Lucius Annaeus Seneca")
+            );
+            authorRepo.save(seneca);
             authorRepo.save(orwell);
             authorRepo.save(asimov);
             authorRepo.save(yuval);
             authorRepo.save(helder);
             authorRepo.save(koolhaas);
+            authorRepo.save(alexander);
+            authorRepo.save(seneca);
 
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas");
+            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas,Cristopher Alexander, Seneca");
 
             // -------------------------------------------------------
             // Publications
@@ -187,33 +215,51 @@ public class DataInitializer {
                     new Title("Nova York Delirante"),
                     koolhaas.identity(),
                     Year.of(1978),
-                    genre5.identity()  // Architecture
+                    genre1.identity()  // Arts
             );
 
             Publication nineteenEightyFour = publicationFactory.createPublication(
                     new Title("1984"),
                     orwell.identity(),
                     Year.of(1949),
-                    genre1.identity()  // Fiction
+                    genre4.identity()  // Fiction
             );
             Publication foundationSeries = publicationFactory.createPublication(
                     new Title("Foundation"),
                     asimov.identity(),
                     Year.of(1951),
-                    genre3.identity()  // Science Fiction
+                    genre10.identity()  // Science Fiction
             );
             Publication sapiens = publicationFactory.createPublication(
                     new Title("Sapiens"),
                     yuval.identity(),
                     Year.of(2011),
-                    genre2.identity()  // Non-Fiction
+                    genre7.identity()  // Non-Fiction
             );
+
+            Publication pattern = publicationFactory.createPublication(
+                    new Title("A Pattern Language"),
+                    alexander.identity(),
+                    Year.of(1977),
+                    genre11.identity()  // Non-Fiction
+            );
+
+            Publication shortnessOfLife = publicationFactory.createPublication(
+                    new Title("On the Shortness of Life"),
+                    seneca.identity(),
+                    Year.of(49),
+                    genre7.identity() // Non-Fiction
+            );
+
+            publicationRepo.save(shortnessOfLife);
             publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
             publicationRepo.save(foundationSeries);
             publicationRepo.save(sapiens);
+            publicationRepo.save(pattern);
+            publicationRepo.save(shortnessOfLife);
 
-            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante");
+            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante, patternLanguage");
 
             // -------------------------------------------------------
             // Cities
@@ -230,12 +276,12 @@ public class DataInitializer {
             AppraisalEntity booker = appraisalEntityFactory.createAppraisalEntity(
                     new Name("Booker Prize"),
                     List.of(book.identity()),
-                    List.of(genre1.identity())  // Fiction
+                    List.of(genre4.identity())  // Fiction
             );
             AppraisalEntity hugo = appraisalEntityFactory.createAppraisalEntity(
                     new Name("Hugo Awards"),
                     List.of(book.identity(), magazine.identity()),
-                    List.of(genre3.identity())  // Science Fiction
+                    List.of(genre10.identity())  // Science Fiction
             );
             appraisalEntityRepo.save(booker);
             appraisalEntityRepo.save(hugo);
@@ -253,7 +299,12 @@ public class DataInitializer {
             PublishingCompany gg = publishingCompanyFactory.createPublishingCompany("GG");
             publishingCompanyRepo.save(gg);
 
-            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG");
+            PublishingCompany oxfordUP = publishingCompanyFactory.createPublishingCompany("Oxford University Press");
+            publishingCompanyRepo.save(gg);
+            PublishingCompany penguinBooks = publishingCompanyFactory.createPublishingCompany("Penguin Books");
+            publishingCompanyRepo.save(penguinBooks);
+
+            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG, Oxford University Press, Penguin Books");
 
             // -------------------------------------------------------
             // Editions
@@ -297,7 +348,37 @@ public class DataInitializer {
             );
             editionRepo.save(edition1984Modern);
 
-            log.info("Editions saved: 1984, Foundation, Nova York Delirante");
+            Edition edition1977PatternLanguage = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("0195019199"),
+                    pattern.identity(),
+                    oxfordUP.identity(),
+                    Year.of(1977),
+                    Language.ENGLISH,
+                    null,
+                    null,
+                    new NumberOfPages(1171),
+                    new EditionNumber(1),
+                    Binding.HARDCOVER
+            );
+            editionRepo.save(edition1984Modern);
+
+            Edition editionShortnessOfLife = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9780141018812"),
+                    shortnessOfLife.identity(),
+                    penguinBooks.identity(),
+                    Year.of(2004),
+                    Language.ENGLISH,
+                    new Dimension(10.9, 18.0, 0.8, DimensionUnit.CENTIMETERS),
+                    null,
+                    new NumberOfPages(112),
+                    new EditionNumber(1),
+                    Binding.PUR
+            );
+            editionRepo.save(editionShortnessOfLife);
+
+            log.info("Editions saved: 1984, Foundation, Nova York Delirante,");
 
 
             // -------------------------------------------------------
@@ -360,9 +441,31 @@ public class DataInitializer {
             );
             itemRepo.save(item3);
 
+            ItemId itemId4 = new ItemId("3B9F4BFAB5");
+            Item item4 = itemFactory.createItem(
+                    itemId4,
+                    edition1977PatternLanguage.identity(),
+                    Condition.FAIR,
+                    new Description("First Edition"),
+                    SaleStatus.NotOnSale,
+                    new Picture("/images/patternLanguage.png")
+            );
+            itemRepo.save(item4);
+
+            ItemId shortnessOfLifeItemId = new ItemId("0141018812");
+            Item shortnessOfLifeItem = itemFactory.createItem(
+                    shortnessOfLifeItemId,
+                    editionShortnessOfLife.identity(),
+                    Condition.GOOD,
+                    new Description("Penguin Great Ideas edition of On the Shortness of Life"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(shortnessOfLifeItem);
+
+
             // -------------------------------------------------------
             // Direct Sales
-            ItemId item4 = new ItemId();
+            ItemId item5 = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
                     List.of(itemId1, itemId2),
@@ -372,7 +475,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(item4),
+                    List.of(item5),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
             );
