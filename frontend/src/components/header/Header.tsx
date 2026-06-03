@@ -11,10 +11,17 @@ import { Link } from 'react-router-dom';
 import classes from './Header.module.css';
 import { ColorSchemeToggle } from "../colorscheme/ColorSchemeToggle.tsx";
 import { Logo } from "../logo/Logo.tsx";
-
+import { useUser } from '../../context/UserContext';
+import { useContext } from 'react';
+import AppContext from '../../context/AppContext';
 
 export function Header() {
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+    const { currentUser, toggleUser } = useUser();
+    const { state } = useContext(AppContext);
+    const { myListsHref, libraryHref } = state.app;
+
+    const isLoggedIn = currentUser !== 'guest@aeiou.com';
 
     return (
         <>
@@ -27,13 +34,15 @@ export function Header() {
 
                     <Group h="100%" gap={0} visibleFrom="sm">
                         <Link to="/" className={classes.link}>MARKETPLACE</Link>
-                        <Link to="/my-library" className={classes.link}>LIBRARY</Link>
-                        <Link to="/my-lists" className={classes.link}>LISTS</Link>
+                        {libraryHref && <Link to="/my-library" className={classes.link}>LIBRARY</Link>}
+                        {myListsHref && <Link to="/my-lists" className={classes.link}>LISTS</Link>}
                     </Group>
 
                     <Group visibleFrom="sm">
                         <ColorSchemeToggle />
-                        <Button color="var(--mantine-color-gray-7)" radius="xl">LOG OUT</Button>
+                        <Button color="var(--mantine-color-indigo-7)" radius="xl" onClick={toggleUser}>
+                            {isLoggedIn ? 'LOG OUT' : 'LOG IN'}
+                        </Button>
                     </Group>
 
                     <Burger
@@ -56,12 +65,14 @@ export function Header() {
             >
                 <ScrollArea h="calc(100vh - 80px)" mx="-md">
                     <Divider my="sm" />
-                        <Link to="/my-library" className={classes.link}>My Library</Link>
-                        <Link to="/my-lists" className={classes.link}>My Lists</Link>
-                        <Link to="/marketplace" className={classes.link}>Marketplace</Link>
+                    <Link to="/" className={classes.link}>Marketplace</Link>
+                    {libraryHref && <Link to="/my-library" className={classes.link}>My Library</Link>}
+                    {myListsHref && <Link to="/my-lists" className={classes.link}>My Lists</Link>}
                     <Divider my="sm" />
                     <Group justify="center" grow pb="xl" px="md">
-                        <Button>Log Out</Button>
+                        <Button onClick={toggleUser}>
+                            {isLoggedIn ? 'LOG OUT' : 'LOG IN'}
+                        </Button>
                     </Group>
                 </ScrollArea>
             </Drawer>
