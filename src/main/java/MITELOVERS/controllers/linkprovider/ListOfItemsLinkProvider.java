@@ -29,7 +29,7 @@ public class ListOfItemsLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         if(_authorizationPolicy.canSeeList(user)) {
-            links.add(WebMvcLinkBuilder.linkTo(methodOn(ListOfItemsRestController.class).getListById(null)).withRel("list"));
+            links.add(WebMvcLinkBuilder.linkTo(methodOn(ListOfItemsRestController.class).getListById(null)).withSelfRel());
             links.add(linkTo(methodOn(ListOfItemsRestController.class).getLists(user.identity().toString())).withRel("collection"));
         }
 
