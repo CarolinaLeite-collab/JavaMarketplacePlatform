@@ -1,9 +1,8 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.dto.response.PublicationResponseDTO;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,18 +11,16 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class PublicationResponseDTOMapper {
+public class PublicationResponseDTOMapper implements RepresentationModelAssembler<Publication, PublicationResponseDTO> {
 
-    public PublicationResponseDTO toResponseDTO(Publication publication,
-                                                Author author,
-                                                Genre genre) {
+    public PublicationResponseDTO toModel(Publication publication) {
 
         return new PublicationResponseDTO(
-                    publication.identity().toString(),
-                    publication.getTitle().toString(),
-                    author.getName().toString(),
-                    publication.getReleaseYear().getValue(),
-                    genre.getGenre()
+                publication.identity().toString(),
+                publication.getTitle().toString(),
+                publication.getAuthorId().toString(),
+                publication.getReleaseYear().getValue(),
+                publication.getGenreId().toString()
         );
 
     }
