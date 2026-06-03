@@ -1,12 +1,14 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,9 +19,10 @@ import java.util.NoSuchElementException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PublishingCompanyRestController.class)
 class PublishingCompanyRestControllerTest {
@@ -30,20 +33,51 @@ class PublishingCompanyRestControllerTest {
     @MockitoBean
     private PublishingCompanyService _publishingCompanyServiceDouble;
 
-    @Autowired
-    private ObjectMapper _objectMapper;
+    @MockitoBean
+    private PublishingCompanyLinkProvider _linkProviderDouble;
+
+    @MockitoBean
+    private UserService _userServiceDouble;
+
+
+    @Test
+    void optionsReturnsOkWithLinks() throws Exception {
+        // Arrange
+        User userDouble = mock(User.class);
+        Link linkDouble = Link.of("/publishingCompanies").withRel("publishingCompanies");
+
+        when(_userServiceDouble.getUserByEmail(any())).thenReturn(userDouble);
+        when(_linkProviderDouble.getLinks(userDouble)).thenReturn(List.of(linkDouble));
+
+        // Act & Assert
+        _mockMvc.perform(options("/publishingCompanies")
+                        .param("email", "pedro@aeiou.com"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void optionsUserNotFoundReturnsNotFound() throws Exception {
+        // Arrange
+        when(_userServiceDouble.getUserByEmail(any()))
+                .thenThrow(new NoSuchElementException("User not found"));
+
+        // Act & Assert
+        _mockMvc.perform(options("/publishingCompanies")
+                        .param("email", "unknown@aeiou.com"))
+                .andExpect(status().isNotFound());
+    }
+
 
     @Test
     void registerPublishingCompanyReturnsOk() throws Exception {
         // Arrange
-        PublishingCompanyResponseDTO responseDouble = mock(PublishingCompanyResponseDTO.class);
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenReturn(responseDouble);
+                .thenReturn(mock(PublishingCompanyResponseDTO.class));
 
         // Act & Assert
         _mockMvc.perform(post("/publishingCompanies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"publishingCompanyId\":\"Secker and Warburg\"}"))
+                        .content("{\"publishingCompanyName\":\"Porto Editora\"}"))
                 .andExpect(status().isOk());
     }
 
@@ -51,12 +85,12 @@ class PublishingCompanyRestControllerTest {
     void registerPublishingCompanyServiceThrowsReturnsInternalServerError() throws Exception {
         // Arrange
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenThrow(new IllegalStateException("Publishing company already exists"));
+                .thenThrow(new IllegalStateException("Already exists"));
 
         // Act & Assert
         _mockMvc.perform(post("/publishingCompanies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"publishingCompanyId\":\"Secker and Warburg\"}"))
+                        .content("{\"publishingCompanyName\":\"Porto Editora\"}"))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -91,8 +125,7 @@ class PublishingCompanyRestControllerTest {
                 .thenReturn(mock(PublishingCompanyResponseDTO.class));
 
         // Act & Assert
-        _mockMvc.perform(get("/publishingCompanies/SECKER AND WARBURG")
-                        .param("publishingCompanyId", "SECKER AND WARBURG"))
+        _mockMvc.perform(get("/publishingCompanies/PORTO-EDITORA"))
                 .andExpect(status().isOk());
     }
 
@@ -100,11 +133,10 @@ class PublishingCompanyRestControllerTest {
     void getPublishingCompanyByIdNotFoundReturnsInternalServerError() throws Exception {
         // Arrange
         when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
-                .thenThrow(new NoSuchElementException("Publishing company not found"));
+                .thenThrow(new NoSuchElementException("Not found"));
 
         // Act & Assert
-        _mockMvc.perform(get("/publishingCompanies/UNKNOWN")
-                        .param("publishingCompanyId", "UNKNOWN"))
+        _mockMvc.perform(get("/publishingCompanies/UNKNOWN"))
                 .andExpect(status().isInternalServerError());
     }
 }

@@ -1,7 +1,12 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.user.User;
+import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller responsible for exposing publication-related endpoints
+ * via HTTP endpoints.
+ */
 
 @Validated
 @RequestMapping("/publishingCompanies")
@@ -17,15 +26,33 @@ import java.util.List;
 public class PublishingCompanyRestController {
 
     private final PublishingCompanyService _publishingCompanyService;
+    private final PublishingCompanyLinkProvider _publishingCompanyLinkProvider;
+    private final UserService _userService;
 
-    public PublishingCompanyRestController(PublishingCompanyService publishingCompanyService) {
+
+    public PublishingCompanyRestController(PublishingCompanyService publishingCompanyService,
+                                           PublishingCompanyLinkProvider publishingCompanyLinkProvider, UserService userService) {
 
         _publishingCompanyService = publishingCompanyService;
+        _publishingCompanyLinkProvider = publishingCompanyLinkProvider;
+        _userService = userService;
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        _publishingCompanyLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
 
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> registerEdition(@RequestBody PublishingCompanyResponseDTO dto) {
+    public ResponseEntity<Object> registerPublishingCompany(@RequestBody PublishingCompanyRequestDTO dto) {
 
         try{
 
@@ -58,7 +85,7 @@ public class PublishingCompanyRestController {
     }
 
     @GetMapping(path = "/{publishingCompanyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getPublishingCompanyById(@RequestParam String publishingCompanyId) {
+    public ResponseEntity<Object> getPublishingCompanyById(@PathVariable String publishingCompanyId) {
 
         try{
 
