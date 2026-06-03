@@ -22,6 +22,7 @@ vi.mock('../components/deletelistmodal/DeleteListModal', () => ({
 vi.mock('../context/lists/ListsActions', () => ({
     getMyLists: vi.fn(),
     deleteList: vi.fn(),
+    getListsOptions: vi.fn(),
 }));
 
 const mockLists = [

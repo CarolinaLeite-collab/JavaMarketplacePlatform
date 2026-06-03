@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { MantineProvider } from '@mantine/core';
 import { DeleteListModal } from '../components/deletelistmodal/DeleteListModal';
 import AppContext from '../context/AppContext';
+import { BASE_URL } from '../services/apiClient';
 
 vi.mock('../context/lists/ListsActions', () => ({
     deleteList: vi.fn(),
@@ -17,10 +18,20 @@ const mockLinks = [
 
 const renderWithContext = (ui: React.ReactElement) =>
     render(
-        <AppContext.Provider value={{
-            state: { lists: { lists: [], genres: [], error: null, loading: false } },
-            dispatch: mockDispatch
-        }}>
+        <AppContext.Provider
+            value={{
+                state: {
+                    lists: {
+                        lists: [],
+                        genres: [],
+                        error: null,
+                        loading: false,
+                        myListsHref: `${BASE_URL}/my-lists`
+                    }
+                },
+                dispatch: mockDispatch
+            }}
+        >
             <MantineProvider>{ui}</MantineProvider>
         </AppContext.Provider>
     );
@@ -105,7 +116,11 @@ describe('DeleteListModal – delete action', () => {
         await user.click(screen.getByRole('button'));
         const dialog = await screen.findByRole('dialog');
         await user.click(within(dialog).getByRole('button', { name: /yes/i }));
-        expect(deleteList).toHaveBeenCalledWith(mockDispatch, mockLinks);
+        expect(deleteList).toHaveBeenCalledWith(
+            mockDispatch,
+            mockLinks,
+            `${BASE_URL}/my-lists`
+        );
     });
 
     it('closes the modal after confirming delete', async () => {
