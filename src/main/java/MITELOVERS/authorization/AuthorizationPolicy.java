@@ -94,7 +94,7 @@ public class AuthorizationPolicy {
 
     /** Any authenticated user may list direct sales. */
     public boolean canListDirectSales(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN) || user.hasRole(Role.NONREGISTRED);
     }
 
     /** Any authenticated user may create a direct sale. */
@@ -104,12 +104,12 @@ public class AuthorizationPolicy {
 
     /** Any authenticated user may filter direct sales by genre. */
     public boolean canFilterDirectSales(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN) || user.hasRole(Role.NONREGISTRED);
     }
 
     /** Any authenticated user may view a specific direct sale. */
     public boolean canGetDirectSale(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN) || user.hasRole(Role.NONREGISTRED);
     }
 
     /** Any authenticated user may register an item. */

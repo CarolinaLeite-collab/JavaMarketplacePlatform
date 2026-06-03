@@ -14,6 +14,7 @@ class AuthorizationPolicyTest {
     private AuthorizationPolicy _authorizationPolicy;
     private User _userDouble;
     private User _adminDouble;
+    private User _guestDouble;
 
     @BeforeEach
     void setUp() {
@@ -22,10 +23,17 @@ class AuthorizationPolicyTest {
         _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(true);
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
+        when(_userDouble.hasRole(Role.NONREGISTRED)).thenReturn(false);
 
         _adminDouble = mock(User.class);
         when(_adminDouble.hasRole(Role.USER)).thenReturn(false);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
+        when(_adminDouble.hasRole(Role.NONREGISTRED)).thenReturn(false);
+
+        _guestDouble = mock(User.class);
+        when(_guestDouble.hasRole(Role.USER)).thenReturn(false);
+        when(_guestDouble.hasRole(Role.ADMIN)).thenReturn(false);
+        when(_guestDouble.hasRole(Role.NONREGISTRED)).thenReturn(true);
     }
 
     // ──────────── Publishing Company ────────────
@@ -225,8 +233,67 @@ class AuthorizationPolicyTest {
         assertFalse(policy.canCreateEdition(_userDouble));
     }
 
+    // ── Direct Sale ─────────────────────────────────────────────────────────
 
+    @Test
+    void canListDirectSalesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canListDirectSales(_userDouble));
+    }
 
+    @Test
+    void canListDirectSalesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canListDirectSales(_adminDouble));
+    }
+
+    @Test
+    void canListDirectSalesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canListDirectSales(_guestDouble));
+    }
+
+    @Test
+    void canCreateDirectSaleUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canCreateDirectSale(_userDouble));
+    }
+
+    @Test
+    void canCreateDirectSaleAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canCreateDirectSale(_adminDouble));
+    }
+
+    @Test
+    void canCreateDirectSaleGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canCreateDirectSale(_guestDouble));
+    }
+
+    @Test
+    void canFilterDirectSalesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canFilterDirectSales(_userDouble));
+    }
+
+    @Test
+    void canFilterDirectSalesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canFilterDirectSales(_adminDouble));
+    }
+
+    @Test
+    void canFilterDirectSalesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canFilterDirectSales(_guestDouble));
+    }
+
+    @Test
+    void canGetDirectSaleUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetDirectSale(_userDouble));
+    }
+
+    @Test
+    void canGetDirectSaleAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetDirectSale(_adminDouble));
+    }
+
+    @Test
+    void canGetDirectSaleGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetDirectSale(_guestDouble));
+    }
 
 
 
