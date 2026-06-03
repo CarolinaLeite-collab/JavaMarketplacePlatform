@@ -1,5 +1,7 @@
 import { apiClient } from '../../services/apiClient';
 
+export const GET_LIST_OPTIONS_SUCCESS = 'GET_LIST_OPTIONS_SUCCESS';
+export const GET_LIST_OPTIONS_ERROR = 'GET_LIST_OPTIONS_ERROR';
 export const CREATE_LIST_SUCCESS = 'CREATE_LIST_SUCCESS';
 export const CREATE_LIST_ERROR = 'CREATE_LIST_ERROR';
 export const GET_LISTS_SUCCESS = 'GET_LISTS_SUCCESS';
@@ -12,6 +14,7 @@ export const MAKE_LIST_PRIVATE_SUCCESS = 'MAKE_LIST_PRIVATE_SUCCESS';
 export const MAKE_LIST_PRIVATE_ERROR = 'MAKE_LIST_PRIVATE_ERROR';
 export const DELETE_LIST_SUCCESS = 'DELETE_LIST_SUCCESS';
 export const DELETE_LIST_ERROR = 'DELETE_LIST_ERROR';
+
 
 export function getListsSuccess(lists) {
     return { type: GET_LISTS_SUCCESS, payload: lists };
@@ -37,12 +40,22 @@ export function getGenresError(error) {
     return { type: GET_GENRES_ERROR, payload: error };
 }
 
+export async function getListsOptions(dispatch) {
+    try {
+        const result = await apiClient.getListsOptions();
+        dispatch({ type: GET_LIST_OPTIONS_SUCCESS, payload: result._links });
+    } catch (e) {
 
-export async function createList(dispatch, href, body) {
+        dispatch({ type: GET_LIST_OPTIONS_ERROR, payload: String(e) });
+    }
+}
+
+
+export async function createList(dispatch, href, body, myListsHref) {
     try {
         const result = await apiClient.postByHref(href, body);
         dispatch(createListSuccess(result));
-        await getMyLists(dispatch);
+        await getMyLists(dispatch, myListsHref);
         return true;
     } catch (e) {
         dispatch(createListError(e.message));
@@ -50,11 +63,14 @@ export async function createList(dispatch, href, body) {
     }
 }
 
-export async function getMyLists(dispatch) {
+export async function getMyLists(dispatch, href) {
+    console.log('getMyLists called with href:', href);
     try {
-        const result = await apiClient.getMyLists();
+        const result = await apiClient.getByHref(href);
+        console.log('getMyLists result:', result);
         dispatch(getListsSuccess(result ?? []));
     } catch (e) {
+        console.log('getMyLists error:', e);
         dispatch(getListsError(String(e)));
     }
 }
@@ -90,13 +106,13 @@ export async function makeListPrivate(dispatch, links) {
     }
 }
 
-export async function deleteList(dispatch, links) {
+export async function deleteList(dispatch, links, myListsHref) {
     const href = links?.find(l => l.rel === 'delete')?.href;
     if (!href) return;
     try {
         await apiClient.deleteByHref(href);
         dispatch({ type: DELETE_LIST_SUCCESS, payload: href });
-        await getMyLists(dispatch);
+        await getMyLists(dispatch, myListsHref);
     } catch (e) {
         dispatch({ type: DELETE_LIST_ERROR, payload: String(e) });
     }

@@ -1,5 +1,6 @@
 import {
     CREATE_LIST_SUCCESS, CREATE_LIST_ERROR,
+    GET_LIST_OPTIONS_SUCCESS, GET_LIST_OPTIONS_ERROR,
     GET_LISTS_SUCCESS, GET_LISTS_ERROR,
     GET_GENRES_SUCCESS, GET_GENRES_ERROR,
     MAKE_LIST_PUBLIC_SUCCESS, MAKE_LIST_PUBLIC_ERROR,
@@ -11,6 +12,7 @@ export const initialListsState = {
     lists: [],
     genres: [],
     createListHref: null,
+    myListsHref: null,
     error: null,
     loading: false,
 };
@@ -50,6 +52,14 @@ function daysLeft(dateString) {
 
 export function listsReducer(state, action) {
     switch (action.type) {
+        case GET_LIST_OPTIONS_SUCCESS:
+            return {
+                ...state,
+                createListHref: action.payload['create-list']?.href ?? null,
+                myListsHref: action.payload['collection']?.href ?? null,
+            };
+        case GET_LIST_OPTIONS_ERROR:
+            return { ...state, error: action.payload };
         case GET_LISTS_SUCCESS: {
             const payload = action.payload;
             const lists = Array.isArray(payload)

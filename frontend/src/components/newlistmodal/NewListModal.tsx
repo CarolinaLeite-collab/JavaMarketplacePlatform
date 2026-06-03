@@ -10,14 +10,14 @@ export function NewListModal() {
     const [name, setName] = useState('');
     const [genreId, setGenreId] = useState(null);
     const { state, dispatch } = useContext(AppContext);
-    const { genres, createListHref, error } = state.lists;
+    const { genres, createListHref, myListsHref, error } = state.lists;
 
     useEffect(() => {
         if (opened) getGenres(dispatch);
     }, [opened]);
 
     const handleCreate = async () => {
-        const success = await createList(dispatch, createListHref, { name, genreId });
+        const success = await createList(dispatch, createListHref, { name, genreId }, myListsHref);
         if (success) close();
     };
 
