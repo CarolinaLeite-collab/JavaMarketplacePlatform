@@ -1,6 +1,6 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
-import  MITELOVERS.domain.publicationtype.PublicationType;
+import MITELOVERS.domain.publicationtype.PublicationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;

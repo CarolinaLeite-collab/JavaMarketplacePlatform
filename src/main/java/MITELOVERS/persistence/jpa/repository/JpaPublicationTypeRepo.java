@@ -6,7 +6,6 @@ import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.persistence.jpa.assembler.PublicationTypeAssembler;
 import MITELOVERS.persistence.jpa.datamodel.PublicationTypeDataModel;
 import MITELOVERS.persistence.springdata.IPublicationTypeSpringDataRepo;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;

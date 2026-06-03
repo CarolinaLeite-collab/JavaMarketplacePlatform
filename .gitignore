@@ -32,6 +32,10 @@ replay_pid*
 
 # Build outputs
 target/
+data/
+
+#Spring Boot data Folder
+data/
 
 # Security scan reports
 *.gitleaks.json

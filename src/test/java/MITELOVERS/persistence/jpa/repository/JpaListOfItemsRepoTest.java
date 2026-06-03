@@ -144,9 +144,9 @@ class JpaListOfItemsRepoTest {
     @Test
     void findByUserIdShouldReturnListsOfGivenUserId(){
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
         ListOfItemsDataModel listDmDouble1 = mock(ListOfItemsDataModel.class);
         ListOfItemsDataModel listDmDouble2 = mock(ListOfItemsDataModel.class);
+        UserId userIdDouble = mock(UserId.class);
 
         List<ListOfItemsDataModel> dms = List.of(listDmDouble1, listDmDouble2);
 
@@ -164,6 +164,18 @@ class JpaListOfItemsRepoTest {
 
         // Assert
         assertEquals(expectedList, result);
+    }
+
+    @Test
+    void deleteListOfItemsShouldDelegateToSpringDataRepoWithStringId() {
+        // Arrange
+        when(_listIdDouble.toString()).thenReturn("LOI-ABC123");
+
+        // Act
+        _repo.deleteListOfItems(_listIdDouble);
+
+        // Assert
+        verify(_springDataRepoDouble).deleteById("LOI-ABC123");
     }
 
 }

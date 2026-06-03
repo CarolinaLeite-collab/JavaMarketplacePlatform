@@ -1,0 +1,70 @@
+@startuml
+title GET - Get All Publications - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":Publication\nRestController" as REST
+participant ":PublicationService" as Service
+participant ":IPublicationRepo" as REPO
+participant ":IAuthorRepo" as AuthorRepo
+participant ":IGenreRepo" as GenreRepo
+participant ":Publication\nResponseDTOMapper" as Mapper
+database DB
+
+activate REST
+REST -> Service : getAllPublications()
+
+activate Service
+Service -> REPO : getAllPublications()
+
+activate REPO
+REPO -> DB : publications = findAll()
+REPO --> Service : publications
+deactivate REPO
+
+create "response : List<PublicationResponseDTO>"
+Service -->> "response : List<PublicationResponseDTO>" : create()
+
+loop publication : publications
+    Service -> AuthorRepo : ofIdentity(publication.getAuthorId())
+    activate AuthorRepo
+    AuthorRepo --> Service : author
+    deactivate AuthorRepo
+
+    Service -> GenreRepo : ofIdentity(publication.getGenreId())
+    activate GenreRepo
+    GenreRepo --> Service : genre
+    deactivate GenreRepo
+
+    Service -> Mapper : toResponseDTO(publication, author, genre)
+    activate Mapper
+    Mapper --> Service : publicationDTO
+    deactivate Mapper
+
+    Service -> "response : List<PublicationResponseDTO>" : add(publicationDTO)
+
+end
+
+Service --> REST : response
+deactivate Service
+loop publicationDTO : response
+    REST -> publicationDTO : add(selfLink)
+end
+
+REST --> REST : ResponseEntity.ok(response)
+
+ref over REST
+[[../a.puml Back to Main Diagram]]
+end
+
+@enduml

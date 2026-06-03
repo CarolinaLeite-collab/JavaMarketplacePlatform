@@ -31,9 +31,7 @@ public class EditionAssembler {
         String stringIdentifierType  = edition.getIdentifier().getClass().getSimpleName();
 
         PublicationIdDataModel publicationIdDataModel = new PublicationIdDataModel(
-                edition.getPublicationId().getTitle().toString(),
-                edition.getPublicationId().getAuthorId().toString(),
-                edition.getPublicationId().getReleaseYear().getValue()
+                edition.getPublicationId().toString()
         );
 
         String stringPubCompanyId = edition.getPublishingCompanyId().toString();
@@ -88,10 +86,7 @@ public class EditionAssembler {
 
         PublicationTypeId  publicationTypeId = new PublicationTypeId(editionDataModel.getTypeId());
 
-        Title title = new Title(editionDataModel.getPublicationIdDm().getTitle());
-        AuthorId authorId = new AuthorId(editionDataModel.getPublicationIdDm().getAuthorId());
-        Year publicationYear = Year.of(editionDataModel.getPublicationIdDm().getReleaseYear());
-        PublicationId publicationId = new PublicationId(title, authorId, publicationYear);
+        PublicationId publicationId = new PublicationId(editionDataModel.getPublicationIdDm().getPublicationId());
 
         PublishingCompanyId publishingCompanyId = new PublishingCompanyId(editionDataModel.getPublishingCompanyId());
 

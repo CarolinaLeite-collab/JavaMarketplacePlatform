@@ -20,9 +20,10 @@ public class PublishingCompanyFactory {
 
     }
 
-    public PublishingCompany createPublishingCompany( PublishingCompanyId publishingCompanyId ) {
+    public PublishingCompany createPublishingCompany( PublishingCompanyId publishingCompanyId, String publishingCompanyName) {
 
-        return new PublishingCompany(publishingCompanyId);
+        return new PublishingCompany(publishingCompanyId, publishingCompanyName);
+
     }
 
 }

@@ -1,6 +1,7 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.listofitems.ListOfItems;
+import MITELOVERS.domain.valueobject.UserId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
@@ -26,8 +27,9 @@ public class ListOfItemsDataModel {
     @Column(name = "id", nullable = false, unique = true)
     private String listOfItemsId;
 
+    @Convert(converter = UserIdConverter.class)
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private UserId userId;
 
     @Column(name = "name", nullable = false)
     private String name;

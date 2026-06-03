@@ -10,14 +10,22 @@ import MITELOVERS.domain.city.City;
 import MITELOVERS.domain.city.CityFactory;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
+import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.edition.EditionFactory;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
+import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.item.ItemFactory;
+import MITELOVERS.domain.library.Library;
+import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.listofitems.ListOfItemsFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publication.PublicationFactory;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
+import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
@@ -64,7 +72,16 @@ public class DataInitializer {
             IDirectSaleRepo directSaleRepo,
             DirectSaleFactory directSaleFactory,
             IAuctionRepo auctionRepo,
-            AuctionFactory auctionFactory) {
+            AuctionFactory auctionFactory,
+            IItemRepo itemRepo,
+            ItemFactory itemFactory,
+            ILibraryRepo libraryRepo,
+            LibraryFactory libraryFactory,
+            IPublishingCompanyRepo publishingCompanyRepo,
+            PublishingCompanyFactory publishingCompanyFactory,
+            IEditionRepo editionRepo,
+            EditionFactory editionFactory
+    ) {
 
         return args -> {
 
@@ -77,8 +94,14 @@ public class DataInitializer {
             Genre genre2 = genreFactory.createGenre("Non-Fiction");
             genreRepo.save(genre2);
 
-            Genre genre3 = genreFactory.createGenre("Science Fiction");
+            Genre genre3 = genreFactory.createGenre("Science-Fiction");
             genreRepo.save(genre3);
+
+            Genre genre4 = genreFactory.createGenre("Prose");
+            genreRepo.save(genre4);
+
+            Genre genre5 = genreFactory.createGenre("Architecture");
+            genreRepo.save(genre5);
 
             // Fetch and log all genres
             log.info("Genres found with findAll():");
@@ -145,16 +168,28 @@ public class DataInitializer {
 
             // -------------------------------------------------------
             // Authors
-            Author orwell = authorFactory.createAuthor(new Name("George Orwell"));
-            Author asimov = authorFactory.createAuthor(new Name("Isaac Asimov"));
-            Author yuval = authorFactory.createAuthor(new Name("Yuval Noah Harari"));
+            Author orwell = authorFactory.createAuthor(new AuthorId("Orwell G.-F43DD6"), new Name("George Orwell"));
+            Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"),new Name("Isaac Asimov"));
+            Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"),new Name("Yuval Noah Harari"));
+            Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"),new Name("Helberto Helder"));
+            Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"),new Name("Rem Koolhaas"));
             authorRepo.save(orwell);
             authorRepo.save(asimov);
             authorRepo.save(yuval);
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari");
+            authorRepo.save(helder);
+            authorRepo.save(koolhaas);
+
+            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas");
 
             // -------------------------------------------------------
             // Publications
+            Publication novaYorkDelirante = publicationFactory.createPublication(
+                    new Title("Nova York Delirante"),
+                    koolhaas.identity(),
+                    Year.of(1978),
+                    genre5.identity()  // Architecture
+            );
+
             Publication nineteenEightyFour = publicationFactory.createPublication(
                     new Title("1984"),
                     orwell.identity(),
@@ -173,10 +208,12 @@ public class DataInitializer {
                     Year.of(2011),
                     genre2.identity()  // Non-Fiction
             );
+            publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
             publicationRepo.save(foundationSeries);
             publicationRepo.save(sapiens);
-            log.info("Publications saved: 1984, Foundation, Sapiens");
+
+            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante");
 
             // -------------------------------------------------------
             // Cities
@@ -204,7 +241,64 @@ public class DataInitializer {
             appraisalEntityRepo.save(hugo);
             log.info("Appraisal entities saved: Booker Prize, Hugo Awards");
 
-            log.info("DataInitializer completed successfully.");
+
+            // -------------------------------------------------------
+            // Publishing Companies
+            PublishingCompany seckerWarburg = publishingCompanyFactory.createPublishingCompany("Secker and Warburg");
+            publishingCompanyRepo.save(seckerWarburg);
+
+            PublishingCompany gnomePress = publishingCompanyFactory.createPublishingCompany("Gnome Press");
+            publishingCompanyRepo.save(gnomePress);
+
+            PublishingCompany gg = publishingCompanyFactory.createPublishingCompany("GG");
+            publishingCompanyRepo.save(gg);
+
+            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG");
+
+            // -------------------------------------------------------
+            // Editions
+            Edition editionNovaYorkDelirante = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9788425222481"),
+                    novaYorkDelirante.identity(),
+                    gg.identity(),
+                    Year.of(2008),
+                    Language.PORTUGUESE_BR,
+                    new Dimension(17.0, 24.0, 2.0, DimensionUnit.CENTIMETERS),
+                    null,
+                    new NumberOfPages(365),
+                    new EditionNumber(1),
+                    Binding.PUR
+            );
+            editionRepo.save(editionNovaYorkDelirante);
+
+            Edition edition1984 = editionFactory.createEdition(
+                    book.identity(),
+                    new NoIdentifier(),
+                    nineteenEightyFour.identity(),
+                    seckerWarburg.identity(),
+                    Year.of(1949),
+                    Language.ENGLISH,
+                    null,
+                    null,
+                    null,
+                    null, Binding.PUR
+            );
+            editionRepo.save(edition1984);
+
+            Edition edition1984Modern = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9780451524935"),
+                    nineteenEightyFour.identity(),
+                    seckerWarburg.identity(),
+                    Year.of(2003),
+                    Language.ENGLISH,
+                    null, null, null, null, null
+            );
+            editionRepo.save(edition1984Modern);
+
+            log.info("Editions saved: 1984, Foundation, Nova York Delirante");
+
 
             // -------------------------------------------------------
             // Lists of Items
@@ -230,22 +324,55 @@ public class DataInitializer {
             );
             listOfItemsRepo.save(list3);
 
+            // -------------------------------------------------------
+            // Items
+            ItemId itemId1 = new ItemId("3C5D126F8B");
+            Item item1 = itemFactory.createItem(
+                    itemId1,
+                    edition1984.identity(),
+                    Condition.GOOD,
+                    new Description("Used copy in good condition"),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://upload.wikimedia.org/wikipedia/commons/5/51/1984_first_edition_cover.jpg")
+
+            );
+            itemRepo.save(item1);
+
+
+            ItemId itemId2 = new ItemId("3F9F4BFAB2");
+            Item item2 = itemFactory.createItem(
+                    itemId2,
+                    edition1984Modern.identity(),
+                    Condition.FAIR,
+                    new Description("Modern edition"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(item2);
+
+            ItemId itemId3 = new ItemId("3F9F4BFAB5");
+            Item item3 = itemFactory.createItem(
+                    itemId3,
+                    editionNovaYorkDelirante.identity(),
+                    Condition.GOOD,
+                    new Description("Portuguese Edition of Delirious New York"),
+                    SaleStatus.OnDirectSale,
+                    new Picture("/images/deliriousNewYork.png")
+            );
+            itemRepo.save(item3);
 
             // -------------------------------------------------------
             // Direct Sales
-            ItemId item1 = new ItemId();
-            ItemId item2 = new ItemId();
-            ItemId item3 = new ItemId();
+            ItemId item4 = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
-                    List.of(item1, item2),
+                    List.of(itemId1, itemId2),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
             );
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(item3),
+                    List.of(item4),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
             );
@@ -259,6 +386,124 @@ public class DataInitializer {
             directSaleRepo.save(directSale3);
 
             log.info("Direct sales saved: 3 direct sales");
+
+            // -------------------------------------------------------
+            // Additional Items for missing genres
+            // -------------------------------------------------------
+
+            // Edition for Sapiens (Non-Fiction)
+            Edition editionSapiens = editionFactory.createEdition(
+                    book.identity(),                     // PublicationType: Book
+                    new ISBN("9780099590088"),           // Valid Sapiens ISBN
+                    sapiens.identity(),                  // Publication Sapiens
+                    gg.identity(),                       // Publishing Company GG
+                    Year.of(2014),                       // Year of edition
+                    Language.ENGLISH,                    // Language
+                    null,                                // Dimension
+                    null,                                // Weight
+                    new NumberOfPages(498),              // Pages
+                    new EditionNumber(1),                // Edition number
+                    Binding.PUR                          // Binding
+            );
+            editionRepo.save(editionSapiens);
+
+            // Edition for Foundation (Science-Fiction)
+            Edition editionFoundationSeries = editionFactory.createEdition(
+                    book.identity(),                     // PublicationType: Book
+                    new ISBN("9780553293357"),           // Valid Foundation ISBN
+                    foundationSeries.identity(),         // Publication Foundation
+                    gg.identity(),                       // Publishing Company GG
+                    Year.of(1991),                       // Year of edition
+                    Language.ENGLISH,                    // Language
+                    null,                                // Dimension
+                    null,                                // Weight
+                    new NumberOfPages(255),              // Pages
+                    new EditionNumber(1),                // Edition number
+                    Binding.PUR                          // Binding
+            );
+            editionRepo.save(editionFoundationSeries);
+
+            log.info("Two additional editions saved for DirectSales");
+
+            // Non-Fiction item
+            ItemId nfItemId = new ItemId("5E4D3C2B1A");
+            Item nfItem = itemFactory.createItem(
+                    nfItemId,
+                    editionSapiens.identity(), // Publication Sapiens → Non-Fiction
+                    Condition.GOOD,
+                    new Description("Non-Fiction test item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(nfItem);
+
+            // Science-Fiction item
+            ItemId sfItemId = new ItemId("F1A2B3C4D5");
+            Item sfItem = itemFactory.createItem(
+                    sfItemId,
+                    editionFoundationSeries.identity(), // Publication Foundation → Sci-Fi
+                    Condition.GOOD,
+                    new Description("Sci-Fi test item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(sfItem);
+
+            log.info("Two additional items saved for DirectSales");
+
+            // -------------------------------------------------------
+            // DirectSales for ALL genres
+            // -------------------------------------------------------
+
+            // Fiction — DirectSale #1 (existing items)
+            DirectSale fictionSale1 = directSaleFactory.createDirectSale(
+                    List.of(itemId1, itemId2),
+                    new Price(7.99, Currency.EUR),
+                    Duration.ofDays(15)
+            );
+            directSaleRepo.save(fictionSale1);
+
+            // Fiction — DirectSale #2 (new item)
+            ItemId fictionExtraId = new ItemId("0A1B2C3D4E");
+            Item fictionExtraItem = itemFactory.createItem(
+                    fictionExtraId,
+                    edition1984.identity(),
+                    Condition.FAIR,
+                    new Description("Extra Fiction item"),
+                    SaleStatus.OnDirectSale
+            );
+            itemRepo.save(fictionExtraItem);
+
+            DirectSale fictionSale2 = directSaleFactory.createDirectSale(
+                    List.of(fictionExtraId),
+                    new Price(5.99, Currency.EUR),
+                    Duration.ofDays(10)
+            );
+            directSaleRepo.save(fictionSale2);
+
+            // Non-Fiction
+            DirectSale nonFictionSale = directSaleFactory.createDirectSale(
+                    List.of(nfItemId),
+                    new Price(8.49, Currency.EUR),
+                    Duration.ofDays(20)
+            );
+            directSaleRepo.save(nonFictionSale);
+
+            // Science-Fiction
+            DirectSale sciFiSale = directSaleFactory.createDirectSale(
+                    List.of(sfItemId),
+                    new Price(6.49, Currency.EUR),
+                    Duration.ofDays(25)
+            );
+            directSaleRepo.save(sciFiSale);
+
+           // Architecture (existing item3)
+            DirectSale architectureSale = directSaleFactory.createDirectSale(
+                    List.of(itemId3),
+                    new Price(12.99, Currency.EUR),
+                    Duration.ofDays(30)
+            );
+            directSaleRepo.save(architectureSale);
+
+            log.info("DirectSales of all genres");
 
             // -------------------------------------------------------
             // Auctions
@@ -310,7 +555,25 @@ public class DataInitializer {
 
             auctionRepo.save(auctionWithBids);
             log.info("Auction with bids saved — winner: Ângelo Martins at 15.00 EUR");
+
+            // Libraries with items
+            Library libraryPedro = libraryFactory.createLibrary(user.identity());
+            libraryPedro.addItemIdToLibrary(itemId1);
+            libraryRepo.save(libraryPedro);
+
+            Library libraryAna = libraryFactory.createLibrary(user2.identity());
+            libraryAna.addItemIdToLibrary(itemId2);
+            libraryRepo.save(libraryAna);
+
+            Library libraryAngelo = libraryFactory.createLibrary(user3.identity());
+            libraryRepo.save(libraryAngelo);  // biblioteca vazia
+
+            log.info("Libraries saved: Pedro, Ana, Angelo");
+
+            log.info("DataInitializer completed successfully.");
+
         };
+
     }
 
 }

@@ -15,4 +15,9 @@ public class NoIdentifier implements Identifier, ValueObject {
         return _noIdentifier;
     }
 
+    @Override
+    public String toString() {
+        return _noIdentifier;
+    }
+
 }

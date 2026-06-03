@@ -1,0 +1,48 @@
+@startuml
+title MiteLovers Logical View %n() Level 2
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+skinparam PackageBorderColor #4B9DA9
+top to bottom direction
+
+component "MiteLovers" as MiteLovers <<System>> {
+    port " " as API_Port
+    port " " as UI_Port
+
+    component "Frontend" as FE {
+    port " " as FE_UI_Port
+    port " " as FE_API_Port
+    }
+
+    component "Backend" as BE {
+        port " " as BE_Port
+        port " " as BE_Port_to_DB
+    }
+    interface "API (internal use)" as Int_API
+
+}
+
+interface "UI"
+interface "API"
+interface "Persistence"
+database "db"
+
+UI -- UI_Port
+API -- API_Port
+UI_Port -- FE_UI_Port
+API_Port -- BE_Port
+FE_API_Port --( Int_API
+BE_Port -- Int_API
+BE_Port_to_DB --( "Persistence"
+db - "Persistence"
+
+@enduml

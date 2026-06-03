@@ -1,0 +1,86 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to register a new publication\nin the system and add the publication to my library." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User
+participant ":Client" as CLI
+participant ":Server" as SER
+database ":Database" as DB
+
+User -> CLI : Register a new publication\nand add it to my library
+activate CLI
+CLI --> User : display publication form
+deactivate CLI
+
+User -> CLI : publication data
+activate CLI
+CLI -> SER : POST /publications {...}
+activate SER
+
+SER -> DB : check publication
+DB --> SER : result
+
+alt publication exists
+    SER -> SER : use existing publication
+else publication does not exist
+    SER -> DB : create publication
+    DB --> SER : publication created
+end
+
+SER --> CLI : HTTP STATUS 200/201
+deactivate SER
+CLI --> User : display edition form
+deactivate CLI
+
+User -> CLI : edition data
+activate CLI
+CLI -> SER : POST /editions {...}
+activate SER
+
+SER -> DB : check edition
+DB --> SER : result
+
+alt edition exists
+    SER -> SER : use existing edition
+else edition does not exist
+    SER -> DB : create edition
+    DB --> SER : edition created
+end
+
+SER --> CLI : HTTP STATUS 200/201
+deactivate SER
+CLI --> User : display item form
+deactivate CLI
+
+User -> CLI : item data
+activate CLI
+CLI -> SER : POST /items {...}
+activate SER
+
+SER -> DB : create item
+DB --> SER : item created
+
+SER -> DB : add item to library
+DB --> SER : library updated
+
+SER --> CLI : HTTP STATUS 201
+deactivate SER
+
+CLI --> User : Successful registration\nand item added to library
+deactivate CLI
+
+@enduml

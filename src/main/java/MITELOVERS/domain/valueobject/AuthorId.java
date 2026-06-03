@@ -49,7 +49,7 @@ public class AuthorId implements DomainId {
 
         String code = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
-        _id = lastName + " " + initials + "-" + code;
+        _id = lastName + "." + initials + "-" + code;
 
     }
 

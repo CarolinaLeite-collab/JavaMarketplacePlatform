@@ -39,7 +39,7 @@ public class ItemDataModel {
     @Column(name = "sale_status", nullable = false)
     private String saleStatus;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "picture", nullable = true)
+    private String picture;
 
 }
