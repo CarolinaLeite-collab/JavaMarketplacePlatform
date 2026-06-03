@@ -10,19 +10,28 @@ jobs:
 
     steps:
       - name: Send message to Discord
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_USER: ${{ github.event.pull_request.user.login }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE: ${{ github.event.pull_request.base.ref }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_INCOMING_PR_WEBHOOK }}
+
         run: |
           curl -H "Content-Type: application/json" \
           -d "$(jq -n \
-            --arg title "${{ github.event.pull_request.title }}" \
-            --arg user "${{ github.event.pull_request.user.login }}" \
-            --arg url "${{ github.event.pull_request.html_url }}" \
-            --arg number "${{ github.event.pull_request.number }}" \
-            --arg base "${{ github.event.pull_request.base.ref }}" \
+            --arg title "$PR_TITLE" \
+            --arg user "$PR_USER" \
+            --arg url "$PR_URL" \
+            --arg number "$PR_NUMBER" \
+            --arg base "$PR_BASE" \
             '{
               content: (
-                "📢 New Pull Request #" + $number + " to merge into " + $base + "\n" +                "🏷️ " + $title + "\n" +
+                "📢 New Pull Request #" + $number + " to merge into " + $base + "\n" +
+                "🏷️ " + $title + "\n" +
                 "👤 " + $user + "\n" +
                 "🌐 " + $url
               )
             }')" \
-          ${{ secrets.DISCORD_INCOMING_PR_WEBHOOK }}
+          "$DISCORD_WEBHOOK"
