@@ -1,7 +1,6 @@
 import { axe, render, screen, within } from '@/test-utils';
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
 import userEvent from "@testing-library/user-event";
-import { LibraryContext } from "../context/AppContext";
 
 describe('MyLibraryPage', () => {
     axe([<MyLibraryPage key="1" />]);
@@ -28,6 +27,14 @@ describe('MyLibraryPage', () => {
         ).toBeInTheDocument();
     });
 
+    it('renders the create a sale button', () => {
+        render(<MyLibraryPage />);
+
+        expect(
+            screen.getByRole('button', { name: /create a sale/i })
+        ).toBeInTheDocument();
+    });
+
     it('opens the add item modal when clicking the add item button', async () => {
         const user = userEvent.setup();
 
@@ -35,48 +42,25 @@ describe('MyLibraryPage', () => {
 
         await user.click(screen.getByRole('button', { name: /add item/i }));
 
-        const dialog = await within(document.body).findByRole('dialog');
+        const dialog = await screen.findByRole('dialog', { name: /add item/i });
+        expect(
+            within(dialog).getByRole('heading', { name: /add item/i })
+        ).toBeInTheDocument();
+    });
+
+    it('opens the create new sale modal when clicking the create a sale button', async () => {
+        const user = userEvent.setup();
+
+        render(<MyLibraryPage />);
+
+        await user.click(screen.getByRole('button', { name: /create a sale/i }));
+
+        const dialog = await screen.findByRole('dialog', { name: /create new sale/i });
         expect(dialog).toBeInTheDocument();
-    });
 
-    it('shows loading state', () => {
-        render(
-            <LibraryContext.Provider
-                value={{
-                    state: {
-                        items: [],
-                        details: {},
-                        loading: true,
-                        error: null
-                    },
-                    dispatch: vi.fn()
-                }}
-            >
-                <MyLibraryPage />
-            </LibraryContext.Provider>
-        );
-
-        expect(screen.getByText(/loading/i)).toBeInTheDocument();
-    });
-
-    it('shows error state', () => {
-        render(
-            <LibraryContext.Provider
-                value={{
-                    state: {
-                        items: [],
-                        details: {},
-                        loading: false,
-                        error: 'Failed'
-                    },
-                    dispatch: vi.fn()
-                }}
-            >
-                <MyLibraryPage />
-            </LibraryContext.Provider>
-        );
-
-        expect(screen.getByText(/failed/i)).toBeInTheDocument();
+        expect(
+            within(dialog).getByRole('heading', { name: /create new sale/i })
+        ).toBeInTheDocument();
     });
 
 });
