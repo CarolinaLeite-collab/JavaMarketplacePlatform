@@ -120,6 +120,15 @@ jobs:
             --error \
             $TARGETS
 
+      - name: Show Semgrep findings
+        if: always()
+        run: |
+          if [ -f semgrep-report.json ]; then
+            jq -r '.results[] | "\(.path):\(.start.line) [\(.check_id)] \(.extra.severity) - \(.extra.message)"' semgrep-report.json
+          else
+            echo "semgrep-report.json not found"
+          fi
+
       - name: Upload Semgrep JSON report
         if: always()
         uses: actions/upload-artifact@v4.6.2
