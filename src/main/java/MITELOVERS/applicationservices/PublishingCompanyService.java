@@ -4,6 +4,7 @@ import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
+import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class PublishingCompanyService {
         _publishingCompanyResponseDTOMapper = publishingCompanyResponseDTOMapper;
     }
 
-    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyResponseDTO publishingCompanyName) {
+    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyRequestDTO publishingCompanyName) {
 
         String newPubCompName = publishingCompanyName.toString();
 

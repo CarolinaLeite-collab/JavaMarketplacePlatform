@@ -4,6 +4,7 @@ import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
+import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ class PublishingCompanyServiceTest {
     @Test
     void registerPublishingCompanyNewReturnsDTO() {
         // Arrange
-        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
         when(dtoDouble.toString()).thenReturn("Porto Editora");
         when(_publishingCompanyFactoryDouble.createPublishingCompany(any(String.class)))
@@ -69,7 +70,7 @@ class PublishingCompanyServiceTest {
     @Test
     void registerPublishingCompanyAlreadyExistsReturnsExisting() {
         // Arrange
-        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
         when(dtoDouble.toString()).thenReturn("Porto Editora");
         when(_publishingCompanyFactoryDouble.createPublishingCompany(any(String.class)))
