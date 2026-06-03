@@ -111,4 +111,10 @@ public class AuthorizationPolicy {
     public boolean canGetDirectSale(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
+
+    /** Any authenticated user may register an item. */
+    public boolean canCreateItem(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN); }
+
+    /** Any authenticated user may list items. */
+    public boolean canListItems(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN); }
 }
