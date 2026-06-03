@@ -33,6 +33,10 @@ export function ItemAccordion({ items, details, dispatch }) {
                                    + 'var(--mantine-color-dark-3))',
                                borderRadius: 'var(--mantine-radius-md)',
                                marginBottom: '6px',
+                           },
+                           control: {
+                               paddingTop: '6px',
+                               paddingBottom: '6px',
                            }
                        }}
             >
