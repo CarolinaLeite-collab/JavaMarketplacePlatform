@@ -10,10 +10,12 @@ export function NewListModal() {
     const [name, setName] = useState('');
     const [genreId, setGenreId] = useState(null);
     const { state, dispatch } = useContext(AppContext);
-    const { genres, createListHref, myListsHref, error } = state.lists;
+    const { genres, error } = state.lists;
+    const { createListHref, genresHref, myListsHref } = state.app;
+
 
     useEffect(() => {
-        if (opened) getGenres(dispatch);
+        if (opened && genresHref) getGenres(dispatch, genresHref);
     }, [opened]);
 
     const handleCreate = async () => {
@@ -56,6 +58,7 @@ export function NewListModal() {
                 leftSection={<IconPlus size={16} />}
                 radius="xl"
                 onClick={open}
+                disabled={!createListHref}
             >
                 NEW LIST
             </Button>
