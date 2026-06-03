@@ -1,6 +1,6 @@
 import {
-    CREATE_LIST_SUCCESS, CREATE_LIST_ERROR,
     GET_LIST_OPTIONS_SUCCESS, GET_LIST_OPTIONS_ERROR,
+    CREATE_LIST_SUCCESS, CREATE_LIST_ERROR,
     GET_LISTS_SUCCESS, GET_LISTS_ERROR,
     GET_GENRES_SUCCESS, GET_GENRES_ERROR,
     MAKE_LIST_PUBLIC_SUCCESS, MAKE_LIST_PUBLIC_ERROR,
@@ -12,10 +12,7 @@ import {
 export const initialListsState = {
     lists: [],
     genres: [],
-    createListHref: null,
-    myListsHref: null,
     error: null,
-    loading: false,
 };
 
 function mapList(item) {
@@ -56,18 +53,20 @@ export function listsReducer(state, action) {
         case GET_LIST_OPTIONS_SUCCESS:
             return {
                 ...state,
-                createListHref: action.payload['create-list']?.href ?? null,
-                myListsHref: action.payload['collection']?.href ?? null,
+                createListHref: action.payload?.['create-list']?.href ?? null,
+                myListsHref: action.payload?.['collection']?.href ?? null,
             };
         case GET_LIST_OPTIONS_ERROR:
             return { ...state, error: action.payload };
         case GET_LISTS_SUCCESS: {
             const payload = action.payload;
+            if (!payload) {
+                return { ...state, error: null, lists: [] };
+            }
             const lists = Array.isArray(payload)
                 ? payload
                 : payload?._embedded?.listOfItemsResponseDTOList ?? [];
-            const createListHref = payload?._links?.['create-list']?.href ?? null;
-            return { ...state, error: null, loading: false, lists: lists.map(mapList), createListHref };
+            return { ...state, error: null, lists: lists.map(mapList) };
         }
         case GET_LISTS_ERROR:
             return { ...state, error: action.payload, loading: false };
