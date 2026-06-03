@@ -1,7 +1,9 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.AuthorService;
+import MITELOVERS.domain.author.Author;
 import MITELOVERS.dto.response.AuthorResponseDTO;
+import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,17 +12,21 @@ import org.springframework.stereotype.Component;
  * This controller delegates the creation of authors to {@link AuthorService}.
  * </p>
  */
-
 @Component
 public class CreateAuthorController {
 
     private final AuthorService _authorService;
+    private final AuthorResponseDTOMapper _authorResponseDTOMapper;
 
-    public CreateAuthorController(AuthorService authorService) {
+    public CreateAuthorController(AuthorService authorService, AuthorResponseDTOMapper authorResponseDTOMapper) {
         _authorService = authorService;
+        _authorResponseDTOMapper = authorResponseDTOMapper;
     }
 
     public AuthorResponseDTO createAuthor(String authorName) {
-        return _authorService.registerAuthor(authorName);
+
+        Author savedAuthor = _authorService.registerAuthor(authorName);
+
+        return _authorResponseDTOMapper.toModel(savedAuthor);
     }
 }

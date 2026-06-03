@@ -1,26 +1,27 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.GenreService;
+import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.dto.response.GenreResponseDTO;
+import MITELOVERS.mapper.GenreResponseDTOMapper;
 import org.springframework.stereotype.Component;
 
 /**
- * Controller responsible for handling the addition of new genres.
- * <p>
- * This controller is stateless and acts as an intermediary between the user interface
- * and the service layer, delegating genre registration to {@link GenreService}.
- * </p>
+ * Controller responsible for handling the addition of new genres via the CLI.
  */
-
 @Component
 public class AddGenreController {
-    private final GenreService _genreService;
 
-    public AddGenreController(GenreService genreService) {
+    private final GenreService _genreService;
+    private final GenreResponseDTOMapper _genreResponseDTOMapper;
+
+    public AddGenreController(GenreService genreService, GenreResponseDTOMapper genreResponseDTOMapper) {
         _genreService = genreService;
+        _genreResponseDTOMapper = genreResponseDTOMapper;
     }
 
     public GenreResponseDTO addGenre(String genreName) {
-        return _genreService.registerGenre(genreName);
+        Genre savedGenre = _genreService.registerGenre(genreName);
+        return _genreResponseDTOMapper.toModel(savedGenre);
     }
 }
