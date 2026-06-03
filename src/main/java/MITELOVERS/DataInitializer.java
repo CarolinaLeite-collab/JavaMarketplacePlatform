@@ -385,7 +385,7 @@ public class DataInitializer {
                     new EditionNumber(1),
                     Binding.HARDCOVER
             );
-            editionRepo.save(edition1984Modern);
+            editionRepo.save(edition1977PatternLanguage);
 
             Edition editionShortnessOfLife = editionFactory.createEdition(
                     book.identity(),
@@ -401,6 +401,7 @@ public class DataInitializer {
                     Binding.PUR
             );
             editionRepo.save(editionShortnessOfLife);
+
             Edition editionE1027Original = editionFactory.createEdition(
                     magazine.identity(),
                     new NoIdentifier(), // sem ISBN na edição original de 1929
