@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -93,30 +92,32 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds) {
 
         List<String> idsAsString = itemIds.stream()
                 .map(ItemId::toString)
                 .toList();
 
-        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateAsc(idsAsString).stream()
+        return _iDirectSaleSpringDataRepo
+                .findByItemsIdOrderByCreationDateAsc(idsAsString)
+                .stream()
                 .map(_directSaleAssembler::toDomain)
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .toList();
     }
 
     @Override
-    public List<ItemId> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
+    public List<DirectSale> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds) {
 
         List<String> idsAsString = itemIds.stream()
                 .map(ItemId::toString)
                 .toList();
 
-        return _iDirectSaleSpringDataRepo.findByItemsIdOrderByCreationDateDesc(idsAsString).stream()
+        return _iDirectSaleSpringDataRepo
+                .findByItemsIdOrderByCreationDateDesc(idsAsString)
+                .stream()
                 .map(_directSaleAssembler::toDomain)
-                .flatMap(ds -> ds.getItemsId().stream())
-                .filter(itemIds::contains)
+                .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .toList();
     }
 

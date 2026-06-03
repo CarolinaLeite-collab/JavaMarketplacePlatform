@@ -42,7 +42,7 @@ class PublishingCompanyFactoryTest {
         try (MockedConstruction<PublishingCompany> mockedConstruction = mockConstruction(PublishingCompany.class)) {
 
             //Act
-            PublishingCompany publishingCompany = publishingCompanyFactory.createPublishingCompany(_publishingCompanyIdDouble);
+            PublishingCompany publishingCompany = publishingCompanyFactory.createPublishingCompany(_publishingCompanyIdDouble, "TASCHEN");
 
             //Assert
             assertNotNull(publishingCompany);

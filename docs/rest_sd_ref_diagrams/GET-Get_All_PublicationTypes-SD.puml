@@ -1,0 +1,59 @@
+@startuml
+title GET - Get All Publication Types - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":PublicationType\nRestController" as REST
+participant ":PublicationType\nService" as Service
+participant ":IPublicationType\nRepo" as REPO
+participant ":PublicationType\nResponseDTOMapper" as Mapper
+database DB
+
+activate REST
+REST -> Service : getAllPublicationTypes()
+
+activate Service
+Service -> REPO : findAll()
+
+activate REPO
+REPO -> DB : publicationTypes = findAll()
+REPO --> Service : publicationTypes
+deactivate REPO
+
+create "response : List<PublicationTypeResponseDTO>"
+Service -->> "response : List<PublicationTypeResponseDTO>" : create()
+
+loop publicationType : publicationTypes
+
+    Service -> Mapper : toModel(publicationType)
+    activate Mapper
+    Mapper --> Service : PublicationTypeResponseDTO
+    deactivate Mapper
+
+    Service -> "response : List<PublicationTypeResponseDTO>" : add(publicationType)
+end
+
+Service --> REST : response
+deactivate Service
+
+loop publicationTypeDTO : response
+        REST -> publicationTypeDTO : add(selfLink)
+    end
+
+    REST --> REST : ResponseEntity.ok(response)
+
+ref over REST
+[[../a.puml Back to Main Diagram]]
+end
+
+@enduml

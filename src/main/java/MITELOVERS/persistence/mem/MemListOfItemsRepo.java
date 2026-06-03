@@ -3,7 +3,6 @@ package MITELOVERS.persistence.mem;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
-
 import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -48,6 +47,11 @@ public class MemListOfItemsRepo implements IListOfItemsRepo {
 
     @Override
     public List<ListOfItems> findListOfItemsByUserId(UserId userId){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void deleteListOfItems(ListOfItemsId listOfItemsId) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

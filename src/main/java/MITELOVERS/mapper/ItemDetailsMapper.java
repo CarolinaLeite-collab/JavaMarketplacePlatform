@@ -4,10 +4,12 @@ import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
-import MITELOVERS.dto.ItemDetailsDTO;
+import MITELOVERS.dto.response.ItemDetailsDTO;
+import MITELOVERS.dto.response.LibraryItemDetailsDTO;
+import org.springframework.stereotype.Component;
 
 /**
- * Mapper responsible for converting domain objects into {@link ItemDetailsDTO}.
+ * Mapper responsible for converting domain objects into {@link LibraryItemDetailsDTO}.
  *
  * <p>
  * This class transforms core domain entities such as {@link Edition},
@@ -23,9 +25,10 @@ import MITELOVERS.dto.ItemDetailsDTO;
  * </p>
  */
 
+@Component
 public class ItemDetailsMapper {
 
-    public static ItemDetailsDTO toDTO(
+    public ItemDetailsDTO toDTO(
             Edition edition,
             Publication publication,
             PublicationType publicationType,
@@ -36,6 +39,7 @@ public class ItemDetailsMapper {
                 author.getName().toString(),
                 publicationType.toString(),
                 edition.getIdentifier().toString()
+
         );
     }
 }

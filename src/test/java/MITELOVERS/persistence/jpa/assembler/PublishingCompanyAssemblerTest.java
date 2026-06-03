@@ -74,8 +74,10 @@ class PublishingCompanyAssemblerTest {
 
         when(dataModelDouble.getPublishingCompanyId())
                 .thenReturn("PORTO EDITORA");
+        when(dataModelDouble.getPublishingCompanyName())
+                .thenReturn("Porto Editora");
 
-        when(publishingCompanyFactoryDouble.createPublishingCompany(any(PublishingCompanyId.class)))
+        when(publishingCompanyFactoryDouble.createPublishingCompany(any(PublishingCompanyId.class), any(String.class)))
                 .thenReturn(publishingCompanyDouble);
 
         when(publishingCompanyDouble.identity())
@@ -114,7 +116,6 @@ class PublishingCompanyAssemblerTest {
 
     @Test
     void toDataModelAndBackShouldKeepSameIdentity() {
-
         // Arrange
         PublishingCompany publishingCompanyDouble =
                 mock(PublishingCompany.class);
@@ -122,35 +123,34 @@ class PublishingCompanyAssemblerTest {
                 mock(PublishingCompanyId.class);
         PublishingCompanyFactory publishingCompanyFactoryDouble =
                 mock(PublishingCompanyFactory.class);
-
-        PublishingCompany reconstructedPublishingCompanyDouble =
+        PublishingCompany reconstructedDouble =
                 mock(PublishingCompany.class);
-        PublishingCompanyId reconstructedPublishingCompanyIdDouble =
+        PublishingCompanyId reconstructedIdDouble =
                 mock(PublishingCompanyId.class);
 
         when(publishingCompanyDouble.identity())
                 .thenReturn(publishingCompanyIdDouble);
         when(publishingCompanyIdDouble.toString())
                 .thenReturn("PORTO EDITORA");
+        when(publishingCompanyDouble.getPublishingCompanyName())
+                .thenReturn("Porto Editora");
 
-        when(reconstructedPublishingCompanyDouble.identity())
-                .thenReturn(reconstructedPublishingCompanyIdDouble);
-        when(reconstructedPublishingCompanyIdDouble.toString())
+        when(reconstructedDouble.identity())
+                .thenReturn(reconstructedIdDouble);
+        when(reconstructedIdDouble.toString())
                 .thenReturn("PORTO EDITORA");
 
-        when(publishingCompanyFactoryDouble.createPublishingCompany(any(PublishingCompanyId.class)))
-                .thenReturn(reconstructedPublishingCompanyDouble);
+        when(publishingCompanyFactoryDouble.createPublishingCompany(
+                any(PublishingCompanyId.class), any(String.class)))
+                .thenReturn(reconstructedDouble);
 
         // SUT
         PublishingCompanyAssembler assembler =
                 new PublishingCompanyAssembler(publishingCompanyFactoryDouble);
 
         // Act
-        PublishingCompanyDataModel dm =
-                assembler.toDataModel(publishingCompanyDouble);
-
-        PublishingCompany result =
-                assembler.toDomain(dm);
+        PublishingCompanyDataModel dm = assembler.toDataModel(publishingCompanyDouble);
+        PublishingCompany result = assembler.toDomain(dm);
 
         // Assert
         assertEquals("PORTO EDITORA", result.identity().toString());

@@ -27,7 +27,7 @@ public class ListOfItemsAssembler {
 
         return new ListOfItemsDataModel(
                 listOfItems.identity().toString(),
-                listOfItems.getUserId().toString(),
+                listOfItems.getUserId(),
                 listOfItems.getName().toString(),
                 listOfItems.getGenreId().toString(),
                 listOfItems.isPrivate(),
@@ -38,7 +38,7 @@ public class ListOfItemsAssembler {
 
     public ListOfItems toDomain(ListOfItemsDataModel dm) {
         ListOfItemsId listOfItemsId = new ListOfItemsId(dm.getListOfItemsId());
-        UserId userId = new UserId(new Email(dm.getUserId()));
+        UserId userId = new UserId(new Email(dm.getUserId().toString()));
         Name name = new Name(dm.getName());
         GenreId genreId = new GenreId(dm.getGenreId());
 

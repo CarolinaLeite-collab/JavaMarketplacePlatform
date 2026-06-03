@@ -27,8 +27,6 @@ class EditionAssemblerTest {
     private ISBN _identifierDouble;
     private PublicationId _publicationIdDouble;
     private PublicationIdDataModel _pubIdDmDouble;
-    private Title _titleDouble;
-    private AuthorId _authorIdDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
     private Dimension _dimensionDouble;
     private DimensionDataModel _dimensionDmDouble;
@@ -49,8 +47,6 @@ class EditionAssemblerTest {
         _identifierDouble = mock(ISBN.class);
         _publicationIdDouble = mock(PublicationId.class);
         _pubIdDmDouble = mock(PublicationIdDataModel.class);
-        _titleDouble = mock(Title.class);
-        _authorIdDouble = mock(AuthorId.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
         _dimensionDouble = mock(Dimension.class);
         _dimensionDmDouble = mock(DimensionDataModel.class);
@@ -66,25 +62,20 @@ class EditionAssemblerTest {
         when(_editionDouble.getIdentifier()).thenReturn(_identifierDouble);
         when(_identifierDouble.getIdentifier()).thenReturn("978-3-16-148410-0");
         when(_editionDouble.getPublicationId()).thenReturn(_publicationIdDouble);
-        when(_publicationIdDouble.getTitle()).thenReturn(_titleDouble);
-        when(_titleDouble.toString()).thenReturn("Clean Code");
-        when(_publicationIdDouble.getAuthorId()).thenReturn(_authorIdDouble);
-        when(_authorIdDouble.toString()).thenReturn("Martin R.U.-ABC123");
-        when(_publicationIdDouble.getReleaseYear()).thenReturn(Year.of(2008));
         when(_editionDouble.getPublishingCompanyId()).thenReturn(_publishingCompanyIdDouble);
         when(_publishingCompanyIdDouble.toString()).thenReturn("PRENTICE HALL");
         when(_editionDouble.getPublishingYear()).thenReturn(Year.of(2008));
         when(_editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
+        when(_publicationIdDouble.toString()).thenReturn("Clean Code - Martin R.U.-ABC123 (2008)");
 
         when(_editionDataModel.getId()).thenReturn("E-ABC12345");
         when(_editionDataModel.getPublishingCompanyId()).thenReturn("PUB-123");
         when(_editionDataModel.getPublishingYear()).thenReturn(2008);
         when(_editionDataModel.getPublicationIdDm()).thenReturn(_pubIdDmDouble);
-        when(_pubIdDmDouble.getTitle()).thenReturn("Clean Code");
-        when(_pubIdDmDouble.getAuthorId()).thenReturn("Martin R.U.-ABC123");
-        when(_pubIdDmDouble.getReleaseYear()).thenReturn(2008);
         when(_editionDataModel.getEditionLanguage()).thenReturn(Language.ENGLISH);
         when(_editionDataModel.getNumberOfPages()).thenReturn(300);
+        when(_pubIdDmDouble.getPublicationId()).thenReturn("Clean Code - Martin R.U.-ABC123 (2008)");
+
 
     }
 
@@ -102,9 +93,7 @@ class EditionAssemblerTest {
                 () -> assertEquals("BOOK", result.getTypeId()),
                 () -> assertEquals("978-3-16-148410-0", result.getIdentifier()),
                 () -> assertEquals("ISBN", result.getIdentifierType()),
-                () -> assertEquals("Clean Code", result.getPublicationIdDm().getTitle()),
-                () -> assertEquals("Martin R.U.-ABC123", result.getPublicationIdDm().getAuthorId()),
-                () -> assertEquals(2008, result.getPublicationIdDm().getReleaseYear()),
+                () -> assertEquals("Clean Code - Martin R.U.-ABC123 (2008)", result.getPublicationIdDm().getPublicationId()),
                 () -> assertEquals("PRENTICE HALL", result.getPublishingCompanyId()),
                 () -> assertEquals(2008, result.getPublishingYear()),
                 () -> assertEquals(Language.ENGLISH, result.getEditionLanguage()),

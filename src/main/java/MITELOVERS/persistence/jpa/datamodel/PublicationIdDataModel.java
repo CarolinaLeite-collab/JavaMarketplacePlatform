@@ -16,13 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Embeddable
 public class PublicationIdDataModel {
-    private String title;
-    private String authorId;
-    private int releaseYear;
 
-    public PublicationIdDataModel(String title, String authorId, int releaseYear) {
-        this.title = title;
-        this.authorId = authorId;
-        this.releaseYear = releaseYear;
+    private String publicationId;
+
+    public PublicationIdDataModel(String publicationId) {
+
+        this.publicationId = publicationId;
+
     }
+
 }

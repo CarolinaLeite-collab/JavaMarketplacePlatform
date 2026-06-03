@@ -14,15 +14,25 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ItemFactory {
-    public Item createItem(EditionId editionId, Condition condition, Description description, Name name) {
-        return new Item(editionId, condition, description, name);
+    public Item createItem(EditionId editionId, Condition condition, Description description, Picture picture) {
+        return new Item(editionId, condition, description, picture);
+    }
+
+    public Item createItem(EditionId editionId, Condition condition,
+                           Description description) {
+        return new Item(editionId, condition, description, null);
     }
 
     public Item createItem(ItemId itemId, EditionId editionId, Condition condition,
-                           Description description, SaleStatus saleStatus, Name name) {
+                           Description description, SaleStatus saleStatus, Picture picture) {
 
-        return new Item(itemId, editionId, condition, description, saleStatus, name);
+        return new Item(itemId, editionId, condition, description, saleStatus, picture);
 
+    }
+
+    public Item createItem(ItemId itemId, EditionId editionId, Condition condition,
+                           Description description, SaleStatus saleStatus) {
+        return new Item(itemId, editionId, condition, description, saleStatus, null);
     }
 
 }

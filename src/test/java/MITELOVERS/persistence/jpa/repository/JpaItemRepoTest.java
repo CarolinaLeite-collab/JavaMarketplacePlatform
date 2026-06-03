@@ -1,6 +1,7 @@
 package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.persistence.jpa.assembler.ItemAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ItemDataModel;
@@ -34,152 +35,252 @@ class JpaItemRepoTest {
     @Mock
     private ItemAssembler _itemAssemblerDouble;
 
-    @Mock
-    private ItemDataModel _itemDataModelDouble;
+    // ------------------------------------------------------------
+    // save
+    // ------------------------------------------------------------
 
     @Test
     void saveShouldReturnDomainItem() {
 
-        //Arrange
+        // Arrange
         Item itemDouble = mock(Item.class);
-        ItemDataModel itemDataModelDouble = mock(ItemDataModel.class);
+        ItemDataModel itemDmDouble = mock(ItemDataModel.class);
 
-        when(_itemAssemblerDouble.toDataModel(itemDouble)).thenReturn(itemDataModelDouble);
-        when(_itemSpringDataRepoDouble.save(itemDataModelDouble)).thenReturn(itemDataModelDouble);
-        when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
+        when(_itemAssemblerDouble.toDataModel(itemDouble)).thenReturn(itemDmDouble);
+        when(_itemSpringDataRepoDouble.save(itemDmDouble)).thenReturn(itemDmDouble);
+        when(_itemAssemblerDouble.toDomain(itemDmDouble)).thenReturn(itemDouble);
 
-        //Act
+        // Act
         Item result = _jpaItemRepo.save(itemDouble);
 
-        //Assert
-        assertEquals(itemDouble, result);
-
+        // Assert
+        assertSame(itemDouble, result);
     }
+
+    // ------------------------------------------------------------
+    // findAllKeys
+    // ------------------------------------------------------------
 
     @Test
     void findAllKeysShouldReturnListOfItemIds() {
 
-        //Arrange
-        ItemDataModel itemDataModelDouble = mock(ItemDataModel.class);
+        // Arrange
+        ItemDataModel itemDmDouble = mock(ItemDataModel.class);
+        when(itemDmDouble.getId()).thenReturn("ABC123DEF0");
+        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDmDouble));
 
-        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
-        when(itemDataModelDouble.getId()).thenReturn("ABC123DEF0");
-
-        //Act
+        // Act
         List<ItemId> result = _jpaItemRepo.findAllKeys();
 
-        //Assert
+        // Assert
         assertEquals(1, result.size());
-
+        assertEquals("ABC123DEF0", result.get(0).getValue());
     }
 
     @Test
-    void findAllKeysShouldReturnFirstItemId() {
+    void findAllKeysShouldReturnEmptyListWhenNoItemsExist() {
 
-        //Arrange
-        ItemDataModel itemDataModelDouble = mock(ItemDataModel.class);
+        // Arrange
+        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of());
 
-        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
-        when(itemDataModelDouble.getId()).thenReturn("ABC123DEF0");
-
-        //Act
+        // Act
         List<ItemId> result = _jpaItemRepo.findAllKeys();
-        ItemId firstItemId = result.get(0);
 
-        //Assert
-        assertEquals("ABC123DEF0", firstItemId.getValue());
-
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
+    // ------------------------------------------------------------
+    // findAll
+    // ------------------------------------------------------------
+
     @Test
-    void findAllShouldReturnListOfSavedItems() {
+    void findAllShouldReturnListOfDomainItems() {
 
-        //Arrange
+        // Arrange
         Item itemDouble = mock(Item.class);
-        ItemDataModel itemDataModelDouble = mock(ItemDataModel.class);
+        ItemDataModel itemDmDouble = mock(ItemDataModel.class);
 
-        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDataModelDouble));
-        when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
+        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of(itemDmDouble));
+        when(_itemAssemblerDouble.toDomain(itemDmDouble)).thenReturn(itemDouble);
 
-        //Act
+        // Act
         Iterable<Item> result = _jpaItemRepo.findAll();
         List<Item> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
 
-        for (Item item : result) {
-            resultList.add(item);
-        }
-
-        //Assert
+        // Assert
         assertEquals(1, resultList.size());
-        assertEquals(itemDouble, resultList.get(0));
-
+        assertSame(itemDouble, resultList.get(0));
     }
 
     @Test
-    void ofIdentityShouldReturnItemOfACertainItemId() {
+    void findAllShouldReturnEmptyIterableWhenNoItemsExist() {
 
-        //Arrange
+        // Arrange
+        when(_itemSpringDataRepoDouble.findAll()).thenReturn(List.of());
+
+        // Act
+        Iterable<Item> result = _jpaItemRepo.findAll();
+
+        // Assert
+        assertFalse(result.iterator().hasNext());
+    }
+
+    // ------------------------------------------------------------
+    // ofIdentity
+    // ------------------------------------------------------------
+
+    @Test
+    void ofIdentityShouldReturnDomainItemWhenExists() {
+
+        // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
         Item itemDouble = mock(Item.class);
-        ItemDataModel itemDataModelDouble = mock(ItemDataModel.class);
+        ItemDataModel itemDmDouble = mock(ItemDataModel.class);
 
-        when(_itemSpringDataRepoDouble.findById(itemIdDouble.getValue())).thenReturn(Optional.of(itemDataModelDouble));
-        when(_itemAssemblerDouble.toDomain(itemDataModelDouble)).thenReturn(itemDouble);
+        when(itemIdDouble.getValue()).thenReturn("XYZ");
+        when(_itemSpringDataRepoDouble.findById("XYZ")).thenReturn(Optional.of(itemDmDouble));
+        when(_itemAssemblerDouble.toDomain(itemDmDouble)).thenReturn(itemDouble);
 
-        //Act
+        // Act
         Optional<Item> result = _jpaItemRepo.ofIdentity(itemIdDouble);
 
-        //Assert
-        assertEquals(itemDouble, result.get());
-
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(itemDouble, result.get());
     }
 
     @Test
-    void ofIdentityShouldReturnEmptyWhenItemDoesNotExist() {
+    void ofIdentityShouldReturnEmptyOptionalWhenItemDoesNotExist() {
 
-        //Arrange
+        // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.getValue()).thenReturn("XYZ");
+        when(_itemSpringDataRepoDouble.findById("XYZ")).thenReturn(Optional.empty());
 
-        when(_itemSpringDataRepoDouble.findById(itemIdDouble.getValue())).thenReturn(Optional.empty());
-
-        //Act
+        // Act
         Optional<Item> result = _jpaItemRepo.ofIdentity(itemIdDouble);
 
-        //Assert
+        // Assert
         assertTrue(result.isEmpty());
-
     }
+
+    // ------------------------------------------------------------
+    // containsOfIdentity
+    // ------------------------------------------------------------
 
     @Test
     void containsOfIdentityShouldReturnTrueWhenItemExists() {
 
-        //Arrange
+        // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("ID123");
+        when(_itemSpringDataRepoDouble.existsById("ID123")).thenReturn(true);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(true);
-
-        //Act
+        // Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
 
-        //Assert
+        // Assert
         assertTrue(result);
-
     }
 
     @Test
     void containsOfIdentityShouldReturnFalseWhenItemDoesNotExist() {
 
-        //Arrange
+        // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("ID123");
+        when(_itemSpringDataRepoDouble.existsById("ID123")).thenReturn(false);
 
-        when(_itemSpringDataRepoDouble.existsById(itemIdDouble.toString())).thenReturn(false);
-
-        //Act
+        // Act
         boolean result = _jpaItemRepo.containsOfIdentity(itemIdDouble);
 
-        //Assert
+        // Assert
         assertFalse(result);
+    }
 
+    // ------------------------------------------------------------
+    // findByIdInOrderByDescriptionAsc
+    // ------------------------------------------------------------
+
+    @Test
+    void findByIdInOrderByDescriptionAscShouldReturnMappedDomainItems() {
+
+        // Arrange
+        ItemDataModel dm1 = mock(ItemDataModel.class);
+        ItemDataModel dm2 = mock(ItemDataModel.class);
+
+        Item item1 = mock(Item.class);
+        Item item2 = mock(Item.class);
+
+        when(_itemSpringDataRepoDouble.findByIdInOrderByDescriptionAsc(List.of("A", "B")))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(_itemAssemblerDouble.toDomain(dm1)).thenReturn(item1);
+        when(_itemAssemblerDouble.toDomain(dm2)).thenReturn(item2);
+
+        // Act
+        List<Item> result = _jpaItemRepo.findByIdInOrderByDescriptionAsc(List.of("A", "B"));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertSame(item1, result.get(0));
+        assertSame(item2, result.get(1));
+    }
+
+    @Test
+    void findByIdInOrderByDescriptionAscShouldReturnEmptyListWhenNoMatches() {
+
+        // Arrange
+        when(_itemSpringDataRepoDouble.findByIdInOrderByDescriptionAsc(List.of("A", "B")))
+                .thenReturn(List.of());
+
+        // Act
+        List<Item> result = _jpaItemRepo.findByIdInOrderByDescriptionAsc(List.of("A", "B"));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ------------------------------------------------------------
+    // findByGenreId
+    // ------------------------------------------------------------
+
+    @Test
+    void findByGenreIdShouldReturnMappedItemIds() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        when(genreIdDouble.toString()).thenReturn("ROMANCE");
+
+        when(_itemSpringDataRepoDouble.findItemIdsByGenre("ROMANCE"))
+                .thenReturn(List.of("A1B2C3D4E5", "F0E1D2C3B4"));
+
+        // Act
+        List<ItemId> result = _jpaItemRepo.findByGenreId(genreIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("A1B2C3D4E5", result.get(0).getValue());
+        assertEquals("F0E1D2C3B4", result.get(1).getValue());
+    }
+
+    @Test
+    void findByGenreIdShouldReturnEmptyListWhenNoItemsMatchGenre() {
+
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        when(genreIdDouble.toString()).thenReturn("FICTION");
+
+        when(_itemSpringDataRepoDouble.findItemIdsByGenre("FICTION"))
+                .thenReturn(List.of());
+
+        // Act
+        List<ItemId> result = _jpaItemRepo.findByGenreId(genreIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
 }

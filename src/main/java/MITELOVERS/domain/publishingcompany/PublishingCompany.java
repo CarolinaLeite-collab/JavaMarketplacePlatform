@@ -19,15 +19,22 @@ import MITELOVERS.domain.valueobject.PublishingCompanyId;
 public class PublishingCompany implements AggregateRoot<PublishingCompanyId> {
 
     private final PublishingCompanyId _id;
+    private final String _publishingCompanyName;
 
     PublishingCompany(String publishingCompanyName) {
 
         _id = new PublishingCompanyId(new Name(publishingCompanyName).toString());
+        _publishingCompanyName = publishingCompanyName;
     }
 
-    PublishingCompany(PublishingCompanyId publishingCompanyid) {
+    PublishingCompany(PublishingCompanyId publishingCompanyid, String publishingCompanyName) {
 
         _id = publishingCompanyid;
+        _publishingCompanyName = publishingCompanyName;
+    }
+
+    public String getPublishingCompanyName() {
+        return _publishingCompanyName;
     }
 
     @Override

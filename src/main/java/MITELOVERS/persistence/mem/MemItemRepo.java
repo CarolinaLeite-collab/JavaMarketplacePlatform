@@ -1,7 +1,12 @@
 package MITELOVERS.persistence.mem;
 
+import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.ItemId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
@@ -26,9 +31,14 @@ import java.util.*;
 public class MemItemRepo implements IItemRepo {
 
     private final Map<ItemId, Item> DATA = new HashMap<ItemId, Item>();
+    private final IEditionRepo _iEditionRepo;
+    private final IPublicationRepo _iPublicationRepo;
 
-    public MemItemRepo() {
+    public MemItemRepo(IEditionRepo iEditionRepo,
+                       IPublicationRepo iPublicationRepo) {
 
+        _iEditionRepo = iEditionRepo;
+        _iPublicationRepo = iPublicationRepo;
     }
 
     @Override
@@ -67,4 +77,26 @@ public class MemItemRepo implements IItemRepo {
     public List<Item> findByIdInOrderByDescriptionAsc(Collection<String> ids) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public List<ItemId> findByGenreId(GenreId genreId) {
+
+        List<ItemId> result = new ArrayList<>();
+
+        for (Item item : DATA.values()) {
+
+            Edition edition = _iEditionRepo.ofIdentity(item.getEditionId())
+                    .orElseThrow(() -> new IllegalStateException("Edition not found: " + item.getEditionId()));
+
+            Publication publication = _iPublicationRepo.ofIdentity(edition.getPublicationId())
+                    .orElseThrow(() -> new IllegalStateException("Publication not found: " + edition.getPublicationId()));
+
+            if (publication.isByGenreId(genreId)) {
+                result.add(item.identity());
+            }
+        }
+
+        return result;
+    }
+
 }

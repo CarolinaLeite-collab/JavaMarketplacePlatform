@@ -104,6 +104,13 @@ public class ListOfItems implements AggregateRoot<ListOfItemsId> {
         _sharedUntil = LocalDateTime.now().plusDays(duration.getDays());
     }
 
+    public void makePrivate(){
+        if (!_isPrivate) {
+            _isPrivate = true;
+            _sharedUntil = null;
+        }
+    }
+
     /**
      * Returns the date and time until which this list is shared publicly.
      *

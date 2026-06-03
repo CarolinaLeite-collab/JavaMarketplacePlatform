@@ -16,8 +16,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -125,5 +124,79 @@ class AuctionAssemblerTest {
         assertEquals(100.0, result.getReservePrice().getValue());
         assertEquals(Currency.EUR, result.getReservePrice().getCurrency());
         assertEquals(2, result.getItemsId().size());
+    }
+
+    @Test
+    void shouldReturnAuctionDataModelWithNullOptionalFields() {
+        // Arrange
+        BidAssembler bidAssemblerDouble = mock(BidAssembler.class);
+        AuctionFactory auctionFactoryDouble = mock(AuctionFactory.class);
+        Auction auction = mock(Auction.class);
+        AuctionId auctionIdDouble = mock(AuctionId.class);
+        Price startingPriceDouble = mock(Price.class);
+        when(startingPriceDouble.getValue()).thenReturn(100.0);
+        when(startingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
+        Price reservePriceDouble = mock(Price.class);
+        when(reservePriceDouble.getValue()).thenReturn(100.0);
+        when(reservePriceDouble.getCurrency()).thenReturn(Currency.EUR);
+
+        when(auction.identity()).thenReturn(auctionIdDouble);
+        when(auction.getStartingPrice()).thenReturn(startingPriceDouble);
+        when(auction.getReservePrice()).thenReturn(reservePriceDouble);
+        when(auction.getOutrightPrice()).thenReturn(null);
+        when(auction.getFinalPrice()).thenReturn(null);
+        when(auction.getUserId()).thenReturn(null);
+        when(auction.getBids()).thenReturn(List.of());
+        when(auction.getItemsId()).thenReturn(List.of());
+        when(auction.getAuctionStartDate()).thenReturn(Instant.now());
+        when(auction.getAuctionEndDate()).thenReturn(Instant.now());
+
+        AuctionAssembler sut = new AuctionAssembler(bidAssemblerDouble, auctionFactoryDouble);
+
+        // Act
+        AuctionDataModel result = sut.toDataModel(auction);
+
+        // Assert
+        assertNotNull(result);
+        assertNull(result.getOutrightPrice());
+        assertNull(result.getFinalPrice());
+        assertNull(result.getUserId());
+    }
+
+    @Test
+    void shouldReturnAuctionDomainWithNullOptionalFields() {
+        // Arrange
+        BidAssembler bidAssemblerDouble = mock(BidAssembler.class);
+        AuctionFactory auctionFactoryDouble = new AuctionFactory();
+        AuctionDataModel auctionDm = mock(AuctionDataModel.class);
+        PriceDataModel startingPriceDm = mock(PriceDataModel.class);
+        PriceDataModel reservePriceDm = mock(PriceDataModel.class);
+
+        when(auctionDm.getAuctionId()).thenReturn("AU-1234ABCD");
+        when(auctionDm.getItemsId()).thenReturn(List.of());
+        when(auctionDm.getAuctionStartDate()).thenReturn(Instant.now());
+        when(auctionDm.getAuctionEndDate()).thenReturn(Instant.now());
+        when(startingPriceDm.getNumericValue()).thenReturn(100.0);
+        when(startingPriceDm.getCurrency()).thenReturn("EUR");
+        when(auctionDm.getStartingPrice()).thenReturn(startingPriceDm);
+        when(reservePriceDm.getNumericValue()).thenReturn(100.0);
+        when(reservePriceDm.getCurrency()).thenReturn("EUR");
+        when(auctionDm.getReservePrice()).thenReturn(reservePriceDm);
+        when(auctionDm.getOutrightPrice()).thenReturn(null);
+        when(auctionDm.getFinalPrice()).thenReturn(null);
+        when(auctionDm.getUserId()).thenReturn(null);
+        when(auctionDm.getBids()).thenReturn(List.of());
+        when(auctionDm.getItemsId()).thenReturn(List.of("A1B2C3D4E5"));
+
+        AuctionAssembler sut = new AuctionAssembler(bidAssemblerDouble, auctionFactoryDouble);
+
+        // Act
+        Auction result = sut.toDomain(auctionDm);
+
+        // Assert
+        assertNotNull(result);
+        assertNull(result.getOutrightPrice());
+        assertNull(result.getFinalPrice());
+        assertNull(result.getUserId());
     }
 }
