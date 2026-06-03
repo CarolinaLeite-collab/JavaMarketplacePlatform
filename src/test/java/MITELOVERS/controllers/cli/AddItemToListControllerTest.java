@@ -46,20 +46,16 @@ class AddItemToListControllerTest {
         // Arrange
         ListOfItems list1 = mock(ListOfItems.class);
         ListOfItems list2 = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response1 = mock(ListOfItemsResponseDTO.class);
-        ListOfItemsResponseDTO response2 = mock(ListOfItemsResponseDTO.class);
 
         when(_service.getUserLists(any(UserId.class))).thenReturn(List.of(list1, list2));
-        when(_mapper.toModel(list1)).thenReturn(response1);
-        when(_mapper.toModel(list2)).thenReturn(response2);
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.getMyLists(VALID_USER_ID);
+        List<ListOfItems> result = _controller.getMyLists(VALID_USER_ID);
 
         // Assert
         assertEquals(2, result.size());
-        assertSame(response1, result.get(0));
-        assertSame(response2, result.get(1));
+        assertSame(list1, result.get(0));
+        assertSame(list2, result.get(1));
     }
 
     @Test
@@ -68,7 +64,7 @@ class AddItemToListControllerTest {
         when(_service.getUserLists(any(UserId.class))).thenReturn(List.of());
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.getMyLists(VALID_USER_ID);
+        List<ListOfItems> result = _controller.getMyLists(VALID_USER_ID);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -79,18 +75,16 @@ class AddItemToListControllerTest {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
         ListOfItems expected = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response = mock(ListOfItemsResponseDTO.class);
 
         when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
         when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class))).thenReturn(expected);
-        when(_mapper.toModel(expected)).thenReturn(response);
 
         // Act
-        ListOfItemsResponseDTO result = _controller.addItemToList(VALID_LIST_ID, dto);
+        ListOfItems result = _controller.addItemToList(VALID_LIST_ID, dto);
 
         // Assert
         assertNotNull(result);
-        assertSame(response, result);
+        assertSame(expected, result);
     }
 
     @Test
@@ -108,6 +102,7 @@ class AddItemToListControllerTest {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
         when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
+
         when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class)))
                 .thenThrow(new IllegalStateException(ITEM_ALREADY_IN_LIST));
 
@@ -123,6 +118,7 @@ class AddItemToListControllerTest {
     void addItemToListShouldThrowWhenListDoesNotExist() {
         // Arrange
         AddItemRequestDTO dto = mock(AddItemRequestDTO.class);
+
         when(dto.getItemId()).thenReturn(VALID_ITEM_ID);
         when(_service.addItemToList(any(ListOfItemsId.class), any(ItemId.class)))
                 .thenThrow(new IllegalStateException(LIST_DOES_NOT_EXIST));
@@ -139,17 +135,15 @@ class AddItemToListControllerTest {
     void findByGenreShouldReturnListsWhenGenreHasResults() {
         // Arrange
         ListOfItems list1 = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response = mock(ListOfItemsResponseDTO.class);
 
         when(_service.findByGenre(any(GenreId.class))).thenReturn(List.of(list1));
-        when(_mapper.toModel(list1)).thenReturn(response);
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.findByGenre(VALID_GENRE_ID);
+        List<ListOfItems> result = _controller.findByGenre(VALID_GENRE_ID);
 
         // Assert
         assertEquals(1, result.size());
-        assertSame(response, result.get(0));
+        assertSame(list1, result.get(0));
     }
 
     @Test
@@ -158,7 +152,7 @@ class AddItemToListControllerTest {
         when(_service.findByGenre(any(GenreId.class))).thenReturn(List.of());
 
         // Act
-        List<ListOfItemsResponseDTO> result = _controller.findByGenre("NON-FICTION");
+        List<ListOfItems> result = _controller.findByGenre("NON-FICTION");
 
         // Assert
         assertTrue(result.isEmpty());

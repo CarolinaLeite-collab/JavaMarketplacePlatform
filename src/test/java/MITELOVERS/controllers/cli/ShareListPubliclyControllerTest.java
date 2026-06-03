@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,9 +26,6 @@ class ShareListPubliclyControllerTest {
     @Mock
     ListOfItemsService _service;
 
-    @Mock
-    ListOfItemsResponseDTOMapper _mapper;
-
     @InjectMocks
     ShareListPubliclyController _controller;
 
@@ -37,16 +34,34 @@ class ShareListPubliclyControllerTest {
         // Arrange
         ListOfItems listDouble = mock(ListOfItems.class);
         MakeListPublicRequestDTO dtoDouble = mock(MakeListPublicRequestDTO.class);
-        ListOfItemsResponseDTO responseDouble = mock(ListOfItemsResponseDTO.class);
 
-        when(_service.makePublic(any(ListOfItemsId.class), any(SharedDuration.class))).thenReturn(listDouble);
         when(dtoDouble.getSharedUntil()).thenReturn(2);
-        when(_mapper.toModel(any(ListOfItems.class))).thenReturn(responseDouble);
+        when(_service.makePublic(any(ListOfItemsId.class), any(SharedDuration.class))).thenReturn(listDouble);
 
         // Act
-        ListOfItemsResponseDTO result = _controller.shareListPublicly("LOI-12345", dtoDouble);
+        ListOfItems result = _controller.shareListPublicly("LOI-12345", dtoDouble);
 
         // Assert
-        assertEquals(responseDouble, result);
+        assertNotNull(result);
+        assertSame(listDouble, result);
+    }
+
+    @Test
+    void shareListPubliclyShouldThrowWhenServiceThrows() {
+        // Arrange
+        MakeListPublicRequestDTO dtoDouble = mock(MakeListPublicRequestDTO.class);
+        when(dtoDouble.getSharedUntil()).thenReturn(2);
+
+        when(_service.makePublic(any(ListOfItemsId.class), any(SharedDuration.class)))
+                .thenThrow(new IllegalStateException("List not found"));
+
+        // Act
+        IllegalStateException ex = assertThrows(
+                IllegalStateException.class,
+                () -> _controller.shareListPublicly("LOI-12345", dtoDouble)
+        );
+
+        // Assert
+        assertEquals("List not found", ex.getMessage());
     }
 }

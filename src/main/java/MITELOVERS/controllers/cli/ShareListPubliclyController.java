@@ -15,22 +15,17 @@ import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 public class ShareListPubliclyController {
 
     private final ListOfItemsService _service;
-    private ListOfItemsResponseDTOMapper _mapper;
 
-    public ShareListPubliclyController(ListOfItemsService service,  ListOfItemsResponseDTOMapper mapper) {
+    public ShareListPubliclyController(ListOfItemsService service) {
         _service = service;
-        _mapper = mapper;
     }
 
-    public ListOfItemsResponseDTO shareListPublicly(String listId, MakeListPublicRequestDTO dto) {
+    public ListOfItems shareListPublicly(String listId, MakeListPublicRequestDTO dto) {
+
         ListOfItemsId listOfItemsId = new ListOfItemsId(listId);
         SharedDuration sharedDuration = new SharedDuration(dto.getSharedUntil());
 
-        ListOfItems list = _service.makePublic(listOfItemsId, sharedDuration);
-
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return _service.makePublic(listOfItemsId, sharedDuration);
     }
 
 }

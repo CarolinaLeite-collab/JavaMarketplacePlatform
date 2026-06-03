@@ -22,25 +22,20 @@ import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 
 public class CreatePrivateListOfItemsController {
 
-    private ListOfItemsResponseDTOMapper _mapper;
     private final ListOfItemsService _service;
 
-    public CreatePrivateListOfItemsController(ListOfItemsService service, ListOfItemsResponseDTOMapper mapper) {
+    public CreatePrivateListOfItemsController(ListOfItemsService service) {
         _service = service;
-        _mapper = mapper;
     }
 
-    public ListOfItemsResponseDTO createListOfItems(String userId, ListOfItemsRequestDTO dto) {
+    public ListOfItems createListOfItems(String userId, ListOfItemsRequestDTO dto) {
+
         UserId recUserId = new UserId(new Email(userId));
         Name name = new Name(dto.getName());
         GenreId genreId = new GenreId(dto.getGenreId());
 
 
-        ListOfItems list = _service.save(recUserId, name, genreId);
-
-        ListOfItemsResponseDTO result = _mapper.toModel(list);
-
-        return result;
+        return _service.save(recUserId, name, genreId);
     }
 
 }
