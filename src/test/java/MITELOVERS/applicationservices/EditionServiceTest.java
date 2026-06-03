@@ -41,6 +41,7 @@ class EditionServiceTest {
 
     @BeforeEach
     void setUp() {
+
         _iEditionRepoDouble = mock(IEditionRepo.class);
         _editionFactoryDouble = mock(EditionFactory.class);
         _iPublicationRepoDouble = mock(IPublicationRepo.class);

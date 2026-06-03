@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+
+/**
+ * Application service responsible for retrieving publication information
+ * and converting domain objects into response DTOs.
+ */
+
 @Service
 public class EditionService {
 
