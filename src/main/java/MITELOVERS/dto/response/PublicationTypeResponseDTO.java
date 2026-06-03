@@ -13,7 +13,7 @@ import org.springframework.hateoas.RepresentationModel;
 @Generated
 @Getter
 @AllArgsConstructor
-public class PublicationTypeResponseDTO  extends RepresentationModel<PublicationResponseDTO>  {
+public class PublicationTypeResponseDTO  extends RepresentationModel<PublicationTypeResponseDTO>  {
 
     private String publicationTypeId;
 
