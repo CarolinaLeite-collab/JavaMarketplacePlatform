@@ -51,6 +51,7 @@ public class AuthorizationPolicy {
     public boolean canListPublications(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
+
     /** Publication related authorization - can register Publication*/
     public boolean canCreatePublication(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
@@ -76,9 +77,20 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER);
     }
 
-    // -----------------------
-    // DirectSale permissions
-    // -----------------------
+    /** Only admins can register a Publishing Company*/
+    public boolean canCreatePublishingCompany(User user) {
+        return user.hasRole(Role.ADMIN);
+    }
+
+    /** Only admins can get a list of all Publishing Companies*/
+    public boolean canGetAllPublishingCompanies(User user) {
+        return user.hasRole(Role.ADMIN);
+    }
+
+    /** Only admins can search for a specific Publishing Company*/
+    public boolean canGetPublishingCompany(User user) {
+        return user.hasRole(Role.ADMIN);
+    }
 
     /** Any authenticated user may list direct sales. */
     public boolean canListDirectSales(User user) {
