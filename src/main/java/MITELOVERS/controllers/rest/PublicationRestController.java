@@ -8,6 +8,7 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
+import MITELOVERS.mapper.PublicationResponseDTOMapper;
 import org.springframework.hateoas.MediaTypes;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
@@ -20,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Year;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -36,14 +38,17 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PublicationRestController {
 
     private final PublicationService _publicationService;
+    private final PublicationResponseDTOMapper _publicationResponseDTOMapper;
     private final PublicationLinkProvider _publicationLinkProvider;
     private final UserService _userService;
 
     public PublicationRestController(PublicationService publicationService,
+                                     PublicationResponseDTOMapper publicationResponseDTOMapper,
                                      PublicationLinkProvider publicationLinkProvider,
                                      UserService userService) {
 
         _publicationService = publicationService;
+        _publicationResponseDTOMapper = publicationResponseDTOMapper;
         _publicationLinkProvider = publicationLinkProvider;
         _userService = userService;
 
@@ -71,48 +76,46 @@ public class PublicationRestController {
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
             @Valid @RequestBody PublicationRequestDTO info) {
 
-        Publication publication =
-                _publicationService.registerPublication(
-                        new Title(info.getTitle()),
-                        new AuthorId(info.getAuthorId()),
-                        Year.of(info.getReleaseYear()),
-                        new GenreId(info.getGenreId())
-                );
-        PublicationResponseDTO publicationResponseDTO =
-                _publicationService.getPublicationResponseDTO(publication);
+        try {
+            Publication publication = _publicationService.registerPublication(
+                    new Title(info.getTitle()),
+                    new AuthorId(info.getAuthorId()),
+                    Year.of(info.getReleaseYear()),
+                    new GenreId(info.getGenreId())
+            );
 
-        publicationResponseDTO.add(
-                linkTo(
-                        methodOn(PublicationRestController.class)
-                                .getPublicationById(
-                                        publicationResponseDTO.getPublicationId()
-                                )
-                ).withSelfRel()
-        );
+            PublicationResponseDTO result = _publicationResponseDTOMapper.toModel(publication);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(publicationResponseDTO);
+            result.add(linkTo(methodOn(PublicationRestController.class)
+                    .getPublicationById(result.getPublicationId())).withSelfRel());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PublicationResponseDTO>> getAllPublications() {
 
-        List<PublicationResponseDTO> publications =
+        List<Publication> publications =
                 _publicationService.getAllPublications();
 
         if (publications.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
-        publications.forEach(publication ->
-                publication.add(
-                        linkTo(methodOn(PublicationRestController.class)
-                                .getPublicationById(publication.getPublicationId()))
-                                .withSelfRel()
-                )
-        );
+        List<PublicationResponseDTO> response = new ArrayList<>();
 
-        return ResponseEntity.ok(publications);
+        for (Publication publication : publications) {
+            PublicationResponseDTO dto = _publicationResponseDTOMapper.toModel(publication);
+            dto.add(linkTo(methodOn(PublicationRestController.class)
+                    .getPublicationById(dto.getPublicationId())).withSelfRel());
+            response.add(dto);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping(
@@ -120,17 +123,20 @@ public class PublicationRestController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationResponseDTO> getPublicationById(
             @PathVariable String id) {
+        try {
+            Publication publication = _publicationService.getPublicationById(id);
 
-        PublicationResponseDTO publication =
-                _publicationService.getPublicationById(id);
+            PublicationResponseDTO result = _publicationResponseDTOMapper.toModel(publication);
 
-        publication.add(
-                linkTo(methodOn(PublicationRestController.class)
-                        .getPublicationById(publication.getPublicationId()))
-                        .withSelfRel()
-        );
+            result.add(linkTo(methodOn(PublicationRestController.class)
+                    .getPublicationById(result.getPublicationId())).withSelfRel());
 
-        return ResponseEntity.ok(publication);
+            return ResponseEntity.ok(result);
+
+        } catch (Exception ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
+
 
 }

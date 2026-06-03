@@ -1,12 +1,15 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.PublicationService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
+import MITELOVERS.mapper.PublicationResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,15 +30,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PublicationRestControllerTest {
 
+    // SUT
     @InjectMocks
     PublicationRestController _controller;
 
     @Mock
     PublicationService _publicationServiceDouble;
 
+    @Mock
+    PublicationResponseDTOMapper _mapperDouble;
+
+    @Mock
+    PublicationLinkProvider _publicationLinkProviderDouble;
+
+    @Mock
+    UserService _userServiceDouble;
+
+    // --- registerPublication tests ---
+
     @Test
-    void registerPublicationAndReturnResponseDTO() {
-        //Arrange
+    void registerPublicationReturnsCreatedWithDTO() {
+        // Arrange
         PublicationRequestDTO requestDTO = new PublicationRequestDTO(
                 "Photomaton & Vox",
                 "HERBERTO_HELDER",
@@ -44,9 +59,7 @@ class PublicationRestControllerTest {
         );
 
         Publication publicationDouble = mock(Publication.class);
-
-        PublicationResponseDTO responseDTODouble =
-                mock(PublicationResponseDTO.class);
+        PublicationResponseDTO responseDTODouble = mock(PublicationResponseDTO.class);
 
         when(_publicationServiceDouble.registerPublication(
                 any(Title.class),
@@ -55,11 +68,8 @@ class PublicationRestControllerTest {
                 any(GenreId.class)
         )).thenReturn(publicationDouble);
 
-        when(_publicationServiceDouble.getPublicationResponseDTO(publicationDouble))
-                .thenReturn(responseDTODouble);
-
-        when(responseDTODouble.getPublicationId())
-                .thenReturn("PUB-001");
+        when(_mapperDouble.toModel(publicationDouble)).thenReturn(responseDTODouble);
+        when(responseDTODouble.getPublicationId()).thenReturn("PUB-001");
 
         // Act
         ResponseEntity<PublicationResponseDTO> response =
@@ -70,17 +80,25 @@ class PublicationRestControllerTest {
         assertSame(responseDTODouble, response.getBody());
     }
 
-    @Test
-    void getAllPublicationsReturnsOkResponse() {
-        // Arrange
-        PublicationResponseDTO publication1 = mock(PublicationResponseDTO.class);
-        PublicationResponseDTO publication2 = mock(PublicationResponseDTO.class);
+    // --- getAllPublications tests ---
 
-        List<PublicationResponseDTO> publications =
-                List.of(publication1, publication2);
+    @Test
+    void getAllPublicationsReturnsOkWithDTOList() {
+        // Arrange
+        Publication publication1 = mock(Publication.class);
+        Publication publication2 = mock(Publication.class);
+
+        PublicationResponseDTO dto1 = mock(PublicationResponseDTO.class);
+        PublicationResponseDTO dto2 = mock(PublicationResponseDTO.class);
 
         when(_publicationServiceDouble.getAllPublications())
-                .thenReturn(publications);
+                .thenReturn(List.of(publication1, publication2));
+
+        when(_mapperDouble.toModel(publication1)).thenReturn(dto1);
+        when(_mapperDouble.toModel(publication2)).thenReturn(dto2);
+
+        when(dto1.getPublicationId()).thenReturn("PUB-001");
+        when(dto2.getPublicationId()).thenReturn("PUB-002");
 
         // Act
         ResponseEntity<List<PublicationResponseDTO>> response =
@@ -88,40 +106,58 @@ class PublicationRestControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertSame(publications, response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertSame(dto1, response.getBody().get(0));
+        assertSame(dto2, response.getBody().get(1));
     }
 
     @Test
-    void getPublicationByIdReturnsOkResponse() {
-        //Arrange
-        PublicationResponseDTO responseDTODouble =
-                mock(PublicationResponseDTO.class);
+    void getAllPublicationsReturnsNoContentWhenListIsEmpty() {
+        // Arrange
+        when(_publicationServiceDouble.getAllPublications()).thenReturn(List.of());
+
+        // Act
+        ResponseEntity<List<PublicationResponseDTO>> response =
+                _controller.getAllPublications();
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
+
+    // --- getPublicationById tests ---
+
+    @Test
+    void getPublicationByIdReturnsOkWithDTO() {
+        // Arrange
+        Publication publicationDouble = mock(Publication.class);
+        PublicationResponseDTO responseDTODouble = mock(PublicationResponseDTO.class);
 
         when(_publicationServiceDouble.getPublicationById("PUB-001"))
-                .thenReturn(responseDTODouble);
+                .thenReturn(publicationDouble);
 
-        //Act
+        when(_mapperDouble.toModel(publicationDouble)).thenReturn(responseDTODouble);
+        when(responseDTODouble.getPublicationId()).thenReturn("PUB-001");
+
+        // Act
         ResponseEntity<PublicationResponseDTO> response =
                 _controller.getPublicationById("PUB-001");
 
-        //Assert
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertSame(responseDTODouble, response.getBody());
     }
 
     @Test
-    void getAllPublicationsReturnsNoContentWhenListIsEmpty() {
-        //Arrange
-        when(_publicationServiceDouble.getAllPublications())
-                .thenReturn(List.of());
+    void getPublicationByIdReturnsNotFoundWhenPublicationDoesNotExist() {
+        // Arrange
+        when(_publicationServiceDouble.getPublicationById("PUB-999"))
+                .thenThrow(new RuntimeException("Publication not found"));
 
-        //Act
-        ResponseEntity<List<PublicationResponseDTO>> response =
-                _controller.getAllPublications();
+        // Act
+        ResponseEntity<PublicationResponseDTO> response =
+                _controller.getPublicationById("PUB-999");
 
-        //Assert
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
-
-
 }
