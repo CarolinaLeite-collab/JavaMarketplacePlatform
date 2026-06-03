@@ -11,6 +11,7 @@ import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
@@ -52,7 +53,8 @@ public class EditionService {
     }
 
 
-    public EditionResponseDTO registerEdition(String pubId, EditionRequestDTO dto) {
+    @Transactional
+    public Edition registerEdition(String pubId, EditionRequestDTO dto) {
 
         PublicationTypeId typeId = new PublicationTypeId(dto.getPublicationTypeId());
         Identifier identifier = _editionRequestDTOMapper.toIdentifier(dto);
@@ -99,66 +101,58 @@ public class EditionService {
                 if (existingEdition.getPublicationTypeId().equals(typeId) &&
                         existingEdition.getIdentifier().equals(identifier)) {
 
-                    return _editionResponseDTOMapper.toModel(existingEdition);
+                    return edition;
                 }
             } else {
                 if (existingEdition.sameAs(edition)) {
 
-                    return _editionResponseDTOMapper.toModel(existingEdition);
+                    return edition;
                 }
             }
         }
 
-        Edition saved = _iEditionRepo.save(edition);
-
-        return _editionResponseDTOMapper.toModel(saved);
+        return _iEditionRepo.save(edition);
 
     }
 
-    public List<EditionResponseDTO> getAllEditions() {
+    @Transactional
+    public List<Edition> getAllEditions() {
 
-        Iterable<Edition> editions = _iEditionRepo.findAll();
+        List<Edition> editions = new ArrayList<>();
 
-        List<EditionResponseDTO> response = new ArrayList<>();
-
-        for (Edition edition : editions) {
-            response.add(_editionResponseDTOMapper.toModel(edition));
+        for (Edition edition : _iEditionRepo.findAll()) {
+            editions.add(edition);
         }
 
-        return response;
+        return editions;
     }
 
-    public List<EditionResponseDTO> getAllEditionsByPublication(String publicationId) {
+    @Transactional
+    public List<Edition> getAllEditionsByPublication(String publicationId) {
 
         PublicationId pubId = new PublicationId(publicationId);
 
         _iPublicationRepo.ofIdentity(pubId)
                 .orElseThrow(() -> new NoSuchElementException("Publication not found"));
 
-        Iterable<Edition> editions = _iEditionRepo.findAll();
+        List<Edition> result = new ArrayList<>();
 
-        List<EditionResponseDTO> response = new ArrayList<>();
-
-        for (Edition edition : editions) {
+        for (Edition edition : _iEditionRepo.findAll()) {
             if (edition.getPublicationId().equals(pubId)) {
-                response.add(_editionResponseDTOMapper.toModel(edition));
+                result.add(edition);
             }
         }
 
-        return response;
+        return result;
     }
 
-    public EditionResponseDTO getEditionById(String editionId) {
+    @Transactional
+    public Edition getEditionById(String editionId) {
 
         EditionId id = new EditionId(editionId);
 
-        Edition edition = _iEditionRepo.ofIdentity(id)
+        return _iEditionRepo.ofIdentity(id)
                 .orElseThrow(() -> new NoSuchElementException("Edition not found"));
-
-        EditionResponseDTO editionResponseDTO = _editionResponseDTOMapper.toModel(edition);
-
-        return editionResponseDTO;
-
     }
 
 }

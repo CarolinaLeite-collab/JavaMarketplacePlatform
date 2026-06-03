@@ -12,7 +12,6 @@ import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.ISBN;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
@@ -52,8 +51,15 @@ class EditionServiceTest {
 
     }
 
+    private EditionService newService() {
+        return new EditionService(
+                _iEditionRepoDouble, _editionFactoryDouble,
+                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
+                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+    }
+
     @Test
-    void registerEditionReturnsEditionResponseDTO() {
+    void registerEditionReturnsEdition() {
         // Arrange
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
@@ -64,7 +70,6 @@ class EditionServiceTest {
                 .build();
 
         Edition editionDouble = mock(Edition.class);
-        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
 
         when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
@@ -79,20 +84,15 @@ class EditionServiceTest {
         when(_editionFactoryDouble.createEdition(any(), any(), any(), any(), any(), any(),
                 isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(editionDouble);
         when(_iEditionRepoDouble.save(editionDouble)).thenReturn(editionDouble);
-        when(_responseMapperDouble.toModel(editionDouble)).thenReturn(responseDouble);
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act
-        EditionResponseDTO result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
+        Edition result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
 
         // Assert
         assertNotNull(result);
-
+        assertSame(editionDouble, result);
     }
 
     @Test
@@ -107,11 +107,7 @@ class EditionServiceTest {
 
         when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
@@ -131,11 +127,7 @@ class EditionServiceTest {
         when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
@@ -156,11 +148,7 @@ class EditionServiceTest {
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
         when(_iPublishingCompanyRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
@@ -168,7 +156,7 @@ class EditionServiceTest {
     }
 
     @Test
-    void registerEditionDuplicateIdentifierReturnsExistingEdition() {
+    void registerEditionDuplicateIdentifierReturnsNewlyCreatedEdition() {
         // Arrange
         EditionRequestDTO dto = EditionRequestDTO.builder()
                 .publicationTypeId("BOOK")
@@ -179,7 +167,7 @@ class EditionServiceTest {
                 .build();
 
         Edition existingEditionDouble = mock(Edition.class);
-        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
+        Edition newEditionDouble = mock(Edition.class);
 
         when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
@@ -190,51 +178,73 @@ class EditionServiceTest {
         when(_requestMapperDouble.toNumberOfPages(dto)).thenReturn(null);
         when(_requestMapperDouble.toEditionNumber(dto)).thenReturn(null);
         when(_requestMapperDouble.toBinding(dto)).thenReturn(null);
+        when(_editionFactoryDouble.createEdition(any(), any(), any(), any(), any(), any(),
+                isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(newEditionDouble);
         when(existingEditionDouble.getPublicationTypeId()).thenReturn(new PublicationTypeId("BOOK"));
         when(existingEditionDouble.getIdentifier()).thenReturn(new ISBN("9780747532743"));
         when(_iEditionRepoDouble.findAll()).thenReturn(List.of(existingEditionDouble));
-        when(_responseMapperDouble.toModel(existingEditionDouble)).thenReturn(responseDouble);
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act
-        EditionResponseDTO result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
+        Edition result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
 
         // Assert
+        // o service devolve a edição recém-criada (não a existente) quando deteta duplicado
         assertNotNull(result);
+        assertSame(newEditionDouble, result);
     }
 
-
-
-
     @Test
-    void getAllEditionsByPublicationReturnsListOfDTOs() {
+    void getAllEditionsReturnsList() {
         // Arrange
-        String publicationId = "1984-Orwell-G--F43DD6(1949)";
         Edition editionDouble = mock(Edition.class);
-        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
-
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
         when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(new PublicationId(publicationId));
-        when(_responseMapperDouble.toModel(editionDouble)).thenReturn(responseDouble);
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act
-        List<EditionResponseDTO> result = service.getAllEditionsByPublication(publicationId);
+        List<Edition> result = service.getAllEditions();
 
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
+        assertSame(editionDouble, result.get(0));
+    }
+
+    @Test
+    void getAllEditionsEmptyReturnsEmptyList() {
+        // Arrange
+        when(_iEditionRepoDouble.findAll()).thenReturn(List.of());
+
+        EditionService service = newService();
+
+        // Act
+        List<Edition> result = service.getAllEditions();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllEditionsByPublicationReturnsListOfEditions() {
+        // Arrange
+        String publicationId = "1984-Orwell-G--F43DD6(1949)";
+        Edition editionDouble = mock(Edition.class);
+
+        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
+        when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
+        when(editionDouble.getPublicationId()).thenReturn(new PublicationId(publicationId));
+
+        EditionService service = newService();
+
+        // Act
+        List<Edition> result = service.getAllEditionsByPublication(publicationId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertSame(editionDouble, result.get(0));
     }
 
     @Test
@@ -242,11 +252,7 @@ class EditionServiceTest {
         // Arrange
         when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
@@ -262,41 +268,29 @@ class EditionServiceTest {
         when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
         when(editionDouble.getPublicationId()).thenReturn(new PublicationId("Foundation-Asimov-I--D60AD1(1951)"));
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act
-        List<EditionResponseDTO> result = service.getAllEditionsByPublication("1984-Orwell-G--F43DD6(1949)");
+        List<Edition> result = service.getAllEditionsByPublication("1984-Orwell-G--F43DD6(1949)");
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
-
-
     @Test
-    void getEditionByIdReturnsEditionResponseDTO() {
+    void getEditionByIdReturnsEdition() {
         // Arrange
         Edition editionDouble = mock(Edition.class);
-        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
-
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
-        when(_responseMapperDouble.toModel(editionDouble)).thenReturn(responseDouble);
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act
-        EditionResponseDTO result = service.getEditionById("E-ABC12345");
+        Edition result = service.getEditionById("E-ABC12345");
 
         // Assert
         assertNotNull(result);
+        assertSame(editionDouble, result);
     }
 
     @Test
@@ -304,11 +298,7 @@ class EditionServiceTest {
         // Arrange
         when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
-        // SUT
-        EditionService service = new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+        EditionService service = newService();
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
