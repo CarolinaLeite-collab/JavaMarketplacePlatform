@@ -80,7 +80,7 @@ describe('ItemAccordion', () => {
             mockItems[1]
         ];
 
-        render(<ItemAccordion items={[]} details={{}} dispatch={vi.fn()} />);
+        render(<ItemAccordion items={itemsWithNullPicture} details={{}} dispatch={vi.fn()} />);
 
         expect(screen.getByText('The War of the Worlds')).toBeInTheDocument();
     });

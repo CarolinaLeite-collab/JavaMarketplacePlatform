@@ -1,26 +1,32 @@
 import {Accordion, Box, Image} from '@mantine/core';
 import {ItemDetailTable} from "../itemDetailsTable/ItemDetailsTable.tsx";
+import { getLibraryDetail } from '../../context/library/LibraryActions';
 
-interface ItemAccordion{
-    itemId: string;
-    title: string;
-    imageUrl: string | null;
-    publicationType: string;
-    authorName: string;
-    identifier: string | null;
-}
+export function ItemAccordion({ items, details, dispatch }) {
 
-interface Props {
-    items: ItemAccordion [];
-}
+    const loadDetail = (href, itemId) => {
+        if (details[itemId]) return;
 
-export function ItemAccordion({ items }: Props) {
+        getLibraryDetail(dispatch, href, itemId);
+    };
+
     return (
         <Box
             w="60%"
             mx="auto"
         >
-            <Accordion chevronPosition="right" variant="separated"
+            <Accordion chevronPosition="right"
+                       variant="separated"
+                       onChange={(itemId) => {
+                            if (!itemId) return;
+
+                            const item = items.find(i => i.itemId === itemId);
+                            const href = item?.links.find(l => l.rel === 'self')?.href;
+
+                            if (href) {
+                                loadDetail(href, itemId);
+                            }
+                       }}
                        styles={{
                            item: {
                                border: '1px solid light-dark(var(--mantine-color-gray-4), '
@@ -33,10 +39,10 @@ export function ItemAccordion({ items }: Props) {
                     {items.map(item => (
                     <Accordion.Item key={item.itemId} value={item.itemId}>
                         <Accordion.Control icon={<Image
-                        src={item.imageUrl}
+                        src={item.picture}
                         alt={item.title}
-                        w={32}
-                        h={32}
+                        w={52}
+                        h={70}
                         fit="cover"
                         radius="sm"
                         fallbackSrc="/book-placeholder.png"/>
@@ -45,13 +51,15 @@ export function ItemAccordion({ items }: Props) {
                         </Accordion.Control>
 
                         <Accordion.Panel>
-                            <ItemDetailTable
-                                item={{
-                                    publicationType: item.publicationType,
-                                    authorName: item.authorName,
-                                    identifier: item.identifier,
-                                }}
-                            />
+                            {details[item.itemId]
+                                ? (
+                                    <ItemDetailTable
+                                        item={details[item.itemId]}
+                                    />
+                                )
+                                : (
+                                    <p>Loading...</p>
+                                )}
                         </Accordion.Panel>
                     </Accordion.Item>
             ))}
