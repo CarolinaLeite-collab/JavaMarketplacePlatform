@@ -122,7 +122,6 @@ public class DataInitializer {
             genreRepo.save(genre11);
 
 
-
             // Fetch and log all genres
             log.info("Genres found with findAll():");
             log.info("-------------------------------");
@@ -196,15 +195,20 @@ public class DataInitializer {
             // -------------------------------------------------------
             // Authors
             Author orwell = authorFactory.createAuthor(new AuthorId("Orwell G.-F43DD6"), new Name("George Orwell"));
-            Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"),new Name("Isaac Asimov"));
-            Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"),new Name("Yuval Noah Harari"));
-            Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"),new Name("Helberto Helder"));
-            Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"),new Name("Rem Koolhaas"));
-            Author alexander = authorFactory.createAuthor(new AuthorId("Alexander C.-13B3C"),new Name("Cristopher Alexander"));
+            Author asimov = authorFactory.createAuthor(new AuthorId("Asimov I.-D60AD1"), new Name("Isaac Asimov"));
+            Author yuval = authorFactory.createAuthor(new AuthorId("Harari Y.N.-54369C"), new Name("Yuval Noah Harari"));
+            Author helder = authorFactory.createAuthor(new AuthorId("Helder H.-27DB3C"), new Name("Helberto Helder"));
+            Author koolhaas = authorFactory.createAuthor(new AuthorId("Koolhaas R.-23B3C"), new Name("Rem Koolhaas"));
+            Author alexander = authorFactory.createAuthor(new AuthorId("Alexander C.-13B3C"), new Name("Cristopher Alexander"));
             Author seneca = authorFactory.createAuthor(
                     new AuthorId("Seneca L.A.-018812"),
                     new Name("Lucius Annaeus Seneca")
             );
+            Author eg = authorFactory.createAuthor(
+                    new AuthorId("Gray E.A.-219812"),
+                    new Name("Eileen Gray")
+            );
+
             authorRepo.save(seneca);
             authorRepo.save(orwell);
             authorRepo.save(asimov);
@@ -213,8 +217,9 @@ public class DataInitializer {
             authorRepo.save(koolhaas);
             authorRepo.save(alexander);
             authorRepo.save(seneca);
+            authorRepo.save(eg);
 
-            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas,Cristopher Alexander, Seneca");
+            log.info("Authors saved: George Orwell, Isaac Asimov, Yuval Noah Harari, Helberto Helder, Rem Koolhaas,Cristopher Alexander, Seneca, Eileen Gray");
 
             // -------------------------------------------------------
             // Publications
@@ -258,6 +263,13 @@ public class DataInitializer {
                     genre7.identity() // Non-Fiction
             );
 
+            Publication e1027 = publicationFactory.createPublication(
+                    new Title("E.1027. Maison en Bord de Mer"),
+                    eg.identity(),
+                    Year.of(1929),
+                    genre1.identity() // Arts / Architecture
+            );
+
             publicationRepo.save(shortnessOfLife);
             publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
@@ -265,8 +277,9 @@ public class DataInitializer {
             publicationRepo.save(sapiens);
             publicationRepo.save(pattern);
             publicationRepo.save(shortnessOfLife);
+            publicationRepo.save(e1027);
 
-            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante, patternLanguage");
+            log.info("Publications saved: 1984, Foundation, Sapiens, novaYorkDelirante, patternLanguage, E.1027");
 
             // -------------------------------------------------------
             // Cities
@@ -311,7 +324,11 @@ public class DataInitializer {
             PublishingCompany penguinBooks = publishingCompanyFactory.createPublishingCompany("Penguin Books");
             publishingCompanyRepo.save(penguinBooks);
 
-            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG, Oxford University Press, Penguin Books");
+            PublishingCompany editionsAlbertMorance =
+                    publishingCompanyFactory.createPublishingCompany("Éditions Albert Morancé");
+            publishingCompanyRepo.save(editionsAlbertMorance);
+
+            log.info("Publishing companies saved: Secker & Warburg, Gnome Press, GG, Oxford University Press, Penguin Books, Éditions Albert Morancé");
 
             // -------------------------------------------------------
             // Editions
@@ -384,8 +401,21 @@ public class DataInitializer {
                     Binding.PUR
             );
             editionRepo.save(editionShortnessOfLife);
-
-            log.info("Editions saved: 1984, Foundation, Nova York Delirante,");
+            Edition editionE1027Original = editionFactory.createEdition(
+                    magazine.identity(),
+                    new NoIdentifier(), // sem ISBN na edição original de 1929
+                    e1027.identity(),
+                    editionsAlbertMorance.identity(),
+                    Year.of(1929),
+                    Language.FRENCH,
+                    null,
+                    null,
+                    null,
+                    new EditionNumber(1),
+                    Binding.PUR
+            );
+            editionRepo.save(editionE1027Original);
+            log.info("Editions saved: 1984, Foundation, Nova York Delirante, E.1027");
 
 
             // -------------------------------------------------------
@@ -466,10 +496,22 @@ public class DataInitializer {
                     editionShortnessOfLife.identity(),
                     Condition.GOOD,
                     new Description("Penguin Great Ideas edition of On the Shortness of Life"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("/images/seneca.png")
             );
             itemRepo.save(shortnessOfLifeItem);
 
+            ItemId itemIdE1027 = new ItemId("3C5D126F9B");
+            Item itemE1027 = itemFactory.createItem(
+                    itemIdE1027,
+                    editionE1027Original.identity(),
+                    Condition.FAIR,
+                    new Description("Magazine rare First Edition"),
+                    SaleStatus.OnDirectSale,
+                    new Picture("/images/E1027")
+
+            );
+            itemRepo.save(itemE1027);
 
             // -------------------------------------------------------
             // Direct Sales
@@ -495,6 +537,13 @@ public class DataInitializer {
                     null  // unlimited duration
             );
             directSaleRepo.save(directSale3);
+
+            DirectSale directSale4 = directSaleFactory.createDirectSale(
+                    List.of(itemIdE1027),
+                    new Price(500, Currency.EUR),
+                    null  // unlimited duration
+            );
+            directSaleRepo.save(directSale4);
 
             log.info("Direct sales saved: 3 direct sales");
 
@@ -606,13 +655,21 @@ public class DataInitializer {
             );
             directSaleRepo.save(sciFiSale);
 
-           // Architecture (existing item3)
+            // Architecture (existing item3)
             DirectSale architectureSale = directSaleFactory.createDirectSale(
                     List.of(itemId3),
                     new Price(12.99, Currency.EUR),
                     Duration.ofDays(30)
             );
             directSaleRepo.save(architectureSale);
+
+            // Seneca (existing item4)
+            DirectSale architectureSale2 = directSaleFactory.createDirectSale(
+                    List.of(itemId3),
+                    new Price(12.99, Currency.EUR),
+                    Duration.ofDays(30)
+            );
+            directSaleRepo.save(architectureSale2);
 
             log.info("DirectSales of all genres");
 
