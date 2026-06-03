@@ -1,11 +1,16 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +33,33 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class LibraryRestController {
 
     private final LibraryService _libraryService;
+    private final LibraryLinkProvider _libraryLinkProvider;
+    private final UserService _userService;
 
-    public LibraryRestController(LibraryService libraryService) {
+    public LibraryRestController(LibraryService libraryService, LibraryLinkProvider  libraryLinkProvider, UserService userService) {
         _libraryService = libraryService;
+        _libraryLinkProvider = libraryLinkProvider;
+        _userService = userService;
+
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity<RepresentationModel<?>> options(
+            @RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        model.add(
+                linkTo(methodOn(LibraryRestController.class)
+                        .options(email))
+                        .withSelfRel()
+        );
+
+        _libraryLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @GetMapping(path ="/", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -1,24 +1,28 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
+import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +35,13 @@ class LibraryRestControllerTest {
 
     @MockitoBean
     private LibraryService libraryService;
+
+    @MockitoBean
+    private LibraryLinkProvider libraryLinkProvider;
+
+    @MockitoBean
+    private UserService userService;
+
 
     @Test
     void shouldReturn200WithItemsWhenLibraryExists() throws Exception {
@@ -162,5 +173,53 @@ class LibraryRestControllerTest {
 
         // Assert
         result.andExpect(status().isConflict());
+    }
+
+    @Test
+    void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
+        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of(
+                Link.of("/my-library/").withRel("library"),
+                Link.of("/my-library/").withRel("library-add")
+        ));
+
+        // Act & Assert
+        mockMvc.perform(options("/my-library")
+                        .param("email", "pedro@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.library").exists())
+                .andExpect(jsonPath("$._links.library-add").exists());
+    }
+
+    @Test
+    void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(userService.getUserByEmail("readonly@aeiou.com")).thenReturn(_userDouble);
+        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of());
+
+        // Act & Assert
+        mockMvc.perform(options("/my-library")
+                        .param("email", "readonly@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
+    }
+
+    @Test
+    void optionsShouldReturn500WhenUserNotFound() throws Exception {
+        // Arrange
+        when(userService.getUserByEmail("naoexiste@aeiou.com"))
+                .thenThrow(new NoSuchElementException("User not found"));
+
+        // Act & Assert
+        mockMvc.perform(options("/my-library")
+                        .param("email", "naoexiste@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isNotFound());
     }
 }
