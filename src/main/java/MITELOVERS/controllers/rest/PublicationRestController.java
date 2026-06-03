@@ -1,13 +1,18 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.PublicationService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
+import org.springframework.hateoas.MediaTypes;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
 import jakarta.validation.Valid;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +36,35 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PublicationRestController {
 
     private final PublicationService _publicationService;
-    public PublicationRestController(PublicationService publicationService) {
+    private final PublicationLinkProvider _publicationLinkProvider;
+    private final UserService _userService;
+
+    public PublicationRestController(PublicationService publicationService,
+                                     PublicationLinkProvider publicationLinkProvider,
+                                     UserService userService) {
+
         _publicationService = publicationService;
+        _publicationLinkProvider = publicationLinkProvider;
+        _userService = userService;
+
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        model.add(
+                linkTo(methodOn(PublicationRestController.class)
+                        .options(email))
+                        .withSelfRel()
+        );
+
+        _publicationLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,  produces = MediaType.APPLICATION_JSON_VALUE)
