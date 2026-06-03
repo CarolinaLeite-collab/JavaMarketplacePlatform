@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
 import { MarketPlaceTable } from '../../components/marketPlaceTable/MarketPlaceTable.jsx';
+import AppContext from '../../context/AppContext';
 
 const genres = [
     { value: 'all', label: 'All genres' },
@@ -61,6 +62,13 @@ const items = [
 ];
 
 export default function Marketplace() {
+    const { state } = useContext(AppContext);
+    const { directSalesHref } = state.app;
+    console.log('directSalesHref:', directSalesHref);
+    const canSeePrice = !!directSalesHref;
+    console.log('canSeePrice:', canSeePrice);
+
+
     const [selectedGenre, setSelectedGenre] = useState('all');
     const [showDirectSales, setShowDirectSales] = useState(false);
     const [showAuctions, setShowAuctions] = useState(false);
@@ -76,6 +84,7 @@ export default function Marketplace() {
                 showAuctions={showAuctions}
                 onShowDirectSalesChange={setShowDirectSales}
                 onShowAuctionsChange={setShowAuctions}
+                canSeePrice={canSeePrice}
             />
         </DefaultLayout>
     );
