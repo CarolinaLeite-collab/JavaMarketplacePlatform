@@ -281,15 +281,19 @@ class AuthorizationPolicyTest {
     }
 
     @Test
-    void canListDirectSalesGuestReturnsTrue() {
-        assertTrue(_authorizationPolicy.canListDirectSales(_guestDouble));
+    void canListDirectSalesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canListDirectSales(_guestDouble));
     }
 
     @Test
-    void canGetDirectSaleGuestReturnsTrue() {
-        assertTrue(_authorizationPolicy.canGetDirectSale(_guestDouble));
+    void canGetDirectSaleGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetDirectSale(_guestDouble));
     }
 
+    @Test
+    void cannotGetDirectSalePricesGuestReturnsTrue() {
+        assertTrue(_authorizationPolicy.cannotSeePrice(_guestDouble));
+    }
 
 
 }

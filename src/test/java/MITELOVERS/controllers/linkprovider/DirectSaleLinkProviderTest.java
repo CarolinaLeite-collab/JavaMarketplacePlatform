@@ -2,6 +2,7 @@ package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -136,6 +138,20 @@ class DirectSaleLinkProviderTest {
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-direct-sale")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales-by-genre")));
+    }
+
+    @Test
+    void shouldIncludeOnlyNonRegisteredPermissionsWhenUserIsNotAuthorized() {
+
+        // Arrange
+        when(authorizationPolicy.cannotSeePrice(any(User.class))).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getLinks(user);
+
+        // Assert
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales-without-price")));
     }
 
 }

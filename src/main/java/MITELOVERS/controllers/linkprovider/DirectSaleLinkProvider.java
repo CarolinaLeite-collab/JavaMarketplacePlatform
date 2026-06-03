@@ -76,6 +76,12 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
             );
         }
 
+        if(_authorizationPolicy.cannotSeePrice(user)) {
+            links.add(
+                    linkTo(methodOn(DirectSaleRestController.class).getDirectSalesWithoutPrice()).withRel("direct-sales-without-price")
+            );
+        }
+
         return links;
     }
 }
