@@ -394,7 +394,7 @@ public class DataInitializer {
                     new EditionNumber(1),
                     Binding.PAPERBACK
             );
-            editionRepo.save(editionNovaYorkDelirante);
+            editionRepo.save(spaceSetlements);
 
             Edition edition1984 = editionFactory.createEdition(
                     book.identity(),
