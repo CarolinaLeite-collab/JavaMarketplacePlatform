@@ -9,14 +9,17 @@ import { deleteList } from '../../context/lists/ListsActions';
 interface DeleteListModalProps {
     listName: string;
     links: { rel: string; href: string }[];
+    myListsHref: string | null;
 }
 
 export function DeleteListModal({ listName, links }: DeleteListModalProps) {
     const [opened, { open, close }] = useDisclosure(false);
-    const { dispatch } = useContext(AppContext);
+    const { dispatch, state } = useContext(AppContext);
+    const { myListsHref } = state.lists;
+
 
     const handleDelete = async () => {
-        await deleteList(dispatch, links);
+        await deleteList(dispatch, links, myListsHref);
         close();
     };
 

@@ -1,10 +1,10 @@
 import { useEffect, useContext, useState } from 'react';
-import { IconChevronDown, IconChevronUp, IconSelector, IconSearch, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconSelector, IconSearch, IconPlus } from '@tabler/icons-react';
 import { Center, Group, ActionIcon, ScrollArea, Table, Text, TextInput, UnstyledButton } from '@mantine/core';
 import classes from './TableList.module.css';
 import { ShareListModal } from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../context/AppContext';
-import { getMyLists } from '../../context/lists/ListsActions';
+import { getMyLists, getListsOptions } from '../../context/lists/ListsActions';
 import { DeleteListModal } from '../deletelistmodal/DeleteListModal.tsx';
 
 
@@ -66,14 +66,22 @@ function sortData(data: RowData[], payload: { sortBy: keyof RowData | null; reve
 
 export function TableList() {
     const { state, dispatch } = useContext(AppContext);
-    const { lists } = state.lists;
+    const { lists, myListsHref } = state.lists;
+    console.log('TableList render - myListsHref:', myListsHref, 'lists:', lists);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
     const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
     useEffect(() => {
-        getMyLists(dispatch);
+        const init = async () => {
+            await getListsOptions(dispatch);
+        };
+        init();
     }, [dispatch]);
+
+    useEffect(() => {
+        if (myListsHref) getMyLists(dispatch, myListsHref);
+    }, [myListsHref]);
 
     const sortedData = sortData(lists, { sortBy, reversed: reverseSortDirection, search });
 
@@ -111,7 +119,7 @@ export function TableList() {
                 </Table.Td>
                 <Table.Td w={50}>
                     <Center>
-                        {canDelete && (<DeleteListModal listName={row.name} links={row.links} />)}
+                        {canDelete && (<DeleteListModal listName={row.name} links={row.links} myListsHref={myListsHref} />)}
                     </Center>
                 </Table.Td>
             </Table.Tr>
