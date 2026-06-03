@@ -130,11 +130,14 @@ public class LibraryService {
     }
 
     @Transactional
-    public void addItemToLibrary(String itemId, String userId) {
+    public LibraryItemSummaryDTO addItemToLibrary(String itemId, String userId) {
 
         ItemId itemId1 = new ItemId(itemId);
         UserId uid = new UserId(new Email(userId));
         LibraryId libraryId = LibraryId.fromUserId(uid);
+
+        Item item = _itemRepo.ofIdentity(itemId1)
+                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
 
         Library library = _libraryRepo.ofIdentity(libraryId)
                 .orElseGet(() -> _libraryFactory.createLibrary(uid));
@@ -146,6 +149,14 @@ public class LibraryService {
         }
 
         _libraryRepo.save(library);
+
+        Edition edition = _editionRepo.ofIdentity(item.getEditionId())
+                .orElseThrow(() -> new IllegalStateException("Edition not found"));
+
+        Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
+                .orElseThrow(() -> new IllegalStateException("Publication not found"));
+
+        return _summaryMapper.toDTO(item, publication);
     }
 
     @Transactional(readOnly = true)

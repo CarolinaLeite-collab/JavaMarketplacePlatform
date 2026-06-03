@@ -73,7 +73,7 @@ public class ListOfItemsRestController {
         for(ListOfItems listOfItems : listOfLists) {
             ListOfItemsResponseDTO listDTO = _mapper.toModel(listOfItems);
             String listId = listDTO.getListId();
-            listDTO.add(linkTo(methodOn(ListOfItemsRestController.class).getListById(listId)).withSelfRel());
+            listDTO.add(linkTo(methodOn(ListOfItemsRestController.class).getListById(listId)).withRel("list"));
             listDTO.add(linkTo(methodOn(ListOfItemsRestController.class).addItemToList(listId, null)).withRel("add-item"));
 
             if (listOfItems.isPrivate()) {
