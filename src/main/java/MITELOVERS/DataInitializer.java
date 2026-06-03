@@ -505,7 +505,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Paperback edition of Hipocritões e Oligarcas"),
                     SaleStatus.OnDirectSale,
-                    new Picture("/images/hipocritoes.png")
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/hipocritoes.png?raw=true")
 
             );
             itemRepo.save(hipocritoesItem);
@@ -516,7 +516,8 @@ public class DataInitializer {
                     spaceSetlements.identity(),
                     Condition.FAIR,
                     new Description("Great book"),
-                    SaleStatus.Sold
+                    SaleStatus.Sold,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/spaceSettlements.png?raw=true")
             );
             itemRepo.save(spaceSetlementsItem);
 
@@ -549,7 +550,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Portuguese Edition of Delirious New York"),
                     SaleStatus.OnDirectSale,
-                    new Picture("/images/deliriousNewYork.png")
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/deliriousNewYork.png?raw=true")
             );
             itemRepo.save(item3);
 
@@ -560,7 +561,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("First Edition"),
                     SaleStatus.NotOnSale,
-                    new Picture("/images/patternLanguage.png")
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/patternLanguage.png?raw=true")
 
             );
             itemRepo.save(item4);
@@ -572,7 +573,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Penguin Great Ideas edition of On the Shortness of Life"),
                     SaleStatus.OnDirectSale,
-                    new Picture("/images/seneca.png")
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/seneca.png?raw=true")
             );
             itemRepo.save(shortnessOfLifeItem);
 
@@ -583,7 +584,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Magazine rare First Edition"),
                     SaleStatus.OnDirectSale,
-                    new Picture("/images/E1027")
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/E1027.png?raw=true")
 
             );
             itemRepo.save(itemE1027);
