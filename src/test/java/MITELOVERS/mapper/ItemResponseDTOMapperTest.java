@@ -249,4 +249,48 @@ class ItemResponseDTOMapperTest {
 
         assertEquals("Genre does not exist in the repository", ex.getMessage());
     }
+
+    @Test
+    void toModelWithPictureReturnsPictureUrl() {
+        // Arrange
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("3C5D126F8B");
+
+        Picture pictureDouble = mock(Picture.class);
+        when(pictureDouble.toString()).thenReturn("http://example.com/image.jpg");
+
+        Item itemDouble = mock(Item.class);
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getCondition()).thenReturn(Condition.GOOD);
+        when(itemDouble.getDescription()).thenReturn(new Description("Nice copy"));
+        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(itemDouble.getPicture()).thenReturn(pictureDouble);
+
+        Edition editionDouble     = mock(Edition.class);
+        Publication pubDouble     = mock(Publication.class);
+        Author authorDouble       = mock(Author.class);
+        Genre genreDouble         = mock(Genre.class);
+
+        when(editionDouble.getEditionId()).thenReturn(mock(EditionId.class));
+        when(editionDouble.getPublishingYear()).thenReturn(Year.of(2003));
+        when(editionDouble.getPublicationTypeId()).thenReturn(mock(PublicationTypeId.class));
+        when(editionDouble.getIdentifier()).thenReturn(mock(ISBN.class));
+        when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
+        when(pubDouble.getTitle()).thenReturn(mock(Title.class));
+        when(pubDouble.getReleaseYear()).thenReturn(Year.of(1949));
+        when(genreDouble.getGenre()).thenReturn("Fiction");
+        when(authorDouble.getName()).thenReturn(mock(Name.class));
+
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, pubDouble, authorDouble, genreDouble);
+
+        // Act
+        ItemResponseDTO dto = mapper.toModel(itemDouble);
+
+        // Assert
+        assertEquals("http://example.com/image.jpg", dto.getPicture());
+        assertTrue(dto.hasLinks());
+    }
 }
