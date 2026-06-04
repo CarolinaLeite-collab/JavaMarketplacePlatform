@@ -34,8 +34,8 @@ export function Header() {
 
                     <Group h="100%" gap={0} visibleFrom="sm">
                         <Link to="/" className={classes.link}>MARKETPLACE</Link>
-                        {libraryHref && <Link to="/my-library" className={classes.link}>LIBRARY</Link>}
-                        {myListsHref && <Link to="/my-lists" className={classes.link}>LISTS</Link>}
+                        {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>LIBRARY</Link>}
+                        {isLoggedIn && myListsHref && <Link to="/my-lists" className={classes.link}>LISTS</Link>}
                     </Group>
 
                     <Group visibleFrom="sm">
@@ -66,8 +66,8 @@ export function Header() {
                 <ScrollArea h="calc(100vh - 80px)" mx="-md">
                     <Divider my="sm" />
                     <Link to="/" className={classes.link}>Marketplace</Link>
-                    {libraryHref && <Link to="/my-library" className={classes.link}>My Library</Link>}
-                    {myListsHref && <Link to="/my-lists" className={classes.link}>My Lists</Link>}
+                    {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>My Library</Link>}
+                    {isLoggedIn && myListsHref && <Link to="/my-lists" className={classes.link}>My Lists</Link>}
                     <Divider my="sm" />
                     <Group justify="center" grow pb="xl" px="md">
                         <Button onClick={toggleUser}>
