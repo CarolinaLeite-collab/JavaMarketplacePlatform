@@ -174,4 +174,27 @@ class ItemServiceTest {
 
         assertSame(itemDouble, result);
     }
+
+    @Test
+    void registerItemAlreadyExistsReturnsExistingItem() {
+        // Arrange
+        EditionId editionIdDouble  = mock(EditionId.class);
+        Item newItemDouble         = mock(Item.class);
+        ItemId itemIdDouble        = mock(ItemId.class);
+        Item existingItemDouble    = mock(Item.class);
+
+        when(editionRepoDouble.ofIdentity(editionIdDouble))
+                .thenReturn(Optional.of(mock(Edition.class)));
+        when(itemFactoryDouble.createItem(any(), any(), any())).thenReturn(newItemDouble);
+        when(newItemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemRepoDouble.containsOfIdentity(itemIdDouble)).thenReturn(true);
+        when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(existingItemDouble));
+
+        // Act
+        Item result = itemService.registerItem(
+                editionIdDouble, Condition.GOOD, new Description("copy"));
+
+        // Assert
+        assertSame(existingItemDouble, result);
+    }
 }
