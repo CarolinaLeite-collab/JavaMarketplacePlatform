@@ -25,6 +25,7 @@ function renderTable(overrides = {}) {
             showAuctions={false}
             onShowDirectSalesChange={() => {}}
             onShowAuctionsChange={() => {}}
+            canSeePrice
             {...overrides}
         />
     );
@@ -96,5 +97,12 @@ describe('MarketPlaceTable', () => {
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
+    });
+
+    it('hides the price column when user cannot see prices', () => {
+        renderTable({ canSeePrice: false });
+
+        expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
+        expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
     });
 });
