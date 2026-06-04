@@ -21,10 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -78,19 +76,13 @@ public class ItemRestController {
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> registerItem(@Valid @RequestBody ItemRequestDTO info) {
 
-        try {
-            Item item = _itemService.registerItem(
-                    new EditionId(info.getEditionId()),
-                    Condition.valueOf(info.getCondition().toUpperCase()),
-                    new Description(info.getDescription())
-            );
-            return new ResponseEntity<>(_mapper.toModel(item), HttpStatus.CREATED);
+        Item item = _itemService.registerItem(
+                new EditionId(info.getEditionId()),
+                Condition.valueOf(info.getCondition().toUpperCase()),
+                new Description(info.getDescription())
+        );
 
-        } catch (IllegalStateException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
-        }
+        return new ResponseEntity<>(_mapper.toModel(item), HttpStatus.CREATED);
     }
 
     /**
@@ -112,15 +104,8 @@ public class ItemRestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable String id) {
 
-        try {
-            return new ResponseEntity<>(
-                    _mapper.toModel(_itemService.getItemById(id)), HttpStatus.OK);
-
-        } catch (NoSuchElementException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
-        }
+        return new ResponseEntity<>(
+                _mapper.toModel(_itemService.getItemById(id)), HttpStatus.OK);
     }
 
     /**
@@ -130,19 +115,12 @@ public class ItemRestController {
     public ResponseEntity<List<ItemResponseDTO>> getItemsIdsInLibrary(
             @RequestHeader("X-User-Id") String userId) {
 
-        try {
-            List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(userId);
+        List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(userId);
 
-            List<ItemResponseDTO> items = itemIds.stream()
-                    .map(id -> _mapper.toModel(_itemService.getItemById(id.getValue())))
-                    .collect(Collectors.toList());
+        List<ItemResponseDTO> items = itemIds.stream()
+                .map(id -> _mapper.toModel(_itemService.getItemById(id.getValue())))
+                .collect(Collectors.toList());
 
-            return ResponseEntity.ok(items);
-
-        } catch (NoSuchElementException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage());
-        }
+        return ResponseEntity.ok(items);
     }
 }
