@@ -182,15 +182,15 @@ jobs:
     name: Insecure Config Scan (Semgrep)
     runs-on: ubuntu-latest
 
-    container:
-      image: semgrep/semgrep
-
     permissions:
       contents: read
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
 
       - name: Run Semgrep config rules
         run: |
