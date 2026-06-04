@@ -23,6 +23,16 @@ participant ":Client" as client
 participant ":Server" as server
 database "DB" as DB
 
+User -> client : show me want I can do
+activate client
+client -> server : OPTIONS /my-library {...}
+activate server
+
+server --> client : available links
+deactivate server
+client --> User : here is what you can do
+deactivate client
+
 User -> client : access to "My Library"
 activate client
 client -> server : GET /my-library
