@@ -1,44 +1,56 @@
-import {NumberInput, SimpleGrid, Stack, TextInput,} from '@mantine/core';
+import {NumberInput, Select, SimpleGrid, Stack, TextInput,} from '@mantine/core';
 import type {Dispatch, SetStateAction} from 'react';
 
 interface EditionData {
-    identifier: string;
-    publicationType: string;
-    editionLanguage: string;
-    publishingCompany: string;
+    publicationTypeId: string;
+    publishingCompanyId: string;
     publishingYear: number;
-    weight: string;
-    dimension: string;
-    binding: string;
+    language: string;
+    identifier: string;
+    dimension: {
+        width: number;
+        height: number;
+        thickness: number;
+        unit: string;
+    };
+    weight: {
+        value: number;
+        unit: string;
+    };
     numberOfPages: number;
     editionNumber: number;
+    binding: string;
 }
 
 interface EditionStepProps {
     data: EditionData;
     setData: Dispatch<SetStateAction<EditionData>>;
+    publicationTypes: { value: string; label: string }[];
+    publishingCompanies: { value: string; label: string }[];
 }
 
 export function EditionStep({
-                                data,
-                                setData,
-                            }: EditionStepProps) {
+                                 data,
+                                 setData,
+                                 publicationTypes,
+                                 publishingCompanies,
+                             }: EditionStepProps) {
     return (
         <Stack>
 
             <SimpleGrid cols={2}>
-                <TextInput
+                <Select
                     label="Publication Type"
-                    placeholder="Type of publication"
-                    value={data.publicationType}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    placeholder="Select publication type"
+                    data={publicationTypes}
+                    value={data.publicationTypeId}
+                    onChange={(value) =>
                         setData((current) => ({
-                        ...current,
-                        publicationType: value,
-                    }));
-                    }}
+                            ...current,
+                            publicationTypeId: value || '',
+                        }))
+                    }
+                    searchable
                     required
                 />
 
@@ -54,38 +66,95 @@ export function EditionStep({
                             identifier: value,
                         }));
                     }}
-                    required
                 />
             </SimpleGrid>
 
             <SimpleGrid cols={3}>
-                <TextInput
+                <Select
                     label="Language"
-                    placeholder="Enter language"
-                    value={data.editionLanguage}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    placeholder="Select language"
+                    data={[
+                        'ENGLISH',
+                        'PORTUGUESE',
+                        'SPANISH',
+                        'FRENCH',
+                        'GERMAN',
+                        'ITALIAN',
+                        'DUTCH',
+                        'SWEDISH',
+                        'NORWEGIAN',
+                        'DANISH',
+                        'FINNISH',
+                        'POLISH',
+                        'CZECH',
+                        'SLOVAK',
+                        'HUNGARIAN',
+                        'ROMANIAN',
+                        'BULGARIAN',
+                        'GREEK',
+                        'CROATIAN',
+                        'SERBIAN',
+                        'UKRAINIAN',
+                        'RUSSIAN',
+                        'CATALAN',
+                        'ARABIC',
+                        'HEBREW',
+                        'TURKISH',
+                        'PERSIAN',
+                        'CHINESE',
+                        'JAPANESE',
+                        'KOREAN',
+                        'HINDI',
+                        'BENGALI',
+                        'THAI',
+                        'VIETNAMESE',
+                        'INDONESIAN',
+                        'MALAY',
+                        'SWAHILI',
+                        'AFRIKAANS',
+                        'AMHARIC',
+                        'HAUSA',
+                        'YORUBA',
+                        'ENGLISH_US',
+                        'HAITIAN_CREOLE',
+                        'NAHUATL',
+                        'MAYA',
+                        'GUARANI',
+                        'PORTUGUESE_BR',
+                        'LATIN',
+                        'ANCIENT_GREEK',
+                        'SANSKRIT',
+                        'CLASSICAL_ARABIC',
+                        'OLD_ENGLISH',
+                        'OLD_NORSE',
+                        'ARAMAIC',
+                        'COPTIC',
+                        'SUMERIAN',
+                        'MIDDLE_ENGLISH',
+                        'OLD_PORTUGUESE'
+                    ]}
+                    value={data.language}
+                    onChange={(value) =>
                         setData((current) => ({
                             ...current,
-                            editionLanguage: value,
-                        }));
-                    }}
+                            language: value || '',
+                        }))
+                    }
                     required
                 />
 
-                <TextInput
+                <Select
                     label="Publishing Company"
-                    placeholder="Publishing Company name"
-                    value={data.publishingCompany}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    placeholder="Select publishing company"
+                    data={publishingCompanies}
+                    value={data.publishingCompanyId}
+                    onChange={(value) =>
                         setData((current) => ({
                             ...current,
-                            publishingCompany: value,
-                        }));
-                    }}
+                            publishingCompanyId: value || '',
+                        }))
+                    }
+                    searchable
                     required
                 />
 
@@ -104,46 +173,71 @@ export function EditionStep({
             </SimpleGrid>
 
             <SimpleGrid cols={3}>
-                <TextInput
+                <NumberInput
                     label="Weight"
                     placeholder="Enter weight"
-                    value={data.weight}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    value={data.weight.value}
+                    onChange={(value) =>
                         setData((current) => ({
                             ...current,
-                            weight: value,
-                        }));
-                    }}
+                            weight: {
+                                ...current.weight,
+                                value: Number(value) || 0,
+                            },
+                        }))
+                    }
                 />
 
                 <TextInput
-                    label="Dimension"
-                    placeholder="Enter dimension"
-                    value={data.dimension}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    label="Weight Unit"
+                    placeholder="GRAMS"
+                    value={data.weight.unit}
+                    onChange={(event) =>
                         setData((current) => ({
                             ...current,
-                            dimension: value,
-                        }));
-                    }}
+                            weight: {
+                                ...current.weight,
+                                unit: event.currentTarget.value,
+                            },
+                        }))
+                    }
                 />
 
-                <TextInput
+                <NumberInput
+                    label="Width"
+                    value={data.dimension.width}
+                    onChange={(value) =>
+                    setData((current) => ({
+                        ...current,
+                        dimension: {
+                            ...current.dimension,
+                            width: Number(value) || 0,
+                        },
+                    }))
+                }
+                    />
+
+                <Select
                     label="Binding"
-                    placeholder="Enter binding"
+                    placeholder="Select binding"
+                    data={[
+                        'PUR',
+                        'PAPERBACK',
+                        'SADDLE_STITCH',
+                        'HARDCOVER',
+                        'SINGER_SEWN',
+                        'SECTION_SEWN',
+                        'COPTIC_STITCH',
+                        'WIRO',
+                        'INTERSCREW',
+                    ]}
                     value={data.binding}
-                    onChange={(event) =>{
-                        const value = event.currentTarget.value;
-
+                    onChange={(value) =>
                         setData((current) => ({
                             ...current,
-                            binding: value,
-                        }));
-                    }}
+                            binding: value || '',
+                        }))
+                    }
                 />
             </SimpleGrid>
 
