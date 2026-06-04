@@ -1,11 +1,13 @@
 import { useEffect, useContext, useState } from 'react';
-import { IconChevronDown, IconChevronUp, IconSelector, IconSearch, IconPlus } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconSelector, IconSearch, IconTrash } from '@tabler/icons-react';
 import { Center, Group, ActionIcon, ScrollArea, Table, Text, TextInput, UnstyledButton } from '@mantine/core';
 import classes from './TableList.module.css';
 import { ShareListModal } from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../context/AppContext';
-import { getMyLists, getListsOptions } from '../../context/lists/ListsActions';
+import { getMyLists, getListsOptions, addItemToList } from '../../context/lists/ListsActions';
 import { DeleteListModal } from '../deletelistmodal/DeleteListModal.tsx';
+import { AddItemToListDropDown } from '../addItemToListModal/AddItemToListDropDown.tsx';
+import { useUser } from '../../context/UserContext';
 
 
 interface RowData {
@@ -15,6 +17,7 @@ interface RowData {
     visibility: 'public' | 'private';
     sharedUntil: number | null;
     links: { rel: string; href: string }[];
+    itemIds: string[];
 }
 
 interface ThProps {
@@ -66,17 +69,15 @@ function sortData(data: RowData[], payload: { sortBy: keyof RowData | null; reve
 
 export function TableList() {
     const { state, dispatch } = useContext(AppContext);
-    const { lists, myListsHref } = state.lists;
+    const { lists } = state.lists;
+    const { myListsHref, libraryHref } = state.app;
     console.log('TableList render - myListsHref:', myListsHref, 'lists:', lists);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
     const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
     useEffect(() => {
-        const init = async () => {
-            await getListsOptions(dispatch);
-        };
-        init();
+        getListsOptions(dispatch);
     }, [dispatch]);
 
     useEffect(() => {
@@ -112,9 +113,12 @@ export function TableList() {
                 </Table.Td>
                 <Table.Td w={50}>
                     <Center>
-                        <ActionIcon variant="filled" color="indigo" size="md" radius="sm">
-                            <IconPlus size={20} stroke={1.5} />
-                        </ActionIcon>
+                        <AddItemToListDropDown
+                            listName={row.name}
+                            libraryHref={libraryHref}
+                            existingItemIds={row.itemIds}
+                            onConfirm={(ids) => ids.forEach(id => addItemToList(dispatch, row.links, id))}
+                        />
                     </Center>
                 </Table.Td>
                 <Table.Td w={50}>

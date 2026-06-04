@@ -35,6 +35,7 @@ export function ShareListModal({ listName, visibility, links }: ShareListModalPr
                 opened={confirmOpened}
                 onClose={closeConfirm}
                 title={`Unshare "${listName}"`}
+                overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
                 centered
                 size="sm"
             >

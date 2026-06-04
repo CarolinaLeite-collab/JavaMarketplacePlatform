@@ -1,5 +1,7 @@
 import { apiClient } from '../../services/apiClient';
 
+export const BOOTSTRAP_SUCCESS = 'BOOTSTRAP_SUCCESS';
+export const BOOTSTRAP_ERROR = 'BOOTSTRAP_ERROR';
 export const GET_LIST_OPTIONS_SUCCESS = 'GET_LIST_OPTIONS_SUCCESS';
 export const GET_LIST_OPTIONS_ERROR = 'GET_LIST_OPTIONS_ERROR';
 export const CREATE_LIST_SUCCESS = 'CREATE_LIST_SUCCESS';
@@ -14,7 +16,8 @@ export const MAKE_LIST_PRIVATE_SUCCESS = 'MAKE_LIST_PRIVATE_SUCCESS';
 export const MAKE_LIST_PRIVATE_ERROR = 'MAKE_LIST_PRIVATE_ERROR';
 export const DELETE_LIST_SUCCESS = 'DELETE_LIST_SUCCESS';
 export const DELETE_LIST_ERROR = 'DELETE_LIST_ERROR';
-
+export const ADD_ITEM_TO_LIST_SUCCESS = 'ADD_ITEM_TO_LIST_SUCCESS';
+export const ADD_ITEM_TO_LIST_ERROR = 'ADD_ITEM_TO_LIST_ERROR';
 
 export function getListsSuccess(lists) {
     return { type: GET_LISTS_SUCCESS, payload: lists };
@@ -40,16 +43,23 @@ export function getGenresError(error) {
     return { type: GET_GENRES_ERROR, payload: error };
 }
 
+export async function bootstrapRoot(dispatch) {
+    try {
+        const result = await apiClient.getRootOptions();
+        dispatch({ type: BOOTSTRAP_SUCCESS, payload: result._links });
+    } catch (e) {
+        dispatch({ type: BOOTSTRAP_ERROR, payload: String(e) });
+    }
+}
+
 export async function getListsOptions(dispatch) {
     try {
         const result = await apiClient.getListsOptions();
         dispatch({ type: GET_LIST_OPTIONS_SUCCESS, payload: result._links });
     } catch (e) {
-
         dispatch({ type: GET_LIST_OPTIONS_ERROR, payload: String(e) });
     }
 }
-
 
 export async function createList(dispatch, href, body, myListsHref) {
     try {
@@ -64,20 +74,17 @@ export async function createList(dispatch, href, body, myListsHref) {
 }
 
 export async function getMyLists(dispatch, href) {
-    console.log('getMyLists called with href:', href);
     try {
         const result = await apiClient.getByHref(href);
-        console.log('getMyLists result:', result);
         dispatch(getListsSuccess(result ?? []));
     } catch (e) {
-        console.log('getMyLists error:', e);
         dispatch(getListsError(String(e)));
     }
 }
 
-export async function getGenres(dispatch) {
+export async function getGenres(dispatch, href) {
     try {
-        const result = await apiClient.getGenres();
+        const result = await apiClient.getByHref(href)
         dispatch(getGenresSuccess(result));
     } catch (e) {
         dispatch(getGenresError(String(e)));
@@ -103,6 +110,17 @@ export async function makeListPrivate(dispatch, links) {
         dispatch({ type: MAKE_LIST_PRIVATE_SUCCESS, payload: result });
     } catch (e) {
         dispatch({ type: MAKE_LIST_PRIVATE_ERROR, payload: String(e) });
+    }
+}
+
+export async function addItemToList(dispatch, links, itemId) {
+    const href = links?.find(l => l.rel === 'add-item')?.href;
+    if (!href) return;
+    try {
+        const result = await apiClient.postByHref(href, { itemId });
+        dispatch({ type: ADD_ITEM_TO_LIST_SUCCESS, payload: result });
+    } catch (e) {
+        dispatch({ type: ADD_ITEM_TO_LIST_ERROR, payload: String(e) });
     }
 }
 

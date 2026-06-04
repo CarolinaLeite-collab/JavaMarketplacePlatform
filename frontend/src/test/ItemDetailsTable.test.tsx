@@ -70,4 +70,33 @@ describe('ItemDetailTable', () => {
         expect(screen.getByText('Identifier')).toBeInTheDocument();
     });
 
+    vi.mock('@mantine/core', async () => {
+        const actual = await vi.importActual('@mantine/core');
+        return {
+            ...actual,
+            useComputedColorScheme: () => 'dark',
+        };
+    });
+
+    describe('ItemDetailTable - dark mode', () => {
+
+        it('renders correctly in dark mode', () => {
+            render(
+                <ItemDetailTable item={{
+                    publicationType: 'Book',
+                    authorName: 'Test Author',
+                    identifier: '123'
+                }} />
+            );
+
+            expect(screen.getByText('Author')).toBeInTheDocument();
+            expect(screen.getByText('Test Author')).toBeInTheDocument();
+            expect(screen.getByText('ISBN')).toBeInTheDocument();
+            expect(screen.getByText('123')).toBeInTheDocument();
+        });
+
+    });
+
+
+
 });

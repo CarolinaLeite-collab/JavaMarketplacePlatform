@@ -1,6 +1,6 @@
 import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { PublicationStep } from './PublicationStep';
+import { PublicationStep } from '../components/addItemModal/PublicationStep';
 
 describe('PublicationStep', () => {
     const data = {
@@ -16,7 +16,7 @@ describe('PublicationStep', () => {
         expect(screen.getByLabelText(/title/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/author/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/release year/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/genre/i)).toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: /genre/i })).toBeInTheDocument();
     });
 
     it('updates title when user types', async () => {
@@ -36,8 +36,13 @@ describe('PublicationStep', () => {
 
         render(<PublicationStep data={data} setData={setData} />);
 
-        await user.click(screen.getByLabelText(/genre/i));
-        await user.click(screen.getByText(/science fiction/i));
+        await user.click(
+            screen.getByRole('combobox', { name: /genre/i })
+        );
+
+        await user.click(
+            screen.getByText('Other')
+        );
 
         expect(setData).toHaveBeenCalled();
     });
