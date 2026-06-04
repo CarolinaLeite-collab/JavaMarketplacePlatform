@@ -36,7 +36,6 @@ class EditionServiceTest {
     private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
     private IPublicationTypeRepo _iPublicationTypeRepoDouble;
     private EditionRequestDTOMapper _requestMapperDouble;
-    private EditionResponseDTOMapper _responseMapperDouble;
 
     @BeforeEach
     void setUp() {
@@ -47,7 +46,6 @@ class EditionServiceTest {
         _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
         _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
         _requestMapperDouble = mock(EditionRequestDTOMapper.class);
-        _responseMapperDouble = mock(EditionResponseDTOMapper.class);
 
     }
 
@@ -55,7 +53,7 @@ class EditionServiceTest {
         return new EditionService(
                 _iEditionRepoDouble, _editionFactoryDouble,
                 _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble, _responseMapperDouble);
+                _iPublicationTypeRepoDouble, _requestMapperDouble);
     }
 
     @Test

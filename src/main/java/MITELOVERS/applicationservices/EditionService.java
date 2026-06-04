@@ -7,7 +7,6 @@ import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
@@ -34,13 +33,11 @@ public class EditionService {
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
     private final IPublicationTypeRepo _iPublicationTypeRepo;
     private final EditionRequestDTOMapper _editionRequestDTOMapper;
-    private final EditionResponseDTOMapper _editionResponseDTOMapper;
 
 
     public EditionService(IEditionRepo iEditionRepo, EditionFactory editionFactory,
                           IPublicationRepo iPublicationRepo, IPublishingCompanyRepo iPublishingCompanyRepo,
-                          IPublicationTypeRepo iPublicationTypeRepo, EditionRequestDTOMapper editionRequestDTOMapper,
-                          EditionResponseDTOMapper editionResponseDTOMapper) {
+                          IPublicationTypeRepo iPublicationTypeRepo, EditionRequestDTOMapper editionRequestDTOMapper) {
 
         _iEditionRepo = iEditionRepo;
         _editionFactory = editionFactory;
@@ -48,7 +45,6 @@ public class EditionService {
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
         _iPublicationTypeRepo = iPublicationTypeRepo;
         _editionRequestDTOMapper = editionRequestDTOMapper;
-        _editionResponseDTOMapper = editionResponseDTOMapper;
 
     }
 
