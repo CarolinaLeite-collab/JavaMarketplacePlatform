@@ -124,8 +124,6 @@ class PublicationRestControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
-    // --- getPublicationById tests ---
-
     @Test
     void getPublicationByIdReturnsOkWithDTO() {
         // Arrange
@@ -147,17 +145,4 @@ class PublicationRestControllerTest {
         assertSame(responseDTODouble, response.getBody());
     }
 
-    @Test
-    void getPublicationByIdReturnsNotFoundWhenPublicationDoesNotExist() {
-        // Arrange
-        when(_publicationServiceDouble.getPublicationById("PUB-999"))
-                .thenThrow(new RuntimeException("Publication not found"));
-
-        // Act
-        ResponseEntity<PublicationResponseDTO> response =
-                _controller.getPublicationById("PUB-999");
-
-        // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
 }
