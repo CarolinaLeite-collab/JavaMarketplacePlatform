@@ -73,6 +73,19 @@ describe('listsReducer', () => {
             const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload: {} });
             expect(result.lists).toEqual([]);
         });
+
+        it('maps itemsId to itemIds', () => {
+            const listWithItems = { ...aList, itemsId: ['ITEM-001', 'ITEM-002'] };
+            const payload = { _embedded: { listOfItemsResponseDTOList: [listWithItems] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].itemIds).toEqual(['ITEM-001', 'ITEM-002']);
+        });
+
+        it('defaults itemIds to empty array when itemsId is absent', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [aList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].itemIds).toEqual([]);
+        });
     });
 
     it('sets error on GET_LISTS_ERROR', () => {
@@ -183,13 +196,23 @@ describe('listsReducer', () => {
             const stateWithTwo = {
                 ...initialListsState,
                 lists: [
-                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] },
-                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', visibility: 'private', sharedUntil: null, links: [] },
+                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [], itemIds: [] },
+                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', visibility: 'private', sharedUntil: null, links: [], itemIds: [] },
                 ],
             };
             const result = listsReducer(stateWithTwo, { type: 'ADD_ITEM_TO_LIST_SUCCESS', payload: aList });
             expect(result.lists[1].listId).toBe('LIST-002');
             expect(result.lists[1].name).toBe('Sci-Fi');
+        });
+
+        it('maps itemsId to itemIds on success', () => {
+            const stateWithList = {
+                ...initialListsState,
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [], itemIds: [] }],
+            };
+            const updated = { ...aList, itemsId: ['ITEM-001', 'ITEM-002'] };
+            const result = listsReducer(stateWithList, { type: 'ADD_ITEM_TO_LIST_SUCCESS', payload: updated });
+            expect(result.lists[0].itemIds).toEqual(['ITEM-001', 'ITEM-002']);
         });
     });
 

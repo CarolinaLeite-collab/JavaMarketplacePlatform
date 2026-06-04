@@ -27,6 +27,7 @@ function mapList(item) {
         visibility: item.private ? 'private' : 'public',
         sharedUntil: item.sharedUntil ? daysLeft(item.sharedUntil) : null,
         links: links,
+        itemIds: item.itemsId ?? [],
     };
 }
 
