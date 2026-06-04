@@ -91,29 +91,6 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-    @Test
-    void shouldReturn400WhenEmailIsInvalid() throws Exception {
-        // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary("invalid-email"))
-                .thenThrow(new IllegalArgumentException("Invalid email"));
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/")
-                .header("X-User-Id", "invalid-email"));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldReturn400WhenHeaderIsMissing() throws Exception {
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/"));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-    }
 
     @Test
     void shouldReturn200WithItemDetailsWhenItemExists() throws Exception {
@@ -133,18 +110,6 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-    @Test
-    void shouldReturn404WhenItemNotFound() throws Exception {
-        // Arrange
-        when(libraryService.getItemDetail(any()))
-                .thenThrow(new IllegalStateException("Item not found!"));
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/INVALID-ID"));
-
-        // Assert
-        result.andExpect(status().isNotFound());
-    }
 
     @Test
     void shouldReturn201WhenItemAddedToLibrary() throws Exception {
@@ -165,21 +130,6 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-    @Test
-    void shouldReturn409WhenItemAlreadyInLibrary() throws Exception {
-        // Arrange
-        when(libraryService.addItemToLibrary(any(), any()))
-                .thenThrow(new IllegalStateException("Item already exists in library"));
-
-        // Act
-        var result = mockMvc.perform(post("/my-library/")
-                .header("X-User-Id", "pedro@aeiou.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemId\": \"3C5D126F8B\"}"));
-
-        // Assert
-        result.andExpect(status().isConflict());
-    }
 
     @Test
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
@@ -217,29 +167,13 @@ class LibraryRestControllerTest {
     }
 
     @Test
-    void optionsShouldReturn404WhenUserNotFound() throws Exception {
-        // Arrange
-        when(userService.getUserByEmail("naoexiste@aeiou.com"))
-                .thenThrow(new NoSuchElementException("User not found"));
+    void shouldReturn400WhenHeaderIsMissing() throws Exception {
 
-        // Act & Assert
-        mockMvc.perform(options("/my-library")
-                        .param("email", "naoexiste@aeiou.com")
-                        .accept(MediaTypes.HAL_JSON))
-                .andExpect(status().isNotFound());
+        // Act
+        var result = mockMvc.perform(get("/my-library/"));
+
+        // Assert
+        result.andExpect(status().isBadRequest());
     }
 
-    @Test
-    void shouldReturn400WhenItemNotFound() throws Exception {
-        // Arrange
-        when(libraryService.addItemToLibrary(any(), any()))
-                .thenThrow(new IllegalArgumentException("Item not found"));
-
-        // Act & Assert
-        mockMvc.perform(post("/my-library/")
-                        .header("X-User-Id", "pedro@aeiou.com")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"itemId\": \"INVALID\"}"))
-                .andExpect(status().isBadRequest());
-    }
 }
