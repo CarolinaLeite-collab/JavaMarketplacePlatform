@@ -108,4 +108,66 @@ describe('ItemAccordion', () => {
         ).toBeInTheDocument();
     });
 
+    it('does nothing when accordion is closed', () => {
+        render(<ItemAccordion items={mockItems} details={{}} dispatch={vi.fn()} />);
+
+        const accordion = screen.getByText('The War of the Worlds');
+
+        fireEvent.click(accordion);
+        fireEvent.click(accordion);
+
+        expect(screen.getByText('The War of the Worlds')).toBeInTheDocument();
+    });
+
+    it('does not call API when item has no href', () => {
+        const itemsNoHref = [{
+            itemId: 'ITM-003',
+            title: 'No Link Book',
+            picture: null,
+            links: []
+        }];
+
+        const dispatch = vi.fn();
+
+        render(<ItemAccordion items={itemsNoHref} details={{}} dispatch={dispatch} />);
+
+        fireEvent.click(screen.getByText('No Link Book'));
+
+        expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it('does not fetch detail if already cached', () => {
+        const dispatch = vi.fn();
+
+        render(
+            <ItemAccordion
+                items={mockItems}
+                details={{
+                    'ITM-001': {
+                        authorName: 'H.G. Wells',
+                        identifier: '123',
+                        publicationType: 'BOOK'
+                    }
+                }}
+                dispatch={dispatch}
+            />
+        );
+
+        fireEvent.click(screen.getByText('The War of the Worlds'));
+
+        expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it('renders fallback image when picture is null', () => {
+        render(
+            <ItemAccordion
+                items={mockItems}
+                details={{}}
+                dispatch={vi.fn()}
+            />
+        );
+
+        const img = screen.getAllByRole('img')[1];
+        expect(img).toBeInTheDocument();
+    });
 });

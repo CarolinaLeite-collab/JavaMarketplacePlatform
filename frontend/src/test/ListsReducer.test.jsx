@@ -61,7 +61,6 @@ describe('listsReducer', () => {
             const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
             expect(result.lists).toHaveLength(1);
             expect(result.lists[0].listId).toBe('LIST-001');
-            expect(result.createListHref).toBe('http://localhost:8081/my-lists/');
             expect(result.error).toBeNull();
         });
 

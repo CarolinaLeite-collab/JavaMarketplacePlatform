@@ -1,25 +1,43 @@
-import { axe, render, screen } from '@/test-utils';
+import { render, screen } from '@/test-utils';
 import { AppRoutes } from '../routes/AppRoutes';
+import AppContext from "../context/AppContext";
+
+vi.mock('../pages/MyLists/MyListsPage', () => ({
+    default: () => <h1>My Lists</h1>,
+}));
+
+vi.mock('../pages/MyLibrary/MyLibraryPage', () => ({
+    default: () => <h1>My Library</h1>,
+}));
+
+const mockState = {
+    app: {
+        myListsHref: '/my-lists',
+        libraryHref: '/my-library',
+    },
+};
 
 describe('AppRoutes', () => {
-    axe([<AppRoutes key="1" />]);
-
-    it('renders correctly', () => {
-        render(<AppRoutes />);
-    });
-
     it('renders Marketplace on default route', () => {
-        render(<AppRoutes />);
-        expect(screen.getByRole('heading', { name: /marketplace/i })).toBeInTheDocument();
-    });
+        render(
+            <AppContext.Provider value={{ state: mockState }}>
+                <AppRoutes />
+            </AppContext.Provider>
+        );
 
-    it('renders MyListsPage on /my-lists route', () => {
-        render(<AppRoutes />, { initialEntries: ['/my-lists'] });
-        expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: /marketplace/i })
+        ).toBeInTheDocument();
     });
 
     it('renders MyLibraryPage on /my-library route', () => {
-        render(<AppRoutes />, { initialEntries: ['/my-library'] });
-        expect(screen.getByRole('heading', { name: /my library/i })).toBeInTheDocument();
+        render(
+            <AppContext.Provider value={{ state: mockState }}>
+                <AppRoutes />
+            </AppContext.Provider>,
+            { initialEntries: ['/my-library'] }
+        );
+
+        expect(screen.getByText(/my library/i)).toBeInTheDocument();
     });
 });

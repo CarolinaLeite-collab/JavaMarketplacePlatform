@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { MantineProvider } from '@mantine/core';
 import { TableList } from "../components/tablelist/TableList.tsx";
 import AppContext from '../context/AppContext';
+import { BASE_URL } from '../services/apiClient';
 
 vi.mock('../components/sharelistmodal/ShareListModal', () => ({
     ShareListModal: ({ listName, visibility }: { listName: string; visibility: string }) => (
@@ -37,10 +38,22 @@ const mockDispatch = vi.fn();
 
 const renderWithContext = (ui: React.ReactElement) =>
     render(
-        <AppContext.Provider value={{
-            state: { lists: { lists: mockLists, genres: [], error: null, loading: false } },
-            dispatch: mockDispatch
-        }}>
+        <AppContext.Provider
+            value={{
+                state: {
+                    app: {
+                        myListsHref: 'http://localhost:8081/my-lists'
+                    },
+                    lists: {
+                        lists: mockLists,
+                        genres: [],
+                        error: null,
+                        loading: false
+                    }
+                },
+                dispatch: mockDispatch
+            }}
+        >
             <MantineProvider>{ui}</MantineProvider>
         </AppContext.Provider>
     );

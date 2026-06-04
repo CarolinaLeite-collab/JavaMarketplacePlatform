@@ -21,12 +21,14 @@ const renderWithContext = (ui: React.ReactElement) =>
         <AppContext.Provider
             value={{
                 state: {
+                    app: {
+                        myListsHref: `${BASE_URL}/my-lists`
+                    },
                     lists: {
                         lists: [],
                         genres: [],
                         error: null,
-                        loading: false,
-                        myListsHref: `${BASE_URL}/my-lists`
+                        loading: false
                     }
                 },
                 dispatch: mockDispatch

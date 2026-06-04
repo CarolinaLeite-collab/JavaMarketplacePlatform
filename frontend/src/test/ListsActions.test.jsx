@@ -82,17 +82,17 @@ describe('ListsActions', () => {
     describe('getGenres', () => {
         it('dispatches GET_GENRES_SUCCESS with genres', async () => {
             const genres = [{ genreId: 'fiction', genreName: 'Fiction' }];
-            apiClient.getGenres.mockResolvedValue(genres);
+            apiClient.getByHref.mockResolvedValue(genres);
 
-            await getGenres(dispatch);
+            await getGenres(dispatch, '/genres');
 
             expect(dispatch).toHaveBeenCalledWith({ type: GET_GENRES_SUCCESS, payload: genres });
         });
 
         it('dispatches GET_GENRES_ERROR on failure', async () => {
-            apiClient.getGenres.mockRejectedValue(new Error('failed'));
+            apiClient.getByHref.mockRejectedValue(new Error('failed'));
 
-            await getGenres(dispatch);
+            await getGenres(dispatch, '/genres');
 
             expect(dispatch).toHaveBeenCalledWith({ type: GET_GENRES_ERROR, payload: 'Error: failed' });
         });

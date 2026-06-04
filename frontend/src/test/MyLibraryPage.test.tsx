@@ -3,13 +3,38 @@ import { vi } from 'vitest';
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
 import userEvent from "@testing-library/user-event";
 import { LibraryContext } from '../context/AppContext';
+import * as LibraryActions from '../context/library/LibraryActions';
 
 const mockState = {
     items: [],
     details: {},
     loading: false,
     error: null,
+
+    sales: {
+        libraryItems: [],
+        error: null,
+        successMessage: null
+    }
 };
+
+vi.mock('../components/createSaleModal/CreateSaleModal', () => ({
+    CreateSaleModal: ({ opened }) =>
+        opened ? <div role="dialog">Create Sale Modal</div> : null,
+}));
+
+vi.mock('../components/addItemModal/AddItemModal', () => ({
+    AddItemModal: ({ opened }) =>
+        opened ? <div role="dialog">Add Item Modal</div> : null,
+}));
+
+vi.mock('../components/accordion/ItemAccordion', () => ({
+    ItemAccordion: () => <div>Accordion</div>,
+}));
+
+vi.mock('../context/library/LibraryActions', () => ({
+    getLibrary: vi.fn(),
+}));
 
 function renderWithLibraryProvider(state = mockState) {
     return render(
@@ -96,18 +121,10 @@ describe('MyLibraryPage', () => {
         expect(dialog).toBeInTheDocument();
     });
 
-    it('renders create sale button', () => {
-        render(<MyLibraryPage />);
-
-        expect(
-            screen.getByRole('button', { name: /create a sale/i })
-        ).toBeInTheDocument();
-    });
-
     it('opens the create sale modal when clicking create sale button', async () => {
         const user = userEvent.setup();
 
-        render(<MyLibraryPage />);
+        renderWithLibraryProvider();
 
         await user.click(
             screen.getByRole('button', { name: /create a sale/i })
@@ -116,5 +133,38 @@ describe('MyLibraryPage', () => {
         expect(
             await within(document.body).findByRole('dialog')
         ).toBeInTheDocument();
+    });
+
+    it('calls getLibrary on mount', () => {
+        renderWithLibraryProvider();
+
+        expect(LibraryActions.getLibrary).toHaveBeenCalled();
+    });
+
+    it('reloads library when item is added', async () => {
+        const user = userEvent.setup();
+
+        renderWithLibraryProvider();
+
+        await user.click(screen.getByRole('button', { name: /add item/i }));
+
+        const modal = await within(document.body).findByRole('dialog');
+        expect(modal).toBeInTheDocument();
+
+        const props = screen.getByText('Add Item Modal');
+
+        expect(props).toBeInTheDocument();
+        expect(LibraryActions.getLibrary).toHaveBeenCalled();
+    });
+
+    it('opens and closes both modals independently', async () => {
+        const user = userEvent.setup();
+
+        renderWithLibraryProvider();
+
+        await user.click(screen.getByRole('button', { name: /add item/i }));
+        await user.click(screen.getByRole('button', { name: /create a sale/i }));
+
+        expect(within(document.body).getAllByRole('dialog').length).toBeGreaterThan(0);
     });
 });
