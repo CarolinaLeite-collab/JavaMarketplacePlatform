@@ -11,11 +11,15 @@ interface PublicationData {
 interface PublicationStepProps {
     data: PublicationData;
     setData: Dispatch<SetStateAction<PublicationData>>;
+    authors: { value: string; label: string }[];
+    genres: { value: string; label: string }[];
 }
 
 export function PublicationStep({
                                     data,
                                     setData,
+                                    authors,
+                                    genres,
                                 }: PublicationStepProps) {
     return (
         <Stack>
@@ -34,20 +38,20 @@ export function PublicationStep({
                 required
             />
 
-            <TextInput
+            <Select
                 label="Author"
-                placeholder="Insert author name"
+                placeholder="Select author"
+                data={authors}
                 value={data.authorName}
-                onChange={(event) => {
-                const value = event.currentTarget.value;
-
-                setData((current) => ({
-                    ...current,
-                    authorName: value,
-                }));
-            }}
+                onChange={(value) =>
+                    setData((current) => ({
+                        ...current,
+                        authorName: value || '',
+                    }))
+                }
+                searchable
                 required
-                />
+            />
 
             <NumberInput
                 label="Release Year"
@@ -65,15 +69,7 @@ export function PublicationStep({
             <Select
                 label="Genre"
                 placeholder="Select genre"
-                data={[
-                    'Fiction',
-                    'Science Fiction',
-                    'Fantasy',
-                    'Romance',
-                    'History',
-                    'Biography',
-                    'Other',
-                ]}
+                data={genres}
                 value={data.genreName}
                 onChange={(value) =>
                     setData((current) => ({
@@ -81,6 +77,7 @@ export function PublicationStep({
                         genreName: value || '',
                     }))
                 }
+                searchable
                 required
             />
         </Stack>

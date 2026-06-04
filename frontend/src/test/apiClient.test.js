@@ -1,31 +1,30 @@
-import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {apiClient, BASE_URL, USER_ID} from '../services/apiClient';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { apiClient, BASE_URL, setUserId } from '../services/apiClient';
 
+vi.stubGlobal('fetch', vi.fn());
+const mockFetch = global.fetch;
 
-// simulate a Vitest function
-const mockFetch = vi.fn();
-vi.stubGlobal('fetch', mockFetch);
+const USER_ID = 'pedro@aeiou.com';
 
-// simulate a success status with data
-const mockSuccess = (data) =>
-    Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () => Promise.resolve(data)
-    });
+/**
+ * Unified fetch mock
+ */
+const createFetchResponse = ({
+                                 ok = true,
+                                 status = 200,
+                                 json = null,
+                                 text = null
+                             }) => ({
+    ok,
+    status,
+    json: vi.fn().mockResolvedValue(json),
+    text: vi.fn().mockResolvedValue(text)
+});
 
-// simulate an error status
-const mockError = (status) =>
-    Promise.resolve({
-        ok: false,
-        status,
-        json: () => Promise.resolve({})
-    });
-
-// clean the history of mockFetch
-beforeEach(() =>
-    mockFetch.mockClear());
-
+beforeEach(() => {
+    mockFetch.mockClear();
+    setUserId(USER_ID);
+});
 
 describe('apiClient', () => {
 
@@ -33,12 +32,10 @@ describe('apiClient', () => {
 
         it('calls OPTIONS on my-lists endpoint', async () => {
             mockFetch.mockReturnValueOnce(
-                Promise.resolve({
+                createFetchResponse({
                     ok: true,
-                    text: () =>
-                        Promise.resolve(
-                            JSON.stringify({ links: [] })
-                        )
+                    status: 200,
+                    text: JSON.stringify({ links: [] })
                 })
             );
 
@@ -57,110 +54,70 @@ describe('apiClient', () => {
 
         it('throws error when getListsOptions fails', async () => {
             mockFetch.mockReturnValueOnce(
-                Promise.resolve({
-                    ok: false,
-                    status: 500
+                createFetchResponse({ ok: false, status: 500 })
+            );
+
+            await expect(apiClient.getListsOptions())
+                .rejects.toThrow('500');
+        });
+
+    });
+
+    describe('getLibraryOptions', () => {
+
+        it('calls OPTIONS on /my-library', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    text: JSON.stringify({ _links: {} })
                 })
             );
 
-            await expect(
-                apiClient.getListsOptions()
-            ).rejects.toThrow('500');
+            await apiClient.getLibraryOptions();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/my-library?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
         });
+
     });
 
     describe('getGenres', () => {
 
-        it('calls the correct URL without X-User-Id', async () => {
-            mockFetch.mockReturnValueOnce(mockSuccess({ genres: [] }));
+        it('calls correct URL without auth header', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: { genres: [] }
+                })
+            );
 
             await apiClient.getGenres();
 
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/genres`
-            );
-
-            const callArgs = mockFetch.mock.calls[0];
-            const headers = callArgs[1]?.headers ?? {};
-            expect(headers['X-User-Id']).toBeUndefined();
-        });
-
-
-        it('returns data on success', async () => {
-            const mockData = { genres: [{ genreId: 'ROMANCE', name: 'Romance' }] };
-            mockFetch.mockReturnValueOnce(mockSuccess(mockData));
-
-            const result = await apiClient.getGenres();
-
-            expect(result).toEqual(mockData);
-        });
-
-    });
-
-    describe('getLibrary', () => {
-
-        it('calls endpoint with X-User-Id header', async () => {
-            mockFetch.mockReturnValueOnce(
-                mockSuccess({ items: [] })
-            );
-
-            await apiClient.getLibrary();
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/my-library/`,
-                expect.objectContaining({
-                    headers: {
-                        'X-User-Id': USER_ID
-                    }
-                })
-            );
-        });
-
-        it('returns library data', async () => {
-            const data = {
-                items: []
-            };
-
-            mockFetch.mockReturnValueOnce(
-                mockSuccess(data)
-            );
-
-            const result = await apiClient.getLibrary();
-
-            expect(result).toEqual(data);
-        });
-
-        it('throws error on failure', async () => {
-            mockFetch.mockReturnValueOnce(mockError(404));
-
-            await expect(
-                apiClient.getByHref`${BASE_URL}/my-library/INVALID`
-            ).rejects.toThrow('404');
-        });
-
-        it('returns null when library endpoint returns 204', async () => {
-            mockFetch.mockReturnValueOnce(
-                Promise.resolve({
-                    ok: true,
-                    status: 204
-                })
-            );
-
-            const result = await apiClient.getLibrary();
-
-            expect(result).toBeNull();
+            expect(mockFetch).toHaveBeenCalledWith(`${BASE_URL}/genres`);
         });
 
     });
 
     describe('getByHref', () => {
 
-        it('calls provided href with X-User-Id header', async () => {
-            const href =
-                `${BASE_URL}/my-library/ITEM-001`;
+        it('calls href with X-User-Id', async () => {
+            const href = `${BASE_URL}/my-library/ITEM-001`;
 
             mockFetch.mockReturnValueOnce(
-                mockSuccess({})
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: { itemId: 'ITEM-001' }
+                })
             );
 
             await apiClient.getByHref(href);
@@ -175,235 +132,289 @@ describe('apiClient', () => {
             );
         });
 
-        it('returns data from href', async () => {
-            const data = {
-                publicationType: 'Book',
-                authorName: 'George Orwell',
-                identifier: '123456789'
-            };
-
+        it('throws when getByHref fails', async () => {
             mockFetch.mockReturnValueOnce(
-                mockSuccess(data)
+                createFetchResponse({ ok: false, status: 404 })
             );
 
-            const result = await apiClient.getByHref(
-                `${BASE_URL}/my-library/ITEM-001`
-            );
-
-            expect(result).toEqual(data);
+            await expect(apiClient.getByHref(`${BASE_URL}/items/ITEM-001`))
+                .rejects.toThrow('404');
         });
 
-        it('throws error on failure', async () => {
+        it('returns null when getByHref receives 204', async () => {
             mockFetch.mockReturnValueOnce(
-                mockError(404)
-            );
-
-            await expect(apiClient.getLibrary()).rejects.toThrow('404');
-        });
-
-        it('returns null when getByHref returns 204', async () => {
-            mockFetch.mockReturnValueOnce(
-                Promise.resolve({
+                createFetchResponse({
                     ok: true,
                     status: 204
                 })
             );
 
-            const result = await apiClient.getByHref(
-                'http://localhost:8081/test'
-            );
+            const result = await apiClient.getByHref(`${BASE_URL}/items/ITEM-001`);
 
             expect(result).toBeNull();
         });
 
     });
 
-    describe('createDirectSales', () => {
+    describe('getRootOptions', () => {
 
-        it('sends POST request with body', async () => {
-            mockFetch.mockReturnValueOnce(
-                mockSuccess({ saleId: 'DS-001' })
-            );
-
-            const body = {
-                libraryItemId: 'ITM-001',
-                price: 12.50
+        it('fetches root options successfully', async () => {
+            const response = {
+                _links: {
+                    genres: {
+                        href: `${BASE_URL}/genres`
+                    }
+                }
             };
 
-            await apiClient.createDirectSales(body);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/direct-sales`,
-                expect.objectContaining({
-                    method: 'POST',
-                    headers: expect.objectContaining({
-                        'Content-Type': 'application/json',
-                        'X-User-Id': USER_ID
-                    }),
-                    body: JSON.stringify(body)
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    text: JSON.stringify(response)
                 })
             );
+
+            const result = await apiClient.getRootOptions();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/api?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws when root options fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 500 })
+            );
+
+            await expect(apiClient.getRootOptions())
+                .rejects.toThrow('500');
         });
 
     });
 
     describe('postByHref', () => {
-        it('calls POST on href with body', async () => {
-            const href =
-                'http://localhost:8081/my-lists';
-
-            const body = {
-                name: 'Favorites'
-            };
+        it('posts body to href with auth and content-type headers', async () => {
+            const href = `${BASE_URL}/publications`;
+            const body = { title: 'Dune' };
+            const response = { publicationId: 'PUB-001' };
 
             mockFetch.mockReturnValueOnce(
-                mockSuccess({})
+                createFetchResponse({
+                    ok: true,
+                    status: 201,
+                    json: response
+                })
             );
 
-            await apiClient.postByHref(href, body);
+            const result = await apiClient.postByHref(href, body);
 
             expect(mockFetch).toHaveBeenCalledWith(
                 href,
-                expect.objectContaining({
+                {
                     method: 'POST',
-                    headers: expect.objectContaining({
+                    headers: {
                         'Content-Type': 'application/json',
                         'X-User-Id': USER_ID
-                    }),
+                    },
                     body: JSON.stringify(body)
-                })
+                }
             );
+
+            expect(result).toEqual(response);
         });
 
-        it('throws error when postByHref fails', async () => {
+        it('throws response text when postByHref fails', async () => {
+            const href = `${BASE_URL}/publications`;
+
             mockFetch.mockReturnValueOnce(
-                Promise.resolve({
+                createFetchResponse({
                     ok: false,
-                    text: () => Promise.resolve('Invalid request')
+                    status: 500,
+                    text: 'backend error'
                 })
             );
 
-            await expect(
-                apiClient.postByHref(
-                    'http://localhost:8081/test',
-                    {}
-                )
-            ).rejects.toThrow('Invalid request');
-        });
-    });
-
-    describe('patchByHref', () => {
-        it('calls PATCH with body', async () => {
-            const href =
-                'http://localhost:8081/my-lists/1';
-
-            const body = {
-                name: 'Updated'
-            };
-
-            mockFetch.mockReturnValueOnce(
-                mockSuccess({})
-            );
-
-            await apiClient.patchByHref(href, body);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                href,
-                expect.objectContaining({
-                    method: 'PATCH',
-                    body: JSON.stringify(body)
-                })
-            );
+            await expect(apiClient.postByHref(href, {}))
+                .rejects.toThrow('backend error');
         });
 
-        it('throws error when patchByHref fails', async () => {
+        it('returns null when postByHref receives 204', async () => {
             mockFetch.mockReturnValueOnce(
-                mockError(400)
-            );
-
-            await expect(
-                apiClient.patchByHref(
-                    'http://localhost:8081/test',
-                    {}
-                )
-            ).rejects.toThrow('400');
-        });
-    });
-
-    describe('patchNoBodyByHref', () => {
-        it('calls PATCH without body', async () => {
-            const href =
-                'http://localhost:8081/my-lists/share';
-
-            mockFetch.mockReturnValueOnce(
-                mockSuccess({})
-            );
-
-            await apiClient.patchNoBodyByHref(href);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                href,
-                expect.objectContaining({
-                    method: 'PATCH',
-                    headers: {
-                        'X-User-Id': USER_ID
-                    }
-                })
-            );
-        });
-
-        it('throws error when patchNoBodyByHref fails', async () => {
-            mockFetch.mockReturnValueOnce(
-                mockError(404)
-            );
-
-            await expect(
-                apiClient.patchNoBodyByHref(
-                    'http://localhost:8081/test'
-                )
-            ).rejects.toThrow('404');
-        });
-    });
-
-    describe('deleteByHref', () => {
-        it('calls DELETE endpoint', async () => {
-            const href =
-                'http://localhost:8081/my-lists/1';
-
-            mockFetch.mockReturnValueOnce(
-                Promise.resolve({
+                createFetchResponse({
                     ok: true,
                     status: 204
                 })
             );
 
-            const result =
-                await apiClient.deleteByHref(href);
+            const result = await apiClient.postByHref(`${BASE_URL}/my-library`, {});
 
             expect(result).toBeNull();
+        });
+    });
+
+    describe('extractIdFromSelfLink', () => {
+        it('extracts id from self link', () => {
+            const response = {
+                _links: {
+                    self: {
+                        href: `${BASE_URL}/publications/PUB-001`
+                    }
+                }
+            };
+
+            const result = apiClient.extractIdFromSelfLink(response);
+
+            expect(result).toBe('PUB-001');
+        });
+    });
+
+    describe('patchByHref', () => {
+        it('patches body to href with auth and content-type headers', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001`;
+            const body = { name: 'Updated list' };
+            const response = { listId: 'LIST-001', name: 'Updated list' };
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.patchByHref(href, body);
 
             expect(mockFetch).toHaveBeenCalledWith(
                 href,
-                expect.objectContaining({
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': USER_ID
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws when patchByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 500 })
+            );
+
+            await expect(apiClient.patchByHref(`${BASE_URL}/my-lists/LIST-001`, {}))
+                .rejects.toThrow('500');
+        });
+
+        it('returns null when patchByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.patchByHref(`${BASE_URL}/my-lists/LIST-001`, {});
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('patchNoBodyByHref', () => {
+        it('patches href without body', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001/items/ITEM-001`;
+            const response = { success: true };
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.patchNoBodyByHref(href);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws when patchNoBodyByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.patchNoBodyByHref(`${BASE_URL}/my-lists/LIST-001`))
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when patchNoBodyByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.patchNoBodyByHref(`${BASE_URL}/my-lists/LIST-001`);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('deleteByHref', () => {
+        it('deletes href with auth header', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001`;
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.deleteByHref(href);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
                     method: 'DELETE',
                     headers: {
                         'X-User-Id': USER_ID
                     }
-                })
+                }
             );
+
+            expect(result).toBeNull();
         });
 
-        it('throws error when deleteByHref fails', async () => {
+        it('throws when deleteByHref fails', async () => {
             mockFetch.mockReturnValueOnce(
-                mockError(404)
+                createFetchResponse({ ok: false, status: 404 })
             );
 
-            await expect(
-                apiClient.deleteByHref(
-                    'http://localhost:8081/test'
-                )
-            ).rejects.toThrow('404');
+            await expect(apiClient.deleteByHref(`${BASE_URL}/my-lists/LIST-001`))
+                .rejects.toThrow('404');
         });
     });
-
 });

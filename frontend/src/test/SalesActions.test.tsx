@@ -17,8 +17,8 @@ import {
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
-        getLibrary: vi.fn(),
-        createDirectSales: vi.fn(),
+        getMyLibraryItemsForSale: vi.fn(),
+        postByHref: vi.fn(),
     },
 }));
 
@@ -31,7 +31,7 @@ describe('SalesActions', () => {
 
     describe('action creators', () => {
         it('getLibraryItemsSuccess returns correct action', () => {
-            const payload = { some: 'data' };
+            const payload = [{ itemId: '1', title: 'Dune' }];
 
             expect(getLibraryItemsSuccess(payload)).toEqual({
                 type: GET_LIBRARY_ITEMS_SUCCESS,
@@ -49,7 +49,7 @@ describe('SalesActions', () => {
         });
 
         it('createDirectSaleSuccess returns correct action', () => {
-            const payload = { id: 'sale-1' };
+            const payload = { directSaleId: 'sale-1' };
 
             expect(createDirectSaleSuccess(payload)).toEqual({
                 type: CREATE_DIRECT_SALE_SUCCESS,
@@ -75,19 +75,15 @@ describe('SalesActions', () => {
 
     describe('getMyLibraryItems', () => {
         it('dispatches success action when api call succeeds', async () => {
-            const result = {
-                _embedded: {
-                    libraryItemSummaryDTOList: [
-                        { itemId: '1', title: 'Dune' },
-                    ],
-                },
-            };
+            const result = [
+                { itemId: '1', title: 'Dune', links: [] },
+            ];
 
-            apiClient.getLibrary.mockResolvedValue(result);
+            apiClient.getMyLibraryItemsForSale.mockResolvedValue(result);
 
             await getMyLibraryItems(dispatch);
 
-            expect(apiClient.getLibrary).toHaveBeenCalledTimes(1);
+            expect(apiClient.getMyLibraryItemsForSale).toHaveBeenCalledTimes(1);
             expect(dispatch).toHaveBeenCalledWith({
                 type: GET_LIBRARY_ITEMS_SUCCESS,
                 payload: result,
@@ -95,11 +91,11 @@ describe('SalesActions', () => {
         });
 
         it('dispatches error action when api call fails with plain error', async () => {
-            apiClient.getLibrary.mockRejectedValue(new Error('Network error'));
+            apiClient.getMyLibraryItemsForSale.mockRejectedValue(new Error('Network error'));
 
             await getMyLibraryItems(dispatch);
 
-            expect(apiClient.getLibrary).toHaveBeenCalledTimes(1);
+            expect(apiClient.getMyLibraryItemsForSale).toHaveBeenCalledTimes(1);
             expect(dispatch).toHaveBeenCalledWith({
                 type: GET_LIBRARY_ITEMS_ERROR,
                 payload: 'Network error',
@@ -107,7 +103,7 @@ describe('SalesActions', () => {
         });
 
         it('dispatches parsed error message when api call fails with JSON error message', async () => {
-            apiClient.getLibrary.mockRejectedValue(
+            apiClient.getMyLibraryItemsForSale.mockRejectedValue(
                 new Error(JSON.stringify({ message: 'Library fetch failed' }))
             );
 
@@ -121,21 +117,39 @@ describe('SalesActions', () => {
     });
 
     describe('createDirectSale', () => {
-        it('dispatches success action and returns true when api call succeeds', async () => {
+        it('dispatches error action and returns false when href is missing', async () => {
             const body = {
                 itemsId: ['1'],
                 priceValue: 20,
                 priceCurrency: 'EUR',
             };
 
-            const result = { id: 'sale-123' };
+            const success = await createDirectSale(dispatch, null, body);
 
-            apiClient.createDirectSales.mockResolvedValue(result);
+            expect(apiClient.postByHref).not.toHaveBeenCalled();
+            expect(dispatch).toHaveBeenCalledWith({
+                type: CREATE_DIRECT_SALE_ERROR,
+                payload: 'Missing create-direct-sale link.',
+            });
+            expect(success).toBe(false);
+        });
 
-            const success = await createDirectSale(dispatch, body);
+        it('dispatches success action and returns true when api call succeeds', async () => {
+            const href = 'http://localhost:8081/direct-sales';
+            const body = {
+                itemsId: ['1'],
+                priceValue: 20,
+                priceCurrency: 'EUR',
+            };
 
-            expect(apiClient.createDirectSales).toHaveBeenCalledTimes(1);
-            expect(apiClient.createDirectSales).toHaveBeenCalledWith(body);
+            const result = { directSaleId: 'sale-123' };
+
+            apiClient.postByHref.mockResolvedValue(result);
+
+            const success = await createDirectSale(dispatch, href, body);
+
+            expect(apiClient.postByHref).toHaveBeenCalledTimes(1);
+            expect(apiClient.postByHref).toHaveBeenCalledWith(href, body);
             expect(dispatch).toHaveBeenCalledWith({
                 type: CREATE_DIRECT_SALE_SUCCESS,
                 payload: result,
@@ -144,17 +158,18 @@ describe('SalesActions', () => {
         });
 
         it('dispatches error action and returns false when api call fails with plain error', async () => {
+            const href = 'http://localhost:8081/direct-sales';
             const body = {
                 itemsId: ['1'],
                 priceValue: 20,
                 priceCurrency: 'EUR',
             };
 
-            apiClient.createDirectSales.mockRejectedValue(new Error('Create sale failed'));
+            apiClient.postByHref.mockRejectedValue(new Error('Create sale failed'));
 
-            const success = await createDirectSale(dispatch, body);
+            const success = await createDirectSale(dispatch, href, body);
 
-            expect(apiClient.createDirectSales).toHaveBeenCalledWith(body);
+            expect(apiClient.postByHref).toHaveBeenCalledWith(href, body);
             expect(dispatch).toHaveBeenCalledWith({
                 type: CREATE_DIRECT_SALE_ERROR,
                 payload: 'Create sale failed',
@@ -163,17 +178,18 @@ describe('SalesActions', () => {
         });
 
         it('dispatches parsed error action and returns false when api call fails with JSON error', async () => {
+            const href = 'http://localhost:8081/direct-sales';
             const body = {
                 itemsId: ['1'],
                 priceValue: 20,
                 priceCurrency: 'EUR',
             };
 
-            apiClient.createDirectSales.mockRejectedValue(
+            apiClient.postByHref.mockRejectedValue(
                 new Error(JSON.stringify({ message: 'Direct sale creation failed' }))
             );
 
-            const success = await createDirectSale(dispatch, body);
+            const success = await createDirectSale(dispatch, href, body);
 
             expect(dispatch).toHaveBeenCalledWith({
                 type: CREATE_DIRECT_SALE_ERROR,

@@ -1,6 +1,7 @@
-import {render, screen} from '@/test-utils';
+import { render, screen } from '../test-utils';
 import userEvent from '@testing-library/user-event';
-import {ItemStep} from '../components/addItemModal/ItemStep';
+import { describe, expect, it, vi } from 'vitest';
+import { ItemStep } from '../components/addItemModal/ItemStep';
 
 describe('ItemStep', () => {
     const data = {

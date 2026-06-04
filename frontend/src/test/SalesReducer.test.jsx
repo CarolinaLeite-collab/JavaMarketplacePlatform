@@ -20,7 +20,7 @@ describe('salesReducer', () => {
         expect(result).toBe(state);
     });
 
-    it('maps library items on GET_LIBRARY_ITEMS_SUCCESS', () => {
+    it('maps library items and keeps only sellable items on GET_LIBRARY_ITEMS_SUCCESS', () => {
         const state = {
             ...initialSalesState,
             error: 'Old error',
@@ -28,25 +28,27 @@ describe('salesReducer', () => {
 
         const action = {
             type: GET_LIBRARY_ITEMS_SUCCESS,
-            payload: {
-                _embedded: {
-                    libraryItemSummaryDTOList: [
-                        {
-                            itemId: 'item-1',
-                            title: 'Dune',
-                            picture: 'dune.jpg',
-                            _links: {
-                                self: { href: '/api/library/items/item-1' },
-                            },
-                        },
-                        {
-                            itemId: 'item-2',
-                            title: '1984',
-                            picture: '1984.jpg',
-                        },
+            payload: [
+                {
+                    itemId: 'item-1',
+                    title: 'Dune',
+                    picture: 'dune.jpg',
+                    saleStatus: 'NotOnSale',
+                    links: [
+                        { rel: 'self', href: '/items/item-1' },
+                        { rel: 'create-direct-sale', href: '/direct-sales' },
                     ],
                 },
-            },
+                {
+                    itemId: 'item-2',
+                    title: '1984',
+                    picture: '1984.jpg',
+                    saleStatus: 'OnDirectSale',
+                    links: [
+                        { rel: 'self', href: '/items/item-2' },
+                    ],
+                },
+            ],
         };
 
         const result = salesReducer(state, action);
@@ -59,32 +61,99 @@ describe('salesReducer', () => {
                     value: 'item-1',
                     label: 'Dune',
                     picture: 'dune.jpg',
-                    href: '/api/library/items/item-1',
-                },
-                {
-                    value: 'item-2',
-                    label: '1984',
-                    picture: '1984.jpg',
-                    href: null,
+                    saleStatus: 'NotOnSale',
+                    selfHref: '/items/item-1',
+                    createDirectSaleHref: '/direct-sales',
+                    links: [
+                        { rel: 'self', href: '/items/item-1' },
+                        { rel: 'create-direct-sale', href: '/direct-sales' },
+                    ],
                 },
             ],
         });
     });
 
-    it('uses an empty array when GET_LIBRARY_ITEMS_SUCCESS payload has no embedded items', () => {
+    it('returns an empty array when GET_LIBRARY_ITEMS_SUCCESS payload is empty', () => {
         const state = {
             ...initialSalesState,
-            libraryItems: [{ value: 'old', label: 'Old', picture: 'old.jpg', href: '/old' }],
+            libraryItems: [
+                {
+                    value: 'old',
+                    label: 'Old item',
+                    picture: 'old.jpg',
+                    saleStatus: 'NotOnSale',
+                    selfHref: '/items/old',
+                    createDirectSaleHref: '/direct-sales',
+                    links: [],
+                },
+            ],
             error: 'Old error',
         };
 
         const result = salesReducer(state, {
             type: GET_LIBRARY_ITEMS_SUCCESS,
-            payload: {},
+            payload: [],
         });
 
         expect(result).toEqual({
             ...state,
+            error: null,
+            libraryItems: [],
+        });
+    });
+
+    it('returns an empty array when GET_LIBRARY_ITEMS_SUCCESS payload is missing', () => {
+        const state = {
+            ...initialSalesState,
+            libraryItems: [
+                {
+                    value: 'old',
+                    label: 'Old item',
+                    picture: 'old.jpg',
+                    saleStatus: 'NotOnSale',
+                    selfHref: '/items/old',
+                    createDirectSaleHref: '/direct-sales',
+                    links: [],
+                },
+            ],
+            error: 'Old error',
+        };
+
+        const result = salesReducer(state, {
+            type: GET_LIBRARY_ITEMS_SUCCESS,
+            payload: undefined,
+        });
+
+        expect(result).toEqual({
+            ...state,
+            error: null,
+            libraryItems: [],
+        });
+    });
+
+    it('filters out items without create-direct-sale link', () => {
+        const result = salesReducer(initialSalesState, {
+            type: GET_LIBRARY_ITEMS_SUCCESS,
+            payload: [
+                {
+                    itemId: 'item-1',
+                    title: 'Dune',
+                    picture: 'dune.jpg',
+                    saleStatus: 'OnDirectSale',
+                    links: [{ rel: 'self', href: '/items/item-1' }],
+                },
+                {
+                    itemId: 'item-2',
+                    title: '1984',
+                    picture: '1984.jpg',
+                    saleStatus: 'Sold',
+                    links: [{ rel: 'self', href: '/items/item-2' }],
+                },
+            ],
+        });
+
+        expect(result).toEqual({
+            ...initialSalesState,
             error: null,
             libraryItems: [],
         });
@@ -102,7 +171,7 @@ describe('salesReducer', () => {
         });
     });
 
-    it('clears error on CREATE_DIRECT_SALE_SUCCESS', () => {
+    it('sets success message and clears error on CREATE_DIRECT_SALE_SUCCESS', () => {
         const state = {
             ...initialSalesState,
             error: 'Previous error',
@@ -116,6 +185,7 @@ describe('salesReducer', () => {
         expect(result).toEqual({
             ...state,
             error: null,
+            successMessage: 'The item was successfully put on direct sale.',
         });
     });
 

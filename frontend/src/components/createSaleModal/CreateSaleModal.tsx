@@ -10,11 +10,11 @@ export function CreateSaleModal({ opened, onClose }) {
     const { libraryItems, error, successMessage } = state.sales;
 
     const [saleType, setSaleType] = useState("Direct sale");
-    const [itemId, setItemId] = useState(null);
-    const [priceValue, setPriceValue] = useState("");
+    const [itemId, setItemId] = useState<string | null>(null);
+    const [priceValue, setPriceValue] = useState<string | number>("");
     const [priceCurrency, setPriceCurrency] = useState("EUR");
-    const [durationDays, setDurationDays] = useState("");
-    const [fieldErrors, setFieldErrors] = useState({});
+    const [durationDays, setDurationDays] = useState<string | number>("");
+    const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
 
     useEffect(() => {
         if (opened) {
@@ -38,7 +38,7 @@ export function CreateSaleModal({ opened, onClose }) {
     };
 
     const validateFields = () => {
-        const errors = {};
+        const errors: Record<string, string> = {};
 
         if (!saleType) errors.saleType = "Sale type is required.";
         if (!itemId) errors.itemId = "Item is required.";
@@ -54,7 +54,18 @@ export function CreateSaleModal({ opened, onClose }) {
     const handleCreate = async () => {
         if (!validateFields()) return;
 
-        const body = {
+        const selectedItem = libraryItems.find((item) => item.value === itemId);
+        const href = selectedItem?.createDirectSaleHref ?? null;
+
+        if (!href) {
+            setFieldErrors((prev) => ({
+                ...prev,
+                itemId: "This item cannot be put on direct sale.",
+            }));
+            return;
+        }
+
+        const body: any = {
             itemsId: [itemId],
             priceValue: Number(priceValue),
             priceCurrency,
@@ -64,12 +75,10 @@ export function CreateSaleModal({ opened, onClose }) {
             body.timeLimitSeconds = Number(durationDays) * 24 * 60 * 60;
         }
 
-        const success = await createDirectSale(dispatch, body);
+        const success = await createDirectSale(dispatch, href, body);
 
         if (success) {
-
             handleClose();
-
             notifications.show({
                 title: 'Direct sale created',
                 message: 'The item was successfully put on direct sale.',
@@ -137,8 +146,7 @@ export function CreateSaleModal({ opened, onClose }) {
                         fixedDecimalScale
                         value={priceValue}
                         onChange={(value) => {
-                            setPriceValue(value);
-
+                            setPriceValue(value ?? "");
                             if (fieldErrors.priceValue && Number(value) > 0) {
                                 setFieldErrors((prev) => ({
                                     ...prev,

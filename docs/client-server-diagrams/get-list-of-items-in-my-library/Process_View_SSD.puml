@@ -21,6 +21,10 @@ title "As a User, I want to get the list (title, author, type and ISBN/SSN) \nof
 actor User
 participant ":Mitelovers" as mite
 
+User -> mite : show me want I can do
+activate mite
+mite --> User : here is what you can do
+deactivate mite
 
 User -> mite : I want to access "My Library"
 activate mite

@@ -1,20 +1,31 @@
-import {describe, expect, it} from 'vitest';
-import {initialState, libraryReducer} from '../context/library/LibraryReducer';
+import { describe, it, expect } from 'vitest';
+import { libraryReducer, initialState } from '../context/library/LibraryReducer';
+import { BASE_URL } from '../services/apiClient';
+import {
+    FETCH_DETAIL_ERROR, FETCH_DETAIL_SUCCESS,
+    FETCH_LIBRARY_ERROR,
+    FETCH_LIBRARY_SUCCESS,
+    GET_LIBRARY_OPTIONS_SUCCESS,
+    GET_LIBRARY_OPTIONS_ERROR,
+    ADD_ITEM_SUCCESS,
+    ADD_ITEM_ERROR
+} from '../context/library/LibraryActions';
 
 describe('libraryReducer', () => {
 
-    it('sets loading to true and clears error on LOADING', () => {
-        const state = {
-            ...initialState,
-            error: 'Some error'
+    it('stores library and addItem hrefs on GET_LIBRARY_OPTIONS_SUCCESS', () => {
+        const action = {
+            type: GET_LIBRARY_OPTIONS_SUCCESS,
+            payload: {
+                library: { href: `${BASE_URL}/my-library/` },
+                'library-add': { href: `${BASE_URL}/my-library/add` }
+            }
         };
 
-        const action = { type: 'LOADING' };
+        const result = libraryReducer(initialState, action);
 
-        const result = libraryReducer(state, action);
-
-        expect(result.loading).toBe(true);
-        expect(result.error).toBeNull();
+        expect(result.libraryHref).toBe(`${BASE_URL}/my-library/`);
+        expect(result.addItemHref).toBe(`${BASE_URL}/my-library/add`);
     });
 
     it('stores library items on FETCH_LIBRARY_SUCCESS', () => {
@@ -24,19 +35,17 @@ describe('libraryReducer', () => {
                 title: 'Dune',
                 picture: null,
                 _links: {
-                    self: { href: 'http://localhost:8081/my-library/ITM-001' }
+                    self: { href: `${BASE_URL}/my-library/ITM-001` }
                 }
             }
         ];
 
         const action = {
-            type: 'FETCH_LIBRARY_SUCCESS',
+            type: FETCH_LIBRARY_SUCCESS,
             payload: items
         };
 
         const result = libraryReducer(initialState, action);
-
-        expect(result.loading).toBe(false);
 
         expect(result.items).toEqual([
             {
@@ -44,7 +53,10 @@ describe('libraryReducer', () => {
                 title: 'Dune',
                 picture: null,
                 links: [
-                    { rel: 'self', href: 'http://localhost:8081/my-library/ITM-001' }
+                    {
+                        rel: 'self',
+                        href: `${BASE_URL}/my-library/ITM-001`
+                    }
                 ]
             }
         ]);
@@ -52,13 +64,12 @@ describe('libraryReducer', () => {
 
     it('stores error message on FETCH_LIBRARY_ERROR', () => {
         const action = {
-            type: 'FETCH_LIBRARY_ERROR',
+            type: FETCH_LIBRARY_ERROR,
             payload: 'Failed to load library'
         };
 
         const result = libraryReducer(initialState, action);
 
-        expect(result.loading).toBe(false);
         expect(result.error).toBe('Failed to load library');
     });
 
@@ -70,7 +81,7 @@ describe('libraryReducer', () => {
         };
 
         const action = {
-            type: 'FETCH_DETAIL_SUCCESS',
+            type: FETCH_DETAIL_SUCCESS,
             payload: {
                 itemId: 'ITM-001',
                 detail
@@ -105,7 +116,7 @@ describe('libraryReducer', () => {
         };
 
         const action = {
-            type: 'FETCH_DETAIL_SUCCESS',
+            type: FETCH_DETAIL_SUCCESS,
             payload: {
                 itemId: 'ITM-002',
                 detail: newDetail
@@ -126,13 +137,104 @@ describe('libraryReducer', () => {
 
     it('stores error message on FETCH_DETAIL_ERROR', () => {
         const action = {
-            type: 'FETCH_DETAIL_ERROR',
+            type: FETCH_DETAIL_ERROR,
             payload: 'Failed to load details'
         };
 
         const result = libraryReducer(initialState, action);
 
         expect(result.error).toBe('Failed to load details');
+    });
+
+    it('adds mapped item on ADD_ITEM_SUCCESS', () => {
+        const state = {
+            ...initialState,
+            items: [
+                {
+                    itemId: 'ITM-001',
+                    title: 'Dune',
+                    picture: null,
+                    links: []
+                }
+            ]
+        };
+
+        const action = {
+            type: ADD_ITEM_SUCCESS,
+            payload: {
+                itemId: 'ITM-002',
+                title: 'Foundation',
+                picture: 'cover.jpg',
+                _links: {
+                    self: { href: `${BASE_URL}/my-library/ITM-002` }
+                }
+            }
+        };
+
+        const result = libraryReducer(state, action);
+
+        expect(result.loading).toBe(false);
+        expect(result.items).toEqual([
+            state.items[0],
+            {
+                itemId: 'ITM-002',
+                title: 'Foundation',
+                picture: 'cover.jpg',
+                links: [
+                    {
+                        rel: 'self',
+                        href: `${BASE_URL}/my-library/ITM-002`
+                    }
+                ]
+            }
+        ]);
+    });
+
+    it('stores error and stops loading on ADD_ITEM_ERROR', () => {
+        const action = {
+            type: ADD_ITEM_ERROR,
+            payload: 'Failed to add item'
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.loading).toBe(false);
+        expect(result.error).toBe('Failed to add item');
+    });
+
+    it('stores error message on GET_LIBRARY_OPTIONS_ERROR', () => {
+        const action = {
+            type: GET_LIBRARY_OPTIONS_ERROR,
+            payload: 'Failed to load library options'
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.error).toBe('Failed to load library options');
+    });
+
+    it('maps empty links when library item has no _links', () => {
+        const action = {
+            type: FETCH_LIBRARY_SUCCESS,
+            payload: [
+                {
+                    itemId: 'ITM-003',
+                    title: 'No Links Book',
+                    picture: undefined
+                }
+            ]
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.items).toEqual([
+            {
+                itemId: 'ITM-003',
+                title: 'No Links Book',
+                picture: null,
+                links: []
+            }
+        ]);
     });
 
     it('returns current state for unknown action', () => {

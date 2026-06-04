@@ -23,11 +23,10 @@ export function ItemStep({
                 label="Condition"
                 placeholder="Select item condition"
                 data={[
-                    'NEW',
                     'LIKE_NEW',
-                    'VERY_GOOD',
                     'GOOD',
-                    'ACCEPTABLE',
+                    'FAIR',
+                    'POOR',
                 ]}
                 value={data.condition}
                 onChange={(value) =>

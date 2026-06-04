@@ -1,16 +1,20 @@
 import {
-    FETCH_DETAIL_ERROR,
-    FETCH_DETAIL_SUCCESS,
-    FETCH_LIBRARY_ERROR,
     FETCH_LIBRARY_SUCCESS,
-    LOADING
+    FETCH_LIBRARY_ERROR,
+    FETCH_DETAIL_SUCCESS,
+    FETCH_DETAIL_ERROR,
+    GET_LIBRARY_OPTIONS_ERROR,
+    GET_LIBRARY_OPTIONS_SUCCESS,
+    ADD_ITEM_SUCCESS,
+    ADD_ITEM_ERROR
 } from './LibraryActions';
 
 export const initialState = {
     items: [],
     details: {},
-    loading: false,
-    error: null
+    error: null,
+    libraryHref: null,
+    addItemHref: null,
 };
 
 function mapItem(item) {
@@ -36,14 +40,25 @@ function formatPublicationType(type) {
 export function libraryReducer(state, action) {
     switch (action.type) {
 
-        case LOADING:
-            return { ...state, loading: true, error: null };
-
         case FETCH_LIBRARY_SUCCESS:
-            return { ...state, loading: false, items: action.payload.map(mapItem) };
+            return { ...state, items: action.payload.map(mapItem) };
+
+        case ADD_ITEM_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                items: [...state.items, mapItem(action.payload)]
+            };
+
+        case ADD_ITEM_ERROR:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            };
 
         case FETCH_LIBRARY_ERROR:
-            return { ...state, loading: false, error: action.payload };
+            return { ...state, error: action.payload };
 
         case FETCH_DETAIL_SUCCESS:
             return {
@@ -58,6 +73,16 @@ export function libraryReducer(state, action) {
             };
 
         case FETCH_DETAIL_ERROR:
+            return { ...state, error: action.payload };
+
+        case GET_LIBRARY_OPTIONS_SUCCESS:
+            return {
+                ...state,
+                libraryHref: action.payload.library?.href ?? null,
+                addItemHref: action.payload['library-add']?.href ?? null,
+            };
+
+        case GET_LIBRARY_OPTIONS_ERROR:
             return { ...state, error: action.payload };
 
         default:
