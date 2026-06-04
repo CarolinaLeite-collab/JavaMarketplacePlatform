@@ -1,5 +1,5 @@
-import { NumberInput, Select, Stack, TextInput } from '@mantine/core';
-import type { Dispatch, SetStateAction } from 'react';
+import {NumberInput, Select, Stack, TextInput} from '@mantine/core';
+import type {Dispatch, SetStateAction} from 'react';
 
 interface PublicationData {
     title: string;

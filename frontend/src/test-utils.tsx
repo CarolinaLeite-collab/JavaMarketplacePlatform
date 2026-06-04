@@ -1,7 +1,7 @@
-import { render, RenderOptions } from '@testing-library/react';
-import { MantineProvider } from '@mantine/core';
-import { MemoryRouter } from 'react-router-dom';
-import { ReactElement } from 'react';
+import {render, RenderOptions} from '@testing-library/react';
+import {MantineProvider} from '@mantine/core';
+import {MemoryRouter} from 'react-router-dom';
+import {ReactElement} from 'react';
 
 const customRender = (ui: ReactElement, options?: RenderOptions & { initialEntries?: string[] }) => {
     const { initialEntries = ['/'], ...rest } = options || {};

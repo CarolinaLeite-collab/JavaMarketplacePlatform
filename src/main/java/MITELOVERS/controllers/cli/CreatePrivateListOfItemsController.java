@@ -9,8 +9,6 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 
 /**
  * Controller responsible for handling the creation of private lists of items for a user.

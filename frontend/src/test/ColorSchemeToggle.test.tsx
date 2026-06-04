@@ -1,5 +1,5 @@
-import { axe, render, screen, fireEvent } from '@/test-utils';
-import { ColorSchemeToggle } from '../components/colorscheme/ColorSchemeToggle';
+import {axe, fireEvent, render, screen} from '@/test-utils';
+import {ColorSchemeToggle} from '../components/colorscheme/ColorSchemeToggle';
 
 describe('ColorSchemeToggle', () => {
     axe([<ColorSchemeToggle key="1" />]);

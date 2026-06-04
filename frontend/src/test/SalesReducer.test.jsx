@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { salesReducer, initialSalesState } from '../context/sales/SalesReducer';
+import {describe, expect, it} from 'vitest';
+import {initialSalesState, salesReducer} from '../context/sales/SalesReducer';
 import {
-    GET_LIBRARY_ITEMS_SUCCESS,
-    GET_LIBRARY_ITEMS_ERROR,
-    CREATE_DIRECT_SALE_SUCCESS,
-    CREATE_DIRECT_SALE_ERROR,
     CLEAR_SALES_MESSAGES,
+    CREATE_DIRECT_SALE_ERROR,
+    CREATE_DIRECT_SALE_SUCCESS,
+    GET_LIBRARY_ITEMS_ERROR,
+    GET_LIBRARY_ITEMS_SUCCESS,
 } from '../context/sales/SalesActions.jsx';
 
 describe('salesReducer', () => {

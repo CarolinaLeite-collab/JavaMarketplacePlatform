@@ -14,7 +14,6 @@ import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
-import MITELOVERS.mapper.EditionResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-import { apiClient } from '../../services/apiClient';
+import {apiClient} from '../../services/apiClient';
 
 export const BOOTSTRAP_SUCCESS = 'BOOTSTRAP_SUCCESS';
 export const BOOTSTRAP_ERROR = 'BOOTSTRAP_ERROR';

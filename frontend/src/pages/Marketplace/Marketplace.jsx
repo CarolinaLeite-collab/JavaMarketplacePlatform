@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
-import { Text } from '@mantine/core';
-import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
-import { MarketPlaceTable } from '../../components/marketPlaceTable/MarketPlaceTable.jsx';
-import { apiClient } from '../../services/apiClient';
+import {useContext, useEffect, useState} from 'react';
+import {Text} from '@mantine/core';
+import {DefaultLayout} from '../../components/layout/DefaultLayout.tsx';
+import {MarketPlaceTable} from '../../components/marketPlaceTable/MarketPlaceTable.jsx';
+import {apiClient} from '../../services/apiClient';
 import AppContext from '../../context/AppContext';
-import { useUser } from '../../context/UserContext';
+import {useUser} from '../../context/UserContext';
 
 function formatPrice(priceValue, priceCurrency) {
     if (priceValue == null) return '';

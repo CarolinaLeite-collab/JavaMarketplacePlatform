@@ -1,5 +1,5 @@
-import { axe, render, screen } from '@/test-utils';
-import { Footer } from '../components/footer/Footer';
+import {axe, render, screen} from '@/test-utils';
+import {Footer} from '../components/footer/Footer';
 
 describe('Footer', () => {
     axe([<Footer key="1" />]);

@@ -1,5 +1,5 @@
-import { Container, Stack } from '@mantine/core';
-import { PageTitle } from "./PageTitle.tsx";
+import {Container, Stack} from '@mantine/core';
+import {PageTitle} from "./PageTitle.tsx";
 
 export function PageContent({ title, subtitle, children }) {
     return (

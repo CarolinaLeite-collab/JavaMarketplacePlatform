@@ -1,6 +1,5 @@
 package MITELOVERS.controllers.rest;
 
-import org.springframework.hateoas.Link;
 import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

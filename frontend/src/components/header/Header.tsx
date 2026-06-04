@@ -1,18 +1,11 @@
-import {
-    Burger,
-    Button,
-    Divider,
-    Drawer,
-    Group,
-    ScrollArea,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { Link } from 'react-router-dom';
+import {Burger, Button, Divider, Drawer, Group, ScrollArea,} from '@mantine/core';
+import {useDisclosure} from '@mantine/hooks';
+import {Link} from 'react-router-dom';
 import classes from './Header.module.css';
-import { ColorSchemeToggle } from "../colorscheme/ColorSchemeToggle.tsx";
-import { Logo } from "../logo/Logo.tsx";
-import { useUser } from '../../context/UserContext';
-import { useContext } from 'react';
+import {ColorSchemeToggle} from "../colorscheme/ColorSchemeToggle.tsx";
+import {Logo} from "../logo/Logo.tsx";
+import {useUser} from '../../context/UserContext';
+import {useContext} from 'react';
 import AppContext from '../../context/AppContext';
 
 export function Header() {

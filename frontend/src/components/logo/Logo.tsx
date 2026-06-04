@@ -1,4 +1,4 @@
-import { useComputedColorScheme } from '@mantine/core';
+import {useComputedColorScheme} from '@mantine/core';
 import LogoLight from '../../assets/MiteloversLogoBlack.svg';
 import LogoDark from '../../assets/MiteloversLogoWhite.svg';
 

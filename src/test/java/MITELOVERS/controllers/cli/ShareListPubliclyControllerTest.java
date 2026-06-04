@@ -5,8 +5,6 @@ import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

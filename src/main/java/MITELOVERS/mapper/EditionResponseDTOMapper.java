@@ -1,11 +1,9 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.edition.Edition;
-import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.dto.DimensionDTO;
-import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.WeightDTO;
-import MITELOVERS.dto.response.PublicationTypeResponseDTO;
+import MITELOVERS.dto.response.EditionResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 

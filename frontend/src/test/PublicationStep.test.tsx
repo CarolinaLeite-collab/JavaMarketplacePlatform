@@ -1,6 +1,6 @@
-import { render, screen } from '@/test-utils';
+import {render, screen} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { PublicationStep } from '../components/addItemModal/PublicationStep';
+import {PublicationStep} from '../components/addItemModal/PublicationStep';
 
 describe('PublicationStep', () => {
     const data = {

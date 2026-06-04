@@ -1,9 +1,9 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
-import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.springframework.stereotype.Controller;

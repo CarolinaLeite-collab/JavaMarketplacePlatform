@@ -7,7 +7,6 @@ import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.AddItemRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

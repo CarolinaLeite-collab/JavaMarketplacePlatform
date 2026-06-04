@@ -2,7 +2,6 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.EditionService;
 import MITELOVERS.domain.edition.Edition;
-import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import org.springframework.stereotype.Controller;
 

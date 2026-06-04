@@ -4,9 +4,9 @@ import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
-import MITELOVERS.dto.request.AddItemRequestDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 

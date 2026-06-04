@@ -1,11 +1,5 @@
-import {
-    NumberInput,
-    Select,
-    SimpleGrid,
-    Stack,
-    TextInput,
-} from '@mantine/core';
-import type { Dispatch, SetStateAction } from 'react';
+import {NumberInput, SimpleGrid, Stack, TextInput,} from '@mantine/core';
+import type {Dispatch, SetStateAction} from 'react';
 
 interface EditionData {
     identifier: string;

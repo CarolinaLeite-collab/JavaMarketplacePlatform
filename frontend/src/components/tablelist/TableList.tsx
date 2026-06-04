@@ -1,13 +1,12 @@
-import { useEffect, useContext, useState } from 'react';
-import { IconChevronDown, IconChevronUp, IconSelector, IconSearch, IconTrash } from '@tabler/icons-react';
-import { Center, Group, ActionIcon, ScrollArea, Table, Text, TextInput, UnstyledButton } from '@mantine/core';
+import {useContext, useEffect, useState} from 'react';
+import {IconChevronDown, IconChevronUp, IconSearch, IconSelector} from '@tabler/icons-react';
+import {Center, Group, ScrollArea, Table, Text, TextInput, UnstyledButton} from '@mantine/core';
 import classes from './TableList.module.css';
-import { ShareListModal } from "../sharelistmodal/ShareListModal.tsx";
+import {ShareListModal} from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../context/AppContext';
-import { getMyLists, getListsOptions, addItemToList } from '../../context/lists/ListsActions';
-import { DeleteListModal } from '../deletelistmodal/DeleteListModal.tsx';
-import { AddItemToListDropDown } from '../addItemToListModal/AddItemToListDropDown.tsx';
-import { useUser } from '../../context/UserContext';
+import {addItemToList, getListsOptions, getMyLists} from '../../context/lists/ListsActions';
+import {DeleteListModal} from '../deletelistmodal/DeleteListModal.tsx';
+import {AddItemToListDropDown} from '../addItemToListModal/AddItemToListDropDown.tsx';
 
 
 interface RowData {

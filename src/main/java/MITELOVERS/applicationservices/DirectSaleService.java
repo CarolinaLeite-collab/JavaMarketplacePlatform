@@ -3,14 +3,12 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.repository.IDirectSaleRepo;
+import MITELOVERS.domain.repository.IGenreRepo;
+import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
-import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
-import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
-import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@/test-utils';
-import { ItemAccordion } from '../components/accordion/ItemAccordion';
+import {fireEvent, render, screen} from '@/test-utils';
+import {ItemAccordion} from '../components/accordion/ItemAccordion';
 
 const mockItems = [{
     itemId: 'ITM-001',

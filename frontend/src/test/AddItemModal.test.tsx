@@ -1,7 +1,7 @@
-import { render, screen } from '@/test-utils';
+import {render, screen} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
-import { AddItemModal } from '@/components/addItemModal/AddItemModal';
+import {vi} from 'vitest';
+import {AddItemModal} from '@/components/addItemModal/AddItemModal';
 
 describe('AddItemModal', () => {
     it('calls onItemAdded with the created item', async () => {

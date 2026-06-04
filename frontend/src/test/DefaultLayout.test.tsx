@@ -1,6 +1,6 @@
-import { axe, render, screen } from '@/test-utils';
-import { DefaultLayout } from '../components/layout/DefaultLayout';
-import { useComputedColorScheme } from '@mantine/core';
+import {axe, render, screen} from '@/test-utils';
+import {DefaultLayout} from '../components/layout/DefaultLayout';
+import {useComputedColorScheme} from '@mantine/core';
 
 vi.mock('@mantine/core', async () => {
     const actual = await vi.importActual('@mantine/core');
