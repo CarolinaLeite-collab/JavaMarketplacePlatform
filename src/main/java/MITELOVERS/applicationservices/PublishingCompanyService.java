@@ -63,16 +63,14 @@ public class PublishingCompanyService {
 
     }
 
-    public PublishingCompanyResponseDTO getPublishingCompanyById(String publishingCompanyId) {
+    public PublishingCompany getPublishingCompanyById(String publishingCompanyId) {
 
         PublishingCompanyId id = new  PublishingCompanyId(publishingCompanyId);
 
         PublishingCompany publishingCompany = _iPublishingCompanyRepo.ofIdentity(id)
                 .orElseThrow(() -> new NoSuchElementException("Publishing Company not found"));
 
-        PublishingCompanyResponseDTO responseDTO = _publishingCompanyResponseDTOMapper.toModel(publishingCompany);
-
-        return responseDTO;
+        return publishingCompany;
 
     }
 

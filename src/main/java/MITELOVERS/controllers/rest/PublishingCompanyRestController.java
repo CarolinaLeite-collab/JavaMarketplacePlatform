@@ -3,10 +3,11 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
+import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +16,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for exposing publication-related endpoints
@@ -29,18 +33,18 @@ public class PublishingCompanyRestController {
     private final PublishingCompanyService _publishingCompanyService;
     private final PublishingCompanyLinkProvider _publishingCompanyLinkProvider;
     private final UserService _userService;
-    private final PublicationTypeResponseDTOMapper _publicationTypeResponseDTOMapper;
+    private final PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapper;
 
 
     public PublishingCompanyRestController(PublishingCompanyService publishingCompanyService,
                                            PublishingCompanyLinkProvider publishingCompanyLinkProvider,
                                            UserService userService,
-                                           PublicationTypeResponseDTOMapper publicationTypeResponseDTOMapper) {
+                                           PublishingCompanyResponseDTOMapper publishingCompanyResponseDTOMapper) {
 
         _publishingCompanyService = publishingCompanyService;
         _publishingCompanyLinkProvider = publishingCompanyLinkProvider;
         _userService = userService;
-        _publicationTypeResponseDTOMapper = publicationTypeResponseDTOMapper;
+        _publishingCompanyResponseDTOMapper = publishingCompanyResponseDTOMapper;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -74,12 +78,19 @@ public class PublishingCompanyRestController {
     }
 
     @GetMapping(path = "/{publishingCompanyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getPublishingCompanyById(@PathVariable String publishingCompanyId) {
+    public ResponseEntity<PublishingCompanyResponseDTO> getPublishingCompanyById(
+            @PathVariable String publishingCompanyId) {
 
-            PublishingCompanyResponseDTO dto = _publishingCompanyService.getPublishingCompanyById(publishingCompanyId);
+        PublishingCompany publishingCompany =
+                _publishingCompanyService.getPublishingCompanyById(publishingCompanyId);
 
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+        PublishingCompanyResponseDTO dto =
+                _publishingCompanyResponseDTOMapper.toModel(publishingCompany);
 
+        dto.add(linkTo(methodOn(PublishingCompanyRestController.class)
+                .getPublishingCompanyById(dto.getPublishingCompanyId()))
+                .withSelfRel());
+
+        return ResponseEntity.ok(dto);
     }
-
 }

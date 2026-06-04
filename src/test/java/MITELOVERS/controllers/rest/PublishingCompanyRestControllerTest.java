@@ -5,7 +5,7 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
+import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,7 +40,7 @@ class PublishingCompanyRestControllerTest {
     private UserService _userServiceDouble;
 
     @MockitoBean
-    private PublicationTypeResponseDTOMapper _publicationTypeResponseDTOMapperDouble;
+    private PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapperDouble;
 
     @Test
     void optionsReturnsOkWithLinks() throws Exception {
