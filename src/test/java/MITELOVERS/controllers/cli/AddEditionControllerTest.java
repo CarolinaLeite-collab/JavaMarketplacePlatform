@@ -1,18 +1,16 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.EditionService;
-import MITELOVERS.dto.response.EditionResponseDTO;
+import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class AddEditionControllerTest {
 
@@ -25,7 +23,7 @@ class AddEditionControllerTest {
     }
 
     @Test
-    void addEditionReturnsEditionResponseDTO() {
+    void addEditionReturnsEdition() {
 
         // Arrange
         EditionRequestDTO dto = EditionRequestDTO.builder()
@@ -36,19 +34,46 @@ class AddEditionControllerTest {
                 .identifier("9780747532743")
                 .build();
 
-        EditionResponseDTO responseDouble = mock(EditionResponseDTO.class);
+        Edition editionDouble = mock(Edition.class);
 
-        when(_editionServiceDouble.registerEdition(any(), any())).thenReturn(responseDouble);
+        when(_editionServiceDouble.registerEdition(any(), any())).thenReturn(editionDouble);
 
         // SUT
         AddEditionController controller = new AddEditionController(_editionServiceDouble);
 
         // Act
-        EditionResponseDTO result = controller.addEdition("1984-Orwell-G--F43DD6(1949)", dto);
+        Edition result = controller.addEdition("1984-Orwell-G--F43DD6(1949)", dto);
 
         // Assert
         assertNotNull(result);
+        assertSame(editionDouble, result);
+    }
 
+    @Test
+    void addEditionDelegatesToService() {
+
+        // Arrange
+        EditionRequestDTO dto = EditionRequestDTO.builder()
+                .publicationTypeId("BOOK")
+                .publishingCompanyId("Secker and Warburg")
+                .publishingYear(2000)
+                .language("ENGLISH")
+                .identifier("9780747532743")
+                .build();
+
+        Edition editionDouble = mock(Edition.class);
+        String publicationId = "1984-Orwell-G--F43DD6(1949)";
+
+        when(_editionServiceDouble.registerEdition(any(), any())).thenReturn(editionDouble);
+
+        // SUT
+        AddEditionController controller = new AddEditionController(_editionServiceDouble);
+
+        // Act
+        controller.addEdition(publicationId, dto);
+
+        // Assert
+        verify(_editionServiceDouble).registerEdition(publicationId, dto);
     }
 
     @Test
@@ -71,7 +96,5 @@ class AddEditionControllerTest {
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
                 controller.addEdition("1984-Orwell-G--F43DD6(1949)", dto));
-
     }
-
 }

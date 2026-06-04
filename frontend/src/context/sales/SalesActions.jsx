@@ -1,4 +1,4 @@
-import { apiClient } from '../../services/apiClient';
+import {apiClient} from '../../services/apiClient';
 
 export const GET_LIBRARY_ITEMS_SUCCESS = 'GET_LIBRARY_ITEMS_SUCCESS';
 export const GET_LIBRARY_ITEMS_ERROR = 'GET_LIBRARY_ITEMS_ERROR';

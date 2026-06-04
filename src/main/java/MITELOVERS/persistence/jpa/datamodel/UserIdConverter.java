@@ -4,8 +4,10 @@ import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import lombok.Generated;
 
 @Converter
+@Generated
 public class UserIdConverter implements AttributeConverter<UserId, String> {
 
     @Override

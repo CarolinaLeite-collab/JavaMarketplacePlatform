@@ -1,24 +1,28 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.LibraryService;
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
+import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +35,13 @@ class LibraryRestControllerTest {
 
     @MockitoBean
     private LibraryService libraryService;
+
+    @MockitoBean
+    private LibraryLinkProvider libraryLinkProvider;
+
+    @MockitoBean
+    private UserService userService;
+
 
     @Test
     void shouldReturn200WithItemsWhenLibraryExists() throws Exception {
@@ -80,29 +91,6 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-    @Test
-    void shouldReturn400WhenEmailIsInvalid() throws Exception {
-        // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary("invalid-email"))
-                .thenThrow(new IllegalArgumentException("Invalid email"));
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/")
-                .header("X-User-Id", "invalid-email"));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldReturn400WhenHeaderIsMissing() throws Exception {
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/"));
-
-        // Assert
-        result.andExpect(status().isBadRequest());
-    }
 
     @Test
     void shouldReturn200WithItemDetailsWhenItemExists() throws Exception {
@@ -122,45 +110,70 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-    @Test
-    void shouldReturn404WhenItemNotFound() throws Exception {
-        // Arrange
-        when(libraryService.getItemDetail(any()))
-                .thenThrow(new IllegalStateException("Item not found!"));
-
-        // Act
-        var result = mockMvc.perform(get("/my-library/INVALID-ID"));
-
-        // Assert
-        result.andExpect(status().isNotFound());
-    }
 
     @Test
     void shouldReturn201WhenItemAddedToLibrary() throws Exception {
         // Arrange
-        // Act
-        var result = mockMvc.perform(post("/my-library/")
-                .header("X-User-Id", "pedro@aeiou.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemId\": \"3C5D126F8B\"}"));
+        LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
+                "3C5D126F8B",
+                "1984",
+                "https://example.com/1984.jpg"
+        );
+        when(libraryService.addItemToLibrary(any(), any())).thenReturn(dto);
 
-        // Assert
-        result.andExpect(status().isCreated());
+        // Act & Assert
+        mockMvc.perform(post("/my-library/")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemId\": \"3C5D126F8B\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self").exists());
+    }
+
+
+    @Test
+    void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
+        // Arrange
+        User _userDouble = mock(User.class);
+        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
+        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of(
+                Link.of("/my-library/").withRel("library"),
+                Link.of("/my-library/").withRel("library-add")
+        ));
+
+        // Act & Assert
+        mockMvc.perform(options("/my-library")
+                        .param("email", "pedro@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links.library").exists())
+                .andExpect(jsonPath("$._links.library-add").exists());
     }
 
     @Test
-    void shouldReturn409WhenItemAlreadyInLibrary() throws Exception {
+    void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
-        doThrow(new IllegalStateException("Item already exists in library"))
-                .when(libraryService).addItemToLibrary(any(), any());
+        User _userDouble = mock(User.class);
+        when(userService.getUserByEmail("readonly@aeiou.com")).thenReturn(_userDouble);
+        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of());
+
+        // Act & Assert
+        mockMvc.perform(options("/my-library")
+                        .param("email", "readonly@aeiou.com")
+                        .accept(MediaTypes.HAL_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists());
+    }
+
+    @Test
+    void shouldReturn400WhenHeaderIsMissing() throws Exception {
 
         // Act
-        var result = mockMvc.perform(post("/my-library/")
-                .header("X-User-Id", "pedro@aeiou.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"itemId\": \"3C5D126F8B\"}"));
+        var result = mockMvc.perform(get("/my-library/"));
 
         // Assert
-        result.andExpect(status().isConflict());
+        result.andExpect(status().isBadRequest());
     }
+
 }

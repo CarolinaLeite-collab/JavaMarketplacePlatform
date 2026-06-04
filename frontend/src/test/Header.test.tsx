@@ -1,6 +1,6 @@
-import { axe, render } from '@/test-utils';
+import {axe, render} from '@/test-utils';
 import attributes from './attributes.json';
-import { Header } from '../components/header/Header';
+import {Header} from '../components/header/Header';
 
 describe('Header', () => {
     axe([<Header key="1" {...(attributes as any)} />]);

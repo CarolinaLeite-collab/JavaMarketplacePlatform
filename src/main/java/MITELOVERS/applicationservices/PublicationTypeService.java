@@ -4,9 +4,8 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.response.PublicationTypeResponseDTO;
-import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,32 +21,33 @@ public class PublicationTypeService {
 
     private final IPublicationTypeRepo _iPublicationTypeRepo;
     private final PublicationTypeFactory _publicationTypeFactory;
-    private final PublicationTypeResponseDTOMapper _mapper;
 
-    public PublicationTypeService(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory factory, PublicationTypeResponseDTOMapper mapper){
+
+    public PublicationTypeService(IPublicationTypeRepo iPublicationTypeRepo, PublicationTypeFactory factory){
 
         _iPublicationTypeRepo = iPublicationTypeRepo;
         _publicationTypeFactory = factory;
-        _mapper = mapper;
 
     }
 
-    public List<PublicationTypeResponseDTO> getAllPublicationTypes(){
+    @Transactional(readOnly = true)
+    public List<PublicationType> getAllPublicationTypes(){
 
         Iterable<PublicationType> publicationTypes = _iPublicationTypeRepo.findAll();
 
-        List<PublicationTypeResponseDTO> response = new ArrayList<>();
+        List<PublicationType> response = new ArrayList<>();
 
         for (PublicationType publicationType : publicationTypes) {
 
-            response.add (_mapper.toModel(publicationType));
+            response.add (publicationType);
         }
 
         return response;
 
     }
 
-    public PublicationTypeResponseDTO getPublicationTypeById(String id){
+    @Transactional(readOnly = true)
+    public PublicationType getPublicationTypeById(String id){
 
         PublicationType publicationType = _iPublicationTypeRepo
                 .ofIdentity(new PublicationTypeId(id))
@@ -55,9 +55,10 @@ public class PublicationTypeService {
                         new NoSuchElementException(
                                 "PublicationType with id '" + id + "' does not exist"));
 
-        return _mapper.toModel(publicationType);
+        return publicationType;
     }
 
+    @Transactional
     public PublicationType addPublicationType(String publicationTypeName) {
 
         PublicationType newPublicationType = _publicationTypeFactory.createPublicationType(publicationTypeName);

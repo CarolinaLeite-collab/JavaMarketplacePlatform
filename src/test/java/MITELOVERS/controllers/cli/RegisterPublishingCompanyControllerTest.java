@@ -1,6 +1,7 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class RegisterPublishingCompanyControllerTest {
     @Test
     void registerPublishingCompanyReturnsDTO() {
         // Arrange
-        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
         PublishingCompanyResponseDTO responseDouble = mock(PublishingCompanyResponseDTO.class);
 
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
@@ -43,7 +44,7 @@ class RegisterPublishingCompanyControllerTest {
     @Test
     void registerPublishingCompanyServiceThrowsExceptionPropagates() {
         // Arrange
-        PublishingCompanyResponseDTO dtoDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
                 .thenThrow(new IllegalStateException("Publishing company already exists"));

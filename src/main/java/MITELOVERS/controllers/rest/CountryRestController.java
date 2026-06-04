@@ -1,16 +1,25 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.CountryService;
-import MITELOVERS.dto.CountryCollectionDTO;
-import MITELOVERS.dto.CountryDTO;
-import MITELOVERS.mapper.CountryCollectionMapper;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.CountryLinkProvider;
+import MITELOVERS.domain.country.Country;
+import MITELOVERS.domain.user.User;
+import MITELOVERS.dto.request.CountryRequestDTO;
+import MITELOVERS.dto.response.CountryResponseDTO;
+import MITELOVERS.mapper.CountryResponseDTOMapper;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.StreamSupport;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @RestController
@@ -18,80 +27,79 @@ import java.util.NoSuchElementException;
 public class CountryRestController {
 
     private final CountryService _service;
-    private final CountryCollectionMapper _collectionMapper;
+    private final CountryResponseDTOMapper _mapper;
+    private final UserService _userService;
+    private final CountryLinkProvider _countryLinkProvider;
 
-    public CountryRestController(CountryService service, CountryCollectionMapper collectionMapper) {
+    public CountryRestController(CountryService service,
+                                 CountryResponseDTOMapper mapper,
+                                 UserService userService,
+                                 CountryLinkProvider countryLinkProvider) {
         _service = service;
-        _collectionMapper = collectionMapper;
+        _mapper = mapper;
+        _userService = userService;
+        _countryLinkProvider = countryLinkProvider;
     }
 
-    @PostMapping
-    public CountryDTO create(@RequestBody String name) {
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        try{
+        User user = _userService.getUserByEmail(email);
 
-            CountryDTO countryDto = _service.createCountry(name);
+        RepresentationModel<?> model = new RepresentationModel<>();
 
-            return new ResponseEntity<>(countryDto, HttpStatus.OK).getBody();
+        _countryLinkProvider.getLinks(user).forEach(model::add);
 
-        } catch (IllegalArgumentException ex) {
-
-            throw new ResponseStatusException(HttpStatus.CONFLICT);
-
-        }
+        return ResponseEntity.ok(model);
     }
 
-//    @PutMapping("/{id}")
-//    public CountryDTO update(@PathVariable String id, @RequestBody String newName) {
-//
-//        try {
-//
-//            return _service.updateCountry(id, newName);
-//
-//        } catch (NoSuchElementException ex) {
-//
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable String id) {
-//
-//        try {
-//
-//            _service.deleteCountry(id);
-//
-//            return ResponseEntity.noContent().build();
-//
-//        } catch (NoSuchElementException ex) {
-//
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CountryResponseDTO> create(@RequestBody CountryRequestDTO request) {
 
-    @GetMapping
-    public ResponseEntity<CountryCollectionDTO> listAll() {
+        Country created = _service.createCountry(request.getCountryName());
+        CountryResponseDTO dto = _mapper.toModel(created);
 
-        List<CountryDTO> countries = _service.listAllCountries();
+        dto.add(linkTo(methodOn(CountryRestController.class)
+                .findById(dto.getCountryId())).withSelfRel());
 
-        CountryCollectionDTO collectionDto = _collectionMapper.toDTO(countries);
+        dto.add(linkTo(methodOn(CountryRestController.class)
+                .listAll()).withRel("list"));
 
-        return ResponseEntity.ok(collectionDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CountryDTO> findById(@PathVariable String id) {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<CountryResponseDTO>> listAll() {
 
-        try {
+        List<CountryResponseDTO> items = StreamSupport
+                .stream(_service.listAllCountries().spliterator(), false)
+                .map(_mapper::toModel)
+                .toList();
 
-            CountryDTO countryDto = _service.findById(id);
+        CollectionModel<CountryResponseDTO> model = CollectionModel.of(items);
 
-            return new ResponseEntity<>(countryDto, HttpStatus.OK);
+        model.add(linkTo(methodOn(CountryRestController.class)
+                .listAll()).withSelfRel());
 
-        } catch (NoSuchElementException ex) {
+        model.add(linkTo(methodOn(CountryRestController.class)
+                .create(null)).withRel("create"));
 
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(model);
+    }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CountryResponseDTO> findById(@PathVariable String id) {
+
+        Country country = _service.findById(id);
+        CountryResponseDTO dto = _mapper.toModel(country);
+
+        dto.add(linkTo(methodOn(CountryRestController.class)
+                .findById(id)).withSelfRel());
+
+        dto.add(linkTo(methodOn(CountryRestController.class)
+                .listAll()).withRel("list"));
+
+        return ResponseEntity.ok(dto);
     }
 
 }

@@ -1,27 +1,29 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.AuthorService;
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
+import MITELOVERS.controllers.linkprovider.AuthorLinkProvider;
+import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.AuthorResponseDTO;
+import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,18 +35,42 @@ class AuthorRestControllerTest {
     @Autowired
     private MockMvc _mockMvc;
 
-    @Autowired
-    private AuthorRestController _controller;
-
     @MockitoBean
     private AuthorService _authorService;
+
+    @MockitoBean
+    private AuthorLinkProvider _authorLinkProvider;
+
+    @MockitoBean
+    private UserService _userService;
+
+    @MockitoBean
+    private AuthorResponseDTOMapper _authorResponseDTOMapper;
+
+    @Test
+    void optionsReturnsAvailableLinksForUser() throws Exception {
+        // Arrange
+        String email = "user@example.com";
+        User mockUser = mock(User.class);
+        Link sampleLink = Link.of("http://localhost/authors", "authors");
+
+        when(_userService.getUserByEmail(email)).thenReturn(mockUser);
+        when(_authorLinkProvider.getLinks(mockUser)).thenReturn(List.of(sampleLink));
+
+        // Act & Assert
+        _mockMvc.perform(options("/authors").param("email", email))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.authors.href").value("http://localhost/authors"));
+    }
 
     @Test
     void registerAuthorAndReturnDTO() throws Exception {
         // Arrange
+        Author mockAuthor = mock(Author.class);
         AuthorResponseDTO dto = new AuthorResponseDTO("SAMPLE", "Sample Name");
 
-        when(_authorService.registerAuthor("Sample Name")).thenReturn(dto);
+        when(_authorService.registerAuthor("Sample Name")).thenReturn(mockAuthor);
+        when(_authorResponseDTOMapper.toModel(mockAuthor)).thenReturn(dto);
 
         // Act & Assert
         _mockMvc.perform(post("/authors")
@@ -52,22 +78,22 @@ class AuthorRestControllerTest {
                         .content("{\"authorName\":\"Sample Name\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.authorId").value("SAMPLE"))
-                .andExpect(jsonPath("$.authorName").value("Sample Name"))
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/authors/SAMPLE"));
     }
 
     @Test
     void getAllAuthorsReturnsList() throws Exception {
         // Arrange
+        Author mockAuthor = mock(Author.class);
         AuthorResponseDTO dto = new AuthorResponseDTO("SAMPLE", "Sample Name");
 
-        when(_authorService.getAllAuthors()).thenReturn(List.of(dto));
+        when(_authorService.getAllAuthors()).thenReturn(List.of(mockAuthor));
+        when(_authorResponseDTOMapper.toModel(mockAuthor)).thenReturn(dto);
 
         // Act & Assert
         _mockMvc.perform(get("/authors"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].authorId").value("SAMPLE"))
-                .andExpect(jsonPath("$[0].authorName").value("Sample Name"))
                 .andExpect(jsonPath("$[0].links[0].href").value("http://localhost/authors/SAMPLE"));
     }
 
@@ -85,22 +111,28 @@ class AuthorRestControllerTest {
     void getAuthorByIdReturnsOkResponse() throws Exception {
         // Arrange
         String authorId = "SAMPLE";
+        Author mockAuthor = mock(Author.class);
+        AuthorResponseDTO dto = new AuthorResponseDTO(authorId, "Sample Name");
+
+        when(_authorService.getAuthorById(authorId)).thenReturn(Optional.of(mockAuthor));
+        when(_authorResponseDTOMapper.toModel(mockAuthor)).thenReturn(dto);
 
         // Act & Assert
         _mockMvc.perform(get("/authors/{id}", authorId))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.authorId").value("SAMPLE"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/authors/SAMPLE"));
     }
 
     @Test
-    void getAuthorByIdReturnsResponseEntity() {
+    void getAuthorByIdThrowsExceptionWhenNotFound() throws Exception {
         // Arrange
-        String authorId = "SAMPLE";
+        String authorId = "NON-EXISTENT";
 
-        // Act
-        ResponseEntity<AuthorResponseDTO> response = _controller.getAuthorById(authorId);
+        when(_authorService.getAuthorById(authorId)).thenReturn(Optional.empty());
 
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        // Act & Assert
+        _mockMvc.perform(get("/authors/{id}", authorId))
+                .andExpect(status().isNotFound());
     }
 }

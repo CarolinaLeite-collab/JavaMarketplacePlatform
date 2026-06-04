@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { listsReducer, initialListsState } from '../context/lists/ListsReducer';
+import {describe, expect, it} from 'vitest';
+import {initialListsState, listsReducer} from '../context/lists/ListsReducer';
 
 const aList = {
     listId: 'LIST-001',

@@ -1,10 +1,10 @@
-import { render, screen, within, waitFor } from '@testing-library/react';
+import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
-import { MantineProvider } from '@mantine/core';
-import { DeleteListModal } from '../components/deletelistmodal/DeleteListModal';
+import {describe, expect, it, vi} from 'vitest';
+import {MantineProvider} from '@mantine/core';
+import {DeleteListModal} from '../components/deletelistmodal/DeleteListModal';
 import AppContext from '../context/AppContext';
-import { BASE_URL } from '../services/apiClient';
+import {BASE_URL} from '../services/apiClient';
 
 vi.mock('../context/lists/ListsActions', () => ({
     deleteList: vi.fn(),

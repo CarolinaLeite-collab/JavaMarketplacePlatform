@@ -5,8 +5,6 @@ import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.dto.response.AuthorResponseDTO;
-import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,28 +34,24 @@ class AuthorServiceTest {
     @Mock
     private AuthorFactory _authorFactory;
 
-    @Mock
-    private AuthorResponseDTOMapper _authorResponseDTOMapper;
-
     @Test
-    void registerAuthorReturnsResponseDTO() {
+    void registerAuthorReturnsRawDomainAuthor() {
         // Arrange
         String authorName = "Sample Name";
         Author authorDouble = mock(Author.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
-        AuthorResponseDTO responseDTODouble = mock(AuthorResponseDTO.class);
 
         when(_authorFactory.createAuthor(any(Name.class))).thenReturn(authorDouble);
         when(authorDouble.identity()).thenReturn(authorIdDouble);
         when(_iAuthorRepo.containsOfIdentity(authorIdDouble)).thenReturn(false);
         when(_iAuthorRepo.save(authorDouble)).thenReturn(authorDouble);
-        when(_authorResponseDTOMapper.toModel(authorDouble)).thenReturn(responseDTODouble);
 
         // Act
-        AuthorResponseDTO result = _authorService.registerAuthor(authorName);
+        Author result = _authorService.registerAuthor(authorName);
 
         // Assert
-        assertSame(responseDTODouble, result);
+        assertNotNull(result);
+        assertSame(authorDouble, result);
     }
 
     @Test
@@ -77,39 +73,74 @@ class AuthorServiceTest {
     }
 
     @Test
-    void getAllAuthorsReturnsMappedList() {
+    void getAllAuthorsReturnsRawDomainEntities() {
         // Arrange
         Author authorOne = mock(Author.class);
         Author authorTwo = mock(Author.class);
-        AuthorResponseDTO dtoOne = mock(AuthorResponseDTO.class);
-        AuthorResponseDTO dtoTwo = mock(AuthorResponseDTO.class);
+        List<Author> authorsList = List.of(authorOne, authorTwo);
 
-        when(_iAuthorRepo.findAll()).thenReturn(List.of(authorOne, authorTwo));
-        when(_authorResponseDTOMapper.toModel(authorOne)).thenReturn(dtoOne);
-        when(_authorResponseDTOMapper.toModel(authorTwo)).thenReturn(dtoTwo);
+        when(_iAuthorRepo.findAll()).thenReturn(authorsList);
 
         // Act
-        List<AuthorResponseDTO> result = _authorService.getAllAuthors();
+        Iterable<Author> result = _authorService.getAllAuthors();
 
         // Assert
-        assertEquals(2, result.size());
-        assertSame(dtoOne, result.get(0));
-        assertSame(dtoTwo, result.get(1));
+        assertNotNull(result);
+        assertSame(authorsList, result);
+    }
+
+    @Test
+    void getAuthorByIdReturnsOptionalWithAuthorWhenFound() {
+        // Arrange
+        String idString = "SAMPLE-ID";
+        Author authorDouble = mock(Author.class);
+
+        when(_iAuthorRepo.ofIdentity(any(AuthorId.class))).thenReturn(Optional.of(authorDouble));
+
+        // Act
+        Optional<Author> result = _authorService.getAuthorById(idString);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(authorDouble, result.get());
+    }
+
+    @Test
+    void getAuthorByIdReturnsEmptyOptionalWhenNotFound() {
+        // Arrange
+        String idString = "NON-EXISTENT";
+
+        when(_iAuthorRepo.ofIdentity(any(AuthorId.class))).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Author> result = _authorService.getAuthorById(idString);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
     void getAuthorsIdReturnsAllAuthorIdsFromRepository() {
         // Arrange
-        AuthorId authorIdOne = mock(AuthorId.class);
-        AuthorId authorIdTwo = mock(AuthorId.class);
-        List<AuthorId> authorIds = List.of(authorIdOne, authorIdTwo);
+        Author authorOne = mock(Author.class);
+        Author authorTwo = mock(Author.class);
+        AuthorId idOne = mock(AuthorId.class);
+        AuthorId idTwo = mock(AuthorId.class);
 
-        when(_iAuthorRepo.findAllKeys()).thenReturn(authorIds);
+        when(authorOne.identity()).thenReturn(idOne);
+        when(authorTwo.identity()).thenReturn(idTwo);
+        when(_iAuthorRepo.findAll()).thenReturn(List.of(authorOne, authorTwo));
 
         // Act
         Iterable<AuthorId> result = _authorService.getAuthorsId();
 
         // Assert
-        assertSame(authorIds, result);
+        assertNotNull(result);
+        List<AuthorId> resultList = new ArrayList<>();
+        result.forEach(resultList::add);
+
+        assertEquals(2, resultList.size());
+        assertTrue(resultList.contains(idOne));
+        assertTrue(resultList.contains(idTwo));
     }
 }

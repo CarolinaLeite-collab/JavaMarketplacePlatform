@@ -4,6 +4,8 @@ import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -336,6 +338,20 @@ class UserTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void setRolesClearsPreviousRoles() {
+
+        // Arrange
+        User user = new User(new Name("Guest"), new Email("guest@aeiou.com"));
+
+        // Act
+        user.setRoles(Set.of(Role.NONREGISTRED));
+
+        // Assert
+        assertTrue(user.hasRole(Role.NONREGISTRED));
+        assertFalse(user.hasRole(Role.USER));
     }
 
 }

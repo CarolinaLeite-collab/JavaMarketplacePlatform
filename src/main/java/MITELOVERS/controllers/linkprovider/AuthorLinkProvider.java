@@ -1,6 +1,7 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.AuthorRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
@@ -14,37 +15,35 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class PublicationLinkProvider implements RootLinkProvider {
+public class AuthorLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
-    PublicationLinkProvider(
-            AuthorizationPolicy authorizationPolicy) {
 
+    public AuthorLinkProvider(AuthorizationPolicy authorizationPolicy) {
         _authorizationPolicy = authorizationPolicy;
     }
 
     @Override
     public List<Link> getLinks(User user) {
-
         List<Link> links = new ArrayList<>();
 
-        if (_authorizationPolicy.canListPublications(user)) {
+        if (_authorizationPolicy.canListAuthors(user)) {
             links.add(
-                    WebMvcLinkBuilder.linkTo(methodOn(PublicationRestController.class)
-                                    .getAllPublications())
-                            .withRel("publications")
+                    WebMvcLinkBuilder.linkTo(methodOn(AuthorRestController.class)
+                                    .getAllAuthors())
+                            .withRel("authors")
             );
         }
 
-        if (_authorizationPolicy.canCreatePublication(user)) {
+        if (_authorizationPolicy.canCreateAuthor(user)) {
             links.add(
-                    linkTo(methodOn(PublicationRestController.class)
-                            .registerPublicationAndReturnDTO(null))
-                            .withRel("create-publication")
+                    linkTo(methodOn(AuthorRestController.class)
+                            .registerAuthorAndReturnDTO(null))
+                            .withRel("create-author")
             );
-
         }
 
         return links;
     }
 }
+

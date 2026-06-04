@@ -1,109 +1,272 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.CountryService;
-import MITELOVERS.dto.CountryCollectionDTO;
-import MITELOVERS.dto.CountryDTO;
-import MITELOVERS.mapper.CountryCollectionMapper;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.CountryLinkProvider;
+import MITELOVERS.domain.country.Country;
+import MITELOVERS.domain.user.User;
+import MITELOVERS.dto.request.CountryRequestDTO;
+import MITELOVERS.dto.response.CountryResponseDTO;
+import MITELOVERS.mapper.CountryResponseDTOMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.server.ResponseStatusException;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class CountryRestControllerTest {
 
+    @Mock
+    private CountryService _serviceDouble;
+
+    @Mock
+    private CountryResponseDTOMapper _mapperDouble;
+
+    @Mock
+    private UserService _userServiceDouble;
+
+    @Mock
+    private CountryLinkProvider _countryLinkProviderDouble;
+
+    @InjectMocks
+    private CountryRestController _controller;
+
     @Test
-    void create_returnsDTO_whenServiceSucceeds() {
-        // arrange
-        CountryService service = mock(CountryService.class);
-        CountryCollectionMapper mapper = mock(CountryCollectionMapper.class);
-        CountryRestController controller = new CountryRestController(service, mapper);
+    void options_returnsModelWithLinksFromProvider() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_userServiceDouble.getUserByEmail("maria@example.com"))
+                .thenReturn(userDouble);
 
-        CountryDTO dto = mock(CountryDTO.class);
-        when(service.createCountry("Portugal")).thenReturn(dto);
+        Link link1 = Link.of("/countries").withRel("countries");
+        Link link2 = Link.of("/countries/create").withRel("create-country");
 
-        // act (SUT)
-        CountryDTO result = controller.create("Portugal");
+        when(_countryLinkProviderDouble.getLinks(userDouble))
+                .thenReturn(List.of(link1, link2));
 
-        // assert
-        assertSame(dto, result);
+        // Act
+        ResponseEntity<RepresentationModel<?>> response =
+                _controller.options("maria@example.com");
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        RepresentationModel<?> model = response.getBody();
+        assertNotNull(model);
+        assertTrue(model.getLinks().contains(link1));
+        assertTrue(model.getLinks().contains(link2));
+    }
+
+    // ───────────────────────────────────────────────────────────────
+    // POST /countries
+    // ───────────────────────────────────────────────────────────────
+
+    @Test
+    void create_returnsCreatedDTOWithLinks() {
+        // Arrange
+        CountryRequestDTO request = new CountryRequestDTO("Portugal");
+
+        Country countryDouble = mock(Country.class);
+        when(_serviceDouble.createCountry("Portugal"))
+                .thenReturn(countryDouble);
+
+        CountryResponseDTO dtoDouble = new CountryResponseDTO("123", "Portugal");
+        when(_mapperDouble.toModel(countryDouble))
+                .thenReturn(dtoDouble);
+
+        // Act
+        ResponseEntity<CountryResponseDTO> response = _controller.create(request);
+
+        // Assert
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        CountryResponseDTO result = response.getBody();
+        assertNotNull(result);
+
+        // DTO fields
+        assertEquals("123", result.getCountryId());
+        assertEquals("Portugal", result.getName());
+
+        // Links added by controller
+        assertTrue(result.getLinks().hasSize(2));
+        assertNotNull(result.getLink("self"));
+        assertNotNull(result.getLink("list"));
     }
 
     @Test
-    void create_throwsConflict_whenServiceThrowsIllegalArgument() {
-        // arrange
-        CountryService service = mock(CountryService.class);
-        CountryCollectionMapper mapper = mock(CountryCollectionMapper.class);
-        CountryRestController controller = new CountryRestController(service, mapper);
+    void listAll_returnsCollectionModelWithLinks() {
+        // Arrange
+        Country c1 = mock(Country.class);
+        Country c2 = mock(Country.class);
 
-        when(service.createCountry("Portugal"))
-                .thenThrow(new IllegalArgumentException("duplicate"));
+        when(_serviceDouble.listAllCountries())
+                .thenReturn(List.of(c1, c2));
 
-        // act + assert
-        assertThrows(ResponseStatusException.class,
-                () -> controller.create("Portugal"));
+        CountryResponseDTO dto1 = new CountryResponseDTO("1", "Portugal");
+        CountryResponseDTO dto2 = new CountryResponseDTO("2", "Spain");
+
+        when(_mapperDouble.toModel(c1)).thenReturn(dto1);
+        when(_mapperDouble.toModel(c2)).thenReturn(dto2);
+
+        // Act
+        ResponseEntity<CollectionModel<CountryResponseDTO>> response =
+                _controller.listAll();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        CollectionModel<CountryResponseDTO> model = response.getBody();
+        assertNotNull(model);
+
+        List<CountryResponseDTO> items = model.getContent().stream().toList();
+        assertEquals(2, items.size());
+        assertTrue(items.contains(dto1));
+        assertTrue(items.contains(dto2));
+
+        // Links added by controller
+        assertNotNull(model.getLink("self"));
+        assertNotNull(model.getLink("create"));
     }
 
     @Test
-    void listAll_returnsCollectionDTO() {
-        // arrange
-        CountryService service = mock(CountryService.class);
-        CountryCollectionMapper mapper = mock(CountryCollectionMapper.class);
-        CountryRestController controller = new CountryRestController(service, mapper);
+    void findById_returnsDTOWithLinks() {
+        // Arrange
+        Country countryDouble = mock(Country.class);
+        when(_serviceDouble.findById("123"))
+                .thenReturn(countryDouble);
 
-        CountryDTO dto1 = mock(CountryDTO.class);
-        CountryDTO dto2 = mock(CountryDTO.class);
+        CountryResponseDTO dtoDouble = new CountryResponseDTO("123", "Portugal");
+        when(_mapperDouble.toModel(countryDouble))
+                .thenReturn(dtoDouble);
 
-        List<CountryDTO> list = List.of(dto1, dto2);
+        // Act
+        ResponseEntity<CountryResponseDTO> response =
+                _controller.findById("123");
 
-        CountryCollectionDTO collection = mock(CountryCollectionDTO.class);
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        CountryResponseDTO result = response.getBody();
+        assertNotNull(result);
 
-        when(service.listAllCountries()).thenReturn(list);
-        when(mapper.toDTO(list)).thenReturn(collection);
+        assertEquals("123", result.getCountryId());
+        assertEquals("Portugal", result.getName());
 
-        // act (SUT)
-        var response = controller.listAll();
-
-        // assert
-        assertSame(collection, response.getBody());
-        assertEquals(200, response.getStatusCode().value());
+        // Links added by controller
+        assertNotNull(result.getLink("self"));
+        assertNotNull(result.getLink("list"));
     }
 
     @Test
-    void findById_returnsDTO_whenServiceSucceeds() {
-        // arrange
-        CountryService service = mock(CountryService.class);
-        CountryCollectionMapper mapper = mock(CountryCollectionMapper.class);
-        CountryRestController controller = new CountryRestController(service, mapper);
+    void options_whenNoLinks_returnsEmptyModel() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_userServiceDouble.getUserByEmail("maria@example.com"))
+                .thenReturn(userDouble);
 
-        CountryDTO dto = mock(CountryDTO.class);
-        when(service.findById("123")).thenReturn(dto);
+        when(_countryLinkProviderDouble.getLinks(userDouble))
+                .thenReturn(List.of());
 
-        // act (SUT)
-        var response = controller.findById("123");
+        // Act
+        ResponseEntity<RepresentationModel<?>> response =
+                _controller.options("maria@example.com");
 
-        // assert
-        assertSame(dto, response.getBody());
-        assertEquals(200, response.getStatusCode().value());
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().getLinks().isEmpty());
     }
 
     @Test
-    void findById_throwsNotFound_whenServiceThrowsNoSuchElement() {
-        // arrange
-        CountryService service = mock(CountryService.class);
-        CountryCollectionMapper mapper = mock(CountryCollectionMapper.class);
-        CountryRestController controller = new CountryRestController(service, mapper);
+    void create_returnsMapperOutputUnchanged() {
+        // Arrange
+        CountryRequestDTO request = new CountryRequestDTO("Portugal");
 
-        when(service.findById("123"))
-                .thenThrow(new NoSuchElementException("not found"));
+        Country countryDouble = mock(Country.class);
+        when(_serviceDouble.createCountry("Portugal"))
+                .thenReturn(countryDouble);
 
-        // act + assert
-        assertThrows(ResponseStatusException.class,
-                () -> controller.findById("123"));
+        CountryResponseDTO dtoDouble = new CountryResponseDTO("999", "X");
+        when(_mapperDouble.toModel(countryDouble))
+                .thenReturn(dtoDouble);
+
+        // Act
+        ResponseEntity<CountryResponseDTO> response = _controller.create(request);
+
+        // Assert
+        assertSame(dtoDouble, response.getBody());
+    }
+
+    @Test
+    void listAll_whenNoCountries_returnsEmptyCollectionModel() {
+        // Arrange
+        when(_serviceDouble.listAllCountries())
+                .thenReturn(List.of());
+
+        // Act
+        ResponseEntity<CollectionModel<CountryResponseDTO>> response =
+                _controller.listAll();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().getContent().isEmpty());
+
+        // Links still must exist
+        assertNotNull(response.getBody().getLink("self"));
+        assertNotNull(response.getBody().getLink("create"));
+    }
+
+    @Test
+    void findById_returnsMapperOutputUnchanged() {
+        // Arrange
+        Country countryDouble = mock(Country.class);
+        when(_serviceDouble.findById("123"))
+                .thenReturn(countryDouble);
+
+        CountryResponseDTO dtoDouble = new CountryResponseDTO("123", "Portugal");
+        when(_mapperDouble.toModel(countryDouble))
+                .thenReturn(dtoDouble);
+
+        // Act
+        ResponseEntity<CountryResponseDTO> response =
+                _controller.findById("123");
+
+        // Assert
+        assertSame(dtoDouble, response.getBody());
+    }
+
+    @Test
+    void findById_whenDtoAlreadyHasLinks_preservesExistingLinks() {
+        // Arrange
+        Country countryDouble = mock(Country.class);
+        when(_serviceDouble.findById("123"))
+                .thenReturn(countryDouble);
+
+        CountryResponseDTO dtoDouble = new CountryResponseDTO("123", "Portugal");
+        dtoDouble.add(Link.of("/existing").withRel("existing"));
+
+        when(_mapperDouble.toModel(countryDouble))
+                .thenReturn(dtoDouble);
+
+        // Act
+        ResponseEntity<CountryResponseDTO> response =
+                _controller.findById("123");
+
+        // Assert
+        CountryResponseDTO result = response.getBody();
+        assertNotNull(result);
+
+        assertNotNull(result.getLink("existing"));
+        assertNotNull(result.getLink("self"));
+        assertNotNull(result.getLink("list"));
     }
 
 }

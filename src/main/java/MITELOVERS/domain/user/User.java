@@ -55,12 +55,21 @@ public class User implements AggregateRoot<UserId> {
         return _email.equals(email);
     }
 
+    public void removeRole(Role role) {
+        _roles.remove(role);
+    }
+
     public Set<Role> getRoles() {
         return Set.copyOf(_roles); // immutable view
     }
 
     public Name getName() {
         return _name;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        _roles.clear();
+        _roles.addAll(roles);
     }
 
     public Address getAddress() {

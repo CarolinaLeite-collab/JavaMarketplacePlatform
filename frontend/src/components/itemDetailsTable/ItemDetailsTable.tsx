@@ -1,4 +1,4 @@
-import {Table, Paper, useComputedColorScheme} from '@mantine/core';
+import {Paper, Table, useComputedColorScheme} from '@mantine/core';
 
 interface ItemDetail {
     authorName: string;

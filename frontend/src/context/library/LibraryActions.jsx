@@ -1,4 +1,4 @@
-import { apiClient } from '../../services/apiClient';
+import {apiClient} from '../../services/apiClient';
 
 // Actions types
 export const FETCH_LIBRARY_SUCCESS  = 'FETCH_LIBRARY_SUCCESS';

@@ -1,10 +1,5 @@
-import { useState } from 'react';
-import {
-    IconChevronDown,
-    IconChevronUp,
-    IconSearch,
-    IconSelector,
-} from '@tabler/icons-react';
+import {useState} from 'react';
+import {IconChevronDown, IconChevronUp, IconSearch, IconSelector,} from '@tabler/icons-react';
 import {
     Center,
     Checkbox,

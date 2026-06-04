@@ -1,9 +1,11 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
+import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ public class ListOfItemsLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         if(_authorizationPolicy.canSeeList(user)) {
-            links.add(linkTo(methodOn(ListOfItemsRestController.class).getListById(null)).withSelfRel());
+            links.add(WebMvcLinkBuilder.linkTo(methodOn(ListOfItemsRestController.class).getListById(null)).withSelfRel());
             links.add(linkTo(methodOn(ListOfItemsRestController.class).getLists(user.identity().toString())).withRel("collection"));
         }
 

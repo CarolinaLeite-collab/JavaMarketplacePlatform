@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from 'react';
-import { setUserId } from '../services/apiClient';
+import {createContext, useContext, useState} from 'react';
+import {setUserId} from '../services/apiClient';
 
 const REAL_USER = 'pedro@aeiou.com';
 const GUEST_USER = 'guest@aeiou.com';

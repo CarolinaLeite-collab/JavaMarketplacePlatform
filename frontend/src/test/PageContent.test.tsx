@@ -1,5 +1,5 @@
-import { render, screen } from '@/test-utils';
-import { PageContent } from '../components/layout/PageContent';
+import {render, screen} from '@/test-utils';
+import {PageContent} from '../components/layout/PageContent';
 
 describe('PageContent', () => {
     it('renders children', () => {

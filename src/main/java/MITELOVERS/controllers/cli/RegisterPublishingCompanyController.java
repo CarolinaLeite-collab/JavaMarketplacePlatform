@@ -1,9 +1,10 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
-import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.springframework.stereotype.Controller;
 
@@ -25,7 +26,7 @@ public class RegisterPublishingCompanyController {
 
     }
 
-    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyResponseDTO dto) {
+    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyRequestDTO dto) {
 
         return _publishingCompanyService.registerPublishingCompany(dto);
 

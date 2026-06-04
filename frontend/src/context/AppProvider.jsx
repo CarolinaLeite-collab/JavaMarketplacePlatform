@@ -1,11 +1,11 @@
-import { useReducer, useEffect } from 'react';
-import AppContext, { LibraryContext } from './AppContext';
-import { appReducer, initialAppState } from './app/AppReducer';
-import { listsReducer, initialListsState } from './lists/ListsReducer';
-import { salesReducer, initialSalesState } from './sales/SalesReducer.jsx';
-import { libraryReducer, initialState as libraryInitialState } from './library/LibraryReducer';
-import { bootstrapRoot } from './lists/ListsActions';
-import { useUser } from './UserContext';
+import {useEffect, useReducer} from 'react';
+import AppContext, {LibraryContext} from './AppContext';
+import {appReducer, initialAppState} from './app/AppReducer';
+import {initialListsState, listsReducer} from './lists/ListsReducer';
+import {initialSalesState, salesReducer} from './sales/SalesReducer.jsx';
+import {initialState as libraryInitialState, libraryReducer} from './library/LibraryReducer';
+import {bootstrapRoot} from './lists/ListsActions';
+import {useUser} from './UserContext';
 
 const initialState = {
     app: initialAppState,

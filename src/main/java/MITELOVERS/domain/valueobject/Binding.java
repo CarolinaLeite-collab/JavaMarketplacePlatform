@@ -9,6 +9,7 @@ import MITELOVERS.ddd.ValueObject;
 public enum Binding implements ValueObject {
 
     PUR("PUR binding"),
+    PAPERBACK("Paperback binding"),
     SADDLE_STITCH("Saddle stitch binding"),
     HARDCOVER("Hardcover binding"),
     SINGER_SEWN("Singer sewn binding"),

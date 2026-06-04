@@ -1,6 +1,6 @@
-import { render, screen } from '@/test-utils';
+import {render, screen} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { EditionStep } from '../components/addItemModal/EditionStep';
+import {EditionStep} from '../components/addItemModal/EditionStep';
 
 describe('EditionStep', () => {
     const data = {

@@ -4,8 +4,6 @@ import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.genre.GenreFactory;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.dto.response.GenreResponseDTO;
-import MITELOVERS.mapper.GenreResponseDTOMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -33,28 +32,23 @@ class GenreServiceTest {
     @Mock
     private GenreFactory _genreFactoryDouble;
 
-    @Mock
-    private GenreResponseDTOMapper _genreResponseDTOMapperDouble;
-
     @Test
-    void registerGenreReturnsResponseDTO() {
+    void registerGenreReturnsRawDomainGenre() {
         // Arrange
         String genreName = "Sample";
         Genre genreDouble = mock(Genre.class);
         GenreId genreIdDouble = mock(GenreId.class);
-        GenreResponseDTO responseDTODouble = mock(GenreResponseDTO.class);
 
         when(_genreFactoryDouble.createGenre(genreName)).thenReturn(genreDouble);
         when(genreDouble.identity()).thenReturn(genreIdDouble);
         when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(false);
         when(_iGenreRepoDouble.save(genreDouble)).thenReturn(genreDouble);
-        when(_genreResponseDTOMapperDouble.toModel(genreDouble)).thenReturn(responseDTODouble);
 
         // Act
-        GenreResponseDTO result = _genreService.registerGenre(genreName);
+        Genre result = _genreService.registerGenre(genreName);
 
         // Assert
-        assertSame(responseDTODouble, result);
+        assertSame(genreDouble, result);
     }
 
     @Test
@@ -76,59 +70,80 @@ class GenreServiceTest {
     }
 
     @Test
-    void getAllGenresReturnsMappedList() {
+    void getAllGenresReturnsRawDomainEntities() {
         // Arrange
         Genre genreOne = mock(Genre.class);
         Genre genreTwo = mock(Genre.class);
-        GenreResponseDTO dtoOne = mock(GenreResponseDTO.class);
-        GenreResponseDTO dtoTwo = mock(GenreResponseDTO.class);
+        List<Genre> genreList = List.of(genreOne, genreTwo);
 
-        when(_iGenreRepoDouble.findAll()).thenReturn(List.of(genreOne, genreTwo));
-        when(_genreResponseDTOMapperDouble.toModel(genreOne)).thenReturn(dtoOne);
-        when(_genreResponseDTOMapperDouble.toModel(genreTwo)).thenReturn(dtoTwo);
+        when(_iGenreRepoDouble.findAll()).thenReturn(genreList);
 
         // Act
-        List<GenreResponseDTO> result = _genreService.getAllGenres();
+        Iterable<Genre> result = _genreService.getAllGenres();
 
         // Assert
-        assertEquals(2, result.size());
-        assertSame(dtoOne, result.get(0));
-        assertSame(dtoTwo, result.get(1));
+        assertSame(genreList, result);
     }
 
     @Test
-    void shouldReturnAllGenreIds(){
-        //Arrange
-        GenreId genreIdDouble = mock(GenreId.class);
+    void getGenreByIdReturnsOptionalWithGenreWhenFound() {
+        // Arrange
+        String idString = "GEN-1";
+        Genre genreDouble = mock(Genre.class);
 
+        when(_iGenreRepoDouble.ofIdentity(new GenreId(idString))).thenReturn(Optional.of(genreDouble));
+
+        // Act
+        Optional<Genre> result = _genreService.getGenreById(idString);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(genreDouble, result.get());
+    }
+
+    @Test
+    void getGenreByIdReturnsEmptyOptionalWhenNotFound() {
+        // Arrange
+        String idString = "NON-EXISTENT";
+
+        when(_iGenreRepoDouble.ofIdentity(new GenreId(idString))).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Genre> result = _genreService.getGenreById(idString);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnAllGenreIds() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
         when(_iGenreRepoDouble.findAllKeys()).thenReturn(List.of(genreIdDouble));
 
-        //Act
+        // Act
         Iterable<GenreId> result = _genreService.getGenresId();
 
         List<GenreId> ids = new ArrayList<>();
-        for (GenreId genreId : result) {
-            ids.add(genreId);
-        }
+        result.forEach(ids::add);
 
-        //Assert
+        // Assert
+        assertEquals(1, ids.size());
         assertEquals(genreIdDouble, ids.get(0));
     }
 
     @Test
     void shouldReturnEmptyListWhenNoGenreIdsExist() {
-        //Arrange
+        // Arrange
         when(_iGenreRepoDouble.findAllKeys()).thenReturn(List.of());
 
-        //Act
+        // Act
         Iterable<GenreId> result = _genreService.getGenresId();
 
         List<GenreId> ids = new ArrayList<>();
-        for (GenreId genreId : result) {
-            ids.add(genreId);
-        }
+        result.forEach(ids::add);
 
-        //Assert
+        // Assert
         assertEquals(0, ids.size());
     }
 }
