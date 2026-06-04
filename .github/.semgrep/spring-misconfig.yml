@@ -1,0 +1,58 @@
+rules:
+  - id: h2-console-enabled
+    languages: [generic]
+    severity: ERROR
+    message: "H2 console ativa — permite execução de SQL arbitrário via browser."
+    metadata: { owasp: "A05:2021 - Security Misconfiguration" }
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*spring\.h2\.console\.enabled\s*=\s*true'
+
+  - id: actuator-all-endpoints-exposed
+    languages: [generic]
+    severity: ERROR
+    message: "Todos os endpoints do Actuator expostos (include=*)."
+    metadata: { owasp: "A05:2021 - Security Misconfiguration" }
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*management\.endpoints\.web\.exposure\.include\s*=\s*\*'
+
+  - id: error-stacktrace-exposed
+    languages: [generic]
+    severity: ERROR
+    message: "Stack traces expostos ao cliente (include-stacktrace=always)."
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*server\.error\.include-stacktrace\s*=\s*always'
+
+  - id: actuator-health-details-always
+    languages: [generic]
+    severity: WARNING
+    message: "Detalhes de health sempre visíveis — fuga de informação interna."
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*management\.endpoint\.health\.show-details\s*=\s*always'
+
+  - id: ssl-disabled
+    languages: [generic]
+    severity: WARNING
+    message: "TLS desativado (server.ssl.enabled=false)."
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*server\.ssl\.enabled\s*=\s*false'
+
+  - id: debug-enabled
+    languages: [generic]
+    severity: WARNING
+    message: "Modo debug ativo em configuração."
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*debug\s*=\s*true'
+
+  - id: jpa-show-sql
+    languages: [generic]
+    severity: INFO
+    message: "show-sql ativo — SQL impresso nos logs."
+    paths:
+      include: ["**/*.properties", "**/*.yml", "**/*.yaml"]
+    pattern-regex: '(?m)^\s*spring\.jpa\.show-sql\s*=\s*true'
