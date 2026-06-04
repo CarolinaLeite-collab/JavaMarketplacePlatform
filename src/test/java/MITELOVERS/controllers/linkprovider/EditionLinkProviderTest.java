@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
@@ -12,18 +12,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class LibraryLinkProviderTest {
+class EditionLinkProviderTest {
 
     @Test
     void userWithAllPermissionsGetsBothLinks() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListEditions(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateEdition(_userDouble)).thenReturn(true);
 
         // SUT
-        LibraryLinkProvider provider = new LibraryLinkProvider(_policyDouble);
+        EditionLinkProvider provider = new EditionLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
@@ -35,11 +35,11 @@ class LibraryLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(false);
-        when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(false);
+        when(_policyDouble.canListEditions(_userDouble)).thenReturn(false);
+        when(_policyDouble.canCreateEdition(_userDouble)).thenReturn(false);
 
         // SUT
-        LibraryLinkProvider provider = new LibraryLinkProvider(_policyDouble);
+        EditionLinkProvider provider = new EditionLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
@@ -47,37 +47,37 @@ class LibraryLinkProviderTest {
     }
 
     @Test
-    void userWithOnlyGetLibraryPermissionGetsOneLink() {
+    void userWithOnlyListPermissionGetsOneLink() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(false);
+        when(_policyDouble.canListEditions(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateEdition(_userDouble)).thenReturn(false);
 
         // SUT
-        LibraryLinkProvider provider = new LibraryLinkProvider(_policyDouble);
+        EditionLinkProvider provider = new EditionLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("editions")));
     }
 
     @Test
-    void userWithOnlyAddToLibraryPermissionGetsOneLink() {
+    void userWithOnlyCreatePermissionGetsOneLink() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(false);
-        when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListEditions(_userDouble)).thenReturn(false);
+        when(_policyDouble.canCreateEdition(_userDouble)).thenReturn(true);
 
         // SUT
-        LibraryLinkProvider provider = new LibraryLinkProvider(_policyDouble);
+        EditionLinkProvider provider = new EditionLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library-add")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("edition-create")));
     }
 
     @Test
@@ -85,15 +85,15 @@ class LibraryLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListEditions(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateEdition(_userDouble)).thenReturn(true);
 
         // SUT
-        LibraryLinkProvider provider = new LibraryLinkProvider(_policyDouble);
+        EditionLinkProvider provider = new EditionLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library-add")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("editions")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("edition-create")));
     }
 }

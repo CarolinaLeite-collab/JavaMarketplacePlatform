@@ -1,4 +1,4 @@
-import { axe, render, screen } from '@/test-utils';
+import {axe, render, screen} from '@/test-utils';
 import MyListsPage from '../pages/MyLists/MyListsPage';
 
 describe('MyListsPage', () => {

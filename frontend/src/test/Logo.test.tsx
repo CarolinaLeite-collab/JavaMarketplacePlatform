@@ -1,5 +1,5 @@
-import { axe, render, screen } from '@/test-utils';
-import { Logo } from '../components/logo/Logo';
+import {axe, render, screen} from '@/test-utils';
+import {Logo} from '../components/logo/Logo';
 
 describe('Logo', () => {
     axe([<Logo key="1" />]);

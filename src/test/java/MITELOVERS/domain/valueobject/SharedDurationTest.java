@@ -46,4 +46,16 @@ class SharedDurationTest {
     void hashCodeShouldBeEqualForEqualDurations() {
         assertEquals(new SharedDuration(7).hashCode(), new SharedDuration(7).hashCode());
     }
+
+    @Test
+    void shouldNotBeEqualToDifferentObjectType() {
+        //Act & Assert
+        assertNotEquals(new SharedDuration(7), "7");
+    }
+
+    @Test
+    void hashCodeShouldBeDifferentForDifferentDurations() {
+        //Act & Assert
+        assertNotEquals(new SharedDuration(7).hashCode(), new SharedDuration(14).hashCode());
+    }
 }

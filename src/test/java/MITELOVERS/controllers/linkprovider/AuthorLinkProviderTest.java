@@ -1,4 +1,4 @@
-package MITELOVERS.controllers.rest;
+package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
@@ -12,18 +12,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class GenreLinkProviderTest {
+class AuthorLinkProviderTest {
 
     @Test
     void userWithAllPermissionsGetsBothLinks() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canListGenres(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddGenre(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListAuthors(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateAuthor(_userDouble)).thenReturn(true);
 
         // SUT
-        GenreLinkProvider provider = new GenreLinkProvider(_policyDouble);
+        AuthorLinkProvider provider = new AuthorLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
@@ -35,11 +35,11 @@ class GenreLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canListGenres(_userDouble)).thenReturn(false);
-        when(_policyDouble.canAddGenre(_userDouble)).thenReturn(false);
+        when(_policyDouble.canListAuthors(_userDouble)).thenReturn(false);
+        when(_policyDouble.canCreateAuthor(_userDouble)).thenReturn(false);
 
         // SUT
-        GenreLinkProvider provider = new GenreLinkProvider(_policyDouble);
+        AuthorLinkProvider provider = new AuthorLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
@@ -47,37 +47,37 @@ class GenreLinkProviderTest {
     }
 
     @Test
-    void userWithOnlyListGenresPermissionGetsOneLink() {
+    void userWithOnlyListAuthorsPermissionGetsOneLink() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canListGenres(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddGenre(_userDouble)).thenReturn(false);
+        when(_policyDouble.canListAuthors(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateAuthor(_userDouble)).thenReturn(false);
 
         // SUT
-        GenreLinkProvider provider = new GenreLinkProvider(_policyDouble);
+        AuthorLinkProvider provider = new AuthorLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("genres")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("authors")));
     }
 
     @Test
-    void userWithOnlyAddGenrePermissionGetsOneLink() {
+    void userWithOnlyCreateAuthorPermissionGetsOneLink() {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canListGenres(_userDouble)).thenReturn(false);
-        when(_policyDouble.canAddGenre(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListAuthors(_userDouble)).thenReturn(false);
+        when(_policyDouble.canCreateAuthor(_userDouble)).thenReturn(true);
 
         // SUT
-        GenreLinkProvider provider = new GenreLinkProvider(_policyDouble);
+        AuthorLinkProvider provider = new AuthorLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-genre")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-author")));
     }
 
     @Test
@@ -85,16 +85,16 @@ class GenreLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
-        when(_policyDouble.canListGenres(_userDouble)).thenReturn(true);
-        when(_policyDouble.canAddGenre(_userDouble)).thenReturn(true);
+        when(_policyDouble.canListAuthors(_userDouble)).thenReturn(true);
+        when(_policyDouble.canCreateAuthor(_userDouble)).thenReturn(true);
 
         // SUT
-        GenreLinkProvider provider = new GenreLinkProvider(_policyDouble);
+        AuthorLinkProvider provider = new AuthorLinkProvider(_policyDouble);
         List<Link> links = provider.getLinks(_userDouble);
 
         // Assert
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("genres")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-genre")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("authors")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-author")));
     }
 }
 

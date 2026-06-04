@@ -1,21 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { notifications } from '@mantine/notifications';
-import {
-    Alert,
-    Button,
-    Group,
-    Modal,
-    NumberInput,
-    Select,
-    Stack,
-} from "@mantine/core";
-import { IconCheck } from "@tabler/icons-react";
+import {useContext, useEffect, useState} from "react";
+import {notifications} from '@mantine/notifications';
+import {Alert, Button, Group, Modal, NumberInput, Select, Stack,} from "@mantine/core";
+import {IconCheck} from "@tabler/icons-react";
 import AppContext from "../../context/AppContext";
-import {
-    clearSalesMessages,
-    createDirectSale,
-    getMyLibraryItems
-} from "../../context/sales/SalesActions.jsx";
+import {clearSalesMessages, createDirectSale, getMyLibraryItems} from "../../context/sales/SalesActions.jsx";
 
 export function CreateSaleModal({ opened, onClose }) {
     const { state, dispatch } = useContext(AppContext);

@@ -1,17 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {
-    createList, getMyLists, getGenres, getListsOptions,
-    makeListPublic, makeListPrivate, deleteList, addItemToList,
-    CREATE_LIST_SUCCESS, CREATE_LIST_ERROR,
-    GET_LISTS_SUCCESS, GET_LISTS_ERROR,
-    GET_GENRES_SUCCESS, GET_GENRES_ERROR,
-    GET_LIST_OPTIONS_SUCCESS, GET_LIST_OPTIONS_ERROR,
-    MAKE_LIST_PUBLIC_SUCCESS, MAKE_LIST_PUBLIC_ERROR,
-    MAKE_LIST_PRIVATE_SUCCESS, MAKE_LIST_PRIVATE_ERROR,
-    DELETE_LIST_SUCCESS, DELETE_LIST_ERROR,
-    ADD_ITEM_TO_LIST_SUCCESS, ADD_ITEM_TO_LIST_ERROR,
+    ADD_ITEM_TO_LIST_ERROR,
+    ADD_ITEM_TO_LIST_SUCCESS,
+    addItemToList,
+    CREATE_LIST_ERROR,
+    CREATE_LIST_SUCCESS,
+    createList,
+    DELETE_LIST_ERROR,
+    DELETE_LIST_SUCCESS,
+    deleteList,
+    GET_GENRES_ERROR,
+    GET_GENRES_SUCCESS,
+    GET_LIST_OPTIONS_ERROR,
+    GET_LIST_OPTIONS_SUCCESS,
+    GET_LISTS_ERROR,
+    GET_LISTS_SUCCESS,
+    getGenres,
+    getListsOptions,
+    getMyLists,
+    MAKE_LIST_PRIVATE_ERROR,
+    MAKE_LIST_PRIVATE_SUCCESS,
+    MAKE_LIST_PUBLIC_ERROR,
+    MAKE_LIST_PUBLIC_SUCCESS,
+    makeListPrivate,
+    makeListPublic,
 } from '../context/lists/ListsActions';
-import { apiClient } from '../services/apiClient';
+import {apiClient} from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {

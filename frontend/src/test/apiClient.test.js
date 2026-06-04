@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiClient, BASE_URL, USER_ID } from '../services/apiClient';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {apiClient, BASE_URL, USER_ID} from '../services/apiClient';
 
 
 // simulate a Vitest function

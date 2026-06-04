@@ -1,10 +1,9 @@
-import { Modal, Button, Stack, Text, Group } from '@mantine/core';
-import { IconTrash } from '@tabler/icons-react';
-import { ActionIcon, Tooltip } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useContext } from 'react';
+import {ActionIcon, Button, Group, Modal, Stack, Text, Tooltip} from '@mantine/core';
+import {IconTrash} from '@tabler/icons-react';
+import {useDisclosure} from '@mantine/hooks';
+import {useContext} from 'react';
 import AppContext from '../../context/AppContext';
-import { deleteList } from '../../context/lists/ListsActions';
+import {deleteList} from '../../context/lists/ListsActions';
 
 export function DeleteListModal({ listName, links } ) {
     const [opened, { open, close }] = useDisclosure(false);

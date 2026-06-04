@@ -4,11 +4,14 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.Role;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.datamodel.UserDataModel;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -102,5 +105,26 @@ class UserAssemblerTest {
         assertEquals(userDouble, result);
     }
 
+    @Test
+    void toDomainSetsRolesFromDataModel() {
+        // Arrange
+        UserDataModel dataModelDouble = mock(UserDataModel.class);
+        UserFactory userFactory = new UserFactory();
+
+        when(dataModelDouble.getEmail()).thenReturn("guest@aeiou.com");
+        when(dataModelDouble.getId()).thenReturn("guest@aeiou.com");
+        when(dataModelDouble.getName()).thenReturn("Guest");
+        when(dataModelDouble.getRoles()).thenReturn(Set.of(Role.NONREGISTRED));
+
+        // SUT
+        UserAssembler assembler = new UserAssembler(userFactory);
+
+        // Act
+        User result = assembler.toDomain(dataModelDouble);
+
+        // Assert
+        assertTrue(result.hasRole(Role.NONREGISTRED));
+        assertFalse(result.hasRole(Role.USER));
+    }
 
 }

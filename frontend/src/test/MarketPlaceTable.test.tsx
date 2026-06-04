@@ -1,6 +1,6 @@
-import { render, screen } from '@/test-utils';
+import {render, screen} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { MarketPlaceTable } from '../components/marketPlaceTable/MarketPlaceTable';
+import {MarketPlaceTable} from '../components/marketPlaceTable/MarketPlaceTable';
 
 const items = [
     { id: '1', item: 'Book 1', genreId: 'HORROR', genreName: 'Horror', type: 'Direct Sale', price: '10 EUR' },

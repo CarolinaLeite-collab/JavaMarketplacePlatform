@@ -1,9 +1,9 @@
-import { useState, useContext, useEffect } from 'react';
-import { Modal, Button, TextInput, Select, Stack, Text } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { IconPlus } from '@tabler/icons-react';
+import {useContext, useEffect, useState} from 'react';
+import {Button, Modal, Select, Stack, Text, TextInput} from '@mantine/core';
+import {useDisclosure} from '@mantine/hooks';
+import {IconPlus} from '@tabler/icons-react';
 import AppContext from '../../context/AppContext';
-import { createList, getGenres } from '../../context/lists/ListsActions';
+import {createList, getGenres} from '../../context/lists/ListsActions';
 
 export function NewListModal() {
     const [opened, { open, close }] = useDisclosure(false);

@@ -1,5 +1,5 @@
-import { render, screen } from '@/test-utils';
-import { AppRoutes } from '../routes/AppRoutes';
+import {render, screen} from '@/test-utils';
+import {AppRoutes} from '../routes/AppRoutes';
 import AppContext from "../context/AppContext";
 
 vi.mock('../pages/MyLists/MyListsPage', () => ({
@@ -16,7 +16,6 @@ const mockState = {
         libraryHref: '/my-library',
     },
 };
-import AppContext from '../context/AppContext';
 
 function renderRoutes(initialEntries = ['/'], appStateOverrides = {}) {
     const state = {

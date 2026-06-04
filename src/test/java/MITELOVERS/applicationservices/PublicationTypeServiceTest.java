@@ -4,8 +4,6 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.response.PublicationTypeResponseDTO;
-import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,99 +29,81 @@ class PublicationTypeServiceTest {
     IPublicationTypeRepo _iPublicationTypeRepoDouble;
 
     @Mock
-    private PublicationTypeFactory _publicationTypeFactoryDouble;
-
-    @Mock
-    PublicationTypeResponseDTOMapper _mapperDouble;
+    PublicationTypeFactory _publicationTypeFactoryDouble;
 
     String PUBLICATION_TYPE_NOT_FOUND_MESSAGE =
             "PublicationType with id '%s' does not exist";
 
+
     @Test
-    void getAllPublicationTypesReturnsMappedDTOs() {
-        //Arrange
+    void getAllPublicationTypesReturnsListOfPublicationTypes() {
+        // Arrange
         PublicationType publicationType1 = mock(PublicationType.class);
         PublicationType publicationType2 = mock(PublicationType.class);
-
-        PublicationTypeResponseDTO dto1 =
-                mock(PublicationTypeResponseDTO.class);
-        PublicationTypeResponseDTO dto2 =
-                mock(PublicationTypeResponseDTO.class);
 
         when(_iPublicationTypeRepoDouble.findAll())
                 .thenReturn(List.of(publicationType1, publicationType2));
 
-        when(_mapperDouble.toModel(publicationType1)).thenReturn(dto1);
-        when(_mapperDouble.toModel(publicationType2)).thenReturn(dto2);
+        // Act
+        List<PublicationType> result = _service.getAllPublicationTypes();
 
-        //Act
-        List<PublicationTypeResponseDTO> result =
-                _service.getAllPublicationTypes();
-
-        //Assert
+        // Assert
         assertEquals(2, result.size());
-        assertSame(dto1, result.get(0));
-        assertSame(dto2, result.get(1));
+        assertSame(publicationType1, result.get(0));
+        assertSame(publicationType2, result.get(1));
     }
 
     @Test
     void getAllPublicationTypesReturnsEmptyListWhenRepoIsEmpty() {
-        //Arrange
+        // Arrange
         when(_iPublicationTypeRepoDouble.findAll()).thenReturn(List.of());
 
-        //Act
-        List<PublicationTypeResponseDTO> result =
-                _service.getAllPublicationTypes();
+        // Act
+        List<PublicationType> result = _service.getAllPublicationTypes();
 
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
+
     @Test
-    void getPublicationTypeByIdReturnsDTOWhenPublicationTypeExists() {
-        //Arrange
+    void getPublicationTypeByIdReturnsPublicationTypeWhenExists() {
+        // Arrange
         PublicationType publicationType = mock(PublicationType.class);
-        PublicationTypeResponseDTO dto =
-                mock(PublicationTypeResponseDTO.class);
 
         when(_iPublicationTypeRepoDouble.ofIdentity(any()))
                 .thenReturn(Optional.of(publicationType));
 
-        when(_mapperDouble.toModel(publicationType))
-                .thenReturn(dto);
+        // Act
+        PublicationType result = _service.getPublicationTypeById("BOOK");
 
-        //Act
-        PublicationTypeResponseDTO result =
-                _service.getPublicationTypeById("BOOK");
-
-        //Assert
-        assertSame(dto, result);
+        // Assert
+        assertSame(publicationType, result);
     }
 
     @Test
-    void getPublicationTypeByIdThrowsExceptionWhenPublicationTypeDoesNotExist() {
-        //Arrange
+    void getPublicationTypeByIdThrowsWhenNotFound() {
+        // Arrange
         when(_iPublicationTypeRepoDouble.ofIdentity(any()))
                 .thenReturn(Optional.empty());
 
-        //Act
-        NoSuchElementException exception =
-                assertThrows(
-                        NoSuchElementException.class,
-                        () -> _service.getPublicationTypeById("BOOK")
-                );
-
-        //Assert
+        // Act & Assert
+        NoSuchElementException exception = assertThrows(
+                NoSuchElementException.class,
+                () -> _service.getPublicationTypeById("BOOK")
+        );
         assertEquals(
                 String.format(PUBLICATION_TYPE_NOT_FOUND_MESSAGE, "BOOK"),
                 exception.getMessage()
         );
     }
 
+    // --- addPublicationType ---
+
     @Test
-    void addPublicationTypeToRepoAndReturnsCreatedType() {
-        //arrange
+    void addPublicationTypeReturnsCreatedType() {
+        // Arrange
         String publicationTypeName = "book";
         PublicationType pubTypeDouble = mock(PublicationType.class);
         PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
@@ -133,56 +113,30 @@ class PublicationTypeServiceTest {
         when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(false);
         when(_iPublicationTypeRepoDouble.save(pubTypeDouble)).thenReturn(pubTypeDouble);
 
-        //Act
-        PublicationType pubTypeResult = _service.addPublicationType(publicationTypeName);
+        // Act
+        PublicationType result = _service.addPublicationType(publicationTypeName);
 
-        //Assert
-        assertEquals(pubTypeDouble, pubTypeResult);
-
+        // Assert
+        assertSame(pubTypeDouble, result);
     }
 
     @Test
-    void shouldNotAddExistingPublicationType() {
-
-        //Arrange
+    void addPublicationTypeThrowsWhenAlreadyExists() {
+        // Arrange
         String publicationTypeName = "book";
         PublicationType pubTypeDouble = mock(PublicationType.class);
         PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
 
         when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
         when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
-
         when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
 
-        //Act
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> _service.addPublicationType(publicationTypeName));
-
-        //Assert
-        assertEquals("The publication type "
-                + publicationTypeName + " already exists.", exception.getMessage());
-
-    }
-
-    @Test
-    void shouldNotSaveWhenPublicationTypeAlreadyExists() {
-        //Arrange
-        String publicationTypeName = "book";
-        PublicationType pubTypeDouble = mock(PublicationType.class);
-        PublicationTypeId pubTypeIdDouble = mock(PublicationTypeId.class);
-
-        when(_publicationTypeFactoryDouble.createPublicationType(publicationTypeName)).thenReturn(pubTypeDouble);
-        when(pubTypeDouble.identity()).thenReturn(pubTypeIdDouble);
-
-        when(_iPublicationTypeRepoDouble.containsOfIdentity(pubTypeIdDouble)).thenReturn(true);
-
-        //Act
-        Exception result = assertThrows(IllegalArgumentException.class,
-                () -> _service.addPublicationType(publicationTypeName));
-
-        //Assert
-        assertEquals("The publication type " +
-                publicationTypeName + " already exists.", result.getMessage());
-
+        // Act & Assert
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> _service.addPublicationType(publicationTypeName)
+        );
+        assertEquals("The publication type " + publicationTypeName + " already exists.",
+                exception.getMessage());
     }
 }

@@ -19,6 +19,7 @@ public class ItemResponseDTO extends RepresentationModel<ItemResponseDTO> {
     private String condition;
     private String description;
     private String saleStatus;
+    private String picture;
 
     // Edition fields
     private String editionId;
@@ -32,5 +33,4 @@ public class ItemResponseDTO extends RepresentationModel<ItemResponseDTO> {
     private String authorName;
     private int releaseYear;
     private String genreName;
-
 }

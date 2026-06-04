@@ -1,18 +1,25 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
+import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -35,8 +42,50 @@ class DirectSaleRestControllerTest {
     @Mock
     private DSFilteredItemsResponseMapper _filteredMapper;
 
+    @Mock
+    private DirectSaleLinkProvider _linkProvider;
+
+    @Mock
+    private UserService _userService;
+
+    @Mock
+    private DirectSaleNoPriceResponseDTOMapper _noPriceMapper;
+
     @InjectMocks
     private DirectSaleRestController _controller;
+
+    //-----------------
+    // Options test
+    //-----------------
+
+    @Test
+    void options_shouldReturnLinksForUser() {
+
+        // Arrange
+        String email = "john@example.com";
+
+        User user = mock(User.class);
+
+        when(_userService.getUserByEmail(email)).thenReturn(user);
+
+        Link link1 = Link.of("/direct-sales").withRel("self");
+        Link link2 = Link.of("/direct-sales/create").withRel("create");
+
+        when(_linkProvider.getLinks(user)).thenReturn(List.of(link1, link2));
+
+        // Act
+        ResponseEntity<RepresentationModel<?>> result =
+                _controller.options(email);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+        RepresentationModel<?> body = result.getBody();
+        assertNotNull(body);
+
+        assertTrue(body.getLinks().hasLink("self"));
+        assertTrue(body.getLinks().hasLink("create"));
+    }
 
     // ------------------------------------------------------------
     // POST /direct-sales
@@ -262,6 +311,33 @@ class DirectSaleRestControllerTest {
 
         // Assert
         assertTrue(result.getBody().getLinks().hasLink("self"));
+    }
+
+    @Test
+    void getDirectSalesWithNoPriceShouldReturnNoPriceDto() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleNoPriceResponseDTO dto =
+                new DirectSaleNoPriceResponseDTO(
+                        "DS-A1B2C3D4",
+                        List.of("ABCDEF1234"),
+                        3600L,
+                        Instant.now()
+                );
+
+        when(_service.getAllDirectSales()).thenReturn(List.of(domain));
+        when(_noPriceMapper.toModel(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<List<DirectSaleNoPriceResponseDTO>> result =
+                _controller.getDirectSalesWithoutPrice();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(1, result.getBody().size());
+        assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
     }
 
 }

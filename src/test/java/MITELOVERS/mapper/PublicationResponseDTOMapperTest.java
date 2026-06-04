@@ -1,9 +1,8 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.domain.author.Author;
-import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.domain.valueobject.Name;
+import MITELOVERS.domain.valueobject.AuthorId;
+import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.PublicationId;
 import MITELOVERS.domain.valueobject.Title;
 import MITELOVERS.dto.response.PublicationResponseDTO;
@@ -18,16 +17,14 @@ import static org.mockito.Mockito.when;
 class PublicationResponseDTOMapperTest {
 
     @Test
-    void shouldMapPublicationsToResponseDTO() {
-
+    void shouldMapPublicationToResponseDTO() {
         // Arrange
         Publication publication = mock(Publication.class);
-        Author author = mock(Author.class);
-        Genre genre = mock(Genre.class);
 
         PublicationId publicationId = mock(PublicationId.class);
         Title title = mock(Title.class);
-        Name authorName = mock(Name.class);
+        AuthorId authorId = mock(AuthorId.class);
+        GenreId genreId = mock(GenreId.class);
 
         when(publication.identity()).thenReturn(publicationId);
         when(publicationId.toString()).thenReturn("PUB-001");
@@ -35,25 +32,24 @@ class PublicationResponseDTOMapperTest {
         when(publication.getTitle()).thenReturn(title);
         when(title.toString()).thenReturn("Delirious New York");
 
-        when(author.getName()).thenReturn(authorName);
-        when(authorName.toString()).thenReturn("Rem Koolhaas");
+        when(publication.getAuthorId()).thenReturn(authorId);
+        when(authorId.toString()).thenReturn("HERBERTO_HELDER");
 
         when(publication.getReleaseYear()).thenReturn(Year.of(1978));
 
-        when(genre.getGenre()).thenReturn("Architecture");
+        when(publication.getGenreId()).thenReturn(genreId);
+        when(genreId.toString()).thenReturn("ARCHITECTURE");
 
-        PublicationResponseDTOMapper mapper =
-                new PublicationResponseDTOMapper();
+        PublicationResponseDTOMapper mapper = new PublicationResponseDTOMapper();
 
         // Act
-        PublicationResponseDTO dto =
-                mapper.toResponseDTO(publication, author, genre);
+        PublicationResponseDTO dto = mapper.toModel(publication);
 
         // Assert
         assertEquals("PUB-001", dto.getPublicationId());
         assertEquals("Delirious New York", dto.getTitle());
-        assertEquals("Rem Koolhaas", dto.getAuthorName());
+        assertEquals("HERBERTO_HELDER", dto.getAuthorId());
         assertEquals(1978, dto.getReleaseYear());
-        assertEquals("Architecture", dto.getGenreName());
+        assertEquals("ARCHITECTURE", dto.getGenreId());
     }
 }

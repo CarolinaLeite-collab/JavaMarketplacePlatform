@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useDisclosure } from '@mantine/hooks';
+import {useEffect, useState} from 'react';
+import {useDisclosure} from '@mantine/hooks';
 import {
-    Popover, ActionIcon, ScrollArea, Checkbox,
-    Stack, Button, Group, Text, Divider, Loader, Center, Tooltip,
+    ActionIcon,
+    Button,
+    Center,
+    Checkbox,
+    Divider,
+    Group,
+    Loader,
+    Popover,
+    ScrollArea,
+    Stack,
+    Text,
+    Tooltip,
 } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
-import { apiClient } from '../../services/apiClient';
+import {IconPlus} from '@tabler/icons-react';
+import {apiClient} from '../../services/apiClient';
 
 interface LibraryItem {
     itemId: string;

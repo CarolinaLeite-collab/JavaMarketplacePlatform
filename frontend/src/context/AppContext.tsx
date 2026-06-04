@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react';
-import { initialState } from './library/LibraryReducer';
+import {createContext, useContext} from 'react';
+import {initialState} from './library/LibraryReducer';
 
 const AppContext = createContext({
     state: {

@@ -1,18 +1,18 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { apiClient } from '../services/apiClient';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {apiClient} from '../services/apiClient';
 import {
-    GET_LIBRARY_ITEMS_SUCCESS,
-    GET_LIBRARY_ITEMS_ERROR,
-    CREATE_DIRECT_SALE_SUCCESS,
-    CREATE_DIRECT_SALE_ERROR,
     CLEAR_SALES_MESSAGES,
-    getLibraryItemsSuccess,
-    getLibraryItemsError,
-    createDirectSaleSuccess,
-    createDirectSaleError,
     clearSalesMessages,
-    getMyLibraryItems,
+    CREATE_DIRECT_SALE_ERROR,
+    CREATE_DIRECT_SALE_SUCCESS,
     createDirectSale,
+    createDirectSaleError,
+    createDirectSaleSuccess,
+    GET_LIBRARY_ITEMS_ERROR,
+    GET_LIBRARY_ITEMS_SUCCESS,
+    getLibraryItemsError,
+    getLibraryItemsSuccess,
+    getMyLibraryItems,
 } from '../context/sales/SalesActions.jsx';
 
 vi.mock('../services/apiClient', () => ({

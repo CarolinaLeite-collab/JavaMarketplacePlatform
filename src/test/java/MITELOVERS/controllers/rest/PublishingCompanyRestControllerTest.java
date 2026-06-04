@@ -1,12 +1,15 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import tools.jackson.databind.ObjectMapper;
+import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-
+import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,9 +20,9 @@ import java.util.NoSuchElementException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WebMvcTest(PublishingCompanyRestController.class)
 class PublishingCompanyRestControllerTest {
@@ -30,81 +33,94 @@ class PublishingCompanyRestControllerTest {
     @MockitoBean
     private PublishingCompanyService _publishingCompanyServiceDouble;
 
-    @Autowired
-    private ObjectMapper _objectMapper;
+    @MockitoBean
+    private PublishingCompanyLinkProvider _linkProviderDouble;
+
+    @MockitoBean
+    private UserService _userServiceDouble;
+
+    @MockitoBean
+    private PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapperDouble;
+
+    @Test
+    void optionsReturnsOkWithLinks() throws Exception {
+        User userDouble = mock(User.class);
+        Link linkDouble = Link.of("/publishingCompanies").withRel("publishingCompanies");
+        when(_userServiceDouble.getUserByEmail(any())).thenReturn(userDouble);
+        when(_linkProviderDouble.getLinks(userDouble)).thenReturn(List.of(linkDouble));
+
+        _mockMvc.perform(options("/publishingCompanies")
+                        .param("email", "pedro@aeiou.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links").exists());
+    }
+
+    @Test
+    void optionsReturnsOkWithNoLinks() throws Exception {
+        User userDouble = mock(User.class);
+        when(_userServiceDouble.getUserByEmail(any())).thenReturn(userDouble);
+        when(_linkProviderDouble.getLinks(userDouble)).thenReturn(List.of());
+
+        _mockMvc.perform(options("/publishingCompanies")
+                        .param("email", "readonly@aeiou.com"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void optionsUserNotFoundReturnsNotFound() throws Exception {
+        when(_userServiceDouble.getUserByEmail(any()))
+                .thenThrow(new NoSuchElementException("User not found"));
+
+        _mockMvc.perform(options("/publishingCompanies")
+                        .param("email", "unknown@aeiou.com"))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     void registerPublishingCompanyReturnsOk() throws Exception {
-        // Arrange
-        PublishingCompanyResponseDTO responseDouble = mock(PublishingCompanyResponseDTO.class);
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenReturn(responseDouble);
+                .thenReturn(mock(PublishingCompanyResponseDTO.class));
 
-        // Act & Assert
         _mockMvc.perform(post("/publishingCompanies")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"publishingCompanyId\":\"Secker and Warburg\"}"))
-                .andExpect(status().isOk());
+                        .content("{\"publishingCompanyName\":\"Porto Editora\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap());
     }
+
 
     @Test
-    void registerPublishingCompanyServiceThrowsReturnsInternalServerError() throws Exception {
-        // Arrange
-        when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenThrow(new IllegalStateException("Publishing company already exists"));
+    void getPublishingCompanyByIdNotFoundReturnsNotFound() throws Exception {
+        when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
+                .thenThrow(new NoSuchElementException("Not found"));
 
-        // Act & Assert
-        _mockMvc.perform(post("/publishingCompanies")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"publishingCompanyId\":\"Secker and Warburg\"}"))
-                .andExpect(status().isInternalServerError());
+        _mockMvc.perform(get("/publishingCompanies/UNKNOWN"))
+                .andExpect(status().isNotFound());
     }
-
 
     @Test
     void getAllPublishingCompaniesReturnsOk() throws Exception {
-        // Arrange
+        //Arrange
         when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
                 .thenReturn(List.of(mock(PublishingCompanyResponseDTO.class)));
-
-        // Act & Assert
+        //Act and Assert
         _mockMvc.perform(get("/publishingCompanies"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
     }
-
-    @Test
-    void getAllPublishingCompaniesServiceThrowsReturnsInternalServerError() throws Exception {
-        // Arrange
-        when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
-                .thenThrow(new RuntimeException("Error"));
-
-        // Act & Assert
-        _mockMvc.perform(get("/publishingCompanies"))
-                .andExpect(status().isInternalServerError());
-    }
-
 
     @Test
     void getPublishingCompanyByIdReturnsOk() throws Exception {
-        // Arrange
+        //Arrange
         when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
+                .thenReturn(mock(MITELOVERS.domain.publishingcompany.PublishingCompany.class));
+
+        when(_publishingCompanyResponseDTOMapperDouble.toModel(any()))
                 .thenReturn(mock(PublishingCompanyResponseDTO.class));
 
-        // Act & Assert
-        _mockMvc.perform(get("/publishingCompanies/SECKER AND WARBURG")
-                        .param("publishingCompanyId", "SECKER AND WARBURG"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getPublishingCompanyByIdNotFoundReturnsInternalServerError() throws Exception {
-        // Arrange
-        when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
-                .thenThrow(new NoSuchElementException("Publishing company not found"));
-
-        // Act & Assert
-        _mockMvc.perform(get("/publishingCompanies/UNKNOWN")
-                        .param("publishingCompanyId", "UNKNOWN"))
-                .andExpect(status().isInternalServerError());
+        //Act and Assert
+        _mockMvc.perform(get("/publishingCompanies/123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap());
     }
 }

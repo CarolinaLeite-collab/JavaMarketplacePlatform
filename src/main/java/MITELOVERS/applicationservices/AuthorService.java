@@ -5,31 +5,25 @@ import MITELOVERS.domain.author.AuthorFactory;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.dto.response.AuthorResponseDTO;
-import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AuthorService {
 
     private final IAuthorRepo _iAuthorRepo;
     private final AuthorFactory _authorFactory;
-    private final AuthorResponseDTOMapper _authorResponseDTOMapper;
 
-    public AuthorService(IAuthorRepo iAuthorRepo,
-                         AuthorFactory authorFactory,
-                         AuthorResponseDTOMapper mapper) {
-
+    public AuthorService(IAuthorRepo iAuthorRepo, AuthorFactory authorFactory) {
         _iAuthorRepo = Objects.requireNonNull(iAuthorRepo, "AuthorRepo is required");
         _authorFactory = Objects.requireNonNull(authorFactory, "AuthorFactory is required");
-        _authorResponseDTOMapper = Objects.requireNonNull(mapper, "AuthorDTOAssembler is required");
     }
 
-    public AuthorResponseDTO registerAuthor(String authorName) {
+    public Author registerAuthor(String authorName) {
         Name name = new Name(authorName);
         Author newAuthor = _authorFactory.createAuthor(name);
 
@@ -37,25 +31,22 @@ public class AuthorService {
             throw new IllegalStateException("Author already exists in the repository");
         }
 
-        Author savedAuthor = _iAuthorRepo.save(newAuthor);
-
-        return _authorResponseDTOMapper.toModel(savedAuthor);
+        return _iAuthorRepo.save(newAuthor);
     }
 
-    public List<AuthorResponseDTO> getAllAuthors() {
-        Iterable<Author> authors = _iAuthorRepo.findAll();
+    public Iterable<Author> getAllAuthors() {
+        return _iAuthorRepo.findAll();
+    }
 
-        List<AuthorResponseDTO> response = new ArrayList<>();
-
-        for (Author author : authors) {
-            response.add(_authorResponseDTOMapper.toModel(author));
-        }
-
-        return response;
+    public Optional<Author> getAuthorById(String id) {
+        return _iAuthorRepo.ofIdentity(new AuthorId(id));
     }
 
     public Iterable<AuthorId> getAuthorsId() {
-        return _iAuthorRepo.findAllKeys();
+        List<AuthorId> ids = new ArrayList<>();
+        for (Author author : _iAuthorRepo.findAll()) {
+            ids.add(author.identity());
+        }
+        return ids;
     }
-
 }

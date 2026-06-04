@@ -1,6 +1,6 @@
 import {Accordion, Box, Image} from '@mantine/core';
 import {ItemDetailTable} from "../itemDetailsTable/ItemDetailsTable.tsx";
-import { getLibraryDetail } from '../../context/library/LibraryActions';
+import {getLibraryDetail} from '../../context/library/LibraryActions';
 
 export function ItemAccordion({ items, details, dispatch }) {
 

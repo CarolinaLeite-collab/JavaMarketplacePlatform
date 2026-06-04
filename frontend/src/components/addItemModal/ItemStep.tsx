@@ -1,10 +1,5 @@
-import {
-    Select,
-    Stack,
-    Textarea,
-    TextInput,
-} from '@mantine/core';
-import type { Dispatch, SetStateAction } from 'react';
+import {Select, Stack, Textarea, TextInput,} from '@mantine/core';
+import type {Dispatch, SetStateAction} from 'react';
 
 interface ItemData {
     condition: string;

@@ -1,9 +1,9 @@
 import {
-    LOADING,
-    FETCH_LIBRARY_SUCCESS,
-    FETCH_LIBRARY_ERROR,
+    FETCH_DETAIL_ERROR,
     FETCH_DETAIL_SUCCESS,
-    FETCH_DETAIL_ERROR
+    FETCH_LIBRARY_ERROR,
+    FETCH_LIBRARY_SUCCESS,
+    LOADING
 } from './LibraryActions';
 
 export const initialState = {

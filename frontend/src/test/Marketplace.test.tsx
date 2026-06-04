@@ -1,7 +1,7 @@
-import { render, screen, waitFor } from '@/test-utils';
+import {render, screen, waitFor} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import Marketplace from '../pages/Marketplace/Marketplace';
-import { apiClient } from '../services/apiClient';
+import {apiClient} from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {

@@ -1,16 +1,15 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import {render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MantineProvider } from '@mantine/core';
-import { AddItemToListDropDown } from '../components/addItemToListModal/AddItemToListDropDown';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {MantineProvider} from '@mantine/core';
+import {AddItemToListDropDown} from '../components/addItemToListModal/AddItemToListDropDown';
+import {apiClient} from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
         getByHref: vi.fn(),
     },
 }));
-
-import { apiClient } from '../services/apiClient';
 
 const mockLibraryItems = [
     { itemId: 'ITEM-001', title: 'The War of the Worlds' },

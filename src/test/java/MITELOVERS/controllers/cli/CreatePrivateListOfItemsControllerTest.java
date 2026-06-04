@@ -6,8 +6,6 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,16 +25,15 @@ class CreatePrivateListOfItemsControllerTest {
     @Mock
     ListOfItemsService _service;
 
-    @Mock
-    ListOfItemsResponseDTOMapper _mapper;
-
     @InjectMocks
     CreatePrivateListOfItemsController _controller;
 
     @Test
     void testCreatePrivateListOfItemsController() {
         // SUT
-        _controller = new CreatePrivateListOfItemsController(_service, _mapper);
+        _controller = new CreatePrivateListOfItemsController(_service);
+
+        assertNotNull(_controller);
     }
 
     @Test
@@ -44,35 +41,35 @@ class CreatePrivateListOfItemsControllerTest {
         // Arrange
         ListOfItems listDouble = mock(ListOfItems.class);
         ListOfItemsRequestDTO dtoDouble = mock(ListOfItemsRequestDTO.class);
-        ListOfItemsResponseDTO responseDouble = mock(ListOfItemsResponseDTO.class);
 
-        when(_service.save(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(listDouble);
         when(dtoDouble.getGenreId()).thenReturn("ficiton");
         when(dtoDouble.getName()).thenReturn("Josefina");
-        when(_mapper.toModel(any(ListOfItems.class))).thenReturn(responseDouble);
+
+        when(_service.save(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(listDouble);
 
         // Act
-        ListOfItemsResponseDTO result = _controller.createListOfItems("user@cenas.com", dtoDouble);
+        ListOfItems result = _controller.createListOfItems("user@cenas.com", dtoDouble);
 
         // Assert
-        assertEquals(responseDouble, result);
         assertNotNull(result);
+        assertEquals(listDouble, result);
     }
 
     @Test
     void shouldNotCreateDuplicateList() {
         // Arrange
         ListOfItemsRequestDTO dtoDouble = mock(ListOfItemsRequestDTO.class);
-        when(_service.save(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(null);
+
         when(dtoDouble.getName()).thenReturn("Josefina");
         when(dtoDouble.getGenreId()).thenReturn("fiction");
 
+        when(_service.save(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(null);
+
         // Act
-        ListOfItemsResponseDTO result = _controller.createListOfItems("user@cenas.com", dtoDouble);
+        ListOfItems result = _controller.createListOfItems("user@cenas.com", dtoDouble);
 
         // Assert
         assertNull(result);
     }
-
 
 }

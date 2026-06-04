@@ -1,7 +1,7 @@
-import { Header } from '../header/Header';
-import { Footer } from '../footer/Footer';
-import { useComputedColorScheme } from '@mantine/core';
-import { PageContent } from "./PageContent.tsx";
+import {Header} from '../header/Header';
+import {Footer} from '../footer/Footer';
+import {useComputedColorScheme} from '@mantine/core';
+import {PageContent} from "./PageContent.tsx";
 
 export function DefaultLayout({ title, subtitle, children }) {
     const colorScheme = useComputedColorScheme('light');

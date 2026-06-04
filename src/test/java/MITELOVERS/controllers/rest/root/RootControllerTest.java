@@ -1,21 +1,17 @@
 package MITELOVERS.controllers.rest.root;
 
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
-import MITELOVERS.controllers.rest.AuthorLinkProvider;
-import MITELOVERS.controllers.rest.GenreLinkProvider;
-import MITELOVERS.controllers.rest.root.RootController;
-import MITELOVERS.controllers.rest.root.RootLinkProvider;
-import MITELOVERS.domain.repository.IUserRepo;
+import MITELOVERS.controllers.linkprovider.AuthorLinkProvider;
+import MITELOVERS.controllers.linkprovider.GenreLinkProvider;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.Role;
-import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -23,11 +19,11 @@ import static org.mockito.Mockito.when;
 
 class RootControllerTest {
 
-    private final IUserRepo userRepo = mock(IUserRepo.class);
-    private final RootLinkProvider linkProvider = mock(RootLinkProvider.class);
+    private final UserService _userServiceDouble = mock(UserService.class);
+    private final RootLinkProvider _linkProviderDouble = mock(RootLinkProvider.class);
 
     private final RootController controller =
-            new RootController(List.of(linkProvider), userRepo);
+            new RootController(List.of(_linkProviderDouble), _userServiceDouble);
 
     @Test
     void shouldReturnRootWithSelfLinkAndProviderLinks() {
@@ -35,12 +31,11 @@ class RootControllerTest {
         String email = "test@email.com";
         User user = mock(User.class);
 
-        when(userRepo.ofIdentity(new UserId(new Email(email))))
-                .thenReturn(Optional.of(user));
+        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
 
         Link myListsLink = Link.of("/api/my-lists").withRel("myLists");
 
-        when(linkProvider.getLinks(user))
+        when(_linkProviderDouble.getLinks(user))
                 .thenReturn(List.of(myListsLink));
 
         // Act
@@ -56,12 +51,12 @@ class RootControllerTest {
         // Arrange
         String email = "missing@email.com";
 
-        when(userRepo.ofIdentity(new UserId(new Email(email))))
-                .thenReturn(Optional.empty());
+        when(_userServiceDouble.getUserByEmail(email))
+                .thenThrow(new NoSuchElementException("User not found: " + email));
 
         // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
+        NoSuchElementException exception = assertThrows(
+                NoSuchElementException.class,
                 () -> controller.root(email)
         );
 
@@ -76,8 +71,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(true);
         when(user.hasRole(Role.ADMIN)).thenReturn(false);
-        when(userRepo.ofIdentity(new UserId(new Email(email))))
-                .thenReturn(Optional.of(user));
+        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(
@@ -85,7 +79,7 @@ class RootControllerTest {
                         new GenreLinkProvider(authorizationPolicy),
                         new AuthorLinkProvider(authorizationPolicy)
                 ),
-                userRepo
+                _userServiceDouble
         );
 
         // Act
@@ -107,8 +101,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(true);
         when(user.hasRole(Role.ADMIN)).thenReturn(true);
-        when(userRepo.ofIdentity(new UserId(new Email(email))))
-                .thenReturn(Optional.of(user));
+        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(
@@ -116,7 +109,7 @@ class RootControllerTest {
                         new GenreLinkProvider(authorizationPolicy),
                         new AuthorLinkProvider(authorizationPolicy)
                 ),
-                userRepo
+                _userServiceDouble
         );
 
         // Act
@@ -138,8 +131,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(false);
         when(user.hasRole(Role.ADMIN)).thenReturn(false);
-        when(userRepo.ofIdentity(new UserId(new Email(email))))
-                .thenReturn(Optional.of(user));
+        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(
@@ -147,7 +139,7 @@ class RootControllerTest {
                         new GenreLinkProvider(authorizationPolicy),
                         new AuthorLinkProvider(authorizationPolicy)
                 ),
-                userRepo
+                _userServiceDouble
         );
 
         // Act

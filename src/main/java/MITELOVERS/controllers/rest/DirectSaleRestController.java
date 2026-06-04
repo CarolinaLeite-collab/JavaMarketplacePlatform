@@ -1,13 +1,19 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.DirectSaleService;
+import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
+import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,14 +44,35 @@ public class DirectSaleRestController {
     private final DirectSaleService _directSaleService;
     private final DirectSaleResponseDTOMapper _responseMapper;
     private final DSFilteredItemsResponseMapper _filteredResponseMapper;
+    private final DirectSaleNoPriceResponseDTOMapper _noPriceMapper;
+    private final DirectSaleLinkProvider _directSaleLinkProvider;
+    private final UserService _userService;
 
     public DirectSaleRestController(DirectSaleService directSaleService,
                                     DirectSaleResponseDTOMapper responseMapper,
-                                    DSFilteredItemsResponseMapper filteredResponseMapper) {
+                                    DSFilteredItemsResponseMapper filteredResponseMapper,
+                                    DirectSaleNoPriceResponseDTOMapper noPriceMapper,
+                                    DirectSaleLinkProvider directSaleLinkProvider,
+                                    UserService userService) {
 
         _directSaleService = directSaleService;
         _responseMapper = responseMapper;
         _filteredResponseMapper = filteredResponseMapper;
+        _noPriceMapper = noPriceMapper;
+        _directSaleLinkProvider = directSaleLinkProvider;
+        _userService = userService;
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        _directSaleLinkProvider.getLinks(user).forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -130,6 +157,30 @@ public class DirectSaleRestController {
         );
 
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping(value = "/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<DirectSaleNoPriceResponseDTO>> getDirectSalesWithoutPrice() {
+
+        List<DirectSale> sales = _directSaleService.getAllDirectSales();
+
+        if (sales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        List<DirectSaleNoPriceResponseDTO> response = sales.stream()
+                .map(_noPriceMapper::toModel)
+                .toList();
+
+        response.forEach(dto ->
+                dto.add(
+                        linkTo(methodOn(DirectSaleRestController.class)
+                                .getDirectSalesWithoutPrice())
+                                .withSelfRel()
+                )
+        );
+
+        return ResponseEntity.ok(response);
     }
 
 }
