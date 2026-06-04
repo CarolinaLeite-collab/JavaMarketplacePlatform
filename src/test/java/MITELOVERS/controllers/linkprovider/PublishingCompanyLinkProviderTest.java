@@ -28,16 +28,21 @@ class PublishingCompanyLinkProviderTest {
 
     @Test
     void shouldReturnAllLinksWhenUserHasAllPermissions() {
-
+        //Arrange
         when(authorizationPolicy.canGetAllPublishingCompanies(user))
                 .thenReturn(true);
 
         when(authorizationPolicy.canCreatePublishingCompany(user))
                 .thenReturn(true);
 
+        when(authorizationPolicy.canGetPublishingCompany(user))
+                .thenReturn(true);
+
+        //Act
         List<Link> links = provider.getLinks(user);
 
-        assertEquals(2, links.size());
+        //Assert
+        assertEquals(3, links.size());
 
         assertTrue(
                 links.stream()
@@ -50,19 +55,53 @@ class PublishingCompanyLinkProviderTest {
                         .anyMatch(link ->
                                 link.getRel().value().equals("createPublishingCompany"))
         );
+
+        assertTrue(
+                links.stream()
+                        .anyMatch(link ->
+                                link.getRel().value().equals("publishingCompany"))
+        );
+
+    }
+
+    @Test
+    void shouldReturnPublishingCompanyAndCollectionLinksWhenUserCanGetOnePublishingCompany() {
+        //Arrange
+        when(authorizationPolicy.canCreatePublishingCompany(user))
+                .thenReturn(false);
+
+        when(authorizationPolicy.canGetAllPublishingCompanies(user))
+                .thenReturn(false);
+
+        when(authorizationPolicy.canGetPublishingCompany(user))
+                .thenReturn(true);
+
+        //Act
+        List<Link> links = provider.getLinks(user);
+
+        //Assert
+        assertEquals(2, links.size());
+
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("publishingCompanies")));
+
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("publishingCompany")));
     }
 
     @Test
     void shouldReturnOnlyGetLink() {
-
+        //Arrange
         when(authorizationPolicy.canGetAllPublishingCompanies(user))
                 .thenReturn(true);
 
         when(authorizationPolicy.canCreatePublishingCompany(user))
                 .thenReturn(false);
 
+        //Act
         List<Link> links = provider.getLinks(user);
 
+        //Assert
         assertEquals(1, links.size());
 
         assertEquals(
@@ -73,15 +112,17 @@ class PublishingCompanyLinkProviderTest {
 
     @Test
     void shouldReturnNoLinksWhenUserHasNoPermissions() {
-
+        //Arrange
         when(authorizationPolicy.canGetAllPublishingCompanies(user))
                 .thenReturn(false);
 
         when(authorizationPolicy.canCreatePublishingCompany(user))
                 .thenReturn(false);
 
+        //Act
         List<Link> links = provider.getLinks(user);
 
+        //Assert
         assertTrue(links.isEmpty());
     }
 }
