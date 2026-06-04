@@ -8,6 +8,8 @@ const AppContext = createContext({
             createListHref: null,
             genresHref: null,
             libraryHref: null,
+            directSalesHref: null,
+            directSalesWithoutPriceHref: null,
         },
         lists: {
             lists: [],
