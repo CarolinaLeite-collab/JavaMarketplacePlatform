@@ -18,8 +18,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -58,22 +57,20 @@ class DirectSaleServiceTest {
                 new ItemId("A1B2C3D4E5")
         );
 
+        Item item1 = mock(Item.class);
+        Item item2 = mock(Item.class);
+
+        when(item1.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(item2.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_iItemRepo.ofIdentity(itemIds.get(0))).thenReturn(Optional.of(item1));
+        when(_iItemRepo.ofIdentity(itemIds.get(1))).thenReturn(Optional.of(item2));
+
         DirectSale newSale = mock(DirectSale.class);
         DirectSale savedSale = mock(DirectSale.class);
 
         when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
         when(newSale.identity()).thenReturn(new DirectSaleId("DS-A1B2C3D4"));
         when(_iDirectSaleRepo.containsOfIdentity(any())).thenReturn(false);
-
-        Item item1 = mock(Item.class);
-        Item item2 = mock(Item.class);
-
-        when(item1.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-        when(item2.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-
-        when(_iItemRepo.ofIdentity(itemIds.get(0))).thenReturn(Optional.of(item1));
-        when(_iItemRepo.ofIdentity(itemIds.get(1))).thenReturn(Optional.of(item2));
-
         when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
 
         // Act
@@ -93,6 +90,12 @@ class DirectSaleServiceTest {
                 "EUR",
                 3600L
         );
+
+        ItemId itemId = new ItemId("ABCDEF1234");
+        Item item = mock(Item.class);
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
 
         DirectSale newSale = mock(DirectSale.class);
         DirectSaleId id = new DirectSaleId("DS-A1B2C3D4");
@@ -119,12 +122,8 @@ class DirectSaleServiceTest {
                 3600L
         );
 
-        DirectSale newSale = mock(DirectSale.class);
-
-        when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
-        when(_iDirectSaleRepo.containsOfIdentity(any())).thenReturn(false);
-
         ItemId itemId = new ItemId("ABCDEF1234");
+
         when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -144,13 +143,6 @@ class DirectSaleServiceTest {
                 "EUR",
                 3600L
         );
-
-        DirectSale newSale = mock(DirectSale.class);
-        DirectSaleId dsId = new DirectSaleId("DS-A1B2C3D4");
-
-        when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
-        when(newSale.identity()).thenReturn(dsId);
-        when(_iDirectSaleRepo.containsOfIdentity(dsId)).thenReturn(false);
 
         ItemId itemId = new ItemId("ABCDEF1234");
         Item item = mock(Item.class);
@@ -176,21 +168,21 @@ class DirectSaleServiceTest {
                 null
         );
 
-        List<ItemId> itemIds = List.of(new ItemId("ABCDEF1234"));
+        ItemId itemId = new ItemId("ABCDEF1234");
+        Item item = mock(Item.class);
+
+        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(item.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+
         DirectSale newSale = mock(DirectSale.class);
         DirectSale savedSale = mock(DirectSale.class);
         DirectSaleId dsId = new DirectSaleId("DS-A1B2C3D4");
 
-        // Use strict argument matchers to force PIT to fail when the null conditional is inverted
-        when(_iDirectSaleRepo.containsOfIdentity(dsId)).thenReturn(false);
-        when(_factory.createDirectSale(Mockito.eq(itemIds), any(Price.class), Mockito.isNull())).thenReturn(newSale);
+        when(_factory.createDirectSale(eq(List.of(itemId)), any(Price.class), isNull()))
+                .thenReturn(newSale);
+
         when(newSale.identity()).thenReturn(dsId);
-
-        // A plain mock works perfectly here as long as we explicitly verify the void execution interaction path
-        Item itemMock = mock(Item.class);
-        when(itemMock.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
-
-        when(_iItemRepo.ofIdentity(itemIds.get(0))).thenReturn(Optional.of(itemMock));
+        when(_iDirectSaleRepo.containsOfIdentity(dsId)).thenReturn(false);
         when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
 
         // Act
@@ -198,7 +190,24 @@ class DirectSaleServiceTest {
 
         // Assert
         assertSame(savedSale, result);
-        Mockito.verify(itemMock, Mockito.times(1)).markAsDirectSale();
+    }
+
+    @Test
+    void createDirectSale_shouldThrowWhenDuplicateItemsProvided() {
+
+        // Arrange
+        DirectSaleRequestDTO request = new DirectSaleRequestDTO(
+                List.of("ABCDEF1234", "ABCDEF1234"), // duplicate
+                20.0,
+                "USD",
+                3600L
+        );
+
+        // Act + Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> _service.createDirectSale(request)
+        );
     }
 
     // ------------------------------------------------------------

@@ -55,20 +55,10 @@ public class DirectSaleService {
                 .map(ItemId::new)
                 .toList();
 
-        Price price = new Price(
-                request.getPriceValue(),
-                Currency.valueOf(request.getPriceCurrency())
-        );
-
-        Duration timeLimit = request.getTimeLimitSeconds() != null
-                ? Duration.ofSeconds(request.getTimeLimitSeconds())
-                : null;
-
-        DirectSale newDirectSale =
-                _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
-
-        if (_iDirectSaleRepo.containsOfIdentity(newDirectSale.identity())) {
-            throw new IllegalStateException("DirectSale already exists");
+        // 1. Fail fast on duplicates
+        Set<ItemId> unique = new HashSet<>(itemsId);
+        if (unique.size() != itemsId.size()) {
+            throw new IllegalArgumentException("Duplicate items are not allowed in a DirectSale.");
         }
 
         // Validate items
@@ -80,13 +70,33 @@ public class DirectSaleService {
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
-
-            item.markAsDirectSale();
         }
 
-        DirectSale saved = _iDirectSaleRepo.save(newDirectSale);
+        Price price = new Price(
+                request.getPriceValue(),
+                Currency.valueOf(request.getPriceCurrency())
+        );
 
-        return saved;
+        Duration timeLimit = request.getTimeLimitSeconds() != null
+                ? Duration.ofSeconds(request.getTimeLimitSeconds())
+                : null;
+
+        // Create the DS
+        DirectSale newDirectSale =
+                _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+
+        if (_iDirectSaleRepo.containsOfIdentity(newDirectSale.identity())) {
+            throw new IllegalStateException("DirectSale already exists");
+        }
+
+        // 5. Mark items as on sale (after validation)
+        for (ItemId itemId : itemsId) {
+            Item item = _iItemRepo.ofIdentity(itemId).get();
+            item.markAsDirectSale();
+            _iItemRepo.save(item);
+        }
+
+        return _iDirectSaleRepo.save(newDirectSale);
     }
 
     public List<DirectSale> getAllDirectSales() {
