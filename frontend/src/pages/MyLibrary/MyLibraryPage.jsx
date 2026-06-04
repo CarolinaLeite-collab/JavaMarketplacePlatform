@@ -24,7 +24,7 @@ export default function MyLibraryPage() {
 
     return (
         <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
-            <Group justify="center" mt="xl">
+            <Group justify="center" mt={0}>
                 <Button
                     color="indigo"
                     radius="xl"
