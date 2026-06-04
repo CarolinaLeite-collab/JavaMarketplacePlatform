@@ -21,13 +21,13 @@ participant ":MiteLovers" as System
 
 U -> System : I want to put an item %n()in my library on direct sale
 activate System
-System --> U : Displays direct sale form
+System --> U : Displays direct sale form %n() with items NotOnSale only
 deactivate System
 
-U -> System : Submit itemId, price, and %n() time limit
+U -> System : Submit selected itemId, price, %n()currency, and time limit
 
 activate System
-System --> U : Success
+System --> U : The item was successfully %n()put on direct sale.
 
 @enduml
 
