@@ -1,5 +1,6 @@
 package MITELOVERS.mapper;
 
+import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.ItemRestController;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
@@ -10,6 +11,7 @@ import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -99,6 +101,11 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
         dto.add(linkTo(methodOn(ItemRestController.class)
                 .getItemById(item.identity().toString()))
                 .withSelfRel());
+
+        if (item.getSaleStatus() == SaleStatus.NotOnSale){
+            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null)).withRel("create-direct-sale"));
+
+        }
 
         return dto;
     }
