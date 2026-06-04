@@ -2,6 +2,7 @@
 '==== Title ====
 title "As a User, I want to use a Web UI to put for %n()sale a publication in my library in a direct sale." %n() SD
 
+
 '==== basic style ====
 skinparam monochrome false
 skinparam shadowing false
@@ -15,42 +16,49 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+
 ' ==== Actor and participants ====
 actor "User"
 participant ":Client" as Client
 participant ":Server" as Server
 database "DB" as DB
 
+
 User -> Client : I want to put an item %n()in my library on direct sale
 activate Client
-Client -> Server : GET /my-library {...}
+Client -> Server : GET /items/my-library {...}
 activate Server
-Server -> DB : select
+Server -> DB : select items in %n()user's library
 DB --> Server : data
-Server --> Client : 200 {...}
+Server --> Client : 200 [ItemResponseDTO + links]
 note right of Client
-Populates the item dropdown inside
-the direct sale form with items
-from the user's library
+Each item includes:
+- self
+- create-direct-sale only if item
+ can be put on direct sale
+Client populates the dropdown only
+with items containing create-direct-sale
 end note
 deactivate Server
-Client --> User : Displays direct sale form
+Client --> User : Displays direct sale form %n() with items NotOnSale only
 deactivate Client
 
 
-User -> Client : Submit itemId, price, and %n() time limit
+
+
+User -> Client : Submit selected itemId, price, %n()currency, and time limit
 activate Client
-Client -> Server : POST /direct-sales {"itemId": "...", %n()"price": "...", "timeLimitDays": "..."}
-activate Server
+Client -> Server : POST {href from rel="create-direct-sale"}\n{ itemsId, priceValue, priceCurrency, %n()timeLimitSeconds }
 note right of Server
-Creates DirectSale %n()and marks Item %n()as OnDirectSale
+Creates DirectSale and updates %n()Item saleStatus as OnDirectSale
 end note
-Server -> DB : insert
-DB --> Server : data
-Server --> Client : 201 {...}
+Server -> DB : insert sale / %n() update item
+DB --> Server : success
+Server --> Client : 201 Created
 deactivate Server
-Client --> User : Success
+Client --> User : The item was successfully %n()put on direct sale.
 deactivate Client
+
 
 /'Client -> Server : PATCH /my-library/{itemId} %n(){ "saleStatus" : "OnDirectSale"}
 activate Client
@@ -60,5 +68,6 @@ DB --> Server : data
 Server --> Client : 200 {...}
 deactivate Server
 deactivate Client'/
+
 
 @enduml
