@@ -1,12 +1,10 @@
 import { apiClient } from '../../services/apiClient';
 
 // Actions types
-export const LOADING                = 'LOADING';
 export const FETCH_LIBRARY_SUCCESS  = 'FETCH_LIBRARY_SUCCESS';
 export const FETCH_LIBRARY_ERROR    = 'FETCH_LIBRARY_ERROR';
 export const FETCH_DETAIL_SUCCESS   = 'FETCH_DETAIL_SUCCESS';
 export const FETCH_DETAIL_ERROR     = 'FETCH_DETAIL_ERROR';
-
 
 
 export function fetchLibrarySuccess(items) {
@@ -25,9 +23,7 @@ export function fetchDetailError(error) {
     return { type: FETCH_DETAIL_ERROR, payload: error };
 }
 
-
 export async function getLibrary(dispatch) {
-    dispatch({ type: LOADING });
     try {
         const data = await apiClient.getLibrary();
         const embedded = data._embedded;

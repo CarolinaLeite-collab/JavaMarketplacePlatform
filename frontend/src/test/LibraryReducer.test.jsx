@@ -1,21 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { libraryReducer, initialState } from '../context/library/LibraryReducer';
+import { BASE_URL } from '../services/apiClient';
 
 describe('libraryReducer', () => {
-
-    it('sets loading to true and clears error on LOADING', () => {
-        const state = {
-            ...initialState,
-            error: 'Some error'
-        };
-
-        const action = { type: 'LOADING' };
-
-        const result = libraryReducer(state, action);
-
-        expect(result.loading).toBe(true);
-        expect(result.error).toBeNull();
-    });
 
     it('stores library items on FETCH_LIBRARY_SUCCESS', () => {
         const items = [
@@ -24,7 +11,7 @@ describe('libraryReducer', () => {
                 title: 'Dune',
                 picture: null,
                 _links: {
-                    self: { href: 'http://localhost:8081/my-library/ITM-001' }
+                    self: { href: `${BASE_URL}/my-library/ITM-001` }
                 }
             }
         ];
@@ -36,15 +23,16 @@ describe('libraryReducer', () => {
 
         const result = libraryReducer(initialState, action);
 
-        expect(result.loading).toBe(false);
-
         expect(result.items).toEqual([
             {
                 itemId: 'ITM-001',
                 title: 'Dune',
                 picture: null,
                 links: [
-                    { rel: 'self', href: 'http://localhost:8081/my-library/ITM-001' }
+                    {
+                        rel: 'self',
+                        href: `${BASE_URL}/my-library/ITM-001`
+                    }
                 ]
             }
         ]);
@@ -58,7 +46,6 @@ describe('libraryReducer', () => {
 
         const result = libraryReducer(initialState, action);
 
-        expect(result.loading).toBe(false);
         expect(result.error).toBe('Failed to load library');
     });
 

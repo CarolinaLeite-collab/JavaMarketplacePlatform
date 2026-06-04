@@ -1,5 +1,4 @@
 import {
-    LOADING,
     FETCH_LIBRARY_SUCCESS,
     FETCH_LIBRARY_ERROR,
     FETCH_DETAIL_SUCCESS,
@@ -9,7 +8,6 @@ import {
 export const initialState = {
     items: [],
     details: {},
-    loading: false,
     error: null
 };
 
@@ -36,14 +34,11 @@ function formatPublicationType(type) {
 export function libraryReducer(state, action) {
     switch (action.type) {
 
-        case LOADING:
-            return { ...state, loading: true, error: null };
-
         case FETCH_LIBRARY_SUCCESS:
-            return { ...state, loading: false, items: action.payload.map(mapItem) };
+            return { ...state, items: action.payload.map(mapItem) };
 
         case FETCH_LIBRARY_ERROR:
-            return { ...state, loading: false, error: action.payload };
+            return { ...state, error: action.payload };
 
         case FETCH_DETAIL_SUCCESS:
             return {
