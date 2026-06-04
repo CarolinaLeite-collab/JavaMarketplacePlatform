@@ -132,6 +132,28 @@ describe('apiClient', () => {
             );
         });
 
+        it('throws when getByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.getByHref(`${BASE_URL}/items/ITEM-001`))
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when getByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getByHref(`${BASE_URL}/items/ITEM-001`);
+
+            expect(result).toBeNull();
+        });
+
     });
 
     describe('getRootOptions', () => {
@@ -179,4 +201,220 @@ describe('apiClient', () => {
 
     });
 
+    describe('postByHref', () => {
+        it('posts body to href with auth and content-type headers', async () => {
+            const href = `${BASE_URL}/publications`;
+            const body = { title: 'Dune' };
+            const response = { publicationId: 'PUB-001' };
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 201,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.postByHref(href, body);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': USER_ID
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws response text when postByHref fails', async () => {
+            const href = `${BASE_URL}/publications`;
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: false,
+                    status: 500,
+                    text: 'backend error'
+                })
+            );
+
+            await expect(apiClient.postByHref(href, {}))
+                .rejects.toThrow('backend error');
+        });
+
+        it('returns null when postByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.postByHref(`${BASE_URL}/my-library`, {});
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('extractIdFromSelfLink', () => {
+        it('extracts id from self link', () => {
+            const response = {
+                _links: {
+                    self: {
+                        href: `${BASE_URL}/publications/PUB-001`
+                    }
+                }
+            };
+
+            const result = apiClient.extractIdFromSelfLink(response);
+
+            expect(result).toBe('PUB-001');
+        });
+    });
+
+    describe('patchByHref', () => {
+        it('patches body to href with auth and content-type headers', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001`;
+            const body = { name: 'Updated list' };
+            const response = { listId: 'LIST-001', name: 'Updated list' };
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.patchByHref(href, body);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-User-Id': USER_ID
+                    },
+                    body: JSON.stringify(body)
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws when patchByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 500 })
+            );
+
+            await expect(apiClient.patchByHref(`${BASE_URL}/my-lists/LIST-001`, {}))
+                .rejects.toThrow('500');
+        });
+
+        it('returns null when patchByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.patchByHref(`${BASE_URL}/my-lists/LIST-001`, {});
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('patchNoBodyByHref', () => {
+        it('patches href without body', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001/items/ITEM-001`;
+            const response = { success: true };
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.patchNoBodyByHref(href);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+
+        it('throws when patchNoBodyByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.patchNoBodyByHref(`${BASE_URL}/my-lists/LIST-001`))
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when patchNoBodyByHref receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.patchNoBodyByHref(`${BASE_URL}/my-lists/LIST-001`);
+
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('deleteByHref', () => {
+        it('deletes href with auth header', async () => {
+            const href = `${BASE_URL}/my-lists/LIST-001`;
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.deleteByHref(href);
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                href,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+
+            expect(result).toBeNull();
+        });
+
+        it('throws when deleteByHref fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.deleteByHref(`${BASE_URL}/my-lists/LIST-001`))
+                .rejects.toThrow('404');
+        });
+    });
 });

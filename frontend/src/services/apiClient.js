@@ -112,6 +112,13 @@ async function deleteByHref(href) {
     return null;
 }
 
+function extractIdFromSelfLink(response) {
+    const href = response._links.self.href;
+    const url = new URL(href);
+
+    return url.pathname.split('/').filter(Boolean).pop();
+}
+
 // Contract endpoints
 export const apiClient = {
     // Entry points — hardcoded
@@ -123,6 +130,8 @@ export const apiClient = {
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
+
+    extractIdFromSelfLink: (response) => extractIdFromSelfLink(response),
 
     // HATEOAS — use full href from backend response links
     getByHref: (href) => getByHref(href),
