@@ -9,8 +9,10 @@ import MITELOVERS.domain.valueobject.Price;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents a direct sale of an {@link Item} with a specified {@link Price} and optional time limit.
@@ -32,6 +34,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
 
         requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
+        ensureNoDuplicateItems(itemsId);
 
         for (ItemId itemId : itemsId) {
             if (itemId == null) {
@@ -39,7 +42,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
             }
         }
 
-        _itemsId = itemsId;
+        _itemsId = List.copyOf(itemsId);
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
@@ -50,6 +53,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
     // rehydration
     DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Duration timeLimit,Instant creationDate) {
         this(itemsId, price, timeLimit);
+
         _directSaleId = Objects.requireNonNull(directSaleId, "DirectSaleId cannot be null");
         _creationDate = creationDate;
 
@@ -98,6 +102,15 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
                 return true;
         }
         return false;
+    }
+
+    private static void ensureNoDuplicateItems(List<ItemId> itemsId) {
+
+        Set<ItemId> unique = new HashSet<>(itemsId);
+
+        if (unique.size() != itemsId.size()) {
+            throw new IllegalArgumentException("DirectSale cannot contain duplicate items.");
+        }
     }
 
 }

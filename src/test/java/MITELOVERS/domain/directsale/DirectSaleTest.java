@@ -57,6 +57,8 @@ class DirectSaleTest {
         assertEquals(_itemsId, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
         assertEquals(_timeLimit, directSale.getTimeLimit());
+        assertThrows(UnsupportedOperationException.class,
+                () -> directSale.getItemsId().add(mock(ItemId.class)));
     }
 
     @Test
@@ -97,13 +99,16 @@ class DirectSaleTest {
     @Test
     void constructorShouldThrowExceptionWhenItemIdIsNull() {
         //Arrange
-        ItemId nullItemId = null;
+        List<ItemId> listWithNull = new ArrayList<>();
 
         //Act
-        _itemsId.add(_itemIdDouble);
-        _itemsId.add(nullItemId);
+        listWithNull.add(mock(ItemId.class));
+        listWithNull.add(null);
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new DirectSale(_itemsId, _priceDouble, _timeLimit));
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSale(listWithNull, _priceDouble, _timeLimit)
+        );
 
         //Assert
         assertEquals("Items cannot contain null elements.", ex.getMessage());
@@ -120,6 +125,20 @@ class DirectSaleTest {
 
         //Assert
         assertEquals("Time limit cannot be negative", ex.getMessage());
+    }
+
+    @Test
+    void constructorShouldThrowWhenDuplicateItemsProvided() {
+
+        ItemId id = mock(ItemId.class);
+        List<ItemId> duplicates = List.of(id, id);
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new DirectSale(duplicates, _priceDouble, _timeLimit)
+        );
+
+        assertEquals("DirectSale cannot contain duplicate items.", ex.getMessage());
     }
 
     @Test
