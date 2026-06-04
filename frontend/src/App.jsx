@@ -10,7 +10,7 @@ import { UserProvider } from "@/context/UserContext";
 export default function App() {
   return (
       <MantineProvider defaultColorScheme="auto">
-          <Notifications />
+          <Notifications position="top-center"/>
               <BrowserRouter>
                   <UserProvider>
                       <AppProvider>
