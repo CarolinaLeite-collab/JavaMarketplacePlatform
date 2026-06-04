@@ -4,6 +4,7 @@ import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
 import { MarketPlaceTable } from '../../components/marketPlaceTable/MarketPlaceTable.jsx';
 import { apiClient } from '../../services/apiClient';
 import AppContext from '../../context/AppContext';
+import { useUser } from '../../context/UserContext';
 
 function formatPrice(priceValue, priceCurrency) {
     if (priceValue == null) return '';
@@ -57,8 +58,11 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
 
 export default function Marketplace() {
     const { state } = useContext(AppContext);
-    const { directSalesHref } = state.app;
-    const canSeePrice = !!directSalesHref;
+    const { directSalesWithoutPriceHref } = state.app;
+    const { currentUser } = useUser();
+    const isLoggedIn = currentUser !== 'guest@aeiou.com';
+    const canSeePrice = isLoggedIn;
+    const marketplaceHref = !isLoggedIn ? directSalesWithoutPriceHref : null;
 
     const [items, setItems] = useState([]);
     const [genres, setGenres] = useState([{ value: 'all', label: 'All genres' }]);
@@ -77,7 +81,7 @@ export default function Marketplace() {
                 setError('');
 
                 const [directSalesResponse, genresResponse] = await Promise.all([
-                    apiClient.getDirectSales(),
+                    marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getDirectSales(),
                     apiClient.getGenres(),
                 ]);
 
@@ -126,7 +130,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [marketplaceHref]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">
