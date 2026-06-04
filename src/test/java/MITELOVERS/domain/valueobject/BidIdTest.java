@@ -112,4 +112,42 @@ class BidIdTest {
 
         assertEquals(uuid.toString(), id.toString());
     }
+
+    @Test
+    void bidIdShouldNotBeEqualToDifferentObjectType() {
+        BidId id = new BidId(_uuid);
+
+        assertNotEquals(id, "fakeId");
+    }
+
+
+    @Test
+    void differentBidIdsShouldHaveDifferentHashCodes() {
+        UUID uuid1 = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        UUID uuid2 = UUID.fromString("00000000-0000-0000-0000-000000000002");
+
+        BidId id1 = new BidId(uuid1);
+        BidId id2 = new BidId(uuid2);
+
+        assertNotEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void throwsExceptionWhenStringBidIdIsBlank() {
+        assertThrows(IllegalArgumentException.class, () -> new BidId(" "));
+    }
+
+    @Test
+    void throwsExceptionWhenStringBidIdIsEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> new BidId(""));
+    }
+
+    @Test
+    void shouldCreateBidIdFromValidString() {
+        UUID uuid = UUID.randomUUID();
+
+        BidId id = new BidId(uuid.toString());
+
+        assertEquals(uuid.toString(), id.toString());
+    }
 }
