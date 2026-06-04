@@ -97,4 +97,30 @@ class PublishingCompanyRestControllerTest {
         _mockMvc.perform(get("/publishingCompanies/UNKNOWN"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void getAllPublishingCompaniesReturnsOk() throws Exception {
+        //Arrange
+        when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
+                .thenReturn(List.of(mock(PublishingCompanyResponseDTO.class)));
+        //Act and Assert
+        _mockMvc.perform(get("/publishingCompanies"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    void getPublishingCompanyByIdReturnsOk() throws Exception {
+        //Arrange
+        when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
+                .thenReturn(mock(MITELOVERS.domain.publishingcompany.PublishingCompany.class));
+
+        when(_publishingCompanyResponseDTOMapperDouble.toModel(any()))
+                .thenReturn(mock(PublishingCompanyResponseDTO.class));
+
+        //Act and Assert
+        _mockMvc.perform(get("/publishingCompanies/123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isMap());
+    }
 }
