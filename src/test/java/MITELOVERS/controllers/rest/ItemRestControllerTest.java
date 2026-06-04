@@ -55,6 +55,7 @@ class ItemRestControllerTest {
     private ItemResponseDTO sampleDto() {
         return new ItemResponseDTO(
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
+                null,
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
                 "1984", "George Orwell", 1949, "Fiction"
         );
