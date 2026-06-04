@@ -118,8 +118,12 @@ export const apiClient = {
     getRootOptions: () => optionsByPath('/api'),
     getListsOptions: () => optionsByPath('/my-lists'),
     getGenres: () => getPublic('/genres'),
+<<<<<<< Updated upstream
     getLibrary: () => getPrivate('/my-library/'),
     getMyLibraryItemsForSale: () => getPrivate('/items/my-library'),
+=======
+    getLibraryOptions: () => optionsByPath('/my-library'),
+>>>>>>> Stashed changes
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),

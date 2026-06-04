@@ -1,6 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { apiClient, BASE_URL, USER_ID } from '../services/apiClient';
 
+const createResponse = (body, { status = 200 } = {}) => ({
+    ok: status >= 200 && status < 300,
+    status,
+    text: vi.fn().mockResolvedValue(body),
+    json: vi.fn().mockResolvedValue(
+        body ? JSON.parse(body) : null
+    )
+});
 
 // simulate a Vitest function
 const mockFetch = vi.fn();
@@ -19,6 +27,7 @@ const mockError = (status) =>
     Promise.resolve({
         ok: false,
         status,
+        text: () => Promise.resolve(String(status)),
         json: () => Promise.resolve({})
     });
 
@@ -69,6 +78,60 @@ describe('apiClient', () => {
         });
     });
 
+    describe('getLibraryOptions', () => {
+        it('calls OPTIONS on /my-library with user headers', async () => {
+            mockFetch.mockResolvedValue(
+                createResponse(
+                    JSON.stringify({ _links: {} }),
+                    { status: 200 }
+                )
+            );
+
+            await apiClient.getLibraryOptions();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/my-library?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+        });
+
+        it('returns parsed options response', async () => {
+            const data = {
+                _links: {
+                    collection: {
+                        href: 'http://localhost:8081/my-library'
+                    }
+                }
+            };
+
+            mockFetch.mockResolvedValue(
+                createResponse(
+                    JSON.stringify(data),
+                    { status: 200 }
+                )
+            );
+
+            const result = await apiClient.getLibraryOptions();
+
+            expect(result).toEqual(data);
+        });
+
+        it('throws when OPTIONS request fails', async () => {
+            mockFetch.mockResolvedValue(
+                createResponse('', { status: 500 })
+            );
+
+            await expect(
+                apiClient.getLibraryOptions()
+            ).rejects.toThrow('500');
+        });
+    });
+
     describe('getGenres', () => {
 
         it('calls the correct URL without X-User-Id', async () => {
@@ -93,62 +156,6 @@ describe('apiClient', () => {
             const result = await apiClient.getGenres();
 
             expect(result).toEqual(mockData);
-        });
-
-    });
-
-    describe('getLibrary', () => {
-
-        it('calls endpoint with X-User-Id header', async () => {
-            mockFetch.mockReturnValueOnce(
-                mockSuccess({ items: [] })
-            );
-
-            await apiClient.getLibrary();
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                `${BASE_URL}/my-library/`,
-                expect.objectContaining({
-                    headers: {
-                        'X-User-Id': USER_ID
-                    }
-                })
-            );
-        });
-
-        it('returns library data', async () => {
-            const data = {
-                items: []
-            };
-
-            mockFetch.mockReturnValueOnce(
-                mockSuccess(data)
-            );
-
-            const result = await apiClient.getLibrary();
-
-            expect(result).toEqual(data);
-        });
-
-        it('throws error on failure', async () => {
-            mockFetch.mockReturnValueOnce(mockError(404));
-
-            await expect(
-                apiClient.getByHref`${BASE_URL}/my-library/INVALID`
-            ).rejects.toThrow('404');
-        });
-
-        it('returns null when library endpoint returns 204', async () => {
-            mockFetch.mockReturnValueOnce(
-                Promise.resolve({
-                    ok: true,
-                    status: 204
-                })
-            );
-
-            const result = await apiClient.getLibrary();
-
-            expect(result).toBeNull();
         });
 
     });
@@ -198,7 +205,9 @@ describe('apiClient', () => {
                 mockError(404)
             );
 
-            await expect(apiClient.getLibrary()).rejects.toThrow('404');
+            await expect(
+                apiClient.getByHref('http://localhost:8081/test')
+            ).rejects.toThrow('404');
         });
 
         it('returns null when getByHref returns 204', async () => {
@@ -405,5 +414,87 @@ describe('apiClient', () => {
             ).rejects.toThrow('404');
         });
     });
+
+    describe('getRootOptions', () => {
+        it('fetches root options successfully', async () => {
+            const response = {
+                _links: {
+                    genres: {
+                        href: 'http://localhost:8081/genres'
+                    }
+                }
+            };
+
+            mockFetch.mockReturnValueOnce(
+                Promise.resolve({
+                    ok: true,
+                    text: () => Promise.resolve(JSON.stringify(response))
+                })
+            );
+
+            const result = await apiClient.getRootOptions();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/api?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+
+            expect(result).toEqual(response);
+        });
+    });
+
+    describe('getDirectSales', () => {
+        it('fetches direct sales successfully', async () => {
+            const response = [{ saleId: 'SALE-001' }];
+
+            mockFetch.mockReturnValueOnce(
+                Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    json: () => Promise.resolve(response)
+                })
+            );
+
+            const result = await apiClient.getDirectSales();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/direct-sales`
+            );
+
+            expect(result).toEqual(response);
+        });
+    });
+
+    describe('getItemById', () => {
+        it('fetches item by id successfully', async () => {
+            const response = {
+                itemId: 'ITEM-001',
+                title: 'Dune'
+            };
+
+            mockFetch.mockReturnValueOnce(
+                Promise.resolve({
+                    ok: true,
+                    status: 200,
+                    json: () => Promise.resolve(response)
+                })
+            );
+
+            const result = await apiClient.getItemById('ITEM-001');
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/items/ITEM-001`
+            );
+
+            expect(result).toEqual(response);
+        });
+    });
+
+
 
 });
