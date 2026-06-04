@@ -13,29 +13,38 @@ export const initialSalesState = {
     successMessage: null,
 };
 
+function getLink(links, rel) {
+    return links?.find((link) => link.rel === rel)?.href ?? null;
+}
 
 function mapLibraryItem(item) {
+    const links = item.links ?? [];
+
     return {
         value: item.itemId,
         label: item.title,
         picture: item.picture,
-        href: item.links?.find((link) => link.rel === 'self')?.href ?? null,
+        saleStatus: item.saleStatus,
+        selfHref: getLink(links, 'self'),
+        createDirectSaleHref: getLink(links, 'create-direct-sale'),
+        links,
     };
 }
 
 export function salesReducer(state, action) {
     switch (action.type) {
         case GET_LIBRARY_ITEMS_SUCCESS: {
-            const items = action.payload ?? [];
+            const items = (action.payload ?? []).map(mapLibraryItem);
 
-            const notOnSaleItems = items.filter(
-                (item) => item.saleStatus === 'NotOnSale'
+            // Final HATEOAS behavior: only items that advertise create-direct-sale
+            const sellableItems = items.filter(
+                (item) => !!item.createDirectSaleHref
             );
 
             return {
                 ...state,
                 error: null,
-                libraryItems: notOnSaleItems.map(mapLibraryItem),
+                libraryItems: sellableItems,
             };
         }
 
@@ -45,7 +54,7 @@ export function salesReducer(state, action) {
 
 
         case CREATE_DIRECT_SALE_SUCCESS:
-            return { ...state, error: null };
+            return { ...state, error: null, successMessage: 'The item was successfully put on direct sale.', };
 
 
         case CREATE_DIRECT_SALE_ERROR:

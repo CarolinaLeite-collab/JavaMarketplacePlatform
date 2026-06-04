@@ -1,4 +1,4 @@
-import { render, screen, waitFor  } from '@/test-utils';
+import { render, screen, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import AppContext from '../context/AppContext';
 import { CreateSaleModal } from '../components/createSaleModal/CreateSaleModal';
@@ -8,7 +8,7 @@ import {
     createDirectSale,
     getMyLibraryItems,
 } from '../context/sales/SalesActions.jsx';
-import {beforeEach, vi} from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@mantine/notifications', () => ({
     notifications: {
@@ -28,8 +28,16 @@ const mockContextValue = {
     state: {
         sales: {
             libraryItems: [
-                { value: 'item-1', label: 'Dune' },
-                { value: 'item-2', label: '1984' },
+                {
+                    value: 'item-1',
+                    label: 'Dune',
+                    createDirectSaleHref: 'http://localhost:8081/direct-sales',
+                },
+                {
+                    value: 'item-2',
+                    label: '1984',
+                    createDirectSaleHref: 'http://localhost:8081/direct-sales',
+                },
             ],
             error: null,
             successMessage: null,
@@ -38,16 +46,16 @@ const mockContextValue = {
     dispatch: mockDispatch,
 };
 
-function renderComponent(props = {}) {
+function renderComponent(props = {}, contextValue = mockContextValue) {
     return render(
-        <AppContext.Provider value={mockContextValue}>
+        <AppContext.Provider value={contextValue}>
             <CreateSaleModal opened={true} onClose={vi.fn()} {...props} />
         </AppContext.Provider>
     );
 }
 
 describe('CreateSaleModal', () => {
-    beforeEach( () => {
+    beforeEach(() => {
         vi.clearAllMocks();
     });
 
@@ -84,7 +92,7 @@ describe('CreateSaleModal', () => {
         expect(createDirectSale).not.toHaveBeenCalled();
     });
 
-    it('calls createDirectSale with correct payload when form is valid', async () => {
+    it('calls createDirectSale with correct href and payload when form is valid', async () => {
         const user = userEvent.setup();
         createDirectSale.mockResolvedValue(true);
 
@@ -104,12 +112,16 @@ describe('CreateSaleModal', () => {
         await user.click(screen.getByRole('button', { name: /create sale/i }));
 
         await waitFor(() => {
-            expect(createDirectSale).toHaveBeenCalledWith(mockDispatch, {
-                itemsId: ['item-1'],
-                priceValue: 12.5,
-                priceCurrency: 'EUR',
-                timeLimitSeconds: 604800,
-            });
+            expect(createDirectSale).toHaveBeenCalledWith(
+                mockDispatch,
+                'http://localhost:8081/direct-sales',
+                {
+                    itemsId: ['item-1'],
+                    priceValue: 12.5,
+                    priceCurrency: 'EUR',
+                    timeLimitSeconds: 604800,
+                }
+            );
         });
     });
 
@@ -138,5 +150,40 @@ describe('CreateSaleModal', () => {
                 autoClose: 3000,
             });
         });
+    });
+
+    it('shows an item error and does not call createDirectSale when selected item has no createDirectSaleHref', async () => {
+        const user = userEvent.setup();
+
+        const contextWithoutHref = {
+            state: {
+                sales: {
+                    libraryItems: [
+                        {
+                            value: 'item-1',
+                            label: 'Dune',
+                            createDirectSaleHref: null,
+                        },
+                    ],
+                    error: null,
+                    successMessage: null,
+                },
+            },
+            dispatch: mockDispatch,
+        };
+
+        renderComponent({}, contextWithoutHref);
+
+        await user.click(screen.getByPlaceholderText(/select an item from your library/i));
+        await user.click(screen.getByText('Dune'));
+
+        const priceInput = screen.getByRole('textbox', { name: /price value/i });
+        await user.clear(priceInput);
+        await user.type(priceInput, '10');
+
+        await user.click(screen.getByRole('button', { name: /create sale/i }));
+
+        expect(await screen.findByText(/this item cannot be put on direct sale/i)).toBeInTheDocument();
+        expect(createDirectSale).not.toHaveBeenCalled();
     });
 });
