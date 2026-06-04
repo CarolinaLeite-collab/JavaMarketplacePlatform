@@ -5,9 +5,11 @@ import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ItemLinkProvider;
+import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.response.ItemResponseDTO;
+import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -47,18 +49,26 @@ class ItemRestControllerTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private ItemResponseDTOMapper itemMapper;
+
+    private ItemResponseDTO sampleDto() {
+        return new ItemResponseDTO(
+                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
+                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
+                "1984", "George Orwell", 1949, "Fiction"
+        );
+    }
+
     // ----------------------------------------------------------------
     // POST /items
     // ----------------------------------------------------------------
 
     @Test
     void shouldReturn201WhenItemIsCreated() throws Exception {
-        ItemResponseDTO dto = new ItemResponseDTO(
-                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
-                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
-                "1984", "George Orwell", 1949, "Fiction"
-        );
-        when(itemService.registerItem(any(), any(), any())).thenReturn(dto);
+        Item itemDouble = mock(Item.class);
+        when(itemService.registerItem(any(), any(), any())).thenReturn(itemDouble);
+        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
 
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -103,18 +113,32 @@ class ItemRestControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldReturn404WhenRegisterItemThrowsIllegalState() throws Exception {
+        when(itemService.registerItem(any(), any(), any()))
+                .thenThrow(new IllegalStateException("Duplicate item"));
+
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                    "editionId": "E-ABCDEF12",
+                                    "condition": "GOOD",
+                                    "description": "Nice copy"
+                                }
+                                """))
+                .andExpect(status().isNotFound());
+    }
+
     // ----------------------------------------------------------------
     // GET /items
     // ----------------------------------------------------------------
 
     @Test
     void shouldReturn200WithListOfItems() throws Exception {
-        ItemResponseDTO dto = new ItemResponseDTO(
-                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
-                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
-                "1984", "George Orwell", 1949, "Fiction"
-        );
-        when(itemService.getAllItems()).thenReturn(List.of(dto));
+        Item itemDouble = mock(Item.class);
+        when(itemService.getAllItems()).thenReturn(List.of(itemDouble));
+        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items"))
                 .andExpect(status().isOk())
@@ -127,12 +151,9 @@ class ItemRestControllerTest {
 
     @Test
     void shouldReturn200WhenItemExists() throws Exception {
-        ItemResponseDTO dto = new ItemResponseDTO(
-                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
-                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
-                "1984", "George Orwell", 1949, "Fiction"
-        );
-        when(itemService.getItemById(any())).thenReturn(dto);
+        Item itemDouble = mock(Item.class);
+        when(itemService.getItemById(any())).thenReturn(itemDouble);
+        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items/3C5D126F8B"))
                 .andExpect(status().isOk())
@@ -148,21 +169,27 @@ class ItemRestControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void shouldReturn422WhenGetItemByIdThrowsIllegalArgument() throws Exception {
+        when(itemService.getItemById(any()))
+                .thenThrow(new IllegalArgumentException("Invalid id format"));
+
+        mockMvc.perform(get("/items/INVALID-FORMAT"))
+                .andExpect(status().isUnprocessableEntity());
+    }
+
     // ----------------------------------------------------------------
     // GET /items/my-library
     // ----------------------------------------------------------------
 
     @Test
     void shouldReturn200WithItemsFromMyLibrary() throws Exception {
-        ItemResponseDTO dto = new ItemResponseDTO(
-                "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
-                "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
-                "1984", "George Orwell", 1949, "Fiction"
-        );
+        Item itemDouble     = mock(Item.class);
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.getValue()).thenReturn("3C5D126F8B");
         when(libraryService.getItemIdsInLibrary(any())).thenReturn(List.of(itemIdDouble));
-        when(itemService.getItemById("3C5D126F8B")).thenReturn(dto);
+        when(itemService.getItemById("3C5D126F8B")).thenReturn(itemDouble);
+        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "pedro@aeiou.com"))
@@ -195,32 +222,6 @@ class ItemRestControllerTest {
     }
 
     @Test
-    void shouldReturn404WhenRegisterItemThrowsIllegalState() throws Exception {
-        when(itemService.registerItem(any(), any(), any()))
-                .thenThrow(new IllegalStateException("Duplicate item"));
-
-        mockMvc.perform(post("/items")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                            {
-                                "editionId": "E-ABCDEF12",
-                                "condition": "GOOD",
-                                "description": "Nice copy"
-                            }
-                            """))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void shouldReturn422WhenGetItemByIdThrowsIllegalArgument() throws Exception {
-        when(itemService.getItemById(any()))
-                .thenThrow(new IllegalArgumentException("Invalid id format"));
-
-        mockMvc.perform(get("/items/INVALID-FORMAT"))
-                .andExpect(status().isUnprocessableEntity());
-    }
-
-    @Test
     void shouldReturn422WhenGetLibraryItemsThrowsIllegalArgument() throws Exception {
         when(libraryService.getItemIdsInLibrary(any()))
                 .thenThrow(new IllegalArgumentException("Invalid user id"));
@@ -247,7 +248,7 @@ class ItemRestControllerTest {
                         .param("email", "pedro@aeiou.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath("$._links.items").exists()); // ← mata linha 67
+                .andExpect(jsonPath("$._links.items").exists());
     }
 
     @Test
