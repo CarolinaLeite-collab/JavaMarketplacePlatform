@@ -5,6 +5,7 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
@@ -14,16 +15,35 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Year;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ItemResponseDTOMapperTest {
 
+    private ItemResponseDTOMapper buildMapper(Edition editionDouble,
+                                              Publication publicationDouble,
+                                              Author authorDouble,
+                                              Genre genreDouble) {
+        IEditionRepo     editionRepo     = mock(IEditionRepo.class);
+        IPublicationRepo publicationRepo = mock(IPublicationRepo.class);
+        IAuthorRepo      authorRepo      = mock(IAuthorRepo.class);
+        IGenreRepo       genreRepo       = mock(IGenreRepo.class);
+
+        when(editionRepo.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepo.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepo.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(genreRepo.ofIdentity(any())).thenReturn(Optional.of(genreDouble));
+
+        return new ItemResponseDTOMapper(editionRepo, publicationRepo, authorRepo, genreRepo);
+    }
+
     @Test
-    void toDTOReturnsCorrectDTOWithAllFields() {
+    void toModelReturnsCorrectDTOWithAllFields() {
         // Arrange
         RequestContextHolder.setRequestAttributes(
                 new ServletRequestAttributes(new MockHttpServletRequest()));
@@ -69,9 +89,10 @@ class ItemResponseDTOMapperTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenre()).thenReturn("Fiction");
 
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+
         // Act
-        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper();
-        ItemResponseDTO dto = mapper.toResponseDTO(itemDouble, editionDouble, publicationDouble, authorDouble, genreDouble);
+        ItemResponseDTO dto = mapper.toModel(itemDouble);
 
         // Assert
         assertEquals("3C5D126F8B", dto.getItemId());
@@ -85,7 +106,7 @@ class ItemResponseDTOMapperTest {
     }
 
     @Test
-    void toDTOWithNoIdentifierReturnsCorrectDTO() {
+    void toModelWithNoIdentifierReturnsCorrectDTO() {
         // Arrange
         RequestContextHolder.setRequestAttributes(
                 new ServletRequestAttributes(new MockHttpServletRequest()));
@@ -131,9 +152,10 @@ class ItemResponseDTOMapperTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenre()).thenReturn("Fiction");
 
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+
         // Act
-        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper();
-        ItemResponseDTO dto = mapper.toResponseDTO(itemDouble, editionDouble, publicationDouble, authorDouble, genreDouble);
+        ItemResponseDTO dto = mapper.toModel(itemDouble);
 
         // Assert
         assertEquals("no identifier", dto.getIdentifier());
