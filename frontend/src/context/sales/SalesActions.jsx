@@ -48,7 +48,7 @@ export function clearSalesMessages() {
 
 export async function getMyLibraryItems(dispatch) {
     try {
-        const result = await apiClient.getLibrary();
+        const result = await apiClient.getMyLibraryItemsForSale();
         dispatch(getLibraryItemsSuccess(result));
     } catch (e) {
         dispatch(getLibraryItemsError(extractErrorMessage(e)));

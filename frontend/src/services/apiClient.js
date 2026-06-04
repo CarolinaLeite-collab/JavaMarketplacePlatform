@@ -119,6 +119,7 @@ export const apiClient = {
     getListsOptions: () => optionsByPath('/my-lists'),
     getGenres: () => getPublic('/genres'),
     getLibrary: () => getPrivate('/my-library/'),
+    getMyLibraryItemsForSale: () => getPrivate('/items/my-library'),
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),

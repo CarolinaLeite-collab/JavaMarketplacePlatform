@@ -19,19 +19,23 @@ function mapLibraryItem(item) {
         value: item.itemId,
         label: item.title,
         picture: item.picture,
-        href: item._links?.self?.href ?? null,
+        href: item.links?.find((link) => link.rel === 'self')?.href ?? null,
     };
 }
-
 
 export function salesReducer(state, action) {
     switch (action.type) {
         case GET_LIBRARY_ITEMS_SUCCESS: {
-            const items = action.payload?._embedded?.libraryItemSummaryDTOList ?? [];
+            const items = action.payload ?? [];
+
+            const notOnSaleItems = items.filter(
+                (item) => item.saleStatus === 'NotOnSale'
+            );
+
             return {
                 ...state,
                 error: null,
-                libraryItems: items.map(mapLibraryItem),
+                libraryItems: notOnSaleItems.map(mapLibraryItem),
             };
         }
 
