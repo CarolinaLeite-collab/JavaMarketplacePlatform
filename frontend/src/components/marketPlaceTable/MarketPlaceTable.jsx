@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import {
-    Icon24Hours,
-    Icon3dCubeSphere, IconAddressBook,
     IconChevronDown,
     IconChevronUp,
     IconSearch,
@@ -20,6 +18,7 @@ import {
     UnstyledButton,
 } from '@mantine/core';
 import classes from './MarketPlaceTable.module.css';
+
 
 function Th({ children, reversed, sorted, onSort, width }) {
     const Icon = sorted ? (reversed ? IconChevronUp : IconChevronDown) : IconSelector;
@@ -90,6 +89,7 @@ export function MarketPlaceTable({
     showAuctions,
     onShowDirectSalesChange,
     onShowAuctionsChange,
+    canSeePrice,
 }) {
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState(null);
@@ -115,7 +115,7 @@ export function MarketPlaceTable({
             <Table.Td>{item.item}</Table.Td>
             <Table.Td>{item.genreName}</Table.Td>
             <Table.Td>{item.type}</Table.Td>
-            <Table.Td>{item.price}</Table.Td>
+            {canSeePrice && <Table.Td>{item.price}</Table.Td>}
         </Table.Tr>
     ));
 
@@ -177,14 +177,16 @@ export function MarketPlaceTable({
                             >
                                 Type
                             </Th>
-                            <Th
-                                width="22%"
-                                sorted={sortBy === 'price'}
-                                reversed={reverseSortDirection}
-                                onSort={() => setSorting('price')}
-                            >
-                                Price
-                            </Th>
+                            {canSeePrice && (
+                                <Th
+                                    width="22%"
+                                    sorted={sortBy === 'price'}
+                                    reversed={reverseSortDirection}
+                                    onSort={() => setSorting('price')}
+                                >
+                                    Price
+                                </Th>
+                            )}
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
@@ -192,7 +194,7 @@ export function MarketPlaceTable({
                             rows
                         ) : (
                             <Table.Tr>
-                                <Table.Td colSpan={4}>
+                                <Table.Td colSpan={canSeePrice ? 4 : 3}>
                                     <Text fw={500} ta="center">Nothing found</Text>
                                 </Table.Td>
                             </Table.Tr>
