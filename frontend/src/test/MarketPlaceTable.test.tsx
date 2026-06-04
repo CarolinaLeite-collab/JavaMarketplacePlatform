@@ -1,4 +1,4 @@
-import {render, screen} from '@/test-utils';
+import { render, screen, within } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import {MarketPlaceTable} from '../components/marketPlaceTable/MarketPlaceTable';
 
@@ -29,6 +29,13 @@ function renderTable(overrides = {}) {
             {...overrides}
         />
     );
+}
+
+function getRenderedItemNames() {
+    return screen
+        .getAllByRole('row')
+        .slice(1)
+        .map((row) => within(row).getAllByRole('cell')[0].textContent);
 }
 
 describe('MarketPlaceTable', () => {
@@ -97,6 +104,15 @@ describe('MarketPlaceTable', () => {
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
+    });
+
+    it('sorts items by genre when the header is clicked', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        await user.click(screen.getByRole('button', { name: /genre/i }));
+
+        expect(getRenderedItemNames()).toEqual(['Book 1', 'Book 3', 'Book 2']);
     });
 
     it('hides the price column when user cannot see prices', () => {

@@ -1,15 +1,27 @@
 import {render, screen, waitFor} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
+import AppContext from '../context/AppContext';
+import { useUser } from '../context/UserContext';
 import Marketplace from '../pages/Marketplace/Marketplace';
 import {apiClient} from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
         getDirectSales: vi.fn(),
+        getByHref: vi.fn(),
         getGenres: vi.fn(),
         getItemById: vi.fn(),
     },
 }));
+
+vi.mock('../context/UserContext', async () => {
+    const actual = await vi.importActual('../context/UserContext');
+
+    return {
+        ...actual,
+        useUser: vi.fn(),
+    };
+});
 
 const directSales = [
     {
@@ -44,21 +56,55 @@ const itemDetails = {
     },
 };
 
+function renderMarketplace({ appState = {} } = {}) {
+    return render(
+        <AppContext.Provider
+            value={{
+                state: {
+                    app: {
+                        myListsHref: null,
+                        createListHref: null,
+                        genresHref: null,
+                        libraryHref: null,
+                        directSalesHref: null,
+                        directSalesWithoutPriceHref: null,
+                        ...appState,
+                    },
+                    lists: {
+                        lists: [],
+                        genres: [],
+                        error: null,
+                    },
+                },
+                dispatch: vi.fn(),
+            }}
+        >
+            <Marketplace />
+        </AppContext.Provider>
+    );
+}
+
 describe('Marketplace', () => {
     beforeEach(() => {
+        vi.clearAllMocks();
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'pedro@aeiou.com',
+            toggleUser: vi.fn(),
+        });
         apiClient.getDirectSales.mockResolvedValue(directSales);
+        apiClient.getByHref.mockResolvedValue(directSales);
         apiClient.getGenres.mockResolvedValue(genres);
         apiClient.getItemById.mockImplementation(async (itemId) => itemDetails[itemId]);
     });
 
-    it('passes accessibility checks', async () => {
-        render(<Marketplace />);
+    it('renders marketplace items after loading', async () => {
+        renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
 
     it('renders the page title and subtitle', async () => {
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(screen.getByRole('heading', { name: /marketplace/i })).toBeInTheDocument();
         expect(screen.getByText(/check all sales:/i)).toBeInTheDocument();
@@ -66,7 +112,7 @@ describe('Marketplace', () => {
     });
 
     it('loads direct sales and item details from the backend client', async () => {
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
@@ -77,21 +123,26 @@ describe('Marketplace', () => {
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-002');
     });
 
-    it('filters items when direct sale checkbox is selected', async () => {
-        const user = userEvent.setup();
-        render(<Marketplace />);
+    it('shows the loading state while marketplace data is being fetched', async () => {
+        let resolveDirectSales;
+        apiClient.getDirectSales.mockReturnValue(
+            new Promise((resolve) => {
+                resolveDirectSales = resolve;
+            })
+        );
+
+        renderMarketplace();
+
+        expect(screen.getByText(/loading marketplace/i)).toBeInTheDocument();
+
+        resolveDirectSales(directSales);
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
-
-        await user.click(screen.getByRole('checkbox', { name: /direct sale/i }));
-
-        expect(screen.getByText('Book 1')).toBeInTheDocument();
-        expect(screen.getByText('Book 2')).toBeInTheDocument();
     });
 
     it('filters items by search text', async () => {
         const user = userEvent.setup();
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
@@ -107,7 +158,7 @@ describe('Marketplace', () => {
     it('shows an error message when marketplace data fails to load', async () => {
         apiClient.getDirectSales.mockRejectedValueOnce(new Error('500'));
 
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
         await waitFor(() => {
@@ -124,7 +175,7 @@ describe('Marketplace', () => {
             return itemDetails[itemId];
         });
 
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
         expect(screen.queryByText('Book 2')).not.toBeInTheDocument();
@@ -134,7 +185,7 @@ describe('Marketplace', () => {
     it('shows an error message when genres fail to load', async () => {
         apiClient.getGenres.mockRejectedValueOnce(new Error('500'));
 
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
     });
@@ -148,8 +199,27 @@ describe('Marketplace', () => {
             return itemDetails[itemId];
         });
 
-        render(<Marketplace />);
+        renderMarketplace();
 
         expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
+    });
+
+    it('uses the guest marketplace feed and hides prices for guest users', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'guest@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderMarketplace({
+            appState: {
+                directSalesWithoutPriceHref: '/direct-sales/public',
+            },
+        });
+
+        expect(await screen.findByText('Book 1')).toBeInTheDocument();
+        expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/public');
+        expect(apiClient.getDirectSales).not.toHaveBeenCalled();
+        expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
+        expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
     });
 });
