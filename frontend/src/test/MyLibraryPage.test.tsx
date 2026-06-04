@@ -1,19 +1,18 @@
 import { axe, render, screen, within } from '@/test-utils';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
+import { waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
-import userEvent from "@testing-library/user-event";
 import { LibraryContext } from '../context/AppContext';
 import * as LibraryActions from '../context/library/LibraryActions';
-import { beforeEach } from 'vitest';
 
 const mockState = {
     items: [],
     details: {},
     error: null,
-
     libraryHref: null,
     addItemHref: null,
-
     sales: {
         libraryItems: [],
         error: null,
@@ -36,7 +35,8 @@ vi.mock('../components/accordion/ItemAccordion', () => ({
 }));
 
 vi.mock('../context/library/LibraryActions', () => ({
-    getLibrary: vi.fn(), getLibraryOptions: vi.fn(),
+    getLibrary: vi.fn(),
+    getLibraryOptions: vi.fn(),
 }));
 
 beforeEach(() => {
@@ -87,70 +87,46 @@ describe('MyLibraryPage', () => {
         ).toBeInTheDocument();
     });
 
-    it('renders the add item button', () => {
+    it('renders buttons', () => {
         renderWithLibraryProvider();
 
-        expect(
-            screen.getByRole('button', { name: /add item/i })
-        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /add item/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /create a sale/i })).toBeInTheDocument();
     });
 
-    it('renders the create a sale button', () => {
-        renderWithLibraryProvider();
-
-        expect(
-            screen.getByRole('button', { name: /create a sale/i })
-        ).toBeInTheDocument();
-    });
-
-    it('opens the add item modal when clicking the add item button', async () => {
+    it('opens add item modal', async () => {
         const user = userEvent.setup();
 
         renderWithLibraryProvider();
 
-        await user.click(
-            screen.getByRole('button', { name: /add item/i })
-        );
-
-        const dialog = await within(document.body).findByRole('dialog');
-        expect(dialog).toBeInTheDocument();
-    });
-
-    it('opens the create new sale modal when clicking the create a sale button', async () => {
-        const user = userEvent.setup();
-
-        renderWithLibraryProvider();
-
-        await user.click(screen.getByRole('button', { name: /create a sale/i }));
-
-        const dialog = await within(document.body).findByRole('dialog');
-
-        expect(dialog).toBeInTheDocument();
-    });
-
-    it('opens the create sale modal when clicking create sale button', async () => {
-        const user = userEvent.setup();
-
-        renderWithLibraryProvider();
-
-        await user.click(
-            screen.getByRole('button', { name: /create a sale/i })
-        );
+        await user.click(screen.getByRole('button', { name: /add item/i }));
 
         expect(
             await within(document.body).findByRole('dialog')
         ).toBeInTheDocument();
     });
 
-    it('calls getLibraryOptions on mount', () => {
+    it('opens create sale modal', async () => {
+        const user = userEvent.setup();
+
         renderWithLibraryProvider();
 
+        await user.click(screen.getByRole('button', { name: /create a sale/i }));
+
         expect(
-            LibraryActions.getLibraryOptions
-        ).toHaveBeenCalled();
+            await within(document.body).findByRole('dialog')
+        ).toBeInTheDocument();
     });
 
-    it('loads library when libraryHref exists', () => {
+    it('calls getLibraryOptions on mount', async () => {
+        renderWithLibraryProvider();
+
+        await waitFor(() => {
+            expect(LibraryActions.getLibraryOptions).toHaveBeenCalled();
+        });
+    });
+
+    it('calls getLibrary when libraryHref exists', async () => {
         const state = {
             ...mockState,
             libraryHref: 'http://localhost:8081/my-library'
@@ -158,23 +134,23 @@ describe('MyLibraryPage', () => {
 
         renderWithLibraryProvider(state);
 
-        expect(
-            LibraryActions.getLibrary
-        ).toHaveBeenCalledWith(
-            expect.any(Function),
-            'http://localhost:8081/my-library'
-        );
+        await waitFor(() => {
+            expect(LibraryActions.getLibrary).toHaveBeenCalledWith(
+                expect.any(Function),
+                'http://localhost:8081/my-library'
+            );
+        });
     });
 
-    it('does not load library when libraryHref is null', () => {
+    it('does NOT call getLibrary when libraryHref is null', async () => {
         renderWithLibraryProvider();
 
-        expect(
-            LibraryActions.getLibrary
-        ).not.toHaveBeenCalled();
+        await waitFor(() => {
+            expect(LibraryActions.getLibrary).not.toHaveBeenCalled();
+        });
     });
 
-    it('opens and closes both modals independently', async () => {
+    it('opens and shows modals independently', async () => {
         const user = userEvent.setup();
 
         renderWithLibraryProvider();
@@ -182,6 +158,8 @@ describe('MyLibraryPage', () => {
         await user.click(screen.getByRole('button', { name: /add item/i }));
         await user.click(screen.getByRole('button', { name: /create a sale/i }));
 
-        expect(within(document.body).getAllByRole('dialog').length).toBeGreaterThan(0);
+        expect(
+            within(document.body).getAllByRole('dialog').length
+        ).toBeGreaterThan(0);
     });
 });

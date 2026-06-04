@@ -23,7 +23,7 @@ export default function MyLibraryPage() {
     }, [dispatch]);
 
     useEffect(() => {
-        if (state.libraryHref) {
+        if (state.libraryHref && state.libraryHref.includes('/my-library')) {
             getLibrary(dispatch, state.libraryHref);
         }
     }, [dispatch, state.libraryHref]);
