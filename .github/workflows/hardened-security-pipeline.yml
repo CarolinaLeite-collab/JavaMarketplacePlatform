@@ -195,7 +195,7 @@ jobs:
       - name: Run Semgrep config rules
         run: |
           semgrep scan \
-            --config .semgrep/spring-misconfig.yml \
+            --config .github/semgrep/spring-misconfig.yml \
             --json --output config-scan-report.json \
             --error \
             src/
