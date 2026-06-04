@@ -28,19 +28,13 @@ public class AuthorizationPolicy {
     }
 
     /** Any authenticated user may see a private list. */
-    public boolean canSeeList(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
-    }
+    public boolean canSeeList(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may add an item to a private list. */
-    public boolean canAddItemTo(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
-    }
+    public boolean canAddItemTo(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may delete a private list. */
-    public boolean canDeleteList(User user) {
-        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
-    }
+    public boolean canDeleteList(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may put items for sale. */
     public boolean canSell(User user) {
@@ -130,6 +124,16 @@ public class AuthorizationPolicy {
     /** Any authenticated user may create an edition. */
     public boolean canCreateEdition(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
-    /** Any authenticated user may see items' prices. */
-    public boolean cannotSeePrice(User user) {return user.hasRole(Role.NONREGISTRED);}
+    /** A non registered user can´t see items' prices. */
+    public boolean cannotSeePrice(User user) { return user.hasRole(Role.NONREGISTRED);}
+
+    /** Any authenticated user may list countries. */
+    public boolean canListCountries(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may view a specific country. */
+    public boolean canGetCountry(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Only admins may create a country. */
+    public boolean canCreateCountry(User user) { return user.hasRole(Role.ADMIN);}
+
 }

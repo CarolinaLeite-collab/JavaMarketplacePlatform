@@ -295,5 +295,85 @@ class AuthorizationPolicyTest {
         assertTrue(_authorizationPolicy.cannotSeePrice(_guestDouble));
     }
 
+    @Test
+    void userCanListCountries() {
+        // Act
+        boolean result = _authorizationPolicy.canListCountries(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanListCountries() {
+        // Act
+        boolean result = _authorizationPolicy.canListCountries(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void guestCannotListCountries() {
+        // Act
+        boolean result = _authorizationPolicy.canListCountries(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanGetCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canGetCountry(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanGetCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canGetCountry(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void guestCannotGetCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canGetCountry(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreateCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateCountry(_userDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void adminCanCreateCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateCountry(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void guestCannotCreateCountry() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateCountry(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
 
 }
