@@ -84,6 +84,17 @@ describe('LibraryActions', () => {
             });
         });
 
+        it('dispatches FETCH_LIBRARY_SUCCESS with empty array when response has no embedded items', async () => {
+            apiClient.getByHref.mockResolvedValue({});
+
+            await getLibrary(dispatch, 'http://fake-url');
+
+            expect(dispatch).toHaveBeenCalledWith({
+                type: FETCH_LIBRARY_SUCCESS,
+                payload: [],
+            });
+        });
+
         it('dispatches FETCH_LIBRARY_ERROR on failure', async () => {
             apiClient.getByHref.mockRejectedValue(
                 new Error('network error')
@@ -94,6 +105,17 @@ describe('LibraryActions', () => {
             expect(dispatch).toHaveBeenCalledWith({
                 type: FETCH_LIBRARY_ERROR,
                 payload: 'Error: network error',
+            });
+        });
+
+        it('dispatches FETCH_LIBRARY_ERROR when href is missing', async () => {
+            await getLibrary(dispatch, null);
+
+            expect(apiClient.getByHref).not.toHaveBeenCalled();
+
+            expect(dispatch).toHaveBeenCalledWith({
+                type: FETCH_LIBRARY_ERROR,
+                payload: 'Missing library href',
             });
         });
     });

@@ -8,6 +8,11 @@ export const FETCH_DETAIL_ERROR     = 'FETCH_DETAIL_ERROR';
 export const GET_LIBRARY_OPTIONS_SUCCESS = 'GET_LIBRARY_OPTIONS_SUCCESS';
 export const GET_LIBRARY_OPTIONS_ERROR   = 'GET_LIBRARY_OPTIONS_ERROR';
 
+export const ADD_ITEM_SUCCESS = 'ADD_ITEM_SUCCESS';
+export const ADD_ITEM_ERROR = 'ADD_ITEM_ERROR';
+
+
+
 export function fetchLibrarySuccess(items) {
     return { type: FETCH_LIBRARY_SUCCESS, payload: items };
 }
@@ -24,16 +29,29 @@ export function fetchDetailError(error) {
     return { type: FETCH_DETAIL_ERROR, payload: error };
 }
 
+export function addItemSuccess(item) {
+    return { type: ADD_ITEM_SUCCESS, payload: item };
+}
+
+export function addItemError(error) {
+    return { type: ADD_ITEM_ERROR, payload: error };
+}
+
 export async function getLibrary(dispatch, href) {
+
+    if (!href) {
+        dispatch(fetchLibraryError('Missing library href'));
+        return;
+    }
+
     try {
         const data = await apiClient.getByHref(href);
 
-        console.log("LIBRARY RESPONSE:", data);
+        const embedded = data?._embedded;
+        const key = embedded ? Object.keys(embedded)[0] : null;
+        const items = key ? embedded[key] : [];
 
-        const embedded = data._embedded;
-        const key = Object.keys(embedded)[0];
-
-        dispatch(fetchLibrarySuccess(embedded[key]));
+        dispatch(fetchLibrarySuccess(items));
     } catch (e) {
         dispatch(fetchLibraryError(String(e)));
     }
