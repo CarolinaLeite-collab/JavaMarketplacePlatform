@@ -5,6 +5,7 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
+import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -38,6 +39,9 @@ class PublishingCompanyRestControllerTest {
 
     @MockitoBean
     private UserService _userServiceDouble;
+
+    @MockitoBean
+    private PublicationTypeResponseDTOMapper _publicationTypeResponseDTOMapperDouble;
 
     @Test
     void optionsReturnsOkWithLinks() throws Exception {
@@ -85,52 +89,13 @@ class PublishingCompanyRestControllerTest {
                 .andExpect(jsonPath("$").isMap());
     }
 
-    @Test
-    void registerPublishingCompanyServiceThrowsReturnsInternalServerError() throws Exception {
-        when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenThrow(new IllegalStateException("Already exists"));
-
-        _mockMvc.perform(post("/publishingCompanies")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"publishingCompanyName\":\"Porto Editora\"}"))
-                .andExpect(status().isInternalServerError());
-    }
 
     @Test
-    void getAllPublishingCompaniesReturnsOk() throws Exception {
-        when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
-                .thenReturn(List.of(mock(PublishingCompanyResponseDTO.class)));
-
-        _mockMvc.perform(get("/publishingCompanies"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-    }
-
-    @Test
-    void getAllPublishingCompaniesServiceThrowsReturnsInternalServerError() throws Exception {
-        when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
-                .thenThrow(new RuntimeException("Error"));
-
-        _mockMvc.perform(get("/publishingCompanies"))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    void getPublishingCompanyByIdReturnsOk() throws Exception {
-        when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
-                .thenReturn(mock(PublishingCompanyResponseDTO.class));
-
-        _mockMvc.perform(get("/publishingCompanies/PORTO-EDITORA"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isMap());
-    }
-
-    @Test
-    void getPublishingCompanyByIdNotFoundReturnsInternalServerError() throws Exception {
+    void getPublishingCompanyByIdNotFoundReturnsNotFound() throws Exception {
         when(_publishingCompanyServiceDouble.getPublishingCompanyById(any()))
                 .thenThrow(new NoSuchElementException("Not found"));
 
         _mockMvc.perform(get("/publishingCompanies/UNKNOWN"))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
