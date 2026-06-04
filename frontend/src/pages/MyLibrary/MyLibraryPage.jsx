@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { Button, Group } from "@mantine/core";
 import {IconPlus, IconTag} from "@tabler/icons-react";
@@ -9,9 +9,14 @@ import {AddItemModal} from "@/components/addItemModal/AddItemModal.tsx";
 import { CreateSaleModal } from "@/components/createSaleModal/CreateSaleModal.tsx";
 
 import { useLibrary } from '../../context/AppContext';
-import { getLibrary, getLibraryOptions } from '../../context/library/LibraryActions';
+import { getLibrary } from '../../context/library/LibraryActions';
+
+import AppContext from "../../context/AppContext";
 
 export default function MyLibraryPage() {
+
+    const { state: appState } = useContext(AppContext);
+    const { libraryHref } = appState.app;
 
     const { state, dispatch } = useLibrary();
 
@@ -19,15 +24,10 @@ export default function MyLibraryPage() {
     const [createSaleOpened, { open: openCreateSale, close: closeCreateSale }] = useDisclosure(false);
 
     useEffect(() => {
-        getLibraryOptions(dispatch);
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (state.libraryHref && state.libraryHref.includes('/my-library')) {
-            getLibrary(dispatch, state.libraryHref);
+        if (libraryHref) {
+            getLibrary(dispatch, libraryHref);
         }
-    }, [dispatch, state.libraryHref]);
-
+    }, [dispatch, libraryHref]);
     return (
         <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
             <Group justify="center" mt={0}>
@@ -62,7 +62,9 @@ export default function MyLibraryPage() {
                 onClose={closeAddItem}
                 onItemAdded={() => {
                     closeAddItem();
-                    getLibrary(dispatch, state.libraryHref);
+                    if (libraryHref) {
+                        getLibrary(dispatch, libraryHref);
+                    }
                 }}
             />
 
