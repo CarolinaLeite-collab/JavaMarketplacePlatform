@@ -1,48 +1,16 @@
-package MITELOVERS.dto;
+package MITELOVERS.dto.response;
 
-import MITELOVERS.Action;
-import MITELOVERS.Link;
+import lombok.AllArgsConstructor;
 import lombok.Generated;
+import lombok.Getter;
+import org.springframework.hateoas.RepresentationModel;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Getter
 @Generated
-public class CountryDTO {
+@AllArgsConstructor
+public class CountryResponseDTO extends RepresentationModel<CountryResponseDTO> {
 
-    private final String _id;
-    private final String _name;
-
-    private final List<Link> links = new ArrayList<>();
-    private final List<Action> actions = new ArrayList<>();
-
-    public CountryDTO(String id, String name) {
-        _id = id;
-        _name = name;
-    }
-
-    public String id() {
-        return _id;
-    }
-
-    public String name() {
-        return _name;
-    }
-
-    public List<Link> links() {
-        return List.copyOf(links);
-    }
-
-    public void addLink(Link link) {
-        links.add(link);
-    }
-
-    public List<Action> actions() {
-        return List.copyOf(actions);
-    }
-
-    public void addAction(Action action) {
-        actions.add(action);
-    }
+    private final String countryId;
+    private final String name;
 
 }

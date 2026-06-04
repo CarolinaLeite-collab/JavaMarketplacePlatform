@@ -1,39 +1,23 @@
 package MITELOVERS.mapper;
 
-import MITELOVERS.Link;
 import MITELOVERS.domain.country.Country;
-import MITELOVERS.dto.CountryDTO;
+import MITELOVERS.dto.response.CountryResponseDTO;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * Assembles Country domain objects into CountryResponseDTO instances.
+ */
+
 @Component
-public class CountryMapper {
+public class CountryResponseDTOMapper implements RepresentationModelAssembler<Country, CountryResponseDTO> {
 
-    // Maps a single Country to CountryDTO
-    public CountryDTO toDTO(Country country) {
+    @Override
+    public CountryResponseDTO toModel(Country country) {
 
-        CountryDTO dto = new CountryDTO(
+        return new CountryResponseDTO(
                 country.identity().toString(),
                 country.name().toString()
         );
-
-        // Links (Get)
-        dto.addLink(new Link("self", "/countries/" + dto.id()));
-
-//        // Actions
-//        dto.addAction(new Action(
-//                "updateCountry",
-//                "PUT",
-//                "/countries/" + dto.id(),
-//                CountryUpdateCommand.schema()
-//        ));
-//
-//        dto.addAction(new Action(
-//                "deleteCountry",
-//                "DELETE",
-//                "/countries/" + dto.id()
-//        ));
-
-        return dto;
     }
-
 }
