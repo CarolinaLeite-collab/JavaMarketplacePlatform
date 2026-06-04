@@ -190,6 +190,7 @@ jobs:
   config-scan:
     name: Insecure Config Scan (Semgrep)
     runs-on: ubuntu-latest
+    needs: gitleaks
 
     permissions:
       contents: read
