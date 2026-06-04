@@ -1,4 +1,4 @@
-package MITELOVERS.dto;
+package MITELOVERS.mapper;
 
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
@@ -8,17 +8,16 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ItemResponseDTO;
-import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.Year;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -160,5 +159,94 @@ class ItemResponseDTOMapperTest {
         // Assert
         assertEquals("no identifier", dto.getIdentifier());
         assertTrue(dto.hasLinks());
+    }
+
+    @Test
+    void toModelEditionNotFoundThrowsNoSuchElementException() {
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        IEditionRepo editionRepo = mock(IEditionRepo.class);
+        when(editionRepo.ofIdentity(any())).thenReturn(Optional.empty());
+
+        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
+                editionRepo,
+                mock(IPublicationRepo.class),
+                mock(IAuthorRepo.class),
+                mock(IGenreRepo.class)
+        );
+
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> mapper.toModel(mock(Item.class)));
+
+        assertEquals("Edition does not exist in the repository", ex.getMessage());
+    }
+
+    @Test
+    void toModelPublicationNotFoundThrowsNoSuchElementException() {
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        IEditionRepo editionRepo = mock(IEditionRepo.class);
+        IPublicationRepo publicationRepo = mock(IPublicationRepo.class);
+        when(editionRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Edition.class)));
+        when(publicationRepo.ofIdentity(any())).thenReturn(Optional.empty());
+
+        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
+                editionRepo, publicationRepo,
+                mock(IAuthorRepo.class), mock(IGenreRepo.class)
+        );
+
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> mapper.toModel(mock(Item.class)));
+
+        assertEquals("Publication does not exist in the repository", ex.getMessage());
+    }
+
+    @Test
+    void toModelAuthorNotFoundThrowsNoSuchElementException() {
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        IEditionRepo editionRepo = mock(IEditionRepo.class);
+        IPublicationRepo publicationRepo = mock(IPublicationRepo.class);
+        IAuthorRepo authorRepo = mock(IAuthorRepo.class);
+        when(editionRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Edition.class)));
+        when(publicationRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
+        when(authorRepo.ofIdentity(any())).thenReturn(Optional.empty());
+
+        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
+                editionRepo, publicationRepo,
+                authorRepo, mock(IGenreRepo.class)
+        );
+
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> mapper.toModel(mock(Item.class)));
+
+        assertEquals("Author does not exist in the repository", ex.getMessage());
+    }
+
+    @Test
+    void toModelGenreNotFoundThrowsNoSuchElementException() {
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        IEditionRepo editionRepo = mock(IEditionRepo.class);
+        IPublicationRepo publicationRepo = mock(IPublicationRepo.class);
+        IAuthorRepo authorRepo = mock(IAuthorRepo.class);
+        IGenreRepo genreRepo = mock(IGenreRepo.class);
+        when(editionRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Edition.class)));
+        when(publicationRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
+        when(authorRepo.ofIdentity(any())).thenReturn(Optional.of(mock(Author.class)));
+        when(genreRepo.ofIdentity(any())).thenReturn(Optional.empty());
+
+        ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
+                editionRepo, publicationRepo, authorRepo, genreRepo
+        );
+
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> mapper.toModel(mock(Item.class)));
+
+        assertEquals("Genre does not exist in the repository", ex.getMessage());
     }
 }
