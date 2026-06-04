@@ -54,11 +54,16 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
                 .orElseThrow(() -> new NoSuchElementException(
                         "Genre does not exist in the repository"));
 
+        String pictureUrl = item.getPicture() != null
+                ? item.getPicture().toString()
+                : null;
+
         ItemResponseDTO dto = new ItemResponseDTO(
                 item.identity().toString(),
                 item.getCondition().toString(),
                 item.getDescription().toString(),
                 item.getSaleStatus().toString(),
+                pictureUrl,
                 edition.getEditionId().toString(),
                 edition.getIdentifier().toString(),
                 edition.getEditionLanguage().toString(),
