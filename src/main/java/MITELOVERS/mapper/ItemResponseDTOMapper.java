@@ -20,6 +20,24 @@ import java.util.Objects;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * Mapper responsible for assembling an {@link Item} domain object
+ * into an {@link ItemResponseDTO}.
+ *
+ * <p>
+ * Implements {@link RepresentationModelAssembler} to follow the team's
+ * mapper convention. Resolves all related domain objects — {@link Edition},
+ * {@link Publication}, {@link Author}, and {@link Genre} — directly from
+ * their respective repositories, keeping the application service layer
+ * free of DTO concerns.
+ * </p>
+ *
+ * <p>
+ * Adds a self-link to each assembled DTO pointing to the item's
+ * dedicated GET endpoint.
+ * </p>
+ */
+
 @Component
 public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item, ItemResponseDTO> {
 
