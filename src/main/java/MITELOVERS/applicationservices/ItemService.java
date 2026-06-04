@@ -36,15 +36,7 @@ public class ItemService {
         _iEditionRepo = Objects.requireNonNull(iEditionRepo, "EditionRepo is required");
     }
 
-    /**
-     * Registers a new item for the given edition.
-     *
-     * @param editionId   the identifier of an existing edition
-     * @param condition   the physical condition of the item
-     * @param description a description of the item
-     * @return the registered Item domain object
-     * @throws NoSuchElementException if the edition does not exist
-     */
+
     @Transactional
     public Item registerItem(EditionId editionId,
                              Condition condition,
@@ -66,24 +58,14 @@ public class ItemService {
         }
     }
 
-    /**
-     * Returns all items currently in the repository.
-     *
-     * @return list of Item domain objects
-     */
+
     public List<Item> getAllItems() {
         List<Item> result = new ArrayList<>();
         _iItemRepo.findAll().forEach(result::add);
         return result;
     }
 
-    /**
-     * Returns a single item by its string identifier.
-     *
-     * @param itemId the item's SKU string
-     * @return the Item domain object
-     * @throws NoSuchElementException if the item does not exist
-     */
+
     public Item getItemById(String itemId) {
         return _iItemRepo.ofIdentity(new ItemId(itemId))
                 .orElseThrow(() -> new NoSuchElementException(
