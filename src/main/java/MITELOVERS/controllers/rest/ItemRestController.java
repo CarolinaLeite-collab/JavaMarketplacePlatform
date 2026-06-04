@@ -54,9 +54,7 @@ public class ItemRestController {
         _mapper           = mapper;
     }
 
-    /**
-     * Returns available HATEOAS links for the authenticated user.
-     */
+
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
@@ -69,9 +67,7 @@ public class ItemRestController {
         return ResponseEntity.ok(model);
     }
 
-    /**
-     * Registers a new item in the system for the given edition.
-     */
+
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> registerItem(@Valid @RequestBody ItemRequestDTO info) {
@@ -85,9 +81,7 @@ public class ItemRestController {
         return new ResponseEntity<>(_mapper.toModel(item), HttpStatus.CREATED);
     }
 
-    /**
-     * Returns all items currently in the repository.
-     */
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponseDTO>> getAllItems() {
 
@@ -98,9 +92,7 @@ public class ItemRestController {
         return ResponseEntity.ok(items);
     }
 
-    /**
-     * Returns a single item by its identifier.
-     */
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable String id) {
 
@@ -108,9 +100,7 @@ public class ItemRestController {
                 _mapper.toModel(_itemService.getItemById(id)), HttpStatus.OK);
     }
 
-    /**
-     * Returns all items in the authenticated user's library.
-     */
+
     @GetMapping(value = "/my-library", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponseDTO>> getItemsIdsInLibrary(
             @RequestHeader("X-User-Id") String userId) {
