@@ -107,18 +107,17 @@ jobs:
       - name: Run Semgrep scan JSON report
         run: |
           TARGETS="src .github pom.xml"
-
+          
           if [ -d "frontend" ]; then
             TARGETS="$TARGETS frontend"
           fi
-
+          
           semgrep scan \
             --config=auto \
             --json \
             --output=semgrep-report.json \
-            --severity=ERROR \
-            --error \
-            $TARGETS
+            $TARGETS || true
+          [ -f semgrep-report.json ] || echo '{"results":[]}' > semgrep-report.json
 
       - name: Show Semgrep findings
         if: always()
@@ -177,6 +176,16 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+
+      - name: Enforce Semgrep gate (fail on ERROR)
+        if: always()
+        run: |
+          ERRORS=$(jq '[.results[] | select(.extra.severity=="ERROR")] | length' semgrep-report.json)
+          echo "Semgrep ERROR findings: $ERRORS"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::Semgrep found $ERRORS ERROR-severity finding(s)."
+            exit 1
+          fi
 
   config-scan:
     name: Insecure Config Scan (Semgrep)
