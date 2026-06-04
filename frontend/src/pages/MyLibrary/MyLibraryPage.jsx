@@ -9,7 +9,7 @@ import {AddItemModal} from "@/components/addItemModal/AddItemModal.tsx";
 import { CreateSaleModal } from "@/components/createSaleModal/CreateSaleModal.tsx";
 
 import { useLibrary } from '../../context/AppContext';
-import { getLibrary } from '../../context/library/LibraryActions';
+import { getLibrary, getLibraryOptions } from '../../context/library/LibraryActions';
 
 export default function MyLibraryPage() {
 
@@ -19,8 +19,14 @@ export default function MyLibraryPage() {
     const [createSaleOpened, { open: openCreateSale, close: closeCreateSale }] = useDisclosure(false);
 
     useEffect(() => {
-        getLibrary(dispatch);
+        getLibraryOptions(dispatch);
     }, [dispatch]);
+
+    useEffect(() => {
+        if (state.libraryHref) {
+            getLibrary(dispatch, state.libraryHref);
+        }
+    }, [dispatch, state.libraryHref]);
 
     return (
         <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
@@ -56,7 +62,7 @@ export default function MyLibraryPage() {
                 onClose={closeAddItem}
                 onItemAdded={() => {
                     closeAddItem();
-                    getLibrary(dispatch);
+                    getLibrary(dispatch, state.libraryHref);
                 }}
             />
 

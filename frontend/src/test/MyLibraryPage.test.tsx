@@ -4,12 +4,15 @@ import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
 import userEvent from "@testing-library/user-event";
 import { LibraryContext } from '../context/AppContext';
 import * as LibraryActions from '../context/library/LibraryActions';
+import { beforeEach } from 'vitest';
 
 const mockState = {
     items: [],
     details: {},
-    loading: false,
     error: null,
+
+    libraryHref: null,
+    addItemHref: null,
 
     sales: {
         libraryItems: [],
@@ -33,8 +36,12 @@ vi.mock('../components/accordion/ItemAccordion', () => ({
 }));
 
 vi.mock('../context/library/LibraryActions', () => ({
-    getLibrary: vi.fn(),
+    getLibrary: vi.fn(), getLibraryOptions: vi.fn(),
 }));
+
+beforeEach(() => {
+    vi.clearAllMocks();
+});
 
 function renderWithLibraryProvider(state = mockState) {
     return render(
@@ -135,26 +142,36 @@ describe('MyLibraryPage', () => {
         ).toBeInTheDocument();
     });
 
-    it('calls getLibrary on mount', () => {
+    it('calls getLibraryOptions on mount', () => {
         renderWithLibraryProvider();
 
-        expect(LibraryActions.getLibrary).toHaveBeenCalled();
+        expect(
+            LibraryActions.getLibraryOptions
+        ).toHaveBeenCalled();
     });
 
-    it('reloads library when item is added', async () => {
-        const user = userEvent.setup();
+    it('loads library when libraryHref exists', () => {
+        const state = {
+            ...mockState,
+            libraryHref: 'http://localhost:8081/my-library'
+        };
 
+        renderWithLibraryProvider(state);
+
+        expect(
+            LibraryActions.getLibrary
+        ).toHaveBeenCalledWith(
+            expect.any(Function),
+            'http://localhost:8081/my-library'
+        );
+    });
+
+    it('does not load library when libraryHref is null', () => {
         renderWithLibraryProvider();
 
-        await user.click(screen.getByRole('button', { name: /add item/i }));
-
-        const modal = await within(document.body).findByRole('dialog');
-        expect(modal).toBeInTheDocument();
-
-        const props = screen.getByText('Add Item Modal');
-
-        expect(props).toBeInTheDocument();
-        expect(LibraryActions.getLibrary).toHaveBeenCalled();
+        expect(
+            LibraryActions.getLibrary
+        ).not.toHaveBeenCalled();
     });
 
     it('opens and closes both modals independently', async () => {
