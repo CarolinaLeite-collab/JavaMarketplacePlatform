@@ -4,7 +4,9 @@ import {
     FETCH_DETAIL_SUCCESS,
     FETCH_DETAIL_ERROR,
     GET_LIBRARY_OPTIONS_ERROR,
-    GET_LIBRARY_OPTIONS_SUCCESS
+    GET_LIBRARY_OPTIONS_SUCCESS,
+    ADD_ITEM_SUCCESS,
+    ADD_ITEM_ERROR
 } from './LibraryActions';
 
 export const initialState = {
@@ -40,6 +42,20 @@ export function libraryReducer(state, action) {
 
         case FETCH_LIBRARY_SUCCESS:
             return { ...state, items: action.payload.map(mapItem) };
+
+        case ADD_ITEM_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                items: [...state.items, mapItem(action.payload)]
+            };
+
+        case ADD_ITEM_ERROR:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload
+            };
 
         case FETCH_LIBRARY_ERROR:
             return { ...state, error: action.payload };

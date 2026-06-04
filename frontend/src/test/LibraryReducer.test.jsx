@@ -5,7 +5,10 @@ import {
     FETCH_DETAIL_ERROR, FETCH_DETAIL_SUCCESS,
     FETCH_LIBRARY_ERROR,
     FETCH_LIBRARY_SUCCESS,
-    GET_LIBRARY_OPTIONS_SUCCESS
+    GET_LIBRARY_OPTIONS_SUCCESS,
+    GET_LIBRARY_OPTIONS_ERROR,
+    ADD_ITEM_SUCCESS,
+    ADD_ITEM_ERROR
 } from '../context/library/LibraryActions';
 
 describe('libraryReducer', () => {
@@ -141,6 +144,97 @@ describe('libraryReducer', () => {
         const result = libraryReducer(initialState, action);
 
         expect(result.error).toBe('Failed to load details');
+    });
+
+    it('adds mapped item on ADD_ITEM_SUCCESS', () => {
+        const state = {
+            ...initialState,
+            items: [
+                {
+                    itemId: 'ITM-001',
+                    title: 'Dune',
+                    picture: null,
+                    links: []
+                }
+            ]
+        };
+
+        const action = {
+            type: ADD_ITEM_SUCCESS,
+            payload: {
+                itemId: 'ITM-002',
+                title: 'Foundation',
+                picture: 'cover.jpg',
+                _links: {
+                    self: { href: `${BASE_URL}/my-library/ITM-002` }
+                }
+            }
+        };
+
+        const result = libraryReducer(state, action);
+
+        expect(result.loading).toBe(false);
+        expect(result.items).toEqual([
+            state.items[0],
+            {
+                itemId: 'ITM-002',
+                title: 'Foundation',
+                picture: 'cover.jpg',
+                links: [
+                    {
+                        rel: 'self',
+                        href: `${BASE_URL}/my-library/ITM-002`
+                    }
+                ]
+            }
+        ]);
+    });
+
+    it('stores error and stops loading on ADD_ITEM_ERROR', () => {
+        const action = {
+            type: ADD_ITEM_ERROR,
+            payload: 'Failed to add item'
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.loading).toBe(false);
+        expect(result.error).toBe('Failed to add item');
+    });
+
+    it('stores error message on GET_LIBRARY_OPTIONS_ERROR', () => {
+        const action = {
+            type: GET_LIBRARY_OPTIONS_ERROR,
+            payload: 'Failed to load library options'
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.error).toBe('Failed to load library options');
+    });
+
+    it('maps empty links when library item has no _links', () => {
+        const action = {
+            type: FETCH_LIBRARY_SUCCESS,
+            payload: [
+                {
+                    itemId: 'ITM-003',
+                    title: 'No Links Book',
+                    picture: undefined
+                }
+            ]
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.items).toEqual([
+            {
+                itemId: 'ITM-003',
+                title: 'No Links Book',
+                picture: null,
+                links: []
+            }
+        ]);
     });
 
     it('returns current state for unknown action', () => {
