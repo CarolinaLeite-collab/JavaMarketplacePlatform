@@ -4,9 +4,6 @@ import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.country.CountryFactory;
 import MITELOVERS.domain.repository.ICountryRepo;
 import MITELOVERS.domain.valueobject.CountryId;
-import MITELOVERS.dto.CountryDTO;
-import MITELOVERS.mapper.CountryMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,102 +22,83 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CountryServiceTest {
 
+    @Mock
+    private ICountryRepo _countryRepoDouble;
+
+    @Mock
+    private CountryFactory _factoryDouble;
+
     @InjectMocks
     private CountryService _service;
 
-    @Mock
-    private ICountryRepo _repo;
+    @Test
+    void createCountry_whenCountryDoesNotExist_savesAndReturnsCountry() {
+        // Arrange
+        CountryId id = mock(CountryId.class);
+        Country countryDouble = mock(Country.class);
 
-    @Mock
-    private CountryFactory _factory;
+        when(_factoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
+        when(countryDouble.identity()).thenReturn(id);
+        when(_countryRepoDouble.containsOfIdentity(id)).thenReturn(false);
+        when(_countryRepoDouble.save(countryDouble)).thenReturn(countryDouble);
 
-    @Mock
-    private CountryMapper _mapper;
+        // Act
+        Country result = _service.createCountry("Portugal");
 
-    @BeforeEach
-    void setup() {
-
-        _service = new CountryService(_repo, _factory, _mapper);
+        // Assert
+        assertSame(countryDouble, result);
     }
 
     @Test
-    void createCountry_returnsMappedDTO_whenCountryIsNew() {
-        // arrange
-        Country domain = mock(Country.class);
+    void createCountry_whenCountryAlreadyExists_throwsException() {
+        // Arrange
         CountryId id = mock(CountryId.class);
-        Country saved = mock(Country.class);
-        CountryDTO dto = mock(CountryDTO.class);
+        Country countryDouble = mock(Country.class);
 
-        when(_factory.createCountry("Portugal")).thenReturn(domain);
-        when(domain.identity()).thenReturn(id);
-        when(_repo.containsOfIdentity(id)).thenReturn(false);
-        when(_repo.save(domain)).thenReturn(saved);
-        when(_mapper.toDTO(saved)).thenReturn(dto);
+        when(_factoryDouble.createCountry("Portugal")).thenReturn(countryDouble);
+        when(countryDouble.identity()).thenReturn(id);
+        when(_countryRepoDouble.containsOfIdentity(id)).thenReturn(true);
 
-        // act (SUT)
-        CountryDTO result = _service.createCountry("Portugal");
-
-        // assert
-        assertSame(dto, result);
-    }
-
-    @Test
-    void createCountry_throwsException_whenCountryAlreadyExists() {
-        // arrange
-        Country domain = mock(Country.class);
-        CountryId id = mock(CountryId.class);
-
-        when(_factory.createCountry("Portugal")).thenReturn(domain);
-        when(domain.identity()).thenReturn(id);
-        when(_repo.containsOfIdentity(id)).thenReturn(true);
-
-        // act + assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> _service.createCountry("Portugal"));
     }
 
     @Test
-    void listAllCountries_returnsMappedDTOs() {
-        // arrange
-        Country c1 = mock(Country.class);
-        Country c2 = mock(Country.class);
+    void listAllCountries_returnsIterableFromRepo() {
+        // Arrange
+        Iterable<Country> expected = List.of(mock(Country.class));
+        when(_countryRepoDouble.findAll()).thenReturn(expected);
 
-        CountryDTO dto1 = mock(CountryDTO.class);
-        CountryDTO dto2 = mock(CountryDTO.class);
+        // Act
+        Iterable<Country> result = _service.listAllCountries();
 
-        when(_repo.findAll()).thenReturn(List.of(c1, c2));
-        when(_mapper.toDTO(c1)).thenReturn(dto1);
-        when(_mapper.toDTO(c2)).thenReturn(dto2);
-
-        // act (SUT)
-        List<CountryDTO> result = _service.listAllCountries();
-
-        // assert
-        assertEquals(List.of(dto1, dto2), result);
+        // Assert
+        assertSame(expected, result);
     }
 
     @Test
-    void findById_returnsMappedDTO_whenCountryExists() {
-        // arrange
-        Country domain = mock(Country.class);
-        CountryDTO dto = mock(CountryDTO.class);
+    void findById_whenCountryExists_returnsCountry() {
+        // Arrange
+        CountryId id = new CountryId("PT");
+        Country countryDouble = mock(Country.class);
 
-        when(_repo.ofIdentity(any(CountryId.class))).thenReturn(Optional.of(domain));
-        when(_mapper.toDTO(domain)).thenReturn(dto);
+        when(_countryRepoDouble.ofIdentity(id)).thenReturn(Optional.of(countryDouble));
 
-        // act (SUT)
-        CountryDTO result = _service.findById("PT");
+        // Act
+        Country result = _service.findById("PT");
 
-        // assert
-        assertSame(dto, result);
+        // Assert
+        assertSame(countryDouble, result);
     }
 
     @Test
-    void findById_throwsException_whenCountryDoesNotExist() {
-        // arrange
-        when(_repo.ofIdentity(any(CountryId.class))).thenReturn(Optional.empty());
+    void findById_whenCountryDoesNotExist_throwsException() {
+        // Arrange
+        CountryId id = new CountryId("PT");
+        when(_countryRepoDouble.ofIdentity(id)).thenReturn(Optional.empty());
 
-        // act + assert
+        // Act + Assert
         assertThrows(NoSuchElementException.class,
                 () -> _service.findById("PT"));
     }
