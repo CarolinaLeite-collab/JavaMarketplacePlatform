@@ -6,15 +6,15 @@ import {
     FETCH_LIBRARY_SUCCESS,
     FETCH_LIBRARY_ERROR,
     FETCH_DETAIL_SUCCESS,
-    FETCH_DETAIL_ERROR,
+    FETCH_DETAIL_ERROR, GET_LIBRARY_OPTIONS_ERROR, GET_LIBRARY_OPTIONS_SUCCESS, getLibraryOptions,
 } from '../context/library/LibraryActions';
 
 import { apiClient } from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
-        getLibrary: vi.fn(),
         getByHref: vi.fn(),
+        getLibraryOptions: vi.fn(),
     },
 }));
 
@@ -26,37 +26,70 @@ describe('LibraryActions', () => {
         vi.clearAllMocks();
     });
 
-    describe('getLibrary', () => {
-        it('dispatches FETCH_LIBRARY_SUCCESS with library items', async () => {
-            const result = {
-                _embedded: {
-                    libraryItemSummaryDTOList: [
-                        {
-                            itemId: 'ITEM-001',
-                            title: 'Book'
-                        }
-                    ]
+    describe('getLibraryOptions', () => {
+        it('dispatches GET_LIBRARY_OPTIONS_SUCCESS', async () => {
+            const links = {
+                self: {
+                    href: 'http://localhost:8081/my-library'
                 }
             };
 
-            apiClient.getLibrary.mockResolvedValue(result);
+            apiClient.getLibraryOptions.mockResolvedValue({
+                _links: links
+            });
 
-            await getLibrary(dispatch);
+            await getLibraryOptions(dispatch);
 
-            expect(apiClient.getLibrary).toHaveBeenCalled();
+            expect(dispatch).toHaveBeenCalledWith({
+                type: GET_LIBRARY_OPTIONS_SUCCESS,
+                payload: links,
+            });
+        });
+
+        it('dispatches GET_LIBRARY_OPTIONS_ERROR on failure', async () => {
+            apiClient.getLibraryOptions.mockRejectedValue(
+                new Error('network error')
+            );
+
+            await getLibraryOptions(dispatch);
+
+            expect(dispatch).toHaveBeenCalledWith({
+                type: GET_LIBRARY_OPTIONS_ERROR,
+                payload: 'Error: network error',
+            });
+        });
+    });
+
+    describe('getLibrary', () => {
+        it('dispatches FETCH_LIBRARY_SUCCESS with library items', async () => {
+            const items = [
+                { itemId: 'ITEM-001', title: 'Book' }
+            ];
+
+            const result = {
+                _embedded: {
+                    anyKey: items
+                }
+            };
+
+            apiClient.getByHref.mockResolvedValue(result);
+
+            await getLibrary(dispatch, 'http://fake-url');
+
+            expect(apiClient.getByHref).toHaveBeenCalledWith('http://fake-url');
 
             expect(dispatch).toHaveBeenCalledWith({
                 type: FETCH_LIBRARY_SUCCESS,
-                payload: result._embedded.libraryItemSummaryDTOList,
+                payload: items,
             });
         });
 
         it('dispatches FETCH_LIBRARY_ERROR on failure', async () => {
-            apiClient.getLibrary.mockRejectedValue(
+            apiClient.getByHref.mockRejectedValue(
                 new Error('network error')
             );
 
-            await getLibrary(dispatch);
+            await getLibrary(dispatch, 'http://fake-url');
 
             expect(dispatch).toHaveBeenCalledWith({
                 type: FETCH_LIBRARY_ERROR,

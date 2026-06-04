@@ -1,8 +1,29 @@
 import { describe, it, expect } from 'vitest';
 import { libraryReducer, initialState } from '../context/library/LibraryReducer';
 import { BASE_URL } from '../services/apiClient';
+import {
+    FETCH_DETAIL_ERROR, FETCH_DETAIL_SUCCESS,
+    FETCH_LIBRARY_ERROR,
+    FETCH_LIBRARY_SUCCESS,
+    GET_LIBRARY_OPTIONS_SUCCESS
+} from '../context/library/LibraryActions';
 
 describe('libraryReducer', () => {
+
+    it('stores library and addItem hrefs on GET_LIBRARY_OPTIONS_SUCCESS', () => {
+        const action = {
+            type: GET_LIBRARY_OPTIONS_SUCCESS,
+            payload: {
+                library: { href: `${BASE_URL}/my-library/` },
+                'library-add': { href: `${BASE_URL}/my-library/add` }
+            }
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.libraryHref).toBe(`${BASE_URL}/my-library/`);
+        expect(result.addItemHref).toBe(`${BASE_URL}/my-library/add`);
+    });
 
     it('stores library items on FETCH_LIBRARY_SUCCESS', () => {
         const items = [
@@ -17,7 +38,7 @@ describe('libraryReducer', () => {
         ];
 
         const action = {
-            type: 'FETCH_LIBRARY_SUCCESS',
+            type: FETCH_LIBRARY_SUCCESS,
             payload: items
         };
 
@@ -40,7 +61,7 @@ describe('libraryReducer', () => {
 
     it('stores error message on FETCH_LIBRARY_ERROR', () => {
         const action = {
-            type: 'FETCH_LIBRARY_ERROR',
+            type: FETCH_LIBRARY_ERROR,
             payload: 'Failed to load library'
         };
 
@@ -57,7 +78,7 @@ describe('libraryReducer', () => {
         };
 
         const action = {
-            type: 'FETCH_DETAIL_SUCCESS',
+            type: FETCH_DETAIL_SUCCESS,
             payload: {
                 itemId: 'ITM-001',
                 detail
@@ -92,7 +113,7 @@ describe('libraryReducer', () => {
         };
 
         const action = {
-            type: 'FETCH_DETAIL_SUCCESS',
+            type: FETCH_DETAIL_SUCCESS,
             payload: {
                 itemId: 'ITM-002',
                 detail: newDetail
@@ -113,7 +134,7 @@ describe('libraryReducer', () => {
 
     it('stores error message on FETCH_DETAIL_ERROR', () => {
         const action = {
-            type: 'FETCH_DETAIL_ERROR',
+            type: FETCH_DETAIL_ERROR,
             payload: 'Failed to load details'
         };
 

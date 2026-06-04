@@ -2,13 +2,17 @@ import {
     FETCH_LIBRARY_SUCCESS,
     FETCH_LIBRARY_ERROR,
     FETCH_DETAIL_SUCCESS,
-    FETCH_DETAIL_ERROR
+    FETCH_DETAIL_ERROR,
+    GET_LIBRARY_OPTIONS_ERROR,
+    GET_LIBRARY_OPTIONS_SUCCESS
 } from './LibraryActions';
 
 export const initialState = {
     items: [],
     details: {},
-    error: null
+    error: null,
+    libraryHref: null,
+    addItemHref: null,
 };
 
 function mapItem(item) {
@@ -53,6 +57,16 @@ export function libraryReducer(state, action) {
             };
 
         case FETCH_DETAIL_ERROR:
+            return { ...state, error: action.payload };
+
+        case GET_LIBRARY_OPTIONS_SUCCESS:
+            return {
+                ...state,
+                libraryHref: action.payload.library?.href ?? null,
+                addItemHref: action.payload['library-add']?.href ?? null,
+            };
+
+        case GET_LIBRARY_OPTIONS_ERROR:
             return { ...state, error: action.payload };
 
         default:
