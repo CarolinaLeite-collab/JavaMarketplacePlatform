@@ -1,35 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import {
     Popover, ActionIcon, ScrollArea, Checkbox,
-    Stack, Button, Group, Text, Divider,
+    Stack, Button, Group, Text, Divider, Loader, Center, Tooltip,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
+import { apiClient } from '../../services/apiClient';
 
 interface LibraryItem {
     itemId: string;
     title: string;
-    authorName: string;
 }
-
-const mockItems: LibraryItem[] = [
-    { itemId: 'ITEM-001', title: 'The War of the Worlds', authorName: 'H.G. Wells' },
-    { itemId: 'ITEM-002', title: 'Dune', authorName: 'Frank Herbert' },
-    { itemId: 'ITEM-003', title: '1984', authorName: 'George Orwell' },
-    { itemId: 'ITEM-004', title: 'Brave New World', authorName: 'Aldous Huxley' },
-    { itemId: 'ITEM-005', title: 'Fahrenheit 451', authorName: 'Ray Bradbury' },
-    { itemId: 'ITEM-006', title: 'The Hobbit', authorName: 'J.R.R. Tolkien' },
-    { itemId: 'ITEM-007', title: 'Neuromancer', authorName: 'William Gibson' },
-];
 
 interface Props {
     listName: string;
+    libraryHref: string | null;
+    existingItemIds: string[];
     onConfirm: (selectedIds: string[]) => void;
 }
 
-export function AddItemToListDropDown({ listName, onConfirm }: Props) {
+export function AddItemToListDropDown({ listName, libraryHref, existingItemIds, onConfirm }: Props) {
     const [opened, { open, close }] = useDisclosure(false);
     const [selected, setSelected] = useState<string[]>([]);
+    const [items, setItems] = useState<LibraryItem[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!opened || !libraryHref) return;
+        setLoading(true);
+        apiClient.getByHref(libraryHref)
+            .then((data: any) => {
+                const embedded = data._embedded;
+                const key = Object.keys(embedded)[0];
+                setItems(embedded[key] ?? []);
+            })
+            .catch(() => setItems([]))
+            .finally(() => setLoading(false));
+    }, [opened, libraryHref]);
 
     const toggle = (id: string) =>
         setSelected(prev =>
@@ -72,16 +79,33 @@ export function AddItemToListDropDown({ listName, onConfirm }: Props) {
                 <Divider mb="xs" />
 
                 <ScrollArea h={220} scrollbarSize={8}>
-                    <Stack gap="xs" pr="xs">
-                        {mockItems.map(item => (
-                            <Checkbox
-                                key={item.itemId}
-                                label={`${item.title} — ${item.authorName}`}
-                                checked={selected.includes(item.itemId)}
-                                onChange={() => toggle(item.itemId)}
-                            />
-                        ))}
-                    </Stack>
+                    {loading ? (
+                        <Center h={200}><Loader size="sm" /></Center>
+                    ) : (
+                        <Stack gap="xs" pr="xs">
+                            {items.map(item => {
+                                const alreadyAdded = existingItemIds.includes(item.itemId);
+                                return (
+                                    <Tooltip
+                                        key={item.itemId}
+                                        label="Already in this list"
+                                        disabled={!alreadyAdded}
+                                        position="right"
+                                        withArrow
+                                    >
+                                        <div>
+                                            <Checkbox
+                                                label={item.title}
+                                                checked={selected.includes(item.itemId)}
+                                                onChange={() => toggle(item.itemId)}
+                                                disabled={alreadyAdded}
+                                            />
+                                        </div>
+                                    </Tooltip>
+                                );
+                            })}
+                        </Stack>
+                    )}
                 </ScrollArea>
 
                 <Divider mt="xs" mb="xs" />
