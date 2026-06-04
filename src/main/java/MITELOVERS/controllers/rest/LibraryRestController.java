@@ -66,7 +66,6 @@ public class LibraryRestController {
     public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
             @RequestHeader("X-User-Id") String userId) {
 
-        try {
             List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(userId);
 
             for (LibraryItemSummaryDTO dto : dtos) {
@@ -80,15 +79,11 @@ public class LibraryRestController {
 
             return new ResponseEntity<>(result, HttpStatus.OK);
 
-        } catch (IllegalArgumentException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
         @GetMapping(path ="/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
 
-            try {
                 LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
 
                 Link link = linkTo(methodOn(LibraryRestController.class)
@@ -97,17 +92,12 @@ public class LibraryRestController {
 
                 return new ResponseEntity<>(dto, HttpStatus.OK);
 
-            } catch (IllegalStateException e) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-            }
         }
 
     @PostMapping(path ="/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LibraryItemSummaryDTO> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
-
-        try {
 
             LibraryItemSummaryDTO dto = _libraryService.addItemToLibrary(request.getItemId(), userId);
 
@@ -117,14 +107,7 @@ public class LibraryRestController {
 
             return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
-        } catch (IllegalStateException e) {
 
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-
-        } catch (IllegalArgumentException e) {
-
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
     }
 
 }

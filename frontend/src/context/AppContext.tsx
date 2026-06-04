@@ -3,17 +3,23 @@ import { initialState } from './library/LibraryReducer';
 
 const AppContext = createContext({
     state: {
+        app: {
+            myListsHref: null,
+            createListHref: null,
+            genresHref: null,
+            libraryHref: null,
+            directSalesHref: null,
+            directSalesWithoutPriceHref: null,
+        },
         lists: {
             lists: [],
             genres: [],
-            createListHref: null,
-            myListsHref: null,
             error: null,
-            loading: false,
-        }
+        },
     },
     dispatch: () => {}
 });
+
 export default AppContext;
 
 export const LibraryContext = createContext({

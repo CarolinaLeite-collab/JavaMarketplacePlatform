@@ -130,7 +130,7 @@ class PublishingCompanyServiceTest {
 
 
     @Test
-    void getPublishingCompanyByIdReturnsDTO() {
+    void getPublishingCompanyByIdReturns() {
         // Arrange
         when(_iPublishingCompanyRepoDouble.ofIdentity(any())).thenReturn(Optional.of(_publishingCompanyDouble));
 
@@ -141,7 +141,7 @@ class PublishingCompanyServiceTest {
                 _responseMapperDouble);
 
         // Act
-        PublishingCompanyResponseDTO result = service.getPublishingCompanyById("PORTO EDITORA");
+        PublishingCompany result = service.getPublishingCompanyById("PORTO EDITORA");
 
         // Assert
         assertNotNull(result);

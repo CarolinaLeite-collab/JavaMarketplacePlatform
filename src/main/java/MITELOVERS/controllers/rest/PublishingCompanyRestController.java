@@ -3,9 +3,11 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
+import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for exposing publication-related endpoints
@@ -28,14 +33,18 @@ public class PublishingCompanyRestController {
     private final PublishingCompanyService _publishingCompanyService;
     private final PublishingCompanyLinkProvider _publishingCompanyLinkProvider;
     private final UserService _userService;
+    private final PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapper;
 
 
     public PublishingCompanyRestController(PublishingCompanyService publishingCompanyService,
-                                           PublishingCompanyLinkProvider publishingCompanyLinkProvider, UserService userService) {
+                                           PublishingCompanyLinkProvider publishingCompanyLinkProvider,
+                                           UserService userService,
+                                           PublishingCompanyResponseDTOMapper publishingCompanyResponseDTOMapper) {
 
         _publishingCompanyService = publishingCompanyService;
         _publishingCompanyLinkProvider = publishingCompanyLinkProvider;
         _userService = userService;
+        _publishingCompanyResponseDTOMapper = publishingCompanyResponseDTOMapper;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -54,51 +63,34 @@ public class PublishingCompanyRestController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> registerPublishingCompany(@RequestBody PublishingCompanyRequestDTO dto) {
 
-        try{
-
-            PublishingCompanyResponseDTO result = _publishingCompanyService.registerPublishingCompany(dto);
+        PublishingCompanyResponseDTO result = _publishingCompanyService.registerPublishingCompany(dto);
 
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        catch (Exception ex) {
-
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllPublishingCompanies() {
 
-        try{
-
             List<PublishingCompanyResponseDTO> result = _publishingCompanyService.getAllPublishingCompanies();
 
             return new ResponseEntity<>(result, HttpStatus.OK);
-        }
-
-        catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
     }
 
     @GetMapping(path = "/{publishingCompanyId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getPublishingCompanyById(@PathVariable String publishingCompanyId) {
+    public ResponseEntity<PublishingCompanyResponseDTO> getPublishingCompanyById(
+            @PathVariable String publishingCompanyId) {
 
-        try{
+        PublishingCompany publishingCompany =
+                _publishingCompanyService.getPublishingCompanyById(publishingCompanyId);
 
-            PublishingCompanyResponseDTO dto = _publishingCompanyService.getPublishingCompanyById(publishingCompanyId);
+        PublishingCompanyResponseDTO dto =
+                _publishingCompanyResponseDTOMapper.toModel(publishingCompany);
 
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+        dto.add(linkTo(methodOn(PublishingCompanyRestController.class)
+                .getPublishingCompanyById(dto.getPublishingCompanyId()))
+                .withSelfRel());
 
-        }
-
-        catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+        return ResponseEntity.ok(dto);
     }
-
 }

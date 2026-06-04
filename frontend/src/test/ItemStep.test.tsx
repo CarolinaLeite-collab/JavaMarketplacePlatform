@@ -1,6 +1,6 @@
 import { render, screen } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
-import { ItemStep } from './ItemStep';
+import { ItemStep } from '../components/addItemModal/ItemStep';
 
 describe('ItemStep', () => {
     const data = {
@@ -12,9 +12,15 @@ describe('ItemStep', () => {
     it('renders all item fields', () => {
         render(<ItemStep data={data} setData={vi.fn()} />);
 
-        expect(screen.getByLabelText(/condition/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/description/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/picture url/i)).toBeInTheDocument();
+        expect(
+            screen.getByRole('combobox', { name: /condition/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByLabelText(/description/i)
+        ).toBeInTheDocument();
+        expect(
+            screen.getByLabelText(/picture url/i)
+        ).toBeInTheDocument();
     });
 
     it('updates description when user types', async () => {
@@ -51,8 +57,13 @@ describe('ItemStep', () => {
 
         render(<ItemStep data={data} setData={setData} />);
 
-        await user.click(screen.getByLabelText(/condition/i));
-        await user.click(screen.getByText('GOOD'));
+        await user.click(
+            screen.getByRole('combobox', { name: /condition/i })
+        );
+
+        await user.click(
+            screen.getByText('GOOD')
+        );
 
         expect(setData).toHaveBeenCalled();
     });

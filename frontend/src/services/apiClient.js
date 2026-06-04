@@ -1,9 +1,14 @@
 export const BASE_URL = 'http://localhost:8081';
-export const USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
+export let USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
 
+export function setUserId(id) {
+    console.log('switching user to:', id);
+    USER_ID = id;
+}
 
 // Entry point functions (hardcoded paths - initial discovery)
 async function optionsByPath(path) {
+    console.log('optionsByPath - current USER_ID:', USER_ID);
     const response = await fetch(`${BASE_URL}${path}?email=${USER_ID}`, {
         method: 'OPTIONS',
         headers: { 'X-User-Id': USER_ID }
@@ -110,10 +115,14 @@ async function deleteByHref(href) {
 // Contract endpoints
 export const apiClient = {
     // Entry points — hardcoded
+    getRootOptions: () => optionsByPath('/api'),
     getListsOptions: () => optionsByPath('/my-lists'),
     getGenres: () => getPublic('/genres'),
     getLibrary: () => getPrivate('/my-library/'),
+    getMyLibraryItemsForSale: () => getPrivate('/items/my-library'),
     createDirectSales: (body) => post('/direct-sales', body),
+    getDirectSales: () => getPublic('/direct-sales'),
+    getItemById: (itemId) => getPublic(`/items/${itemId}`),
 
     // HATEOAS — use full href from backend response links
     getByHref: (href) => getByHref(href),

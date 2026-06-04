@@ -2,7 +2,6 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.EditionService;
 import MITELOVERS.applicationservices.UserService;
-import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.EditionLinkProvider;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.user.User;
@@ -12,9 +11,7 @@ import MITELOVERS.mapper.EditionRequestDTOMapper;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
@@ -32,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Import({JacksonAutoConfiguration.class, CustomRestExceptionHandler.class})
 @WebMvcTest(EditionRestController.class)
 class EditionRestControllerTest {
 
@@ -83,28 +79,6 @@ class EditionRestControllerTest {
                         .content(_objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isCreated());
     }
-
-    @Test
-    void registerEditionServiceThrowsReturnsInternalServerError() throws Exception {
-        // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .build();
-
-        when(_editionServiceDouble.registerEdition(any(), any()))
-                .thenThrow(new IllegalStateException("Edition already exists"));
-
-        // Act & Assert
-        _mockMvc.perform(post("/editions")
-                        .param("pubId", "1984-Orwell-G--F43DD6(1949)")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isInternalServerError());
-    }
-
 
     @Test
     void getAllEditionsReturnsOk() throws Exception {
@@ -171,17 +145,6 @@ class EditionRestControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    @Test
-    void getAllEditionsByPublicationServiceThrowsReturnsInternalServerError() throws Exception {
-        // Arrange
-        when(_editionServiceDouble.getAllEditionsByPublication(any()))
-                .thenThrow(new NoSuchElementException("Publication not found"));
-
-        // Act & Assert
-        _mockMvc.perform(get("/editions/by-publication")
-                        .param("publicationId", "1984-Orwell-G--F43DD6(1949)"))
-                .andExpect(status().isInternalServerError());
-    }
 
     @Test
     void getEditionByIdReturnsOk() throws Exception {

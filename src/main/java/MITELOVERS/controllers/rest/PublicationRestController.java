@@ -76,7 +76,6 @@ public class PublicationRestController {
     public ResponseEntity<PublicationResponseDTO> registerPublicationAndReturnDTO(
             @Valid @RequestBody PublicationRequestDTO info) {
 
-        try {
             Publication publication = _publicationService.registerPublication(
                     new Title(info.getTitle()),
                     new AuthorId(info.getAuthorId()),
@@ -91,9 +90,6 @@ public class PublicationRestController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -123,7 +119,7 @@ public class PublicationRestController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PublicationResponseDTO> getPublicationById(
             @PathVariable String id) {
-        try {
+
             Publication publication = _publicationService.getPublicationById(id);
 
             PublicationResponseDTO result = _publicationResponseDTOMapper.toModel(publication);
@@ -133,10 +129,6 @@ public class PublicationRestController {
 
             return ResponseEntity.ok(result);
 
-        } catch (Exception ex) {
-            return ResponseEntity.notFound().build();
-        }
     }
-
 
 }

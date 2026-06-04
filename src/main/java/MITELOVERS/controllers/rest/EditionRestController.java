@@ -67,8 +67,6 @@ public class EditionRestController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> registerEdition(@RequestParam String pubId, @RequestBody EditionRequestDTO dto) {
 
-        try {
-
             Edition edition = _editionService.registerEdition(pubId, dto);
 
             EditionResponseDTO result = _editionResponseDTOMapper.toModel(edition);
@@ -79,18 +77,10 @@ public class EditionRestController {
 
             return new ResponseEntity<>(result, HttpStatus.CREATED);
 
-        }
-
-        catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllEditions(){
-
-        try {
 
         List<Edition> editions = _editionService.getAllEditions();
 
@@ -116,18 +106,10 @@ public class EditionRestController {
 
         return new ResponseEntity<>(collection, HttpStatus.OK);
 
-    } catch (Exception ex) {
-
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
-
     }
 
     @GetMapping(path = "/by-publication", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllEditionsByPublication(@RequestParam String publicationId){
-
-        try {
 
             List<Edition> editions = _editionService.getAllEditionsByPublication(publicationId);
 
@@ -152,17 +134,11 @@ public class EditionRestController {
 
             return new ResponseEntity<>(collection, HttpStatus.OK);
 
-        } catch (Exception ex) {
-
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
 
     }
 
     @GetMapping(path = "/{editionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getEditionById(@PathVariable String editionId) {
-        try {
             Edition edition = _editionService.getEditionById(editionId);
 
             EditionResponseDTO result = _editionResponseDTOMapper.toModel(edition);
@@ -173,11 +149,6 @@ public class EditionRestController {
 
             return ResponseEntity.ok(result);
 
-        } catch (Exception ex) {
-
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-
-        }
     }
 
 }
