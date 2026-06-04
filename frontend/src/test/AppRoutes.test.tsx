@@ -16,18 +16,59 @@ const mockState = {
         libraryHref: '/my-library',
     },
 };
+import AppContext from '../context/AppContext';
+
+function renderRoutes(initialEntries = ['/'], appStateOverrides = {}) {
+    const state = {
+        app: {
+            myListsHref: 'http://localhost:8081/my-lists/',
+            libraryHref: 'http://localhost:8081/my-library/',
+            ...appStateOverrides,
+        },
+        lists: {
+            lists: [],
+            genres: [],
+            error: null,
+        },
+        sales: {
+            directSales: [],
+            error: null,
+            successMessage: null,
+            libraryItems: [],
+        },
+    };
+
+    return render(
+        <AppContext.Provider value={{ state, dispatch: () => {} }}>
+            <AppRoutes />
+        </AppContext.Provider>,
+        { initialEntries }
+    );
+}
 
 describe('AppRoutes', () => {
+    axe([<AppRoutes key="1" />]);
+
+    it('renders correctly', () => {
+        renderRoutes();
+    });
+
     it('renders Marketplace on default route', () => {
         render(
             <AppContext.Provider value={{ state: mockState }}>
                 <AppRoutes />
             </AppContext.Provider>
         );
+        renderRoutes();
+        expect(screen.getByRole('heading', { name: /marketplace/i })).toBeInTheDocument();
+    });
 
         expect(
             screen.getByRole('heading', { name: /marketplace/i })
         ).toBeInTheDocument();
+    it('renders MyListsPage on /my-lists route', () => {
+        renderRoutes(['/my-lists']);
+        expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
     });
 
     it('renders MyLibraryPage on /my-library route', () => {
@@ -39,5 +80,7 @@ describe('AppRoutes', () => {
         );
 
         expect(screen.getByText(/my library/i)).toBeInTheDocument();
+        renderRoutes(['/my-library']);
+        expect(screen.getByRole('heading', { name: /my library/i })).toBeInTheDocument();
     });
 });
