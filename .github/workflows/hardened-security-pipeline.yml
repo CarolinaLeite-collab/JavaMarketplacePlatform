@@ -240,6 +240,68 @@ jobs:
       - name: Build test and run security scans
         run: mvn clean verify
 
+      - name: Upload Dependency-Check JSON
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-json
+          path: target/dependency-check-report.json
+
+      - name: Post Dependency-Check comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## OWASP Dependency-Check – SCA Findings\n\n';
+            try {
+              const report = JSON.parse(fs.readFileSync('target/dependency-check-report.json', 'utf8'));
+              const rows = [];
+              for (const dep of report.dependencies || []) {
+                if (!dep.vulnerabilities) continue;
+                for (const v of dep.vulnerabilities) {
+                  // CVSS: tenta v3 primeiro, depois v2
+                  let score = v.cvssv3?.baseScore ?? v.cvssv2?.score ?? null;
+                  let sev = (v.severity || '').toUpperCase();
+                  rows.push({
+                    dep: dep.fileName || '',
+                    cve: v.name || '',
+                    score: score !== null ? Number(score) : -1,
+                    sev
+                  });
+                }
+              }
+            
+              if (rows.length === 0) {
+                body += '✅ No known vulnerabilities found.';
+              } else {
+                // ordena por CVSS desc
+                rows.sort((a, b) => b.score - a.score);
+                const order = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+                const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+                for (const r of rows) if (counts[r.sev] !== undefined) counts[r.sev]++;
+            
+                body += `**${rows.length} vulnerable finding(s):** `;
+                body += `🔴 ${counts.CRITICAL} Critical · 🟠 ${counts.HIGH} High · `;
+                body += `🟡 ${counts.MEDIUM} Medium · 🔵 ${counts.LOW} Low\n\n`;
+                body += '| Dependency | CVE | CVSS | Severity |\n|---|---|---|---|\n';
+                for (const r of rows.slice(0, 30)) {
+                  const score = r.score >= 0 ? r.score.toFixed(1) : 'N/A';
+                  body += `| \`${r.dep}\` | ${r.cve} | ${score} | ${r.sev} |\n`;
+                }
+                if (rows.length > 30) body += `\n_…and ${rows.length - 30} more (see full report artifact)._\n`;
+                body += '\n> ⚠️ Build fails on any vulnerability with CVSS ≥ 7.';
+              }
+            } catch (e) {
+              body += '_Could not read Dependency-Check JSON report._';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
       - name: Upload application artifact
         if: success()
         uses: actions/upload-artifact@v4.6.2
