@@ -24,14 +24,15 @@ vi.mock('../context/lists/ListsActions', () => ({
     getMyLists: vi.fn(),
     deleteList: vi.fn(),
     getListsOptions: vi.fn(),
+    addItemToList: vi.fn(),
 }));
 
 const mockLists = [
-    { listId: '1', name: 'Fantasy Favourites', genre: 'Fantasy', visibility: 'public' as const, sharedUntil: 12, links: [{ rel: 'delete', href: '/my-lists/1' }, { rel: 'make-private', href: '/my-lists/1/visibility' }] },
-    { listId: '2', name: 'Secret Reads', genre: 'Mystery', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/2' }, { rel: 'make-public', href: '/my-lists/2/visibility' }] },
-    { listId: '3', name: 'Sci-Fi Shelf', genre: 'Science Fiction', visibility: 'public' as const, sharedUntil: 3, links: [{ rel: 'delete', href: '/my-lists/3' }, { rel: 'make-private', href: '/my-lists/3/visibility' }] },
-    { listId: '4', name: 'Classic Literature', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/4' }, { rel: 'make-public', href: '/my-lists/4/visibility' }] },
-    { listId: '5', name: 'Lista fixe', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/5' }, { rel: 'make-public', href: '/my-lists/5/visibility' }] },
+    { listId: '1', name: 'Fantasy Favourites', genre: 'Fantasy', visibility: 'public' as const, sharedUntil: 12, links: [{ rel: 'delete', href: '/my-lists/1' }, { rel: 'make-private', href: '/my-lists/1/visibility' }], itemIds: [] },
+    { listId: '2', name: 'Secret Reads', genre: 'Mystery', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/2' }, { rel: 'make-public', href: '/my-lists/2/visibility' }], itemIds: [] },
+    { listId: '3', name: 'Sci-Fi Shelf', genre: 'Science Fiction', visibility: 'public' as const, sharedUntil: 3, links: [{ rel: 'delete', href: '/my-lists/3' }, { rel: 'make-private', href: '/my-lists/3/visibility' }], itemIds: [] },
+    { listId: '4', name: 'Classic Literature', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/4' }, { rel: 'make-public', href: '/my-lists/4/visibility' }], itemIds: [] },
+    { listId: '5', name: 'Lista fixe', genre: 'Classic', visibility: 'private' as const, sharedUntil: null, links: [{ rel: 'delete', href: '/my-lists/5' }, { rel: 'make-public', href: '/my-lists/5/visibility' }], itemIds: [] },
 ];
 
 const mockDispatch = vi.fn();
@@ -42,7 +43,8 @@ const renderWithContext = (ui: React.ReactElement) =>
             value={{
                 state: {
                     app: {
-                        myListsHref: 'http://localhost:8081/my-lists'
+                        myListsHref: 'http://localhost:8081/my-lists',
+                        libraryHref: 'http://localhost:8081/items/my-library',
                     },
                     lists: {
                         lists: mockLists,
