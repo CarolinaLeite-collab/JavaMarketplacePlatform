@@ -1,13 +1,9 @@
-import { render, screen, waitFor  } from '@/test-utils';
+import {render, screen, waitFor} from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import AppContext from '../context/AppContext';
-import { CreateSaleModal } from '../components/createSaleModal/CreateSaleModal';
-import { notifications } from '@mantine/notifications';
-import {
-    clearSalesMessages,
-    createDirectSale,
-    getMyLibraryItems,
-} from '../context/sales/SalesActions.jsx';
+import {CreateSaleModal} from '../components/createSaleModal/CreateSaleModal';
+import {notifications} from '@mantine/notifications';
+import {clearSalesMessages, createDirectSale, getMyLibraryItems,} from '../context/sales/SalesActions.jsx';
 import {beforeEach, vi} from 'vitest';
 
 vi.mock('@mantine/notifications', () => ({

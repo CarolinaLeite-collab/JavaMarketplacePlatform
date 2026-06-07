@@ -1,4 +1,4 @@
-import { render, screen } from '@/test-utils';
+import {render, screen} from '@/test-utils';
 import {ItemDetailTable} from "../components/itemDetailsTable/ItemDetailsTable.tsx";
 
 describe('ItemDetailTable', () => {

@@ -1,5 +1,5 @@
-import { render, screen } from '@/test-utils';
-import { PageTitle } from '../components/layout/PageTitle';
+import {render, screen} from '@/test-utils';
+import {PageTitle} from '../components/layout/PageTitle';
 
 describe('PageTitle', () => {
     it('renders children as a level 1 heading', () => {

@@ -84,7 +84,7 @@ class ItemRestControllerTest {
     }
 
     @Test
-    void shouldReturn422WhenConditionIsInvalid() throws Exception {
+    void shouldReturn400WhenConditionIsInvalid() throws Exception {
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
@@ -94,7 +94,7 @@ class ItemRestControllerTest {
                                     "description": "Nice copy"
                                 }
                                 """))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().is(400));
     }
 
     @Test
@@ -171,12 +171,12 @@ class ItemRestControllerTest {
     }
 
     @Test
-    void shouldReturn422WhenGetItemByIdThrowsIllegalArgument() throws Exception {
+    void shouldReturn400WhenGetItemByIdThrowsIllegalArgument() throws Exception {
         when(itemService.getItemById(any()))
                 .thenThrow(new IllegalArgumentException("Invalid id format"));
 
         mockMvc.perform(get("/items/INVALID-FORMAT"))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().is(400));
     }
 
     // ----------------------------------------------------------------
@@ -223,13 +223,13 @@ class ItemRestControllerTest {
     }
 
     @Test
-    void shouldReturn422WhenGetLibraryItemsThrowsIllegalArgument() throws Exception {
+    void shouldReturn400WhenGetLibraryItemsThrowsIllegalArgument() throws Exception {
         when(libraryService.getItemIdsInLibrary(any()))
                 .thenThrow(new IllegalArgumentException("Invalid user id"));
 
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "invalid"))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().is(400));
     }
 
     // ----------------------------------------------------------------

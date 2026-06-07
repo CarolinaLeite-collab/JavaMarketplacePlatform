@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { libraryReducer, initialState } from '../context/library/LibraryReducer';
+import {describe, expect, it} from 'vitest';
+import {initialState, libraryReducer} from '../context/library/LibraryReducer';
 
 describe('libraryReducer', () => {
 

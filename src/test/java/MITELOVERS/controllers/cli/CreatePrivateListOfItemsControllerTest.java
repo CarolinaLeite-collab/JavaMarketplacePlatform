@@ -6,8 +6,6 @@ import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.ListOfItemsRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

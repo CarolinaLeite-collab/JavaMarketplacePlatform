@@ -1,6 +1,6 @@
-import {Modal, Stepper, Button, Group} from '@mantine/core'
-import { useState } from 'react'
-import { PublicationStep } from './PublicationStep';
+import {Button, Group, Modal, Stepper} from '@mantine/core'
+import {useState} from 'react'
+import {PublicationStep} from './PublicationStep';
 import {EditionStep} from './EditionStep';
 import {ItemStep} from "./ItemStep.tsx";
 

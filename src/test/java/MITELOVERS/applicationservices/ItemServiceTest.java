@@ -5,7 +5,10 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.item.ItemFactory;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.Condition;
+import MITELOVERS.domain.valueobject.Description;
+import MITELOVERS.domain.valueobject.EditionId;
+import MITELOVERS.domain.valueobject.ItemId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -173,5 +176,28 @@ class ItemServiceTest {
         Item result = itemService.getItemById("3C5D126F8B");
 
         assertSame(itemDouble, result);
+    }
+
+    @Test
+    void registerItemAlreadyExistsReturnsExistingItem() {
+        // Arrange
+        EditionId editionIdDouble  = mock(EditionId.class);
+        Item newItemDouble         = mock(Item.class);
+        ItemId itemIdDouble        = mock(ItemId.class);
+        Item existingItemDouble    = mock(Item.class);
+
+        when(editionRepoDouble.ofIdentity(editionIdDouble))
+                .thenReturn(Optional.of(mock(Edition.class)));
+        when(itemFactoryDouble.createItem(any(), any(), any())).thenReturn(newItemDouble);
+        when(newItemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemRepoDouble.containsOfIdentity(itemIdDouble)).thenReturn(true);
+        when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(existingItemDouble));
+
+        // Act
+        Item result = itemService.registerItem(
+                editionIdDouble, Condition.GOOD, new Description("copy"));
+
+        // Assert
+        assertSame(existingItemDouble, result);
     }
 }

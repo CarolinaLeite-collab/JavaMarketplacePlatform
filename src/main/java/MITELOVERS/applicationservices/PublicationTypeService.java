@@ -4,8 +4,6 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.response.PublicationTypeResponseDTO;
-import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

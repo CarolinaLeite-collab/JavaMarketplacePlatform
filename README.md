@@ -120,17 +120,17 @@ Administrative management of branch protection policies is the responsibility of
 ### Quality Gates
 - All tests must pass;
 - Build must succeed with `mvn clean verify`.
-- JaCoCo instruction coverage must be ≥ 95%;
+- JaCoCo line coverage must be ≥ 95%;
 
 ### Security Findings Severity Reporting
 
 Every Pull Request automatically receives comments summarising security findings from each tool:
 
-| Tool | Severity Levels | Blocking Threshold |
-|---|---|---|
-| Gitleaks | N/A (binary: secret found or not) | Any secret detected |
-| Semgrep | ERROR, WARNING, INFO | ERROR |
-| OWASP Dependency-Check | CRITICAL, HIGH, MEDIUM, LOW (CVSS) | CVSS ≥ 7 (HIGH) |
+| Tool                   | Severity Levels                    | Blocking Threshold  |
+|------------------------|------------------------------------|---------------------|
+| Gitleaks               | N/A (binary: secret found or not)  | Any secret detected |
+| Semgrep                | ERROR, WARNING, INFO               | ERROR               |
+| OWASP Dependency-Check | CRITICAL, HIGH, MEDIUM, LOW (CVSS) | CVSS ≥ 7 (HIGH)     |
 
 - **Gitleaks** posts a comment listing every detected secret (rule, file, line) if any are found.
 - **Semgrep** posts a breakdown of findings grouped by severity (ERROR / WARNING / INFO).
@@ -142,7 +142,7 @@ Findings above the defined threshold cause the pipeline to fail and block the PR
 
 ## Test Coverage
 
-It was decided to link the coverage threshold to the `mvn verify` stage, with JaCoCo configured to enforce a minimum instruction coverage of **95%**.
+It was decided to link the coverage threshold to the `mvn verify` stage, with JaCoCo configured to enforce a minimum line coverage of **95%**.
 
 For that we updated the JaCoCo plugin in the pom.xml:
 
@@ -215,7 +215,6 @@ ___
 The project uses GitHub Actions for continuous integration.
 
 The pipeline triggers automatically on:
-- Every push to `main`, `b3`, or `b4`
 - Every pull request targeting `main`, `b3`, or `b4`
 
 For that, we defined three different GitHub worflows:
@@ -254,7 +253,7 @@ jobs:
             --arg base "${{ github.event.pull_request.base.ref }}" \
             '{
               content: (
-                "📢 New Pull Request #" + $number + "to merge into " + $base  "\n" +
+                "📢 New Pull Request #" + $number + "to merge into " + $base + "\n" +
                 "🏷️ " + $title + "\n" +
                 "👤 " + $user + "\n" +
                 "🌐 " + $url
@@ -310,10 +309,11 @@ jobs:
 
 This workflow, comprised of several jobs, seeks to enforce a propper running order for several tasks.
 
-Its consists of the following jobs: 
-  - `gitleaks`: ensures secret detection
-  - `semgrep-sast`: implements a SAST scan
-  - `build-and-test-with-coverage`: build + tests + JaCoCo coverage + OWASP Dependency-Check (SCA) + SBOM generation
+It consists of the following jobs:
+- `gitleaks`: secret detection, with a PR comment listing any findings;
+- `semgrep-sast`: SAST scan, with findings grouped by severity in a PR comment;
+- `config-scan`: insecure-configuration detection on Spring property files;
+- `build-and-test-with-coverage`: build + tests + JaCoCo coverage + OWASP Dependency-Check (SCA) + SBOM, with a PR comment per report.
 
 
 The full pipeline is configured as follows:
@@ -334,6 +334,10 @@ jobs:
   gitleaks:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      pull-requests: write
+
     steps:
       - name: Checkout full history
         uses: actions/checkout@v4
@@ -348,6 +352,8 @@ jobs:
           gitleaks version
 
       - name: Run Gitleaks
+        id: gitleaks
+        continue-on-error: true
         run: |
           gitleaks detect \
             --source . \
@@ -355,12 +361,50 @@ jobs:
             --report-path gitleaks-report.json \
             --exit-code 1
 
+      - name: Post Gitleaks comment on PR
+        if: steps.gitleaks.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## Gitleaks – Secret Detection Failed\n\n';
+
+            try {
+              const report = JSON.parse(fs.readFileSync('gitleaks-report.json', 'utf8'));
+
+              if (report.length === 0) {
+                body += 'No secrets found.';
+              } else {
+                body += `**${report.length} secret(s) detected:**\n\n`;
+                body += '| Rule | File | Line |\n|---|---|---|\n';
+
+                for (const finding of report) {
+                  body += `| \`${finding.RuleID}\` | \`${finding.File}\` | ${finding.StartLine} |\n`;
+                }
+
+                body += '\n> ⚠️ Remove the secret, rotate the credential, and purge it from Git history.';
+              }
+            } catch (e) {
+              body += '_Could not parse Gitleaks report._';
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
       - name: Upload Gitleaks report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-report
           path: gitleaks-report.json
+
+      - name: Fail if Gitleaks found leaks
+        if: steps.gitleaks.outcome == 'failure'
+        run: exit 1
 
   semgrep-sast:
     name: Semgrep SAST
@@ -372,31 +416,129 @@ jobs:
 
     permissions:
       contents: read
+      issues: write
+      pull-requests: write
       security-events: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run Semgrep scan (JSON report)
+      - name: Run Semgrep scan JSON report
         run: |
+          TARGETS="src .github pom.xml"
+
+          if [ -d "frontend" ]; then
+            TARGETS="$TARGETS frontend"
+          fi
+
           semgrep scan \
             --config=auto \
-            --config p/java \
-            --json --output semgrep-report.json \
-            --severity ERROR \
-            --error \
-            src/ 
+            --json \
+            --output=semgrep-report.json \
+            $TARGETS || true
+          [ -f semgrep-report.json ] || echo '{"results":[]}' > semgrep-report.json
+
+      - name: Show Semgrep findings
+        if: always()
+        run: |
+          if [ -f semgrep-report.json ]; then
+            jq -r '.results[] | "\(.path):\(.start.line) [\(.check_id)] \(.extra.severity) - \(.extra.message)"' semgrep-report.json
+          else
+            echo "semgrep-report.json not found"
+          fi
 
       - name: Upload Semgrep JSON report
+        if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: semgrep-sast-report
           path: semgrep-report.json
 
+      - name: Post Semgrep comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## 🔍 Semgrep SAST – Findings Summary\n\n';
+            try {
+              const report = JSON.parse(fs.readFileSync('semgrep-report.json', 'utf8'));
+              const results = report.results || [];
+              if (results.length === 0) {
+                body += '✅ No findings detected.';
+              } else {
+                const bySeverity = { ERROR: [], WARNING: [], INFO: [] };
+                for (const r of results) {
+                  const sev = r.extra?.severity?.toUpperCase() || 'INFO';
+                  if (bySeverity[sev]) bySeverity[sev].push(r);
+                }
+                for (const [sev, items] of Object.entries(bySeverity)) {
+                  if (items.length === 0) continue;
+                  const emoji = sev === 'ERROR' ? '🔴' : sev === 'WARNING' ? '🟡' : '🔵';
+                  body += `### ${emoji} ${sev} (${items.length})\n\n`;
+                  body += '| Rule | File | Line | Message |\n|---|---|---|---|\n';
+                  for (const item of items) {
+                    const file = item.path || '';
+                    const line = item.start?.line || '';
+                    const rule = item.check_id || '';
+                    const msg = (item.extra?.message || '').substring(0, 80);
+                    body += `| \`${rule}\` | \`${file}\` | ${line} | ${msg} |\n`;
+                  }
+                }
+              }
+            } catch (e) {
+              body += '_Could not parse Semgrep report._';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Enforce Semgrep gate (fail on ERROR)
+        if: always()
+        run: |
+          ERRORS=$(jq '[.results[] | select(.extra.severity=="ERROR")] | length' semgrep-report.json)
+          echo "Semgrep ERROR findings: $ERRORS"
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "::error::Semgrep found $ERRORS ERROR-severity finding(s)."
+            exit 1
+          fi
+
+  config-scan:
+    name: Insecure Config Scan (Semgrep)
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep config rules
+        run: |
+          semgrep scan \
+            --config .github/semgrep/spring-misconfig.yml \
+            --json --output config-scan-report.json \
+            --error \
+            src/
+
+      - name: Upload config scan report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: config-scan-report
+          path: config-scan-report.json
+
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
-    needs: semgrep-sast
+    needs: [semgrep-sast, config-scan]
 
     permissions:
       contents: read
@@ -408,32 +550,115 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4.7.0
         with:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build, test, and run security scans
+
+      - name: Cache OWASP Dependency-Check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            dependency-check-${{ runner.os }}
+
+      - name: Build test and run security scans
         run: mvn clean verify
+
+      - name: Upload Dependency-Check JSON
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dependency-check-json
+          path: target/dependency-check-report.json
+
+      - name: Post Dependency-Check comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## OWASP Dependency-Check – SCA Findings\n\n';
+            try {
+              const report = JSON.parse(fs.readFileSync('target/dependency-check-report.json', 'utf8'));
+              const rows = [];
+              for (const dep of report.dependencies || []) {
+                if (!dep.vulnerabilities) continue;
+                for (const v of dep.vulnerabilities) {
+                  // CVSS: tenta v3 primeiro, depois v2
+                  let score = v.cvssv3?.baseScore ?? v.cvssv2?.score ?? null;
+                  let sev = (v.severity || '').toUpperCase();
+                  rows.push({
+                    dep: dep.fileName || '',
+                    cve: v.name || '',
+                    score: score !== null ? Number(score) : -1,
+                    sev
+                  });
+                }
+              }
+
+              if (rows.length === 0) {
+                body += '✅ No known vulnerabilities found.';
+              } else {
+                // ordena por CVSS desc
+                rows.sort((a, b) => b.score - a.score);
+                const order = { CRITICAL: 4, HIGH: 3, MEDIUM: 2, LOW: 1 };
+                const counts = { CRITICAL: 0, HIGH: 0, MEDIUM: 0, LOW: 0 };
+                for (const r of rows) if (counts[r.sev] !== undefined) counts[r.sev]++;
+
+                body += `**${rows.length} vulnerable finding(s):** `;
+                body += `🔴 ${counts.CRITICAL} Critical · 🟠 ${counts.HIGH} High · `;
+                body += `🟡 ${counts.MEDIUM} Medium · 🔵 ${counts.LOW} Low\n\n`;
+                body += '| Dependency | CVE | CVSS | Severity |\n|---|---|---|---|\n';
+                for (const r of rows.slice(0, 30)) {
+                  const score = r.score >= 0 ? r.score.toFixed(1) : 'N/A';
+                  body += `| \`${r.dep}\` | ${r.cve} | ${score} | ${r.sev} |\n`;
+                }
+                if (rows.length > 30) body += `\n_…and ${rows.length - 30} more (see full report artifact)._\n`;
+                body += '\n> ⚠️ Build fails on any vulnerability with CVSS ≥ 7.';
+              }
+            } catch (e) {
+              body += '_Could not read Dependency-Check JSON report._';
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+      - name: Upload application artifact
+        if: success()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: mitelovers-${{ github.run_number }}
+          path: target/*.jar
+
       - name: Upload JaCoCo coverage report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: jacoco-report
           path: target/site/jacoco/
+
       - name: Upload Dependency-Check report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: dependency-check-report
           path: target/dependency-check-report.html
+
       - name: Upload SBOM
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: sbom-cyclonedx
           path: target/bom.xml
+
       - name: Post coverage comment
         if: always()
         uses: madrapps/jacoco-report@v1.7.1
@@ -521,44 +746,116 @@ Gitleaks correctly detected the secret and failed the pipeline. Even after the f
 
 ### Static Code Analysis and Security Checks with Semgrep
 
-Semgrep was integrated into the CI pipeline as a static application security testing (SAST) stage to automatically detect security issues and bad practices in the Java codebase on every pull request targeting main, b3 or b4.
+Semgrep was integrated into the CI pipeline as a static application security testing (SAST) stage to automatically detect insecure code patterns and bad practices in the Java codebase, on every pull request targeting `main`, `b3`, or `b4`.
 
-The workflow runs after the secret-detection job, using the official Semgrep container to scan `src/`, `.github/`, and `pom.xml` with the `--config=auto` ruleset, which applies a curated set of language-aware security and correctness rules. This covers both insecure code patterns and insecure configurations (e.g. hardcoded credentials, weak cipher usage, misconfigured security settings).
+The job runs after the secret-detection (`gitleaks`) job, using the official Semgrep container to scan `src/`, `.github/`, and `pom.xml` with the `--config=auto` ruleset, which applies a curated set of language-aware security and correctness rules (e.g. SQL injection, weak cipher usage, hardcoded credentials).
+
+> Insecure **configuration** detection is handled by the separate `config-scan` job, not by this SAST scan.
 
 ```yaml
- semgrep-sast:
-    name: Semgrep SAST
-    runs-on: ubuntu-latest
-    needs: gitleaks
+   semgrep-sast:
+     name: Semgrep SAST
+     runs-on: ubuntu-latest
+     needs: gitleaks
 
-    container:
-      image: semgrep/semgrep
+     container:
+       image: semgrep/semgrep
 
-    permissions:
-      contents: read
-      security-events: write
+     permissions:
+       contents: read
+       issues: write
+       pull-requests: write
+       security-events: write
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+     steps:
+       - name: Checkout repository
+         uses: actions/checkout@v4
 
-      - name: Run Semgrep scan (JSON report)
-        run: |
-          semgrep scan \
-            --config=auto \
-            --config p/java \
-            --json --output semgrep-report.json \
-            --severity ERROR \
-            --error \
-            src/ 
+       - name: Run Semgrep scan JSON report
+         run: |
+           TARGETS="src .github pom.xml"
 
-      - name: Upload Semgrep JSON report
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: semgrep-sast-report
-          path: semgrep-report.json
+           if [ -d "frontend" ]; then
+             TARGETS="$TARGETS frontend"
+           fi
+
+           semgrep scan \
+             --config=auto \
+             --json \
+             --output=semgrep-report.json \
+             $TARGETS || true
+           [ -f semgrep-report.json ] || echo '{"results":[]}' > semgrep-report.json
+
+       - name: Show Semgrep findings
+         if: always()
+         run: |
+           if [ -f semgrep-report.json ]; then
+             jq -r '.results[] | "\(.path):\(.start.line) [\(.check_id)] \(.extra.severity) - \(.extra.message)"' semgrep-report.json
+           else
+             echo "semgrep-report.json not found"
+           fi
+
+       - name: Upload Semgrep JSON report
+         if: always()
+         uses: actions/upload-artifact@v4.6.2
+         with:
+           name: semgrep-sast-report
+           path: semgrep-report.json
+
+       - name: Post Semgrep comment on PR
+         if: always()
+         uses: actions/github-script@v7
+         with:
+           script: |
+             const fs = require('fs');
+             let body = '## 🔍 Semgrep SAST – Findings Summary\n\n';
+             try {
+               const report = JSON.parse(fs.readFileSync('semgrep-report.json', 'utf8'));
+               const results = report.results || [];
+               if (results.length === 0) {
+                 body += '✅ No findings detected.';
+               } else {
+                 const bySeverity = { ERROR: [], WARNING: [], INFO: [] };
+                 for (const r of results) {
+                   const sev = r.extra?.severity?.toUpperCase() || 'INFO';
+                   if (bySeverity[sev]) bySeverity[sev].push(r);
+                 }
+                 for (const [sev, items] of Object.entries(bySeverity)) {
+                   if (items.length === 0) continue;
+                   const emoji = sev === 'ERROR' ? '🔴' : sev === 'WARNING' ? '🟡' : '🔵';
+                   body += `### ${emoji} ${sev} (${items.length})\n\n`;
+                   body += '| Rule | File | Line | Message |\n|---|---|---|---|\n';
+                   for (const item of items) {
+                     const file = item.path || '';
+                     const line = item.start?.line || '';
+                     const rule = item.check_id || '';
+                     const msg = (item.extra?.message || '').substring(0, 80);
+                     body += `| \`${rule}\` | \`${file}\` | ${line} | ${msg} |\n`;
+                   }
+                 }
+               }
+             } catch (e) {
+               body += '_Could not parse Semgrep report._';
+             }
+             await github.rest.issues.createComment({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               issue_number: context.issue.number,
+               body
+             });
+
+       - name: Enforce Semgrep gate (fail on ERROR)
+         if: always()
+         run: |
+           ERRORS=$(jq '[.results[] | select(.extra.severity=="ERROR")] | length' semgrep-report.json)
+           echo "Semgrep ERROR findings: $ERRORS"
+           if [ "$ERRORS" -gt 0 ]; then
+             echo "::error::Semgrep found $ERRORS ERROR-severity finding(s)."
+             exit 1
+           fi
+
 ```
-The scan is configured with `--severity ERROR` and `--error`, meaning any finding at error level causes the job to fail, turning security findings into a hard quality gate.
+The scan captures findings at all severity levels (ERROR, WARNING, INFO) and posts a PR comment grouping them by severity. A dedicated gate step (`Enforce Semgrep gate`) then fails the job only when ERROR-severity findings are present; WARNING and INFO findings are reported but do not block the merge.
 
 Additionally, the job produces a JSON report (`semgrep-report.json`) that is uploaded as a pipeline artifact, which allows inspection of the detailed results for each run.
 
@@ -567,6 +864,54 @@ By chaining Semgrep after Gitleaks and before the build-and-test stage, the pipe
 The job's validation was tested with the temporary addition of a file containing SQL injection, which caused the PR to fail during Semgrep scan:
 ![semgrep-pr-fail.png](docs/readme-printscreens/semgrep-pr-fail.png)
 ![semgrep-pr-fail-report.png](docs/readme-printscreens/semgrep-pr-fail-report.png)
+---
+
+### Insecure Configuration Detection (config-scan)
+
+Code-level analysis is covered by the `semgrep-sast` job; this `config-scan` job is its configuration-level counterpart, focused on insecure settings rather than insecure code.
+
+
+Beyond code-level SAST, a dedicated `config-scan` job detects insecure settings in Spring property files using a custom Semgrep ruleset located at`.github/semgrep/spring-misconfig.yml`. It flags misconfigurations such as an enabled H2 console, fully exposed Actuator endpoints, stack traces returned to clients, and disabled TLS.
+
+Each rule has a severity (ERROR / WARNING / INFO). The job runs with --error, so the pipeline fails on any finding, in practice, the rules that flag the shared configuration are ERROR-severity.
+
+Development-only settings (e.g. the H2 console and SQL logging) were moved out of the shared `application.properties` into a dedicated `application-dev.properties`, loaded only under the `dev` profile and never active in CI or production. The Semgrep ruleset excludes `application-dev.properties` from the scan, since these settings are legitimate in a local development context while the shared configuration stays clean and fully scanned.
+
+```yaml
+  config-scan:
+    name: Insecure Config Scan (Semgrep)
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      - name: Run Semgrep config rules
+        run: |
+          semgrep scan \
+            --config .github/semgrep/spring-misconfig.yml \
+            --json --output config-scan-report.json \
+            --error \
+            src/
+
+      - name: Upload config scan report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: config-scan-report
+          path: config-scan-report.json
+```
+The `config-scan` job runs in parallel with `semgrep-sast`, both gated behind the `gitleaks` job: secret detection runs first, and only if it passes do the two Semgrep-based scans run. Keeping configuration scanning as a separate job (with its own report and PR check) makes it immediately clear whether a failure came from insecure *code* (`semgrep-sast`) or insecure *configuration* (`config-scan`).
+
+Unlike the SAST job, this job does not use the Semgrep container: since the ruleset is a local file in the repository, Semgrep is installed directly on the runner (`pip install semgrep`) so the `--config` path resolves against the checked-out workspace.
+
 ---
 
 ### Run Tests on Pull Request
@@ -594,7 +939,7 @@ The `build-and-test-with-coverage` job is configured as follows:
 ```yaml
   build-and-test-with-coverage:
     runs-on: ubuntu-latest
-    needs: semgrep-sast
+    needs: [semgrep-sast, config-scan]
 
     permissions:
       contents: read
@@ -754,21 +1099,19 @@ After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enfo
 ---
 ## SpringBoot application.properties
 
-The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined:
+The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined.
 
-```bash
+The **shared** configuration is kept free of insecure development-only settings:
+
+```properties
 # H2
 spring.datasource.url=jdbc:h2:file:./data/miteloversdb;DB_CLOSE_ON_EXIT=FALSE
 spring.datasource.driver-class-name=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
-# H2 Console
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
 
 # JPA / Hibernate
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
 spring.jpa.open-in-view=false
 
 # Active Profile
@@ -777,16 +1120,30 @@ spring.profiles.active=bootstrap,jpa
 # Server
 server.port=8081
 ```
-This Spring Boot configuration sets up an H2 file-based database stored at `./data/miteloversdb`, accessible via the built-in H2 console at /h2-console using the default credentials. 
+This configuration sets up an H2 file-based database stored at ./data/miteloversdb. 
 
-Hibernate manages the schema automatically with `ddl-auto=update`, keeping it in sync with the entity classes without ever dropping data, while SQL logging is enabled for debugging purposes. 
+Hibernate manages the schema automatically with `ddl-auto=update`, keeping it in sync with the entity classes without ever dropping data. 
 
-The `open-in-view=false` setting ensures database sessions are properly scoped to the service layer. 
-
-Two profiles are active: `bootstrap` and `jpa`, handling data seeding (through a `DataInitializer` class) and JPA configuration (All the Java Persistence API repos, that were established as the active profile) respectively. 
+The `open-in-view=false` setting ensures database sessions are properly scoped to the service layer. Two profiles are active by default: `bootstrap` and `jpa`, handling data seeding (via a DataInitializer class) and JPA configuration respectively. 
 
 The application runs on port 8081.
 
+### Development-only settings (`dev` profile)
+
+The H2 console and SQL logging are **not** part of the shared configuration, since an enabled H2 console and verbose SQL logging are insecure outside local development. They are isolated in a dedicated `application-dev.properties`, loaded only under the `dev` profile:
+
+```properties
+# H2 Console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+# JPA / Hibernate
+spring.jpa.show-sql=true
+```
+
+To enable them locally, run the application with the `dev` profile active (e.g. via the IDE run configuration or `-Dspring-boot.run.profiles=dev`). The H2 console is then available at `http://localhost:8081/h2-console`.
+
+This separation keeps the shared configuration free of insecure settings, enforced automatically by the `config-scan` job, whose Semgrep ruleset excludes `application-dev.properties` because those settings are legitimate only in a local development context.
 
 ## Quality & Security Gates (Authoritative Section)
 
@@ -812,13 +1169,11 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
  - JaCoCo line coverage must be ≥ 95% (enforced in Maven verify)
 
- - Mutation testing (PIT) must run without errors
-
  - Code must follow secure and correct patterns (Semgrep SAST)
 
 ### Security Gates
 
- - Gitleaks must detect 0 secrets
+ - Gitleaks must detect 0  secrets
 
  - Semgrep must report 0 ERROR‑severity findings
 
@@ -830,16 +1185,16 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality & Security Gates Summary Table
 
-| **Gate** | **Tool** | **Threshold / Condition** | **Enforcement Workflow** |
-| --- | --- | --- | --- |
-| **Build & Unit Tests** | Maven / JUnit | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **Line Coverage** | JaCoCo | ≥ 95% line coverage | Maven ``verify`` phase |
-| **Mutation Testing** | PIT | No errors during mutation analysis | Maven test lifecycle |
-| **Static Analysis (SAST) & Insecure Config Detection** | Semgrep | 0 ERROR findings | Hardened Security Pipeline → ``semgrep-sast`` |
-| **Secret Detection** | Gitleaks | 0 secrets detected | Hardened Security Pipeline → ``gitleaks`` |
-| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **SBOM Generation** | CycloneDX | SBOM generated successfully | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **PR Notifications** | Discord Webhooks | Informational only | Notify PR Creation / Notify PR Merge |
+| **Gate**                             | **Tool**               | **Threshold / Condition**             | **Enforcement Workflow**                                      |
+|--------------------------------------|------------------------|---------------------------------------|---------------------------------------------------------------|
+| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                   | Maven ``verify`` phase                                        |
+| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                      | Hardened Security Pipeline → ``semgrep-sast``                 |
+| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings             | Hardened Security Pipeline → `config-scan`                    |
+| **Secret Detection**                 | Gitleaks               | 0 secrets detected                    | Hardened Security Pipeline → ``gitleaks``                     |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities            | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully           | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **PR Notifications**                 | Discord Webhooks       | Informational only                    | Notify PR Creation / Notify PR Merge                          |
 
 ## Local Security & Quality Testing (Developer Guide)
 

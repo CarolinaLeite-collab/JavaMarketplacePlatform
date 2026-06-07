@@ -1,6 +1,6 @@
 import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
 import {TableList} from "../../components/tablelist/TableList.tsx";
-import { Affix } from '@mantine/core';
+import {Affix} from '@mantine/core';
 import {NewListModal} from "../../components/newlistmodal/NewListModal.tsx";
 import {useEffect, useState} from "react";
 

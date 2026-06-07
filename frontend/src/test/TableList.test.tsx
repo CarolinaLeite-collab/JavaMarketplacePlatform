@@ -1,10 +1,9 @@
-import { render, screen, within } from '@testing-library/react';
+import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
-import { MantineProvider } from '@mantine/core';
-import { TableList } from "../components/tablelist/TableList.tsx";
+import {describe, expect, it, vi} from 'vitest';
+import {MantineProvider} from '@mantine/core';
+import {TableList} from "../components/tablelist/TableList.tsx";
 import AppContext from '../context/AppContext';
-import { BASE_URL } from '../services/apiClient';
 
 vi.mock('../components/sharelistmodal/ShareListModal', () => ({
     ShareListModal: ({ listName, visibility }: { listName: string; visibility: string }) => (

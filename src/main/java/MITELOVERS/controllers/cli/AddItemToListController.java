@@ -4,10 +4,8 @@ import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddItemRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import org.springframework.stereotype.Controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller

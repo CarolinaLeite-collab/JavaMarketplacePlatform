@@ -1,8 +1,8 @@
-import { axe, render, screen, within } from '@/test-utils';
-import { vi } from 'vitest';
+import {axe, render, screen, within} from '@/test-utils';
+import {vi} from 'vitest';
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage';
 import userEvent from "@testing-library/user-event";
-import { LibraryContext } from '../context/AppContext';
+import {LibraryContext} from '../context/AppContext';
 import * as LibraryActions from '../context/library/LibraryActions';
 
 const mockState = {

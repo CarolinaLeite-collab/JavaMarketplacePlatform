@@ -9,7 +9,6 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibraryId;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;

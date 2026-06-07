@@ -4,6 +4,7 @@ import MITELOVERS.applicationservices.PublicationService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuthorId;
 import MITELOVERS.domain.valueobject.GenreId;
 import MITELOVERS.domain.valueobject.Title;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -45,8 +48,6 @@ class PublicationRestControllerTest {
 
     @Mock
     UserService _userServiceDouble;
-
-    // --- registerPublication tests ---
 
     @Test
     void registerPublicationReturnsCreatedWithDTO() {
@@ -79,8 +80,6 @@ class PublicationRestControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertSame(responseDTODouble, response.getBody());
     }
-
-    // --- getAllPublications tests ---
 
     @Test
     void getAllPublicationsReturnsOkWithDTOList() {
@@ -126,23 +125,64 @@ class PublicationRestControllerTest {
 
     @Test
     void getPublicationByIdReturnsOkWithDTO() {
-        // Arrange
+        //Arrange
         Publication publicationDouble = mock(Publication.class);
-        PublicationResponseDTO responseDTODouble = mock(PublicationResponseDTO.class);
+        PublicationResponseDTO dtoDouble = mock(PublicationResponseDTO.class);
 
-        when(_publicationServiceDouble.getPublicationById("PUB-001"))
+        when(dtoDouble.getPublicationId()).thenReturn("publication-id");
+
+        when(_publicationServiceDouble.getPublicationById(any()))
                 .thenReturn(publicationDouble);
 
-        when(_mapperDouble.toModel(publicationDouble)).thenReturn(responseDTODouble);
-        when(responseDTODouble.getPublicationId()).thenReturn("PUB-001");
+        when(_mapperDouble.toModel(publicationDouble))
+                .thenReturn(dtoDouble);
 
-        // Act
+        //Act
         ResponseEntity<PublicationResponseDTO> response =
-                _controller.getPublicationById("PUB-001");
+                _controller.getPublicationById("publication-id");
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(dtoDouble, response.getBody());
+    }
+
+    @Test
+    void optionsReturnsOkWithLinks() {
+        // Arrange
+        User userDouble = mock(User.class);
+        Link linkDouble = Link.of("/publications").withRel("publications");
+
+        when(_userServiceDouble.getUserByEmail("pedro@aeiou.com"))
+                .thenReturn(userDouble);
+
+        when(_publicationLinkProviderDouble.getLinks(userDouble))
+                .thenReturn(List.of(linkDouble));
+
+        //Act
+        ResponseEntity<RepresentationModel<?>> response =
+                _controller.options("pedro@aeiou.com");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertSame(responseDTODouble, response.getBody());
+        assertEquals(2, response.getBody().getLinks().toList().size());
     }
 
+    @Test
+    void optionsReturnsOkWithNoLinks() {
+        //Arrange
+        User userDouble = mock(User.class);
+
+        when(_userServiceDouble.getUserByEmail("readonly@aeiou.com"))
+                .thenReturn(userDouble);
+
+        when(_publicationLinkProviderDouble.getLinks(userDouble))
+                .thenReturn(List.of());
+
+        //Act
+        ResponseEntity<RepresentationModel<?>> response =
+                _controller.options("readonly@aeiou.com");
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 }

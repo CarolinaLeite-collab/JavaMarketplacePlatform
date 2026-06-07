@@ -6,8 +6,6 @@ import MITELOVERS.domain.valueobject.ListOfItemsId;
 import MITELOVERS.domain.valueobject.SharedDuration;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
-import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 
 /**
  * Controller responsible for sharing publicly a list of a {@link UserId}.

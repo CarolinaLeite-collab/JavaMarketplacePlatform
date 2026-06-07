@@ -1,4 +1,4 @@
-import { BOOTSTRAP_SUCCESS, BOOTSTRAP_ERROR } from '../lists/ListsActions';
+import {BOOTSTRAP_ERROR, BOOTSTRAP_SUCCESS} from '../lists/ListsActions';
 
 export const initialAppState = {
     myListsHref: null,

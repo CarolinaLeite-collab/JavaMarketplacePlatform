@@ -1,12 +1,17 @@
 package MITELOVERS.mapper;
 
+import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.ItemRestController;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
-import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.repository.IAuthorRepo;
+import MITELOVERS.domain.repository.IEditionRepo;
+import MITELOVERS.domain.repository.IGenreRepo;
+import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -16,6 +21,24 @@ import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+/**
+ * Mapper responsible for assembling an {@link Item} domain object
+ * into an {@link ItemResponseDTO}.
+ *
+ * <p>
+ * Implements {@link RepresentationModelAssembler} to follow the team's
+ * mapper convention. Resolves all related domain objects — {@link Edition},
+ * {@link Publication}, {@link Author}, and {@link Genre} — directly from
+ * their respective repositories, keeping the application service layer
+ * free of DTO concerns.
+ * </p>
+ *
+ * <p>
+ * Adds a self-link to each assembled DTO pointing to the item's
+ * dedicated GET endpoint.
+ * </p>
+ */
 
 @Component
 public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item, ItemResponseDTO> {
@@ -78,6 +101,11 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
         dto.add(linkTo(methodOn(ItemRestController.class)
                 .getItemById(item.identity().toString()))
                 .withSelfRel());
+
+        if (item.getSaleStatus() == SaleStatus.NotOnSale){
+            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null)).withRel("create-direct-sale"));
+
+        }
 
         return dto;
     }
