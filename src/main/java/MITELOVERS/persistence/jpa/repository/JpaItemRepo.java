@@ -94,7 +94,7 @@ public class JpaItemRepo implements IItemRepo {
     @Override
     public boolean containsOfIdentity(ItemId id) {
 
-        return _itemSpringDataRepo.existsById(id.toString());
+        return _itemSpringDataRepo.existsById(id.getValue());
 
     }
 
