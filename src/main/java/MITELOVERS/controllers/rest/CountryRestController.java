@@ -21,6 +21,17 @@ import java.util.stream.StreamSupport;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller exposing Country operations to API clients.
+ *
+ * <p>Provides endpoints for creating countries, retrieving all countries,
+ * fetching a specific country by its identifier. Responses are enriched with HATEOAS links to support
+ * discoverability and navigability of the API.</p>
+ *
+ * <p>This controller delegates all business logic to
+ * {@link CountryService}, ensuring a clean separation between HTTP
+ * concerns and domain/application logic.</p>
+ */
 
 @RestController
 @RequestMapping("/countries")
@@ -47,6 +58,12 @@ public class CountryRestController {
         User user = _userService.getUserByEmail(email);
 
         RepresentationModel<?> model = new RepresentationModel<>();
+
+        model.add(
+                linkTo(methodOn(CountryRestController.class)
+                        .options(email))
+                        .withSelfRel()
+        );
 
         _countryLinkProvider.getLinks(user).forEach(model::add);
 

@@ -59,13 +59,12 @@ class DirectSaleRestControllerTest {
     //-----------------
 
     @Test
-    void options_shouldReturnLinksForUser() {
+    void options_shouldReturnSelfLinkAndProviderLinks() {
 
         // Arrange
         String email = "john@example.com";
 
         User user = mock(User.class);
-
         when(_userService.getUserByEmail(email)).thenReturn(user);
 
         Link link1 = Link.of("/direct-sales").withRel("self");
@@ -83,8 +82,17 @@ class DirectSaleRestControllerTest {
         RepresentationModel<?> body = result.getBody();
         assertNotNull(body);
 
+        // 1) Self link added by controller
         assertTrue(body.getLinks().hasLink("self"));
+
+        // 2) Provider links
         assertTrue(body.getLinks().hasLink("create"));
+
+        // 3) Optional: assert order (strong mutation killer)
+        List<Link> links = body.getLinks().toList();
+        assertEquals("self", links.get(0).getRel().value());   // controller self link
+        assertEquals("self", links.get(1).getRel().value());   // provider link1
+        assertEquals("create", links.get(2).getRel().value()); // provider link2
     }
 
     // ------------------------------------------------------------
