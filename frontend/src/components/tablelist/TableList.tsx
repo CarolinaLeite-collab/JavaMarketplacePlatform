@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {IconChevronDown, IconChevronUp, IconSearch, IconSelector} from '@tabler/icons-react';
-import {Center, Group, ScrollArea, Table, Text, TextInput, UnstyledButton} from '@mantine/core';
+import {Anchor, Center, Group, ScrollArea, Table, Text, TextInput, UnstyledButton} from '@mantine/core';
 import classes from './TableList.module.css';
 import {ShareListModal} from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../context/AppContext';
@@ -70,6 +71,7 @@ export function TableList() {
     const { state, dispatch } = useContext(AppContext);
     const { lists } = state.lists;
     const { myListsHref, libraryHref } = state.app;
+    const navigate = useNavigate();
     console.log('TableList render - myListsHref:', myListsHref, 'lists:', lists);
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
@@ -97,7 +99,11 @@ export function TableList() {
 
         return (
             <Table.Tr key={row.listId}>
-                <Table.Td>{row.name}</Table.Td>
+                <Table.Td>
+                    <Anchor component="button" fz="sm" onClick={() => navigate(`/my-lists/${row.listId}`)}>
+                        {row.name}
+                    </Anchor>
+                </Table.Td>
                 <Table.Td>{row.genre}</Table.Td>
                 <Table.Td>
                     {row.sharedUntil !== null
