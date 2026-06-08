@@ -189,4 +189,12 @@ public class DirectSaleRestController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteDirectSale(@PathVariable String id) {
+
+        _directSaleService.deleteDirectSale(new DirectSaleId(id));
+
+        return ResponseEntity.noContent().build();
+    }
+
 }

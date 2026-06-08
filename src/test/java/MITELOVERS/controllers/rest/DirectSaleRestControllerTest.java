@@ -27,8 +27,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DirectSaleRestControllerTest {
@@ -346,6 +345,36 @@ class DirectSaleRestControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
         assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
+    }
+
+    @Test
+    void deleteDirectSale_shouldReturnNoContent() {
+
+        // Arrange
+        String id = "DS-A1B2C3D4";
+        // no stubbing needed — service returns void
+
+        // Act
+        ResponseEntity<Void> response = _controller.deleteDirectSale(id);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void deleteDirectSale_shouldPropagateExceptionFromService() {
+
+        // Arrange
+        String id = "DS-A1B2C3D4";
+
+        doThrow(new IllegalStateException("boom"))
+                .when(_service)
+                .deleteDirectSale(new DirectSaleId(id));
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _controller.deleteDirectSale(id));
     }
 
 }
