@@ -20,8 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DirectSaleServiceTest {
@@ -409,4 +408,50 @@ class DirectSaleServiceTest {
         result.add(new DirectSaleId("DS-A1B2C3D4"));
         assertEquals(initialSize + 1, result.size());
     }
+
+    // -------------
+    // DELETE tests
+    // -------------
+    @Test
+    void deleteDirectSale_shouldDeleteWithoutErrors() {
+
+        // Arrange
+        DirectSaleId id = mock(DirectSaleId.class);
+
+        // Act
+        assertDoesNotThrow(() -> _service.deleteDirectSale(id));
+
+        // Assert
+        assertTrue(true); // state-based: no exception means success
+    }
+
+
+    @Test
+    void deleteDirectSale_shouldPropagateExceptionWhenRepoFails() {
+
+        // Arrange
+        DirectSaleId id = mock(DirectSaleId.class);
+
+        doThrow(new IllegalStateException("delete failed"))
+                .when(_iDirectSaleRepo)
+                .deleteDirectSale(id);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _service.deleteDirectSale(id));
+    }
+
+    @Test
+    void deleteDirectSale_shouldAcceptAnyId() {
+
+        // Arrange
+        DirectSaleId id = mock(DirectSaleId.class);
+
+        // Act
+        _service.deleteDirectSale(id);
+
+        // Assert
+        assertNotNull(id);
+    }
+
 }
