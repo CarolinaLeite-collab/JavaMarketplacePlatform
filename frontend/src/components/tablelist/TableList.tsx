@@ -122,7 +122,12 @@ export function TableList() {
                             listName={row.name}
                             libraryHref={libraryHref}
                             existingItemIds={row.itemIds}
-                            onConfirm={(ids) => ids.forEach(id => addItemToList(dispatch, row.links, id))}
+                            onConfirm={async (ids) => {
+                                for (const id of ids) {
+                                    await addItemToList(dispatch, row.links, id);
+                                }
+                                if (myListsHref) await getMyLists(dispatch, myListsHref);
+                            }}
                         />
                     </Center>
                 </Table.Td>
