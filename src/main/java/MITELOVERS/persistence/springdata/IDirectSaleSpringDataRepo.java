@@ -12,12 +12,14 @@ public interface IDirectSaleSpringDataRepo extends JpaRepository<DirectSaleDataM
 
     List<DirectSaleDataModel> findByItemsIdOrderByCreationDateDesc(List<String> itemsId);
 
-    @Query("""
+    @Query( value = """
     SELECT ds
     FROM DirectSaleDataModel ds
     WHERE ds.timeLimit IS NOT NULL
-      AND FUNCTION('DATEADD', 'SECOND', ds.timeLimit, ds.creationDate) < CURRENT_TIMESTAMP
-""")
+      AND DATEADD('SECOND', ds.timeLimit, ds.creationDate) < CURRENT_TIMESTAMP
+    """,
+            nativeQuery = true
+    )
     List<DirectSaleDataModel> findExpiredRaw();
 
 }
