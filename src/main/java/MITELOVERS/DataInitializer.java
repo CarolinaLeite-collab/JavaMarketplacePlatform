@@ -593,6 +593,7 @@ public class DataInitializer {
             // Direct Sales
             DirectSale hipocritoesSale = directSaleFactory.createDirectSale(
                     List.of(hipocritoesItemId),
+                    user.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(30)
             );
@@ -602,6 +603,7 @@ public class DataInitializer {
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
                     List.of(itemId1, itemId2),
+                    user.identity(),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
             );
@@ -609,6 +611,7 @@ public class DataInitializer {
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
                     List.of(item5),
+                    user2.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
             );
@@ -616,6 +619,7 @@ public class DataInitializer {
 
             DirectSale directSale3 = directSaleFactory.createDirectSale(
                     List.of(new ItemId()),
+                    user2.identity(),
                     new Price(4.99, Currency.EUR),
                     null  // unlimited duration
             );
@@ -623,6 +627,7 @@ public class DataInitializer {
 
             DirectSale directSale4 = directSaleFactory.createDirectSale(
                     List.of(itemIdE1027),
+                    user3.identity(),
                     new Price(500, Currency.EUR),
                     null  // unlimited duration
             );
@@ -699,6 +704,7 @@ public class DataInitializer {
             // Fiction — DirectSale #1 (existing items)
             DirectSale fictionSale1 = directSaleFactory.createDirectSale(
                     List.of(itemId1, itemId2),
+                    user.identity(),
                     new Price(7.99, Currency.EUR),
                     Duration.ofDays(15)
             );
@@ -717,6 +723,7 @@ public class DataInitializer {
 
             DirectSale fictionSale2 = directSaleFactory.createDirectSale(
                     List.of(fictionExtraId),
+                    user.identity(),
                     new Price(5.99, Currency.EUR),
                     Duration.ofDays(10)
             );
@@ -725,6 +732,7 @@ public class DataInitializer {
             // Non-Fiction
             DirectSale nonFictionSale = directSaleFactory.createDirectSale(
                     List.of(nfItemId),
+                    user2.identity(),
                     new Price(8.49, Currency.EUR),
                     Duration.ofDays(20)
             );
@@ -733,6 +741,7 @@ public class DataInitializer {
             // Science-Fiction
             DirectSale sciFiSale = directSaleFactory.createDirectSale(
                     List.of(sfItemId),
+                    user2.identity(),
                     new Price(6.49, Currency.EUR),
                     Duration.ofDays(25)
             );
@@ -741,6 +750,7 @@ public class DataInitializer {
             // Architecture (existing item3)
             DirectSale architectureSale = directSaleFactory.createDirectSale(
                     List.of(itemId3),
+                    user3.identity(),
                     new Price(12.99, Currency.EUR),
                     Duration.ofDays(30)
             );
@@ -749,6 +759,7 @@ public class DataInitializer {
             // Seneca (existing item4)
             DirectSale architectureSale2 = directSaleFactory.createDirectSale(
                     List.of(itemId3),
+                    user3.identity(),
                     new Price(12.99, Currency.EUR),
                     Duration.ofDays(30)
             );
