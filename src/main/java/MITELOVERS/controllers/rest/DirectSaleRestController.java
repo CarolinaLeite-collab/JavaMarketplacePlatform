@@ -12,9 +12,11 @@ import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -85,10 +87,10 @@ public class DirectSaleRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
-            @RequestParam("email") String email,
+            @RequestHeader("X-User-Id") String userId,
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
-        DirectSale created = _directSaleService.createDirectSale(requestDTO, email);
+        DirectSale created = _directSaleService.createDirectSale(requestDTO, userId);
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
@@ -123,6 +125,31 @@ public class DirectSaleRestController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping(value="/active", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<DirectSaleResponseDTO>> getAllActiveDirectSales(
+            @RequestHeader("X-User-Id") String userId) {
+
+        List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
+
+        if (sales.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        List<DirectSaleResponseDTO> response = sales.stream()
+                .map(_responseMapper::toResponseDTO)
+                .toList();
+
+        response.forEach(dto ->
+                _directSaleLinkProvider.addResourceLinks(dto, userId)
+        );
+
+        CollectionModel<DirectSaleResponseDTO> result = CollectionModel.of(response);
+
+        _directSaleLinkProvider.addCollectionLinks(result, userId);
+
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
@@ -173,6 +174,56 @@ class DirectSaleRestControllerTest {
         // Act
         ResponseEntity<List<DirectSaleResponseDTO>> result =
                 _controller.getAllDirectSales();
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    // ------------------------------------------------------------
+    // GET /direct-sales/active
+    // ------------------------------------------------------------
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnOk() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of("ABCDEF1234"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now()
+        );
+
+        String email = "user@email.com";
+
+        when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
+                _controller.getAllActiveDirectSales(email);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(1, result.getBody().getContent().stream().count());
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnNoContentWhenEmpty() {
+
+        // Arrange
+        String email = "user@email.com";
+
+        when(_service.getAllActiveDirectSales()).thenReturn(List.of());
+
+        // Act
+        ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
+                _controller.getAllActiveDirectSales(email);
 
         // Assert
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
