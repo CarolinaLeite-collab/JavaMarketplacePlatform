@@ -49,6 +49,11 @@ class Author <<Aggregate Root>> {}
 class PublicationType <<Aggregate Root>>  {}
 class Genre <<Aggregate Root>> {}
 class AppraisalEntity <<Aggregate Root>> {}
+class ShoppingCart <<Aggregate Root>> {}
+class ShoppingCartLine <<Entity>> {}
+class Sale <<Aggregate Root>> {}
+class SaleLine <<Entity>> {}
+
 
 '=== Correlations ==='
 
@@ -88,6 +93,16 @@ Auction "1" --> "*" Bid
 
 '--- City ---'
 City "*" --> "1" Country
+
+'--- ShoppingCart ---'
+User "1" --> "0..1" ShoppingCart
+ShoppingCart "1" --> "*" ShoppingCartLine
+ShoppingCartLine "*" --> "1" DirectSale
+
+'--- Sale ---'
+User "1" --> "*" Sale
+Sale "1" --> "*" SaleLine
+SaleLine "*" --> "1" DirectSale
 
 
 

@@ -49,6 +49,8 @@ class Author <<Aggregate Root>> {}
 class PublicationType <<Aggregate Root>>  {}
 class Genre <<Aggregate Root>> {}
 class AppraisalEntity <<Aggregate Root>> {}
+class ShoppingCart <<Aggregate Root>> {}
+class Sale <<Aggregate Root>> {}
 
 '=== Correlations ==='
 
@@ -72,6 +74,7 @@ User "1" --> "1" Library
 'User "1" --> "*" Bid
 User "1" --> "*" Auction
 User "1" --> "*" DirectSale
+User "1" --> "0..1" ShoppingCart
 
 '--- Publication ---'
 Publication "*" --> "1" Author
@@ -89,6 +92,9 @@ Item "1" --> "0..1" DirectSale
 '--- City ---'
 City "*" --> "1" Country
 
+'--- ShoppingCarte ---'
+'--- Sale ---'
+User "1" --> "*" Sale
 
 
 @enduml

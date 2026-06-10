@@ -116,6 +116,7 @@ Package "DOMAIN" {
 
                 object PublishingCompany <<Aggregate Root>>
 
+
             }
 
             '== Value Object (Id) ==
@@ -130,7 +131,19 @@ Package "DOMAIN" {
         }
 
 '=== B4 ==
+    together {
 
+        Package "LIBRARY" <<Folder>> #b0c4d4 {
+
+            object Library <<Aggregate Root>>
+
+        }
+
+        Package "LISTOFITEMS" <<Folder>> #b0c4d4 {
+
+            object ListOfItems <<Aggregate Root>>
+
+        }
 
 
     together {
@@ -153,21 +166,21 @@ Package "DOMAIN" {
             object Bid <<Entity>>
         }
 
+        together {
+        Package "SHOPPINGCART" <<Folder>> #b0c4d4 {
+            object ShoppingCart <<Aggregate Root>>
+            object ShoppingCartLine <<Entity>>
+}
+
+        Package "SALE" <<Folder>> #b0c4d4 {
+            object Sale <<Aggregate Root>>
+            object SaleLine <<Entity>>
+}
+}
+
     }
 
-    together {
 
-        Package "LIBRARY" <<Folder>> #b0c4d4 {
-
-            object Library <<Aggregate Root>>
-
-        }
-
-        Package "LISTOFITEMS" <<Folder>> #b0c4d4 {
-
-            object ListOfItems <<Aggregate Root>>
-
-        }
 
     }
 
@@ -176,6 +189,8 @@ Package "DOMAIN" {
     object DirectSaleId <<Value Object>> #LightPink
     object AuctionId <<Value Object>> #LightPink
     object ListOfItemsId <<Value Object>> #LightPink
+    object ShoppingCartId <<Value Object>> #LightPink
+    object SaleId <<Value Object>> #LightPink
 
 }
 
@@ -247,6 +262,20 @@ DirectSale "1" ---> "1" DirectSaleId: has
 '--- ListOfItems ---'
 ListOfItems "1" ....> "*" ItemId: references
 ListOfItems "1" ---> "1" ListOfItemsId: has
+
+'--- ShoppingCart ---'
+ShoppingCart "1" -> "1" ShoppingCartId : has
+ShoppingCart "1" -> "*" ShoppingCartLine : contains
+ShoppingCart "1" ..> "1" UserId : references
+ShoppingCartLine "*" ..> "1" DirectSaleId : references
+ShoppingCart "1" ..> "1" UserId : references
+
+'--- Sale ---'
+Sale "1" -> "1" SaleId : has
+Sale "1" -> "*" SaleLine : contains
+Sale "1" .> "1" UserId : references
+Sale "1" .> "1" UserId : references
+SaleLine "*" .> "1" DirectSaleId : references
 
 
 @enduml
