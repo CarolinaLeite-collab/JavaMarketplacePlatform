@@ -319,4 +319,29 @@ class DirectSaleTest {
         assertEquals(_sellerIdDouble, result);
 
     }
+
+    @Test
+    void shouldReturnStatus() {
+        //Arrange
+        DirectSaleId directSaleId = new DirectSaleId("DS-ABCDEF12");
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
+
+        DirectSale directSale = new DirectSale(
+                directSaleId,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit,
+                creationDate,
+                _saleStatus
+        );
+
+        //Act
+
+        DirectSaleStatus result = directSale.getDSStatus();
+
+        //Assert
+        assertEquals(_saleStatus, result);
+
+    }
 }
