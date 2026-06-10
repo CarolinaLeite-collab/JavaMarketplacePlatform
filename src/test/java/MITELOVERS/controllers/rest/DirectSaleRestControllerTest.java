@@ -25,6 +25,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -199,31 +200,34 @@ class DirectSaleRestControllerTest {
                 Instant.now()
         );
 
-        String email = "user@email.com";
+        String userId = "user@email.com";
 
         when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
         // Act
         ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
-                _controller.getAllActiveDirectSales(email);
+                _controller.getAllActiveDirectSales(userId);
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(1, result.getBody().getContent().stream().count());
+        assertEquals(1, new ArrayList<>(result.getBody().getContent()).size());
+        assertSame(dto, new ArrayList<>(result.getBody().getContent()).get(0));
+        verify(_linkProvider).addResourceLinks(dto, userId);
+        verify(_linkProvider).addCollectionLinks(result.getBody(), userId);
     }
 
     @Test
     void getAllActiveDirectSales_shouldReturnNoContentWhenEmpty() {
 
         // Arrange
-        String email = "user@email.com";
+        String userId = "user@email.com";
 
         when(_service.getAllActiveDirectSales()).thenReturn(List.of());
 
         // Act
         ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
-                _controller.getAllActiveDirectSales(email);
+                _controller.getAllActiveDirectSales(userId);
 
         // Assert
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
