@@ -1,9 +1,6 @@
 package MITELOVERS.domain.directsale;
 
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +21,7 @@ class DirectSaleTest {
     private Price _priceDouble;
     private Duration _timeLimit;
     private Instant _creationDate;
+    private DirectSaleStatus _saleStatus;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +34,7 @@ class DirectSaleTest {
         _priceDouble = mock(Price.class);
         _timeLimit = Duration.ofDays(3);
         _creationDate = Instant.parse("2024-01-01T10:00:00Z");
+        _saleStatus = DirectSaleStatus.ACTIVE;
     }
 
     @Test
@@ -43,7 +42,7 @@ class DirectSaleTest {
         //Arrange
 
         //SUT
-        DirectSale directSale = new DirectSale(_dsIdDouble, _itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit, _creationDate);
+        DirectSale directSale = new DirectSale(_dsIdDouble, _itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit, _creationDate, _saleStatus);
 
         //Act & Assert
         assertEquals(_dsIdDouble, directSale.identity());
@@ -285,7 +284,8 @@ class DirectSaleTest {
                 _sellerIdDouble,
                 _priceDouble,
                 _timeLimit,
-                creationDate
+                creationDate,
+                _saleStatus
         );
 
         //Act
@@ -307,7 +307,8 @@ class DirectSaleTest {
                 _sellerIdDouble,
                 _priceDouble,
                 _timeLimit,
-                creationDate
+                creationDate,
+                _saleStatus
         );
 
         //Act

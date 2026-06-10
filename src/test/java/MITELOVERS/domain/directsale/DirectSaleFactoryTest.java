@@ -1,9 +1,6 @@
 package MITELOVERS.domain.directsale;
 
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -60,6 +57,7 @@ class DirectSaleFactoryTest {
         Price price = mock(Price.class);
         Duration timeLimit = Duration.ofDays(5);
         Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
+        DirectSaleStatus status = DirectSaleStatus.ACTIVE;
 
         //SUT
         DirectSaleFactory factory = new DirectSaleFactory();
@@ -72,7 +70,7 @@ class DirectSaleFactoryTest {
                              })) {
 
             //Act
-            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, sellerIdDouble, price, timeLimit, creationDate);
+            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, sellerIdDouble, price, timeLimit, creationDate, status);
 
             //Assert
             assertEquals(id, newDirectSale.identity());
