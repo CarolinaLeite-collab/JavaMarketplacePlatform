@@ -84,6 +84,30 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
     }
 
+    public void markAsCompleted() {
+
+        if (_status == DirectSaleStatus.COMPLETED) {
+            throw new IllegalStateException("This Direct Sale was already completed!");
+        }
+
+        _status = DirectSaleStatus.COMPLETED;
+
+    }
+
+    public void markAsExpired() {
+
+        if (_status == DirectSaleStatus.EXPIRED) {
+            throw new IllegalStateException("This Direct Sale was already expired!");
+        }
+
+        if (_timeLimit != null && _creationDate.plus(_timeLimit).isAfter(Instant.now())) {
+            throw new IllegalStateException("Cannot marked as expired - still within the time limit!");
+        }
+
+        _status = DirectSaleStatus.EXPIRED;
+
+    }
+
     @Override
     public DirectSaleId identity() {
         return _directSaleId;

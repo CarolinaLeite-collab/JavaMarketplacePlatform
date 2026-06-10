@@ -344,4 +344,95 @@ class DirectSaleTest {
         assertEquals(_saleStatus, result);
 
     }
+
+    @Test
+    void shouldBeMarkedAsCompleteAfterBeingMarkedCompleted() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act
+        directSale.markAsCompleted();
+
+        // Assert
+        assertEquals(DirectSaleStatus.COMPLETED, directSale.getDSStatus());
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsAlreadyCompleted() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act
+        directSale.markAsCompleted();
+
+        // Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsCompleted()
+        );
+    }
+
+    @Test
+    void shouldBeMarkedAsExpiredAfterBeingMarkedExpired() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act
+        directSale.markAsExpired();
+
+        // Assert
+        assertEquals(DirectSaleStatus.EXPIRED, directSale.getDSStatus());
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsAlreadyExpired() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act
+        directSale.markAsExpired();
+
+        // Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsExpired()
+        );
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsStillWithinTimeLimit() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsExpired()
+        );
+    }
 }
