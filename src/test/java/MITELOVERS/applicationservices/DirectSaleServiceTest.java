@@ -131,6 +131,7 @@ class DirectSaleServiceTest {
         );
 
         String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
 
         ItemId itemId = new ItemId("ABCDEF1234");
 
@@ -155,6 +156,7 @@ class DirectSaleServiceTest {
         );
 
         String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
 
         ItemId itemId = new ItemId("ABCDEF1234");
         Item item = mock(Item.class);
@@ -219,10 +221,33 @@ class DirectSaleServiceTest {
         );
 
         String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
 
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
+                () -> _service.createDirectSale(request, email)
+        );
+    }
+
+    @Test
+    void createDirectSale_shouldThrowWhenUserDoesNotExist() {
+
+        // Arrange
+        DirectSaleRequestDTO request = new DirectSaleRequestDTO(
+                List.of("ABCDEF1234"), // duplicate
+                20.0,
+                "USD",
+                3600L
+        );
+
+        String email = "seller@selling.com";
+
+        when(_userService.userIdExists(email)).thenReturn(false);
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
                 () -> _service.createDirectSale(request, email)
         );
     }
@@ -255,6 +280,35 @@ class DirectSaleServiceTest {
 
         // Act
         List<DirectSale> result = _service.getAllDirectSales();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnDomainList() {
+
+        // Arrange
+        DirectSale ds = mock(DirectSale.class);
+        when(ds.getDSStatus()).thenReturn(DirectSaleStatus.ACTIVE);
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+
+        // Act (SUT)
+        List<DirectSale> result = _service.getAllActiveDirectSales();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(ds, result.get(0));
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnEmptyListWhenNoDirectSales() {
+
+        // Arrange
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of());
+
+        // Act
+        List<DirectSale> result = _service.getAllActiveDirectSales();
 
         // Assert
         assertTrue(result.isEmpty());

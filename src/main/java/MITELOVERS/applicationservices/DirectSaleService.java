@@ -59,7 +59,12 @@ public class DirectSaleService {
                 .map(ItemId::new)
                 .toList();
 
-        // 1. Fail fast on duplicates
+        // Validate user + create userId
+        if (!(_userService.userIdExists(email))) {
+            throw new IllegalStateException("This is user does not exist!");
+        }
+
+        // Fail fast on duplicates
         Set<ItemId> unique = new HashSet<>(itemsId);
         if (unique.size() != itemsId.size()) {
             throw new IllegalArgumentException("Duplicate items are not allowed in a DirectSale.");
@@ -84,11 +89,6 @@ public class DirectSaleService {
         Duration timeLimit = request.getTimeLimitSeconds() != null
                 ? Duration.ofSeconds(request.getTimeLimitSeconds())
                 : null;
-
-        // Validate user + create userId
-        if (!(_userService.userIdExists(email))) {
-            throw new IllegalStateException("This is user does not exist!");
-        }
 
         UserId sellerId = new UserId(new Email(email));
 
@@ -118,6 +118,26 @@ public class DirectSaleService {
         _iDirectSaleRepo.findAll().forEach(result::add);
 
         return result;
+    }
+
+    @Transactional
+    public List<DirectSale> getAllActiveDirectSales() {
+
+        List<DirectSale> result = new ArrayList<>();
+        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+
+        for (DirectSale directSale : directSales) {
+
+            if (directSale.getDSStatus() == DirectSaleStatus.ACTIVE) {
+
+                result.add(directSale);
+
+            }
+
+        }
+
+        return result;
+
     }
 
     @Transactional
