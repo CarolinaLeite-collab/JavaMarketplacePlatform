@@ -18,17 +18,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DirectSaleRestControllerTest {
@@ -59,13 +60,12 @@ class DirectSaleRestControllerTest {
     //-----------------
 
     @Test
-    void options_shouldReturnLinksForUser() {
+    void options_shouldReturnSelfLinkAndProviderLinks() {
 
         // Arrange
         String email = "john@example.com";
 
         User user = mock(User.class);
-
         when(_userService.getUserByEmail(email)).thenReturn(user);
 
         Link link1 = Link.of("/direct-sales").withRel("self");
@@ -83,8 +83,17 @@ class DirectSaleRestControllerTest {
         RepresentationModel<?> body = result.getBody();
         assertNotNull(body);
 
+        // 1) Self link added by controller
         assertTrue(body.getLinks().hasLink("self"));
+
+        // 2) Provider links
         assertTrue(body.getLinks().hasLink("create"));
+
+        // 3) Optional: assert order (strong mutation killer)
+        List<Link> links = body.getLinks().toList();
+        assertEquals("self", links.get(0).getRel().value());   // controller self link
+        assertEquals("self", links.get(1).getRel().value());   // provider link1
+        assertEquals("create", links.get(2).getRel().value()); // provider link2
     }
 
     // ------------------------------------------------------------
@@ -99,6 +108,8 @@ class DirectSaleRestControllerTest {
 
         DirectSale domain = mock(DirectSale.class);
 
+        String email = "email@email.com";
+
         DirectSaleResponseDTO response =
                 new DirectSaleResponseDTO(
                         "DS-A1B2C3D4",
@@ -109,12 +120,12 @@ class DirectSaleRestControllerTest {
                         Instant.now()
                 );
 
-        when(_service.createDirectSale(request)).thenReturn(domain);
+        when(_service.createDirectSale(request, email)).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(response);
 
         // Act (SUT)
         ResponseEntity<DirectSaleResponseDTO> result =
-                _controller.createDirectSale(request);
+                _controller.createDirectSale(email, request);
 
         // Assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
@@ -164,6 +175,59 @@ class DirectSaleRestControllerTest {
         // Act
         ResponseEntity<List<DirectSaleResponseDTO>> result =
                 _controller.getAllDirectSales();
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    // ------------------------------------------------------------
+    // GET /direct-sales/active
+    // ------------------------------------------------------------
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnOk() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of("ABCDEF1234"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now()
+        );
+
+        String userId = "user@email.com";
+
+        when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
+                _controller.getAllActiveDirectSales(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(1, new ArrayList<>(result.getBody().getContent()).size());
+        assertSame(dto, new ArrayList<>(result.getBody().getContent()).get(0));
+        verify(_linkProvider).addResourceLinks(dto, userId);
+        verify(_linkProvider).addCollectionLinks(result.getBody(), userId);
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnNoContentWhenEmpty() {
+
+        // Arrange
+        String userId = "user@email.com";
+
+        when(_service.getAllActiveDirectSales()).thenReturn(List.of());
+
+        // Act
+        ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
+                _controller.getAllActiveDirectSales(userId);
 
         // Assert
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
@@ -338,6 +402,36 @@ class DirectSaleRestControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
         assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
+    }
+
+    @Test
+    void deleteDirectSale_shouldReturnNoContent() {
+
+        // Arrange
+        String id = "DS-A1B2C3D4";
+        // no stubbing needed — service returns void
+
+        // Act
+        ResponseEntity<Void> response = _controller.deleteDirectSale(id);
+
+        // Assert
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void deleteDirectSale_shouldPropagateExceptionFromService() {
+
+        // Arrange
+        String id = "DS-A1B2C3D4";
+
+        doThrow(new IllegalStateException("boom"))
+                .when(_service)
+                .deleteDirectSale(new DirectSaleId(id));
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _controller.deleteDirectSale(id));
     }
 
 }

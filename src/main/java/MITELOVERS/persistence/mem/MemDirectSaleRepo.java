@@ -8,6 +8,7 @@ import MITELOVERS.domain.valueobject.ItemId;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -88,6 +89,26 @@ public class MemDirectSaleRepo implements IDirectSaleRepo {
         return DATA.values().stream()
                 .filter(ds -> ds.getItemsId().stream().anyMatch(itemIds::contains))
                 .sorted(Comparator.comparing(DirectSale::getCreationDate).reversed())
+                .toList();
+    }
+
+    @Override
+    public void deleteDirectSale(DirectSaleId directSaleId) {
+
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<DirectSaleId> findExpired() {
+
+        Instant now = Instant.now();
+
+        return DATA.values().stream()
+                .filter(ds -> ds.getTimeLimit() != null)   // only sales with a time limit
+                .filter(ds -> ds.getCreationDate()
+                        .plus(ds.getTimeLimit())             // creationDate + timeLimit
+                        .isBefore(now))
+                .map(DirectSale::identity)
                 .toList();
     }
 

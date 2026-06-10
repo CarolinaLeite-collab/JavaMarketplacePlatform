@@ -1,8 +1,6 @@
 package MITELOVERS.domain.directsale;
 
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,23 +14,27 @@ import static org.mockito.Mockito.mock;
 
 class DirectSaleTest {
 
-    private List<ItemId> _itemsId;
-    private DirectSaleId _dsId;
+    private List<ItemId> _itemsIdDouble;
+    private DirectSaleId _dsIdDouble;
+    private UserId _sellerIdDouble;
     private ItemId _itemIdDouble;
     private Price _priceDouble;
     private Duration _timeLimit;
     private Instant _creationDate;
+    private DirectSaleStatus _saleStatus;
 
     @BeforeEach
     void setUp() {
 
-        _dsId = mock(DirectSaleId.class);
-        _itemsId = new ArrayList<>();
+        _dsIdDouble = mock(DirectSaleId.class);
+        _itemsIdDouble = new ArrayList<>();
+        _sellerIdDouble = mock(UserId.class);
         _itemIdDouble = mock(ItemId.class);
-        _itemsId.add(_itemIdDouble);
+        _itemsIdDouble.add(_itemIdDouble);
         _priceDouble = mock(Price.class);
         _timeLimit = Duration.ofDays(3);
         _creationDate = Instant.parse("2024-01-01T10:00:00Z");
+        _saleStatus = DirectSaleStatus.ACTIVE;
     }
 
     @Test
@@ -40,10 +42,10 @@ class DirectSaleTest {
         //Arrange
 
         //SUT
-        DirectSale directSale = new DirectSale(_dsId, _itemsId, _priceDouble, _timeLimit, _creationDate);
+        DirectSale directSale = new DirectSale(_dsIdDouble, _itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit, _creationDate, _saleStatus);
 
         //Act & Assert
-        assertEquals(_dsId, directSale.identity());
+        assertEquals(_dsIdDouble, directSale.identity());
 
     }
 
@@ -51,10 +53,10 @@ class DirectSaleTest {
     void constructorShouldBuildDirectSaleWithTimeLimit() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act & Assert
-        assertEquals(_itemsId, directSale.getItemsId());
+        assertEquals(_itemsIdDouble, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
         assertEquals(_timeLimit, directSale.getTimeLimit());
         assertThrows(UnsupportedOperationException.class,
@@ -65,10 +67,10 @@ class DirectSaleTest {
     void constructorShouldBuildDirectSaleWithoutTimeLimit() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, null);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, null);
 
         //Act & Assert
-        assertEquals(_itemsId, directSale.getItemsId());
+        assertEquals(_itemsIdDouble, directSale.getItemsId());
         assertEquals(_priceDouble, directSale.getPrice());
         assertNull(directSale.getTimeLimit());
     }
@@ -78,7 +80,7 @@ class DirectSaleTest {
         //Act
         //SUT
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(_itemsId, null, _timeLimit));
+                () -> new DirectSale(_itemsIdDouble, _sellerIdDouble, null, _timeLimit));
 
         //Assert
         assertEquals("Price is required for a direct sale", ex.getMessage());
@@ -90,7 +92,7 @@ class DirectSaleTest {
         //Act
         //SUT
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(null, _priceDouble, _timeLimit)); // SUT
+                () -> new DirectSale(null, _sellerIdDouble, _priceDouble, _timeLimit)); // SUT
 
         //Assert
         assertEquals("ItemId is required for a direct sale", ex.getMessage());
@@ -107,7 +109,7 @@ class DirectSaleTest {
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new DirectSale(listWithNull, _priceDouble, _timeLimit)
+                () -> new DirectSale(listWithNull, _sellerIdDouble, _priceDouble, _timeLimit)
         );
 
         //Assert
@@ -121,7 +123,7 @@ class DirectSaleTest {
 
         //Act & Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> new DirectSale(_itemsId, _priceDouble, negativeLimit)); // SUT
+                () -> new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, negativeLimit)); // SUT
 
         //Assert
         assertEquals("Time limit cannot be negative", ex.getMessage());
@@ -135,7 +137,7 @@ class DirectSaleTest {
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new DirectSale(duplicates, _priceDouble, _timeLimit)
+                () -> new DirectSale(duplicates, _sellerIdDouble, _priceDouble, _timeLimit)
         );
 
         assertEquals("DirectSale cannot contain duplicate items.", ex.getMessage());
@@ -145,7 +147,7 @@ class DirectSaleTest {
     void shouldReturnIdentity() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         DirectSaleId result = directSale.identity();
@@ -160,7 +162,7 @@ class DirectSaleTest {
     void shouldReturnTrueWhenSameIdentity() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale.equals(directSale);
@@ -173,8 +175,8 @@ class DirectSaleTest {
     void shouldReturnFalseWhenDifferentIdentities(){
         //Arrange
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale1 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.equals(directSale2);
@@ -187,7 +189,7 @@ class DirectSaleTest {
     void shouldReturnFalseWhenObjectIsNull() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Assert
         assertFalse(directSale.sameAs(null));
@@ -197,7 +199,7 @@ class DirectSaleTest {
     void shouldReturnFalseWhenObjectIsDifferentType() {
         //Arrange
         //SUT
-        DirectSale directSale = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale.equals(_itemIdDouble);
@@ -210,8 +212,8 @@ class DirectSaleTest {
     void shouldReturnTrueWhenSameFields() {
         //Arrange
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale1 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -228,8 +230,8 @@ class DirectSaleTest {
         itemsId2.add(itemIdDouble2);
 
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
-        DirectSale directSale2 = new DirectSale(itemsId2, _priceDouble, _timeLimit);
+        DirectSale directSale1 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
+        DirectSale directSale2 = new DirectSale(itemsId2, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -244,8 +246,8 @@ class DirectSaleTest {
         Price pricedouble2 = mock(Price.class);
 
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, pricedouble2, _timeLimit);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale1 = new DirectSale(_itemsIdDouble, _sellerIdDouble, pricedouble2, _timeLimit);
+        DirectSale directSale2 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -260,8 +262,8 @@ class DirectSaleTest {
         Duration timeDouble = Duration.ofDays(5);
 
         //SUT
-        DirectSale directSale1 = new DirectSale(_itemsId, _priceDouble, timeDouble);
-        DirectSale directSale2 = new DirectSale(_itemsId, _priceDouble, _timeLimit);
+        DirectSale directSale1 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, timeDouble);
+        DirectSale directSale2 = new DirectSale(_itemsIdDouble, _sellerIdDouble, _priceDouble, _timeLimit);
 
         //Act
         boolean result = directSale1.sameAs(directSale2);
@@ -278,10 +280,12 @@ class DirectSaleTest {
 
         DirectSale directSale = new DirectSale(
                 directSaleId,
-                _itemsId,
+                _itemsIdDouble,
+                _sellerIdDouble,
                 _priceDouble,
                 _timeLimit,
-                creationDate
+                creationDate,
+                _saleStatus
         );
 
         //Act
@@ -289,5 +293,146 @@ class DirectSaleTest {
 
         //Assert
         assertEquals(creationDate, result);
+    }
+
+    @Test
+    void shouldReturnSellerId() {
+        //Arrange
+        DirectSaleId directSaleId = new DirectSaleId("DS-ABCDEF12");
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
+
+        DirectSale directSale = new DirectSale(
+                directSaleId,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit,
+                creationDate,
+                _saleStatus
+        );
+
+        //Act
+
+        UserId result = directSale.getSellerId();
+
+        //Assert
+        assertEquals(_sellerIdDouble, result);
+
+    }
+
+    @Test
+    void shouldReturnStatus() {
+        //Arrange
+        DirectSaleId directSaleId = new DirectSaleId("DS-ABCDEF12");
+        Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
+
+        DirectSale directSale = new DirectSale(
+                directSaleId,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit,
+                creationDate,
+                _saleStatus
+        );
+
+        //Act
+
+        DirectSaleStatus result = directSale.getDSStatus();
+
+        //Assert
+        assertEquals(_saleStatus, result);
+
+    }
+
+    @Test
+    void shouldBeMarkedAsCompleteAfterBeingMarkedCompleted() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act
+        directSale.markAsCompleted();
+
+        // Assert
+        assertEquals(DirectSaleStatus.COMPLETED, directSale.getDSStatus());
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsAlreadyCompleted() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act
+        directSale.markAsCompleted();
+
+        // Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsCompleted()
+        );
+    }
+
+    @Test
+    void shouldBeMarkedAsExpiredAfterBeingMarkedExpired() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act
+        directSale.markAsExpired();
+
+        // Assert
+        assertEquals(DirectSaleStatus.EXPIRED, directSale.getDSStatus());
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsAlreadyExpired() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act
+        directSale.markAsExpired();
+
+        // Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsExpired()
+        );
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleIsStillWithinTimeLimit() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit
+        );
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsExpired()
+        );
     }
 }
