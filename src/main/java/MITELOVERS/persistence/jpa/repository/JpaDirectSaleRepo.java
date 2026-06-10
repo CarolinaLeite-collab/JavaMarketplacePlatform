@@ -121,4 +121,19 @@ public class JpaDirectSaleRepo implements IDirectSaleRepo {
                 .toList();
     }
 
+    @Override
+    public void deleteDirectSale(DirectSaleId id) {
+
+        _iDirectSaleSpringDataRepo.deleteById(id.toString());
+    }
+
+    @Override
+    public List<DirectSaleId> findExpired() {
+
+        return _iDirectSaleSpringDataRepo.findExpiredRaw()
+                .stream()
+                .map(dm -> new DirectSaleId(dm.getDirectSaleId()))
+                .toList();
+    }
+
 }

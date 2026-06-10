@@ -484,4 +484,48 @@ class ItemTest {
         // Assert
         assertNull(sut.getPicture());
     }
+
+    //-------------------
+    // Mark as NotOnSale
+    //-------------------
+    @Test
+    void markAsNotOnSale_shouldSetSaleStatusToNotOnSale() {
+
+        // Arrange
+        Item item = new Item(
+                new ItemId("AB12CD34EF"),
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.OnDirectSale,
+                null
+        );
+
+        // Act
+        item.markAsNotOnSale();
+
+        // Assert
+        assertEquals(SaleStatus.NotOnSale, item.getSaleStatus());
+    }
+
+    @Test
+    void markAsNotOnSale_shouldWorkFromAnySaleState() {
+
+        // Arrange
+        Item item = new Item(
+                new ItemId("AB12CD34EF"),
+                _editionIdDouble,
+                _conditionDouble,
+                _descriptionDouble,
+                SaleStatus.Sold,
+                null
+        );
+
+        // Act
+        item.markAsNotOnSale();
+
+        // Assert
+        assertEquals(SaleStatus.NotOnSale, item.getSaleStatus());
+    }
+
 }

@@ -70,6 +70,12 @@ public class DirectSaleRestController {
 
         RepresentationModel<?> model = new RepresentationModel<>();
 
+        model.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .options(email))
+                        .withSelfRel()
+        );
+
         _directSaleLinkProvider.getLinks(user).forEach(model::add);
 
         return ResponseEntity.ok(model);
@@ -181,6 +187,14 @@ public class DirectSaleRestController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteDirectSale(@PathVariable String id) {
+
+        _directSaleService.deleteDirectSale(new DirectSaleId(id));
+
+        return ResponseEntity.noContent().build();
     }
 
 }

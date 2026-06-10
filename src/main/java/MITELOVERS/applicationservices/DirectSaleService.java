@@ -10,6 +10,7 @@ import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.*;
@@ -46,6 +47,7 @@ public class DirectSaleService {
         _directSaleFactory = Objects.requireNonNull(directSaleFactory);
     }
 
+    @Transactional
     public DirectSale createDirectSale(DirectSaleRequestDTO request) {
 
         List<ItemId> itemsId = request.getItemsId()
@@ -97,6 +99,7 @@ public class DirectSaleService {
         return _iDirectSaleRepo.save(newDirectSale);
     }
 
+    @Transactional
     public List<DirectSale> getAllDirectSales() {
 
         List<DirectSale> result = new ArrayList<>();
@@ -106,6 +109,7 @@ public class DirectSaleService {
         return result;
     }
 
+    @Transactional
     public DirectSale getDirectSaleById(String id) {
 
         DirectSaleId directSaleId = new DirectSaleId(id);
@@ -118,6 +122,7 @@ public class DirectSaleService {
     // Filtered Direct Sales
     //-----------------------
 
+    @Transactional
     public List<DirectSaleId> getDirectSaleItemsByGenreAsc(String genreId) {
 
         if (genreId == null || genreId.isBlank()) {
@@ -159,6 +164,12 @@ public class DirectSaleService {
             }
         }
         return new ArrayList<>(distinctSaleIds);
+    }
+
+    @Transactional
+    public void deleteDirectSale(DirectSaleId directSaleId) {
+
+        _iDirectSaleRepo.deleteDirectSale(directSaleId);
     }
 
 }
