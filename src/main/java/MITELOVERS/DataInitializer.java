@@ -623,6 +623,8 @@ public class DataInitializer {
                     new Price(4.99, Currency.EUR),
                     null  // unlimited duration
             );
+
+            directSale3.markAsExpired();
             directSaleRepo.save(directSale3);
 
             DirectSale directSale4 = directSaleFactory.createDirectSale(
@@ -727,6 +729,9 @@ public class DataInitializer {
                     new Price(5.99, Currency.EUR),
                     Duration.ofDays(10)
             );
+
+            fictionSale2.markAsCompleted();
+
             directSaleRepo.save(fictionSale2);
 
             // Non-Fiction
@@ -763,6 +768,9 @@ public class DataInitializer {
                     new Price(12.99, Currency.EUR),
                     Duration.ofDays(30)
             );
+
+            architectureSale2.markAsCompleted();
+
             directSaleRepo.save(architectureSale2);
 
             log.info("DirectSales of all genres");
