@@ -1,18 +1,21 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 
+import java.time.Instant;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -20,24 +23,27 @@ import static org.mockito.Mockito.when;
 class DirectSaleLinkProviderTest {
 
     @Mock
-    private AuthorizationPolicy authorizationPolicy;
+    private AuthorizationPolicy authorizationPolicyDouble;
+
+    @Mock
+    private UserService userServiceDouble;
 
     @InjectMocks
     private DirectSaleLinkProvider provider;
 
     @Mock
-    private User user;
+    private User userDouble;
 
     @Test
     void shouldIncludeListDirectSalesLinkWhenAuthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(true);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(false);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(false);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertEquals(1, links.size());
@@ -45,15 +51,32 @@ class DirectSaleLinkProviderTest {
     }
 
     @Test
+    void shouldIncludeListActiveDirectSalesLinkWhenAuthorized() {
+
+        // Arrange
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canListActiveDirectSales(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userDouble);
+
+        // Assert
+        assertEquals(1, links.size());
+        assertEquals("active-direct-sales", links.get(0).getRel().value());
+    }
+
+    @Test
     void shouldNotIncludeListDirectSalesLinkWhenUnauthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(false);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(false);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -63,12 +86,12 @@ class DirectSaleLinkProviderTest {
     void shouldIncludeCreateDirectSaleLinkWhenAuthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(true);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(false);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertEquals(1, links.size());
@@ -79,12 +102,12 @@ class DirectSaleLinkProviderTest {
     void shouldNotIncludeCreateDirectSaleLinkWhenUnauthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(false);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(false);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -94,12 +117,12 @@ class DirectSaleLinkProviderTest {
     void shouldIncludeFilterDirectSalesLinkWhenAuthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(false);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(true);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(true);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertEquals(1, links.size());
@@ -110,12 +133,12 @@ class DirectSaleLinkProviderTest {
     void shouldNotIncludeFilterDirectSalesLinkWhenUnauthorized() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(false);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(false);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -125,13 +148,13 @@ class DirectSaleLinkProviderTest {
     void shouldIncludeAllLinksWhenAllPermissionsGranted() {
 
         // Arrange
-        when(authorizationPolicy.canListDirectSales(user)).thenReturn(true);
-        when(authorizationPolicy.canCreateDirectSale(user)).thenReturn(true);
-        when(authorizationPolicy.canFilterDirectSales(user)).thenReturn(true);
-        when(authorizationPolicy.canGetDirectSale(user)).thenReturn(true);
+        when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canFilterDirectSales(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canGetDirectSale(userDouble)).thenReturn(true);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales")));
@@ -145,10 +168,10 @@ class DirectSaleLinkProviderTest {
     void shouldIncludeOnlyNonRegisteredPermissionsWhenUserIsNotAuthorized() {
 
         // Arrange
-        when(authorizationPolicy.cannotSeePrice(any(User.class))).thenReturn(true);
+        when(authorizationPolicyDouble.cannotSeePrice(any(User.class))).thenReturn(true);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertEquals(1, links.size());
@@ -159,10 +182,10 @@ class DirectSaleLinkProviderTest {
     void shouldIncludeGetDirectSaleByIdLinkWhenAuthorized() {
 
         // Arrange
-        when(authorizationPolicy.canGetDirectSale(user)).thenReturn(true);
+        when(authorizationPolicyDouble.canGetDirectSale(userDouble)).thenReturn(true);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        List<Link> links = provider.getLinks(userDouble);
 
         // Assert
         assertEquals(1, links.size());
@@ -170,17 +193,80 @@ class DirectSaleLinkProviderTest {
     }
 
     @Test
-    void shouldNotIncludeGetDirectSaleByIdLinkWhenUnauthorized() {
+    void addResourceLinks_shouldAddSelfLinkOnly_whenUserCannotDelete() {
 
         // Arrange
-        when(authorizationPolicy.canGetDirectSale(user)).thenReturn(false);
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-ABCDEF12",
+                List.of("ABC123DEF0"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.parse("2024-01-01T10:00:00Z")
+        );
+
+        String email = "user@email.com";
+
+        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
+        when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getLinks(user);
+        provider.addResourceLinks(dto, email);
 
         // Assert
-        assertTrue(links.stream()
-                .noneMatch(link -> link.getRel().value().equals("direct-sale")));
+        assertTrue(dto.hasLink("self"));
+        assertFalse(dto.hasLink("delete"));
+    }
+
+    @Test
+    void addResourceLinks_shouldAddSelfAndDeleteLinks_whenUserCanDelete() {
+
+        // Arrange
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-ABCDEF12",
+                List.of("ABC123DEF0"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.parse("2024-01-01T10:00:00Z")
+        );
+
+        String email = "admin@email.com";
+
+        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
+        when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(true);
+
+        // Act
+        provider.addResourceLinks(dto, email);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+        assertTrue(dto.hasLink("delete"));
+    }
+
+    @Test
+    void addCollectionLinks_shouldAddSelfLink() {
+
+        // Arrange
+        String email = "user@email.com";
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-ABCDEF12",
+                List.of("ABC123DEF0"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.parse("2024-01-01T10:00:00Z")
+        );
+
+        CollectionModel<DirectSaleResponseDTO> dtos = CollectionModel.of(List.of(dto));
+
+        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
+
+        // Act
+        provider.addCollectionLinks(dtos, email);
+
+        // Assert
+        assertTrue(dtos.hasLink("self"));
     }
 
 }

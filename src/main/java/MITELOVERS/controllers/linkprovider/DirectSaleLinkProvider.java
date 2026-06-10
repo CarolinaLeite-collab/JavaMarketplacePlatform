@@ -1,10 +1,16 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
+import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.DirectSaleResponseDTO;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
@@ -33,10 +39,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class DirectSaleLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
+    private final UserService _userService;
 
-    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy) {
+    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy, UserService userService) {
 
         _authorizationPolicy = authorizationPolicy;
+        _userService = userService;
     }
 
     @Override
@@ -52,6 +60,14 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
             );
         }
 
+        if (_authorizationPolicy.canListActiveDirectSales(user)) {
+            links.add(
+                    WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
+                                    .getAllActiveDirectSales(null))
+                            .withRel("active-direct-sales")
+            );
+        }
+
         if (_authorizationPolicy.canGetDirectSale(user)) {
             links.add(
                     WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
@@ -63,7 +79,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canCreateDirectSale(user)) {
             links.add(
                     linkTo(methodOn(DirectSaleRestController.class)
-                            .createDirectSale(null))
+                            .createDirectSale(null, null))
                             .withRel("create-direct-sale")
             );
         }
@@ -84,4 +100,38 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         return links;
     }
+
+    public void addResourceLinks(DirectSaleResponseDTO dto, String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(null))
+                        .withSelfRel()
+        );
+
+        if(_authorizationPolicy.canDeleteList(user)) {
+
+            dto.add(
+                    linkTo(methodOn(DirectSaleRestController.class)
+                            .deleteDirectSale(null))
+                            .withRel("delete")
+                    );
+
+        }
+
+    }
+
+    public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        dtos.add(linkTo(methodOn(DirectSaleRestController.class)
+                .getAllActiveDirectSales(null))
+                .withSelfRel()
+        );
+
+    }
+
 }

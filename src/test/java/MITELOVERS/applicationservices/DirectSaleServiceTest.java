@@ -37,6 +37,9 @@ class DirectSaleServiceTest {
     @Mock
     private DirectSaleFactory _factory;
 
+    @Mock
+    private UserService _userService;
+
     @InjectMocks
     private DirectSaleService _service;
 
@@ -51,6 +54,8 @@ class DirectSaleServiceTest {
                 3600L
         );
 
+        String email = "seller@selling.com";
+
         List<ItemId> itemIds = List.of(
                 new ItemId("ABCDEF1234"),
                 new ItemId("A1B2C3D4E5")
@@ -59,6 +64,7 @@ class DirectSaleServiceTest {
         Item item1 = mock(Item.class);
         Item item2 = mock(Item.class);
 
+        when(_userService.userIdExists(email)).thenReturn(true);
         when(item1.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
         when(item2.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
         when(_iItemRepo.ofIdentity(itemIds.get(0))).thenReturn(Optional.of(item1));
@@ -67,13 +73,13 @@ class DirectSaleServiceTest {
         DirectSale newSale = mock(DirectSale.class);
         DirectSale savedSale = mock(DirectSale.class);
 
-        when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
+        when(_factory.createDirectSale(anyList(), any(), any(), any())).thenReturn(newSale);
         when(newSale.identity()).thenReturn(new DirectSaleId("DS-A1B2C3D4"));
         when(_iDirectSaleRepo.containsOfIdentity(any())).thenReturn(false);
         when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
 
         // Act
-        DirectSale result = _service.createDirectSale(request);
+        DirectSale result = _service.createDirectSale(request, email);
 
         // Assert
         assertSame(savedSale, result);
@@ -90,23 +96,26 @@ class DirectSaleServiceTest {
                 3600L
         );
 
+        String email = "seller@selling.com";
+
         ItemId itemId = new ItemId("ABCDEF1234");
         Item item = mock(Item.class);
 
         when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
         when(item.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+        when(_userService.userIdExists(email)).thenReturn(true);
 
         DirectSale newSale = mock(DirectSale.class);
         DirectSaleId id = new DirectSaleId("DS-A1B2C3D4");
 
-        when(_factory.createDirectSale(anyList(), any(), any())).thenReturn(newSale);
+        when(_factory.createDirectSale(anyList(), any(), any(), any())).thenReturn(newSale);
         when(newSale.identity()).thenReturn(id);
         when(_iDirectSaleRepo.containsOfIdentity(id)).thenReturn(true);
 
         // Act + Assert
         assertThrows(
                 IllegalStateException.class,
-                () -> _service.createDirectSale(request)
+                () -> _service.createDirectSale(request, email)
         );
     }
 
@@ -121,6 +130,9 @@ class DirectSaleServiceTest {
                 3600L
         );
 
+        String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
+
         ItemId itemId = new ItemId("ABCDEF1234");
 
         when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
@@ -128,7 +140,7 @@ class DirectSaleServiceTest {
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> _service.createDirectSale(request)
+                () -> _service.createDirectSale(request, email)
         );
     }
 
@@ -143,6 +155,9 @@ class DirectSaleServiceTest {
                 3600L
         );
 
+        String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
+
         ItemId itemId = new ItemId("ABCDEF1234");
         Item item = mock(Item.class);
 
@@ -152,7 +167,7 @@ class DirectSaleServiceTest {
         // Act + Assert
         assertThrows(
                 IllegalStateException.class,
-                () -> _service.createDirectSale(request)
+                () -> _service.createDirectSale(request, email)
         );
     }
 
@@ -167,9 +182,12 @@ class DirectSaleServiceTest {
                 null
         );
 
+        String email = "seller@selling.com";
+
         ItemId itemId = new ItemId("ABCDEF1234");
         Item item = mock(Item.class);
 
+        when(_userService.userIdExists(email)).thenReturn(true);
         when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(item));
         when(item.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
 
@@ -177,7 +195,7 @@ class DirectSaleServiceTest {
         DirectSale savedSale = mock(DirectSale.class);
         DirectSaleId dsId = new DirectSaleId("DS-A1B2C3D4");
 
-        when(_factory.createDirectSale(eq(List.of(itemId)), any(Price.class), isNull()))
+        when(_factory.createDirectSale(eq(List.of(itemId)), any(UserId.class), any(Price.class), isNull()))
                 .thenReturn(newSale);
 
         when(newSale.identity()).thenReturn(dsId);
@@ -185,7 +203,7 @@ class DirectSaleServiceTest {
         when(_iDirectSaleRepo.save(newSale)).thenReturn(savedSale);
 
         // Act
-        DirectSale result = _service.createDirectSale(request);
+        DirectSale result = _service.createDirectSale(request,email);
 
         // Assert
         assertSame(savedSale, result);
@@ -202,10 +220,35 @@ class DirectSaleServiceTest {
                 3600L
         );
 
+        String email = "seller@selling.com";
+        when(_userService.userIdExists(email)).thenReturn(true);
+
         // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> _service.createDirectSale(request)
+                () -> _service.createDirectSale(request, email)
+        );
+    }
+
+    @Test
+    void createDirectSale_shouldThrowWhenUserDoesNotExist() {
+
+        // Arrange
+        DirectSaleRequestDTO request = new DirectSaleRequestDTO(
+                List.of("ABCDEF1234"), // duplicate
+                20.0,
+                "USD",
+                3600L
+        );
+
+        String email = "seller@selling.com";
+
+        when(_userService.userIdExists(email)).thenReturn(false);
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> _service.createDirectSale(request, email)
         );
     }
 
@@ -237,6 +280,35 @@ class DirectSaleServiceTest {
 
         // Act
         List<DirectSale> result = _service.getAllDirectSales();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnDomainList() {
+
+        // Arrange
+        DirectSale ds = mock(DirectSale.class);
+        when(ds.getDSStatus()).thenReturn(DirectSaleStatus.ACTIVE);
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of(ds));
+
+        // Act (SUT)
+        List<DirectSale> result = _service.getAllActiveDirectSales();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(ds, result.get(0));
+    }
+
+    @Test
+    void getAllActiveDirectSales_shouldReturnEmptyListWhenNoDirectSales() {
+
+        // Arrange
+        when(_iDirectSaleRepo.findAll()).thenReturn(List.of());
+
+        // Act
+        List<DirectSale> result = _service.getAllActiveDirectSales();
 
         // Assert
         assertTrue(result.isEmpty());

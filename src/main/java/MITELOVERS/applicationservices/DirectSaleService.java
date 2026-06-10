@@ -6,6 +6,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
@@ -33,29 +34,36 @@ public class DirectSaleService {
 
     private final IGenreRepo _iGenreRepo;
     private final IDirectSaleRepo _iDirectSaleRepo;
+    private final UserService _userService;
     private final IItemRepo _iItemRepo;
     private final DirectSaleFactory _directSaleFactory;
 
     public DirectSaleService(IGenreRepo iGenreRepo,
                              IDirectSaleRepo iDirectSaleRepo,
                              IItemRepo iItemRepo,
+                             UserService userService,
                              DirectSaleFactory directSaleFactory) {
 
         _iGenreRepo = Objects.requireNonNull(iGenreRepo);
         _iDirectSaleRepo = Objects.requireNonNull(iDirectSaleRepo);
         _iItemRepo = Objects.requireNonNull(iItemRepo);
+        _userService = Objects.requireNonNull(userService);
         _directSaleFactory = Objects.requireNonNull(directSaleFactory);
     }
 
     @Transactional
-    public DirectSale createDirectSale(DirectSaleRequestDTO request) {
+    public DirectSale createDirectSale(DirectSaleRequestDTO request, String email) {
 
         List<ItemId> itemsId = request.getItemsId()
                 .stream()
                 .map(ItemId::new)
                 .toList();
 
-        // 1. Fail fast on duplicates
+        // Validate user + create userId
+        if (!(_userService.userIdExists(email))) {
+            throw new IllegalStateException("This is user does not exist!");
+        }
+
         Set<ItemId> unique = new HashSet<>(itemsId);
         if (unique.size() != itemsId.size()) {
             throw new IllegalArgumentException("Duplicate items are not allowed in a DirectSale.");
@@ -81,9 +89,10 @@ public class DirectSaleService {
                 ? Duration.ofSeconds(request.getTimeLimitSeconds())
                 : null;
 
-        // Create the DS
+        UserId sellerId = new UserId(new Email(email));
+
         DirectSale newDirectSale =
-                _directSaleFactory.createDirectSale(itemsId, price, timeLimit);
+                _directSaleFactory.createDirectSale(itemsId, sellerId, price, timeLimit);
 
         if (_iDirectSaleRepo.containsOfIdentity(newDirectSale.identity())) {
             throw new IllegalStateException("DirectSale already exists");
@@ -107,6 +116,26 @@ public class DirectSaleService {
         _iDirectSaleRepo.findAll().forEach(result::add);
 
         return result;
+    }
+
+    @Transactional
+    public List<DirectSale> getAllActiveDirectSales() {
+
+        List<DirectSale> result = new ArrayList<>();
+        Iterable<DirectSale> directSales = _iDirectSaleRepo.findAll();
+
+        for (DirectSale directSale : directSales) {
+
+            if (directSale.getDSStatus() == DirectSaleStatus.ACTIVE) {
+
+                result.add(directSale);
+
+            }
+
+        }
+
+        return result;
+
     }
 
     @Transactional

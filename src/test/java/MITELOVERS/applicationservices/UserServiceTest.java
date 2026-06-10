@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -50,5 +49,40 @@ class UserServiceTest {
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
                 service.getUserByEmail("unknown@aeiou.com"));
+    }
+
+    @Test
+    void userIdExistsShouldReturnTrueIfUserExists() {
+        // Arrange
+        String emailString = "seller@selling.com";
+
+        when(_userRepoDouble.containsOfIdentity(any())).thenReturn(true);
+
+        // SUT
+        UserService service = new UserService(_userRepoDouble);
+
+        // Act
+        boolean result = service.userIdExists(emailString);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userIdExistsShouldReturnFalseIfUserDoesNotExist() {
+        // Arrange
+        String emailString = "seller@selling.com";
+
+        when(_userRepoDouble.containsOfIdentity(any())).thenReturn(false);
+
+        // SUT
+        UserService service = new UserService(_userRepoDouble);
+
+        // Act
+        boolean result = service.userIdExists(emailString);
+
+        // Assert
+        assertFalse(result);
+
     }
 }
