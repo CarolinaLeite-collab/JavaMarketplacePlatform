@@ -23,6 +23,9 @@ public class DirectSaleDataModel {
     @Id
     private String directSaleId;
 
+    @Column(name = "user_id")
+    private String userId;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "direct_sale_items",
