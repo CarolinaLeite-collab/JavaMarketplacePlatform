@@ -35,7 +35,8 @@ public class DirectSaleAssembler {
                         directSale.getPrice().getValue(),
                         directSale.getPrice().getCurrency().toString()),
                 timeLimit,
-                directSale.getCreationDate());
+                directSale.getCreationDate(),
+                directSale.getDSStatus().toString());
 
         return dm;
     }
@@ -54,7 +55,8 @@ public class DirectSaleAssembler {
                         dm.getPrice().getNumericValue(),
                         Currency.valueOf(dm.getPrice().getCurrency())),
                 timeLimit,
-                dm.getCreationDate()
+                dm.getCreationDate(),
+                DirectSaleStatus.valueOf(dm.getStatus())
         );
 
         return directSale;

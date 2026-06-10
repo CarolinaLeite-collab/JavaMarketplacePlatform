@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,7 @@ class DirectSaleAssemblerTest {
         ItemId item = mock(ItemId.class);
         when(id.toString()).thenReturn("DS1");
         UserId sellerIdDouble = mock(UserId.class);
+        DirectSaleStatus status = DirectSaleStatus.ACTIVE;
 
         Price price = mock(Price.class);
         when(price.getValue()).thenReturn(10.0);
@@ -52,6 +54,7 @@ class DirectSaleAssemblerTest {
         when(directSale.getPrice()).thenReturn(price);
         when(directSale.getTimeLimit()).thenReturn(duration);
         when(directSale.getCreationDate()).thenReturn(creationDate);
+        when(directSale.getDSStatus()).thenReturn(status);
 
         Long expectedResult = duration.toDays();
 
@@ -84,6 +87,7 @@ class DirectSaleAssemblerTest {
         when(dm.getPrice()).thenReturn(priceDM);
         when(dm.getTimeLimit()).thenReturn(5L);
         when(dm.getCreationDate()).thenReturn(creationDate);
+        when(dm.getStatus()).thenReturn("ACTIVE");
 
 
 
@@ -94,7 +98,8 @@ class DirectSaleAssemblerTest {
                 new UserId(new Email(email)),
                 new Price(10.0, Currency.EUR),
                 Duration.ofDays(5),
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                DirectSaleStatus.ACTIVE
         )).thenReturn(expected);
 
         //SUT

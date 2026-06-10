@@ -1,5 +1,6 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
@@ -43,4 +44,7 @@ public class DirectSaleDataModel {
     private PriceDataModel price;
     private Long timeLimit;
     private Instant creationDate;
+
+    @Column(name = "status")
+    private String status;
 }
