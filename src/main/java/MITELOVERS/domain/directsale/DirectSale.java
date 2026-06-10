@@ -6,6 +6,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,12 +26,13 @@ import java.util.Set;
 public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     private final List<ItemId> _itemsId;
+    private final UserId _sellerId;
     private final Price _price;
     private final Duration _timeLimit; // optional
     private DirectSaleId _directSaleId;
     private Instant _creationDate;
 
-    DirectSale(List<ItemId> itemsId, Price price, Duration timeLimit) {
+    DirectSale(List<ItemId> itemsId, UserId sellerId, Price price, Duration timeLimit) {
 
         requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
@@ -43,6 +45,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
 
         _itemsId = List.copyOf(itemsId);
+        _sellerId = Objects.requireNonNull(sellerId, "SellerId cannot be null!");
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
@@ -51,8 +54,8 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
     }
 
     // rehydration
-    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Duration timeLimit,Instant creationDate) {
-        this(itemsId, price, timeLimit);
+    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, UserId _sellerId, Price price, Duration timeLimit,Instant creationDate) {
+        this(itemsId, _sellerId, price, timeLimit);
 
         _directSaleId = Objects.requireNonNull(directSaleId, "DirectSaleId cannot be null");
         _creationDate = creationDate;
@@ -60,6 +63,7 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
     }
 
     public List<ItemId> getItemsId() { return _itemsId; }
+    public UserId getSellerId() {return _sellerId;}
     public Price getPrice() { return _price; }
     public Duration getTimeLimit() { return _timeLimit; }
     public Instant getCreationDate(){ return _creationDate;}

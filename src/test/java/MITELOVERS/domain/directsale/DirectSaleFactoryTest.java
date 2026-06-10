@@ -3,6 +3,7 @@ package MITELOVERS.domain.directsale;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -22,6 +23,7 @@ class DirectSaleFactoryTest {
         List<ItemId> itemsId = new ArrayList<>();
         ItemId itemIdDouble = mock(ItemId.class);
         itemsId.add(itemIdDouble);
+        UserId sellerIdDouble = mock(UserId.class);
 
         Price priceDouble = mock(Price.class);
         Duration timeLimit = Duration.ofDays(30);
@@ -35,14 +37,14 @@ class DirectSaleFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             //Act
-            DirectSale directSaleResult = directSaleFactory.createDirectSale(itemsId, priceDouble, timeLimit);
+            DirectSale directSaleResult = directSaleFactory.createDirectSale(itemsId, sellerIdDouble, priceDouble, timeLimit);
 
             //Assert
             assertNotNull(directSaleResult);
             List<Object> params = capturedArguments.get(0);
-            assertSame(itemsId, params.get(0));
-            assertSame(priceDouble, params.get(1));
-            assertSame(timeLimit, params.get(2));
+            assertSame(sellerIdDouble, params.get(1));
+            assertSame(priceDouble, params.get(2));
+            assertSame(timeLimit, params.get(3));
             assertEquals(1, mockedConstruction.constructed().size());
             assertEquals(mockedConstruction.constructed().get(0), directSaleResult);
         }
@@ -54,6 +56,7 @@ class DirectSaleFactoryTest {
         //Arrange
         DirectSaleId id = mock(DirectSaleId.class);
         List<ItemId> itemsId = mock(List.class);
+        UserId sellerIdDouble = mock(UserId.class);
         Price price = mock(Price.class);
         Duration timeLimit = Duration.ofDays(5);
         Instant creationDate = Instant.parse("2024-01-01T10:00:00Z");
@@ -69,7 +72,7 @@ class DirectSaleFactoryTest {
                              })) {
 
             //Act
-            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, price, timeLimit, creationDate);
+            DirectSale newDirectSale = factory.createDirectSale(id, itemsId, sellerIdDouble, price, timeLimit, creationDate);
 
             //Assert
             assertEquals(id, newDirectSale.identity());
