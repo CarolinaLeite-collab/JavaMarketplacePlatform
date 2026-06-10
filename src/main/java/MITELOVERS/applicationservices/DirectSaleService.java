@@ -64,7 +64,6 @@ public class DirectSaleService {
             throw new IllegalStateException("This is user does not exist!");
         }
 
-        // Fail fast on duplicates
         Set<ItemId> unique = new HashSet<>(itemsId);
         if (unique.size() != itemsId.size()) {
             throw new IllegalArgumentException("Duplicate items are not allowed in a DirectSale.");
@@ -92,7 +91,6 @@ public class DirectSaleService {
 
         UserId sellerId = new UserId(new Email(email));
 
-        // Create the DS
         DirectSale newDirectSale =
                 _directSaleFactory.createDirectSale(itemsId, sellerId, price, timeLimit);
 

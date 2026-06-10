@@ -4,6 +4,7 @@ import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
+import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.Email;
@@ -129,7 +130,7 @@ public class DirectSaleRestController {
 
     @GetMapping(value="/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<DirectSaleResponseDTO>> getAllActiveDirectSales(
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader("X-User-Id") @NotBlank String userId) {
 
         List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
