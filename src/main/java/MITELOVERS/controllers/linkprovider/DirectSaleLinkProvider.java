@@ -63,7 +63,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canCreateDirectSale(user)) {
             links.add(
                     linkTo(methodOn(DirectSaleRestController.class)
-                            .createDirectSale(null))
+                            .createDirectSale(null, null))
                             .withRel("create-direct-sale")
             );
         }
