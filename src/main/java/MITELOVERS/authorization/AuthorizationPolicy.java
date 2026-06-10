@@ -86,8 +86,13 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.ADMIN);
     }
 
-    /** Any authenticated user may list direct sales. */
+    /** Only admins may list expired or cancelled direct sales. */
     public boolean canListDirectSales(User user) {
+        return user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may list active direct sales. */
+    public boolean canListActiveDirectSales(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
