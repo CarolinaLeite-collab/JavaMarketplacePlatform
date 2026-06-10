@@ -39,8 +39,9 @@ public class SaleExpirationService {
                     .orElseThrow(() -> new IllegalStateException("Expired DirectSale not found: " + directSaleId));
 
             releaseItems(sale.getItemsId());
+            sale.markAsExpired();
 
-            _iDirectSaleRepo.deleteDirectSale(directSaleId);
+            _iDirectSaleRepo.save(sale);
         }
     }
 

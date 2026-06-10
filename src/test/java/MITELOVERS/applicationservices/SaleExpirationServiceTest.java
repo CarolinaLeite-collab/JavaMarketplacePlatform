@@ -111,4 +111,29 @@ class SaleExpirationServiceTest {
                 () -> _service.expireAllExpiredSales());
     }
 
+    @Test
+    void expireAllExpiredSales_shouldExpireMultipleSales() {
+
+        // Arrange
+        DirectSaleId saleId1 = mock(DirectSaleId.class);
+        DirectSaleId saleId2 = mock(DirectSaleId.class);
+        DirectSale sale1 = mock(DirectSale.class);
+        DirectSale sale2 = mock(DirectSale.class);
+        ItemId itemId1 = mock(ItemId.class);
+        ItemId itemId2 = mock(ItemId.class);
+        Item item1 = mock(Item.class);
+        Item item2 = mock(Item.class);
+
+        when(_iDirectSaleRepo.findExpired()).thenReturn(List.of(saleId1, saleId2));
+        when(_iDirectSaleRepo.ofIdentity(saleId1)).thenReturn(Optional.of(sale1));
+        when(_iDirectSaleRepo.ofIdentity(saleId2)).thenReturn(Optional.of(sale2));
+        when(sale1.getItemsId()).thenReturn(List.of(itemId1));
+        when(sale2.getItemsId()).thenReturn(List.of(itemId2));
+        when(_iItemRepo.ofIdentity(itemId1)).thenReturn(Optional.of(item1));
+        when(_iItemRepo.ofIdentity(itemId2)).thenReturn(Optional.of(item2));
+
+        // Act + Assert
+        Assertions.assertDoesNotThrow(() -> _service.expireAllExpiredSales());
+    }
+
 }
