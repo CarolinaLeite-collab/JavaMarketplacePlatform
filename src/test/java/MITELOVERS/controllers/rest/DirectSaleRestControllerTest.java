@@ -106,6 +106,8 @@ class DirectSaleRestControllerTest {
 
         DirectSale domain = mock(DirectSale.class);
 
+        String email = "email@email.com";
+
         DirectSaleResponseDTO response =
                 new DirectSaleResponseDTO(
                         "DS-A1B2C3D4",
@@ -116,12 +118,12 @@ class DirectSaleRestControllerTest {
                         Instant.now()
                 );
 
-        when(_service.createDirectSale(request)).thenReturn(domain);
+        when(_service.createDirectSale(request, email)).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(response);
 
         // Act (SUT)
         ResponseEntity<DirectSaleResponseDTO> result =
-                _controller.createDirectSale(request);
+                _controller.createDirectSale(email, request);
 
         // Assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());

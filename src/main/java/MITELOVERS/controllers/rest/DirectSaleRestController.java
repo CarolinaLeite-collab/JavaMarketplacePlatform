@@ -6,6 +6,8 @@ import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
@@ -83,9 +85,10 @@ public class DirectSaleRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
+            @RequestParam("email") String email,
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
-        DirectSale created = _directSaleService.createDirectSale(requestDTO);
+        DirectSale created = _directSaleService.createDirectSale(requestDTO, email);
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
