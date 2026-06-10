@@ -23,7 +23,7 @@ public class DirectSaleDataModel {
     @Id
     private String directSaleId;
 
-    @Column(name = "user_id")
+    @Column(name = "seller_id")
     private String userId;
 
     @ElementCollection(fetch = FetchType.EAGER)
