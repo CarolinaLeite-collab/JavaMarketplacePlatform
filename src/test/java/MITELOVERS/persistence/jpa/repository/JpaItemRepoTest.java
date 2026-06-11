@@ -175,7 +175,7 @@ class JpaItemRepoTest {
 
         // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
-        when(itemIdDouble.toString()).thenReturn("ID123");
+        when(itemIdDouble.getValue()).thenReturn("ID123");
         when(_itemSpringDataRepoDouble.existsById("ID123")).thenReturn(true);
 
         // Act
@@ -190,7 +190,7 @@ class JpaItemRepoTest {
 
         // Arrange
         ItemId itemIdDouble = mock(ItemId.class);
-        when(itemIdDouble.toString()).thenReturn("ID123");
+        when(itemIdDouble.getValue()).thenReturn("ID123");
         when(_itemSpringDataRepoDouble.existsById("ID123")).thenReturn(false);
 
         // Act

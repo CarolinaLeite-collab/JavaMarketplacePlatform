@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class JpaDirectSaleRepoTest {
@@ -361,6 +360,65 @@ class JpaDirectSaleRepoTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void deleteDirectSaleShouldDeleteWithoutErrors() {
+
+        // Arrange
+        when(_idDouble1.toString()).thenReturn("DS-12345678");
+
+        // Act
+        assertDoesNotThrow(() -> _jpaDirectSaleRepo.deleteDirectSale(_idDouble1));
+
+        // Assert
+        assertTrue(true); // state-based: no exception means success
+    }
+
+    @Test
+    void deleteDirectSaleShouldPropagateExceptionWhenRepoFails() {
+
+        // Arrange
+        when(_idDouble1.toString()).thenReturn("DS-12345678");
+        doThrow(new IllegalStateException("boom"))
+                .when(_iDirectSaleSpringDataRepo)
+                .deleteById("DS-12345678");
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _jpaDirectSaleRepo.deleteDirectSale(_idDouble1));
+    }
+
+    @Test
+    void findExpiredShouldReturnEmptyListWhenNoExpiredSales() {
+
+        // Arrange
+        when(_iDirectSaleSpringDataRepo.findExpiredRaw()).thenReturn(List.of());
+
+        // Act
+        List<DirectSaleId> result = _jpaDirectSaleRepo.findExpired();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findExpiredShouldReturnMappedDirectSaleIds() {
+
+        // Arrange
+        when(_directSaleDMDouble1.getDirectSaleId()).thenReturn("DS-12345678");
+        when(_directSaleDMDouble2.getDirectSaleId()).thenReturn("DS-1B445678");
+
+        when(_iDirectSaleSpringDataRepo.findExpiredRaw())
+                .thenReturn(List.of(_directSaleDMDouble1, _directSaleDMDouble2));
+
+        // Act
+        List<DirectSaleId> result = _jpaDirectSaleRepo.findExpired();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("DS-12345678", result.get(0).toString());
+        assertEquals("DS-1B445678", result.get(1).toString());
     }
 
 }

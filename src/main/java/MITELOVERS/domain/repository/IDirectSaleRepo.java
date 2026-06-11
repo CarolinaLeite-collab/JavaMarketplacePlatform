@@ -16,4 +16,8 @@ public interface IDirectSaleRepo extends IRepository<DirectSaleId, DirectSale> {
     List<DirectSale> findByItemsIdSortedByPublicationDateAsc(List<ItemId> itemIds);
 
     List<DirectSale> findByItemsIdSortedByPublicationDateDesc(List<ItemId> itemIds);
+
+    List<DirectSaleId> findExpired();
+
+    void deleteDirectSale(DirectSaleId directSaleId);
 }
