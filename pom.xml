@@ -37,6 +37,9 @@
         <!-- Override Tomcat version to fix CVEs -->
         <tomcat.version>11.0.22</tomcat.version>
 
+        <!-- Override Spring Framework to patched version -->
+        <spring-framework.version>7.0.8</spring-framework.version>
+
     </properties>
 
     <dependencies>

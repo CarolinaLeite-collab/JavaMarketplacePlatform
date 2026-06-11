@@ -103,7 +103,7 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
                 .withSelfRel());
 
         if (item.getSaleStatus() == SaleStatus.NotOnSale){
-            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null)).withRel("create-direct-sale"));
+            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null, null)).withRel("create-direct-sale"));
 
         }
 

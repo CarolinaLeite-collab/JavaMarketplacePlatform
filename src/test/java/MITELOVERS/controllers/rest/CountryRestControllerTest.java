@@ -44,10 +44,12 @@ class CountryRestControllerTest {
     private CountryRestController _controller;
 
     @Test
-    void options_returnsModelWithLinksFromProvider() {
+    void options_returnsSelfLinkAndProviderLinks() {
         // Arrange
+        String email = "maria@example.com";
+
         User userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail("maria@example.com"))
+        when(_userServiceDouble.getUserByEmail(email))
                 .thenReturn(userDouble);
 
         Link link1 = Link.of("/countries").withRel("countries");
@@ -58,14 +60,27 @@ class CountryRestControllerTest {
 
         // Act
         ResponseEntity<RepresentationModel<?>> response =
-                _controller.options("maria@example.com");
+                _controller.options(email);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
         RepresentationModel<?> model = response.getBody();
         assertNotNull(model);
-        assertTrue(model.getLinks().contains(link1));
-        assertTrue(model.getLinks().contains(link2));
+
+        // 1) Self link added by controller
+        assertTrue(model.getLinks().hasLink("self"));
+
+        // 2) Provider links
+        assertTrue(model.getLinks().hasLink("countries"));
+        assertTrue(model.getLinks().hasLink("create-country"));
+
+        // 3) Optional but strong mutation killer: assert order
+        List<Link> links = model.getLinks().toList();
+
+        assertEquals("self", links.get(0).getRel().value());
+        assertEquals("countries", links.get(1).getRel().value());
+        assertEquals("create-country", links.get(2).getRel().value());
     }
 
     // ───────────────────────────────────────────────────────────────
@@ -167,7 +182,7 @@ class CountryRestControllerTest {
     }
 
     @Test
-    void options_whenNoLinks_returnsEmptyModel() {
+    void options_whenNoLinks_returnsOnlySelfLink() {
         // Arrange
         User userDouble = mock(User.class);
         when(_userServiceDouble.getUserByEmail("maria@example.com"))
@@ -182,7 +197,12 @@ class CountryRestControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().getLinks().isEmpty());
+
+        RepresentationModel<?> model = response.getBody();
+        assertNotNull(model);
+
+        assertEquals(1, model.getLinks().toList().size());
+        assertTrue(model.getLinks().hasLink("self"));
     }
 
     @Test
