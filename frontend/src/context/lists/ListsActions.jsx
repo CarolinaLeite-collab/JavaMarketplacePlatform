@@ -18,6 +18,8 @@ export const DELETE_LIST_SUCCESS = 'DELETE_LIST_SUCCESS';
 export const DELETE_LIST_ERROR = 'DELETE_LIST_ERROR';
 export const ADD_ITEM_TO_LIST_SUCCESS = 'ADD_ITEM_TO_LIST_SUCCESS';
 export const ADD_ITEM_TO_LIST_ERROR = 'ADD_ITEM_TO_LIST_ERROR';
+export const REMOVE_ITEM_FROM_LIST_SUCCESS = 'REMOVE_ITEM_FROM_LIST_SUCCESS';
+export const REMOVE_ITEM_FROM_LIST_ERROR = 'REMOVE_ITEM_FROM_LIST_ERROR';
 
 export function getListsSuccess(lists) {
     return { type: GET_LISTS_SUCCESS, payload: lists };
@@ -121,6 +123,17 @@ export async function addItemToList(dispatch, links, itemId) {
         dispatch({ type: ADD_ITEM_TO_LIST_SUCCESS, payload: result });
     } catch (e) {
         dispatch({ type: ADD_ITEM_TO_LIST_ERROR, payload: String(e) });
+    }
+}
+
+export async function removeItemFromList(dispatch, links, itemId, listId) {
+    const href = links?.find(l => l.rel === 'remove-item')?.href;
+    if (!href) return;
+    try {
+        await apiClient.deleteByHref(`${href}/${itemId}`);
+        dispatch({ type: REMOVE_ITEM_FROM_LIST_SUCCESS, payload: { listId, itemId } });
+    } catch (e) {
+        dispatch({ type: REMOVE_ITEM_FROM_LIST_ERROR, payload: String(e) });
     }
 }
 

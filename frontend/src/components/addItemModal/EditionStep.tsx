@@ -29,6 +29,14 @@ interface EditionStepProps {
     publishingCompanies: { value: string; label: string }[];
 }
 
+/**
+ * Step responsible for collecting edition data for the selected publication.
+ *
+ * Publication type and publishing company values are provided by backend-loaded
+ * options. Optional edition fields are collected independently and are only sent
+ * by the parent modal when they contain valid values.
+ */
+
 export function EditionStep({
                                  data,
                                  setData,

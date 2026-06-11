@@ -21,6 +21,15 @@ participant ":Client" as CLI
 participant ":Server" as SER
 database "DB" as DB
 
+User -> CLI : Show me what I can do here
+activate CLI
+CLI -> SER : OPTIONS /my-lists {...}
+activate SER
+SER --> CLI : [POST], [GET], [PATCH], [DELETE]
+deactivate SER
+CLI --> User : These are your available resources
+deactivate CLI
+
 User -> CLI : Show me my lists of items
 activate CLI
 CLI -> SER : GET /my-lists {...}
@@ -47,7 +56,7 @@ deactivate SER
 CLI --> User : displays available genres
 deactivate CLI
 
-User -> CLI : write name and select genre
+User -> CLI : name, genreId
 activate CLI
 CLI -> SER : POST /my-lists {"name": "Sci-fi books", "genreId": "SCIENCE FICTION"}
 activate SER

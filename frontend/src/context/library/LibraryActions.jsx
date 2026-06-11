@@ -1,5 +1,12 @@
 import {apiClient} from '../../services/apiClient';
 
+/**
+ * Loads the user's library using a backend-provided HATEOAS href.
+ *
+ * The response is normalized from the first embedded collection found in the HAL
+ * response. Missing links and request failures are reported through reducer errors.
+ */
+
 // Actions types
 export const FETCH_LIBRARY_SUCCESS  = 'FETCH_LIBRARY_SUCCESS';
 export const FETCH_LIBRARY_ERROR    = 'FETCH_LIBRARY_ERROR';
