@@ -12,6 +12,14 @@ interface ItemStepProps {
     setData: Dispatch<SetStateAction<ItemData>>;
 }
 
+/**
+ * Step responsible for collecting item-specific information.
+ *
+ * The condition options are aligned with the backend item condition enum. The
+ * picture URL is kept as UI data but is not currently submitted in the item
+ * creation request.
+ */
+
 export function ItemStep({
                              data,
                              setData,

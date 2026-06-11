@@ -13,6 +13,14 @@ import { getLibrary } from '../../context/library/LibraryActions';
 
 import AppContext from "../../context/AppContext";
 
+/**
+ * Page responsible for displaying the user's library and coordinating library actions.
+ *
+ * The library collection link is read from AppContext after the application
+ * bootstrap discovers backend HATEOAS links. When a new item is added through the
+ * modal, the page refreshes the library using the current library link.
+ */
+
 export default function MyLibraryPage() {
 
     const { state: appState } = useContext(AppContext);
