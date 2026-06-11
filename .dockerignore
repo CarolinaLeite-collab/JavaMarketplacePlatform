@@ -1,0 +1,31 @@
+# Build output
+target/
+data/
+
+# Log file
+*.log
+gitleaks-report.json
+reports/
+
+# Git
+.git/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Docker
+Dockerfile
+
+# Local documentation and configurations
+*.md
+*.env
+.env*
+
+# CI
+.github/
+
+# OS
+.DS_Store
+Thumbs.db
