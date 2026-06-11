@@ -1,0 +1,146 @@
+@startuml
+title "US067 - As a User, I want to bid on an auction" - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":Client" as Client
+participant ":AuctionRestController" as REST
+participant ":UserService" as userService
+participant ":IUserRepo" as userRepo
+participant ":AuctionLinkProvider" as Link
+participant ":AuctionService" as Service
+participant ":IAuctionRepo" as auctionRepo
+participant ":Auction" as Auction
+participant ":Bid\nResponseDTOMapper" as Mapper
+database DB
+
+' ===== OPTIONS /auctions/{auctionId}/bids =====
+
+Client -> REST : OPTIONS /auctions/{auctionId}/bids { emailFromHeader }
+activate REST
+
+REST -> userService : getUserByEmail(emailFromHeader)
+activate userService
+
+create "email:Email" as email
+userService -->> email : createEmail(emailFromHeader)
+
+create "userId:UserId" as userId
+userService -->> userId : createUserId(email)
+
+userService -> userRepo : ofIdentity(userId)
+activate userRepo
+userRepo -> DB : ofIdentity(userId)
+activate DB
+DB --> userRepo : user
+deactivate
+userRepo --> userService : user
+deactivate userRepo
+
+userService --> REST : user
+deactivate userService
+
+REST -> Link : getBidLinks(user, auctionId)
+activate Link
+Link --> REST : _links = List<Link>
+deactivate Link
+
+create "bidOptions:RepresentationModel<?>" as bidOptions
+REST -->> bidOptions : createRepresentationModel()
+
+loop for each link in _links
+    REST -> bidOptions : add(link)
+end
+
+REST --> Client : 200 OK + _links
+deactivate REST
+
+
+' ===== POST /auctions/{auctionId}/bids =====
+
+Client -> REST : POST /auctions/{auctionId}/bids %n(){ offerPrice } + emailFromHeader
+activate REST
+
+REST -> userService : getUserByEmail(emailFromHeader)
+activate userService
+
+create "email2:Email" as email2
+userService -->> email2 : createEmail(emailFromHeader)
+
+create "userId2:UserId" as userId2
+userService -->> userId2 : createUserId(email2)
+
+userService -> userRepo : ofIdentity(userId2)
+activate userRepo
+userRepo -> DB : ofIdentity(userId2)
+activate DB
+DB --> userRepo : user
+deactivate DB
+userRepo --> userService : user
+deactivate userRepo
+
+userService --> REST : user
+deactivate userService
+
+' Build request DTO from input + found User
+create "request:BidRequestDTO" as request
+REST -->> request : createBidRequestDTO(auctionId, user, amount)
+
+REST -> Service : placeBid(request)
+activate Service
+
+' Load Auction aggregate
+Service -> auctionRepo : ofIdentity(auctionId)
+activate auctionRepo
+auctionRepo -> DB : ofIdentity(auctionId)
+activate DB
+DB --> auctionRepo : auction
+deactivate DB
+auctionRepo --> Service : auction
+deactivate auctionRepo
+
+' Domain logic: Auction.placeBid(...)
+Service -> Auction : placeBid(user, offerPrice)
+activate Auction
+Auction --> Service : updated auction
+deactivate Auction
+
+' Persist updated Auction
+Service -> auctionRepo : save(auction)
+activate auctionRepo
+auctionRepo -> DB : save(auction)
+activate DB
+DB --> auctionRepo : auction
+deactivate DB
+auctionRepo --> Service : auction
+deactivate auctionRepo
+
+' Map to response DTO
+Service -> Mapper : toBidResponseDTO(auction, user, offerPrice)
+activate Mapper
+Mapper --> Service : BidResponseDTO
+deactivate Mapper
+
+Service --> REST : BidResponseDTO
+deactivate Service
+
+' Add HATEOAS links (self, auction, maybe all-bids)
+REST -> Link : addBidLinks(BidResponseDTO)
+activate Link
+Link --> REST : BidResponseDTO with _links
+deactivate Link
+
+REST --> Client : 201 Created + BidResponseDTO
+deactivate REST
+
+@enduml
