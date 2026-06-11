@@ -25,7 +25,7 @@ User -> CLI : Show me what I can do here
 activate CLI
 CLI -> SER : OPTIONS /my-lists {...}
 activate SER
-SER --> CLI : HTTP STATUS 200 {...}
+SER --> CLI : [POST], [GET], [PATCH], [DELETE]
 deactivate SER
 CLI --> User : These are your available resources
 deactivate CLI
