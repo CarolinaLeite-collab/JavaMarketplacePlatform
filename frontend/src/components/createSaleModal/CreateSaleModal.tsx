@@ -22,6 +22,7 @@ export function CreateSaleModal({ opened, onClose }) {
     const [auctionCurrency, setAuctionCurrency] = useState("EUR");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+    const [outrightPriceValue, setOutrightPriceValue] = useState<string | number>("");
 
 
     const [fieldErrors, setFieldErrors] = useState<Record<string, string | undefined>>({});
@@ -45,6 +46,7 @@ export function CreateSaleModal({ opened, onClose }) {
         setAuctionCurrency("EUR");
         setStartDate("");
         setEndDate("");
+        setOutrightPriceValue("");
         setFieldErrors({});
     };
 
@@ -108,7 +110,7 @@ export function CreateSaleModal({ opened, onClose }) {
                 itemIds: itemIds,
                 startingPrice: Number(startingPriceValue),
                 reservePrice: Number(reservePriceValue),
-                outrightPrice: null,
+                outrightPrice: outrightPriceValue !== "" ? Number(outrightPriceValue) : null,
                 priceCurrency: auctionCurrency,
                 startDate: new Date(startDate).toISOString(),
                 endDate: new Date(endDate).toISOString(),
@@ -320,6 +322,16 @@ export function CreateSaleModal({ opened, onClose }) {
                                     setFieldErrors((prev) => ({ ...prev, reservePriceValue: undefined }));
                             }}
                             error={fieldErrors.reservePriceValue}
+                        />
+
+                        <NumberInput
+                            label="Outright price (optional)"
+                            placeholder="Enter buy now price"
+                            min={0}
+                            decimalScale={2}
+                            fixedDecimalScale
+                            value={outrightPriceValue}
+                            onChange={(value) => setOutrightPriceValue(value ?? "")}
                         />
 
                         <Group grow>
