@@ -38,6 +38,8 @@ class AuctionResponseDTOMapperTest {
         when(auctionDouble.getOutrightPrice()).thenReturn(outrightPriceDouble);
         when(outrightPriceDouble.getValue()).thenReturn(30.0);
 
+        when(startingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
+
         when(auctionDouble.getAuctionStartDate()).thenReturn(startDate.toInstant());
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());
 
@@ -52,6 +54,7 @@ class AuctionResponseDTOMapperTest {
         assertEquals(10.0, dto.getStartingPrice());
         assertEquals(20.0, dto.getReservePrice());
         assertEquals(30.0, dto.getOutrightPrice());
+        assertEquals("EUR", dto.getPriceCurrency());
         assertEquals(startDate.toInstant(), dto.getStartDate());
         assertEquals(endDate.toInstant(), dto.getEndDate());
     }
@@ -76,6 +79,8 @@ class AuctionResponseDTOMapperTest {
 
         when(auctionDouble.getReservePrice()).thenReturn(reservePriceDouble);
         when(reservePriceDouble.getValue()).thenReturn(20.0);
+
+        when(startingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
 
         when(auctionDouble.getAuctionStartDate()).thenReturn(startDate.toInstant());
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());

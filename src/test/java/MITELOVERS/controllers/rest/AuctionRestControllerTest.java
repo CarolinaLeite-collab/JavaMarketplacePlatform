@@ -51,7 +51,7 @@ class AuctionRestControllerTest {
         AuctionResponseDTO dto = new AuctionResponseDTO(
                 "auction-123",
                 List.of("ABCDEF1234"),
-                10.0, 25.0, 50.0,
+                10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z")
         );
@@ -66,6 +66,7 @@ class AuctionRestControllerTest {
                     "startingPrice": 10.0,
                     "reservePrice": 25.0,
                     "outrightPrice": 50.0,
+                    "priceCurrency": "EUR",
                     "startDate": "2026-06-10T10:00:00Z",
                     "endDate": "2026-06-20T10:00:00Z"
                 }
@@ -80,7 +81,8 @@ class AuctionRestControllerTest {
                 .andExpect(jsonPath("$.auctionId").value("auction-123"))
                 .andExpect(jsonPath("$.startingPrice").value(10.0))
                 .andExpect(jsonPath("$.reservePrice").value(25.0))
-                .andExpect(jsonPath("$.outrightPrice").value(50.0));
+                .andExpect(jsonPath("$.outrightPrice").value(50.0))
+                .andExpect(jsonPath("$.priceCurrency").value("EUR"));
     }
 
     @Test
@@ -90,7 +92,7 @@ class AuctionRestControllerTest {
         AuctionResponseDTO dto = new AuctionResponseDTO(
                 "auction-123",
                 List.of("ABCDEF1234"),
-                10.0, 25.0, null,
+                10.0, 25.0, null, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z")
         );
@@ -104,6 +106,7 @@ class AuctionRestControllerTest {
                     "itemIds": ["ABCDEF1234"],
                     "startingPrice": 10.0,
                     "reservePrice": 25.0,
+                    "priceCurrency": "EUR",
                     "startDate": "2026-06-10T10:00:00Z",
                     "endDate": "2026-06-20T10:00:00Z"
                 }
@@ -114,7 +117,8 @@ class AuctionRestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.outrightPrice").doesNotExist());
+                .andExpect(jsonPath("$.outrightPrice").isEmpty())
+                .andExpect(jsonPath("$.priceCurrency").value("EUR"));
     }
 
     @Test
@@ -128,6 +132,7 @@ class AuctionRestControllerTest {
                     "itemIds": ["item-nao-existe"],
                     "startingPrice": 10.0,
                     "reservePrice": 25.0,
+                    "priceCurrency": "EUR",
                     "startDate": "2026-06-10T10:00:00Z",
                     "endDate": "2026-06-20T10:00:00Z"
                 }

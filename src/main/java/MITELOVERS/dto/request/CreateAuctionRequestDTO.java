@@ -16,6 +16,7 @@ public class CreateAuctionRequestDTO {
     private final double startingPrice;
     private final double reservePrice;
     private final Double outrightPrice;
+    private final String priceCurrency;
     private final Instant startDate;
     private final Instant endDate;
 

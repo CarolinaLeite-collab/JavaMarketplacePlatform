@@ -31,6 +31,7 @@ public class AuctionResponseDTOMapper {
                 auction.getStartingPrice().getValue(),
                 auction.getReservePrice().getValue(),
                 auction.getOutrightPrice() != null ? auction.getOutrightPrice().getValue() : null,
+                auction.getStartingPrice().getCurrency().name(),
                 auction.getAuctionStartDate(),
                 auction.getAuctionEndDate()
         );

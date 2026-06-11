@@ -66,18 +66,17 @@ public class AuctionRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAuction(
-            @RequestHeader("X-User-Id") String userId,
-            @RequestBody CreateAuctionRequestDTO request) {
+    public ResponseEntity<Object> createAuction(@RequestHeader("X-User-Id") String userId, @RequestBody CreateAuctionRequestDTO request) {
         try {
             List<ItemId> itemIds = request.getItemIds().stream()
                     .map(ItemId::new)
                     .toList();
 
-            Price startingPrice = new Price(request.getStartingPrice(), Currency.EUR);
-            Price reservePrice = new Price(request.getReservePrice(), Currency.EUR);
+            Currency currency = Currency.valueOf(request.getPriceCurrency());
+            Price startingPrice = new Price(request.getStartingPrice(), currency);
+            Price reservePrice = new Price(request.getReservePrice(), currency);
             Price outrightPrice = request.getOutrightPrice() != null
-                    ? new Price(request.getOutrightPrice(), Currency.EUR)
+                    ? new Price(request.getOutrightPrice(), currency)
                     : null;
 
             ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
