@@ -71,6 +71,10 @@ public class Item implements AggregateRoot<ItemId> {
         _saleStatus = SaleStatus.Sold;
     }
 
+    public void markAsNotOnSale() {
+        _saleStatus = SaleStatus.NotOnSale;
+    }
+
     private void ensureNotOnSale() {
         if (_saleStatus != SaleStatus.NotOnSale) {
             throw new IllegalStateException("Item is already on sale.");

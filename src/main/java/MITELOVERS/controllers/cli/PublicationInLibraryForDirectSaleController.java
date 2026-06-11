@@ -45,10 +45,10 @@ public class PublicationInLibraryForDirectSaleController {
 
     }
 
-    public DirectSale putItemIdOnDirectSale (List<ItemId> itemIds, Price price, Duration timeLimit) {
+    public DirectSale putItemIdOnDirectSale (List<ItemId> itemIds, UserId sellerId, Price price, Duration timeLimit) {
 
 
-        DirectSale directSale =  _directSaleFactory.createDirectSale(itemIds, price, timeLimit);
+        DirectSale directSale =  _directSaleFactory.createDirectSale(itemIds, sellerId, price, timeLimit);
 
         if (_iDirectSaleRepo.containsOfIdentity(directSale.identity())) {
 

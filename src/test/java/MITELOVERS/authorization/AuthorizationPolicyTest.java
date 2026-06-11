@@ -237,9 +237,15 @@ class AuthorizationPolicyTest {
     // ── Direct Sale ─────────────────────────────────────────────────────────
 
     @Test
-    void canListDirectSalesUserReturnsTrue() {
-        assertTrue(_authorizationPolicy.canListDirectSales(_userDouble));
+    void canListDirectSalesUserReturnsFalse() {
+        assertFalse(_authorizationPolicy.canListDirectSales(_userDouble));
     }
+
+    @Test
+    void canListActiveDirectSalesUserReturnsTrue() { assertTrue(_authorizationPolicy.canListActiveDirectSales(_userDouble)); }
+
+    @Test
+    void canListActiveDirectSalesAdminReturnsTrue() { assertTrue(_authorizationPolicy.canListActiveDirectSales(_adminDouble)); }
 
     @Test
     void canListDirectSalesAdminReturnsTrue() {

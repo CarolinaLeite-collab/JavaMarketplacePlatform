@@ -1,6 +1,14 @@
 export const BASE_URL = 'http://localhost:8081';
 export let USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
 
+/**
+ * Central API client used by the frontend to communicate with the backend.
+ *
+ * It exposes fixed entry-point calls used during bootstrap and generic HATEOAS
+ * helpers that operate on backend-provided hrefs. HATEOAS helpers should be
+ * preferred whenever a link has already been discovered from the API.
+ */
+
 export function setUserId(id) {
     console.log('switching user to:', id);
     USER_ID = id;
@@ -130,6 +138,13 @@ export const apiClient = {
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
+
+    /**
+     * Extracts the resource identifier from a HATEOAS self link.
+     *
+     * This is used after creating resources whose ids are required by subsequent
+     * workflow steps, such as creating an edition after creating a publication.
+     */
 
     extractIdFromSelfLink: (response) => extractIdFromSelfLink(response),
 
