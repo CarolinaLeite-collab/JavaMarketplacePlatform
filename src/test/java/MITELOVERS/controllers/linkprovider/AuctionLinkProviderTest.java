@@ -2,6 +2,7 @@ package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
@@ -24,8 +25,13 @@ class AuctionLinkProviderTest {
     }
 
     @Test
-    void getLinks_userCanSell_containsCreateAuctionLink() {
+    void getLinksUserCanSellContainsCreateAuctionLink() {
         User user = mock(User.class);
+        UserId userId = mock(UserId.class);
+
+        when(user.identity()).thenReturn(userId);
+        when(userId.toString()).thenReturn("user123");
+
         when(_authorizationPolicy.canSell(user)).thenReturn(true);
 
         List<Link> links = _linkProvider.getLinks(user);
@@ -35,7 +41,7 @@ class AuctionLinkProviderTest {
     }
 
     @Test
-    void getLinks_userCannotSell_returnsEmptyList() {
+    void getLinksUserCannotSellReturnsEmptyList() {
         User user = mock(User.class);
         when(_authorizationPolicy.canSell(user)).thenReturn(false);
 
