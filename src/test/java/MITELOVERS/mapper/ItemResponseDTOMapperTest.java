@@ -296,4 +296,61 @@ class ItemResponseDTOMapperTest {
         assertEquals("http://example.com/image.jpg", dto.getPicture());
         assertTrue(dto.hasLinks());
     }
+
+    @Test
+    void toModelWithNotOnSaleStatusAddsCreateAuctionLink() {
+        // Arrange
+        RequestContextHolder.setRequestAttributes(
+                new ServletRequestAttributes(new MockHttpServletRequest()));
+
+        ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("3C5D126F8B");
+
+        EditionId editionIdDouble = mock(EditionId.class);
+        when(editionIdDouble.toString()).thenReturn("E-ABCDEF12");
+
+        NoIdentifier noIdentifierDouble = mock(NoIdentifier.class);
+        when(noIdentifierDouble.toString()).thenReturn("no identifier");
+
+        PublicationTypeId typeIdDouble = mock(PublicationTypeId.class);
+        when(typeIdDouble.toString()).thenReturn("BOOK");
+
+        Title titleDouble = mock(Title.class);
+        when(titleDouble.toString()).thenReturn("1984");
+
+        Name authorNameDouble = mock(Name.class);
+        when(authorNameDouble.toString()).thenReturn("George Orwell");
+
+        Item itemDouble = mock(Item.class);
+        when(itemDouble.identity()).thenReturn(itemIdDouble);
+        when(itemDouble.getCondition()).thenReturn(Condition.GOOD);
+        when(itemDouble.getDescription()).thenReturn(new Description("Nice copy"));
+        when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.NotOnSale);
+
+        Edition editionDouble = mock(Edition.class);
+        when(editionDouble.getEditionId()).thenReturn(editionIdDouble);
+        when(editionDouble.getIdentifier()).thenReturn(noIdentifierDouble);
+        when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
+        when(editionDouble.getPublishingYear()).thenReturn(Year.of(1949));
+        when(editionDouble.getPublicationTypeId()).thenReturn(typeIdDouble);
+
+        Publication publicationDouble = mock(Publication.class);
+        when(publicationDouble.getTitle()).thenReturn(titleDouble);
+        when(publicationDouble.getReleaseYear()).thenReturn(Year.of(1949));
+
+        Author authorDouble = mock(Author.class);
+        when(authorDouble.getName()).thenReturn(authorNameDouble);
+
+        Genre genreDouble = mock(Genre.class);
+        when(genreDouble.getGenre()).thenReturn("Fiction");
+
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+
+        // Act
+        ItemResponseDTO dto = mapper.toModel(itemDouble);
+
+        // Assert
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("create-auction")));
+    }
 }
