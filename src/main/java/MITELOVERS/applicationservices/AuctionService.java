@@ -8,6 +8,8 @@ import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -25,6 +27,7 @@ import java.util.List;
  */
 
 @Service
+@AllArgsConstructor
 public class AuctionService {
 
     private final ILibraryRepo _iLibraryRepo;
@@ -32,16 +35,7 @@ public class AuctionService {
     private final AuctionFactory _auctionFactory;
     private final IItemRepo _iItemRepo;
 
-    public AuctionService(ILibraryRepo iLibraryRepo, IAuctionRepo iAuctionRepo, AuctionFactory auctionFactory,
-                                            IItemRepo iItemRepo) {
-
-        _iLibraryRepo = iLibraryRepo;
-        _iAuctionRepo = iAuctionRepo;
-        _auctionFactory = auctionFactory;
-        _iItemRepo = iItemRepo;
-
-    }
-
+    @Transactional(readOnly = true)
     public List<ItemId> getLibraryItemsIdList(UserId userId) {
 
         LibraryId libraryID = LibraryId.fromUserId(userId);
@@ -53,6 +47,7 @@ public class AuctionService {
         return List.copyOf(itemIds);
     }
 
+    @Transactional
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
 
         List<Item> items = new ArrayList<>();
@@ -82,6 +77,7 @@ public class AuctionService {
         return auction;
     }
 
+    @Transactional
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice,
                                     ZonedDateTime startDate, ZonedDateTime endDate) {
         return putItemOnAuction(itemsId, startPrice, reservePrice, null, startDate, endDate);
