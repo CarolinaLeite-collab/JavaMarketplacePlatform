@@ -19,11 +19,15 @@ autonumber
 actor User
 participant ":Mitelovers" as System
 
+User -> System : show me want I can do
+activate System
+System --> User : here is what you can do
+deactivate System
+
 User -> System : I want to Register an Item \nand add it to my library
 activate System
 System --> User : Display publication form
 deactivate System
-
 
 User -> System : publication form filled
 activate System
@@ -38,7 +42,6 @@ deactivate System
 User -> System : Item form filled
 activate System
 System --> User: successful registration
-
 
 User -> System : add it to library
 System --> User: Done!
