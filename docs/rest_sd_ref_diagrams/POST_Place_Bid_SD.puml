@@ -1,5 +1,5 @@
 @startuml
-title "US067 - As a User, I want to bid on an auction" - SD
+title "US067 - As a Buyer, I want to use the Web UI to bid on an auction." - REST SD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -20,20 +20,21 @@ participant ":IUserRepo" as userRepo
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
 participant ":IAuctionRepo" as auctionRepo
-participant ":Auction" as Auction
+participant ":BidFactory" as BidFactory
+participant "auction%n():Auction" as Auction
 participant ":Bid\nResponseDTOMapper" as Mapper
 database DB
 
 ' ===== OPTIONS /auctions/{auctionId}/bids =====
 
-Client -> REST : OPTIONS /auctions/{auctionId}/bids { emailFromHeader }
+Client -> REST : OPTIONS /auctions/{auctionId}/bids { ... }
 activate REST
 
-REST -> userService : getUserByEmail(emailFromHeader)
+REST -> userService : getUserByEmail(emailString)
 activate userService
 
 create "email:Email" as email
-userService -->> email : createEmail(emailFromHeader)
+userService -->> email : createEmail(emailString)
 
 create "userId:UserId" as userId
 userService -->> userId : createUserId(email)
@@ -50,13 +51,13 @@ deactivate userRepo
 userService --> REST : user
 deactivate userService
 
+create "bidOptions:RepresentationModel<?>" as bidOptions
+REST -->> bidOptions : createRepresentationModel()
+
 REST -> Link : getBidLinks(user, auctionId)
 activate Link
 Link --> REST : _links = List<Link>
 deactivate Link
-
-create "bidOptions:RepresentationModel<?>" as bidOptions
-REST -->> bidOptions : createRepresentationModel()
 
 loop for each link in _links
     REST -> bidOptions : add(link)
@@ -68,38 +69,21 @@ deactivate REST
 
 ' ===== POST /auctions/{auctionId}/bids =====
 
-Client -> REST : POST /auctions/{auctionId}/bids %n(){ offerPrice } + emailFromHeader
+Client -> REST : POST /auctions/{auctionId}/bids %n(){ DTORequest } + userIdFromHeader
 activate REST
 
-REST -> userService : getUserByEmail(emailFromHeader)
-activate userService
-
 create "email2:Email" as email2
-userService -->> email2 : createEmail(emailFromHeader)
+REST -->> email2 : createEmail(userIdFromHeader)
 
 create "userId2:UserId" as userId2
-userService -->> userId2 : createUserId(email2)
+REST --> userId2 : createUserId(email2)
 
-userService -> userRepo : ofIdentity(userId2)
-activate userRepo
-userRepo -> DB : ofIdentity(userId2)
-activate DB
-DB --> userRepo : user
-deactivate DB
-userRepo --> userService : user
-deactivate userRepo
+create "offerPrice:Price" as offerPrice
+REST -->> offerPrice : createPrice(DTORequest.getOfferPrice, currency)
 
-userService --> REST : user
-deactivate userService
-
-' Build request DTO from input + found User
-create "request:BidRequestDTO" as request
-REST -->> request : createBidRequestDTO(auctionId, user, amount)
-
-REST -> Service : placeBid(request)
+REST -> Service : placeBid(auctionId, userId2, offerPrice)
 activate Service
 
-' Load Auction aggregate
 Service -> auctionRepo : ofIdentity(auctionId)
 activate auctionRepo
 auctionRepo -> DB : ofIdentity(auctionId)
@@ -109,13 +93,19 @@ deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
 
-' Domain logic: Auction.placeBid(...)
-Service -> Auction : placeBid(user, offerPrice)
+Service -> BidFactory : createBid(userId2, offerPrice)
+activate BidFactory
+create "bid:Bid" as bid
+BidFactory -->> bid : <<create>>
+BidFactory --> Service : bid
+deactivate BidFactory
+
+Service -> Auction : placeBid(bid)
 activate Auction
-Auction --> Service : updated auction
+note right Service: returns auction updated %n() with placed bid
+Auction --> Service : auction
 deactivate Auction
 
-' Persist updated Auction
 Service -> auctionRepo : save(auction)
 activate auctionRepo
 auctionRepo -> DB : save(auction)
@@ -125,8 +115,7 @@ deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
 
-' Map to response DTO
-Service -> Mapper : toBidResponseDTO(auction, user, offerPrice)
+Service -> Mapper : toBidResponseDTO(auction, bid)
 activate Mapper
 Mapper --> Service : BidResponseDTO
 deactivate Mapper
@@ -134,7 +123,6 @@ deactivate Mapper
 Service --> REST : BidResponseDTO
 deactivate Service
 
-' Add HATEOAS links (self, auction, maybe all-bids)
 REST -> Link : addBidLinks(BidResponseDTO)
 activate Link
 Link --> REST : BidResponseDTO with _links
