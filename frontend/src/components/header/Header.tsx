@@ -7,7 +7,8 @@ import {useUser} from '../../context/UserContext';
 import {useContext} from 'react';
 import AppContext from '../../context/AppContext';
 import { ShoppingCart } from 'lucide-react';
-import { Burger, Button, Divider, Drawer, Group, ScrollArea, Modal, ActionIcon, Indicator, Text } from '@mantine/core';
+import { ShoppingCart as ShoppingCartModal } from '../shoppingCart/shoppingCart.tsx';
+import { Burger, Button, Divider, Drawer, Group, ScrollArea, ActionIcon, Indicator } from '@mantine/core';
 
 export function Header() {
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
@@ -15,8 +16,7 @@ export function Header() {
     const { state } = useContext(AppContext);
     const { myListsHref, libraryHref } = state.app;
     const [cartOpened, { open: openCart, close: closeCart }] = useDisclosure(false);
-    const cartCount = state.cart?.items?.length ?? 0; // adjust to your state shape??
-
+    const cartCount = state.cart?.items?.length ?? 0;
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
 
     return (
@@ -96,32 +96,7 @@ export function Header() {
                 </ActionIcon>
 
             </Drawer>
-            <Modal
-                opened={cartOpened}
-                onClose={closeCart}
-                title="Shopping Cart"
-                size="lg"
-                centered
-            >
-                {cartCount === 0 ? (
-                    <Text c="dimmed" ta="center" py="xl">Your cart is empty.</Text>
-                ) : (
-                    <ScrollArea h={400}>
-                        {(state.cart?.items ?? []).map((item) => (
-                            <Group key={item.id} justify="space-between" py="sm">
-                                <Text>{item.name}</Text>
-                                <Text fw={600}>{item.price}</Text>
-                            </Group>
-                        ))}
-                    </ScrollArea>
-                )}
-
-                <Divider my="sm" />
-
-                <Group justify="flex-end">
-                    <Button color="var(--mantine-color-indigo-7)" radius="xl">Checkout</Button>
-                </Group>
-            </Modal>
+            <ShoppingCartModal opened={cartOpened} onClose={closeCart} />
 
         </>
     );
