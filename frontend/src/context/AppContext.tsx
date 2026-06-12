@@ -23,6 +23,9 @@ const AppContext = createContext({
             genres: [],
             error: null,
         },
+        cart: {
+            items: [],
+        },
     },
     dispatch: () => {}
 });
