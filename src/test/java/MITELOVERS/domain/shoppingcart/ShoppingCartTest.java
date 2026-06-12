@@ -1,17 +1,21 @@
 package MITELOVERS.domain.shoppingcart;
 
+import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.ShoppingCartId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartTest {
@@ -25,8 +29,15 @@ class ShoppingCartTest {
     @Mock
     private Price _totalAmountDouble;
 
-    @Mock
     private List<ShoppingCartLine> _cartItemsDouble;
+
+    @BeforeEach
+    void setUp() {
+
+        _cartItemsDouble = new ArrayList<>();
+        _cartItemsDouble.add(mock(ShoppingCartLine.class));
+
+    }
 
     @Test
     void testConstructorWithOneArgument() {
@@ -41,6 +52,28 @@ class ShoppingCartTest {
 
         //SUT
         new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartItemsDouble);
+
+    }
+
+    @Test
+    void testShouldThrowIfCartItemsIsEmptyAndTotalAmountIsNotNull() {
+
+        List<ShoppingCartLine> cartLinesDouble = new ArrayList<>();
+
+        //SUT + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, cartLinesDouble)
+        );
+
+    }
+
+    @Test
+    void testShouldThrowIfCartItemsIsNotEmptyAndTotalAmountIsNull() {
+
+        //SUT + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, null, _cartItemsDouble)
+        );
 
     }
 
@@ -191,6 +224,63 @@ class ShoppingCartTest {
 
         //Assert
         assertEquals(cart1.hashCode(), cart2.hashCode());
+
+    }
+
+    @Test
+    void testGetBuyerIdShouldReturnUserId() {
+
+        //SUT
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartItemsDouble);
+
+        //Act
+        UserId result = cart1.getBuyerId();
+
+        //Assert
+        assertEquals(_buyerIdDouble, result);
+
+    }
+
+    @Test
+    void testGetTotalAmountShouldGetTotalAmount() {
+
+        //SUT
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartItemsDouble);
+
+        //Act
+        Price result = cart1.getTotalAmount();
+
+        //Assert
+        assertEquals(_totalAmountDouble, result);
+
+    }
+
+    @Test
+    void testGetCartItemsShouldReturnShoppingCartLines() {
+
+        //SUT
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartItemsDouble);
+
+        //Act
+        List<ShoppingCartLine> result = cart1.getCartItems();
+
+        //Assert
+        assertEquals(_cartItemsDouble, result);
+
+    }
+
+    @Test
+    void testClearShoppingCartShouldClearCartItemsAndResetTotalAmount() {
+
+        //SUT
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartItemsDouble);
+
+        //Act
+        cart1.clearShoppingCart();
+
+        //Assert
+        assertEquals(0, cart1.getCartItems().size());
+        assertNull(cart1.getTotalAmount());
 
     }
 
