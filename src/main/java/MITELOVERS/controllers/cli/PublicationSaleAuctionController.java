@@ -3,6 +3,7 @@ package MITELOVERS.controllers.cli;
 import MITELOVERS.applicationservices.AuctionService;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.valueobject.*;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 
 import java.time.ZonedDateTime;
@@ -18,19 +19,12 @@ import java.util.List;
  *
  */
 
+@AllArgsConstructor
 @Controller
 public class PublicationSaleAuctionController {
 
     private final AuctionService _auctionService;
 
-    public PublicationSaleAuctionController(AuctionService service) {
-        _auctionService = service;
-    }
-
-    public List<ItemId> getLibraryItemsIdList(UserId userId) {
-
-        return _auctionService.getLibraryItemsIdList(userId);
-    }
 
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice,
                                     ZonedDateTime startDate, ZonedDateTime endDate) {

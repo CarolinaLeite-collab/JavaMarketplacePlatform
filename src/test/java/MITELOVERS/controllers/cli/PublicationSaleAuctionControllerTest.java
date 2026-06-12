@@ -26,9 +26,6 @@ class PublicationSaleAuctionControllerTest {
     private PublicationSaleAuctionController _publicationSaleAuctionController;
 
     @Mock
-    private UserId _userIdDouble;
-
-    @Mock
     private ItemId _itemIdDouble;
 
     @Mock
@@ -56,29 +53,8 @@ class PublicationSaleAuctionControllerTest {
 
     @Test
     void testConstructor() {
-        PublicationSaleAuctionController controller =
-                new PublicationSaleAuctionController(_service);
-
-        assertNotNull(controller);
-    }
-
-    @Test
-    void shouldReturnLibraryItemsIdList() {
-
-        // Arrange
-        List<ItemId> expected = List.of(_itemIdDouble);
-
-        when(_service.getLibraryItemsIdList(_userIdDouble))
-                .thenReturn(expected);
-
-        // Act
-        List<ItemId> result =
-                _publicationSaleAuctionController.getLibraryItemsIdList(_userIdDouble);
-
-        // Assert
-        assertEquals(expected, result);
-
-        verify(_service).getLibraryItemsIdList(_userIdDouble);
+        // SUT
+        new PublicationSaleAuctionController(_service);
     }
 
     @Test
@@ -93,6 +69,9 @@ class PublicationSaleAuctionControllerTest {
                 _startDate,
                 _endDate))
                 .thenReturn(_auctionDouble);
+
+        // SUT
+        new PublicationSaleAuctionController(_service);
 
         // Act
         Auction result =
@@ -127,6 +106,9 @@ class PublicationSaleAuctionControllerTest {
                 _startDate,
                 _endDate))
                 .thenReturn(_auctionDouble);
+
+        // SUT
+        new PublicationSaleAuctionController(_service);
 
         // Act
         Auction result =

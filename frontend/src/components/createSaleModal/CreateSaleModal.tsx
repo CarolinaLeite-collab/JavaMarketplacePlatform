@@ -223,8 +223,19 @@ export function CreateSaleModal({ opened, onClose }) {
                             }
                         }}
                         searchable
+                        hidePickedOptions
                         nothingFoundMessage="No items available for this sale type"
                         error={fieldErrors.itemId}
+                        comboboxProps={{
+                            shadow: "xl",
+                            withinPortal: true,
+                            styles: {
+                                dropdown: {
+                                    border: '2px solid #339af0',
+                                    borderRadius: 8,
+                                }
+                            }
+                        }}
                     />
                 )}
 

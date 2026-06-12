@@ -3,17 +3,14 @@ package MITELOVERS.applicationservices;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.AuctionFactory;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.library.Library;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.repository.ILibraryRepo;
 import MITELOVERS.domain.valueobject.*;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,27 +27,12 @@ import java.util.List;
 @AllArgsConstructor
 public class AuctionService {
 
-    private final ILibraryRepo _iLibraryRepo;
     private final IAuctionRepo _iAuctionRepo;
     private final AuctionFactory _auctionFactory;
     private final IItemRepo _iItemRepo;
 
-    @Transactional(readOnly = true)
-    public List<ItemId> getLibraryItemsIdList(UserId userId) {
-
-        LibraryId libraryID = LibraryId.fromUserId(userId);
-
-        Library userLibrary = _iLibraryRepo.ofIdentity(libraryID)
-                .orElseThrow(() -> new IllegalStateException("Library not found for user!"));
-
-        List<ItemId> itemIds = userLibrary.getItemsIdInLibrary();
-        return List.copyOf(itemIds);
-    }
-
     @Transactional
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
-
-        List<Item> items = new ArrayList<>();
 
         for (ItemId itemId : itemsId) {
 

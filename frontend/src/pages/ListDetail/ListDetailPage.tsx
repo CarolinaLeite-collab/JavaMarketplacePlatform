@@ -13,6 +13,7 @@ interface ItemDetail {
     authorName: string;
     identifier: string;
     publicationTypeName: string;
+    picture: string | null;
 }
 
 export default function ListDetailPage() {
@@ -38,8 +39,9 @@ export default function ListDetailPage() {
                         authorName: data?.authorName ?? '—',
                         identifier: data?.identifier ?? '—',
                         publicationTypeName: data?.publicationTypeName ?? '—',
+                        picture: data?.picture ?? null,
                     }))
-                    .catch(() => ({itemId: id, title: '—', authorName: '—', identifier: '—', publicationTypeName: '—'}))
+                    .catch(() => ({itemId: id, title: '—', authorName: '—', identifier: '—', publicationTypeName: '—', picture: null}))
             )
         ).then(results => {
             setItems(results);
@@ -66,6 +68,13 @@ export default function ListDetailPage() {
 
     const rows = items.map(item => (
         <Table.Tr key={item.itemId}>
+            <Table.Td w={80}>
+                {item.picture ? (
+                    <img src={item.picture} alt={item.title} style={{ width: 45, height: 62, objectFit: 'contain', borderRadius: 4 }} />
+                ) : (
+                    <div style={{ width: 45, height: 62, background: '#eee', borderRadius: 4 }} />
+                )}
+            </Table.Td>
             <Table.Td>{item.title}</Table.Td>
             <Table.Td>{item.authorName}</Table.Td>
             <Table.Td>{item.identifier}</Table.Td>
@@ -94,7 +103,7 @@ export default function ListDetailPage() {
     ));
 
     return (
-        <DefaultLayout title={list.name} subtitle={`${list.genre} · ${list.visibility}`}>
+        <DefaultLayout title={list.name} subtitle={`${list.genre} · ${list.visibility.charAt(0).toUpperCase() + list.visibility.slice(1)}`}>
             <ActionIcon variant="subtle" mb="md" onClick={() => navigate('/my-lists')} aria-label="Back">
                 <IconArrowLeft size={18}/>
             </ActionIcon>
@@ -102,23 +111,24 @@ export default function ListDetailPage() {
                 <Table horizontalSpacing="md" verticalSpacing="xs" miw={700} layout="fixed">
                     <Table.Thead>
                         <Table.Tr>
+                            <Table.Th w={100}>Cover</Table.Th>
                             <Table.Th>Title</Table.Th>
                             <Table.Th>Author</Table.Th>
                             <Table.Th>ISBN</Table.Th>
                             <Table.Th>Type</Table.Th>
-                            <Table.Th w={60}><Center><Text fw={500} fz="sm">Remove</Text></Center></Table.Th>
+                            <Table.Th w={100}><Center><Text fw={500} fz="sm">Remove</Text></Center></Table.Th>
                         </Table.Tr>
                     </Table.Thead>
                     <Table.Tbody>
                         {loading ? (
                             <Table.Tr>
-                                <Table.Td colSpan={5}>
+                                <Table.Td colSpan={6}>
                                     <Text ta="center">Loading...</Text>
                                 </Table.Td>
                             </Table.Tr>
                         ) : rows.length > 0 ? rows : (
                             <Table.Tr>
-                                <Table.Td colSpan={5}>
+                                <Table.Td colSpan={6}>
                                     <Text fw={500} ta="center">No items in this list</Text>
                                 </Table.Td>
                             </Table.Tr>

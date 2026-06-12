@@ -24,7 +24,7 @@ participant ":AuctionService" as Service
 participant ":AuctionFactory" as Factory
 participant ":IAuctionRepo" as auctionRepo
 participant ":IItemRepo" as itemRepo
-participant ":Item" as Item
+participant "item:Item" as Item
 participant ":Auction\nResponseDTOMapper" as Mapper
 database DB
 
@@ -70,15 +70,18 @@ create "itemId:ItemId" as itemId
 REST -->> itemId : create(itemIdString)
 end
 
+create "currency:Currency" as currency
+REST -->> currency : valueOf(priceCurrency)
+
 create "startingPrice:Price" as startingPrice
-REST -->> startingPrice : create(value, EUR)
+REST -->> startingPrice : create(value, currency)
 
 create "reservePrice:Price" as reservePrice
-REST -->> reservePrice : create(value, EUR)
+REST -->> reservePrice : create(value, currency)
 
 opt outrightPrice != null
     create "outrightPrice:Price" as outrightPrice
-    REST -->> outrightPrice : create(value, EUR)
+    REST -->> outrightPrice : create(value, currency)
 end
 
 create "startDate:ZonedDateTime" as startDate
@@ -91,24 +94,24 @@ REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outr
 activate Service
 
 loop for each item - validation
-    Service -> itemRepo : ofIdentity(ItemId)
+    Service -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo -> DB : ofIdentity(ItemId)
+    itemRepo -> DB : ofIdentity(itemId)
     activate DB
     DB --> itemRepo : item
     deactivate DB
-    itemRepo --> Service : Item
+    itemRepo --> Service : item
     deactivate itemRepo
 
     Service -> Item : getSaleStatus()
     activate Item
-    Item --> Service : SaleStatus
+    Item --> Service : saleStatus
     deactivate Item
 end
 
 Service -> Factory : createAuction (\n  itemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate)
 activate Factory
-Factory --> Service : Auction
+Factory --> Service : auction
 deactivate Factory
 
 Service -> auctionRepo : containsOfIdentity(auctionId)
@@ -118,17 +121,17 @@ deactivate auctionRepo
 
 Service -> auctionRepo : save(auction)
 activate auctionRepo
-auctionRepo --> Service : auction
+auctionRepo --> Service : auctionSaved
 deactivate auctionRepo
 
 loop for each item - update
     Service -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo -> DB : ofIdentity(ItemId)
+    itemRepo -> DB : ofIdentity(itemId)
     activate DB
     DB --> itemRepo : item
     deactivate DB
-    itemRepo --> Service : Item
+    itemRepo --> Service : item
     deactivate itemRepo
 
     Service -> Item : markAsAuction()
@@ -139,9 +142,9 @@ loop for each item - update
     activate itemRepo
     itemRepo -> DB : save(item)
     activate DB
-    DB --> itemRepo : item
+    DB --> itemRepo : itemSaved
     deactivate DB
-    itemRepo --> Service : item
+    itemRepo --> Service : itemSaved
     deactivate itemRepo
 end
 
