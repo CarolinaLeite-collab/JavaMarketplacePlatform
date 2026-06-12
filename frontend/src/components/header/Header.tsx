@@ -119,7 +119,6 @@ export function Header() {
                 <Divider my="sm" />
 
                 <Group justify="flex-end">
-                    <Button variant="default" onClick={closeCart}>Continue Shopping</Button>
                     <Button color="var(--mantine-color-indigo-7)" radius="xl">Checkout</Button>
                 </Group>
             </Modal>
