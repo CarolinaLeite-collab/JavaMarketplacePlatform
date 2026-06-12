@@ -70,15 +70,18 @@ create "itemId:ItemId" as itemId
 REST -->> itemId : create(itemIdString)
 end
 
+create "currency:Currency" as currency
+REST -->> currency : valueOf(priceCurrency)
+
 create "startingPrice:Price" as startingPrice
-REST -->> startingPrice : create(value, EUR)
+REST -->> startingPrice : create(value, currency)
 
 create "reservePrice:Price" as reservePrice
-REST -->> reservePrice : create(value, EUR)
+REST -->> reservePrice : create(value, currency)
 
 opt outrightPrice != null
     create "outrightPrice:Price" as outrightPrice
-    REST -->> outrightPrice : create(value, EUR)
+    REST -->> outrightPrice : create(value, currency)
 end
 
 create "startDate:ZonedDateTime" as startDate
