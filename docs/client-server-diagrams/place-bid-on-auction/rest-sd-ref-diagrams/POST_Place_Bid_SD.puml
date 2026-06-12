@@ -1,5 +1,5 @@
 @startuml
-title "US067 - As a Buyer, I want to use the Web UI to bid on an auction." - REST SD
+title POST (place bid on auction) %n()ref SD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -13,10 +13,7 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-participant ":Client" as Client
 participant ":AuctionRestController" as REST
-participant ":UserService" as userService
-participant ":IUserRepo" as userRepo
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
 participant ":IAuctionRepo" as auctionRepo
@@ -25,54 +22,11 @@ participant "auction%n():Auction" as Auction
 participant ":Bid\nResponseDTOMapper" as Mapper
 database DB
 
-' ===== OPTIONS /auctions/{auctionId}/bids =====
-
-Client -> REST : OPTIONS /auctions/{auctionId}/bids { ... }
-activate REST
-
-REST -> userService : getUserByEmail(emailString)
-activate userService
-
-create "email:Email" as email
-userService -->> email : createEmail(emailString)
-
-create "userId:UserId" as userId
-userService -->> userId : createUserId(email)
-
-userService -> userRepo : ofIdentity(userId)
-activate userRepo
-userRepo -> DB : ofIdentity(userId)
-activate DB
-DB --> userRepo : user
-deactivate
-userRepo --> userService : user
-deactivate userRepo
-
-userService --> REST : user
-deactivate userService
-
-create "bidOptions:RepresentationModel<?>" as bidOptions
-REST -->> bidOptions : createRepresentationModel()
-
-REST -> Link : getBidLinks(user, auctionId)
-activate Link
-Link --> REST : _links = List<Link>
-deactivate Link
-
-loop for each link in _links
-    REST -> bidOptions : add(link)
-end
-
-REST --> Client : 200 OK + _links
-deactivate REST
-
-
 ' ===== POST /auctions/{auctionId}/bids =====
 
-Client -> REST : POST /auctions/{auctionId}/bids %n(){ DTORequest } + userIdFromHeader
+create "email2:Email" as email2
 activate REST
 
-create "email2:Email" as email2
 REST -->> email2 : createEmail(userIdFromHeader)
 
 create "userId2:UserId" as userId2
@@ -114,13 +68,14 @@ DB --> auctionRepo : auction
 deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
+Service --> REST : auction
+deactivate Service
 
-Service -> Mapper : toBidResponseDTO(auction, bid)
+REST -> Mapper : toBidResponseDTO(auction, bid)
 activate Mapper
-Mapper --> Service : BidResponseDTO
+Mapper --> REST : BidResponseDTO
 deactivate Mapper
 
-Service --> REST : BidResponseDTO
 deactivate Service
 
 REST -> Link : addBidLinks(BidResponseDTO)
@@ -128,7 +83,10 @@ activate Link
 Link --> REST : BidResponseDTO with _links
 deactivate Link
 
-REST --> Client : 201 Created + BidResponseDTO
 deactivate REST
+
+ref over REST
+[[../Process_Diagram_Level_3_SD.puml Return to main diagram]]
+end ref
 
 @enduml
