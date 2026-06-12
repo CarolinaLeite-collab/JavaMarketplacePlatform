@@ -60,7 +60,9 @@ public class AuctionRestController {
         User user = _userService.getUserByEmail(email);
 
         RepresentationModel<?> model = new RepresentationModel<>();
-        _auctionLinkProvider.getLinks(user).forEach(link -> model.add((Iterable<Link>) link));
+        for (Link link : _auctionLinkProvider.getLinks(user)) {
+            model.add(link);
+        }
 
         return ResponseEntity.ok(model);
     }

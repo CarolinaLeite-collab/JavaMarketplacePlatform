@@ -24,8 +24,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AuctionRestController.class)
 class AuctionRestControllerTest {
@@ -117,6 +116,7 @@ class AuctionRestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
+                .andExpect(jsonPath("$._links.self.href").exists())
                 .andExpect(jsonPath("$.outrightPrice").isEmpty())
                 .andExpect(jsonPath("$.priceCurrency").value("EUR"));
     }
@@ -144,6 +144,22 @@ class AuctionRestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    void optionsUserCanSellReturnsCreateAuctionLink() throws Exception {
+        User user = mock(User.class);
+
+        when(_userService.getUserByEmail("user@example.com"))
+                .thenReturn(user);
+
+        when(_auctionLinkProvider.getLinks(user))
+                .thenReturn(List.of(Link.of("/auctions", "create-auction")));
+
+        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions")
+                        .param("email", "user@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links['create-auction']").exists());
     }
 
     @Test
