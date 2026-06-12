@@ -223,6 +223,7 @@ export function CreateSaleModal({ opened, onClose }) {
                             }
                         }}
                         searchable
+                        hidePickedOptions
                         nothingFoundMessage="No items available for this sale type"
                         error={fieldErrors.itemId}
                         comboboxProps={{
