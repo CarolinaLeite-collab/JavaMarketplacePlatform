@@ -1,8 +1,17 @@
 package MITELOVERS.domain.valueobject;
 
 import MITELOVERS.ddd.DomainId;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 
 import java.util.UUID;
+
+/**
+ * Value object representing the unique identifier of a {@link ShoppingCartLine}.
+ * <p>
+ * Identifiers follow the format {@code SCL-XXXXXXXX}, where {@code X} is an
+ * uppercase letter or digit.
+ * </p>
+ */
 
 public class ShoppingCartLineId implements DomainId {
 
