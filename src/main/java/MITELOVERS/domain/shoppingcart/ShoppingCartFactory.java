@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Factory responsible for creating {@link ShoppingCart} instances.
+ */
+
 @Component
 public class ShoppingCartFactory {
 
