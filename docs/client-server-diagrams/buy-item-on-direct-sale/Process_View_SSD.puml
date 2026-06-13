@@ -32,9 +32,9 @@ activate mite
 mite --> User : Show direct sale details
 deactivate mite
 
-User -> mite : Add publication to shopping cart
+User -> mite : Add Item to shopping cart
 activate mite
-mite --> User : Publication added to shopping cart
+mite --> User : Item added to shopping cart
 deactivate mite
 
 User -> mite : View shopping cart
@@ -51,6 +51,5 @@ User -> mite : Confirm purchase
 activate mite
 mite --> User : Sale successfully completed
 deactivate mite
-
 
 @enduml
