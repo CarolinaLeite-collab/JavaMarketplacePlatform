@@ -10,6 +10,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * Assembler responsible for converting between {@link ShoppingCartLine} domain objects
+ * and {@link ShoppingCartLineDataModel} persistence representations.
+ */
+
 @Component
 @AllArgsConstructor
 public class ShoppingCartLineAssembler {

@@ -14,6 +14,11 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Assembler responsible for converting between {@link ShoppingCart} domain objects
+ * and {@link ShoppingCartDataModel} persistence representations.
+ */
+
 @Component
 @AllArgsConstructor
 public class ShoppingCartAssembler {
