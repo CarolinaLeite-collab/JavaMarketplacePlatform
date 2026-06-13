@@ -36,14 +36,14 @@ deactivate CLI
 
 User -> CLI : I want to place a %n() bid on this auction
 activate CLI
-CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ PlaceBidRequestDTO } + %n()userIdFromHeader
+CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ placeBidRequestDTO } + %n()userIdFromHeader
 activate Controller
 
 ref over Controller
 [[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST (place bid on auction)]]
 end ref
 
-Controller --> CLI : 201 Created + BidResponseDTO
+Controller --> CLI : 201 Created + bidResponseDTO
 deactivate Controller
 CLI --> User : Bid successfully %n() placed.
 deactivate CLI

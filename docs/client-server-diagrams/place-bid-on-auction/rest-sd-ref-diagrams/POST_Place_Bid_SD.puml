@@ -33,7 +33,7 @@ create "userId2:UserId" as userId2
 REST --> userId2 : createUserId(email2)
 
 create "offerPrice:Price" as offerPrice
-REST -->> offerPrice : createPrice(PlaceBidRequestDTO.getOfferPrice, currency)
+REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
 
 REST -> Service : placeBid(auctionId, userId2, offerPrice)
 activate Service
@@ -73,14 +73,14 @@ deactivate Service
 
 REST -> Mapper : toDTO(auction, bid)
 activate Mapper
-Mapper --> REST : BidResponseDTO
+Mapper --> REST : bidResponseDTO
 deactivate Mapper
 
 deactivate Service
 
-REST -> Link : addBidLinks(BidResponseDTO)
+REST -> Link : addBidLinks(bidResponseDTO)
 activate Link
-Link --> REST : BidResponseDTO with _links
+Link --> REST : bidResponseDTO with _links
 deactivate Link
 
 deactivate REST
