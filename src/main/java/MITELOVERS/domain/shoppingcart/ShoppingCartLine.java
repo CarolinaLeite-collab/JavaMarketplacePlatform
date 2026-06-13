@@ -1,10 +1,17 @@
 package MITELOVERS.domain.shoppingcart;
 
 import MITELOVERS.ddd.DomainEntity;
+import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.valueobject.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+/**
+ * Represents a single line item within a {@link ShoppingCart}, referencing a
+ * {@link DirectSale} along with the seller and the
+ * price at the time it was added to the cart.
+ */
 
 public class ShoppingCartLine implements DomainEntity<ShoppingCartLineId> {
 
