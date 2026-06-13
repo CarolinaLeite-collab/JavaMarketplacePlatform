@@ -5,6 +5,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+/**
+ * Factory responsible for creating {@link ShoppingCartLine} instances.
+ */
+
 @Component
 public class ShoppingCartLineFactory {
 
