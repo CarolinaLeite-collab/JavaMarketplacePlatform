@@ -8,13 +8,21 @@ import MITELOVERS.persistence.jpa.assembler.ShoppingCartAssembler;
 import MITELOVERS.persistence.jpa.datamodel.ShoppingCartDataModel;
 import MITELOVERS.persistence.springdata.IShoppingCartSpringDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * JPA-based implementation of {@link IShoppingCartRepo}, providing persistence
+ * and retrieval of {@link ShoppingCart} aggregates via Spring Data.
+ * <p> Active only when the {@code jpa} Spring profile is enabled.
+ */
+
 @Repository
+@Profile("jpa")
 public class JpaShoppingCartRepo implements IShoppingCartRepo {
 
     @Autowired
