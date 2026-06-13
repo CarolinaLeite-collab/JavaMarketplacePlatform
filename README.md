@@ -20,18 +20,41 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [Build, Test and Run](#build-test-and-run)
   * [DevSecOps Workflow](#devsecops-workflow)
     * [Branching Strategy](#branching-strategy)
+    * [Branch Protection Rules](#branch-protection-rules)
     * [Development Flow](#development-flow)
     * [Quality Gates](#quality-gates)
+    * [Security Findings Severity Reporting](#security-findings-severity-reporting)
   * [Test Coverage](#test-coverage)
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
     * [Hardened Security Pipeline](#hardened-security-pipeline)
-      * [Secret Detection with Gitleaks](#secret-detection-with-gitleaks)
-      * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
-      * [Run Tests on Pull Request](#run-tests-on-pull-request)
-      * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [Secret Detection with `Gitleaks`](#secret-detection-with-gitleaks)
+    * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
+    * [Insecure Configuration Detection (config-scan)](#insecure-configuration-detection-config-scan)
+    * [Run Tests on Pull Request](#run-tests-on-pull-request)
+    * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
   * [SpringBoot application.properties](#springboot-applicationproperties)
+    * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
+  * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
+    * [Purpose of the Gates](#purpose-of-the-gates)
+    * [Blocking Behaviour](#blocking-behaviour)
+    * [Quality Gates](#quality-gates-1)
+    * [Security Gates](#security-gates)
+    * [Quality & Security Gates Summary Table](#quality--security-gates-summary-table)
+  * [Local Security & Quality Testing (Developer Guide)](#local-security--quality-testing-developer-guide)
+    * [How to fix Failing Gates](#how-to-fix-failing-gates)
+      * [Coverage < 95%](#coverage--95)
+      * [Semgrep ERROR finding](#semgrep-error-finding)
+      * [Gitleaks secret detected](#gitleaks-secret-detected)
+      * [Dependency‑Check CVSS ≥ 7](#dependencycheck-cvss--7)
+      * [SBOM or build failure](#sbom-or-build-failure)
+  * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
+      * [Application service and image build](#application-service-and-image-build)
+      * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
+      * [Health check](#health-check)
+      * [Running it](#running-it)
+      * [Validation](#validation)
 <!-- TOC -->
 
 ___
@@ -1242,7 +1265,7 @@ Developers can run the same checks locally before pushing a PR.
 
 ---
 
-### Container Orchestration with Docker Compose
+## Container Orchestration with Docker Compose
 
 Containerising the application involves two complementary pieces. The `Dockerfile` describes **how the image is built**, the layers, the base image, how the application is compiled and packaged.
 
