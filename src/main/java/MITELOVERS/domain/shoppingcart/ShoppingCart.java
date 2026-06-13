@@ -7,6 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a buyer's shopping cart, containing a collection of {@link ShoppingCartLine}s
+ * and the total amount across all lines.
+ * <p>
+ * Enforces that all cart lines share the same currency, and that the total amount
+ * is {@code null} when the cart is empty and non-null otherwise.
+ * </p>
+ */
+
 public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
     private ShoppingCartId _cartId;
