@@ -1,9 +1,11 @@
 package MITELOVERS.domain.shoppingcart;
 
 import MITELOVERS.domain.valueobject.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
+@Component
 public class ShoppingCartLineFactory {
 
     public ShoppingCartLine createNewShoppingCartLine(DirectSaleId directSaleId,

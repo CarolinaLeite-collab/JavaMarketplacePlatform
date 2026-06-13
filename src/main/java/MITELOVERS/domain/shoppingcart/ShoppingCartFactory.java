@@ -3,9 +3,11 @@ package MITELOVERS.domain.shoppingcart;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.ShoppingCartId;
 import MITELOVERS.domain.valueobject.UserId;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class ShoppingCartFactory {
 
     public ShoppingCart createShoppingCart(UserId buyerId) {
