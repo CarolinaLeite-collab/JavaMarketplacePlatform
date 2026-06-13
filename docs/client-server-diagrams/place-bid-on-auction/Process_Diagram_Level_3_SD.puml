@@ -36,7 +36,7 @@ deactivate CLI
 
 User -> CLI : I want to place a %n() bid on this auction
 activate CLI
-CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ BidRequestDTO } + userIdFromHeader
+CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ PlaceBidRequestDTO } + %n()userIdFromHeader
 activate Controller
 
 ref over Controller

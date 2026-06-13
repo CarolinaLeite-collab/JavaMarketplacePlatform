@@ -71,7 +71,7 @@ deactivate auctionRepo
 Service --> REST : auction
 deactivate Service
 
-REST -> Mapper : toBidResponseDTO(auction, bid)
+REST -> Mapper : toDTO(auction, bid)
 activate Mapper
 Mapper --> REST : BidResponseDTO
 deactivate Mapper
