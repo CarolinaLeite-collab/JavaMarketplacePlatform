@@ -19,7 +19,7 @@ import static org.mockito.Mockito.mockConstruction;
 class ShoppingCartFactoryTest {
 
     @Test
-    void shouldCreatePublishingCompany() {
+    void shouldCreateShoppingCart() {
 
         //SUT
         ShoppingCartFactory shoppingCartFactory = new ShoppingCartFactory();
@@ -44,7 +44,7 @@ class ShoppingCartFactoryTest {
     }
 
     @Test
-    void shouldCreatePublishingCompanyWithId() {
+    void shouldCreateShoppingCartWithId() {
 
         //SUT
         ShoppingCartFactory shoppingCartFactory = new ShoppingCartFactory();
