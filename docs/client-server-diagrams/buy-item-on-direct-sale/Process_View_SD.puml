@@ -1,0 +1,86 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User
+participant ":Client" as CLI
+participant ":Server" as SER
+database ":DataBase" as DB
+
+User -> CLI : I want to buy \nan item in a direct sale
+activate CLI
+CLI -> SER : GET /direct-sales/active {...}
+activate SER
+SER -> DB : select / insert
+DB -> SER : data
+SER -> CLI : HTTP STATUS 200 {...}
+deactivate SER
+
+CLI --> User : Show available direct sales
+deactivate CLI
+
+User -> CLI : Select direct sale
+activate CLI
+
+CLI -> SER : GET /direct-sales/{id}
+activate SER
+SER -> DB : select
+DB -> SER : data
+SER -> CLI : HTTP STATUS 200 {...}
+deactivate SER
+CLI -> User : Show direct sale details
+deactivate CLI
+
+User -> CLI : Add item to shopping cart
+activate CLI
+CLI -> SER : POST /shopping-cart/items
+activate SER
+SER -> DB : select / insert
+activate DB
+DB -> SER : data
+deactivate DB
+SER -> CLI : HTTP STATUS 200 {...}
+deactivate SER
+CLI --> User : Item added to shopping cart
+deactivate CLI
+
+User -> CLI : View shopping cart
+activate CLI
+CLI -> SER : GET /shopping-cart/{id}
+activate SER
+SER -> DB : select
+activate DB
+DB -> SER : data
+deactivate DB
+SER -> CLI : HTTP STATUS 200 {...}
+deactivate SER
+CLI --> User : Show shopping cart contents
+deactivate CLI
+User -> CLI : Proceed to checkout
+activate CLI
+CLI -> SER : POST /sales
+activate SER
+SER -> DB : insert sale
+activate DB
+DB -> SER : data
+deactivate DB
+SER -> CLI : HTTP STATUS 201 {...}
+deactivate SER
+CLI --> User : Purchase successfully completed
+deactivate CLI
+
+@enduml
