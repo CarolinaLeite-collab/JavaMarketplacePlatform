@@ -1,9 +1,7 @@
 package MITELOVERS.domain.shoppingcart;
 
 import MITELOVERS.ddd.AggregateRoot;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.ShoppingCartId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +12,14 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
     private ShoppingCartId _cartId;
     private UserId _buyerId;
     private Price _totalAmount;
-    private List<ShoppingCartLine> _cartItems;
+    private List<ShoppingCartLine> _cartLines;
 
     public ShoppingCart(UserId buyerId) {
 
         _cartId = new ShoppingCartId();
         _buyerId = Objects.requireNonNull(buyerId, "buyerId cannot be null!");
         _totalAmount = null;
-        _cartItems = new ArrayList<>();
+        _cartLines = new ArrayList<>();
 
     }
 
@@ -32,13 +30,13 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
         _cartId = Objects.requireNonNull(cartId, "cartId cannot be null!");
         _buyerId = Objects.requireNonNull(buyerId, "buyerId cannot be null!");
-        _cartItems = (cartItems == null) ? new ArrayList<>() : new ArrayList<>(cartItems);
+        _cartLines = (cartItems == null) ? new ArrayList<>() : new ArrayList<>(cartItems);
 
-        if (_cartItems.isEmpty() && totalAmount != null) {
+        if (_cartLines.isEmpty() && totalAmount != null) {
             throw new IllegalArgumentException("TotalAmount must be null when cart has no items!");
         }
 
-        if (!_cartItems.isEmpty() && totalAmount == null) {
+        if (!_cartLines.isEmpty() && totalAmount == null) {
             throw new IllegalArgumentException("TotalAmount cannot be null when cart has items!");
         }
 
@@ -48,12 +46,67 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
     public UserId getBuyerId() { return _buyerId; }
     public Price getTotalAmount() { return _totalAmount; }
-    public List<ShoppingCartLine> getCartItems() { return List.copyOf(_cartItems); }
+    public List<ShoppingCartLine> getCartLines() { return List.copyOf(_cartLines); }
 
     public void clearShoppingCart() {
-        _cartItems.clear();
+        _cartLines.clear();
         _totalAmount = null;
     }
+
+    public void addCartLine(ShoppingCartLine shoppingCartLine) {
+
+        if (shoppingCartLine == null) {
+            throw new IllegalArgumentException("Shopping Cart Line cannot be null!");
+        }
+
+        if (!_cartLines.isEmpty()) {
+
+            Currency existingCurrency = _cartLines.get(0).getPriceAtAddition().getCurrency();
+
+            if (shoppingCartLine.getPriceAtAddition().getCurrency() != existingCurrency) {
+                throw new IllegalArgumentException("Cannot mix currencies in a shopping cart!");
+            }
+
+        }
+
+        _cartLines.add(shoppingCartLine);
+        recalculateTotalAmount();
+
+    }
+
+    public void removeCartLine(ShoppingCartLineId cartLineId) {
+
+        boolean isRemoved = _cartLines.removeIf(
+                cartLine -> cartLine.identity().equals(cartLineId)
+        );
+
+        if(!isRemoved) {
+            throw new IllegalArgumentException("ShoppingCartLine not found in cart: " + cartLineId);
+        }
+
+        recalculateTotalAmount();
+
+    }
+
+    private void recalculateTotalAmount() {
+
+        if (_cartLines.isEmpty()) {
+
+            _totalAmount = null;
+            return;
+
+        }
+
+        Currency currency = _cartLines.get(0).getPriceAtAddition().getCurrency();
+        double sum = _cartLines.stream()
+                .mapToDouble(line -> line.getPriceAtAddition().getValue())
+                .sum();
+
+        _totalAmount = new Price(sum,currency);
+
+    }
+
+
 
     @Override
     public ShoppingCartId identity() {
