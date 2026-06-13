@@ -1,6 +1,5 @@
 package MITELOVERS.domain.shoppingcart;
 
-import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.ShoppingCartId;
 import MITELOVERS.domain.valueobject.UserId;
@@ -15,7 +14,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ShoppingCartTest {
