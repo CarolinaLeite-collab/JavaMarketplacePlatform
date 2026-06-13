@@ -20,7 +20,7 @@ public class BidResponseDTO extends RepresentationModel<BidResponseDTO> {
     private String bidId;
     private String auctionId;
     private String buyerId;
-    private BigDecimal offerPrice;
+    private double offerPrice;
     private String currency;
     private Instant bidDate;
 }

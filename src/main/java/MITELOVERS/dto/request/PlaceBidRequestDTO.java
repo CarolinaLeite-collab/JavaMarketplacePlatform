@@ -15,5 +15,5 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class PlaceBidRequestDTO {
 
-    private BigDecimal offerPrice;
+    private double offerPrice;
 }
