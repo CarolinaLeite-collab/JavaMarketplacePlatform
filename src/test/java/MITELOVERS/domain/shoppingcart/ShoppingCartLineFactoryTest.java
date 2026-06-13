@@ -24,7 +24,6 @@ class ShoppingCartLineFactoryTest {
 
             //Arrange
             DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-            ItemId itemIdDouble = mock(ItemId.class);
             UserId buyerIdDouble = mock(UserId.class);
             Price priceDouble = mock(Price.class);
 
@@ -32,7 +31,6 @@ class ShoppingCartLineFactoryTest {
             ShoppingCartLine shoppingCartLine = shoppingCartLineFactory
                     .createNewShoppingCartLine(
                             directSaleIdDouble,
-                            itemIdDouble,
                             buyerIdDouble,
                             priceDouble
                     );
@@ -56,7 +54,6 @@ class ShoppingCartLineFactoryTest {
             //Arrange
             ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
             DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-            ItemId itemIdDouble = mock(ItemId.class);
             UserId buyerIdDouble = mock(UserId.class);
             Price priceDouble = mock(Price.class);
             LocalDateTime time = LocalDateTime.now();
@@ -67,7 +64,6 @@ class ShoppingCartLineFactoryTest {
                     .createNewShoppingCartLine(
                             lineIdDouble,
                             directSaleIdDouble,
-                            itemIdDouble,
                             buyerIdDouble,
                             priceDouble,
                             time

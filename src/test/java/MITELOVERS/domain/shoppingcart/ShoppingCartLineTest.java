@@ -22,9 +22,6 @@ class ShoppingCartLineTest {
     private DirectSaleId _directSaleIdDouble;
 
     @Mock
-    private ItemId _itemIdDouble;
-
-    @Mock
     private UserId _sellerIdDouble;
 
     @Mock
@@ -43,7 +40,7 @@ class ShoppingCartLineTest {
     void testFourArgumentConstructor() {
 
         //SUT
-        new ShoppingCartLine(_directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble);
+        new ShoppingCartLine(_directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble);
 
     }
 
@@ -51,7 +48,7 @@ class ShoppingCartLineTest {
     void testSixArgumentConstructor() {
 
         //SUT
-        new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
     }
 
@@ -60,17 +57,7 @@ class ShoppingCartLineTest {
 
         //SUT + Assert
         assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(null, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble)
-        );
-
-    }
-
-    @Test
-    void testConstructorShouldThrowIfItemIdIsNull() {
-
-        //SUT + Assert
-        assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(_directSaleIdDouble, null, _sellerIdDouble, _priceAtAdditionDouble)
+                () -> new ShoppingCartLine(null, _sellerIdDouble, _priceAtAdditionDouble)
         );
 
     }
@@ -80,7 +67,7 @@ class ShoppingCartLineTest {
 
         //SUT + Assert
         assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(_directSaleIdDouble, _itemIdDouble, null, _priceAtAdditionDouble)
+                () -> new ShoppingCartLine(_directSaleIdDouble, null, _priceAtAdditionDouble)
         );
 
     }
@@ -90,7 +77,7 @@ class ShoppingCartLineTest {
 
         //SUT + Assert
         assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(_directSaleIdDouble, _itemIdDouble, _sellerIdDouble, null)
+                () -> new ShoppingCartLine(_directSaleIdDouble, _sellerIdDouble, null)
         );
 
     }
@@ -100,7 +87,7 @@ class ShoppingCartLineTest {
 
         //SUT + Assert
         assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(null, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime)
+                () -> new ShoppingCartLine(null, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime)
 
         );
 
@@ -111,7 +98,7 @@ class ShoppingCartLineTest {
 
         //SUT + Assert
         assertThrows(NullPointerException.class,
-                () -> new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, null)
+                () -> new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, null)
 
         );
 
@@ -121,7 +108,7 @@ class ShoppingCartLineTest {
     void testGetDirectSaleId() {
 
         //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act
         DirectSaleId result = cartLine.getDirectSaleId();
@@ -131,25 +118,13 @@ class ShoppingCartLineTest {
 
     }
 
-    @Test
-    void testGetItemId() {
 
-        //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-
-        //Act
-        ItemId result = cartLine.getItemId();
-
-        //Assert
-        assertEquals(result, _itemIdDouble);
-
-    }
 
     @Test
     void testGetUserId() {
 
         //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act
         UserId result = cartLine.getSellerId();
@@ -163,7 +138,7 @@ class ShoppingCartLineTest {
     void testGetPriceAtAddition() {
 
         //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act
         Price result = cartLine.getPriceAtAddition();
@@ -177,7 +152,7 @@ class ShoppingCartLineTest {
     void testGetAddedAt() {
 
         //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act
         LocalDateTime result = cartLine.getAddedAt();
@@ -191,7 +166,7 @@ class ShoppingCartLineTest {
     void testIdentity() {
 
         //SUT
-        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act
         ShoppingCartLineId result = cartLine.identity();
@@ -205,8 +180,8 @@ class ShoppingCartLineTest {
     void testSameAsShouldReturnTrueWhenObjectIsTheSame() {
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertTrue(cartLine1.sameAs(cartLine2));
@@ -220,8 +195,8 @@ class ShoppingCartLineTest {
         DirectSaleId directSaleId2Double = mock(DirectSaleId.class);
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertFalse(cartLine1.sameAs(cartLine2));
@@ -232,7 +207,7 @@ class ShoppingCartLineTest {
     void testEqualsShouldReturnFalseWhenObjectIsNull() {
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertFalse(cartLine1.equals(null));
@@ -246,7 +221,7 @@ class ShoppingCartLineTest {
         String string = "test";
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertFalse(cartLine1.equals(string));
@@ -257,7 +232,7 @@ class ShoppingCartLineTest {
     void testEqualsShouldReturnTrueWhenObjectIsTheSameObject() {
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertTrue(cartLine1.equals(cartLine1));
@@ -268,8 +243,8 @@ class ShoppingCartLineTest {
     void testEqualsShouldReturnTrueWhenObjectIsEquals() {
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertTrue(cartLine1.equals(cartLine2));
@@ -283,8 +258,8 @@ class ShoppingCartLineTest {
         DirectSaleId directSaleId2Double = mock(DirectSaleId.class);
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertFalse(cartLine1.equals(cartLine2));
@@ -295,8 +270,8 @@ class ShoppingCartLineTest {
     void testHashCodeShouldBeSameWhenObjectsAreEquals() {
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertEquals(cartLine1.hashCode(), cartLine2.hashCode());
@@ -310,8 +285,8 @@ class ShoppingCartLineTest {
         DirectSaleId directSaleId2Double = mock(DirectSaleId.class);
 
         //SUT
-        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
-        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _itemIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine1 = new ShoppingCartLine(_shoppingCartLineIdDouble, _directSaleIdDouble, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
+        ShoppingCartLine cartLine2 = new ShoppingCartLine(_shoppingCartLineIdDouble, directSaleId2Double, _sellerIdDouble, _priceAtAdditionDouble, _localDateTime);
 
         //Act + Assert
         assertNotEquals(cartLine1.hashCode(), cartLine2.hashCode());
