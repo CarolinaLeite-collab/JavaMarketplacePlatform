@@ -33,7 +33,7 @@ create "userId2:UserId" as userId2
 REST --> userId2 : createUserId(email2)
 
 create "offerPrice:Price" as offerPrice
-REST -->> offerPrice : createPrice(DTORequest.getOfferPrice, currency)
+REST -->> offerPrice : createPrice(PlaceBidRequestDTO.getOfferPrice, currency)
 
 REST -> Service : placeBid(auctionId, userId2, offerPrice)
 activate Service

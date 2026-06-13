@@ -34,9 +34,9 @@ deactivate Controller
 CLI --> User : display HATEOAS %n() links
 deactivate CLI
 
-User -> CLI : I want to place a %n() bid on an auction
+User -> CLI : I want to place a %n() bid on this auction
 activate CLI
-CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ DTORequest } + userIdFromHeader
+CLI -> Controller : POST /auctions/{auctionId}/bids %n(){ BidRequestDTO } + userIdFromHeader
 activate Controller
 
 ref over Controller
