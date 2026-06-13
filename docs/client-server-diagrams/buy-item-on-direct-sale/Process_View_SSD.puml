@@ -1,0 +1,56 @@
+@startuml
+
+'==== basic style ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+autonumber
+
+title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SSD
+
+' --- Actor and participants ---
+
+actor User
+participant ":Mitelovers" as mite
+
+User -> mite : I want to buy an item in a direct sale
+activate mite
+mite --> User : Show available direct sales
+deactivate mite
+
+User -> mite : Select direct sale
+activate mite
+mite --> User : Show direct sale details
+deactivate mite
+
+User -> mite : Add publication to shopping cart
+activate mite
+mite --> User : Publication added to shopping cart
+deactivate mite
+
+User -> mite : View shopping cart
+activate mite
+mite --> User : Show shopping cart contents
+deactivate mite
+
+User -> mite : Proceed to checkout
+activate mite
+mite --> User : Show purchase summary
+deactivate mite
+
+User -> mite : Confirm purchase
+activate mite
+mite --> User : Sale successfully completed
+deactivate mite
+
+
+@enduml
