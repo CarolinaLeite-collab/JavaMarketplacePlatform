@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class ShoppingCartLineId implements DomainId {
 
-    private String _id;
+    private final String _id;
 
     public ShoppingCartLineId() {
 
