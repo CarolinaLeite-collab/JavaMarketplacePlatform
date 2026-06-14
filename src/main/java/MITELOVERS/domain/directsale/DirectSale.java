@@ -3,9 +3,7 @@ package MITELOVERS.domain.directsale;
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.item.Item;
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,12 +23,14 @@ import java.util.Set;
 public class DirectSale implements AggregateRoot<DirectSaleId> {
 
     private final List<ItemId> _itemsId;
+    private final UserId _sellerId;
     private final Price _price;
     private final Duration _timeLimit; // optional
     private DirectSaleId _directSaleId;
     private Instant _creationDate;
+    private DirectSaleStatus _status;
 
-    DirectSale(List<ItemId> itemsId, Price price, Duration timeLimit) {
+    DirectSale(List<ItemId> itemsId, UserId sellerId, Price price, Duration timeLimit) {
 
         requiresItemAndPrice(itemsId, price);
         timeLimitMustBeValid(timeLimit);
@@ -43,26 +43,31 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         }
 
         _itemsId = List.copyOf(itemsId);
+        _sellerId = Objects.requireNonNull(sellerId, "SellerId cannot be null!");
         _price = price;
         _timeLimit = timeLimit;// may be null = unlimited duration
         _directSaleId = new DirectSaleId();
         _creationDate = Instant.now();
+        _status = DirectSaleStatus.ACTIVE;
 
     }
 
     // rehydration
-    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, Price price, Duration timeLimit,Instant creationDate) {
-        this(itemsId, price, timeLimit);
+    DirectSale(DirectSaleId directSaleId, List<ItemId> itemsId, UserId _sellerId, Price price, Duration timeLimit,Instant creationDate, DirectSaleStatus status) {
+        this(itemsId, _sellerId, price, timeLimit);
 
         _directSaleId = Objects.requireNonNull(directSaleId, "DirectSaleId cannot be null");
         _creationDate = creationDate;
+        _status = status;
 
     }
 
     public List<ItemId> getItemsId() { return _itemsId; }
+    public UserId getSellerId() { return _sellerId; }
     public Price getPrice() { return _price; }
     public Duration getTimeLimit() { return _timeLimit; }
     public Instant getCreationDate(){ return _creationDate;}
+    public DirectSaleStatus getDSStatus(){ return _status; }
 
     private static void requiresItemAndPrice(List<ItemId> itemsId, Price price) {
         if (itemsId == null) {
@@ -77,6 +82,30 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         if (timeLimit != null && timeLimit.isNegative()) {
             throw new IllegalArgumentException("Time limit cannot be negative");
         }
+    }
+
+    public void markAsCompleted() {
+
+        if (_status == DirectSaleStatus.COMPLETED) {
+            throw new IllegalStateException("This Direct Sale was already completed!");
+        }
+
+        _status = DirectSaleStatus.COMPLETED;
+
+    }
+
+    public void markAsExpired() {
+
+        if (_status == DirectSaleStatus.EXPIRED) {
+            throw new IllegalStateException("This Direct Sale was already expired!");
+        }
+
+        if (_timeLimit != null && _creationDate.plus(_timeLimit).isAfter(Instant.now())) {
+            throw new IllegalStateException("Cannot marked as expired - still within the time limit!");
+        }
+
+        _status = DirectSaleStatus.EXPIRED;
+
     }
 
     @Override

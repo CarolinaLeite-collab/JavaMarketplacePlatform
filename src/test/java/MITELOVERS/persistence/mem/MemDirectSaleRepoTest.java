@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -222,6 +223,58 @@ class MemDirectSaleRepoTest {
                 repo.findByItemsIdSortedByPublicationDateAsc(List.of(_itemIdDouble2));
 
         assertEquals(List.of(_ds2Double), result);
+    }
+
+    @Test
+    void deleteDirectSale_shouldThrowUnsupportedOperation() {
+
+        // Arrange
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        // Act + Assert
+        assertThrows(UnsupportedOperationException.class,
+                () -> repo.deleteDirectSale(_dsIdDouble1));
+    }
+
+    @Test
+    void findExpired_shouldReturnEmptyWhenNoSales() {
+
+        // Arrange
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        // Act
+        List<DirectSaleId> result = repo.findExpired();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findExpired_shouldReturnOnlyExpiredSales() {
+
+        // Arrange
+        MemDirectSaleRepo repo = new MemDirectSaleRepo();
+
+        when(_ds1Double.identity()).thenReturn(_dsIdDouble1);
+        when(_ds2Double.identity()).thenReturn(_dsIdDouble2);
+
+        // expired sale
+        when(_ds1Double.getCreationDate()).thenReturn(Instant.now().minusSeconds(5000));
+        when(_ds1Double.getTimeLimit()).thenReturn(Duration.ofSeconds(1000));
+
+        // not expired sale
+        when(_ds2Double.getCreationDate()).thenReturn(Instant.now());
+        when(_ds2Double.getTimeLimit()).thenReturn(Duration.ofSeconds(999999));
+
+        repo.save(_ds1Double);
+        repo.save(_ds2Double);
+
+        // Act
+        List<DirectSaleId> result = repo.findExpired();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(_dsIdDouble1));
     }
 
 }

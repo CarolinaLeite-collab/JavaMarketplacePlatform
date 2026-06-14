@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Running build before push..."
+
+mvn clean compile
+
+if [ $? -ne 0 ]; then
+  echo "Build failed. Push aborted."
+  exit 1
+fi
+
+echo "Build successful. Proceeding with push."
+exit 0

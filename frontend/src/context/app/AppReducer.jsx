@@ -17,6 +17,13 @@ export const initialAppState = {
     libraryAddHref: null,
 };
 
+/**
+ * Reducer responsible for storing application-wide HATEOAS links discovered at bootstrap.
+ *
+ * The reducer maps backend root OPTIONS links into stable frontend state fields so
+ * components can execute workflows without hardcoding endpoint paths.
+ */
+
 export function appReducer(state, action) {
     switch (action.type) {
         case BOOTSTRAP_SUCCESS:

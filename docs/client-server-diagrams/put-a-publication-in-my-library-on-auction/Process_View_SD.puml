@@ -1,0 +1,69 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for %n()sale in an auction a publication in my library." %n() SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+actor "User"
+participant ":Client" as Client
+participant ":Server" as Server
+database "DB" as DB
+
+User -> Client : show me want I can do
+activate Client
+Client -> Server : OPTIONS /my-library {...}
+activate Server
+Server --> Client : available links
+deactivate Server
+Client --> User : here is what you can do
+deactivate Client
+
+User -> Client : I want to put an item %n()in my library on auction
+activate Client
+Client -> Server : GET /items/my-library {...}
+activate Server
+Server -> DB : select items in %n()user's library
+DB --> Server : data
+Server --> Client : 200 [ItemResponseDTO + links]
+note right of Client
+Each item includes:
+- self
+- create-auction only if item
+ can be put on auction
+Client populates the dropdown only
+with items containing create-auction
+end note
+deactivate Server
+Client --> User : Displays auction form %n() with items NotOnSale only
+deactivate Client
+
+
+User -> Client : Submit selected itemIds, starting price, %n()reserve price, currency, %n()start date and end date
+activate Client
+Client -> Server : POST {href from rel="create-auction"}\n{ itemIds, startingPrice, %n()reservePrice, priceCurrency, %n()startDate, endDate }
+note right of Server
+Creates Auction and updates %n()Item saleStatus as OnAuction
+end note
+Server -> DB : insert auction / %n() update item
+DB --> Server : success
+Server --> Client : 201 Created
+deactivate Server
+Client --> User : The item was successfully %n()put on auction.
+deactivate Client
+
+
+@enduml

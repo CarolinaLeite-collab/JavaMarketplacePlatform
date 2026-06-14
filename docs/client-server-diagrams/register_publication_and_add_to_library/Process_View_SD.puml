@@ -34,13 +34,6 @@ activate SER
 SER -> DB : check publication
 DB --> SER : result
 
-alt publication exists
-    SER -> SER : use existing publication
-else publication does not exist
-    SER -> DB : create publication
-    DB --> SER : publication created
-end
-
 SER --> CLI : HTTP STATUS 200/201
 deactivate SER
 CLI --> User : display edition form
@@ -53,13 +46,6 @@ activate SER
 
 SER -> DB : check edition
 DB --> SER : result
-
-alt edition exists
-    SER -> SER : use existing edition
-else edition does not exist
-    SER -> DB : create edition
-    DB --> SER : edition created
-end
 
 SER --> CLI : HTTP STATUS 200/201
 deactivate SER

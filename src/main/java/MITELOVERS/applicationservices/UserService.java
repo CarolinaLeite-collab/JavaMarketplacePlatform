@@ -33,4 +33,10 @@ public class UserService {
 
     }
 
+    public boolean userIdExists(String email) {
+
+        return _iUserRepo.containsOfIdentity(new UserId(new Email(email)));
+
+    }
+
 }

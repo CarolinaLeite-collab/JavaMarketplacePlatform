@@ -2,6 +2,14 @@ import {createContext, useContext} from 'react';
 import {initialState} from './library/LibraryReducer';
 import { RowData } from '../components/lists/tablelist/TableList.tsx';
 
+/**
+ * Application-level context containing globally discovered backend links and shared state.
+ *
+ * HATEOAS links exposed here are populated during application bootstrap and reused
+ * by feature workflows that need backend entry points, such as lists, direct sales,
+ * library access, and item registration.
+ */
+
 interface AppState {
     app: {
         myListsHref: string | null;

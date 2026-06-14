@@ -1,5 +1,6 @@
 package MITELOVERS.mapper;
 
+import MITELOVERS.controllers.rest.AuctionRestController;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.ItemRestController;
 import MITELOVERS.domain.author.Author;
@@ -103,8 +104,9 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
                 .withSelfRel());
 
         if (item.getSaleStatus() == SaleStatus.NotOnSale){
-            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null)).withRel("create-direct-sale"));
-
+            dto.add(linkTo(methodOn(DirectSaleRestController.class).createDirectSale(null, null)).withRel("create-direct-sale"));
+            dto.add(linkTo(AuctionRestController.class)
+                    .withRel("create-auction"));
         }
 
         return dto;
