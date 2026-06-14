@@ -6,6 +6,7 @@ import { useState, useEffect, useContext, useCallback } from "react";
 import { FiltersBar } from "../../components/lists/FiltersBar.tsx";
 import AppContext from "../../context/AppContext.tsx";
 import { getPublicLists, getListsOptions } from "../../context/lists/ListsActions.jsx";
+import { getGenres } from "../../context/lists/ListsActions.jsx";
 import { RowData } from "../../components/lists/tablelist/TableList.tsx";
 
 export default function PublicListsPage() {
@@ -13,7 +14,7 @@ export default function PublicListsPage() {
     const { state, dispatch } = useContext(AppContext);
     const { publicListsHref } = state.app;
     const publicLists = state.lists.publicLists ?? [];
-    const genres = state.lists.genres?.map(g => g.label) ?? [];
+    const genres = state.lists.genres;
 
     const [search, setSearch]   = useState("");
     const [genre, setGenre]     = useState<string | null>(null);
@@ -22,6 +23,12 @@ export default function PublicListsPage() {
     const [favourites, setFavourites] = useState<Set<string>>(new Set());
 
     useEffect(() => { getListsOptions(dispatch); }, [dispatch]);
+
+    useEffect(() => {
+        if (state.app.genresHref) {
+            getGenres(dispatch, state.app.genresHref);
+        }
+    }, [state.app.genresHref]);
 
     useEffect(() => {
         if (!publicListsHref) return;

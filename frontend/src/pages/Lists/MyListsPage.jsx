@@ -5,6 +5,7 @@ import { NewListModal } from "../../components/lists/newlistmodal/NewListModal.t
 import { useEffect, useState, useContext } from "react";
 import { FiltersBar } from "../../components/lists/FiltersBar.tsx";
 import AppContext from "../../context/AppContext.tsx";
+import { getGenres } from "../../context/lists/ListsActions.jsx";
 
 export default function MyListsPage() {
     const [footerHeight, setFooterHeight] = useState(0);
@@ -14,13 +15,19 @@ export default function MyListsPage() {
     const [genre, setGenre] = useState(null);
 
     // Genres from backend (your colleagues already fetch them)
-    const { state } = useContext(AppContext);
-    const genres = state.lists.genres?.map(g => g.name) ?? [];
+    const { state, dispatch } = useContext(AppContext);
+    const genres = state.lists.genres;
 
     useEffect(() => {
         const footer = document.querySelector("footer");
         if (footer) setFooterHeight(footer.offsetHeight);
     }, []);
+
+    useEffect(() => {
+        if (state.app.genresHref) {
+            getGenres(dispatch, state.app.genresHref);
+        }
+    }, [state.app.genresHref]);
 
     return (
         <DefaultLayout title="My Lists" subtitle="CHECK OUT YOUR LISTS:">

@@ -5,7 +5,7 @@ interface FiltersBarProps {
     onSearchChange: (value: string) => void;
     genre: string | null;
     onGenreChange: (value: string | null) => void;
-    genres: string[];
+    genres: { value: string; label: string }[];
 }
 
 export function FiltersBar({
