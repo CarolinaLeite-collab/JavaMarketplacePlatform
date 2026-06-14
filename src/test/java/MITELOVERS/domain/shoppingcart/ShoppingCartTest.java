@@ -24,17 +24,11 @@ class ShoppingCartTest {
     @Mock
     private UserId _buyerIdDouble;
 
-    @Mock
-    private Price _totalAmountDouble;
-
     private List<ShoppingCartLine> _cartLinesDouble;
 
     @BeforeEach
     void setUp() {
-
         _cartLinesDouble = new ArrayList<>();
-        _cartLinesDouble.add(mock(ShoppingCartLine.class));
-
     }
 
     @Test
@@ -48,19 +42,30 @@ class ShoppingCartTest {
     @Test
     void testConstructorWithFourArguments() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
     }
 
     @Test
     void testShouldThrowIfCartItemsIsEmptyAndTotalAmountIsNotNull() {
 
-        List<ShoppingCartLine> cartLinesDouble = new ArrayList<>();
+        //Arrange
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, cartLinesDouble)
+                () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble)
         );
 
     }
@@ -68,9 +73,47 @@ class ShoppingCartTest {
     @Test
     void testShouldThrowIfCartItemsIsNotEmptyAndTotalAmountIsNull() {
 
+        //Arrange
+        // Constructor flow: cartLines non-empty + totalAmount null -> throws BEFORE
+        // any currency check or recalculateTotalAmount() runs, so getCurrency()/getValue()
+        // on this line's Price are never called. Only getPriceAtAddition() itself is
+        // not even invoked here, so no stubbing is needed on the line at all.
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        _cartLinesDouble.add(lineDouble);
+
         //SUT + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, null, _cartLinesDouble)
+        );
+
+    }
+
+    @Test
+    void testShouldThrowIfCartLinesHaveDifferentCurrencies() {
+
+        //Arrange
+        // Both totalAmount-null/empty checks pass (non-empty cart, non-null totalAmount),
+        // so execution reaches allCartLinesShareSameCurrency(). That method only calls
+        // getPriceAtAddition().getCurrency() on each line - it never calls getValue(),
+        // and it throws on the second line before recalculateTotalAmount() runs.
+        ShoppingCartLine line1Double = mock(ShoppingCartLine.class);
+        Price price1Double = mock(Price.class);
+        when(price1Double.getCurrency()).thenReturn(Currency.EUR);
+        when(line1Double.getPriceAtAddition()).thenReturn(price1Double);
+
+        ShoppingCartLine line2Double = mock(ShoppingCartLine.class);
+        Price price2Double = mock(Price.class);
+        when(price2Double.getCurrency()).thenReturn(Currency.USD);
+        when(line2Double.getPriceAtAddition()).thenReturn(price2Double);
+
+        _cartLinesDouble.add(line1Double);
+        _cartLinesDouble.add(line2Double);
+
+        Price totalAmountDouble = mock(Price.class);
+
+        //SUT + Assert
+        assertThrows(IllegalStateException.class,
+                () -> new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble)
         );
 
     }
@@ -92,9 +135,19 @@ class ShoppingCartTest {
     @Test
     void testSameAsEqualObjectsShouldReturnTrue() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertTrue(cart1.sameAs(cart2));
@@ -105,11 +158,19 @@ class ShoppingCartTest {
     void testSameAsNonEqualObjectsShouldReturnFalse() {
 
         //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
         ShoppingCartId cartId2Double = mock(ShoppingCartId.class);
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertFalse(cart1.sameAs(cart2));
@@ -119,8 +180,18 @@ class ShoppingCartTest {
     @Test
     void testEqualsNullShouldReturnFalse() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertFalse(cart1.equals(null));
@@ -131,10 +202,18 @@ class ShoppingCartTest {
     void testEqualsOtherClassShouldReturnFalse() {
 
         //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
         String string = "test";
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertFalse(cart1.equals(string));
@@ -145,11 +224,19 @@ class ShoppingCartTest {
     void testEqualsShouldReturnFalseWhenCartsAreDifferent() {
 
         //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
         ShoppingCartId cartId2Double = mock(ShoppingCartId.class);
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertFalse(cart1.equals(cart2));
@@ -159,9 +246,19 @@ class ShoppingCartTest {
     @Test
     void testEqualsShouldReturnTrueWhenCartsAreEquals() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertTrue(cart1.equals(cart2));
@@ -172,11 +269,18 @@ class ShoppingCartTest {
     void testEqualsShouldReturnTrueWhenCartsIdAreSame() {
 
         //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmount1Double = mock(Price.class);
         Price totalAmount2Double = mock(Price.class);
 
-
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmount1Double, _cartLinesDouble);
         ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmount2Double, _cartLinesDouble);
 
         //Assert
@@ -187,8 +291,18 @@ class ShoppingCartTest {
     @Test
     void testEqualsShouldReturnTrueWhenCartsIsSame() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertTrue(cart1.equals(cart1));
@@ -199,11 +313,19 @@ class ShoppingCartTest {
     void testHashShouldBeDifferentWhenCartsAreDifferent() {
 
         //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
         ShoppingCartId cartId2Double = mock(ShoppingCartId.class);
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(cartId2Double, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertNotEquals(cart1.hashCode(), cart2.hashCode());
@@ -214,11 +336,18 @@ class ShoppingCartTest {
     void testHashShouldBeSameWhenCartsAreSame() {
 
         //Arrange
-        ShoppingCartId cartId2Double = mock(ShoppingCartId.class);
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
-        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart2 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Assert
         assertEquals(cart1.hashCode(), cart2.hashCode());
@@ -228,8 +357,18 @@ class ShoppingCartTest {
     @Test
     void testGetBuyerIdShouldReturnUserId() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Act
         UserId result = cart1.getBuyerId();
@@ -240,24 +379,46 @@ class ShoppingCartTest {
     }
 
     @Test
-    void testGetTotalAmountShouldGetTotalAmount() {
+    void testGetTotalAmountShouldReturnDerivedAmount() {
+
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Act
         Price result = cart1.getTotalAmount();
 
         //Assert
-        assertEquals(_totalAmountDouble, result);
+        assertNotNull(result);
+        assertEquals(10.0, result.getValue());
+        assertEquals(Currency.EUR, result.getCurrency());
 
     }
 
     @Test
     void testGetCartItemsShouldReturnShoppingCartLines() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Act
         List<ShoppingCartLine> result = cart1.getCartLines();
@@ -270,8 +431,18 @@ class ShoppingCartTest {
     @Test
     void testClearShoppingCartShouldClearCartItemsAndResetTotalAmount() {
 
+        //Arrange
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        Price priceDouble = mock(Price.class);
+        when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(priceDouble.getValue()).thenReturn(10.0);
+        when(lineDouble.getPriceAtAddition()).thenReturn(priceDouble);
+        _cartLinesDouble.add(lineDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, totalAmountDouble, _cartLinesDouble);
 
         //Act
         cart1.clearShoppingCart();
@@ -282,22 +453,23 @@ class ShoppingCartTest {
 
     }
 
-
     @Test
     void testAddCartLineShouldAddACartLine() {
 
         //Arrange
+        // cart starts empty via the 1-arg constructor, so addCartLine triggers
+        // isSameCurrencyAsExisting (returns true on empty list, no Price calls)
+        // and then recalculateTotalAmount, which calls getCurrency() and getValue().
         ShoppingCartLine cartLineDouble = mock(ShoppingCartLine.class);
         Price priceAtAddition = mock(Price.class);
-        when(priceAtAddition.getValue()).thenReturn(20.0);
         when(priceAtAddition.getCurrency()).thenReturn(Currency.EUR);
+        when(priceAtAddition.getValue()).thenReturn(20.0);
         when(cartLineDouble.getPriceAtAddition()).thenReturn(priceAtAddition);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_buyerIdDouble);
 
         //Act
-        cart1.clearShoppingCart();
         cart1.addCartLine(cartLineDouble);
 
         //Assert
@@ -309,12 +481,17 @@ class ShoppingCartTest {
     void testAddCartLineShouldThrowWhenCurrencyIsDifferent() {
 
         // Arrange
+        // existingLineDouble is added successfully -> isSameCurrencyAsExisting (empty list,
+        // true, no Price calls) then recalculateTotalAmount calls getCurrency() + getValue().
         ShoppingCartLine existingLineDouble = mock(ShoppingCartLine.class);
         Price existingPriceDouble = mock(Price.class);
         when(existingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
         when(existingPriceDouble.getValue()).thenReturn(20.0);
         when(existingLineDouble.getPriceAtAddition()).thenReturn(existingPriceDouble);
 
+        // newLineDouble: isSameCurrencyAsExisting compares its getCurrency() against the
+        // existing line's currency and returns false -> throws BEFORE recalculateTotalAmount
+        // runs, so getValue() on newPriceDouble is never called.
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
         Price newPriceDouble = mock(Price.class);
         when(newPriceDouble.getCurrency()).thenReturn(Currency.USD);
@@ -347,16 +524,15 @@ class ShoppingCartTest {
         ShoppingCartLine cartLineDouble = mock(ShoppingCartLine.class);
         ShoppingCartLineId cartLineDoubleId = mock(ShoppingCartLineId.class);
         Price priceAtAddition = mock(Price.class);
-        when(priceAtAddition.getValue()).thenReturn(20.0);
         when(priceAtAddition.getCurrency()).thenReturn(Currency.EUR);
+        when(priceAtAddition.getValue()).thenReturn(20.0);
         when(cartLineDouble.getPriceAtAddition()).thenReturn(priceAtAddition);
         when(cartLineDouble.identity()).thenReturn(cartLineDoubleId);
 
         //SUT
-        ShoppingCart cart1 = new ShoppingCart(_cartIdDouble, _buyerIdDouble, _totalAmountDouble, _cartLinesDouble);
+        ShoppingCart cart1 = new ShoppingCart(_buyerIdDouble);
 
         //Act
-        cart1.clearShoppingCart();
         cart1.addCartLine(cartLineDouble);
         cart1.removeCartLine(cartLineDoubleId);
 
@@ -438,8 +614,6 @@ class ShoppingCartTest {
     void testAddCartLineShouldRecalculateTotalAmount() {
 
         // Arrange
-        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
-
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
         Price priceDouble = mock(Price.class);
         when(priceDouble.getCurrency()).thenReturn(Currency.EUR);
@@ -453,7 +627,8 @@ class ShoppingCartTest {
         cart.addCartLine(lineDouble);
 
         // Assert
-        assertEquals(lineDouble.getPriceAtAddition().getValue(), 10.0);
+        assertEquals(10.0, cart.getTotalAmount().getValue());
+        assertEquals(Currency.EUR, cart.getTotalAmount().getCurrency());
     }
 
 }

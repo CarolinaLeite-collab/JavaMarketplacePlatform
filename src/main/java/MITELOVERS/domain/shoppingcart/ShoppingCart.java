@@ -24,10 +24,11 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
     private Price _totalAmount;
     private List<ShoppingCartLine> _cartLines;
 
+    // rehydration / primary
     ShoppingCart(ShoppingCartId cartId,
-                        UserId buyerId,
-                        Price totalAmount,
-                        List<ShoppingCartLine> cartLines) {
+                 UserId buyerId,
+                 Price totalAmount,
+                 List<ShoppingCartLine> cartLines) {
 
         _cartId = Objects.requireNonNull(cartId, "cartId cannot be null!");
         _buyerId = Objects.requireNonNull(buyerId, "buyerId cannot be null!");
@@ -41,10 +42,14 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
             throw new IllegalArgumentException("TotalAmount cannot be null when cart has items!");
         }
 
-        _totalAmount = totalAmount;
+        if (!allCartLinesShareSameCurrency(_cartLines)) {
+            throw new IllegalStateException("CartLines must all have the same currency!");
+        }
 
+        recalculateTotalAmount();
     }
 
+    // creation
     ShoppingCart(UserId buyerId) {
         this(new ShoppingCartId(), buyerId, null, new ArrayList<>());
     }
@@ -64,19 +69,12 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
             throw new IllegalArgumentException("Shopping Cart Line cannot be null!");
         }
 
-        if (!_cartLines.isEmpty()) {
-
-            Currency existingCurrency = _cartLines.get(0).getPriceAtAddition().getCurrency();
-
-            if (shoppingCartLine.getPriceAtAddition().getCurrency() != existingCurrency) {
-                throw new IllegalArgumentException("Cannot mix currencies in a shopping cart!");
-            }
-
+        if (!isSameCurrencyAsExisting(shoppingCartLine)) {
+            throw new IllegalArgumentException("Cannot mix currencies in a shopping cart!");
         }
 
         _cartLines.add(shoppingCartLine);
         recalculateTotalAmount();
-
     }
 
     public void removeCartLine(ShoppingCartLineId cartLineId) {
@@ -85,21 +83,46 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
                 cartLine -> cartLine.identity().equals(cartLineId)
         );
 
-        if(!isRemoved) {
+        if (!isRemoved) {
             throw new NoSuchElementException("ShoppingCartLine not found in cart: " + cartLineId);
         }
 
         recalculateTotalAmount();
+    }
 
+    private boolean allCartLinesShareSameCurrency(List<ShoppingCartLine> cartLines) {
+
+        if (cartLines.isEmpty()) {
+            return true;
+        }
+
+        Currency currencyToCompare = cartLines.get(0).getPriceAtAddition().getCurrency();
+
+        for (ShoppingCartLine cartLine : cartLines) {
+            if (!cartLine.getPriceAtAddition().getCurrency().equals(currencyToCompare)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isSameCurrencyAsExisting(ShoppingCartLine cartLine) {
+
+        if (_cartLines.isEmpty()) {
+            return true;
+        }
+
+        Currency existingCurrency = _cartLines.get(0).getPriceAtAddition().getCurrency();
+
+        return cartLine.getPriceAtAddition().getCurrency().equals(existingCurrency);
     }
 
     private void recalculateTotalAmount() {
 
         if (_cartLines.isEmpty()) {
-
             _totalAmount = null;
             return;
-
         }
 
         Currency currency = _cartLines.get(0).getPriceAtAddition().getCurrency();
@@ -107,11 +130,8 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
                 .mapToDouble(line -> line.getPriceAtAddition().getValue())
                 .sum();
 
-        _totalAmount = new Price(sum,currency);
-
+        _totalAmount = new Price(sum, currency);
     }
-
-
 
     @Override
     public ShoppingCartId identity() {
