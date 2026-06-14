@@ -57,7 +57,7 @@ export default function PublicListsPage() {
 
     return (
         <DefaultLayout title="Public Lists" subtitle="CHECK OUT OTHER'S COLLECTIONS:">
-            <Container>
+            <Container size="lg">
                 <FiltersBar
                     search={search}
                     onSearchChange={setSearch}
@@ -69,12 +69,12 @@ export default function PublicListsPage() {
                 {loading ? (
                     <Center mt="xl"><Loader /></Center>
                 ) : (
-                    <Table striped highlightOnHover mt="md">
+                    <Table highlightOnHover mt="md" highlightOnHoverColor="var(--mantine-color-white)">
                         <Table.Thead>
                             <Table.Tr>
-                                <Table.Th>List name</Table.Th>
-                                <Table.Th>Genre</Table.Th>
-                                <Table.Th>Add to Favourites</Table.Th>
+                                <Table.Th style={{ width: "55%", fontWeight: 500 }}>List name</Table.Th>
+                                <Table.Th style={{ width: "30%", fontWeight: 500 }}>Genre</Table.Th>
+                                <Table.Th style={{ width: "15%", textAlign: "center", fontWeight: 500 }}>Add to Favourites</Table.Th>
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
@@ -85,15 +85,17 @@ export default function PublicListsPage() {
                                     </Table.Td>
                                     <Table.Td>{list.genre}</Table.Td>
                                     <Table.Td>
-                                        <ActionIcon
-                                            color="red"
-                                            variant="subtle"
-                                            onClick={() => toggleFavourite(list.listId)}
-                                        >
-                                            {favourites.has(list.listId)
-                                                ? <IconHeartFilled />
-                                                : <IconHeart />}
-                                        </ActionIcon>
+                                        <Center>
+                                            <ActionIcon
+                                                color="red"
+                                                variant="subtle"
+                                                onClick={() => toggleFavourite(list.listId)}
+                                            >
+                                                {favourites.has(list.listId)
+                                                    ? <IconHeartFilled />
+                                                    : <IconHeart />}
+                                            </ActionIcon>
+                                        </Center>
                                     </Table.Td>
                                 </Table.Tr>
                             )) : (
