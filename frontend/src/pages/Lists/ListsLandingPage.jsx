@@ -15,7 +15,7 @@ export default function ListsLandingPage() {
                         radius="xl"
                         variant="filled"
                         color="var(--mantine-color-indigo-7)"
-                        onClick={() => navigate("/my-lists")}
+                        onClick={() => navigate("/lists/my-lists")}
                     >
                         My Lists
                     </Button>

@@ -7,6 +7,7 @@ import AppContext from '../../../context/AppContext.tsx';
 import {addItemToList, getListsOptions, getMyLists} from '../../../context/lists/ListsActions.jsx';
 import {DeleteListModal} from '../../deletelistmodal/DeleteListModal.tsx';
 import {AddItemToListDropDown} from '../../addItemToListModal/AddItemToListDropDown.tsx';
+import {useNavigate} from "react-router-dom";
 
 export interface RowData {
     listId: string;
@@ -62,6 +63,7 @@ function sortData(
 }
 
 export function TableList({ search, genre }: TableListProps) {
+    const navigate = useNavigate();
     const { state, dispatch } = useContext(AppContext);
     const { lists } = state.lists;
     const { myListsHref, libraryHref } = state.app;
@@ -101,7 +103,14 @@ export function TableList({ search, genre }: TableListProps) {
         const canShare  = row.links?.some(l => l.rel === 'make-public' || l.rel === 'make-private');
 
         return (
-            <Table.Tr key={row.listId}>
+            <Table.Tr
+                key={row.listId}
+                onClick={() => navigate(`/lists/${row.listId}/items`)}
+                style={{
+                        cursor: "pointer",
+                        whiteSpace: "nowrap"
+                }}
+            >
                 <Table.Td>{row.name}</Table.Td>
                 <Table.Td>{row.genre}</Table.Td>
                 <Table.Td>
@@ -110,7 +119,7 @@ export function TableList({ search, genre }: TableListProps) {
                         : <Text fz="sm" c="dimmed">—</Text>
                     }
                 </Table.Td>
-                <Table.Td w={120}>
+                <Table.Td w={78} onClick={(e) => e.stopPropagation()}>
                     <Center>
                         {canShare && (
                             <ShareListModal
@@ -121,7 +130,7 @@ export function TableList({ search, genre }: TableListProps) {
                         )}
                     </Center>
                 </Table.Td>
-                <Table.Td w={50}>
+                <Table.Td w={50} onClick={(e) => e.stopPropagation()}>
                     <Center>
                         <AddItemToListDropDown
                             listName={row.name}
@@ -131,7 +140,7 @@ export function TableList({ search, genre }: TableListProps) {
                         />
                     </Center>
                 </Table.Td>
-                <Table.Td w={50}>
+                <Table.Td w={50} onClick={(e) => e.stopPropagation()}>
                     <Center>
                         {canDelete && (
                             <DeleteListModal
@@ -148,15 +157,21 @@ export function TableList({ search, genre }: TableListProps) {
 
     return (
         <ScrollArea>
-            <Table horizontalSpacing="md" verticalSpacing="xs" miw={900} layout="fixed">
+            <Table horizontalSpacing="md"
+                   verticalSpacing="xs"
+                   miw={900}
+                   highlightOnHover
+                   highlightOnHoverColor="var(--mantine-color-white)"
+                   tableLayout="fixed"
+            >
                 <Table.Thead>
                     <Table.Tr>
-                        <Th width="25%" sorted={sortBy === 'name'} reversed={reverseSortDirection} onSort={() => setSorting('name')}>List Name</Th>
-                        <Th width="15%" sorted={sortBy === 'genre'} reversed={reverseSortDirection} onSort={() => setSorting('genre')}>Genre</Th>
-                        <Th width="15%" sorted={sortBy === 'sharedUntil'} reversed={reverseSortDirection} onSort={() => setSorting('sharedUntil')}>Shared Until</Th>
-                        <Table.Th w={78}><Center><Text fw={500} fz="sm">Visibility</Text></Center></Table.Th>
-                        <Table.Th w={78}><Center><Text fw={500} fz="sm">Add Items</Text></Center></Table.Th>
-                        <Table.Th w={78}><Center><Text fw={500} fz="sm">Delete</Text></Center></Table.Th>
+                        <Th width="200" sorted={sortBy === 'name'} reversed={reverseSortDirection} onSort={() => setSorting('name')}>List Name</Th>
+                        <Th width="80" sorted={sortBy === 'genre'} reversed={reverseSortDirection} onSort={() => setSorting('genre')}>Genre</Th>
+                        <Th width="30" sorted={sortBy === 'sharedUntil'} reversed={reverseSortDirection} onSort={() => setSorting('sharedUntil')}>Shared Until</Th>
+                        <Table.Th w={100}><Center><Text fw={500} fz="sm">Visibility</Text></Center></Table.Th>
+                        <Table.Th w={100}><Center><Text fw={500} fz="sm">Add Items</Text></Center></Table.Th>
+                        <Table.Th w={100}><Center><Text fw={500} fz="sm">Delete</Text></Center></Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>

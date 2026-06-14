@@ -29,7 +29,7 @@ export function AppRoutes() {
 
             {/* My Lists */}
             <Route
-                path="/my-lists"
+                path="/lists/my-lists"
                 element={
                     <ProtectedRoute href={isLoggedIn ? myListsHref : null}>
                         <MyListsPage />
