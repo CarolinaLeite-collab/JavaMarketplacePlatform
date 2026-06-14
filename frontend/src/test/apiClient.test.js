@@ -417,4 +417,44 @@ describe('apiClient', () => {
                 .rejects.toThrow('404');
         });
     });
+
+    describe('getAuctionById', () => {
+
+        it('calls correct URL without auth header', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: { auctionId: 'AUC-001' }
+                })
+            );
+
+            await apiClient.getAuctionById('AUC-001');
+
+            expect(mockFetch).toHaveBeenCalledWith(`${BASE_URL}/auctions/AUC-001`);
+        });
+
+        it('throws when getAuctionById fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.getAuctionById('AUC-001'))
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when getAuctionById receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getAuctionById('AUC-001');
+
+            expect(result).toBeNull();
+        });
+
+    });
 });
