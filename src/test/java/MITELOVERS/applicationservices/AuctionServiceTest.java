@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -115,8 +116,8 @@ class AuctionServiceTest {
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
+        NoSuchElementException exception = assertThrows(
+                NoSuchElementException.class,
                 () -> _auctionService.putItemOnAuction(
                         _itemsId, _startingPriceDouble, _reservePriceDouble,
                         _outrightPriceDouble, _startDate, _endDate)

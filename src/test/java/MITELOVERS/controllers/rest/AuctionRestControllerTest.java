@@ -110,6 +110,7 @@ class AuctionRestControllerTest {
                 }
                 """;
 
+        // act + assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
@@ -145,6 +146,7 @@ class AuctionRestControllerTest {
 
     @Test
     void optionsUserCanSellReturnsCreateAuctionLink() throws Exception {
+        // arrange
         User user = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
@@ -153,6 +155,7 @@ class AuctionRestControllerTest {
         when(_auctionLinkProvider.getLinks(user))
                 .thenReturn(List.of(Link.of("/auctions", "create-auction")));
 
+        // act + assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions")
                         .param("email", "user@example.com"))
                 .andExpect(status().isOk())
@@ -161,10 +164,12 @@ class AuctionRestControllerTest {
 
     @Test
     void optionsUserCannotSellReturnsNoLinks() throws Exception {
+        // arrange
         User user = mock(User.class);
         when(_userService.getUserByEmail("user@example.com")).thenReturn(user);
         when(_auctionLinkProvider.getLinks(user)).thenReturn(List.of());
 
+        // act + assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions")
                         .param("email", "user@example.com"))
                 .andExpect(status().isOk())
