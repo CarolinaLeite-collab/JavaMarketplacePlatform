@@ -2,8 +2,8 @@ import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {MantineProvider} from '@mantine/core';
-import {NewListModal} from "../components/newlistmodal/NewListModal.tsx";
-import MyListsPage from "../pages/MyLists/MyListsPage.tsx";
+import {NewListModal} from "../components/lists/newlistmodal/NewListModal.tsx";
+import MyListsPage from "../pages/Lists/MyListsPage.tsx";
 
 vi.mock('@/components/tablelist/TableList.tsx', () => ({
     TableList: () => <div data-testid="table-list" />,
