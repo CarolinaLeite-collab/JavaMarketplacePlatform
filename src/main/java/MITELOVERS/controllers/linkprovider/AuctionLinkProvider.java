@@ -12,6 +12,18 @@ import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+/**
+ * Provides auction-related HATEOAS links according to the permissions
+ * of the authenticated user.
+ * <p>
+ * This component implements {@link RootLinkProvider} and is responsible for
+ * determining which auction resources should be exposed to a given user.
+ * The available links are generated based on the user's authorization level,
+ * as defined by the {@link AuthorizationPolicy}.
+ * </p>
+ *
+ */
+
 @Component
 public class AuctionLinkProvider implements RootLinkProvider {
     private final AuthorizationPolicy _authorizationPolicy;

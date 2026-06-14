@@ -8,6 +8,15 @@ import org.springframework.hateoas.RepresentationModel;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Data Transfer Object representing an auction resource returned by the REST API.
+ * <p>
+ * This DTO contains the information describing an auction, including its
+ * identifier, the identifiers of the auctioned items, pricing information,
+ * and the period during which the auction is active.
+ * </p>
+ */
+
 @Generated
 @Getter
 @AllArgsConstructor
