@@ -49,6 +49,11 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
       * [Gitleaks secret detected](#gitleaks-secret-detected)
       * [Dependency‑Check CVSS ≥ 7](#dependencycheck-cvss--7)
       * [SBOM or build failure](#sbom-or-build-failure)
+  * [Docker](#docker)
+    * [Prerequisites](#prerequisites-1)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
+    * [Image Security](#image-security)
   * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
       * [Application service and image build](#application-service-and-image-build)
       * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
@@ -56,7 +61,6 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
       * [Running it](#running-it)
       * [Validation](#validation)
 <!-- TOC -->
-
 ___
 
 
@@ -1261,6 +1265,46 @@ Developers can run the same checks locally before pushing a PR.
 
 1. Fix dependency resolution issues
 2. Ensure Maven plugins run correctly
+
+## Docker
+
+The application is containerised using Docker with multi-stage builds and pinned base images for reproducibility and security.
+
+### Prerequisites
+
+- Docker 24+
+
+### Backend
+
+Build and run the backend container:
+
+```bash
+docker build -t mitelovers-backend .
+docker run -p 8081:8081 mitelovers-backend
+```
+
+The application will be available at `http://localhost:8081/h2-console/`.
+
+### Frontend
+
+Build and run the frontend container:
+
+```bash
+cd frontend
+docker build -t mitelovers-frontend .
+docker run -p 5173:80 mitelovers-frontend
+```
+
+The application will be available at `http://localhost:5173`.
+
+### Image Security
+
+Both Dockerfiles follow secure image-building practices:
+
+- **Multi-stage builds** — build tools are not present in the final image
+- **Pinned base images** — SHA256 digests ensure reproducible builds
+- **.dockerignore** — excludes build output, IDE files, logs, and local configs
+- **No hardcoded secrets** — all configuration is passed via environment variables
 
 
 ---
