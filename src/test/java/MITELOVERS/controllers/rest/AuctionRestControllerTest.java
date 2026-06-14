@@ -73,7 +73,6 @@ class AuctionRestControllerTest {
 
         // act + assert
         mockMvc.perform(post("/auctions")
-                        .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -112,7 +111,6 @@ class AuctionRestControllerTest {
                 """;
 
         mockMvc.perform(post("/auctions")
-                        .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
@@ -140,7 +138,6 @@ class AuctionRestControllerTest {
 
         // act + assert
         mockMvc.perform(post("/auctions")
-                        .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isInternalServerError());

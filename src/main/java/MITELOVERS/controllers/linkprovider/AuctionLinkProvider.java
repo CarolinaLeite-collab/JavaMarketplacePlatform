@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
 public class AuctionLinkProvider implements RootLinkProvider {
@@ -27,8 +26,8 @@ public class AuctionLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         if (_authorizationPolicy.canSell(user)) {
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .createAuction(user.identity().toString(), null)).withRel("create-auction"));
+            links.add(linkTo(AuctionRestController.class)
+                    .withRel("create-auction"));
         }
 
         return links;
