@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Application service responsible for managing auction-related operations.
@@ -39,7 +40,7 @@ public class AuctionService {
         for (ItemId itemId : itemsId) {
 
             Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalStateException("Item not found: " + itemId));
+                    .orElseThrow(() -> new NoSuchElementException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
