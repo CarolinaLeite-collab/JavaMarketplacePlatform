@@ -6,6 +6,7 @@ import ListDetailPage from '../pages/ListDetail/ListDetailPage.tsx';
 import {useContext} from 'react';
 import AppContext from '../context/AppContext';
 import {useUser} from '../context/UserContext';
+import AuctionDetailPage from '../pages/AuctionDetail/AuctionDetailPage.jsx';
 
 function ProtectedRoute({ href, children }) {
     if (!href) return <Navigate to="/" replace />;
@@ -36,6 +37,8 @@ export function AppRoutes() {
                     <ListDetailPage />
                 </ProtectedRoute>
             } />
+            <Route path="/auctions/:auctionId" element={<AuctionDetailPage />} />
+
         </Routes>
     );
 }
