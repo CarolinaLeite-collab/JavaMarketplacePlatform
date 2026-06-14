@@ -15,10 +15,15 @@ import {
     MAKE_LIST_PRIVATE_SUCCESS,
     MAKE_LIST_PUBLIC_ERROR,
     MAKE_LIST_PUBLIC_SUCCESS,
+    REMOVE_ITEM_FROM_LIST_SUCCESS,
+    REMOVE_ITEM_FROM_LIST_ERROR,
+    GET_PUBLIC_LISTS_SUCCESS,
+    GET_PUBLIC_LISTS_ERROR
 } from './ListsActions';
 
 export const initialListsState = {
-    lists: [],
+    lists: [] ,
+    publicLists: [] ,
     genres: [],
     error: null,
 };
@@ -32,10 +37,10 @@ function mapList(item) {
         listId: item.listId,
         name: item.name,
         genre: formatGenre(item.genreId),
-        visibility: item.private ? 'private' : 'public',
+        isPrivate: item.isPrivate ?? item.private ?? true,
         sharedUntil: item.sharedUntil ? daysLeft(item.sharedUntil) : null,
         links: links,
-        itemIds: item.itemsId ?? [],
+        itemIds: item.itemsId ?? item.itemIds ?? [],
     };
 }
 
@@ -64,6 +69,7 @@ export function listsReducer(state, action) {
                 ...state,
                 createListHref: action.payload?.['create-list']?.href ?? null,
                 myListsHref: action.payload?.['collection']?.href ?? null,
+                publicListsHref: action.payload?.['public-lists']?.href ?? null,
             };
         case GET_LIST_OPTIONS_ERROR:
             return { ...state, error: action.payload };
@@ -128,6 +134,32 @@ export function listsReducer(state, action) {
             };
         case ADD_ITEM_TO_LIST_ERROR:
             return { ...state, error: action.payload };
+
+        case REMOVE_ITEM_FROM_LIST_SUCCESS:
+            return {
+                ...state,
+                error: null,
+                lists: state.lists.map((list) =>
+                    list.listId === action.payload.listId
+                        ? mapList(action.payload)
+                        : list
+                )
+            };
+
+        case REMOVE_ITEM_FROM_LIST_ERROR:
+            return { ...state, error: action.payload };
+
+        case GET_PUBLIC_LISTS_SUCCESS: {
+            const payload = action.payload;
+            const lists = Array.isArray(payload)
+                ? payload
+                : payload?._embedded?.listOfItemsResponseDTOList ?? [];
+            return { ...state, error: null, publicLists: lists.map(mapList) };
+        }
+
+        case GET_PUBLIC_LISTS_ERROR:
+            return { ...state, error: action.payload };
+
         default:
             return state;
     }

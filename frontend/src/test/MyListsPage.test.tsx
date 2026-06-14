@@ -1,5 +1,5 @@
 import {axe, render, screen} from '@/test-utils';
-import MyListsPage from '../pages/MyLists/MyListsPage';
+import MyListsPage from '../pages/Lists/MyListsPage';
 
 describe('MyListsPage', () => {
     axe([<MyListsPage key="1" />]);
