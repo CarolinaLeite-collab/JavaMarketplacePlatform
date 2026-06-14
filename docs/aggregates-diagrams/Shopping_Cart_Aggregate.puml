@@ -99,7 +99,7 @@ IShoppingCartRepo --|> IRepository : has
 
 
 ShoppingCart "1" --> "1" ShoppingCartId: has
-ShoppingCart "1" o-- "*" ShoppingCartLine 
+ShoppingCart "1" *-- "*" ShoppingCartLine
 ShoppingCart "1" ..> "1" ShoppingCartLineFactory : <<use>>
 ShoppingCart "1" --> "1" UserId : has
 ShoppingCart "1" --> "0..1" Price : has
