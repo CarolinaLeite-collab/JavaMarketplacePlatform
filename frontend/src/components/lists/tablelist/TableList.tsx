@@ -1,22 +1,26 @@
 import {useContext, useEffect, useState} from 'react';
-import {IconChevronDown, IconChevronUp, IconSearch, IconSelector} from '@tabler/icons-react';
-import {Center, Group, ScrollArea, Table, Text, TextInput, UnstyledButton} from '@mantine/core';
+import {IconChevronDown, IconChevronUp, IconSelector} from '@tabler/icons-react';
+import {Center, Group, ScrollArea, Table, Text, UnstyledButton} from '@mantine/core';
 import classes from './TableList.module.css';
 import {ShareListModal} from "../sharelistmodal/ShareListModal.tsx";
-import AppContext from '../../context/AppContext';
-import {addItemToList, getListsOptions, getMyLists} from '../../context/lists/ListsActions';
-import {DeleteListModal} from '../deletelistmodal/DeleteListModal.tsx';
-import {AddItemToListDropDown} from '../addItemToListModal/AddItemToListDropDown.tsx';
+import AppContext from '../../../context/AppContext.tsx';
+import {addItemToList, getListsOptions, getMyLists} from '../../../context/lists/ListsActions.jsx';
+import {DeleteListModal} from '../../deletelistmodal/DeleteListModal.tsx';
+import {AddItemToListDropDown} from '../../addItemToListModal/AddItemToListDropDown.tsx';
 
-
-interface RowData {
+export interface RowData {
     listId: string;
     name: string;
     genre: string;
-    visibility: 'public' | 'private';
+    isPrivate: boolean;
     sharedUntil: number | null;
     links: { rel: string; href: string }[];
-    itemIds: string[];
+    itemsId: string[];
+}
+
+interface TableListProps {
+    search: string;
+    genre: string | null;
 }
 
 interface ThProps {
@@ -43,35 +47,24 @@ function Th({ children, reversed, sorted, onSort, width }: ThProps) {
     );
 }
 
-function filterData(data: RowData[], search: string) {
-    const query = search.toLowerCase().trim();
-    return data.filter((item) =>
-        (['name', 'genre', 'visibility'] as (keyof RowData)[]).some((key) =>
-            String(item[key]).toLowerCase().includes(query)
-        ) ||
-        (item.sharedUntil !== null && String(item.sharedUntil).includes(query))
-    );
-}
-
-function sortData(data: RowData[], payload: { sortBy: keyof RowData | null; reversed: boolean; search: string }) {
+function sortData(
+    data: RowData[],
+    payload: { sortBy: keyof RowData | null; reversed: boolean }
+) {
     const { sortBy } = payload;
-    if (!sortBy) return filterData(data, payload.search);
-    return filterData(
-        [...data].sort((a, b) => {
-            const aVal = String(a[sortBy] ?? '');
-            const bVal = String(b[sortBy] ?? '');
-            return payload.reversed ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
-        }),
-        payload.search
-    );
+    if (!sortBy) return data;
+    return [...data].sort((a, b) => {
+        const aVal = String(a[sortBy] ?? '');
+        const bVal = String(b[sortBy] ?? '');
+        return payload.reversed ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+    });
 }
 
-export function TableList() {
+export function TableList({ search, genre }: TableListProps) {
     const { state, dispatch } = useContext(AppContext);
     const { lists } = state.lists;
     const { myListsHref, libraryHref } = state.app;
-    console.log('TableList render - myListsHref:', myListsHref, 'lists:', lists);
-    const [search, setSearch] = useState('');
+
     const [sortBy, setSortBy] = useState<keyof RowData | null>(null);
     const [reverseSortDirection, setReverseSortDirection] = useState(false);
 
@@ -83,17 +76,28 @@ export function TableList() {
         if (myListsHref) getMyLists(dispatch, myListsHref);
     }, [myListsHref]);
 
-    const sortedData = sortData(lists, { sortBy, reversed: reverseSortDirection, search });
-
     const setSorting = (field: keyof RowData) => {
         const reversed = field === sortBy ? !reverseSortDirection : false;
         setReverseSortDirection(reversed);
         setSortBy(field);
     };
 
-    const rows = sortedData.map((row) => {
+    // Filter by search and genre, then sort
+    const processedData = sortData(
+        lists.filter(row => {
+            const q = search.toLowerCase().trim();
+            const matchesSearch = !q ||
+                row.name.toLowerCase().includes(q) ||
+                row.genre.toLowerCase().includes(q);
+            const matchesGenre = !genre || row.genre === genre;
+            return matchesSearch && matchesGenre;
+        }),
+        { sortBy, reversed: reverseSortDirection }
+    );
+
+    const rows = processedData.map((row) => {
         const canDelete = row.links?.some(l => l.rel === 'delete');
-        const canShare = row.links?.some(l => l.rel === 'make-public' || l.rel === 'make-private');
+        const canShare  = row.links?.some(l => l.rel === 'make-public' || l.rel === 'make-private');
 
         return (
             <Table.Tr key={row.listId}>
@@ -107,7 +111,13 @@ export function TableList() {
                 </Table.Td>
                 <Table.Td w={120}>
                     <Center>
-                        {canShare && <ShareListModal listName={row.name} visibility={row.visibility} links={row.links} />}
+                        {canShare && (
+                            <ShareListModal
+                                listName={row.name}
+                                visibility={row.isPrivate ? 'private' : 'public'}
+                                links={row.links}
+                            />
+                        )}
                     </Center>
                 </Table.Td>
                 <Table.Td w={50}>
@@ -115,14 +125,20 @@ export function TableList() {
                         <AddItemToListDropDown
                             listName={row.name}
                             libraryHref={libraryHref}
-                            existingItemIds={row.itemIds}
+                            existingItemIds={row.itemsId}
                             onConfirm={(ids) => ids.forEach(id => addItemToList(dispatch, row.links, id))}
                         />
                     </Center>
                 </Table.Td>
                 <Table.Td w={50}>
                     <Center>
-                        {canDelete && (<DeleteListModal listName={row.name} links={row.links} myListsHref={myListsHref} />)}
+                        {canDelete && (
+                            <DeleteListModal
+                                listName={row.name}
+                                links={row.links}
+                                myListsHref={myListsHref}
+                            />
+                        )}
                     </Center>
                 </Table.Td>
             </Table.Tr>
@@ -131,13 +147,6 @@ export function TableList() {
 
     return (
         <ScrollArea>
-            <TextInput
-                placeholder="Search by name, genre or visibility"
-                mb="md"
-                leftSection={<IconSearch size={16} stroke={1.5} />}
-                value={search}
-                onChange={(e) => setSearch(e.currentTarget.value)}
-            />
             <Table horizontalSpacing="md" verticalSpacing="xs" miw={900} layout="fixed">
                 <Table.Thead>
                     <Table.Tr>

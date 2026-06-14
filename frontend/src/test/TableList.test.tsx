@@ -2,7 +2,7 @@ import {render, screen, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {MantineProvider} from '@mantine/core';
-import {TableList} from "../components/tablelist/TableList.tsx";
+import {TableList} from "../components/lists/tablelist/TableList.tsx";
 import AppContext from '../context/AppContext';
 
 vi.mock('../components/sharelistmodal/ShareListModal', () => ({
