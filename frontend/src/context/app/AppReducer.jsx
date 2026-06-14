@@ -1,7 +1,8 @@
-import {BOOTSTRAP_ERROR, BOOTSTRAP_SUCCESS} from '../lists/ListsActions';
+import {BOOTSTRAP_ERROR, BOOTSTRAP_SUCCESS, GET_LIST_OPTIONS_SUCCESS} from '../lists/ListsActions';
 
 export const initialAppState = {
     myListsHref: null,
+    publicListsHref: null,
     createListHref: null,
     genresHref: null,
     libraryHref: null,
@@ -35,7 +36,16 @@ export function appReducer(state, action) {
                 publicationTypesHref: action.payload?.['publication-types']?.href ?? null,
                 publishingCompaniesHref:
                     action.payload?.['publishingCompanies']?.href ??
-                    'http://localhost:8081/publishingCompanies',            };
+                    'http://localhost:8081/publishingCompanies',
+            };
+
+        case GET_LIST_OPTIONS_SUCCESS:
+            return {
+                ...state,
+                myListsHref:     action.payload?.['collection']?.href    ?? state.myListsHref,
+                createListHref:  action.payload?.['create-list']?.href   ?? state.createListHref,
+                publicListsHref: action.payload?.['public-lists']?.href  ?? state.publicListsHref,
+            };
         case BOOTSTRAP_ERROR:
             return { ...state };
         default:

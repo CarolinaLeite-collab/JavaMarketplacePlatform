@@ -16,6 +16,7 @@ export interface RowData {
     sharedUntil: number | null;
     links: { rel: string; href: string }[];
     itemsId: string[];
+    itemsHref: string | null;
 }
 
 interface TableListProps {

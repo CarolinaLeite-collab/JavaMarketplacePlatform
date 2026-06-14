@@ -46,7 +46,7 @@ export default function ListItemsPage() {
                 setListName(data.name);
 
                 // Extract HAL links
-                const halLinks = data._links
+                const halLinks= data._links
                     ? Object.entries(data._links).map(([rel, val]: [string, any]) => ({
                         rel,
                         href: val.href,
@@ -54,12 +54,26 @@ export default function ListItemsPage() {
                     : [];
                 setLinks(halLinks);
 
-                // Fetch full item details for each itemId
-                const itemIds = (data.itemIds ?? []) as string[];
-                const itemObjects = await Promise.all(
-                    itemIds.map((id) => apiClient.getItemById(id))
-                );
-                setItems(itemObjects);
+                // Check if there's an items href (public list path)
+                const itemsLink = halLinks.find(l => l.rel === 'items');
+
+                if (itemsLink) {
+                    // Public list — fetch item IDs from the items endpoint
+                    const itemIds = await apiClient.getByHref(itemsLink.href) as string[];
+                    const itemIds2 = (itemIds ?? []) as string[];
+                    const itemObjects = await Promise.all(
+                        itemIds2.map((id) => apiClient.getItemById(id))
+                    );
+                    setItems(itemObjects);
+
+                } else {
+                    // Owner — item IDs are embedded directly in the list response
+                    const itemIds = (data.itemIds ?? []) as string[];
+                    const itemObjects = await Promise.all(
+                        itemIds.map((id) => apiClient.getItemById(id))
+                    );
+                    setItems(itemObjects);
+                }
 
             } catch (err) {
                 console.error("Failed to fetch list", err);

@@ -40,7 +40,8 @@ function mapList(item) {
         isPrivate: item.isPrivate ?? item.private ?? true,
         sharedUntil: item.sharedUntil ? daysLeft(item.sharedUntil) : null,
         links: links,
-        itemIds: item.itemsId ?? item.itemIds ?? [],
+        itemIds: item.itemsId ?? [],
+        itemsHref: item._links?.items?.href ?? null,
     };
 }
 
@@ -67,9 +68,7 @@ export function listsReducer(state, action) {
         case GET_LIST_OPTIONS_SUCCESS:
             return {
                 ...state,
-                createListHref: action.payload?.['create-list']?.href ?? null,
-                myListsHref: action.payload?.['collection']?.href ?? null,
-                publicListsHref: action.payload?.['public-lists']?.href ?? null,
+                error: null,
             };
         case GET_LIST_OPTIONS_ERROR:
             return { ...state, error: action.payload };

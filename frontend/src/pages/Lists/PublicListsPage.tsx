@@ -6,6 +6,7 @@ import { useState, useEffect, useContext, useCallback } from "react";
 import { FiltersBar } from "../../components/lists/FiltersBar.tsx";
 import AppContext from "../../context/AppContext.tsx";
 import { getPublicLists, getListsOptions } from "../../context/lists/ListsActions.jsx";
+import { RowData } from "../../components/lists/tablelist/TableList.tsx";
 
 export default function PublicListsPage() {
     const navigate = useNavigate();
@@ -36,6 +37,18 @@ export default function PublicListsPage() {
         });
     }, []);
 
+    const handleListClick = (list: RowData) => {
+        if (list.itemsHref) {
+            // Extract listId from the HAL href: /my-lists/{listId}/items
+            const parts = list.itemsHref.split('/');
+            const idx = parts.indexOf('my-lists');
+            const id = idx !== -1 ? parts[idx + 1] : list.listId;
+            navigate(`/lists/${id}/items`);
+        } else {
+            navigate(`/lists/${list.listId}/items`);
+        }
+    };
+
     const filtered = publicLists.filter(list => {
         const matchesSearch = !search.trim() || list.name.toLowerCase().includes(search.toLowerCase());
         const matchesGenre  = !genre || list.genre === genre;
@@ -61,13 +74,13 @@ export default function PublicListsPage() {
                             <Table.Tr>
                                 <Table.Th>List name</Table.Th>
                                 <Table.Th>Genre</Table.Th>
-                                <Table.Th>Favourite</Table.Th>
+                                <Table.Th>Add to Favourites</Table.Th>
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
                             {filtered.length > 0 ? filtered.map((list) => (
                                 <Table.Tr key={list.listId} style={{ cursor: "pointer" }}>
-                                    <Table.Td onClick={() => navigate(`/lists/${list.listId}/items`)}>
+                                    <Table.Td onClick={() => handleListClick(list)}>
                                         {list.name}
                                     </Table.Td>
                                     <Table.Td>{list.genre}</Table.Td>
