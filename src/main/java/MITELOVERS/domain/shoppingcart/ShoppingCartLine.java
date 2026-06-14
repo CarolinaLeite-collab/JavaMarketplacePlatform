@@ -15,35 +15,29 @@ import java.util.Objects;
 
 public class ShoppingCartLine implements DomainEntity<ShoppingCartLineId> {
 
-    private ShoppingCartLineId _shoppingCartLineId;
-    private DirectSaleId _directSaleId;
-    private UserId _sellerId;
-    private Price _priceAtAddition;
-    private LocalDateTime _addedAt;
+    private final ShoppingCartLineId _shoppingCartLineId;
+    private final DirectSaleId _directSaleId;
+    private final UserId _sellerId;
+    private final Price _priceAtAddition;
+    private final LocalDateTime _addedAt;
 
-    public ShoppingCartLine(DirectSaleId directSaleId,
-                            UserId sellerId,
-                            Price priceAtAddition) {
+    // rehydration / primary
+    ShoppingCartLine(ShoppingCartLineId shoppingCartLineId,
+                     DirectSaleId directSaleId,
+                     UserId sellerId,
+                     Price priceAtAddition,
+                     LocalDateTime addedAt) {
 
-        _shoppingCartLineId = new ShoppingCartLineId();
+        _shoppingCartLineId = Objects.requireNonNull(shoppingCartLineId, "ShoppingCartLineId cannot be null!");
         _directSaleId = Objects.requireNonNull(directSaleId, "directSaleId cannot be null!");
         _sellerId = Objects.requireNonNull(sellerId, "sellerId cannot be null!");
         _priceAtAddition = Objects.requireNonNull(priceAtAddition, "priceAtAddition cannot be null!");
-        _addedAt = LocalDateTime.now();
-
+        _addedAt = Objects.requireNonNull(addedAt, "Time of addition cannot be null!");
     }
 
-    //Re-hydration
-    public ShoppingCartLine(ShoppingCartLineId shoppingCartLineId,
-                            DirectSaleId directSaleId,
-                            UserId sellerId,
-                            Price priceAtAddition,
-                            LocalDateTime addetAt) {
-
-        this(directSaleId, sellerId, priceAtAddition);
-        _shoppingCartLineId = Objects.requireNonNull(shoppingCartLineId, "ShoppingCartLineId cannot be null!");
-        _addedAt = Objects.requireNonNull(addetAt, "Time of addition cannot be null!");
-
+    // creation
+    ShoppingCartLine(DirectSaleId directSaleId, UserId sellerId, Price priceAtAddition) {
+        this(new ShoppingCartLineId(), directSaleId, sellerId, priceAtAddition, LocalDateTime.now());
     }
 
     public DirectSaleId getDirectSaleId() {
