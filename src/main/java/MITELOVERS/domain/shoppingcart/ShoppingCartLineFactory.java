@@ -24,9 +24,9 @@ public class ShoppingCartLineFactory {
                                                       DirectSaleId directSaleId,
                                                       UserId sellerId,
                                                       Price priceAtAddition,
-                                                      LocalDateTime addetAt) {
+                                                      LocalDateTime addedAt) {
 
-        return new ShoppingCartLine(shoppingCartLineId, directSaleId, sellerId, priceAtAddition, addetAt);
+        return new ShoppingCartLine(shoppingCartLineId, directSaleId, sellerId, priceAtAddition, addedAt);
 
     }
 
