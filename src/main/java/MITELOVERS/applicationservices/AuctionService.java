@@ -75,12 +75,6 @@ public class AuctionService {
         Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
                 outrightPrice, auctionStartDate, auctionEndDate);
 
-        if (_iAuctionRepo.containsOfIdentity(auction.identity())) {
-
-            throw new IllegalStateException("Auction already exists!");
-
-        }
-
         return _iAuctionRepo.save(auction);
     }
 
