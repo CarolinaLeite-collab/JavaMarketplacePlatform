@@ -475,7 +475,7 @@ public class DataInitializer {
             ListOfItems list1 = listOfItemsFactory.createListOfItems(
                     user.identity(),
                     new Name("Pedro Favourites"),
-                    genre1.identity()
+                    genre3.identity()
             );
             listOfItemsRepo.save(list1);
 
@@ -487,12 +487,29 @@ public class DataInitializer {
             );
             listOfItemsRepo.save(list2);
 
-            ListOfItems list3 = listOfItemsFactory.createListOfItems(
+            ListOfItems list3 = listOfItemsFactory.createPublicListOfItems(
                     user3.identity(),
                     new Name("Angelo Non-Fiction"),
-                    genre2.identity()
+                    genre2.identity(),
+                    new SharedDuration(300)
             );
             listOfItemsRepo.save(list3);
+
+            ListOfItems list4 = listOfItemsFactory.createPublicListOfItems(
+                    user.identity(),
+                    new Name("Pedro Architecture Picks"),
+                    genre1.identity(),
+                    new SharedDuration(15)
+            );
+            listOfItemsRepo.save(list4);
+
+            ListOfItems list5 = listOfItemsFactory.createPublicListOfItems(
+                    user2.identity(),
+                    new Name("Ana Classics Collection"),
+                    genre4.identity(),  // Fiction
+                    new SharedDuration(20)
+            );
+            listOfItemsRepo.save(list5);
 
             // -------------------------------------------------------
             // Items
@@ -842,9 +859,20 @@ public class DataInitializer {
             list3.addItem(shortnessOfLifeItemId);   // On the Shortness of Life
             list3.addItem(hipocritoesItemId);
 
+            // Pedro's architecture
+            list4.addItem(itemId3);                // Nova York Delirante
+            list4.addItem(itemIdE1027);            // E.1027
+            list4.addItem(spaceSetlementsItemId);  // Space Settlements
+
+            list5.addItem(itemId1);     // 1984
+            list5.addItem(itemId2);     // 1984 Modern Edition
+            list5.addItem(nfItemId);
+
             listOfItemsRepo.save(list1);
             listOfItemsRepo.save(list2);
             listOfItemsRepo.save(list3);
+            listOfItemsRepo.save(list4);
+            listOfItemsRepo.save(list5);
 
             log.info("DataInitializer completed successfully.");
 
