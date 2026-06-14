@@ -34,6 +34,9 @@ export default function ListItemsPage() {
         if (footer) setFooterHeight(footer.offsetHeight);
     }, []);
 
+    // True if the user owns this list — determined by presence of remove-item link
+    const isOwner = links.some(l => l.rel === 'remove-item');
+
     // Fetch list + items + HAL links
     useEffect(() => {
         if (!listId) return;
@@ -46,34 +49,31 @@ export default function ListItemsPage() {
                 setListName(data.name);
 
                 // Extract HAL links
-                const halLinks= data._links
-                    ? Object.entries(data._links).map(([rel, val]: [string, any]) => ({
+                const halLinks: { rel: string; href: string }[] = data._links
+                    ? Object.entries(data._links).map(([rel, val]) => ({
                         rel,
-                        href: val.href,
+                        href: (val as any).href,
                     }))
                     : [];
                 setLinks(halLinks);
 
-                // Check if there's an items href (public list path)
-                const itemsLink = halLinks.find(l => l.rel === 'items');
+                // Always read itemsId directly from the list response
+                const rawIds = (data.itemsId ?? []) as string[];
 
-                if (itemsLink) {
-                    // Public list — fetch item IDs from the items endpoint
-                    const itemIds = await apiClient.getByHref(itemsLink.href) as string[];
-                    const itemIds2 = (itemIds ?? []) as string[];
-                    const itemObjects = await Promise.all(
-                        itemIds2.map((id) => apiClient.getItemById(id))
-                    );
-                    setItems(itemObjects);
-
-                } else {
-                    // Owner — item IDs are embedded directly in the list response
-                    const itemIds = (data.itemIds ?? []) as string[];
-                    const itemObjects = await Promise.all(
-                        itemIds.map((id) => apiClient.getItemById(id))
-                    );
-                    setItems(itemObjects);
+                if (rawIds.length === 0) {
+                    setItems([]);
+                    return;
                 }
+
+                const results = await Promise.allSettled(
+                    rawIds.map((id) => apiClient.getItemById(id))
+                );
+
+                const resolved = results
+                    .filter((r): r is PromiseFulfilledResult<any> => r.status === 'fulfilled')
+                    .map(r => r.value);
+
+                setItems(resolved);
 
             } catch (err) {
                 console.error("Failed to fetch list", err);
@@ -88,15 +88,22 @@ export default function ListItemsPage() {
             title={listName || "List Items"}
             subtitle="CHECK OUT THE ITEMS IN THIS LIST:"
         >
-            <Container>
+            <Container size="lg">
 
-                <Table striped highlightOnHover mt="md">
+                <Table highlightOnHover
+                       mt="md" highlightOnHoverColor="var(--mantine-color-white)"
+                       tableLayout="fixed"
+                >
                     <Table.Thead>
                         <Table.Tr>
-                            <Table.Th>Title</Table.Th>
-                            <Table.Th>Author</Table.Th>
-                            <Table.Th>Year</Table.Th>
-                            <Table.Th>Remove</Table.Th>
+                            <Table.Th style={{ width: 250, fontWeight: 500 }}>Title</Table.Th>
+                            <Table.Th style={{ width: 200, fontWeight: 500 }}>Author</Table.Th>
+                            <Table.Th style={{ width: 80, fontWeight: 500 }}>Year</Table.Th>
+                            {isOwner && (
+                                <Table.Th style={{ width: 50, fontWeight: 500 }}>
+                                    Remove
+                                </Table.Th>
+                            )}
                         </Table.Tr>
                     </Table.Thead>
 
@@ -107,21 +114,22 @@ export default function ListItemsPage() {
                                     <Table.Td>{item.title}</Table.Td>
                                     <Table.Td>{item.authorName}</Table.Td>
                                     <Table.Td>{item.publishingYear}</Table.Td>
-
-                                    <Table.Td>
-                                        <Center>
-                                            <DeleteItemFromListModal
-                                                itemName={item.title}
-                                                itemId={item.itemId}
-                                                links={links}
-                                            />
-                                        </Center>
-                                    </Table.Td>
+                                    {isOwner && (
+                                        <Table.Td>
+                                            <Center>
+                                                <DeleteItemFromListModal
+                                                    itemName={item.title}
+                                                    itemId={item.itemId}
+                                                    links={links}
+                                                />
+                                            </Center>
+                                        </Table.Td>
+                                    )}
                                 </Table.Tr>
                             ))
                         ) : (
                             <Table.Tr>
-                                <Table.Td colSpan={4}>
+                                <Table.Td colSpan={isOwner ? 4 : 3}>
                                     <Text ta="center" fw={500}>
                                         No items in this list
                                     </Text>
@@ -132,26 +140,27 @@ export default function ListItemsPage() {
                 </Table>
 
                 {/* Floating Add Item Button */}
-                <Affix position={{ bottom: footerHeight + 76, right: 24 }} zIndex={90}>
-                    <AddItemToListDropDown
-                        listName={listName}
-                        libraryHref={libraryHref}
-                        existingItemIds={items.map((i) => i.itemId)}
-                        onConfirm={(ids) =>
-                            ids.forEach((id) => addItemToList(dispatch, links, id))
-                        }
-                    >
-                        <ActionIcon
-                            size="xl"
-                            radius="xl"
-                            color="blue"
-                            variant="filled"
+                {isOwner && (
+                    <Affix position={{ bottom: footerHeight + 76, right: 24 }} zIndex={90}>
+                        <AddItemToListDropDown
+                            listName={listName}
+                            libraryHref={libraryHref}
+                            existingItemIds={items.map((i) => i.itemId)}
+                            onConfirm={(ids) =>
+                                ids.forEach((id) => addItemToList(dispatch, links, id))
+                            }
                         >
-                            <IconPlus size={24} />
-                        </ActionIcon>
-                    </AddItemToListDropDown>
-                </Affix>
-
+                            <ActionIcon
+                                size="xl"
+                                radius="xl"
+                                color="blue"
+                                variant="filled"
+                            >
+                                <IconPlus size={24} />
+                            </ActionIcon>
+                        </AddItemToListDropDown>
+                    </Affix>
+                )}
             </Container>
         </DefaultLayout>
     );

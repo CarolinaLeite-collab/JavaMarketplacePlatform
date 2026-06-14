@@ -69,12 +69,14 @@ export default function PublicListsPage() {
                 {loading ? (
                     <Center mt="xl"><Loader /></Center>
                 ) : (
-                    <Table highlightOnHover mt="md" highlightOnHoverColor="var(--mantine-color-white)">
+                    <Table highlightOnHover mt="md" highlightOnHoverColor="var(--mantine-color-white)"
+                           tableLayout="fixed"
+                    >
                         <Table.Thead>
                             <Table.Tr>
-                                <Table.Th style={{ width: "55%", fontWeight: 500 }}>List name</Table.Th>
-                                <Table.Th style={{ width: "30%", fontWeight: 500 }}>Genre</Table.Th>
-                                <Table.Th style={{ width: "15%", textAlign: "center", fontWeight: 500 }}>Add to Favourites</Table.Th>
+                                <Table.Th style={{ width: 200, fontWeight: 500 }}>List name</Table.Th>
+                                <Table.Th style={{ width: 100, fontWeight: 500 }}>Genre</Table.Th>
+                                <Table.Th style={{ width: 80, textAlign: "center", fontWeight: 500 }}>Add to Favourites</Table.Th>
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>

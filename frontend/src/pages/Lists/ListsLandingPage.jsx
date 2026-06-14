@@ -9,11 +9,25 @@ export default function ListsLandingPage() {
         <DefaultLayout title="Lists" subtitle="CHOOSE AN OPTION:">
             <Container size="sm">
                 <Stack align="center" mt="xl">
-                    <Button size="lg" fullWidth onClick={() => navigate("/my-lists")}>
+                    <Button
+                        size="lg"
+                        fullWidth
+                        radius="xl"
+                        variant="filled"
+                        color="var(--mantine-color-indigo-7)"
+                        onClick={() => navigate("/my-lists")}
+                    >
                         My Lists
                     </Button>
 
-                    <Button size="lg" fullWidth onClick={() => navigate("/lists/public")}>
+                    <Button
+                        size="lg"
+                        fullWidth
+                        radius="xl"
+                        variant="filled"
+                        color="var(--mantine-color-indigo-7)"
+                        onClick={() => navigate("/lists/public")}
+                    >
                         Public Lists
                     </Button>
                 </Stack>
