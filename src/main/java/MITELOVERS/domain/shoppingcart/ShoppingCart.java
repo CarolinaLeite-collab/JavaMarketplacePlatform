@@ -5,6 +5,7 @@ import MITELOVERS.domain.valueobject.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -18,28 +19,19 @@ import java.util.Objects;
 
 public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
-    private ShoppingCartId _cartId;
-    private UserId _buyerId;
+    private final ShoppingCartId _cartId;
+    private final UserId _buyerId;
     private Price _totalAmount;
     private List<ShoppingCartLine> _cartLines;
 
-    public ShoppingCart(UserId buyerId) {
-
-        _cartId = new ShoppingCartId();
-        _buyerId = Objects.requireNonNull(buyerId, "buyerId cannot be null!");
-        _totalAmount = null;
-        _cartLines = new ArrayList<>();
-
-    }
-
-    public ShoppingCart(ShoppingCartId cartId,
+    ShoppingCart(ShoppingCartId cartId,
                         UserId buyerId,
                         Price totalAmount,
-                        List<ShoppingCartLine> cartItems) {
+                        List<ShoppingCartLine> cartLines) {
 
         _cartId = Objects.requireNonNull(cartId, "cartId cannot be null!");
         _buyerId = Objects.requireNonNull(buyerId, "buyerId cannot be null!");
-        _cartLines = (cartItems == null) ? new ArrayList<>() : new ArrayList<>(cartItems);
+        _cartLines = (cartLines == null) ? new ArrayList<>() : new ArrayList<>(cartLines);
 
         if (_cartLines.isEmpty() && totalAmount != null) {
             throw new IllegalArgumentException("TotalAmount must be null when cart has no items!");
@@ -51,6 +43,10 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
         _totalAmount = totalAmount;
 
+    }
+
+    ShoppingCart(UserId buyerId) {
+        this(new ShoppingCartId(), buyerId, null, new ArrayList<>());
     }
 
     public UserId getBuyerId() { return _buyerId; }
@@ -90,7 +86,7 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
         );
 
         if(!isRemoved) {
-            throw new IllegalArgumentException("ShoppingCartLine not found in cart: " + cartLineId);
+            throw new NoSuchElementException("ShoppingCartLine not found in cart: " + cartLineId);
         }
 
         recalculateTotalAmount();

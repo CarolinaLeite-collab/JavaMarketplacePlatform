@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -405,7 +406,7 @@ class ShoppingCartTest {
         ShoppingCartLineId nonExistentIdDouble = mock(ShoppingCartLineId.class);
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NoSuchElementException.class,
                 () -> cart1.removeCartLine(nonExistentIdDouble));
     }
 
