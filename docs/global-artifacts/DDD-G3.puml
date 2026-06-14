@@ -273,8 +273,8 @@ ShoppingCart "1" ..> "1" UserId : references
 '--- Sale ---'
 Sale "1" -> "1" SaleId : has
 Sale "1" -> "*" SaleLine : contains
-Sale "1" .> "1" UserId : references
-Sale "1" .> "1" UserId : references
+Sale "*" .> "1" UserId : references
+SaleLine "*" .> "1" UserId : references
 SaleLine "*" .> "1" DirectSaleId : references
 
 
