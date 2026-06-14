@@ -28,7 +28,7 @@ export function Header() {
                     <Group h="100%" gap={0} visibleFrom="sm">
                         <Link to="/" className={classes.link}>MARKETPLACE</Link>
                         {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>LIBRARY</Link>}
-                        {isLoggedIn && myListsHref && <Link to="/my-lists" className={classes.link}>LISTS</Link>}
+                        {isLoggedIn && myListsHref && <Link to="/lists" className={classes.link}>LISTS</Link>}
                     </Group>
 
                     <Group visibleFrom="sm">
@@ -60,7 +60,7 @@ export function Header() {
                     <Divider my="sm" />
                     <Link to="/" className={classes.link}>Marketplace</Link>
                     {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>My Library</Link>}
-                    {isLoggedIn && myListsHref && <Link to="/my-lists" className={classes.link}>My Lists</Link>}
+                    {isLoggedIn && myListsHref && <Link to="/lists" className={classes.link}>Lists</Link>}
                     <Divider my="sm" />
                     <Group justify="center" grow pb="xl" px="md">
                         <Button onClick={toggleUser}>
