@@ -1,6 +1,6 @@
 @startuml
 
-title Sale Aggregate
+title Sale Aggregate - DDD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -19,49 +19,42 @@ Package "domain" {
 
     Package "sale" <<Folder>> #b0c4d4 {
         class Sale <<Entity>> <<Root>> {
-            -SaleId _saleId
-            -UserId _buyerId
-            -SaleStatus _status
-            -Price _totalAmount
-            -List<SaleLine> _saleLines
+            - createdAt : LocalDateTime
+            + getBuyerId() : UserId
+            + getTotalAmount() : Price
         }
 
         class SaleLine <<Entity>> {
-             -SaleLineId _saleLineId
-             -DirectSaleId _directSaleId
-             -ItemId _itemId
-             -UserId _sellerId
-             -Price _priceAtSale
+            + getDirectSaleId() : DirectSaleId
+            + getSellerId() : UserId
+            + getPriceAtSale() : Price
                 }
 
         class SaleFactory <<Factory>> {
-            +createSale() : SaleLine
-            +createSale() : SaleLine
+            +createSale() : Sale
+            +reconstituteSale() : Sale
         }
         class SaleLineFactory <<Factory>> {
-            +createSaleLine() : Sale
-            +createSaleLine() : Sale
+            +createSaleLine() : SaleLine
+            +reconstituteSaleLine() : SaleLine
         }
     }
 
     Package "valueobject" <<Folder>> {
         class SaleId <<ValueObject>> #LightPink {
-            -String _id
+                -_id :String
                     }
-        class SaleLineId <<ValueObject>>{
-                    -String _id
+
+        class SaleLineId <<ValueObject>> #LightPink{
+        -_id :String
                     }
 
         enum SaleStatus {
-            PENDING
-            COMPLETED
-            CANCELLED
         }
 
-                class UserId <<Value Object>> #LightPink
-                class DirectSaleId <<Value Object>> #LightPink
-                class ItemId <<Value Object>> #LightPink
-                class Price <<Value Object>> #LightPink
+                class UserId <<Value Object>>
+                class DirectSaleId <<Value Object>>
+                class Price <<Value Object>>
     }
 
     Package "repository" <<Folder>> {
@@ -86,31 +79,28 @@ Package "ddd" {
 }
 
 
-
 Sale "*" <- "1" ISaleRepo : persists
 
 ISaleRepo --|> IRepository
-SaleFactory ..> Sale : <<create>>
-SaleLineFactory ..> SaleLine : <<create>>
-Sale "1" *-- "*" SaleLine: aggregates
+SaleFactory "1" ..> "1..*" Sale : <<create>>
+SaleLineFactory "1" ..> "1..*" SaleLine : <<create>>
+Sale "1" *-- "*" SaleLine: has
 
-Sale ..> SaleId
-Sale ..> UserId
-Sale ..> Price
-Sale ..> SaleStatus
+Sale "1" -> "1" SaleId : has
+Sale "*"..> "1" UserId : references
+Sale "1" -> "1" Price : has
+SaleLine "1" -> "1" Price : has
 
-SaleLine ..> SaleLineId
-SaleLine ..> DirectSaleId
-SaleLine ..> ItemId
-SaleLine ..> UserId
-SaleLine ..> Price
+Sale "*" -> "1" SaleStatus : has
 
-Sale ..> SaleLineFactory : <<uses>>
+SaleLine "*"..> "1" DirectSaleId : references
+SaleLine "*"..> "1" UserId : references
+SaleLine "1" -> "1" SaleLineId : has
+
+Sale "1" ..> "1" SaleLineFactory : <<uses>>
+
 Sale ..|> AggregateRoot
 SaleLine ..|> DomainEntity
-AggregateRoot --|> DomainEntity
-
 AggregateRoot -|> DomainEntity
-Sale .|> AggregateRoot
 
 @enduml
