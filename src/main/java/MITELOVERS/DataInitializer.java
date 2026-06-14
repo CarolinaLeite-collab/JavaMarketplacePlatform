@@ -204,6 +204,8 @@ public class DataInitializer {
             Author scharmen = authorFactory.createAuthor(new AuthorId("Scharmen F.-10B3C"), new Name("Fred Scharmen"));
             Author seneca = authorFactory.createAuthor(new AuthorId("Seneca L.A.-018812"), new Name("Lucius Annaeus Seneca"));
             Author ruiTavares = authorFactory.createAuthor(new AuthorId("Tavares R.-483561"), new Name("Rui Tavares"));
+            Author saramago = authorFactory.createAuthor(new AuthorId("Saramago J.-A1B2C3"), new Name("José Saramago"));
+            Author delahaye = authorFactory.createAuthor(new AuthorId("Delahaye G.-C1D2E3"), new Name("Gilbert Delahaye"));
 
             authorRepo.save(ruiTavares);
             authorRepo.save(alexander);
@@ -215,6 +217,8 @@ public class DataInitializer {
             authorRepo.save(scharmen);
             authorRepo.save(seneca);
             authorRepo.save(asimov);
+            authorRepo.save(saramago);
+            authorRepo.save(delahaye);
 
             log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca");
             // -------------------------------------------------------
@@ -280,6 +284,20 @@ public class DataInitializer {
                     genre7.identity() // Non-Fiction
             );
 
+            Publication intermitencias = publicationFactory.createPublication(
+                    new Title("As Intermitências da Morte"),
+                    saramago.identity(),
+                    Year.of(2005),
+                    genre4.identity()  // Fiction
+            );
+
+            Publication anitaVasCompras = publicationFactory.createPublication(
+                    new Title("Anita vai às Compras"),
+                    delahaye.identity(),
+                    Year.of(1954),
+                    genre8.identity()  // Other
+            );
+
             publicationRepo.save(shortnessOfLife);
             publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
@@ -290,6 +308,8 @@ public class DataInitializer {
             publicationRepo.save(e1027);
             publicationRepo.save(spaceSettlements);
             publicationRepo.save(hipocritoesEOlhigarcas);
+            publicationRepo.save(intermitencias);
+            publicationRepo.save(anitaVasCompras);
 
             log.info("Publications saved: 1984, E.1027, Foundation, Nova York Delirante, Sapiens, Space Settlements, A Pattern Language");
 
@@ -345,6 +365,12 @@ public class DataInitializer {
             publishingCompanyRepo.save(editionsAlbertMorance);
             PublishingCompany columbia = publishingCompanyFactory.createPublishingCompany("Columbia Books");
             publishingCompanyRepo.save(editionsAlbertMorance);
+
+            PublishingCompany camiloAzurara = publishingCompanyFactory.createPublishingCompany("Caminho");
+            publishingCompanyRepo.save(camiloAzurara);
+
+            PublishingCompany hachette = publishingCompanyFactory.createPublishingCompany("Hachette");
+            publishingCompanyRepo.save(hachette);
 
             log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China");
 
@@ -467,6 +493,35 @@ public class DataInitializer {
                     Binding.PAPERBACK
             );
             editionRepo.save(editionE1027Original);
+
+            Edition editionIntermitencias = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9789722116404"),
+                    intermitencias.identity(),
+                    camiloAzurara.identity(),
+                    Year.of(2005),
+                    Language.PORTUGUESE,
+                    null, null,
+                    new NumberOfPages(191),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
+            );
+            editionRepo.save(editionIntermitencias);
+
+            Edition editionAnitaVasCompras = editionFactory.createEdition(
+                    book.identity(),
+                    new NoIdentifier(),
+                    anitaVasCompras.identity(),
+                    hachette.identity(),
+                    Year.of(1954),
+                    Language.PORTUGUESE,
+                    null, null,
+                    new NumberOfPages(32),
+                    new EditionNumber(1),
+                    Binding.HARDCOVER
+            );
+            editionRepo.save(editionAnitaVasCompras);
+
             log.info("Editions saved: 1984, Foundation, Nova York Delirante, E.1027");
 
 
@@ -589,6 +644,29 @@ public class DataInitializer {
             );
             itemRepo.save(itemE1027);
 
+
+            ItemId itemId5 = new ItemId("A1B2C3D4E5");
+            Item item5 = itemFactory.createItem(
+                    itemId5,
+                    editionIntermitencias.identity(),
+                    Condition.GOOD,
+                    new Description("As Intermitências da Morte - first copy"),
+                    SaleStatus.NotOnSale,
+                    new Picture("https://www.worldofbooks.com/cdn/shop/files/8535907254.jpg?v=1750732116&width=493")
+            );
+            itemRepo.save(item5);
+
+            ItemId itemId6 = new ItemId("B2C3D4E5F6");
+            Item item6 = itemFactory.createItem(
+                    itemId6,
+                    editionAnitaVasCompras.identity(),
+                    Condition.FAIR,
+                    new Description("Anita vai às Compras - second copy"),
+                    SaleStatus.NotOnSale,
+                    new Picture("https://www.bokay.pt/wp-content/uploads/2024/04/Anita-vai-as-aulas-de-Gilbert-Delahaye-e-Marcel-Marlier-Pi.png")
+            );
+            itemRepo.save(item6);
+
             // -------------------------------------------------------
             // Direct Sales
             DirectSale hipocritoesSale = directSaleFactory.createDirectSale(
@@ -599,7 +677,7 @@ public class DataInitializer {
             );
             directSaleRepo.save(hipocritoesSale);
 
-            ItemId item5 = new ItemId();
+            ItemId randomItemId = new ItemId();
 
             DirectSale directSale1 = directSaleFactory.createDirectSale(
                     List.of(itemId1, itemId2),
@@ -610,7 +688,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(item5),
+                    List.of(randomItemId),
                     user2.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
@@ -833,6 +911,8 @@ public class DataInitializer {
             libraryPedro.addItemIdToLibrary(itemIdE1027);
             libraryPedro.addItemIdToLibrary(shortnessOfLifeItemId);
             libraryPedro.addItemIdToLibrary(spaceSetlementsItemId);
+            libraryPedro.addItemIdToLibrary(itemId5);
+            libraryPedro.addItemIdToLibrary(itemId6);
 
             libraryRepo.save(libraryPedro);
 

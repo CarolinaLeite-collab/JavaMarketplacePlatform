@@ -1,0 +1,32 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for %n()sale in an auction a publication in my library." %n() Process View SD Level 1
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor "User" as U
+participant ":MiteLovers" as System
+
+U -> System : I want to put an item %n()in my library on auction
+activate System
+System --> U : Displays auction form %n() with items NotOnSale only
+deactivate System
+
+U -> System : Submit selected itemId, starting price, %n()reserve price, currency, %n()start date and end date
+
+activate System
+System --> U : The item was successfully %n()put on auction.
+
+@enduml
