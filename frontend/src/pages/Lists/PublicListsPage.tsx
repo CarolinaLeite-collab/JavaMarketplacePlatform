@@ -1,0 +1,101 @@
+import { DefaultLayout } from "../../components/layout/DefaultLayout.tsx";
+import { Container, Table, ActionIcon, Text, Loader, Center } from "@mantine/core";
+import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext, useCallback } from "react";
+import { FiltersBar } from "../../components/lists/FiltersBar.tsx";
+import AppContext from "../../context/AppContext.tsx";
+import { getPublicLists, getListsOptions } from "../../context/lists/ListsActions.jsx";
+
+export default function PublicListsPage() {
+    const navigate = useNavigate();
+    const { state, dispatch } = useContext(AppContext);
+    const { publicListsHref } = state.app;
+    const publicLists = state.lists.publicLists ?? [];
+    const genres = state.lists.genres?.map(g => g.label) ?? [];
+
+    const [search, setSearch]   = useState("");
+    const [genre, setGenre]     = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    // Favourites are local UI state only — no backend logic
+    const [favourites, setFavourites] = useState<Set<string>>(new Set());
+
+    useEffect(() => { getListsOptions(dispatch); }, [dispatch]);
+
+    useEffect(() => {
+        if (!publicListsHref) return;
+        setLoading(true);
+        getPublicLists(dispatch, publicListsHref).finally(() => setLoading(false));
+    }, [publicListsHref]);
+
+    const toggleFavourite = useCallback((id: string) => {
+        setFavourites(prev => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
+    }, []);
+
+    const filtered = publicLists.filter(list => {
+        const matchesSearch = !search.trim() || list.name.toLowerCase().includes(search.toLowerCase());
+        const matchesGenre  = !genre || list.genre === genre;
+        return matchesSearch && matchesGenre;
+    });
+
+    return (
+        <DefaultLayout title="Public Lists" subtitle="CHECK OUT OTHER'S COLLECTIONS:">
+            <Container>
+                <FiltersBar
+                    search={search}
+                    onSearchChange={setSearch}
+                    genre={genre}
+                    onGenreChange={setGenre}
+                    genres={genres}
+                />
+
+                {loading ? (
+                    <Center mt="xl"><Loader /></Center>
+                ) : (
+                    <Table striped highlightOnHover mt="md">
+                        <Table.Thead>
+                            <Table.Tr>
+                                <Table.Th>List name</Table.Th>
+                                <Table.Th>Genre</Table.Th>
+                                <Table.Th>Favourite</Table.Th>
+                            </Table.Tr>
+                        </Table.Thead>
+                        <Table.Tbody>
+                            {filtered.length > 0 ? filtered.map((list) => (
+                                <Table.Tr key={list.listId} style={{ cursor: "pointer" }}>
+                                    <Table.Td onClick={() => navigate(`/lists/${list.listId}/items`)}>
+                                        {list.name}
+                                    </Table.Td>
+                                    <Table.Td>{list.genre}</Table.Td>
+                                    <Table.Td>
+                                        <ActionIcon
+                                            color="red"
+                                            variant="subtle"
+                                            onClick={() => toggleFavourite(list.listId)}
+                                        >
+                                            {favourites.has(list.listId)
+                                                ? <IconHeartFilled />
+                                                : <IconHeart />}
+                                        </ActionIcon>
+                                    </Table.Td>
+                                </Table.Tr>
+                            )) : (
+                                <Table.Tr>
+                                    <Table.Td colSpan={3}>
+                                        <Text ta="center" fw={500}>No public lists found</Text>
+                                    </Table.Td>
+                                </Table.Tr>
+                            )}
+                        </Table.Tbody>
+                    </Table>
+                )}
+            </Container>
+        </DefaultLayout>
+    );
+}
+
+
