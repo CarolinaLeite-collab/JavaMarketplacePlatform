@@ -36,7 +36,6 @@ package "domain" {
         }
         class UserId <<Value Object>>
         class Price <<Value Object>>
-        class ItemId <<Value Object>>
         class DirectSaleId <<Value Object>>
 
     }
@@ -100,15 +99,15 @@ IShoppingCartRepo --|> IRepository : has
 
 
 ShoppingCart "1" --> "1" ShoppingCartId: has
-ShoppingCart "1" o-- "*" ShoppingCartLine : has
+ShoppingCart "1" o-- "*" ShoppingCartLine 
 ShoppingCart "1" ..> "1" ShoppingCartLineFactory : <<use>>
 ShoppingCart "1" --> "1" UserId : has
 ShoppingCart "1" --> "0..1" Price : has
 
 ShoppingCartLine "1" --> "1" ShoppingCartLineId : has
-ShoppingCartLine "1" --> "1" UserId : has
+ShoppingCartLine "1" ..> "1" UserId : references
 ShoppingCartLine "1" --> "1" Price : has
-ShoppingCartLine "1" --> "1" DirectSaleId : has
+ShoppingCartLine "1" ..> "1" DirectSaleId : references
 
 
 ShoppingCartFactory "1" ..> "1..*" ShoppingCart: <<create>>
