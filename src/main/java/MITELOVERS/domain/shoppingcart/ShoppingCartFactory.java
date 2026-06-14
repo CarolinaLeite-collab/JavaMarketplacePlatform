@@ -23,9 +23,9 @@ public class ShoppingCartFactory {
     public ShoppingCart createShoppingCart(ShoppingCartId cartId,
                                            UserId buyerId,
                                            Price totalAmount,
-                                           List<ShoppingCartLine> cartItems) {
+                                           List<ShoppingCartLine> cartLines) {
 
-        return new ShoppingCart(cartId, buyerId, totalAmount, cartItems);
+        return new ShoppingCart(cartId, buyerId, totalAmount, cartLines);
 
     }
 
