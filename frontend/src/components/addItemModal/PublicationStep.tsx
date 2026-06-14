@@ -15,6 +15,14 @@ interface PublicationStepProps {
     genres: { value: string; label: string }[];
 }
 
+/**
+ * Step responsible for collecting publication data required by the item registration flow.
+ *
+ * Author and genre values are selected from backend-loaded options instead of being
+ * entered as free text, ensuring that the submitted payload references existing
+ * backend resources.
+ */
+
 export function PublicationStep({
                                     data,
                                     setData,

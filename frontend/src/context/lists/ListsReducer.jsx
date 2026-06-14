@@ -15,6 +15,8 @@ import {
     MAKE_LIST_PRIVATE_SUCCESS,
     MAKE_LIST_PUBLIC_ERROR,
     MAKE_LIST_PUBLIC_SUCCESS,
+    REMOVE_ITEM_FROM_LIST_ERROR,
+    REMOVE_ITEM_FROM_LIST_SUCCESS,
 } from './ListsActions';
 
 export const initialListsState = {
@@ -127,6 +129,18 @@ export function listsReducer(state, action) {
                 )
             };
         case ADD_ITEM_TO_LIST_ERROR:
+            return { ...state, error: action.payload };
+        case REMOVE_ITEM_FROM_LIST_SUCCESS:
+            return {
+                ...state,
+                error: null,
+                lists: state.lists.map(list =>
+                    list.listId === action.payload.listId
+                        ? { ...list, itemIds: list.itemIds.filter(id => id !== action.payload.itemId) }
+                        : list
+                )
+            };
+        case REMOVE_ITEM_FROM_LIST_ERROR:
             return { ...state, error: action.payload };
         default:
             return state;

@@ -1,6 +1,14 @@
 import {createContext, useContext} from 'react';
 import {initialState} from './library/LibraryReducer';
 
+/**
+ * Application-level context containing globally discovered backend links and shared state.
+ *
+ * HATEOAS links exposed here are populated during application bootstrap and reused
+ * by feature workflows that need backend entry points, such as lists, direct sales,
+ * library access, and item registration.
+ */
+
 const AppContext = createContext({
     state: {
         app: {

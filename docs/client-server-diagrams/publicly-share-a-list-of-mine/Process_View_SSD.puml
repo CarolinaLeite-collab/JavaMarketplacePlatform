@@ -19,6 +19,11 @@ autonumber
 actor User
 participant ":Mitelovers" as System
 
+User -> System : Show me what I can do here
+activate System
+System --> User : These are your available resources
+deactivate System
+
 User -> System : Show me my lists of items
 activate System
 System --> User : display lists of items

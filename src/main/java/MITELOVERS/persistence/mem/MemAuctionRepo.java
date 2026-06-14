@@ -26,9 +26,9 @@ public class MemAuctionRepo implements IAuctionRepo {
 
 
     @Override
-    public Auction save(Auction auction) {
-        DATA.put(auction.identity(), auction);
-        return auction;
+    public Auction save(Auction auctionSaved) {
+        DATA.put(auctionSaved.identity(), auctionSaved);
+        return auctionSaved;
     }
 
     @Override

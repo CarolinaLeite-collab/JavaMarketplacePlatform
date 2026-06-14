@@ -12,6 +12,15 @@ interface AddItemModalProps {
     onItemAdded: (item: any) => void;
 }
 
+/**
+ * Modal responsible for registering a new item and adding it to the user's library.
+ *
+ * The workflow is split into publication, edition, and item steps. Required backend
+ * resources are discovered through HATEOAS links stored in AppContext. The modal
+ * creates or reuses the publication and edition, creates the item, and finally
+ * adds the created item to the user's library.
+ */
+
     export function AddItemModal({
                                      opened,
                                      onClose,
