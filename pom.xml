@@ -39,6 +39,7 @@
 
         <!-- Override Spring Framework to patched version -->
         <spring-framework.version>7.0.8</spring-framework.version>
+        <spring-hateoas.version>3.0.4</spring-hateoas.version>
 
     </properties>
 

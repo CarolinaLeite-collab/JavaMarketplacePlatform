@@ -20,7 +20,7 @@ describe('salesReducer', () => {
         expect(result).toBe(state);
     });
 
-    it('maps library items and keeps only sellable items on GET_LIBRARY_ITEMS_SUCCESS', () => {
+    it('maps all library items on GET_LIBRARY_ITEMS_SUCCESS, including those without create-direct-sale link', () => {
         const state = {
             ...initialSalesState,
             error: 'Old error',
@@ -37,6 +37,7 @@ describe('salesReducer', () => {
                     links: [
                         { rel: 'self', href: '/items/item-1' },
                         { rel: 'create-direct-sale', href: '/direct-sales' },
+                        { rel: 'create-auction', href: '/auctions' },
                     ],
                 },
                 {
@@ -64,9 +65,23 @@ describe('salesReducer', () => {
                     saleStatus: 'NotOnSale',
                     selfHref: '/items/item-1',
                     createDirectSaleHref: '/direct-sales',
+                    createAuctionHref: '/auctions',
                     links: [
                         { rel: 'self', href: '/items/item-1' },
                         { rel: 'create-direct-sale', href: '/direct-sales' },
+                        { rel: 'create-auction', href: '/auctions' },
+                    ],
+                },
+                {
+                    value: 'item-2',
+                    label: '1984',
+                    picture: '1984.jpg',
+                    saleStatus: 'OnDirectSale',
+                    selfHref: '/items/item-2',
+                    createDirectSaleHref: null,
+                    createAuctionHref: null,
+                    links: [
+                        { rel: 'self', href: '/items/item-2' },
                     ],
                 },
             ],
@@ -84,6 +99,7 @@ describe('salesReducer', () => {
                     saleStatus: 'NotOnSale',
                     selfHref: '/items/old',
                     createDirectSaleHref: '/direct-sales',
+                    createAuctionHref: null,
                     links: [],
                 },
             ],
@@ -113,6 +129,7 @@ describe('salesReducer', () => {
                     saleStatus: 'NotOnSale',
                     selfHref: '/items/old',
                     createDirectSaleHref: '/direct-sales',
+                    createAuctionHref: null,
                     links: [],
                 },
             ],
@@ -131,7 +148,7 @@ describe('salesReducer', () => {
         });
     });
 
-    it('filters out items without create-direct-sale link', () => {
+    it('maps items without create-direct-sale link with null createDirectSaleHref', () => {
         const result = salesReducer(initialSalesState, {
             type: GET_LIBRARY_ITEMS_SUCCESS,
             payload: [
@@ -152,11 +169,10 @@ describe('salesReducer', () => {
             ],
         });
 
-        expect(result).toEqual({
-            ...initialSalesState,
-            error: null,
-            libraryItems: [],
-        });
+        expect(result.libraryItems).toHaveLength(2);
+        expect(result.libraryItems[0].createDirectSaleHref).toBeNull();
+        expect(result.libraryItems[1].createDirectSaleHref).toBeNull();
+        expect(result.error).toBeNull();
     });
 
     it('sets error on GET_LIBRARY_ITEMS_ERROR', () => {

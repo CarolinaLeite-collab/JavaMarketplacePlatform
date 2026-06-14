@@ -4,6 +4,7 @@ import {describe, expect, it, vi} from 'vitest';
 import {MantineProvider} from '@mantine/core';
 import {TableList} from "../components/tablelist/TableList.tsx";
 import AppContext from '../context/AppContext';
+import { MemoryRouter } from 'react-router-dom';
 
 vi.mock('../components/sharelistmodal/ShareListModal', () => ({
     ShareListModal: ({ listName, visibility }: { listName: string; visibility: string }) => (
@@ -38,6 +39,7 @@ const mockDispatch = vi.fn();
 
 const renderWithContext = (ui: React.ReactElement) =>
     render(
+        <MemoryRouter>
         <AppContext.Provider
             value={{
                 state: {
@@ -57,6 +59,7 @@ const renderWithContext = (ui: React.ReactElement) =>
         >
             <MantineProvider>{ui}</MantineProvider>
         </AppContext.Provider>
+        </MemoryRouter>
     );
 
 const getDataRows = () =>
@@ -79,10 +82,10 @@ describe('TableList – rendering', () => {
         );
     });
 
-    it('renders three buttons per data row (Share + Add + Delete)', () => {
+    it('renders four buttons per data row (Link + Share + Add + Delete)', () => {
         renderWithContext(<TableList />);
         getDataRows().forEach((row) => {
-            expect(within(row).getAllByRole('button')).toHaveLength(3);
+            expect(within(row).getAllByRole('button')).toHaveLength(4);
         });
     });
 

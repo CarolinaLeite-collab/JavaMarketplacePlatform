@@ -1,0 +1,163 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for sale in an auction a publication in my library" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":Client" as Client
+participant ":AuctionRestController" as REST
+participant ":UserService" as userService
+participant ":IUserRepo" as userRepo
+participant ":AuctionLinkProvider" as Link
+participant ":AuctionService" as Service
+participant ":AuctionFactory" as Factory
+participant ":IAuctionRepo" as auctionRepo
+participant ":IItemRepo" as itemRepo
+participant "item:Item" as Item
+participant ":Auction\nResponseDTOMapper" as Mapper
+database DB
+
+Client -> REST : OPTIONS /auctions {...}
+activate REST
+REST -> userService : getUserByEmail(email)
+activate userService
+
+create "email:Email" as email
+userService -->> email : create(email)
+
+create "userId:UserId" as userId
+userService -->> userId : create(userIdString)
+
+userService -> userRepo : user = ofIdentity(userId)
+activate userRepo
+userRepo --> userService : user
+deactivate userRepo
+
+userService --> REST : user
+deactivate userService
+
+REST -> Link : getLinks(user)
+activate Link
+Link --> REST : _links = List<Link>
+deactivate Link
+
+create "result:RepresentationModel<?>" as model
+REST -->> model : create()
+
+loop for each link
+    REST -> model : add(link)
+end
+
+REST -> Client : 200 OK + _links
+deactivate REST
+
+Client -> REST : POST /auctions {...}
+activate REST
+
+loop for each itemId
+create "itemId:ItemId" as itemId
+REST -->> itemId : create(itemIdString)
+end
+
+create "currency:Currency" as currency
+REST -->> currency : valueOf(priceCurrency)
+
+create "startingPrice:Price" as startingPrice
+REST -->> startingPrice : create(value, currency)
+
+create "reservePrice:Price" as reservePrice
+REST -->> reservePrice : create(value, currency)
+
+opt outrightPrice != null
+    create "outrightPrice:Price" as outrightPrice
+    REST -->> outrightPrice : create(value, currency)
+end
+
+create "startDate:ZonedDateTime" as startDate
+REST -->> startDate : atZone(UTC)
+
+create "endDate:ZonedDateTime" as endDate
+REST -->> endDate : atZone(UTC)
+
+REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate)
+activate Service
+
+loop for each item - validation
+    Service -> itemRepo : ofIdentity(itemId)
+    activate itemRepo
+    itemRepo -> DB : ofIdentity(itemId)
+    activate DB
+    DB --> itemRepo : item
+    deactivate DB
+    itemRepo --> Service : item
+    deactivate itemRepo
+
+    Service -> Item : getSaleStatus()
+    activate Item
+    Item --> Service : saleStatus
+    deactivate Item
+end
+
+Service -> Factory : createAuction (\n  itemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate)
+activate Factory
+Factory --> Service : auction
+deactivate Factory
+
+Service -> auctionRepo : containsOfIdentity(auctionId)
+activate auctionRepo
+auctionRepo --> Service : false
+deactivate auctionRepo
+
+Service -> auctionRepo : save(auction)
+activate auctionRepo
+auctionRepo --> Service : auctionSaved
+deactivate auctionRepo
+
+loop for each item - update
+    Service -> itemRepo : ofIdentity(itemId)
+    activate itemRepo
+    itemRepo -> DB : ofIdentity(itemId)
+    activate DB
+    DB --> itemRepo : item
+    deactivate DB
+    itemRepo --> Service : item
+    deactivate itemRepo
+
+    Service -> Item : markAsAuction()
+    activate Item
+    deactivate Item
+
+    Service -> itemRepo : save(item)
+    activate itemRepo
+    itemRepo -> DB : save(item)
+    activate DB
+    DB --> itemRepo : itemSaved
+    deactivate DB
+    itemRepo --> Service : itemSaved
+    deactivate itemRepo
+end
+
+Service --> REST : Auction
+deactivate Service
+
+REST -> Mapper : toDTO(auction)
+activate Mapper
+Mapper --> REST : AuctionResponseDTO
+deactivate Mapper
+
+REST -> REST : dto.add(selfRel)
+REST --> Client : 201 Created
+deactivate REST
+
+@enduml
