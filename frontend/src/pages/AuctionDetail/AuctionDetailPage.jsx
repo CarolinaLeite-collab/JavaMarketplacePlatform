@@ -14,6 +14,15 @@ import {
     auctionReducer, initialAuctionState,
 } from '../../context/auctions/AuctionReducer.jsx';
 
+/**
+ * Page component that displays the details of a specific auction.
+ *
+ * Renders auction information including title, image, pricing, seller,
+ * deadline, description, synopsis, and a details table with publication
+ * attributes. Logged-in users with the appropriate HATEOAS link can
+ * place bids through a modal dialog.
+ */
+
 export default function AuctionDetailPage() {
     const { auctionId } = useParams();
     const { currentUser } = useUser();

@@ -6,6 +6,13 @@ import {
     CLEAR_AUCTION_MESSAGES,
 } from './AuctionActions.jsx';
 
+/**
+ * Reducer responsible for managing auction detail state.
+ *
+ * Handles fetching auction data, placing bids, and clearing messages.
+ * Extracts the place-bid HATEOAS link from the auction response.
+ */
+
 export const initialAuctionState = {
     auction: null,
     placeBidHref: null,

@@ -1,5 +1,12 @@
 import { apiClient } from '../../services/apiClient';
 
+/**
+ * Loads a specific action using a backend-provided HATEOAS href.
+ *
+ * The response is normalized from the first embedded collection found in the HAL
+ * response. Missing links and request failures are reported through reducer errors.
+ */
+
 export const GET_AUCTION_SUCCESS = 'GET_AUCTION_SUCCESS';
 export const GET_AUCTION_ERROR = 'GET_AUCTION_ERROR';
 export const PLACE_BID_SUCCESS = 'PLACE_BID_SUCCESS';
