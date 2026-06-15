@@ -10,6 +10,10 @@ vi.mock('../pages/MyLibrary/MyLibraryPage', () => ({
     default: () => <h1>My Library</h1>,
 }));
 
+vi.mock('../pages/AuctionDetail/AuctionDetailPage', () => ({
+    default: () => <h1>Auction Detail</h1>,
+}));
+
 const mockState = {
     app: {
         myListsHref: '/my-lists',
@@ -66,4 +70,10 @@ describe('AppRoutes', () => {
         renderRoutes(['/my-library']);
         expect(screen.getByRole('heading', { name: /my library/i })).toBeInTheDocument();
     });
+
+    it('renders AuctionDetailPage on /auctions/:auctionId route', () => {
+        renderRoutes(['/auctions/test-123']);
+        expect(screen.getByRole('heading', { name: /auction detail/i })).toBeInTheDocument();
+    });
+
 });

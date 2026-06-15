@@ -6,7 +6,9 @@ import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.SaleStatus;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,7 +41,7 @@ public class AuctionService {
         for (ItemId itemId : itemsId) {
 
             Item item = _iItemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalStateException("Item not found: " + itemId));
+                    .orElseThrow(() -> new NoSuchElementException("Item not found: " + itemId));
 
             if (item.getSaleStatus() != SaleStatus.NotOnSale) {
                 throw new IllegalStateException(itemId + " is already on sale!");
@@ -73,12 +75,6 @@ public class AuctionService {
 
         Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
                 outrightPrice, auctionStartDate, auctionEndDate);
-
-        if (_iAuctionRepo.containsOfIdentity(auction.identity())) {
-
-            throw new IllegalStateException("Auction already exists!");
-
-        }
 
         return _iAuctionRepo.save(auction);
     }

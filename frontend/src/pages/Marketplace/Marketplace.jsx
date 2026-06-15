@@ -5,6 +5,8 @@ import {MarketPlaceTable} from '../../components/marketPlaceTable/MarketPlaceTab
 import {apiClient} from '../../services/apiClient';
 import AppContext from '../../context/AppContext';
 import {useUser} from '../../context/UserContext';
+import {useDisclosure} from "@mantine/hooks";
+import {SaleDetailsModal} from "@/components/saleDetailsModal/SaleDetailsModal.tsx";
 
 function formatPrice(priceValue, priceCurrency) {
     if (priceValue == null) return '';
@@ -45,12 +47,20 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
             const genreName = itemDetails?.genreName ?? 'Unknown';
 
             return {
+                //main table details
                 id: `${sale.directSaleId}-${itemId}`,
                 item: itemDetails?.title ?? itemId,
                 genreId: genreNameToId.get(genreName) ?? 'unknown',
                 genreName,
                 type: 'Direct Sale',
                 price: formatPrice(sale.priceValue, sale.priceCurrency),
+
+                //details card fields
+                author:itemDetails?.author ?? 'unknown',
+                condition:itemDetails?.condition ?? 'unknown',
+                cover:itemDetails?.cover ?? '',
+                seller:sale.seller ?? 'unknown',
+                saleType:'Direct Sale',
             };
         }).filter(Boolean);
     });
@@ -71,6 +81,9 @@ export default function Marketplace() {
     const [showAuctions, setShowAuctions] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedSale, setSelectedSale] = useState(null);
+    const [detailsOpened, { open: openDetails, close: closeDetails}] = useDisclosure(false);
+    const handleSaleClick = (sale) => {setSelectedSale(sale);openDetails();}
 
     useEffect(() => {
         let isMounted = true;
@@ -139,18 +152,40 @@ export default function Marketplace() {
             ) : error ? (
                 <Text c="red">{error}</Text>
             ) : (
-                <MarketPlaceTable
-                    items={items}
-                    genres={genres}
-                    selectedGenre={selectedGenre}
-                    onGenreChange={setSelectedGenre}
-                    showDirectSales={showDirectSales}
-                    showAuctions={showAuctions}
-                    onShowDirectSalesChange={setShowDirectSales}
-                    onShowAuctionsChange={setShowAuctions}
-                    canSeePrice={canSeePrice}
-                />
-            )}
+                <>
+                    <MarketPlaceTable
+                        items={items}
+                        genres={genres}
+                        selectedGenre={selectedGenre}
+                        onGenreChange={setSelectedGenre}
+                        showDirectSales={showDirectSales}
+                        showAuctions={showAuctions}
+                        onShowDirectSalesChange={setShowDirectSales}
+                        onShowAuctionsChange={setShowAuctions}
+                        canSeePrice={canSeePrice}
+                        onSaleClick={handleSaleClick}
+                    />
+
+                    <SaleDetailsModal
+                        opened={detailsOpened}
+                        item={
+                            selectedSale && {
+                                cover: selectedSale.cover,
+                                title: selectedSale.item,
+                                author: selectedSale.author,
+                                genre: selectedSale.genreName,
+                                condition: selectedSale.condition,
+                                price: selectedSale.price,
+                                seller: selectedSale.seller,
+                            }
+                        }
+                        onClose={closeDetails}
+                        onSeeMore={() => {
+                            // depois é preciso ligar à página da venda em si
+                        }}
+                        />
+                </>
+                )}
         </DefaultLayout>
     );
 }

@@ -1,0 +1,47 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to use the Web UI to bid on an auction." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor Buyer as User
+participant ":Client" as CLI
+participant ":Server" as SER
+database "DB" as DB
+
+User -> CLI : I would like to know %n() what I can do in %n() regard to an existing %n()auction
+activate CLI
+CLI -> SER : OPTIONS /auctions {auctionId}
+activate SER
+SER -> DB : select
+DB --> SER : data
+SER --> CLI : HTTP STATUS 200 {...}
+deactivate SER
+CLI --> User : display HATEOAS links
+deactivate CLI
+
+
+User -> CLI : I want to place\n a bid on this auction
+activate CLI
+CLI -> SER : POST /auctions/auctionId {"price: 12.50€"}
+activate SER
+SER -> DB : insert
+DB --> SER : data
+SER --> CLI : HTTP STATUS 201 {...}
+deactivate SER
+CLI --> User : Success!
+deactivate CLI
+
+@enduml

@@ -117,8 +117,8 @@ class AuctionServiceTest {
         when(_iItemRepoDouble.ofIdentity(_itemIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        IllegalStateException exception = assertThrows(
-                IllegalStateException.class,
+        NoSuchElementException exception = assertThrows(
+                NoSuchElementException.class,
                 () -> _auctionService.putItemOnAuction(
                         _itemsId, _startingPriceDouble, _reservePriceDouble,
                         _outrightPriceDouble, _startDate, _endDate)
@@ -142,46 +142,6 @@ class AuctionServiceTest {
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));
-    }
-
-    @Test
-    void shouldThrowWhenAuctionAlreadyExists() {
-
-        when(_iItemRepoDouble.ofIdentity(_itemIdDouble))
-                .thenReturn(Optional.of(_itemDouble));
-
-        when(_itemDouble.getSaleStatus())
-                .thenReturn(SaleStatus.NotOnSale);
-
-        AuctionId auctionId = mock(AuctionId.class);
-
-        when(_auctionDouble.identity())
-                .thenReturn(auctionId);
-
-        when(_auctionFactoryDouble.createAuction(
-                _itemsId,
-                _startingPriceDouble,
-                _reservePriceDouble,
-                _outrightPriceDouble,
-                _startDate,
-                _endDate))
-                .thenReturn(_auctionDouble);
-
-        when(_iAuctionRepoDouble.containsOfIdentity(auctionId))
-                .thenReturn(true);
-
-        IllegalStateException ex = assertThrows(
-                IllegalStateException.class,
-                () -> _auctionService.putItemOnAuction(
-                        _itemsId,
-                        _startingPriceDouble,
-                        _reservePriceDouble,
-                        _outrightPriceDouble,
-                        _startDate,
-                        _endDate)
-        );
-
-        assertEquals("Auction already exists!", ex.getMessage());
     }
 
     @Test

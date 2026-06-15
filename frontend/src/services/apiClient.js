@@ -138,6 +138,8 @@ export const apiClient = {
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
+    getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),
+    getAuctionById: (auctionId) => getPublic(`/auctions/${auctionId}`),
 
     /**
      * Extracts the resource identifier from a HATEOAS self link.

@@ -12,7 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+/**
+ * Provides auction-related HATEOAS links according to the permissions
+ * of the authenticated user.
+ * <p>
+ * This component implements {@link RootLinkProvider} and is responsible for
+ * determining which auction resources should be exposed to a given user.
+ * The available links are generated based on the user's authorization level,
+ * as defined by the {@link AuthorizationPolicy}.
+ * </p>
+ *
+ */
 
 @Component
 public class AuctionLinkProvider implements RootLinkProvider {
@@ -30,8 +41,8 @@ public class AuctionLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         if (_authorizationPolicy.canSell(user)) {
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .createAuction(user.identity().toString(), null)).withRel("create-auction"));
+            links.add(linkTo(AuctionRestController.class)
+                    .withRel("create-auction"));
         }
 
         return links;

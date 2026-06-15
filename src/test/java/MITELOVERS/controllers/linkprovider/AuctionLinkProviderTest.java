@@ -15,27 +15,21 @@ import static org.mockito.Mockito.*;
 
 class AuctionLinkProviderTest {
 
-    private AuthorizationPolicy _authorizationPolicy;
-    private AuctionLinkProvider _linkProvider;
-
-    @BeforeEach
-    void setUp() {
-        _authorizationPolicy = mock(AuthorizationPolicy.class);
-        _linkProvider = new AuctionLinkProvider(_authorizationPolicy);
-    }
-
     @Test
     void getLinksUserCanSellContainsCreateAuctionLink() {
+        // Arrange
         User user = mock(User.class);
-        UserId userId = mock(UserId.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
 
-        when(user.identity()).thenReturn(userId);
-        when(userId.toString()).thenReturn("user123");
+        when(authorizationPolicy.canSell(user)).thenReturn(true);
 
-        when(_authorizationPolicy.canSell(user)).thenReturn(true);
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
-        List<Link> links = _linkProvider.getLinks(user);
+        // Act
+        List<Link> links = linkProvider.getLinks(user);
 
+        // Assert
         assertTrue(links.stream()
                 .anyMatch(l -> l.getRel().value().equals("create-auction")));
     }
@@ -43,10 +37,17 @@ class AuctionLinkProviderTest {
     @Test
     void getLinksUserCannotSellReturnsEmptyList() {
         User user = mock(User.class);
-        when(_authorizationPolicy.canSell(user)).thenReturn(false);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
 
-        List<Link> links = _linkProvider.getLinks(user);
+        when(authorizationPolicy.canSell(user)).thenReturn(false);
 
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<Link> links = linkProvider.getLinks(user);
+
+        // Assert
         assertTrue(links.isEmpty());
     }
 
