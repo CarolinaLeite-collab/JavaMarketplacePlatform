@@ -85,6 +85,7 @@ export function MarketPlaceTable({
     onShowDirectSalesChange,
     onShowAuctionsChange,
     canSeePrice,
+    onSaleClick,
 }) {
     const [search, setSearch] = useState('');
     const [sortBy, setSortBy] = useState(null);
@@ -106,7 +107,10 @@ export function MarketPlaceTable({
     };
 
     const rows = sortedItems.map((item) => (
-        <Table.Tr key={item.id}>
+        <Table.Tr
+            key={item.id}
+            onClick={()=> onSaleClick && onSaleClick(item)}
+        >
             <Table.Td>{item.item}</Table.Td>
             <Table.Td>{item.genreName}</Table.Td>
             <Table.Td>{item.type}</Table.Td>
