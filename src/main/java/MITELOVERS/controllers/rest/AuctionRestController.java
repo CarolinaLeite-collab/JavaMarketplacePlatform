@@ -11,6 +11,12 @@ import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.dto.request.CreateAuctionRequestDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
+import MITELOVERS.dto.request.PlaceBidRequestDTO;
+import MITELOVERS.dto.response.BidResponseDTO;
+import MITELOVERS.mapper.BidResponseDTOMapper;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.auction.Bid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
@@ -26,9 +32,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * REST controller responsible for managing auction-related HTTP requests.
+ * REST controller responsible for managing auction- and bidding-related HTTP requests.
  * <p>
- * This controller exposes endpoints for creating auctions and acts as the
+ * This controller exposes endpoints for creating auctions and bids, acting as the
  * entry point between API clients and the application layer.
  * It converts incoming request data into domain objects, delegates business
  * operations to the {@link AuctionService}, and maps domain entities to
@@ -41,14 +47,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class AuctionRestController {
     private final AuctionService _auctionService;
     private final AuctionResponseDTOMapper _auctionMapper;
+    private final BidResponseDTOMapper _bidResponseDTOMapper;
     private final UserService _userService;
     private final AuctionLinkProvider _auctionLinkProvider;
 
 
-    public AuctionRestController(AuctionService auctionService, AuctionResponseDTOMapper auctionMapper, UserService userService,
+    public AuctionRestController(AuctionService auctionService, AuctionResponseDTOMapper auctionMapper, BidResponseDTOMapper bidResponseDTOMapper, UserService userService,
                                  AuctionLinkProvider auctionLinkProvider) {
         _auctionService = auctionService;
         _auctionMapper = auctionMapper;
+        _bidResponseDTOMapper = bidResponseDTOMapper;
         _userService = userService;
         _auctionLinkProvider = auctionLinkProvider;
     }
@@ -61,6 +69,22 @@ public class AuctionRestController {
 
         RepresentationModel<?> model = new RepresentationModel<>();
         for (Link link : _auctionLinkProvider.getLinks(user)) {
+            model.add(link);
+        }
+
+        return ResponseEntity.ok(model);
+    }
+
+    @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
+            @PathVariable String auctionId,
+            @RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        for (Link link : _auctionLinkProvider.getLinks(user, auctionId)) {
             model.add(link);
         }
 
@@ -92,6 +116,37 @@ public class AuctionRestController {
 
             dto.add(linkTo(methodOn(AuctionRestController.class)
                     .createAuction(userId, request)).withSelfRel());
+
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(
+            path = "/{auctionId}/bids",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> placeBid(
+            @PathVariable String auctionId,
+            @RequestHeader("X-User-Id") String userIdFromHeader,
+            @RequestBody PlaceBidRequestDTO request) {
+        try {
+            Email email = new Email(userIdFromHeader);
+            UserId userId = new UserId(email);
+
+            Currency currency = Currency.valueOf(request.getCurrency());
+            Price offerPrice = new Price(request.getOfferPrice(), currency);
+
+            var result = _auctionService.placeBid(auctionId, userId, offerPrice);
+            Auction auction = result.auction();
+            Bid bid = result.bid();
+
+            BidResponseDTO dto = _bidResponseDTOMapper.toDTO(auction, bid);
+
+            _auctionLinkProvider.addBidLinks(dto);
 
             return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
