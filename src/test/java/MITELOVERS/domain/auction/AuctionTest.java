@@ -1,9 +1,6 @@
 package MITELOVERS.domain.auction;
 
-import MITELOVERS.domain.valueobject.AuctionId;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +19,7 @@ class AuctionTest {
     private Price _startingPriceDouble;
     private Price _reservePriceDouble;
     private Price _outrightPriceDouble;
+    private Price _offerPriceDouble;
     private ZonedDateTime _auctionStart;
     private ZonedDateTime _auctionEnd;
     private ZonedDateTime _start;
@@ -34,10 +32,14 @@ class AuctionTest {
         _itemsId.add(_itemIdDouble);
         _startingPriceDouble = mock(Price.class);
         when(_startingPriceDouble.getValue()).thenReturn(10.0);
+        when(_startingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
         _reservePriceDouble = mock(Price.class);
         when(_reservePriceDouble.getValue()).thenReturn(50.0);
+        when(_reservePriceDouble.getCurrency()).thenReturn(Currency.EUR);
         _outrightPriceDouble = mock(Price.class);
         when(_outrightPriceDouble.getValue()).thenReturn(100.0);
+        when(_outrightPriceDouble.getCurrency()).thenReturn(Currency.EUR);
+        _offerPriceDouble = mock(Price.class);
         _auctionStart = ZonedDateTime.of(2027, 1, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
         _auctionEnd = ZonedDateTime.of(2027, 2, 1, 0, 0, 0, 0, ZoneId.of("Europe/Lisbon"));
         _start = ZonedDateTime.now().plusMinutes(1);
@@ -252,6 +254,48 @@ class AuctionTest {
     }
 
     @Test
+    void placeBidShouldThrowWhenBidCurrencyIsDifferentFromAuctionCurrency() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        // SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+
+        when(_offerPriceDouble.getValue()).thenReturn(20.0);
+        when(_offerPriceDouble.getCurrency()).thenReturn(Currency.USD);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, _offerPriceDouble));
+    }
+
+    @Test
+    void placeBidShouldSucceedWhenBidCurrencyIsSameAsAuctionCurrency() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        // SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, start, end);
+
+        UserId user = mock(UserId.class);
+
+        when(_offerPriceDouble.getValue()).thenReturn(20.0);
+        when(_offerPriceDouble.getCurrency()).thenReturn(Currency.EUR);
+
+        // Act
+        Bid bid = auction.placeBid(user, _offerPriceDouble);
+
+        // Assert
+        assertNotNull(bid);
+        assertEquals(1, auction.getBids().size());
+        assertEquals(bid, auction.getBids().get(0));
+    }
+
+    @Test
     void getBidsReturnsNonNullEvenWhenEmpty() {
         // Arrange
         ZonedDateTime start = ZonedDateTime.now().plusMinutes(1);
@@ -276,6 +320,7 @@ class AuctionTest {
         UserId user = mock(UserId.class);
         Price price = mock(Price.class);
         when(price.getValue()).thenReturn(20.0);
+        when(price.getCurrency()).thenReturn(Currency.EUR);
 
         auction.placeBid(user, price);
 
@@ -299,7 +344,10 @@ class AuctionTest {
         Price p1 = mock(Price.class);
         Price p2 = mock(Price.class);
         when(p1.getValue()).thenReturn(20.0);
+        when(p1.getCurrency()).thenReturn(Currency.EUR);
         when(p2.getValue()).thenReturn(50.0);
+        when(p2.getCurrency()).thenReturn(Currency.EUR);
+
 
         auction.placeBid(user, p1);
         auction.placeBid(user, p2);
@@ -347,6 +395,8 @@ class AuctionTest {
         UserId user = mock(UserId.class);
         Price price = mock(Price.class);
         when(price.getValue()).thenReturn(5.0);
+        when(price.getCurrency()).thenReturn(Currency.EUR);
+
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> auction.placeBid(user, price));
@@ -363,6 +413,8 @@ class AuctionTest {
         UserId user = mock(UserId.class);
         Price price = mock(Price.class);
         when(price.getValue()).thenReturn(20.0);
+        when(price.getCurrency()).thenReturn(Currency.EUR);
+
 
         // Act
         Bid bid = auction.placeBid(user, price);
@@ -396,7 +448,9 @@ class AuctionTest {
         Price low = mock(Price.class);
         Price high = mock(Price.class);
         when(low.getValue()).thenReturn(20.0);
+        when(low.getCurrency()).thenReturn(Currency.EUR);
         when(high.getValue()).thenReturn(60.0);
+        when(high.getCurrency()).thenReturn(Currency.EUR);
         when(high.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
 
         auction.placeBid(user, low);
@@ -420,7 +474,9 @@ class AuctionTest {
         UserId user = mock(UserId.class);
         Price bidPrice = mock(Price.class);
         when(bidPrice.getValue()).thenReturn(100.0);
+        when(bidPrice.getCurrency()).thenReturn(Currency.EUR);
         when(bidPrice.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
+
 
         auction.placeBid(user, bidPrice);
 

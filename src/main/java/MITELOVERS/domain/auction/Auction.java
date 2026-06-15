@@ -250,6 +250,10 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalStateException("Auction not active");
         }
 
+        if (!offerPrice.getCurrency().equals(_startingPrice.getCurrency())) {
+            throw new IllegalArgumentException("Bid currency must match auction currency");
+        }
+
         if (offerPrice.getValue() <= _startingPrice.getValue()) {
             throw new IllegalArgumentException("Bid must be higher than starting price");
         }
