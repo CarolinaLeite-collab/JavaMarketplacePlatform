@@ -37,53 +37,37 @@ describe('AuctionDetailPage', () => {
     it('renders auction title', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('1984 - George Orwell - First Edition')).toBeInTheDocument();
+        expect(await screen.findByText('1984')).toBeInTheDocument();
     });
 
-    it('renders description section', async () => {
+    it('renders highest bid in large text', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('DESCRIPTION:')).toBeInTheDocument();
-        expect(screen.getByText(/First edition of George Orwell/)).toBeInTheDocument();
+        expect(await screen.findByText(/75/)).toBeInTheDocument();
     });
 
-    it('renders details table with author', async () => {
+    it('renders starting price', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('Author')).toBeInTheDocument();
-        expect(screen.getByText('George Orwell')).toBeInTheDocument();
+        expect(await screen.findByText(/Starting price: 50 EUR/)).toBeInTheDocument();
     });
 
-    it('renders details table with genre', async () => {
+    it('renders number of bids', async () => {
         renderAuctionDetail();
 
-        const genreLabels = await screen.findAllByText('Genre');
-        expect(genreLabels.length).toBeGreaterThanOrEqual(1);
-        const fictionLabels = screen.getAllByText('Fiction');
-        expect(fictionLabels.length).toBeGreaterThanOrEqual(1);
+        expect(await screen.findByText(/6 bids/)).toBeInTheDocument();
     });
 
-    it('renders details table with genre', async () => {
+    it('renders seller', async () => {
         renderAuctionDetail();
 
-        const genreLabels = await screen.findAllByText('Genre');
-        expect(genreLabels.length).toBeGreaterThanOrEqual(1);
-        const fictionLabels = screen.getAllByText('Fiction');
-        expect(fictionLabels.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('renders starting price and highest bid', async () => {
-        renderAuctionDetail();
-
-        expect(await screen.findByText('Starting price')).toBeInTheDocument();
-        expect(screen.getByText('Highest bid')).toBeInTheDocument();
+        expect(await screen.findByText(/Sold by Unknown/)).toBeInTheDocument();
     });
 
     it('renders deadline', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('Deadline')).toBeInTheDocument();
-        expect(screen.getByText('2025-07-15T23:59:59')).toBeInTheDocument();
+        expect(await screen.findByText(/3 days, 2025-07-15/)).toBeInTheDocument();
     });
 
     it('renders status badge', async () => {
@@ -92,36 +76,82 @@ describe('AuctionDetailPage', () => {
         expect(await screen.findByText('Active')).toBeInTheDocument();
     });
 
-    it('renders items table', async () => {
+    it('renders description card', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('ITEMS:')).toBeInTheDocument();
-        expect(screen.getByText('1984 - Hardcover')).toBeInTheDocument();
-        expect(screen.getByText('1984 - Paperback')).toBeInTheDocument();
+        expect(await screen.findByText(/First edition of George Orwell/)).toBeInTheDocument();
     });
 
-    it('renders Place Bid button for logged-in user', async () => {
+    it('renders synopsis section', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('SYNOPSIS:')).toBeInTheDocument();
+        expect(screen.getByText(/seminal texts/)).toBeInTheDocument();
+    });
+
+    it('renders details table with author and publisher', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Author')).toBeInTheDocument();
+        expect(screen.getByText('George Orwell')).toBeInTheDocument();
+        expect(screen.getByText('Publisher')).toBeInTheDocument();
+        expect(screen.getByText('Secker & Warburg')).toBeInTheDocument();
+    });
+
+    it('renders details table with genre and edition', async () => {
+        renderAuctionDetail();
+
+        const genreLabels = await screen.findAllByText('Genre');
+        expect(genreLabels.length).toBeGreaterThanOrEqual(1);
+        expect(screen.getByText('1st Edition')).toBeInTheDocument();
+    });
+
+    it('renders details table with publication type and identifier', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Publication type')).toBeInTheDocument();
+        expect(screen.getByText('Book')).toBeInTheDocument();
+        expect(screen.getByText('978-0-451-52493-5')).toBeInTheDocument();
+    });
+
+    it('renders details table with year and language', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Year')).toBeInTheDocument();
+        expect(screen.getByText('1949')).toBeInTheDocument();
+        expect(screen.getByText('English')).toBeInTheDocument();
+    });
+
+    it('renders details table with condition and weight', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Condition')).toBeInTheDocument();
+        expect(screen.getByText('Good')).toBeInTheDocument();
+        expect(screen.getByText('350 g')).toBeInTheDocument();
+    });
+
+    it('renders details table with dimensions', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Dimensions')).toBeInTheDocument();
+        expect(screen.getByText('20 x 13 x 2.5 cm')).toBeInTheDocument();
+    });
+
+    it('renders Place Bid button', async () => {
         renderAuctionDetail();
 
         expect(await screen.findByRole('button', { name: /place bid/i })).toBeInTheDocument();
     });
 
-    it('renders bid input for logged-in user', async () => {
+    it('renders Buy Now button', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByPlaceholderText('Enter bid value')).toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /buy now/i })).toBeInTheDocument();
     });
 
-    it('hides bid actions for guest user', async () => {
-        vi.mocked(useUser).mockReturnValue({
-            currentUser: 'guest@aeiou.com',
-            toggleUser: vi.fn(),
-        });
-
+    it('renders Add to Cart button', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('1984 - George Orwell - First Edition')).toBeInTheDocument();
-        expect(screen.queryByRole('button', { name: /place bid/i })).not.toBeInTheDocument();
-        expect(screen.queryByPlaceholderText('Enter bid value')).not.toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /add to cart/i })).toBeInTheDocument();
     });
 });
