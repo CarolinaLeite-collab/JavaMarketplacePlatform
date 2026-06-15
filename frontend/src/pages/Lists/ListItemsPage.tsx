@@ -1,5 +1,6 @@
 import { DefaultLayout } from "../../components/layout/DefaultLayout.tsx";
-import { Table, ActionIcon, Affix, Container, Center, Text } from "@mantine/core";
+import { Table, Affix, ActionIcon, Container, Center, Text, Modal, Stack, Badge, Image, Group, Divider } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
@@ -8,15 +9,8 @@ import { addItemToList } from "../../context/lists/ListsActions.jsx";
 import { AddItemToListDropDown } from "../../components/addItemToListModal/AddItemToListDropDown.tsx";
 import { DeleteItemFromListModal } from "../../components/lists/DeleteItemFromListModal.tsx";
 import { apiClient } from "../../services/apiClient";
+import { ItemDetailModal, ItemDTO } from "../../components/lists/ItemDetailModal.tsx";
 
-interface ItemDTO {
-    itemId: string;
-    title: string;
-    authorName: string;
-    publishingYear: number;
-    condition: string;
-    description: string;
-}
 
 export default function ListItemsPage() {
     const { listId } = useParams();
@@ -27,15 +21,17 @@ export default function ListItemsPage() {
     const [listName, setListName] = useState("");
     const [items, setItems] = useState<ItemDTO[]>([]);
     const [links, setLinks] = useState<{ rel: string; href: string }[]>([]);
+    const [selectedItem, setSelectedItem] = useState<ItemDTO | null>(null);
+    const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
+
+    // True if the user owns this list — determined by presence of remove-item link
+    const isOwner = links.some(l => l.rel === 'remove-item');
 
     // Footer height for floating button
     useEffect(() => {
         const footer = document.querySelector("footer");
         if (footer) setFooterHeight(footer.offsetHeight);
     }, []);
-
-    // True if the user owns this list — determined by presence of remove-item link
-    const isOwner = links.some(l => l.rel === 'remove-item');
 
     // Fetch list + items + HAL links
     useEffect(() => {
@@ -83,6 +79,11 @@ export default function ListItemsPage() {
         void fetchList();
     }, [listId]);
 
+    const handleRowClick = (item: ItemDTO) => {
+        setSelectedItem(item);
+        openModal();
+    };
+
     return (
         <DefaultLayout
             title={listName || "List Items"}
@@ -91,11 +92,13 @@ export default function ListItemsPage() {
             <Container size="lg">
 
                 <Table highlightOnHover
-                       mt="md" highlightOnHoverColor="var(--mantine-color-white)"
+                       mt="md"
+                       highlightOnHoverColor="var(--mantine-color-white)"
                        tableLayout="fixed"
                 >
                     <Table.Thead>
                         <Table.Tr>
+                            <Table.Th style={{ width: 80, fontWeight: 500 }}>Cover</Table.Th>
                             <Table.Th style={{ width: 250, fontWeight: 500 }}>Title</Table.Th>
                             <Table.Th style={{ width: 200, fontWeight: 500 }}>Author</Table.Th>
                             <Table.Th style={{ width: 80, fontWeight: 500 }}>Year</Table.Th>
@@ -110,12 +113,40 @@ export default function ListItemsPage() {
                     <Table.Tbody>
                         {items.length > 0 ? (
                             items.map((item) => (
-                                <Table.Tr key={item.itemId}>
+                                <Table.Tr
+                                    key={item.itemId}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => handleRowClick(item)}
+                                >
+                                    <Table.Td w={80}>
+                                        {item.picture ? (
+                                            <img
+                                                src={item.picture}
+                                                alt={item.title}
+                                                style={{
+                                                    width: 45,
+                                                    height: 62,
+                                                    objectFit: "contain",
+                                                    borderRadius: 4,
+                                                    display: "block"
+                                                }}
+                                            />
+                                        ) : (
+                                            <div style={{
+                                                width: 45,
+                                                height: 60,
+                                                background: "var(--mantine-color-gray-2)",
+                                                borderRadius: 4
+                                            }} />
+                                        )}
+                                    </Table.Td>
                                     <Table.Td>{item.title}</Table.Td>
                                     <Table.Td>{item.authorName}</Table.Td>
                                     <Table.Td>{item.publishingYear}</Table.Td>
                                     {isOwner && (
-                                        <Table.Td>
+                                        <Table.Td
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
                                             <Center>
                                                 <DeleteItemFromListModal
                                                     itemName={item.title}
@@ -129,7 +160,7 @@ export default function ListItemsPage() {
                             ))
                         ) : (
                             <Table.Tr>
-                                <Table.Td colSpan={isOwner ? 4 : 3}>
+                                <Table.Td colSpan={isOwner ? 5 : 4}>
                                     <Text ta="center" fw={500}>
                                         No items in this list
                                     </Text>
@@ -162,6 +193,13 @@ export default function ListItemsPage() {
                     </Affix>
                 )}
             </Container>
+
+            <ItemDetailModal
+                item={selectedItem}
+                opened={modalOpened}
+                onClose={closeModal}
+            />
+
         </DefaultLayout>
     );
 }
