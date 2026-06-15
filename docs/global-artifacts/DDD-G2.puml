@@ -95,7 +95,7 @@ Auction "1" --> "*" Bid
 City "*" --> "1" Country
 
 '--- ShoppingCart ---'
-User "1" --> "0..1" ShoppingCart
+User "1" --> "1" ShoppingCart
 ShoppingCart "1" --> "*" ShoppingCartLine
 ShoppingCartLine "*" --> "1" DirectSale
 
