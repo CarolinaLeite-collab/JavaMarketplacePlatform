@@ -12,7 +12,12 @@ FROM eclipse-temurin:21-jre-alpine@sha256:704db3c40204a44f471191446ddd9cda5d60da
 
 WORKDIR /app
 
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN mkdir -p /app/data && chown -R appuser:appgroup /app
+
 COPY --from=builder /app/target/*.jar app.jar
+
+USER appuser
 
 EXPOSE 8081
 
