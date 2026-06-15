@@ -9,6 +9,7 @@ reports/
 
 # Git
 .git/
+githooks/
 
 # IDE
 .idea/
@@ -17,6 +18,7 @@ reports/
 
 # Docker
 Dockerfile
+docker-compose.yml
 
 # Local documentation and configurations
 *.md
@@ -29,3 +31,9 @@ Dockerfile
 # OS
 .DS_Store
 Thumbs.db
+
+# Frontend — not needed for backend build
+frontend/
+
+# Documentation
+docs/
