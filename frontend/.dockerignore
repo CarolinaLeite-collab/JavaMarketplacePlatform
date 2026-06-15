@@ -30,7 +30,6 @@ coverage/
 .DS_Store
 
 # Docker
-Dockerfile
 docker-compose.yml
 
 # Local configs

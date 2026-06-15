@@ -17,7 +17,6 @@ githooks/
 .vscode/
 
 # Docker
-Dockerfile
 docker-compose.yml
 
 # Local documentation and configurations
