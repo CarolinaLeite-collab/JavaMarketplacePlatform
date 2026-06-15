@@ -22,6 +22,11 @@ title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SSD
 actor User
 participant ":Mitelovers" as mite
 
+User -> mite : Show me what I can do here
+activate mite
+mite --> User : These are your available resources
+deactivate mite
+
 User -> mite : I want to buy an item in a direct sale
 activate mite
 mite --> User : Show available direct sales
