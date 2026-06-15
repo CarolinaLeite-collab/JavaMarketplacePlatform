@@ -1,0 +1,66 @@
+@startuml
+'==== basic style ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+autonumber
+
+title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/SSN - SD"
+
+' --- Actor and participants ---
+
+actor User
+participant ":Client" as client
+participant ":Server" as server
+database "DB" as DB
+
+User -> client : show me what I can do
+activate client
+client -> server : OPTIONS /my-library {...}
+activate server
+
+server --> client : available links
+deactivate server
+client --> User : here is what you can do
+deactivate client
+
+User -> client : access to "My Library"
+activate client
+client -> server : GET /my-library
+activate server
+
+server -> DB : select
+activate DB
+DB --> server : data
+deactivate DB
+
+server --> client : 200
+deactivate server
+client --> User : Items of your library
+deactivate client
+
+User -> client : sort library by title/author/type/ISBN-SSN
+activate client
+client -> server : GET /my-library?sort={field}
+activate server
+
+server -> DB : select ordered by {field}
+activate DB
+DB --> server : sorted data
+deactivate DB
+
+server --> client : 200
+deactivate server
+client --> User : sorted items of your library
+deactivate client
+
+@enduml
