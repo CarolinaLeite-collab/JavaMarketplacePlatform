@@ -141,4 +141,10 @@ public class AuthorizationPolicy {
     /** Only admins may create a country. */
     public boolean canCreateCountry(User user) { return user.hasRole(Role.ADMIN);}
 
+    /** Any authenticated user may view auction details. */
+    public boolean canViewAuction(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may place bids on auctions. */
+    public boolean canBid(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
 }

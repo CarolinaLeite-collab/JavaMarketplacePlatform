@@ -383,4 +383,38 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // ──────────── Auction viewing ────────────
+
+    @Test
+    void userCanViewAuction() {
+        assertTrue(_authorizationPolicy.canViewAuction(_userDouble));
+    }
+
+    @Test
+    void adminCanViewAuction() {
+        assertTrue(_authorizationPolicy.canViewAuction(_adminDouble));
+    }
+
+    @Test
+    void guestCannotViewAuction() {
+        assertFalse(_authorizationPolicy.canViewAuction(_guestDouble));
+    }
+
+// ──────────── Bidding on auctions ────────────
+
+    @Test
+    void userCanBid() {
+        assertTrue(_authorizationPolicy.canBid(_userDouble));
+    }
+
+    @Test
+    void adminCanBid() {
+        assertTrue(_authorizationPolicy.canBid(_adminDouble));
+    }
+
+    @Test
+    void guestCannotBid() {
+        assertFalse(_authorizationPolicy.canBid(_guestDouble));
+    }
+
 }
