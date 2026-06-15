@@ -17,10 +17,10 @@ participant ":AuctionRestController" as REST
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
 participant ":IAuctionRepo" as auctionRepo
-participant ":BidFactory" as BidFactory
 participant "auction%n():Auction" as Auction
+participant ":BidFactory" as BidFactory
 participant ":Bid\nResponseDTOMapper" as Mapper
-database DB
+participant "Database" as DB
 
 ' ===== POST /auctions/{auctionId}/bids =====
 
@@ -33,7 +33,7 @@ create "userId2:UserId" as userId2
 REST --> userId2 : createUserId(email2)
 
 create "offerPrice:Price" as offerPrice
-REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
+REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, placeBidRequestDTO.getCurrency)
 
 REST -> Service : placeBid(auctionId, userId2, offerPrice)
 activate Service
@@ -47,17 +47,18 @@ deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
 
-Service -> BidFactory : createBid(userId2, offerPrice)
+
+Service -> Auction : placeBid(userId2, offerPrice)
+activate Auction
+'note right Service: returns auction updated %n() with placed bid
+
+Auction -> BidFactory : createBid%n()(userId2, offerPrice)
 activate BidFactory
 create "bid:Bid" as bid
 BidFactory -->> bid : <<create>>
-BidFactory --> Service : bid
+BidFactory --> Auction : bid
 deactivate BidFactory
-
-Service -> Auction : placeBid(bid)
-activate Auction
-note right Service: returns auction updated %n() with placed bid
-Auction --> Service : auction
+Auction --> Service : bid
 deactivate Auction
 
 Service -> auctionRepo : save(auction)
@@ -68,8 +69,26 @@ DB --> auctionRepo : auction
 deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
-Service --> REST : auction
+'Service --> REST : BidPlacementResult(auction, bid)
+create "bidPlacementResult:BidPlacementResult" as Result
+Service -->> Result : createBidPlacementResult(auction, bid)
+Service --> REST : bidPlacementResult
 deactivate Service
+
+note right of REST
+  BidPlacementResult is a record containing:
+  - auction (updated aggregate)
+  - bid (newly created bid)
+end note
+
+REST -> Result : getAuction()
+activate Result
+Result --> REST : auction
+deactivate Result
+REST -> Result : getBid
+activate Result
+Result --> REST : bid
+deactivate Result
 
 REST -> Mapper : toDTO(auction, bid)
 activate Mapper
@@ -86,7 +105,7 @@ deactivate Link
 deactivate REST
 
 ref over REST
-[[../Process_Diagram_Level_3_SD.puml Return to main diagram]]
+Process_View_Level_3_SD.puml]
 end ref
 
 @enduml
