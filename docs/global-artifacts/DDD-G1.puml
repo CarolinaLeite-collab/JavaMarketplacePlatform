@@ -74,7 +74,7 @@ User "1" --> "1" Library
 'User "1" --> "*" Bid
 User "1" --> "*" Auction
 User "1" --> "*" DirectSale
-User "1" --> "0..1" ShoppingCart
+User "1" --> "1" ShoppingCart
 
 '--- Publication ---'
 Publication "*" --> "1" Author
