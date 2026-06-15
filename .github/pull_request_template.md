@@ -19,6 +19,7 @@
 - [ ] Chore / Maintenance
 - [ ] Documentation
 - [ ] Performance improvement
+- [ ] Security improvement
 
 ---
 
@@ -57,12 +58,10 @@
 - [ ] Request DTOs include validation rules where applicable such as `@NotBlank`, `@NotNull`, `@Min`, `@Max`, `@Size`, or `@Pattern`
 - [ ] Domain/value object validation is preserved and covered by tests
 - [ ] User-provided values are not used unsafely in queries, paths, redirects, or logs
-- 
-### Authorization and Access Control
-- [ ] New or changed actions are reflected in `AuthorizationPolicy` when role-based access is needed
-- [ ] Link providers expose only actions allowed for the current user role
-- [ ] Access control tests cover allowed and denied cases where applicable
-- [ ] User IDs from requests or headers are checked before granting access
+
+### Authentication, Authorization and Access Control
+- [ ] N/A - Application-level login, authentication, authorization, and ACL mechanisms are not implemented in this sprint
+- [ ] Existing role/link visibility rules are preserved where applicable
 
 ### Secrets and Configuration
 - [ ] No real secrets or credentials are committed
