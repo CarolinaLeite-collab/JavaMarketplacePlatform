@@ -2,6 +2,7 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.AuctionFactory;
+import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
@@ -12,14 +13,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
- * Application service responsible for managing auction-related operations.
+ * Application service responsible for managing auction- and bid-related operations.
  * <p>
  * This service coordinates the interaction between repositories and domain
- * objects required to create auctions and place library items on auction.
- * It validates item availability, creates and persists auctions, and updates
- * the sale status of the involved items.
+ * objects required to create auctions and bids, along with placing library items on auction.
+ * It validates item availability, creates and persists auctions, creates and persists
+ * bids on an auction, and updates the sale status of the involved items.
  * </p>
  */
 
@@ -79,6 +81,27 @@ public class AuctionService {
         }
 
         return _iAuctionRepo.save(auction);
+    }
+
+    // === Bidding support ===
+
+    // for returning both auction and bid
+    public record BidPlacementResult(Auction auction, Bid bid) {}
+
+    @Transactional
+    public BidPlacementResult placeBid(String auctionIdRaw,
+                                       UserId userId,
+                                       Price offerPrice) {
+
+        AuctionId auctionId = new AuctionId(auctionIdRaw);
+        Auction auction = _iAuctionRepo.ofIdentity(auctionId)
+                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
+
+        Bid bid = auction.placeBid(userId, offerPrice);
+
+        _iAuctionRepo.save(auction);
+
+        return new BidPlacementResult(auction, bid);
     }
 
 }

@@ -2,6 +2,7 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.AuctionFactory;
+import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IAuctionRepo;
 import MITELOVERS.domain.repository.IItemRepo;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -181,4 +183,50 @@ class AuctionServiceTest {
 
         assertEquals("Auction already exists!", ex.getMessage());
     }
+
+    @Test
+    void placeBidShouldReturnResultAndSaveAuction() {
+        // Arrange
+        String rawAuctionId = "AU-12345678";
+        UserId userIdDouble = mock(UserId.class);
+        Price offerPriceDouble = mock(Price.class);
+
+        Bid bidDouble = mock(Bid.class);
+
+        when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
+                .thenReturn(Optional.of(_auctionDouble));
+
+        when(_auctionDouble.placeBid(userIdDouble, offerPriceDouble)).thenReturn(bidDouble);
+
+        when(_iAuctionRepoDouble.save(_auctionDouble)).thenReturn(_auctionDouble);
+
+        // Act
+        AuctionService.BidPlacementResult result =
+                _auctionService.placeBid(rawAuctionId, userIdDouble, offerPriceDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertSame(_auctionDouble, result.auction());
+        assertSame(bidDouble, result.bid());
+    }
+
+    @Test
+    void placeBidShouldThrowWhenAuctionNotFound() {
+        // Arrange
+        String rawAuctionId = "AU-12345678";
+        UserId userId = mock(UserId.class);
+        Price offerPrice = mock(Price.class);
+
+        when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
+                .thenReturn(Optional.empty());
+
+        // Act + Assert
+        NoSuchElementException ex = assertThrows(
+                NoSuchElementException.class,
+                () -> _auctionService.placeBid(rawAuctionId, userId, offerPrice)
+        );
+
+        assertTrue(ex.getMessage().contains("Auction not found"));
+    }
+
 }
