@@ -1,0 +1,45 @@
+@startuml
+
+'==== basic style ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+autonumber
+
+title "I want to see the publications in a public list." - SD
+
+' --- Actor and participants ---
+
+actor User
+participant ":Frontend" as Front
+participant ":Backend" as Back
+participant ":DataBase" as DB
+
+' --- Interactions ---
+
+User -> Front : Click on  publicly shared list
+activate Front
+Front -> Back : OPTIONS /:listId/items
+activate Back
+Back --> Front : [GET]
+deactivate Back
+
+Front -> Back : GET /:listId/items
+activate Back
+Back -> DB : select
+DB --> Back : data
+Back --> Front : HTTP STATUS 200 {...}
+deactivate Back
+Front --> User : Show the selected list page and its items
+deactivate Front
+
+@enduml
