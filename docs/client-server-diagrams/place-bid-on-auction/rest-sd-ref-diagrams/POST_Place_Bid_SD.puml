@@ -1,0 +1,92 @@
+@startuml
+title POST (place bid on auction) %n()ref SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":AuctionRestController" as REST
+participant ":AuctionLinkProvider" as Link
+participant ":AuctionService" as Service
+participant ":IAuctionRepo" as auctionRepo
+participant ":BidFactory" as BidFactory
+participant "auction%n():Auction" as Auction
+participant ":Bid\nResponseDTOMapper" as Mapper
+database DB
+
+' ===== POST /auctions/{auctionId}/bids =====
+
+create "email2:Email" as email2
+activate REST
+
+REST -->> email2 : createEmail(userIdFromHeader)
+
+create "userId2:UserId" as userId2
+REST --> userId2 : createUserId(email2)
+
+create "offerPrice:Price" as offerPrice
+REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
+
+REST -> Service : placeBid(auctionId, userId2, offerPrice)
+activate Service
+
+Service -> auctionRepo : ofIdentity(auctionId)
+activate auctionRepo
+auctionRepo -> DB : ofIdentity(auctionId)
+activate DB
+DB --> auctionRepo : auction
+deactivate DB
+auctionRepo --> Service : auction
+deactivate auctionRepo
+
+Service -> BidFactory : createBid(userId2, offerPrice)
+activate BidFactory
+create "bid:Bid" as bid
+BidFactory -->> bid : <<create>>
+BidFactory --> Service : bid
+deactivate BidFactory
+
+Service -> Auction : placeBid(bid)
+activate Auction
+note right Service: returns auction updated %n() with placed bid
+Auction --> Service : auction
+deactivate Auction
+
+Service -> auctionRepo : save(auction)
+activate auctionRepo
+auctionRepo -> DB : save(auction)
+activate DB
+DB --> auctionRepo : auction
+deactivate DB
+auctionRepo --> Service : auction
+deactivate auctionRepo
+Service --> REST : auction
+deactivate Service
+
+REST -> Mapper : toDTO(auction, bid)
+activate Mapper
+Mapper --> REST : bidResponseDTO
+deactivate Mapper
+
+deactivate Service
+
+REST -> Link : addBidLinks(bidResponseDTO)
+activate Link
+Link --> REST : bidResponseDTO with _links
+deactivate Link
+
+deactivate REST
+
+ref over REST
+[[../Process_Diagram_Level_3_SD.puml Return to main diagram]]
+end ref
+
+@enduml

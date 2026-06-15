@@ -42,9 +42,9 @@ public class MemItemRepo implements IItemRepo {
     }
 
     @Override
-    public Item save (Item item){
-        DATA.put(item.identity(), item);
-        return item;
+    public Item save (Item itemSaved){
+        DATA.put(itemSaved.identity(), itemSaved);
+        return itemSaved;
     }
 
     @Override

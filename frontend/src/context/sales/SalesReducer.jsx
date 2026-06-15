@@ -1,5 +1,7 @@
 import {
     CLEAR_SALES_MESSAGES,
+    CREATE_AUCTION_ERROR,
+    CREATE_AUCTION_SUCCESS,
     CREATE_DIRECT_SALE_ERROR,
     CREATE_DIRECT_SALE_SUCCESS,
     GET_LIBRARY_ITEMS_ERROR,
@@ -27,6 +29,7 @@ function mapLibraryItem(item) {
         saleStatus: item.saleStatus,
         selfHref: getLink(links, 'self'),
         createDirectSaleHref: getLink(links, 'create-direct-sale'),
+        createAuctionHref: getLink(links, 'create-auction'),
         links,
     };
 }
@@ -36,15 +39,10 @@ export function salesReducer(state, action) {
         case GET_LIBRARY_ITEMS_SUCCESS: {
             const items = (action.payload ?? []).map(mapLibraryItem);
 
-            // Final HATEOAS behavior: only items that advertise create-direct-sale
-            const sellableItems = items.filter(
-                (item) => !!item.createDirectSaleHref
-            );
-
             return {
                 ...state,
                 error: null,
-                libraryItems: sellableItems,
+                libraryItems: items,
             };
         }
 
@@ -58,6 +56,12 @@ export function salesReducer(state, action) {
 
 
         case CREATE_DIRECT_SALE_ERROR:
+            return { ...state, error: action.payload };
+
+        case CREATE_AUCTION_SUCCESS:
+            return { ...state, error: null, successMessage: 'The item was successfully put on auction.' };
+
+        case CREATE_AUCTION_ERROR:
             return { ...state, error: action.payload };
 
 
