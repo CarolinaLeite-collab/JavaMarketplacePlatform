@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -74,22 +75,6 @@ public class AuctionRestController {
         return ResponseEntity.ok(model);
     }
 
-    @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
-            @PathVariable String auctionId,
-            @RequestParam("email") String email) {
-
-        User user = _userService.getUserByEmail(email);
-
-        RepresentationModel<?> model = new RepresentationModel<>();
-
-        for (Link link : _auctionLinkProvider.getLinks(user, auctionId)) {
-            model.add(link);
-        }
-
-        return ResponseEntity.ok(model);
-    }
-
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createAuction (@RequestBody CreateAuctionRequestDTO request) {
         try {
@@ -120,6 +105,44 @@ public class AuctionRestController {
 
         } catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
+            @PathVariable String auctionId,
+            @RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        for (Link link : _auctionLinkProvider.getLinks(user, auctionId)) {
+            model.add(link);
+        }
+
+        return ResponseEntity.ok(model);
+    }
+
+    @GetMapping(
+            path = "/{auctionId}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> getAuctionById(@PathVariable String auctionId) {
+        try {
+            Auction auction = _auctionService.getAuctionById(auctionId);
+
+            AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
+
+            dto.add(linkTo(AuctionRestController.class).withSelfRel());
+
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+
+        } catch (NoSuchElementException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(),  HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

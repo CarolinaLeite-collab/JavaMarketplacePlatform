@@ -81,6 +81,14 @@ public class AuctionService {
         return _iAuctionRepo.save(auction);
     }
 
+    @Transactional
+    public Auction getAuctionById(String auctionIdRaw) {
+        AuctionId auctionId = new AuctionId(auctionIdRaw);
+
+        return _iAuctionRepo.ofIdentity(auctionId)
+                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
+    }
+
     // === Bidding support ===
 
     // for returning both auction and bid

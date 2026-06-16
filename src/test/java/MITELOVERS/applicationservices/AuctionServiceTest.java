@@ -145,6 +145,34 @@ class AuctionServiceTest {
     }
 
     @Test
+    void getAuctionByIdReturnsAuctionWhenFound() {
+        // Arrange
+        String rawAuctionId = "AU-12345678";
+
+        when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
+                .thenReturn(Optional.of(_auctionDouble));
+
+        // Act
+        Auction result = _auctionService.getAuctionById(rawAuctionId);
+
+        // Assert
+        assertSame(_auctionDouble, result);
+    }
+
+    @Test
+    void getAuctionByIdThrowsWhenNotFound() {
+        // Arrange
+        String rawAuctionId = "AU-12345678";
+
+        when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(NoSuchElementException.class,
+                () -> _auctionService.getAuctionById(rawAuctionId));
+    }
+
+    @Test
     void placeBidShouldReturnResultAndSaveAuction() {
         // Arrange
         String rawAuctionId = "AU-12345678";
