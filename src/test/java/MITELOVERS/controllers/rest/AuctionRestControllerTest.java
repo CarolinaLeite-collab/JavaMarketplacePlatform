@@ -49,6 +49,43 @@ class AuctionRestControllerTest {
     @MockitoBean
     private UserService _userService;
 
+    // ------------------------------------------------------------
+    // GET /auctions
+    // ------------------------------------------------------------
+
+    @Test
+    void getAllActiveAuctions_shouldReturnOk() throws Exception {
+        // arrange
+        Auction auction = mock(Auction.class);
+        AuctionResponseDTO dto = new AuctionResponseDTO(
+                "AU-12345678",
+                List.of("ABCDEF1234"),
+                10.0, 25.0, 50.0, "EUR",
+                Instant.parse("2026-06-10T10:00:00Z"),
+                Instant.parse("2099-01-01T10:00:00Z")
+        );
+
+        when(_auctionService.getAllActiveAuctions()).thenReturn(List.of(auction));
+        when(_auctionMapper.toDTO(auction)).thenReturn(dto);
+
+        // act + assert
+        mockMvc.perform(get("/auctions"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].auctionId").value("AU-12345678"))
+                .andExpect(jsonPath("$[0].startingPrice").value(10.0))
+                .andExpect(jsonPath("$[0]._links.self").exists());
+    }
+
+    @Test
+    void getAllActiveAuctions_shouldReturnNoContentWhenEmpty() throws Exception {
+        // arrange
+        when(_auctionService.getAllActiveAuctions()).thenReturn(List.of());
+
+        // act + assert
+        mockMvc.perform(get("/auctions"))
+                .andExpect(status().isNoContent());
+    }
+
     @Test
     void createAuctionValidRequestReturns201() throws Exception {
         // arrange
