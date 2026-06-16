@@ -1268,7 +1268,7 @@ Developers can run the same checks locally before pushing a PR.
 
 ## Docker
 
-The application is containerised using Docker with multi-stage builds and pinned base images for reproducibility and security.
+The application is containerized using Docker with multi-stage builds and pinned base images for reproducibility and security.
 
 ### Prerequisites
 
@@ -1303,6 +1303,7 @@ Both Dockerfiles follow secure image-building practices:
 
 - **Multi-stage builds** — build tools are not present in the final image
 - **Pinned base images** — SHA256 digests ensure reproducible builds
+- **Non-root user** — containers run as a non-privileged user
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
 - **No hardcoded secrets** — all configuration is passed via environment variables
 
