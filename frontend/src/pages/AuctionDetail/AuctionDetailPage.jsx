@@ -2,7 +2,7 @@ import { useEffect, useReducer, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     Text, Group, Stack, Button, Badge, Alert,
-    Grid, Table, Image, Title, Card, Modal, TextInput,
+    Grid, Table, Image, Title, Card, Modal, TextInput,SimpleGrid
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
@@ -46,7 +46,7 @@ export default function AuctionDetailPage() {
             highestBid: 75.00,
             priceCurrency: 'EUR',
             seller: 'Unknown',
-            endDate: '3 days, 2025-07-15T23:59:59',
+            endDate: '3 days, 15-07-2025, 16:42',
             author: 'George Orwell',
             genre: 'Fiction',
             condition: 'Good',
@@ -103,13 +103,14 @@ export default function AuctionDetailPage() {
                 )}
 
                 {/* Title */}
-                <Title order={1} fz={50} style={{ fontFamily: 'EB Garamond, serif' }}>
+                <Title order={1} fz={50} fw={600} style={{ fontFamily: 'EB Garamond, serif' }}>
+                    <Text span fz={30} fw={500} >{auction.publicationType ?? 'N/A'}:</Text>{' '}
                     {auction.title ?? 'Auction'}
                 </Title>
 
                 {/* Image + Info */}
                 <Grid>
-                    <Grid.Col span={5}>
+                    <Grid.Col span={6}>
                         <Image
                             src={auction.imageUrl ?? null}
                             fallbackSrc="https://placehold.co/500x550?text=No+Image"
@@ -119,143 +120,147 @@ export default function AuctionDetailPage() {
                         />
                     </Grid.Col>
 
-                    <Grid.Col span={7}>
+                    <Grid.Col span={6}>
                         <Stack gap="md" h="100%" justify="space-between">
                             <Stack gap="sm">
 
-                                {/* Price line */}
-                                <Text fz={30} fw={700} c="blue">
-                                    {auction.highestBid ?? 'No bids'} {auction.highestBid ? auction.priceCurrency : ''}
-                                </Text>
-
-
-
-
-
-                                <Group gap="lg" align="baseline">
-                                    <Text size="sm" c="dimmed">
-                                        Starting price: {auction.startingPrice} {auction.priceCurrency}
+                                <Stack gap={1}>
+                                    {/* Current Price */}
+                                    <Text fz={30} fw={700} c="var(--mantine-color-indigo-7)">
+                                        {auction.highestBid ?? 'No bids'} {auction.highestBid ? auction.priceCurrency : ''}
                                     </Text>
 
-                                    <Text size="sm" c="dimmed">
-                                        {auction.bids} bids
+                                    {/* Starting price and Number of bids*/}
+                                    <Group gap="lg" align="baseline">
+                                        <Text size="sm" c="dimmed">
+                                            Starting price: {auction.startingPrice} {auction.priceCurrency}
+                                        </Text>
+
+                                        <Text td="underline" size="sm" c="dimmed">
+                                            {auction.bids} bids
+                                        </Text>
+                                    </Group>
+
+                                    {/* Seller */}
+                                    <Text size="xs" c="dimmed" >
+                                        Sold by {auction.seller ?? 'Unknown'}
                                     </Text>
+                                </Stack>
 
-                                </Group>
+                                    {/* Deadline + Status */}
+                                    <Group gap="lg" c="dimmed" mt="xs">
+                                        <Text size="sm">
+                                            Ends in {auction.endDate ?? 'N/A'}
+                                        </Text>
+                                        <Badge color="var(--mantine-color-indigo-7)" variant="light" size="sm">
+                                            {auction.status ?? 'Active'}
+                                        </Badge>
+                                    </Group>
 
-                                {/* Seller */}
-                                <Text size="xs" c="dimmed" >
-                                    Sold by {auction.seller ?? 'Unknown'}
-                                </Text>
 
-                                {/* Deadline + Status */}
-                                <Group gap="md">
-                                    <Text size="sm">
-                                        Ends: {auction.endDate ?? 'N/A'}
-                                    </Text>
-                                    <Badge color="blue" variant="light" size="sm">
-                                        {auction.status ?? 'Active'}
-                                    </Badge>
-                                </Group>
-
-                                {/* Description */}
-                                <Card padding="md" radius="md" withBorder mt="md">
+                                {/* Seller's description */}
+                                <Stack gap={4} mt="xs">
+                                    <Text size="m" fw={700} c="dimmed">Seller's description:</Text>
                                     <Text size="sm">
                                         {auction.description ?? 'No description available.'}
                                     </Text>
-                                </Card>
+                                </Stack>
+
                             </Stack>
 
-                            <Button
-                                onClick={openBidModal}
-                                disabled={!isLoggedIn || !placeBidHref}
-                                fullWidth
-                                size="md"
-                            >
-                                Place Bid
-                            </Button>
-                            <Button
-                                variant="outline"
-                                fullWidth
-                                size="md"
-                            >
-                                Add to Cart
-                            </Button>
-                            <Button
-                                variant=""
-                                color="blue"
-                                fullWidth
-                                size="md"
-                            >
-                                Buy Now
-                            </Button>
+                            <Stack>
+                                {/* Quick info */}
+                                <SimpleGrid cols={4} mt="sm">
+                                    <Card padding="xs" radius="md" withBorder>
+                                        <Text size="xs" c="dimmed">Author</Text>
+                                        <Text size="sm" fw={400}>{auction.author}</Text>
+                                    </Card>
+                                    <Card padding="xs" radius="md" withBorder>
+                                        <Text size="xs" c="dimmed">Edition</Text>
+                                        <Text size="sm" fw={400}>{auction.edition}</Text>
+                                    </Card>
+                                    <Card padding="xs" radius="md" withBorder>
+                                        <Text size="xs" c="dimmed">ISBN</Text>
+                                        <Text size="sm" fw={400}>{auction.identifier}</Text>
+                                    </Card>
+                                    <Card padding="xs" radius="md" withBorder>
+                                        <Text size="xs" c="dimmed">Condition</Text>
+                                        <Text size="sm" fw={400}>{auction.condition}</Text>
+                                    </Card>
+                                </SimpleGrid>
+
+                                <Button
+                                    onClick={openBidModal}
+                                    disabled={!isLoggedIn || !placeBidHref}
+                                    fullWidth
+                                    size="md"
+                                >
+                                    Place Bid
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    color="var(--mantine-color-indigo-7)"
+                                    fullWidth
+                                    size="md"
+                                >
+                                    Add to Cart
+                                </Button>
+                                <Button
+                                    variant=""
+                                    color="var(--mantine-color-indigo-7)"
+                                    fullWidth
+                                    size="md"
+                                >
+                                    Buy Now
+                                </Button>
+                            </Stack>
                         </Stack>
                     </Grid.Col>
                 </Grid>
 
-                {/* Details */}
+                {/* Synopsis */}
                 <Stack gap="md">
-                    <Text size="sm" fw={700} c="dimmed">SYNOPSIS:</Text>
+                    <Stack gap={4}>
+                        <Text size="m" fw={700} c="dimmed">Synopsis:</Text>
+                        <Card padding="md" radius="md" withBorder bg="gray.0">
+                            <Text size="sm" fs="italic">
+                                {auction.synopsis ?? 'No synopsis available.'}
+                            </Text>
+                        </Card>
+                    </Stack>
 
-                    {/* Synopsis */}
-                    <Card padding="md" radius="md" withBorder bg="white">
-                        <Text size="sm" fs="italic">
-                            {auction.synopsis ?? 'No synopsis available.'}
-                        </Text>
-                    </Card>
-
-                    <Text size="sm" fw={700} c="dimmed">DETAILS:</Text>
-
-                    {/* Details table — 4 columns */}
-                    <Table withTableBorder withColumnBorders>
-                        <Table.Tbody>
-                            <Table.Tr>
-                                <Table.Td fw={600} w="15%">Author</Table.Td>
-                                <Table.Td w="35%">{auction.author ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600} w="15%">Publisher</Table.Td>
-                                <Table.Td w="35%">{auction.publisher ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Genre</Table.Td>
-                                <Table.Td>{auction.genre ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}>Edition</Table.Td>
-                                <Table.Td>{auction.edition ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Publication type</Table.Td>
-                                <Table.Td>{auction.publicationType ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}>Identifier</Table.Td>
-                                <Table.Td>{auction.identifier ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Year</Table.Td>
-                                <Table.Td>{auction.year ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}>Language</Table.Td>
-                                <Table.Td>{auction.language ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Pages</Table.Td>
-                                <Table.Td>{auction.pages ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}>Binding</Table.Td>
-                                <Table.Td>{auction.binding ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Condition</Table.Td>
-                                <Table.Td>{auction.condition ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}>Weight</Table.Td>
-                                <Table.Td>{auction.weight ?? 'N/A'}</Table.Td>
-                            </Table.Tr>
-                            <Table.Tr>
-                                <Table.Td fw={600}>Dimensions</Table.Td>
-                                <Table.Td>{auction.dimensions ?? 'N/A'}</Table.Td>
-                                <Table.Td fw={600}></Table.Td>
-                                <Table.Td></Table.Td>
-                            </Table.Tr>
-                        </Table.Tbody>
-                    </Table>
+                    <Stack gap={4}>
+                        <Text size="m" fw={700} c="dimmed">Details:</Text>
+                        <Table withTableBorder withColumnBorders>
+                            <Table.Tbody>
+                                <Table.Tr>
+                                    <Table.Td fw={600} w="15%">Publisher</Table.Td>
+                                    <Table.Td w="35%" bg="gray.0">{auction.publisher ?? 'N/A'}</Table.Td>
+                                    <Table.Td fw={600}>Genre</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.genre ?? 'N/A'}</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <Table.Td fw={600}>Year</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.year ?? 'N/A'}</Table.Td>
+                                    <Table.Td fw={600}>Language</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.language ?? 'N/A'}</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <Table.Td fw={600}>Pages</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.pages ?? 'N/A'}</Table.Td>
+                                    <Table.Td fw={600}>Binding</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.binding ?? 'N/A'}</Table.Td>
+                                </Table.Tr>
+                                <Table.Tr>
+                                    <Table.Td fw={600}>Weight</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.weight ?? 'N/A'}</Table.Td>
+                                    <Table.Td fw={600}>Dimensions</Table.Td>
+                                    <Table.Td bg="gray.0">{auction.dimensions ?? 'N/A'}</Table.Td>
+                                </Table.Tr>
+                            </Table.Tbody>
+                        </Table>
+                    </Stack>
                 </Stack>
-
-
             </Stack>
             <PlaceBidModal
                 opened={bidModalOpened}

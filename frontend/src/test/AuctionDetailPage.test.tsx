@@ -34,13 +34,14 @@ describe('AuctionDetailPage', () => {
         });
     });
 
-    it('renders auction title', async () => {
+    it('renders publication type and title', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('1984')).toBeInTheDocument();
+        expect(await screen.findByText(/Book:/)).toBeInTheDocument();
+        expect(screen.getByText('1984')).toBeInTheDocument();
     });
 
-    it('renders highest bid in large text', async () => {
+    it('renders highest bid', async () => {
         renderAuctionDetail();
 
         expect(await screen.findByText(/75/)).toBeInTheDocument();
@@ -67,7 +68,7 @@ describe('AuctionDetailPage', () => {
     it('renders deadline', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText(/3 days, 2025-07-15/)).toBeInTheDocument();
+        expect(await screen.findByText(/Ends in 3 days/)).toBeInTheDocument();
     });
 
     it('renders status badge', async () => {
@@ -76,42 +77,40 @@ describe('AuctionDetailPage', () => {
         expect(await screen.findByText('Active')).toBeInTheDocument();
     });
 
-    it('renders description card', async () => {
+    it('renders seller description', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText(/First edition of George Orwell/)).toBeInTheDocument();
+        expect(await screen.findByText("Seller's description:")).toBeInTheDocument();
+        expect(screen.getByText(/First edition of George Orwell/)).toBeInTheDocument();
+    });
+
+    it('renders quick info cards', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Author')).toBeInTheDocument();
+        expect(screen.getByText('George Orwell')).toBeInTheDocument();
+        expect(screen.getByText('Edition')).toBeInTheDocument();
+        expect(screen.getByText('1st Edition')).toBeInTheDocument();
+        expect(screen.getByText('ISBN')).toBeInTheDocument();
+        expect(screen.getByText('978-0-451-52493-5')).toBeInTheDocument();
+        expect(screen.getByText('Condition')).toBeInTheDocument();
+        expect(screen.getByText('Good')).toBeInTheDocument();
     });
 
     it('renders synopsis section', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('SYNOPSIS:')).toBeInTheDocument();
+        expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
         expect(screen.getByText(/seminal texts/)).toBeInTheDocument();
     });
 
-    it('renders details table with author and publisher', async () => {
+    it('renders details table with publisher and genre', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('Author')).toBeInTheDocument();
-        expect(screen.getByText('George Orwell')).toBeInTheDocument();
-        expect(screen.getByText('Publisher')).toBeInTheDocument();
+        expect(await screen.findByText('Publisher')).toBeInTheDocument();
         expect(screen.getByText('Secker & Warburg')).toBeInTheDocument();
-    });
-
-    it('renders details table with genre and edition', async () => {
-        renderAuctionDetail();
-
-        const genreLabels = await screen.findAllByText('Genre');
+        const genreLabels = screen.getAllByText('Genre');
         expect(genreLabels.length).toBeGreaterThanOrEqual(1);
-        expect(screen.getByText('1st Edition')).toBeInTheDocument();
-    });
-
-    it('renders details table with publication type and identifier', async () => {
-        renderAuctionDetail();
-
-        expect(await screen.findByText('Publication type')).toBeInTheDocument();
-        expect(screen.getByText('Book')).toBeInTheDocument();
-        expect(screen.getByText('978-0-451-52493-5')).toBeInTheDocument();
     });
 
     it('renders details table with year and language', async () => {
@@ -122,18 +121,19 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('English')).toBeInTheDocument();
     });
 
-    it('renders details table with condition and weight', async () => {
+    it('renders details table with pages and binding', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('Condition')).toBeInTheDocument();
-        expect(screen.getByText('Good')).toBeInTheDocument();
-        expect(screen.getByText('350 g')).toBeInTheDocument();
+        expect(await screen.findByText('Pages')).toBeInTheDocument();
+        expect(screen.getByText('328')).toBeInTheDocument();
+        expect(screen.getByText('Hardcover')).toBeInTheDocument();
     });
 
-    it('renders details table with dimensions', async () => {
+    it('renders details table with weight and dimensions', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByText('Dimensions')).toBeInTheDocument();
+        expect(await screen.findByText('Weight')).toBeInTheDocument();
+        expect(screen.getByText('350 g')).toBeInTheDocument();
         expect(screen.getByText('20 x 13 x 2.5 cm')).toBeInTheDocument();
     });
 
