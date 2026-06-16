@@ -5,7 +5,7 @@ import {MantineProvider} from '@mantine/core';
 import {NewListModal} from "../components/lists/newlistmodal/NewListModal.tsx";
 import MyListsPage from "../pages/Lists/MyListsPage.tsx";
 
-vi.mock('@/components/tablelist/TableList.tsx', () => ({
+vi.mock('@/components/lists/TableList.tsx', () => ({
     TableList: () => <div data-testid="table-list" />,
 }));
 

@@ -1,5 +1,14 @@
 import {render, screen} from '@/test-utils';
+import { describe, it, expect, vi } from "vitest";
 import {ItemDetailTable} from "../components/itemDetailsTable/ItemDetailsTable.tsx";
+
+vi.mock('@mantine/core', async () => {
+    const actual = await vi.importActual('@mantine/core');
+    return {
+        ...actual,
+        useComputedColorScheme: () => 'dark',
+    };
+});
 
 describe('ItemDetailTable', () => {
 
@@ -68,14 +77,6 @@ describe('ItemDetailTable', () => {
         );
 
         expect(screen.getByText('Identifier')).toBeInTheDocument();
-    });
-
-    vi.mock('@mantine/core', async () => {
-        const actual = await vi.importActual('@mantine/core');
-        return {
-            ...actual,
-            useComputedColorScheme: () => 'dark',
-        };
     });
 
     describe('ItemDetailTable - dark mode', () => {
