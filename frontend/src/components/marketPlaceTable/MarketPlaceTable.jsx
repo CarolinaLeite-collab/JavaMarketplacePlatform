@@ -109,7 +109,9 @@ export function MarketPlaceTable({
     const rows = sortedItems.map((item) => (
         <Table.Tr
             key={item.id}
-            onClick={()=> onSaleClick && onSaleClick(item)}
+            onClick={() => onSaleClick && onSaleClick(item)}
+            className={classes.row}
+            style={{ cursor: 'pointer' }}
         >
             <Table.Td>{item.item}</Table.Td>
             <Table.Td>{item.genreName}</Table.Td>
