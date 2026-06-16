@@ -1,0 +1,38 @@
+# Build output
+target/
+data/
+
+# Log file
+*.log
+gitleaks-report.json
+reports/
+
+# Git
+.git/
+githooks/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Docker
+docker-compose.yml
+
+# Local documentation and configurations
+*.md
+*.env
+.env*
+
+# CI
+.github/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend — not needed for backend build
+frontend/
+
+# Documentation
+docs/
