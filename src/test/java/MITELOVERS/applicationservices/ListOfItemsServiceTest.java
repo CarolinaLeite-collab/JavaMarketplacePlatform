@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -158,5 +159,71 @@ class ListOfItemsServiceTest {
         assertEquals(2, result.size());
         assertEquals(listOfItemsDouble1, result.get(0));
         assertEquals(listOfItemsDouble2, result.get(1));
+    }
+
+    @Test
+    void getPublicListsReturnsOnlyNonPrivateLists() {
+        // arrange
+        ListOfItems publicListDouble = mock(ListOfItems.class);
+        ListOfItems privateListDouble = mock(ListOfItems.class);
+        ListOfItems secondPublicListDouble = mock(ListOfItems.class);
+
+        when(publicListDouble.isPrivate()).thenReturn(false);
+        when(privateListDouble.isPrivate()).thenReturn(true);
+        when(secondPublicListDouble.isPrivate()).thenReturn(false);
+        when(_listOfItemsRepoDouble.findAll()).thenReturn(List.of(publicListDouble, privateListDouble, secondPublicListDouble));
+
+        // act
+        List<ListOfItems> result = _service.getPublicLists();
+
+        // assert
+        assertEquals(2, result.size());
+        assertEquals(publicListDouble, result.get(0));
+        assertEquals(secondPublicListDouble, result.get(1));
+    }
+
+    @Test
+    void getItemsInPublicListReturnsItemIdsWhenListIsPublic() {
+        // arrange
+        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+        ItemId itemIdDouble1 = mock(ItemId.class);
+        ItemId itemIdDouble2 = mock(ItemId.class);
+
+        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
+        when(listOfItemsDouble.isPrivate()).thenReturn(false);
+        when(listOfItemsDouble.getItemIds()).thenReturn(List.of(itemIdDouble1, itemIdDouble2));
+
+        // act
+        List<ItemId> result = _service.getItemsInPublicList(listOfItemsIdDouble);
+
+        // assert
+        assertEquals(2, result.size());
+        assertEquals(itemIdDouble1, result.get(0));
+        assertEquals(itemIdDouble2, result.get(1));
+    }
+
+    @Test
+    void getItemsInPublicListThrowsWhenListIsPrivate() {
+        // arrange
+        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+
+        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
+        when(listOfItemsDouble.isPrivate()).thenReturn(true);
+
+        // act + assert
+        assertThrows(IllegalStateException.class, () -> _service.getItemsInPublicList(listOfItemsIdDouble));
+    }
+
+    @Test
+    void getItemsInPublicListThrowsWhenListDoesNotExist() {
+        // arrange
+        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+
+        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.empty());
+
+        // act + assert
+        assertThrows(IllegalArgumentException.class, () -> _service.getItemsInPublicList(listOfItemsIdDouble));
     }
 }
