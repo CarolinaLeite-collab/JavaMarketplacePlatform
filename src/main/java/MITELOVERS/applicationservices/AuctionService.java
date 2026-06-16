@@ -91,6 +91,7 @@ public class AuctionService {
                 .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
     }
 
+    @Transactional(readOnly = true)
     public List<Auction> getAllActiveAuctions() {
         Instant now = Instant.now();
         List<Auction> all = new ArrayList<>();

@@ -11,6 +11,7 @@ vi.mock('../services/apiClient', () => ({
         getByHref: vi.fn(),
         getGenres: vi.fn(),
         getItemById: vi.fn(),
+        getAuctions: vi.fn(),
     },
 }));
 
@@ -95,6 +96,7 @@ describe('Marketplace', () => {
         apiClient.getByHref.mockResolvedValue(directSales);
         apiClient.getGenres.mockResolvedValue(genres);
         apiClient.getItemById.mockImplementation(async (itemId) => itemDetails[itemId]);
+        apiClient.getAuctions.mockResolvedValue([]);
     });
 
     it('renders marketplace items after loading', async () => {
