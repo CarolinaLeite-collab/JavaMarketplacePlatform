@@ -66,6 +66,36 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
     });
 }
 
+function buildAuctionItems(auctions, itemDetailsMap, genreNameToId) {
+    return auctions.flatMap((auction) => {
+        const itemIds = auction.itemIds ?? [];
+
+        return itemIds.map((itemId) => {
+            const itemDetails = itemDetailsMap.get(itemId);
+            if (!itemDetails) return null;
+
+            const genreName = itemDetails?.genreName ?? 'Unknown';
+
+            return {
+                //main table details
+                id: `${auction.auctionId}-${itemId}`,
+                item: itemDetails?.title ?? itemId,
+                genreId: genreNameToId.get(genreName) ?? 'unknown',
+                genreName,
+                type: 'Auction',
+                price: formatPrice(auction.startingPrice, auction.priceCurrency),
+
+                //details card fields
+                author: itemDetails?.author ?? 'unknown',
+                condition: itemDetails?.condition ?? 'unknown',
+                cover: itemDetails?.cover ?? '',
+                seller: 'unknown',
+                saleType: 'Auction',
+            };
+        }).filter(Boolean);
+    });
+}
+
 export default function Marketplace() {
     const { state } = useContext(AppContext);
     const { directSalesWithoutPriceHref } = state.app;
@@ -93,18 +123,21 @@ export default function Marketplace() {
                 setLoading(true);
                 setError('');
 
-                const [directSalesResponse, genresResponse] = await Promise.all([
+                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
                     marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getDirectSales(),
+                    apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
 
                 const directSales = directSalesResponse ?? [];
+                const auctions = auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
 
-                const uniqueItemIds = [...new Set(
-                    directSales.flatMap((sale) => sale.itemsId ?? [])
-                )];
+                const uniqueItemIds = [...new Set([
+                    ...directSales.flatMap((sale) => sale.itemsId ?? []),
+                    ...auctions.flatMap((auction) => auction.itemIds ?? []),
+                ])];
 
                 const itemResponses = await Promise.all(
                     uniqueItemIds.map(async (itemId) => {
@@ -122,7 +155,10 @@ export default function Marketplace() {
                 );
 
                 const itemDetailsMap = new Map(itemResponses.filter(Boolean));
-                const marketplaceItems = buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId);
+                const marketplaceItems = [
+                    ...buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId),
+                    ...buildAuctionItems(auctions, itemDetailsMap, genreNameToId),
+                ];
 
                 if (!isMounted) return;
 
