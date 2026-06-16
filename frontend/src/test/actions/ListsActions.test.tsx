@@ -2,17 +2,30 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import * as Actions from '../../context/lists/ListsActions.jsx';
 import {apiClient} from '../../services/apiClient.js';
 
-vi.mock('../services/apiClient', () => ({
-    apiClient: {
+vi.mock('../../services/apiClient', () => {
+    const mockApi = {
         getRootOptions: vi.fn(),
         getListsOptions: vi.fn(),
+        getGenres: vi.fn(),
+        getMyLibraryItemsForSale: vi.fn(),
+        getLibraryOptions: vi.fn(),
+        createDirectSales: vi.fn(),
+        getDirectSales: vi.fn(),
+        getItemById: vi.fn(),
+        extractIdFromSelfLink: vi.fn(),
+
+        // HATEOAS
         getByHref: vi.fn(),
         postByHref: vi.fn(),
         patchByHref: vi.fn(),
         patchNoBodyByHref: vi.fn(),
         deleteByHref: vi.fn(),
-    }
-}));
+    };
+
+    return {
+        apiClient: mockApi
+    };
+});
 
 describe('ListsActions', () => {
     let dispatch: ReturnType<typeof vi.fn>;

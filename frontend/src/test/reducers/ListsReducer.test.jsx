@@ -30,20 +30,15 @@ describe('listsReducer', () => {
     });
 
     describe('GET_LIST_OPTIONS_SUCCESS', () => {
-        it('extracts createListHref and myListsHref from links', () => {
-            const payload = {
-                'create-list': { href: 'http://localhost:8081/my-lists/' },
-                collection: { href: 'http://localhost:8081/my-lists/' },
-            };
-            const result = listsReducer(initialListsState, { type: 'GET_LIST_OPTIONS_SUCCESS', payload });
-            expect(result.createListHref).toBe('http://localhost:8081/my-lists/');
-            expect(result.myListsHref).toBe('http://localhost:8081/my-lists/');
+        it('clears any existing error', () => {
+            const stateWithError = { ...initialListsState, error: 'previous error' };
+            const result = listsReducer(stateWithError, { type: 'GET_LIST_OPTIONS_SUCCESS', payload: {} });
+            expect(result.error).toBeNull();
         });
 
-        it('sets null when links are missing', () => {
-            const result = listsReducer(initialListsState, { type: 'GET_LIST_OPTIONS_SUCCESS', payload: {} });
-            expect(result.createListHref).toBeNull();
-            expect(result.myListsHref).toBeNull();
+        it('does not mutate lists or other fields', () => {
+            const result = listsReducer(initialListsState, { type: 'GET_LIST_OPTIONS_SUCCESS', payload: { 'create-list': { href: 'http://localhost:8081/my-lists/' } } });
+            expect(result.lists).toEqual([]);
         });
     });
 
@@ -53,7 +48,7 @@ describe('listsReducer', () => {
     });
 
     describe('GET_LISTS_SUCCESS', () => {
-        it('maps list payload and extracts createListHref', () => {
+        it('maps list payload from embedded shape', () => {
             const payload = {
                 _embedded: { listOfItemsResponseDTOList: [aList] },
                 _links: { 'create-list': { href: 'http://localhost:8081/my-lists/' } },
@@ -74,6 +69,24 @@ describe('listsReducer', () => {
             expect(result.lists).toEqual([]);
         });
 
+        it('defaults to empty array when payload is null', () => {
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload: null });
+            expect(result.lists).toEqual([]);
+            expect(result.error).toBeNull();
+        });
+
+        it('maps private:true to isPrivate:true', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [aList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].isPrivate).toBe(true);
+        });
+
+        it('maps private:false to isPrivate:false', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [anotherList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].isPrivate).toBe(false);
+        });
+
         it('maps itemsId to itemIds', () => {
             const listWithItems = { ...aList, itemsId: ['ITEM-001', 'ITEM-002'] };
             const payload = { _embedded: { listOfItemsResponseDTOList: [listWithItems] }, _links: {} };
@@ -86,6 +99,21 @@ describe('listsReducer', () => {
             const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
             expect(result.lists[0].itemIds).toEqual([]);
         });
+
+        it('maps _links into a rel/href array', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [aList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].links).toEqual([
+                { rel: 'add-item', href: 'http://localhost:8081/my-lists/LIST-001' },
+                { rel: 'delete', href: 'http://localhost:8081/my-lists/LIST-001' },
+            ]);
+        });
+
+        it('formats genreId into a display genre', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [aList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_LISTS_SUCCESS', payload });
+            expect(result.lists[0].genre).toBe('Fiction');
+        });
     });
 
     it('sets error on GET_LISTS_ERROR', () => {
@@ -94,11 +122,12 @@ describe('listsReducer', () => {
     });
 
     describe('CREATE_LIST_SUCCESS', () => {
-        it('appends the new list to state', () => {
-            const stateWithOne = { ...initialListsState, lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] }] };
+        it('appends the new mapped list to state', () => {
+            const stateWithOne = { ...initialListsState, lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }] };
             const result = listsReducer(stateWithOne, { type: 'CREATE_LIST_SUCCESS', payload: anotherList });
             expect(result.lists).toHaveLength(2);
             expect(result.lists[1].listId).toBe('LIST-002');
+            expect(result.lists[1].isPrivate).toBe(false);
         });
     });
 
@@ -123,33 +152,33 @@ describe('listsReducer', () => {
     describe('MAKE_LIST_PUBLIC_SUCCESS / MAKE_LIST_PRIVATE_SUCCESS', () => {
         const stateWithList = {
             ...initialListsState,
-            lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] }],
+            lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }],
         };
 
         it('updates the matching list on MAKE_LIST_PUBLIC_SUCCESS', () => {
             const updated = { ...aList, private: false };
             const result = listsReducer(stateWithList, { type: 'MAKE_LIST_PUBLIC_SUCCESS', payload: updated });
-            expect(result.lists[0].visibility).toBe('public');
+            expect(result.lists[0].isPrivate).toBe(false);
         });
 
         it('updates the matching list on MAKE_LIST_PRIVATE_SUCCESS', () => {
-            const statePublic = { ...initialListsState, lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'public', sharedUntil: null, links: [] }] };
+            const statePublic = { ...initialListsState, lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: false, sharedUntil: null, links: [], itemIds: [] }] };
             const result = listsReducer(statePublic, { type: 'MAKE_LIST_PRIVATE_SUCCESS', payload: aList });
-            expect(result.lists[0].visibility).toBe('private');
+            expect(result.lists[0].isPrivate).toBe(true);
         });
 
         it('leaves other lists untouched', () => {
             const stateWithTwo = {
                 ...initialListsState,
                 lists: [
-                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] },
-                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', visibility: 'private', sharedUntil: null, links: [] },
+                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] },
+                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', isPrivate: true, sharedUntil: null, links: [], itemIds: [] },
                 ],
             };
             const updated = { ...aList, private: false };
             const result = listsReducer(stateWithTwo, { type: 'MAKE_LIST_PUBLIC_SUCCESS', payload: updated });
             expect(result.lists[1].listId).toBe('LIST-002');
-            expect(result.lists[1].visibility).toBe('private');
+            expect(result.lists[1].isPrivate).toBe(true);
         });
     });
 
@@ -164,14 +193,28 @@ describe('listsReducer', () => {
     });
 
     describe('DELETE_LIST_SUCCESS', () => {
-        it('clears the error; list removal happens via the subsequent GET_LISTS_SUCCESS refresh', () => {
-            const stateWithError = {
+        it('removes the list matching the deleted href', () => {
+            const stateWithList = {
                 ...initialListsState,
-                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] }],
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }],
                 error: 'previous error',
             };
-            const result = listsReducer(stateWithError, { type: 'DELETE_LIST_SUCCESS', payload: 'http://localhost:8081/my-lists/LIST-001' });
+            const result = listsReducer(stateWithList, { type: 'DELETE_LIST_SUCCESS', payload: 'LIST-001' });
             expect(result.error).toBeNull();
+            expect(result.lists).toHaveLength(0);
+        });
+
+        it('leaves non-matching lists in place', () => {
+            const stateWithTwo = {
+                ...initialListsState,
+                lists: [
+                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] },
+                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', isPrivate: false, sharedUntil: null, links: [], itemIds: [] },
+                ],
+            };
+            const result = listsReducer(stateWithTwo, { type: 'DELETE_LIST_SUCCESS', payload: 'LIST-001' });
+            expect(result.lists).toHaveLength(1);
+            expect(result.lists[0].listId).toBe('LIST-002');
         });
     });
 
@@ -184,7 +227,7 @@ describe('listsReducer', () => {
         it('updates the matching list in state', () => {
             const stateWithList = {
                 ...initialListsState,
-                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [] }],
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }],
             };
             const updated = { ...aList, name: 'My Fiction Updated' };
             const result = listsReducer(stateWithList, { type: 'ADD_ITEM_TO_LIST_SUCCESS', payload: updated });
@@ -196,8 +239,8 @@ describe('listsReducer', () => {
             const stateWithTwo = {
                 ...initialListsState,
                 lists: [
-                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [], itemIds: [] },
-                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', visibility: 'private', sharedUntil: null, links: [], itemIds: [] },
+                    { listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] },
+                    { listId: 'LIST-002', name: 'Sci-Fi', genre: 'Sci Fi', isPrivate: true, sharedUntil: null, links: [], itemIds: [] },
                 ],
             };
             const result = listsReducer(stateWithTwo, { type: 'ADD_ITEM_TO_LIST_SUCCESS', payload: aList });
@@ -208,7 +251,7 @@ describe('listsReducer', () => {
         it('maps itemsId to itemIds on success', () => {
             const stateWithList = {
                 ...initialListsState,
-                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', visibility: 'private', sharedUntil: null, links: [], itemIds: [] }],
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }],
             };
             const updated = { ...aList, itemsId: ['ITEM-001', 'ITEM-002'] };
             const result = listsReducer(stateWithList, { type: 'ADD_ITEM_TO_LIST_SUCCESS', payload: updated });
@@ -220,4 +263,52 @@ describe('listsReducer', () => {
         const result = listsReducer(initialListsState, { type: 'ADD_ITEM_TO_LIST_ERROR', payload: 'item not in library' });
         expect(result.error).toBe('item not in library');
     });
+
+    describe('REMOVE_ITEM_FROM_LIST_SUCCESS', () => {
+        it('updates the matching list in state', () => {
+            const stateWithList = {
+                ...initialListsState,
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: ['ITEM-001'] }],
+            };
+            const updated = { ...aList, itemsId: [] };
+            const result = listsReducer(stateWithList, { type: 'REMOVE_ITEM_FROM_LIST_SUCCESS', payload: updated });
+            expect(result.lists[0].itemIds).toEqual([]);
+            expect(result.error).toBeNull();
+        });
+    });
+
+    it('sets error on REMOVE_ITEM_FROM_LIST_ERROR', () => {
+        const result = listsReducer(initialListsState, { type: 'REMOVE_ITEM_FROM_LIST_ERROR', payload: 'failed' });
+        expect(result.error).toBe('failed');
+    });
+
+    describe('GET_PUBLIC_LISTS_SUCCESS', () => {
+        it('maps embedded payload into publicLists', () => {
+            const payload = { _embedded: { listOfItemsResponseDTOList: [anotherList] }, _links: {} };
+            const result = listsReducer(initialListsState, { type: 'GET_PUBLIC_LISTS_SUCCESS', payload });
+            expect(result.publicLists).toHaveLength(1);
+            expect(result.publicLists[0].listId).toBe('LIST-002');
+        });
+
+        it('handles flat array payload', () => {
+            const result = listsReducer(initialListsState, { type: 'GET_PUBLIC_LISTS_SUCCESS', payload: [anotherList] });
+            expect(result.publicLists).toHaveLength(1);
+        });
+
+        it('does not affect the private lists array', () => {
+            const stateWithList = {
+                ...initialListsState,
+                lists: [{ listId: 'LIST-001', name: 'My Fiction', genre: 'Fiction', isPrivate: true, sharedUntil: null, links: [], itemIds: [] }],
+            };
+            const result = listsReducer(stateWithList, { type: 'GET_PUBLIC_LISTS_SUCCESS', payload: [anotherList] });
+            expect(result.lists).toHaveLength(1);
+            expect(result.publicLists).toHaveLength(1);
+        });
+    });
+
+    it('sets error on GET_PUBLIC_LISTS_ERROR', () => {
+        const result = listsReducer(initialListsState, { type: 'GET_PUBLIC_LISTS_ERROR', payload: 'failed' });
+        expect(result.error).toBe('failed');
+    });
 });
+
