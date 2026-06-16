@@ -31,6 +31,8 @@ export function DeleteItemFromListModal({ itemName, itemId, links }: DeleteItemF
                 title={`Remove "${itemName}"`}
                 centered
                 overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+                closeButtonProps={{ "aria-label": "Close" }}
+                transitionProps={{ duration: 0 }}
             >
                 <Stack>
                     <Text fz="sm" c="dimmed">

@@ -74,7 +74,7 @@ export default function PublicListsPage() {
                 />
 
                 {loading ? (
-                    <Center mt="xl"><Loader /></Center>
+                    <Center mt="xl"><Loader data-testid="loader" /></Center>
                 ) : (
                     <Table highlightOnHover mt="md" highlightOnHoverColor="var(--mantine-color-white)"
                            tableLayout="fixed"

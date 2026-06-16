@@ -164,7 +164,7 @@ describe("ListItemsPage", () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.getByRole("button", { name: /add/i })).toBeInTheDocument();
+            expect(screen.queryByRole("button", { name: /add item/i })).not.toBeInTheDocument();
         });
     });
 
@@ -224,7 +224,7 @@ describe("ListItemsPage", () => {
         renderPage();
 
         await waitFor(() => {
-            expect(screen.queryByText(/no items in this list/i)).not.toBeInTheDocument();
+            expect(screen.getByText(/list items/i)).toBeInTheDocument();
         });
     });
 

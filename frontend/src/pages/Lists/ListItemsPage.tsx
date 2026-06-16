@@ -186,6 +186,7 @@ export default function ListItemsPage() {
                                 radius="xl"
                                 color="blue"
                                 variant="filled"
+                                aria-label="Add item"
                             >
                                 <IconPlus size={24} />
                             </ActionIcon>

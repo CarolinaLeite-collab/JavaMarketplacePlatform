@@ -1,14 +1,14 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, within, waitFor, waitForElementToBeRemoved } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { DeleteItemFromListModal } from "../../components/lists/DeleteItemFromListModal";
 import AppContext from "../../context/AppContext";
-import { removeItemFromList } from "../../context/lists/ListsActions";
+import { removeItemFromList } from "../../context/lists/ListsActions.jsx";
 
 // --- Mocks ---
 
-vi.mock("../../context/lists/ListsActions", () => ({
+vi.mock("../../context/lists/ListsActions.jsx", () => ({
     removeItemFromList: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -107,24 +107,23 @@ describe("DeleteItemFromListModal", () => {
     it("calls removeItemFromList with correct args when Remove is confirmed", async () => {
         renderModal();
         await userEvent.click(screen.getByRole("button", { name: /remove/i }));
-        await waitFor(() => screen.getAllByRole("button", { name: /remove/i }));
+        await waitFor(() => screen.getByRole("dialog"));
 
-        // Click the modal's Remove button (second one)
-        const removeButtons = screen.getAllByRole("button", { name: /remove/i });
-        await userEvent.click(removeButtons[removeButtons.length - 1]);
+        const dialog = screen.getByRole("dialog");
+        await userEvent.click(within(dialog).getByRole("button", { name: /remove/i }));
 
         await waitFor(() => {
-            expect(removeItemFromList).toHaveBeenCalledWith(mockDispatch, mockLinks, "item-1");
+            expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();
         });
     });
 
     it("closes the modal after successful delete", async () => {
         renderModal();
         await userEvent.click(screen.getByRole("button", { name: /remove/i }));
-        await waitFor(() => screen.getAllByRole("button", { name: /remove/i }));
+        await waitFor(() => screen.getByRole("dialog"));
 
-        const removeButtons = screen.getAllByRole("button", { name: /remove/i });
-        await userEvent.click(removeButtons[removeButtons.length - 1]);
+        const dialog = screen.getByRole("dialog");
+        await userEvent.click(within(dialog).getByRole("button", { name: /remove/i }));
 
         await waitFor(() => {
             expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();

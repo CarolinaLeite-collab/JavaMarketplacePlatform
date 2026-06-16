@@ -27,6 +27,8 @@ export function ItemDetailModal({ item, opened, onClose }: {
             centered
             overlayProps={{ backgroundOpacity: 0.55, blur: 4 }}
             size="md"
+            transitionProps={{ duration: 0 }}
+            closeButtonProps={{ "aria-label": "Close" }}
         >
             <Group align="flex-start" gap="md">
                 {item.picture ? (

@@ -25,7 +25,14 @@ export function DeleteListModal({ listName, links, myListsHref }: DeleteListModa
                 Delete
             </Button>
 
-            <Modal opened={opened} onClose={close} title={`Delete "${listName}"`} centered>
+            <Modal
+                opened={opened}
+                onClose={close}
+                title={`Delete "${listName}"`}
+                centered
+                transitionProps={{ duration: 0 }}
+                closeButtonProps={{ "aria-label": "Close" }}
+            >
                 <Stack>
                     <Text>Are you sure you want to delete this list?</Text>
                     <Button color="red" onClick={handleDelete}>Confirm</Button>

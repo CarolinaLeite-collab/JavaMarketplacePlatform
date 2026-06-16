@@ -166,14 +166,14 @@ describe("PublicListsPage", () => {
     it("shows a loader while fetching", async () => {
         vi.mocked(getPublicLists).mockReturnValue(new Promise(() => {})); // never resolves
         renderPage();
-        expect(screen.getByRole("status")).toBeInTheDocument(); // Mantine Loader has role="status"
+        expect(screen.getByTestId("loader")).toBeInTheDocument(); // Mantine Loader has role="status"
     });
 
     it("hides the loader after fetch completes", async () => {
         vi.mocked(getPublicLists).mockResolvedValue(undefined);
         renderPage(makeContext([mockList()]));
         await waitFor(() => {
-            expect(screen.queryByRole("status")).not.toBeInTheDocument();
+            expect(screen.queryByTestId("loader")).not.toBeInTheDocument();
         });
     });
 

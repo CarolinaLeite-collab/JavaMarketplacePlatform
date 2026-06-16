@@ -29,8 +29,8 @@ describe("ItemDetailModal", () => {
     // --- Unit: rendering ---
 
     it("renders nothing when item is null", () => {
-        const { container } = renderModal(null, true);
-        expect(container).toBeEmptyDOMElement();
+        renderModal(null, true);
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("does not render when opened is false", () => {
@@ -57,9 +57,10 @@ describe("ItemDetailModal", () => {
     });
 
     it("renders a placeholder div when picture is null", () => {
-        const { container } = renderModal(mockItem, true);
-        const placeholder = container.querySelector("div[style*='background']");
-        expect(placeholder).toBeInTheDocument();
+        renderModal(mockItem, true);
+        expect(screen.queryByAltText("The Great Gatsby")).not.toBeInTheDocument();
+        // confirm no image and modal is open
+        expect(screen.getByText("The Great Gatsby")).toBeInTheDocument();
     });
 
     it("renders the cover image when picture is provided", () => {

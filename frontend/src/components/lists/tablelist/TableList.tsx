@@ -89,9 +89,13 @@ export function TableList({ search, genre }: TableListProps) {
     const processedData = sortData(
         lists.filter(row => {
             const q = search.toLowerCase().trim();
+            const visibility = row.isPrivate ? 'private' : 'public';
+
             const matchesSearch = !q ||
                 row.name.toLowerCase().includes(q) ||
                 row.genre.toLowerCase().includes(q);
+                visibility.includes(q);
+
             const matchesGenre = !genre || row.genre === genre;
             return matchesSearch && matchesGenre;
         }),
@@ -130,16 +134,7 @@ export function TableList({ search, genre }: TableListProps) {
                         )}
                     </Center>
                 </Table.Td>
-                <Table.Td w={50} onClick={(e) => e.stopPropagation()}>
-                    <Center>
-                        <AddItemToListDropDown
-                            listName={row.name}
-                            libraryHref={libraryHref}
-                            existingItemIds={row.itemsId}
-                            onConfirm={(ids) => ids.forEach(id => addItemToList(dispatch, row.links, id))}
-                        />
-                    </Center>
-                </Table.Td>
+
                 <Table.Td w={50} onClick={(e) => e.stopPropagation()}>
                     <Center>
                         {canDelete && (
@@ -170,14 +165,13 @@ export function TableList({ search, genre }: TableListProps) {
                         <Th width="80" sorted={sortBy === 'genre'} reversed={reverseSortDirection} onSort={() => setSorting('genre')}>Genre</Th>
                         <Th width="30" sorted={sortBy === 'sharedUntil'} reversed={reverseSortDirection} onSort={() => setSorting('sharedUntil')}>Shared Until</Th>
                         <Table.Th w={100}><Center><Text fw={500} fz="sm">Visibility</Text></Center></Table.Th>
-                        <Table.Th w={100}><Center><Text fw={500} fz="sm">Add Items</Text></Center></Table.Th>
                         <Table.Th w={100}><Center><Text fw={500} fz="sm">Delete</Text></Center></Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
                     {rows.length > 0 ? rows : (
                         <Table.Tr>
-                            <Table.Td colSpan={6}>
+                            <Table.Td colSpan={5}>
                                 <Text fw={500} ta="center">Nothing found</Text>
                             </Table.Td>
                         </Table.Tr>
