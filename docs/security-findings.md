@@ -1,5 +1,9 @@
 # Security Findings – CVE Resolution Log
 
+This log tracks security findings detected during the project, including both
+resolved issues (with their fixes) and unresolved issues that are being carried
+as accepted risks together with their mitigation decisions.
+
 ## SF-001 · Spring Framework DoS vulnerabilities in `spring-core`
 
 | Field | Detail |
@@ -64,3 +68,72 @@ mvn clean verify
 | 2026-06-08 | Spring Framework 7.0.8 released, CVEs published |
 | 2026-06-09 | CI pipeline blocked by OWASP Dependency-Check |
 | 2026-06-09 | Fix applied via `<spring-framework.version>7.0.8</spring-framework.version>` |
+
+
+## SF-002 · Absence of application-level authentication and authorization
+
+| Field | Detail |
+|---|---|
+| **Date recorded** | 2026-06-16 |
+| **Detected by** | Manual review (architecture / requirements) |
+| **Affected area** | Entire Web UI and HTTP API |
+| **Status** | ⚠ Accepted risk (unresolved) |
+
+---
+
+### Description
+
+The current version of the application does not implement application-level:
+
+- User login or authentication
+- Authorization / role-based access control
+- Access control lists (ACL) on protected operations or resources
+
+Any user who can reach the Web UI or API endpoints can access functionalities
+that, in a production system, would typically require an authenticated identity
+and specific permissions.
+
+### Impact
+
+- The system cannot distinguish between different users or roles.
+- Operations that should be restricted (for example, creating or modifying
+  domain data) can be triggered by any party with network access to the
+  application.
+- In a production context, this would represent a high-severity weakness.
+
+### Decision
+
+- **Decision type:** Accepted risk
+- **Reason:** Implementing full authentication and authorization is outside the
+  current delivery scope and cannot be completed within the available time and
+  constraints.
+- **Status:** The limitation is explicitly acknowledged and tracked as an
+  unresolved security issue, not ignored or considered fixed.
+- **Owner:** Project team / product owner for this delivery.
+
+### Compensating controls
+
+To reduce the impact of this limitation in the current environment:
+
+- The application is deployed only in a controlled environment, not as a
+  publicly exposed Internet service.
+- Access to the deployment may be further restricted at infrastructure level
+  (for example, reverse proxy rules, HTTP Basic Authentication, or network/IP
+  restrictions), as documented in the deployment configuration.
+- The system is used with non-production data for demonstration and evaluation
+  purposes.
+
+These measures reduce exposure but do **not** replace proper, in-application
+authentication and authorization.
+
+### Review conditions
+
+This accepted risk must be revisited if:
+
+- The application is exposed to a broader audience or less controlled network,
+- Real user accounts or personal/sensitive data are introduced, or
+- The project scope is extended to include identity and access management.
+
+At that point, designing and implementing authentication, authorization, and
+access control mechanisms becomes a required remediation step rather than an
+accepted limitation.
