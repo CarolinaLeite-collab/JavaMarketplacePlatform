@@ -13,6 +13,7 @@ import {
 import {
     auctionReducer, initialAuctionState,
 } from '../../context/auctions/AuctionReducer.jsx';
+import { PlaceBidModal } from '../../components/placeBidModal/PlaceBidModal.tsx';
 
 /**
  * Page component that displays the details of a specific auction.
@@ -69,27 +70,18 @@ export default function AuctionDetailPage() {
         setLoading(false);
     }, [auctionId]);
 
-    async function handlePlaceBid() {
+    async function handlePlaceBid(bidAmount) {
         dispatch(clearAuctionMessages());
 
         const success = await placeBid(dispatch, placeBidHref, {
-            bidValue: parseFloat(bidValue),
+            bidValue: bidAmount,
             currency: auction?.priceCurrency ?? 'EUR',
         });
 
         if (success) {
-            setBidValue('');
             closeBidModal();
             await getAuction(dispatch, auctionId);
         }
-    }
-
-    if (loading) {
-        return (
-            <DefaultLayout title="Auction" subtitle="">
-                <Text>Loading auction...</Text>
-            </DefaultLayout>
-        );
     }
 
     if (!auction) {
@@ -175,8 +167,8 @@ export default function AuctionDetailPage() {
                             </Stack>
 
                             <Button
-                                onClick={handlePlaceBid}
-                                disabled={!bidValue || parseFloat(bidValue) <= 0}
+                                onClick={openBidModal}
+                                disabled={!isLoggedIn || !placeBidHref}
                                 fullWidth
                                 size="md"
                             >
@@ -265,6 +257,13 @@ export default function AuctionDetailPage() {
 
 
             </Stack>
+            <PlaceBidModal
+                opened={bidModalOpened}
+                currentPrice={auction.highestBid ?? auction.startingPrice}
+                currency={auction.priceCurrency ?? 'EUR'}
+                onClose={closeBidModal}
+                onConfirm={handlePlaceBid}
+            />
         </DefaultLayout>
     );
 }

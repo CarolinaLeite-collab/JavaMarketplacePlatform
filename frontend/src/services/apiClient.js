@@ -137,6 +137,7 @@ export const apiClient = {
     getLibraryOptions: () => optionsByPath('/my-library'),
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
+    getAuctions: () => getPublic('/auctions'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
     getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),
     getAuctionById: (auctionId) => getPublic(`/auctions/${auctionId}`),

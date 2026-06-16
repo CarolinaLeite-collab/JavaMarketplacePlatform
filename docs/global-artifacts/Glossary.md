@@ -324,6 +324,23 @@ Represents the organization or company that formally releases an `Edition`.
 
 ---
 
+#### Sale Line
+
+Represents a single purchase resulting from that `DirectSale` and it is created from a `ShoppingCartLine` during the checkout process.
+A `SaleLine` belongs to exactly one `Sale`, while a `Sale` may contain one or more `SaleLine`s.
+
+---
+
+#### Sale
+
+Represents the purchase of one or more items listed in `DirectSale`s. 
+It is composed of one or more `SaleLine`s, each corresponding to a purchase.
+It is created when a `Buyer` completes the checkout process from a `ShoppingCart`. 
+It records the items purchased, their prices at the time of purchase, the participating `Seller`s, and the overall transaction amount.
+A `Sale` may contain items from multiple `Seller`s but is always associated with a single `Buyer`.
+
+---
+
 #### Seller
 
 A `Seller` is a `User` who sells an `Item`(s).
@@ -338,8 +355,19 @@ A `ShoppingCart` is not binding. The `Buyer` might add or remove `Item`(s) at wi
 
 One `shopping cart` may contain:
 
-- one or more `item`s a `buyer` intends to buy
-- `TotalPrice`: the total cost of all items currently in the `ShoppingCart`.
+- one or more `ShoppingCartLine`s representing the `Item`(s) the `Buyer` intends to buy
+- 
+- `TotalAmount`: the total cost of all items currently in the `ShoppingCart`
+
+___
+
+#### Shopping Cart Line
+
+Represents a single item selected for purchase from a `DirectSale`.
+
+It may be transformed into a `SaleLine` when the `Buyer` completes the checkout process and a `Sale` is created.
+
+A `ShoppingCartLine` belongs to exactly one `ShoppingCart`, while a `ShoppingCart` may contain one or more `ShoppingCartLine`s.
 
 ___
 

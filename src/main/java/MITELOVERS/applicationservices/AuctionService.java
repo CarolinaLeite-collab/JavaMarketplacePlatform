@@ -15,7 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -87,6 +89,15 @@ public class AuctionService {
 
         return _iAuctionRepo.ofIdentity(auctionId)
                 .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
+    }
+
+    public List<Auction> getAllActiveAuctions() {
+        Instant now = Instant.now();
+        List<Auction> all = new ArrayList<>();
+        _iAuctionRepo.findAll().forEach(all::add);
+        return all.stream()
+                .filter(a -> a.getAuctionEndDate().isAfter(now))
+                .toList();
     }
 
     // === Bidding support ===
