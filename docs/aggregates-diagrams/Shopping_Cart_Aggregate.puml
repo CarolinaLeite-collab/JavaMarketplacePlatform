@@ -1,0 +1,120 @@
+@startuml
+'https://plantuml.com/class-diagram
+title Shopping Cart Aggregate DDD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam classAttributeIconSize 0
+
+top to bottom direction
+
+
+package "domain" {
+
+    package "repository" {
+
+        interface IShoppingCartRepo <<Interface>> {
+            +findShoppingCartByUserId(userId : UserId) : Optional<ShoppingCart>
+        }
+
+    }
+
+    package "valueobject" {
+        class ShoppingCartId <<Value Object>> #LightPink {
+        - _id : String
+        }
+        class ShoppingCartLineId <<Value Object>> #LightPink {
+        - _id : String
+        }
+        class UserId <<Value Object>>
+        class Price <<Value Object>>
+        class DirectSaleId <<Value Object>>
+
+    }
+
+    package "shoppingcart" #b0c4d4 {
+
+        class ShoppingCart <<Root>> <<Entity>> {
+        + getBuyerId() : UserId
+        + getTotalAmount() : Price
+        + getCartLines() : List<ShoppingCartLine>
+        + clearShoppingCart() : void
+        + addCartLine(shoppingCartLine : ShoppingCartLine) : void
+        + removeCartLine(cartLineId : ShoppingCartLineId) : void
+        - recalculateTotalAmount() : void
+        }
+
+        class ShoppingCartFactory <<Factory>> {
+        + createShoppingCart(buyerId : UserId) : ShoppingCart
+        + createShoppingCart(cartId : ShoppingCartId, buyerId : UserId, totalAmount : Price, cartItems : List<ShoppingCartLine>) : ShoppingCart
+        }
+
+        class ShoppingCartLine <<Entity>> {
+
+        - _addedAt : LocalDateTime
+        + getDirectSaleId() : DirectSaleId
+        + getSellerId() : UserId
+        + getPriceAtAddition() : Price
+        + getAddedAt() : LocalDateTime
+        }
+
+        class ShoppingCartLineFactory <<Factory>> {
+        + createNewShoppingCartLine(directSaleId : DirectSaleId, sellerId : UserId, priceAtAddition : Price) : ShoppingCartLine
+        + createNewShoppingCartLine(shoppingCartLineId : ShoppingCartLineId, directSaleId : DirectSaleId, sellerId : UserId, priceAtAddition : Price, addedAt : LocalDateTime) : ShoppingCartLine
+        }
+
+    }
+
+}
+
+Package "ddd" {
+    interface IRepository<ID, T> <<Interface>> {
+        +save(entity: T) : T
+        +findAll() : Iterable<T>
+        +ofIdentity(id: ID) : Optional<T>
+        +containsOfIdentity(id: ID) : boolean
+        +findAllKeys() : List<ID>
+    }
+
+    interface AggregateRoot <ID> <<Interface>>{
+    }
+
+    interface DomainEntity<ID, T> <<Interface>> {
+        +identity() : ID
+        +sameAs(object : Object) : boolean
+    }
+}
+
+
+ShoppingCart "*" <-- "1"  IShoppingCartRepo : persists
+IShoppingCartRepo --|> IRepository : has
+
+
+ShoppingCart "1" --> "1" ShoppingCartId: has
+ShoppingCart "1" *-- "*" ShoppingCartLine
+ShoppingCart "1" ..> "1" ShoppingCartLineFactory : <<use>>
+ShoppingCart "1" --> "1" UserId : has
+ShoppingCart "1" --> "0..1" Price : has
+
+ShoppingCartLine "1" --> "1" ShoppingCartLineId : has
+ShoppingCartLine "1" ..> "1" UserId : references
+ShoppingCartLine "1" --> "1" Price : has
+ShoppingCartLine "1" ..> "1" DirectSaleId : references
+
+
+ShoppingCartFactory "1" ..> "1..*" ShoppingCart: <<create>>
+ShoppingCartLineFactory "1" ..> "1..*" ShoppingCartLine: <<create>>
+
+
+AggregateRoot -|> DomainEntity
+ShoppingCart .|> AggregateRoot
+
+@enduml
