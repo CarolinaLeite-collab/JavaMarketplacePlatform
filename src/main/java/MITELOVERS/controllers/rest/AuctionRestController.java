@@ -29,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for managing auction- and bidding-related HTTP requests.
@@ -88,6 +89,28 @@ public class AuctionRestController {
         }
 
         return ResponseEntity.ok(model);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AuctionResponseDTO>> getAllActiveAuctions() {
+        List<Auction> auctions = _auctionService.getAllActiveAuctions();
+
+        if (auctions.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        List<AuctionResponseDTO> response = auctions.stream()
+                .map(_auctionMapper::toDTO)
+                .toList();
+
+        response.forEach(dto ->
+                dto.add(linkTo(methodOn(AuctionRestController.class)
+                        .getAllActiveAuctions())
+                        .slash(dto.getAuctionId())
+                        .withSelfRel())
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
