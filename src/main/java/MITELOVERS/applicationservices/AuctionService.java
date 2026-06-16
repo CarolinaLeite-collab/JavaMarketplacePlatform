@@ -83,6 +83,7 @@ public class AuctionService {
         return _iAuctionRepo.save(auction);
     }
 
+    @Transactional(readOnly = true)
     public List<Auction> getAllActiveAuctions() {
         Instant now = Instant.now();
         List<Auction> all = new ArrayList<>();
