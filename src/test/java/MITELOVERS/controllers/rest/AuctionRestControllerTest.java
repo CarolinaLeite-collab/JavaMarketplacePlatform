@@ -74,7 +74,8 @@ class AuctionRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].auctionId").value("AU-12345678"))
                 .andExpect(jsonPath("$[0].startingPrice").value(10.0))
-                .andExpect(jsonPath("$[0]._links.self").exists());
+                .andExpect(jsonPath("$[0].links[0].rel").value("self"))
+                .andExpect(jsonPath("$[0].links[0].href").value("http://localhost/auctions/AU-12345678"));
     }
 
     @Test
