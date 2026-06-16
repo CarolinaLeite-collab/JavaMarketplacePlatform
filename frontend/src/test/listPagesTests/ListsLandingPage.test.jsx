@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { MemoryRouter } from "react-router-dom";
-import ListsLandingPage from "../../pages/lists/ListsLandingPage.jsx";
+import ListsLandingPage from "../../pages/Lists/ListsLandingPage.jsx";
 import React from "react";
 
 // --- Mocks ---

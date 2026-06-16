@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { MemoryRouter } from "react-router-dom";
-import PublicListsPage from "../../pages/lists/PublicListsPage.tsx";
+import PublicListsPage from "../../pages/Lists/PublicListsPage.tsx";
 import AppContext from "../../context/AppContext";
 import { getPublicLists, getListsOptions, getGenres } from "../../context/lists/ListsActions.jsx";
 

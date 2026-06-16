@@ -3,9 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import ListItemsPage from "../../pages/lists/ListItemsPage.tsx";
+import ListItemsPage from "../../pages/Lists/ListItemsPage.tsx";
 import AppContext from "../../context/AppContext.jsx";
-import { apiClient } from "../../services/apiClient.js";
+import { apiClient } from "../../services/apiClient";
 
 // --- Mocks ---
 
