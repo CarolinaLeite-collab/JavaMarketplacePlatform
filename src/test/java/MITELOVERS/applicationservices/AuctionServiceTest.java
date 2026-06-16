@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,6 +143,54 @@ class AuctionServiceTest {
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));
+    }
+
+    // ------------------------------------------------------------
+    // getAllActiveAuctions
+    // ------------------------------------------------------------
+
+    @Test
+    void getAllActiveAuctions_shouldReturnOnlyAuctionsWithFutureEndDate() {
+        // Arrange
+        Auction activeAuction = mock(Auction.class);
+        Auction expiredAuction = mock(Auction.class);
+
+        when(activeAuction.getAuctionEndDate()).thenReturn(Instant.now().plusSeconds(3600));
+        when(expiredAuction.getAuctionEndDate()).thenReturn(Instant.now().minusSeconds(3600));
+        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(activeAuction, expiredAuction));
+
+        // Act
+        List<Auction> result = _auctionService.getAllActiveAuctions();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(activeAuction, result.get(0));
+    }
+
+    @Test
+    void getAllActiveAuctions_shouldReturnEmptyListWhenRepoIsEmpty() {
+        // Arrange
+        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = _auctionService.getAllActiveAuctions();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAllActiveAuctions_shouldReturnEmptyWhenAllAuctionsExpired() {
+        // Arrange
+        Auction expiredAuction = mock(Auction.class);
+        when(expiredAuction.getAuctionEndDate()).thenReturn(Instant.now().minusSeconds(3600));
+        when(_iAuctionRepoDouble.findAll()).thenReturn(List.of(expiredAuction));
+
+        // Act
+        List<Auction> result = _auctionService.getAllActiveAuctions();
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
