@@ -964,7 +964,8 @@ public class DataInitializer {
                     new Price(30.00, Currency.EUR),
                     new Price(50.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(7)
+                    ZonedDateTime.now().plusDays(7),
+                    user3.identity()
             );
 
             auctionRepo.save(spaceMatrixAuction);
