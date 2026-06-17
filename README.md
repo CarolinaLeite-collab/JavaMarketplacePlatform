@@ -585,6 +585,27 @@ jobs:
           java-version: '21'
           cache: maven
 
+        - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies (deterministic)
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --run
+
+      - name: Verify frontend coverage
+        working-directory: frontend
+        run: npm run test:coverage
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        
       - name: Cache OWASP Dependency-Check data
         uses: actions/cache@v4
         with:
@@ -1213,9 +1234,9 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality Gates
 
- - Build must succeed with mvn clean verify
+ - Build must succeed with mvn clean verify (Backend) and npm run build (Frontend)
 
- - All unit tests must pass
+ - All unit tests must pass (JUnit 5 for backend / Vitest for frontend)
 
  - JaCoCo line coverage must be ≥ 95% (enforced in Maven verify)
 
@@ -1235,28 +1256,32 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality & Security Gates Summary Table
 
-| **Gate**                             | **Tool**               | **Threshold / Condition**             | **Enforcement Workflow**                                      |
-|--------------------------------------|------------------------|---------------------------------------|---------------------------------------------------------------|
-| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                   | Maven ``verify`` phase                                        |
-| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                      | Hardened Security Pipeline → ``semgrep-sast``                 |
-| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings             | Hardened Security Pipeline → `config-scan`                    |
-| **Secret Detection**                 | Gitleaks               | 0 secrets detected                    | Hardened Security Pipeline → ``gitleaks``                     |
-| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities            | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully           | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **PR Notifications**                 | Discord Webhooks       | Informational only                    | Notify PR Creation / Notify PR Merge                          |
-
+| **Gate**                             | **Tool**               | **Threshold / Condition**                    | **Enforcement Workflow**                                      |
+|--------------------------------------|------------------------|----------------------------------------------|---------------------------------------------------------------|
+| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed        | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                          | Maven ``verify`` phase                                        |
+| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                             | Hardened Security Pipeline → ``semgrep-sast``                 |
+| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings                    | Hardened Security Pipeline → `config-scan`                    |
+| **Secret Detection**                 | Gitleaks               | 0 secrets detected                           | Hardened Security Pipeline → ``gitleaks``                     |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities                   | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully                  | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **PR Notifications**                 | Discord Webhooks       | Informational only                           | Notify PR Creation / Notify PR Merge                          |
+| **Frontend Build & Logic**           | Vitest / npm           | ``npm test -- --run`` and build must succeed | Hardened Security Pipeline → Frontend steps                   |
+| **Frontend Test Coverage**           | Vitest Coverage        | Execution of `test:coverage` without errors  | Hardened Security Pipeline → Frontend steps                   |
 ## Local Security & Quality Testing (Developer Guide)
 
 Developers can run the same checks locally before pushing a PR.
 
-1. Run full build + coverage + SCA ('mvn clean verify');
 
-2. Run Gitleaks locally ('gitleaks detect --source . --verbose');
+1. Run full backend build + coverage + SCA (`mvn clean verify`);
 
-3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/ .github/ pom.xml');
+2. Run full frontend isolation check (`cd frontend && npm ci && npm test -- --run && npm run test:coverage`);
 
-4. Generate SBOM locally ('mvn cyclonedx:makeAggregateBom');
+3. Run Gitleaks locally (`gitleaks detect --source . --verbose`);
+
+4. Run Semgrep locally (`semgrep scan --config auto --config p/java src/ .github/ pom.xml`);
+
+5. Generate SBOM locally (`mvn cyclonedx:makeAggregateBom`);
 
 ### How to fix Failing Gates
 
