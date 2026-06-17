@@ -100,7 +100,7 @@ class AuctionRestControllerTest {
                 Instant.parse("2026-06-20T10:00:00Z")
         );
 
-        when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any()))
+        when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(auction);
         when(_auctionMapper.toDTO(auction)).thenReturn(dto);
 
@@ -119,6 +119,7 @@ class AuctionRestControllerTest {
         // act + assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-User-Id", "pedro@aeiou.com")
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.auctionId").value("auction-123"))
@@ -140,7 +141,7 @@ class AuctionRestControllerTest {
                 Instant.parse("2026-06-20T10:00:00Z")
         );
 
-        when(_auctionService.putItemOnAuction(any(), any(), any(), isNull(), any(), any()))
+        when(_auctionService.putItemOnAuction(any(), any(), any(), isNull(), any(), any(), any()))
                 .thenReturn(auction);
         when(_auctionMapper.toDTO(auction)).thenReturn(dto);
 
@@ -158,6 +159,7 @@ class AuctionRestControllerTest {
         // act + assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-User-Id", "pedro@aeiou.com")
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$._links.self.href").exists())
@@ -185,6 +187,7 @@ class AuctionRestControllerTest {
         // act + assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-User-Id", "pedro@aeiou.com")
                         .content(requestBody))
                 .andExpect(status().isInternalServerError());
     }

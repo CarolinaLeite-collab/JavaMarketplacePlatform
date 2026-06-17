@@ -17,6 +17,7 @@ import MITELOVERS.mapper.BidResponseDTOMapper;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
+import org.springframework.hateoas.IanaUriSchemes;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
@@ -99,7 +100,7 @@ public class AuctionRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAuction (@RequestBody CreateAuctionRequestDTO request) {
+    public ResponseEntity<Object> createAuction (@RequestBody CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
         try {
             List<ItemId> itemIds = request.getItemIds().stream()
                     .map(ItemId::new)
@@ -115,8 +116,10 @@ public class AuctionRestController {
             ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
             ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
 
+            UserId seller = new UserId(new Email(email));
+
             Auction auction = _auctionService.putItemOnAuction(
-                    itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate
+                    itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller
             );
 
             AuctionResponseDTO dto = _auctionMapper.toDTO(auction);

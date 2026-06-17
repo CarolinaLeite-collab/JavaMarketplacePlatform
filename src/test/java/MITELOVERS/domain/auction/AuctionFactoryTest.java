@@ -2,6 +2,7 @@ package MITELOVERS.domain.auction;
 
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
@@ -27,6 +28,7 @@ class AuctionFactoryTest {
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
         ZonedDateTime end = start.plusDays(1);
         List<List<Object>> capturedArguments = new ArrayList<>();
+        UserId seller = mock(UserId.class);
 
         // SUT
         AuctionFactory factory = new AuctionFactory();
@@ -35,7 +37,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(itemsId, startingPrice, reservePrice, start, end);
+            Auction created = factory.createAuction(itemsId, startingPrice, reservePrice, start, end, seller);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);
@@ -61,6 +63,7 @@ class AuctionFactoryTest {
         ZonedDateTime start = ZonedDateTime.now().plusDays(1);
         ZonedDateTime end = start.plusDays(1);
         List<List<Object>> capturedArguments = new ArrayList<>();
+        UserId seller = mock(UserId.class);
 
         // SUT
         AuctionFactory factory = new AuctionFactory();
@@ -69,7 +72,7 @@ class AuctionFactoryTest {
                 (mock, context) -> capturedArguments.add(new ArrayList<>(context.arguments())))) {
 
             // Act
-            Auction created = factory.createAuction(itemsId, startingPrice, reservePrice, outrightPrice, start, end);
+            Auction created = factory.createAuction(itemsId, startingPrice, reservePrice, outrightPrice, start, end, seller);
 
             // Assert
             assertSame(mocked.constructed().get(0), created);

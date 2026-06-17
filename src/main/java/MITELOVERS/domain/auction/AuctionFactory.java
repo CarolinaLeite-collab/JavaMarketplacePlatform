@@ -21,13 +21,13 @@ import java.util.List;
 public class AuctionFactory {
 
     public Auction createAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return new Auction(itemsId, startingPrice, reservePrice, auctionStartDate, auctionEndDate);
+                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate, UserId seller) {
+        return new Auction(itemsId, startingPrice, reservePrice, auctionStartDate, auctionEndDate, seller);
     }
 
     public Auction createAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, Price outrightPrice,
-                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        return new Auction(itemsId, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate);
+                                 ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate, UserId seller) {
+        return new Auction(itemsId, startingPrice, reservePrice, outrightPrice, auctionStartDate, auctionEndDate, seller);
     }
 
     public Auction createAuction(AuctionId auctionId,
@@ -38,6 +38,7 @@ public class AuctionFactory {
                                  ZonedDateTime auctionStartDate,
                                  ZonedDateTime auctionEndDate,
                                  UserId userId,
+                                 UserId seller,
                                  Price finalPrice,
                                  List<Bid> bids) {
         return new Auction(
@@ -50,6 +51,7 @@ public class AuctionFactory {
                 auctionEndDate,
                 userId,
                 finalPrice,
-                bids);
+                bids,
+                seller);
     }
 }

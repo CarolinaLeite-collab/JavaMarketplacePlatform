@@ -27,13 +27,13 @@ public class PublicationSaleAuctionController {
 
 
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice,
-                                    ZonedDateTime startDate, ZonedDateTime endDate) {
+                                    ZonedDateTime startDate, ZonedDateTime endDate, UserId seller) {
 
-        return _auctionService.putItemOnAuction(itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate);
+        return _auctionService.putItemOnAuction(itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate, seller);
     }
 
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice,
-                                    ZonedDateTime startDate, ZonedDateTime endDate) {
-        return _auctionService.putItemOnAuction(itemsId, startPrice, reservePrice, startDate, endDate);
+                                    ZonedDateTime startDate, ZonedDateTime endDate, UserId seller) {
+        return _auctionService.putItemOnAuction(itemsId, startPrice, reservePrice, startDate, endDate, seller);
     }
 }
