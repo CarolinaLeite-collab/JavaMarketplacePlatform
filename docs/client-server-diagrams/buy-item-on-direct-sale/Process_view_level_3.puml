@@ -1,0 +1,134 @@
+@startuml
+
+'==== Title ====
+title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User as USER
+participant ":apiClient" as FRONTEND
+participant ":ShoppingCartRESTController" as CTL
+participant ":SalesRESTController" as SALESCTL
+
+note over FRONTEND
+  Assumes the user already opened a DirectSale via
+  GET /direct-sales/{id}, whose response included an
+  "add-to-cart" link pointing to /shoppingCarts/shoppingCartLines.
+  That href is what FRONTEND follows below, not a hardcoded URL.
+end note
+
+USER -> FRONTEND : I want to add a Direct Sale to my Shopping Cart
+activate FRONTEND
+
+FRONTEND -> CTL : OPTIONS {add-to-cart href}
+activate CTL
+
+ref over CTL
+[[xxx.puml OPTIONS for shoppingCartLines on /shoppingCarts/shoppingCartLines]]
+end ref
+
+CTL --> FRONTEND : 200 OK + [GET, POST]
+deactivate CTL
+
+FRONTEND -> CTL : POST {add-to-cart href}
+activate CTL
+
+ref over CTL
+[[xxx.puml POST new shoppingCartLine in /shoppingCarts/shoppingCartLines]]
+end ref
+
+CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (new shoppingCartLine)
+deactivate CTL
+
+FRONTEND --> USER : Direct Sale successfully added to cart!
+deactivate FRONTEND
+
+USER -> FRONTEND : I want to access my Shopping Cart
+activate FRONTEND
+
+FRONTEND -> CTL : OPTIONS {shoppingCart self link}
+activate CTL
+
+ref over CTL
+[[xxx.puml OPTIONS for shoppingCart on /shoppingCarts/{cartId}]]
+end ref
+
+CTL --> FRONTEND : 200 OK + [GET, DELETE]
+deactivate CTL
+
+FRONTEND -> CTL : GET {shoppingCart self link}
+activate CTL
+
+ref over CTL
+[[xxx.puml GET /shoppingCarts/{cartId}]]
+end ref
+
+CTL --> FRONTEND : 200 OK + self link \n+ links to each shoppingCartLine \n+ checkout link (if cartLines is not empty)
+deactivate CTL
+
+loop for each shoppingCartLine href received above
+
+FRONTEND -> CTL : OPTIONS {shoppingCartLine href}
+activate CTL
+
+ref over CTL
+[[xxx.puml OPTIONS for /shoppingCarts/shoppingCartLines/{id}]]
+end ref
+
+CTL --> FRONTEND : 200 OK + [GET, DELETE]
+deactivate CTL
+
+FRONTEND -> CTL : GET {shoppingCartLine href}
+activate CTL
+
+ref over CTL
+[[xxx.puml GET /shoppingCarts/shoppingCartLines/{id}]]
+end ref
+
+CTL --> FRONTEND : 200 OK + self link \n+ delete link
+deactivate CTL
+
+end loop
+
+FRONTEND --> USER : Shopping Cart displayed!
+deactivate FRONTEND
+
+USER -> FRONTEND : I want to checkout my ShoppingCart
+activate FRONTEND
+
+FRONTEND -> SALESCTL : OPTIONS {checkout link}
+activate SALESCTL
+
+ref over SALESCTL
+[[xxx.puml OPTIONS for sales on /sales]]
+end ref
+
+SALESCTL --> FRONTEND : 200 OK + [GET, POST]
+deactivate SALESCTL
+
+FRONTEND -> SALESCTL : POST {checkout link}
+activate SALESCTL
+
+ref over SALESCTL
+[[xxx.puml Sale creation orchestration]]
+end ref
+
+SALESCTL --> FRONTEND : 201 Created + self link (sale)
+deactivate SALESCTL
+
+FRONTEND --> USER : Purchase completed!
+deactivate FRONTEND
+
+@enduml
