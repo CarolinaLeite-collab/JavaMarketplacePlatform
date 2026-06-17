@@ -34,6 +34,8 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Insecure Configuration Detection (config-scan)](#insecure-configuration-detection-config-scan)
     * [Run Tests on Pull Request](#run-tests-on-pull-request)
     * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [License Risk Management](#license-risk-management)
+      * [License Policy](#license-policy)
   * [SpringBoot application.properties](#springboot-applicationproperties)
     * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
   * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
@@ -1048,62 +1050,6 @@ As part of hardening the security pipeline, **Software Composition Analysis (SCA
 
 A **Software Bill of Materials (SBOM)** is also generated through the **CycloneDX** plugin, creating a _machine-readable_ inventory of all third-party components in the application (101 in total). The SBOM artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check if the affected library exists in the SBOM, enabling rapid impact assessment and remediation without the need to rescan or manually inspect all application dependencies again.
 
-```yml
-  license-scan:
-    name: License Risk Scan
-    runs-on: ubuntu-latest
-    needs: gitleaks
-
-    permissions:
-      contents: read
-      pull-requests: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.2.2
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4.7.0
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
-
-      - name: Generate dependency license report
-        run: mvn license:add-third-party
-
-      - name: Post License Report comment on PR
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // paste your license comment script here
-
-      - name: Enforce license policy
-        run: |
-          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
-            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
-            exit 1
-          fi
-
-      - name: Upload License Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: third-party-licenses
-          path: target/generated-sources/license/THIRD-PARTY.txt
-
-```
-
-The `build-and-test-with-coverage` job declares `license-scan` as a dependency (needs: `[semgrep-sast, config-scan, license-scan]`), ensuring no build or test runs until the license gate passes.
-
-The license scan was validated on a real Pull Request. 
-The pipeline correctly posted a PR comment summarising the license analysis:
-
-![](docs/readme-printscreens/LicenseRiskAnalyses.jpg)
-
-144 dependencies were reviewed and no non-approved licenses were detected, confirming the gate passes cleanly on the current dependency set.
-
 **OWASP Dependency-Check plugin configuration** (pom.xml):
 
 ```
@@ -1183,37 +1129,6 @@ Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabili
 
 This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
 
-**License Risk Management**
-
-The project defines a license policy and generates dependency license reports as part of the CI pipeline. A Maven-based license scanning step produces a report of all third-party dependency licenses used by the application. This provides visibility into the project's software supply chain and supports the identification of potential licensing risks before dependencies are merged.
-
-#### License Policy
-
-**Allowed licenses**
-- MIT
-- Apache-2.0
-- BSD-2-Clause
-- BSD-3-Clause
-- EPL-2.0
-
-**Restricted / Review Required**
-- LGPL
-
-**Not Approved**
-- GPL
-- AGPL
-- Unknown or unlicensed dependencies
-
-The generated license report is archived as a CI artifact and reviewed alongside other security and compliance reports.
-
-**CI Integration:**
-
-The license-scan job runs in parallel with `semgrep-sast` and `config-scan`, both gated behind `gitleaks`. 
-It performs the following steps:
-    - Generates a `THIRD-PARTY.txt` report via `mvn license:add-third-party`.
-    - Posts a PR comment listing all dependencies grouped by license status (✅ approved / ❌ blocked)
-    - Fails the pipeline if any dependency uses a non-approved license (AGPL, GPL-3, or GPL without a classpath exception)
-    - Uploads `THIRD-PARTY.txt as a CI artifact
 
 **CI Integration:**
 
@@ -1231,6 +1146,188 @@ To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat w
 ![SCA_failed_pipeline_test.png](docs/readme-printscreens/SCA_failed_pipeline_test.png)
 
 After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
+
+---
+
+### License Risk Management
+
+License risk is managed automatically in CI using a Maven-based scanning step.
+
+```xml
+<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7.1</version>
+            </plugin>
+```
+
+It is used to identify licensing risks before dependencies are merged, by generating a report of all third-party licenses used by the application.
+
+The generated license report is archived as a CI artifact and reviewed alongside other security and compliance reports.
+
+The project's license policy is divided into three categories: `Allowed licenses`, `Restricted` and `Not Approved`.
+
+| Category | Licenses |
+|----------|----------|
+| ✅ **Allowed** | MIT<br>Apache-2.0<br>BSD-2-Clause<br>BSD-3-Clause<br>EPL-2.0 |
+| ⚠️ **Restricted / Review Required** | LGPL |
+| ❌ **Not Approved** | GPL<br>AGPL<br>Unknown or unlicensed dependencies |
+
+  Note: LGPL dependencies trigger a warning comment but do not fail the pipeline
+
+**CI Integration:**
+
+The license-scan job runs in parallel with `semgrep-sast` and `config-scan`, both gated behind `gitleaks`. 
+It performs the following steps:
+    - Generates a `THIRD-PARTY.txt` report via `mvn license:add-third-party`.
+    - Posts a PR comment listing all dependencies grouped by license status (✅ approved / ❌ blocked)
+    - Fails the pipeline if any dependency uses a non-approved license (AGPL, GPL-3, or GPL without a classpath exception)
+    - Uploads `THIRD-PARTY.txt as a CI artifact
+
+```yml
+  license-scan:
+    name: License Risk Scan
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Generate dependency license report
+        run: mvn license:add-third-party
+
+      - name: Post License Report comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let body = '## 📜 License Risk Analysis\n\n';
+
+            try {
+              const report = fs.readFileSync(
+                'target/generated-sources/license/THIRD-PARTY.txt',
+                'utf8'
+              );
+
+              const lines = report.split('\n');
+
+              let totalDependencies = 0;
+              const findings = [];
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+
+                if (!trimmed.startsWith('(')) continue;
+
+                const coordinatesMatch = trimmed.match(/\(([^():]+:[^():]+:[^()\s]+)\s*-\s*.*\)$/);
+                if (!coordinatesMatch) continue;
+
+                totalDependencies++;
+
+                const dependency = coordinatesMatch[1];
+
+                const licensePart = trimmed
+                  .replace(/\s*\([^():]+:[^():]+:[^()\s]+\s*-\s*.*\)$/, '')
+                  .trim();
+
+                const normalizedLicense = licensePart.toUpperCase();
+
+                const hasAgpl = normalizedLicense.includes('AGPL');
+
+                const hasPureGpl =
+                  normalizedLicense.includes('GPL-3') ||
+                  normalizedLicense.includes('GPL 3') ||
+                  normalizedLicense.includes('GPLV3') ||
+                  normalizedLicense.includes('GNU GENERAL PUBLIC LICENSE');
+
+                const hasException =
+                  normalizedLicense.includes('CPE') ||
+                  normalizedLicense.includes('CLASSPATH EXCEPTION');
+
+                const hasAllowedAlternative =
+                  normalizedLicense.includes('EPL') ||
+                  normalizedLicense.includes('ECLIPSE PUBLIC LICENSE') ||
+                  normalizedLicense.includes('APACHE') ||
+                  normalizedLicense.includes('MIT') ||
+                  normalizedLicense.includes('BSD');
+
+                const blocked =
+                  hasAgpl ||
+                  (hasPureGpl && !hasException && !hasAllowedAlternative);
+
+                if (blocked) {
+                  findings.push({
+                    dependency,
+                    license: licensePart
+                  });
+                }
+              }
+
+              body += `✅ ${totalDependencies} dependencies reviewed\n\n`;
+
+              if (findings.length === 0) {
+                body += 'No dependencies with non-approved licenses were detected.';
+              } else {
+                body += '| Dependency | License | Status |\n';
+                body += '|---|---|---|\n';
+
+                for (const finding of findings) {
+                  body += `| \`${finding.dependency}\` | ${finding.license} | ❌ Replace or request exception |\n`;
+                }
+
+                body += '\n> ⚠️ Dependencies using AGPL or GPL without an approved exception require replacement or an approved exception.';
+              }
+
+            } catch (e) {
+              body += '_Could not read THIRD-PARTY.txt report._';
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+
+      - name: Upload License Report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: third-party-licenses
+          path: target/generated-sources/license/THIRD-PARTY.txt
+
+
+      - name: Enforce license policy
+        run: |
+          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
+            exit 1
+          fi
+
+```
+The `build-and-test-with-coverage` job declares `license-scan` as a dependency (needs: `[semgrep-sast, config-scan, license-scan]`), ensuring no build or test runs until the license gate passes.
+
+The license scan was validated on a real Pull Request.
+The pipeline correctly posted a PR comment summarising the license analysis:
+
+![](docs/readme-printscreens/LicenseRiskAnalyses.jpg)
+
+On validation, 144 dependencies were reviewed with no violations detected.
 
 ---
 
@@ -1585,7 +1682,6 @@ curl http://localhost:8081/actuator/health
 NAME                          IMAGE               COMMAND               SERVICE   CREATED         STATUS                   PORTS
 switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
 ```
-
 
 ### Build, Scan, and Publish Docker Images
 
