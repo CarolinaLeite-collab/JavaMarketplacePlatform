@@ -245,6 +245,12 @@ describe('MyLibraryPage', () => {
             expect(titles).toEqual(['Zebra', 'Apple']);
         });
 
+        it('does not show the direction toggle when no sort is selected', () => {
+            renderWithProviders();
+
+            expect(screen.queryByRole('button', { name: /sort ascending|sort descending/i })).not.toBeInTheDocument();
+        });
+
         it('sorts items by title when "Title" is selected', async () => {
             const user = userEvent.setup();
 
@@ -322,6 +328,43 @@ describe('MyLibraryPage', () => {
 
             // identifier "111" (Zebra) sorts before "999" (Apple)
             expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('reverses order when the direction toggle is clicked', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{Enter}'); // Title, ascending: Apple, Zebra
+
+            let accordion = screen.getByTestId('accordion');
+            let titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+            expect(titles).toEqual(['Apple', 'Zebra']);
+
+            const toggle = screen.getByRole('button', { name: /sort ascending/i });
+            await user.click(toggle);
+
+            accordion = screen.getByTestId('accordion');
+            titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('shows the direction toggle once a sort criterion is selected', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{Enter}');
+
+            expect(screen.getByRole('button', { name: /sort ascending|sort descending/i })).toBeInTheDocument();
         });
 
         it('reverts to original order when sort selection is cleared', async () => {
