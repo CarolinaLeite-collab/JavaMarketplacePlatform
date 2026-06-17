@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Button, Group, Select, Text } from "@mantine/core";
-import {IconPlus, IconTag} from "@tabler/icons-react";
+import { ActionIcon, Button, Group, Select, Text } from "@mantine/core";
+import { IconPlus, IconTag, IconSortAscending, IconSortDescending } from "@tabler/icons-react";
 
 import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
 import {ItemAccordion} from "@/components/accordion/ItemAccordion.js";
@@ -20,16 +20,38 @@ const SORT_OPTIONS = [
     { value: "identifier", label: "ISBN/ISSN" },
 ];
 
-function sortItems(items, sortBy) {
+/**
+ * Sorts items by the given field using locale-aware, case-insensitive comparison.
+ * Items with null/missing values for the field are treated as empty strings,
+ * so they sort first in ascending order and last in descending order.
+ *
+ * @param {Array<Object>} items - the library items to sort
+ * @param {string|null} sortBy - one of the SORT_OPTIONS values, or null/falsy for no sorting
+ * @param {'asc'|'desc'} direction - sort direction, defaults to ascending semantics
+ * @returns {Array<Object>} a new sorted array; the input array is never mutated
+ */
+function sortItems(items, sortBy, direction) {
     if (!sortBy) return items;
 
-    return [...items].sort((a, b) => {
+    const sorted = [...items].sort((a, b) => {
         const valA = a[sortBy] ?? "";
         const valB = b[sortBy] ?? "";
         return String(valA).localeCompare(String(valB), undefined, { sensitivity: "base" });
     });
+
+    return direction === "desc" ? sorted.reverse() : sorted;
 }
 
+/**
+ * Checks whether at least one item has a populated (non-null, non-empty) value
+ * for the given sort field. Used to warn the user when a sort criterion currently
+ * has no usable data — e.g. while the backend summary endpoint doesn't yet return
+ * authorName/publicationType/identifier (see issue #1122).
+ *
+ * @param {Array<Object>} items - the library items to check
+ * @param {string|null} sortBy - one of the SORT_OPTIONS values, or null/falsy
+ * @returns {boolean} true if sortBy is falsy, or if any item has a usable value
+ */
 function hasDataForSort(items, sortBy) {
     if (!sortBy) return true;
     return items.some(item => item[sortBy] != null && item[sortBy] !== "");
@@ -45,6 +67,7 @@ export default function MyLibraryPage() {
     const [addItemOpened, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
     const [createSaleOpened, { open: openCreateSale, close: closeCreateSale }] = useDisclosure(false);
     const [sortBy, setSortBy] = useState(null);
+    const [sortDirection, setSortDirection] = useState("asc");
 
     useEffect(() => {
         if (libraryHref) {
@@ -53,14 +76,18 @@ export default function MyLibraryPage() {
     }, [dispatch, libraryHref]);
 
     const sortedItems = useMemo(
-        () => sortItems(state.items, sortBy),
-        [state.items, sortBy]
+        () => sortItems(state.items, sortBy, sortDirection),
+        [state.items, sortBy, sortDirection]
     );
 
     const sortHasData = useMemo(
         () => hasDataForSort(state.items, sortBy),
         [state.items, sortBy]
     );
+
+    const toggleSortDirection = () => {
+        setSortDirection(current => (current === "asc" ? "desc" : "asc"));
+    };
 
     return (
         <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
@@ -93,13 +120,24 @@ export default function MyLibraryPage() {
                     w={160}
                 />
 
+                {sortBy && (
+                    <ActionIcon
+                        variant="default"
+                        radius="xl"
+                        size="lg"
+                        onClick={toggleSortDirection}
+                        aria-label={sortDirection === "asc" ? "Sort ascending" : "Sort descending"}
+                        title={sortDirection === "asc" ? "Ascending" : "Descending"}
+                    >
+                        {sortDirection === "asc" ? <IconSortAscending size={18} /> : <IconSortDescending size={18} />}
+                    </ActionIcon>
+                )}
+
             </Group>
 
-            {sortBy && !sortHasData && (
-                <Text size="xs" c="dimmed" ta="center" mt={6}>
-                    No data available to sort by this field yet
-                </Text>
-            )}
+            <Text size="xs" c="dimmed" ta="center" mt={6} aria-live="polite">
+                {sortBy && !sortHasData ? "No data available to sort by this field yet" : ""}
+            </Text>
 
             <ItemAccordion
                 items={sortedItems}
