@@ -28,12 +28,12 @@ participant ":DataBase" as DB
 
 User -> Front : Click on  publicly shared list
 activate Front
-Front -> Back : OPTIONS /:listId/items
+Front -> Back : OPTIONS /{listId}/items
 activate Back
 Back --> Front : [GET]
 deactivate Back
 
-Front -> Back : GET /:listId/items
+Front -> Back : GET /{listId}/items
 activate Back
 Back -> DB : select
 DB --> Back : data

@@ -1,4 +1,4 @@
-import { Modal, Button, Stack, Text } from "@mantine/core";
+import { Modal, Button, Stack, Text, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { deleteList } from "../../context/lists/ListsActions.jsx";
 import { useContext } from "react";
@@ -35,7 +35,14 @@ export function DeleteListModal({ listName, links, myListsHref }: DeleteListModa
             >
                 <Stack>
                     <Text>Are you sure you want to delete this list?</Text>
-                    <Button color="red" onClick={handleDelete}>Confirm</Button>
+                    <Group justify="flex-end" grow>
+                        <Button variant="default" radius="xl" onClick={close}>
+                            Cancel
+                        </Button>
+                        <Button color="red" onClick={handleDelete}>
+                            Confirm
+                        </Button>
+                    </Group>
                 </Stack>
             </Modal>
         </>

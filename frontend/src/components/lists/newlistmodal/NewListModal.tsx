@@ -31,6 +31,7 @@ export function NewListModal() {
                 title="Create New List"
                 overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
                 centered
+                transitionProps={{ duration: 0 }}
             >
                 <Stack>
                     {error && <Text fz="sm" c="red">{error}</Text>}

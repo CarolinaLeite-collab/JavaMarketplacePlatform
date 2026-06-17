@@ -29,24 +29,6 @@ describe('listsReducer', () => {
         expect(result).toEqual(initialListsState);
     });
 
-    describe('GET_LIST_OPTIONS_SUCCESS', () => {
-        it('clears any existing error', () => {
-            const stateWithError = { ...initialListsState, error: 'previous error' };
-            const result = listsReducer(stateWithError, { type: 'GET_LIST_OPTIONS_SUCCESS', payload: {} });
-            expect(result.error).toBeNull();
-        });
-
-        it('does not mutate lists or other fields', () => {
-            const result = listsReducer(initialListsState, { type: 'GET_LIST_OPTIONS_SUCCESS', payload: { 'create-list': { href: 'http://localhost:8081/my-lists/' } } });
-            expect(result.lists).toEqual([]);
-        });
-    });
-
-    it('sets error on GET_LIST_OPTIONS_ERROR', () => {
-        const result = listsReducer(initialListsState, { type: 'GET_LIST_OPTIONS_ERROR', payload: 'forbidden' });
-        expect(result.error).toBe('forbidden');
-    });
-
     describe('GET_LISTS_SUCCESS', () => {
         it('maps list payload from embedded shape', () => {
             const payload = {

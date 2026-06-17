@@ -26,7 +26,7 @@ participant ":Mitelovers" as mite
 
 User -> mite : Consult the items in a publicly shared list
 activate mite
-mite --> User : Show the selected list page with it's items
+mite --> User : Show the selected list page with its items
 deactivate mite
 
 @enduml

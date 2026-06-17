@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { MantineProvider } from "@mantine/core";
-import { DeleteListModal } from "../../components/lists/DeleteListModal";
+import { DeleteListModal } from "../../components/lists/DeleteListModal.tsx";
 import AppContext from "../../context/AppContext";
 import { deleteList } from "../../context/lists/ListsActions";
 
@@ -131,5 +131,31 @@ describe("DeleteListModal", () => {
         await waitFor(() => {
             expect(deleteList).toHaveBeenCalledWith(mockDispatch, mockLinks, null);
         });
+    });
+
+    it("renders Cancel button inside the modal", async () => {
+        renderModal();
+        await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+        await waitFor(() => {
+            expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+        });
+    });
+
+    it("closes the modal when Cancel is clicked", async () => {
+        renderModal();
+        await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+        await waitFor(() => screen.getByRole("button", { name: /cancel/i }));
+        await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+        await waitFor(() => {
+            expect(screen.queryByText(/are you sure/i)).not.toBeInTheDocument();
+        });
+    });
+
+    it("does not call deleteList when Cancel is clicked", async () => {
+        renderModal();
+        await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+        await waitFor(() => screen.getByRole("button", { name: /cancel/i }));
+        await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+        expect(deleteList).not.toHaveBeenCalled();
     });
 });

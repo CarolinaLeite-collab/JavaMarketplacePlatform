@@ -7,8 +7,6 @@ import {
     DELETE_LIST_SUCCESS,
     GET_GENRES_ERROR,
     GET_GENRES_SUCCESS,
-    GET_LIST_OPTIONS_ERROR,
-    GET_LIST_OPTIONS_SUCCESS,
     GET_LISTS_ERROR,
     GET_LISTS_SUCCESS,
     MAKE_LIST_PRIVATE_ERROR,
@@ -45,10 +43,6 @@ function mapList(item) {
     };
 }
 
-function getLink(links, rel) {
-    return links?.find(l => l.rel === rel)?.href || null;
-}
-
 function formatGenre(genreId) {
     return genreId
         .replace(/-/g, ' ')
@@ -65,13 +59,6 @@ function daysLeft(dateString) {
 
 export function listsReducer(state, action) {
     switch (action.type) {
-        case GET_LIST_OPTIONS_SUCCESS:
-            return {
-                ...state,
-                error: null,
-            };
-        case GET_LIST_OPTIONS_ERROR:
-            return { ...state, error: action.payload };
         case GET_LISTS_SUCCESS: {
             const payload = action.payload;
             if (!payload) {

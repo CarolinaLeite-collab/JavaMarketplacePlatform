@@ -4,9 +4,8 @@ import {Center, Group, ScrollArea, Table, Text, UnstyledButton} from '@mantine/c
 import classes from './TableList.module.css';
 import {ShareListModal} from "../sharelistmodal/ShareListModal.tsx";
 import AppContext from '../../../context/AppContext.tsx';
-import {addItemToList, getListsOptions, getMyLists} from '../../../context/lists/ListsActions.jsx';
+import {getListsOptions, getMyLists} from '../../../context/lists/ListsActions.jsx';
 import {DeleteListModal} from '../../deletelistmodal/DeleteListModal.tsx';
-import {AddItemToListDropDown} from '../../addItemToListModal/AddItemToListDropDown.tsx';
 import {useNavigate} from "react-router-dom";
 
 export interface RowData {
