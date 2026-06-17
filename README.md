@@ -20,20 +20,47 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [Build, Test and Run](#build-test-and-run)
   * [DevSecOps Workflow](#devsecops-workflow)
     * [Branching Strategy](#branching-strategy)
+    * [Branch Protection Rules](#branch-protection-rules)
     * [Development Flow](#development-flow)
     * [Quality Gates](#quality-gates)
+    * [Security Findings Severity Reporting](#security-findings-severity-reporting)
   * [Test Coverage](#test-coverage)
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
     * [Hardened Security Pipeline](#hardened-security-pipeline)
-      * [Secret Detection with Gitleaks](#secret-detection-with-gitleaks)
-      * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
-      * [Run Tests on Pull Request](#run-tests-on-pull-request)
-      * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [Secret Detection with `Gitleaks`](#secret-detection-with-gitleaks)
+    * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
+    * [Insecure Configuration Detection (config-scan)](#insecure-configuration-detection-config-scan)
+    * [Run Tests on Pull Request](#run-tests-on-pull-request)
+    * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
   * [SpringBoot application.properties](#springboot-applicationproperties)
+    * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
+  * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
+    * [Purpose of the Gates](#purpose-of-the-gates)
+    * [Blocking Behaviour](#blocking-behaviour)
+    * [Quality Gates](#quality-gates-1)
+    * [Security Gates](#security-gates)
+    * [Quality & Security Gates Summary Table](#quality--security-gates-summary-table)
+  * [Local Security & Quality Testing (Developer Guide)](#local-security--quality-testing-developer-guide)
+    * [How to fix Failing Gates](#how-to-fix-failing-gates)
+      * [Coverage < 95%](#coverage--95)
+      * [Semgrep ERROR finding](#semgrep-error-finding)
+      * [Gitleaks secret detected](#gitleaks-secret-detected)
+      * [Dependency‑Check CVSS ≥ 7](#dependencycheck-cvss--7)
+      * [SBOM or build failure](#sbom-or-build-failure)
+  * [Docker](#docker)
+    * [Prerequisites](#prerequisites-1)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
+    * [Image Security](#image-security)
+  * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
+      * [Application service and image build](#application-service-and-image-build)
+      * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
+      * [Health check](#health-check)
+      * [Running it](#running-it)
+      * [Validation](#validation)
 <!-- TOC -->
-
 ___
 
 
@@ -1238,3 +1265,211 @@ Developers can run the same checks locally before pushing a PR.
 
 1. Fix dependency resolution issues
 2. Ensure Maven plugins run correctly
+
+## Docker
+
+The application is containerized using Docker with multi-stage builds and pinned base images for reproducibility and security.
+
+### Prerequisites
+
+- Docker 24+
+
+### Backend
+
+Build and run the backend container:
+
+```bash
+docker build -t mitelovers-backend .
+docker run -p 8081:8081 mitelovers-backend
+```
+
+The application will be available at `http://localhost:8081/h2-console/`.
+
+### Frontend
+
+Build and run the frontend container:
+
+```bash
+cd frontend
+docker build -t mitelovers-frontend .
+docker run -p 5173:80 mitelovers-frontend
+```
+
+The application will be available at `http://localhost:5173`.
+
+### Image Security
+
+Both Dockerfiles follow secure image-building practices:
+
+- **Multi-stage builds** — build tools are not present in the final image
+- **Pinned base images** — SHA256 digests ensure reproducible builds
+- **Non-root user** — containers run as a non-privileged user
+- **.dockerignore** — excludes build output, IDE files, logs, and local configs
+- **No hardcoded secrets** — all configuration is passed via environment variables
+
+
+---
+
+## Container Orchestration with Docker Compose
+
+Containerising the application involves two complementary pieces. The `Dockerfile` describes **how the image is built**, the layers, the base image, how the application is compiled and packaged.
+
+The `docker-compose.yml`, described here, describes **how that image is run** as a container: which ports are published to the host, which volumes are mounted, which environment variables are injected, and how the container's health is monitored.
+
+Instead of a long `docker run` command with flags that live only in someone's terminal history, the entire runtime setup is committed to the repository, making the application environment **reproducible** and **auditable**.
+
+In line with the user story, the configuration follows **least-privilege principles**: only the port, volume, and environment variables the application genuinely needs are exposed, nothing more. The file orchestrates a single service, `app`, which is the Spring Boot backend.
+
+The complete `docker-compose.yml` is shown below, the following sections break it down piece by piece.
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mitelovers:${APP_VERSION:-latest}
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
+    volumes:
+      - mitelovers-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mitelovers-data:
+```
+
+#### Application service and image build
+
+The service builds its image from the project's `Dockerfile` and tags it. The `${APP_VERSION:-latest}` syntax uses the `APP_VERSION` environment variable if set, otherwise defaults to `latest`.
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mitelovers:${APP_VERSION:-latest}
+    restart: unless-stopped
+```
+
+-`restart: unless-stopped` makes the container restart automatically if it crashes, but not if it is stopped deliberately.
+
+---
+
+#### Least-privilege configuration: ports, volumes, environment
+
+Only the single port the application listens on is exposed, `8081`, the backend's HTTP port. No database console port, no management port, nothing else is published to the host.
+
+```yaml
+    ports:
+      - "8081:8081"
+```
+
+---
+
+Environment variables are passed explicitly and **contain no hardcoded secrets**. The active Spring profiles are provided through `SPRING_PROFILES_ACTIVE`, defaulting to `bootstrap,jpa`. This makes the same image reusable across environments without rebuilding it, and keeps configuration out of the image itself.
+
+```yaml
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
+```
+
+---
+
+A single named volume is mounted — only the directory where the H2 database file is written (`/app/data`, matching the `jdbc:h2:file:./data/miteloversdb` JDBC URL relative to the container's `/app` working directory). No source code or other host directories are mounted, in line with least-privilege.
+
+```yaml
+    volumes:
+      - mitelovers-data:/app/data
+
+volumes:
+  mitelovers-data:
+```
+
+---
+
+#### Health check
+
+A health check was added so Docker can verify that the application is genuinely **responding**, not just that the container process started. The container's health is monitored through the Spring Boot Actuator endpoint `/actuator/health`, which reports `{"status":"UP"}` once the application is fully ready.
+
+The health check itself is declared in `docker-compose.yml`, on the `app` service:
+```yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+```
+
+Each field: 
+- `test` is the command Docker runs to check health (only checks that the endpoint responds); 
+- `interval` is how often it checks; `timeout` how long it waits for a response; 
+- `retries` how many consecutive failures mark the container `unhealthy`; 
+- `start_period` gives the app 40s of grace on startup, during which failures don't count against it.
+
+For this to work, the Actuator was added as a dependency in `pom.xml`:
+
+```xml
+    <!-- Actuator (health checks) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+```
+
+And configured in `src/main/resources/application.properties` to expose **only** the health endpoint, with no internal details:
+
+```properties
+# Actuator — exposes the health check endpoint only
+management.endpoints.web.exposure.include=health
+management.endpoint.health.show-details=never
+```
+
+This restraint matters because exposing all Actuator endpoints (`include=*`) or health details (`show-details=always`) would itself be an insecure configuration.
+
+--- 
+
+#### Running it
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+The application becomes available at `http://localhost:8081`.
+
+#### Validation
+
+The configuration was validated locally:
+
+- `docker compose build` successfully built the image (`mitelovers:latest`) from the multi-stage Dockerfile.
+- `docker compose up` started the container; the Spring Boot application booted on port **8081** and the data seeding (`DataInitializer`) completed.
+- The health endpoint was confirmed responding:
+
+```bash
+curl http://localhost:8081/actuator/health
+
+# output
+{"groups":["liveness","readiness"],"status":"UP"}% 
+```
+
+- `docker compose ps` reports the container as **`healthy`** once the start period elapses:
+
+```bash
+NAME                          IMAGE               COMMAND               SERVICE   CREATED         STATUS                   PORTS
+switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+```
+
+---
+

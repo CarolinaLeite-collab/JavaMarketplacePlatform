@@ -7,7 +7,7 @@ import {useUser} from '../../context/UserContext';
 import {useContext} from 'react';
 import AppContext from '../../context/AppContext';
 import { ShoppingCart } from 'lucide-react';
-import { ShoppingCart as ShoppingCartModal } from '../shoppingCart/shoppingCart.tsx';
+import { ShoppingCart as ShoppingCartModal } from '../shoppingCart/ShoppingCart.tsx';
 import { Burger, Button, Divider, Drawer, Group, ScrollArea, ActionIcon, Indicator } from '@mantine/core';
 
 export function Header() {
