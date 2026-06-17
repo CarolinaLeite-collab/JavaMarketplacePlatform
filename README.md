@@ -1586,5 +1586,109 @@ NAME                          IMAGE               COMMAND               SERVICE 
 switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
 ```
 
+
+### Build, Scan, and Publish Docker Images
+
+A dedicated CI workflow was added to automate the build, security scanning, and publication of both backend and frontend Docker images.
+This workflow runs on:
+
+- Pushes to main
+- Pull requests targeting main
+- Manual triggers via workflow_dispatch
+- It ensures that every container image is reproducible, cached, vulnerability‑scanned, and safely published to GitHub Container Registry (GHCR).
+
+##### Workflow Overview
+
+The workflow consists of two independent jobs, one for each image:
+- Backend image (mitelovers-backend)
+- Frontend image (mitelovers-frontend)
+
+Each job performs the following steps:
+
+1. Checkout the repository.
+   Uses the latest version of actions/checkout to retrieve the source code.
+
+2. Set up Docker Buildx.
+   Buildx enables multi-platform builds, caching, and advanced build features.
+
+3. Authenticate to GHCR (only on push to main).
+   Pull requests do not push images, but they still build them for validation.
+
+4. Generate image metadata.
+   Uses docker/metadata-action to automatically generate:
+
+    - Tags (latest, commit SHA)
+    - OCI-compliant labels
+    - Versioning metadata
+
+5. Build the Docker image
+   Using docker/build-push-action:
+
+    - On PRs → image is built and loaded locally (load: true)
+    - On pushes to main → image is pushed to GHCR
+    - Build caching is enabled for faster builds
+
+6. Scan the image with Trivy
+   Each image is scanned for vulnerabilities:
+
+    - Only CRITICAL and HIGH severities fail the job
+    - Unfixed vulnerabilities are ignored to reduce noise
+    - Output is shown in table format for readability
+
+    This ensures that no vulnerable image is published to GHCR.
+
+##### Security Enforcement
+
+Trivy is configured with:
+````
+severity: CRITICAL,HIGH
+exit-code: 1
+ignore-unfixed: true
+````
+This means:
+
+- Any CRITICAL or HIGH vulnerability blocks the workflow
+- Medium/Low findings are reported but do not fail the build
+- Only vulnerabilities with available fixes are considered blocking
+
+This aligns with the project's Security Gates policy.
+
+##### Image Publication
+
+When the workflow runs on main, images are published to:
+````
+ghcr.io/<owner>/mitelovers-backend:latest
+ghcr.io/<owner>/mitelovers-frontend:latest
+````
+
+Additionally, each build receives a unique SHA tag:
+````
+ghcr.io/<owner>/<image>:<commit-sha>
+````
+
+This ensures:
+
+- Reproducibility
+- Traceability
+- Immutable versioning
+
+##### Summary Table
+
+| Stage | Backend | Frontend | Blocking |
+| --- | --- | --- | --- |
+| Build image | ✔️ | ✔️ | Yes |
+| Trivy scan | ✔️ | ✔️ | CRITICAL/HIGH |
+| Push to GHCR | ✔️ (main only) | ✔️ (main only) | Yes |
+| Metadata & labels | ✔️ | ✔️ | No |
+| Build caching | ✔️ | ✔️ | No |
+
+##### How to Use the Images Locally
+
+Pull the latest backend image: ````docker pull ghcr.io/<owner>/mitelovers-backend:latest````
+
+Pull the latest frontend image: ````docker pull ghcr.io/<owner>/mitelovers-frontend:latest````
+
+Or run them together using Docker Compose (see the Docker section).
+
 ---
 
