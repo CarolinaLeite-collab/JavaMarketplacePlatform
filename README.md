@@ -1048,6 +1048,62 @@ As part of hardening the security pipeline, **Software Composition Analysis (SCA
 
 A **Software Bill of Materials (SBOM)** is also generated through the **CycloneDX** plugin, creating a _machine-readable_ inventory of all third-party components in the application (101 in total). The SBOM artifact provides traceability for supply-chain risk. If and when a new vulnerability is publicly announced, the team can quickly check if the affected library exists in the SBOM, enabling rapid impact assessment and remediation without the need to rescan or manually inspect all application dependencies again.
 
+```yml
+  license-scan:
+    name: License Risk Scan
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Generate dependency license report
+        run: mvn license:add-third-party
+
+      - name: Post License Report comment on PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // paste your license comment script here
+
+      - name: Enforce license policy
+        run: |
+          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
+            exit 1
+          fi
+
+      - name: Upload License Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: third-party-licenses
+          path: target/generated-sources/license/THIRD-PARTY.txt
+
+```
+
+The `build-and-test-with-coverage` job declares `license-scan` as a dependency (needs: `[semgrep-sast, config-scan, license-scan]`), ensuring no build or test runs until the license gate passes.
+
+The license scan was validated on a real Pull Request. 
+The pipeline correctly posted a PR comment summarising the license analysis:
+
+![](docs/readme-printscreens/LicenseRiskAnalyses.jpg)
+
+144 dependencies were reviewed and no non-approved licenses were detected, confirming the gate passes cleanly on the current dependency set.
+
 **OWASP Dependency-Check plugin configuration** (pom.xml):
 
 ```
@@ -1152,6 +1208,15 @@ The generated license report is archived as a CI artifact and reviewed alongside
 
 **CI Integration:**
 
+The license-scan job runs in parallel with `semgrep-sast` and `config-scan`, both gated behind `gitleaks`. 
+It performs the following steps:
+    - Generates a `THIRD-PARTY.txt` report via `mvn license:add-third-party`.
+    - Posts a PR comment listing all dependencies grouped by license status (✅ approved / ❌ blocked)
+    - Fails the pipeline if any dependency uses a non-approved license (AGPL, GPL-3, or GPL without a classpath exception)
+    - Uploads `THIRD-PARTY.txt as a CI artifact
+
+**CI Integration:**
+
 An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
 
 The workflow now uploads three artifacts on each PR:
@@ -1168,6 +1233,7 @@ To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat w
 After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
 
 ---
+
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined.
@@ -1258,16 +1324,18 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 | **Gate**                             | **Tool**               | **Threshold / Condition**                    | **Enforcement Workflow**                                      |
 |--------------------------------------|------------------------|----------------------------------------------|---------------------------------------------------------------|
-| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed        | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                          | Maven ``verify`` phase                                        |
-| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                             | Hardened Security Pipeline → ``semgrep-sast``                 |
+| **Build & Unit Tests**               | Maven / JUnit          | `mvn clean verify` must succeed              | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                          | Maven `verify` phase                                          |
+| **Static Analysis (SAST)**           | Semgrep                | 0 ERROR findings                             | Hardened Security Pipeline → `semgrep-sast`                   |
 | **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings                    | Hardened Security Pipeline → `config-scan`                    |
-| **Secret Detection**                 | Gitleaks               | 0 secrets detected                           | Hardened Security Pipeline → ``gitleaks``                     |
-| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities                   | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully                  | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
+| **Secret Detection**                 | Gitleaks               | 0 secrets detected                           | Hardened Security Pipeline → `gitleaks`                       |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities                   | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **License Risk (SCA)**               | Maven License Plugin   | 0 non-approved licenses (GPL / AGPL)         | Hardened Security Pipeline → `license-scan`                   |
+| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully                  | Hardened Security Pipeline → `build-and-test-with-coverage`   |
 | **PR Notifications**                 | Discord Webhooks       | Informational only                           | Notify PR Creation / Notify PR Merge                          |
-| **Frontend Build & Logic**           | Vitest / npm           | ``npm test -- --run`` and build must succeed | Hardened Security Pipeline → Frontend steps                   |
+| **Frontend Build & Logic**           | Vitest / npm           | `npm test -- --run` and build must succeed   | Hardened Security Pipeline → Frontend steps                   |
 | **Frontend Test Coverage**           | Vitest Coverage        | Execution of `test:coverage` without errors  | Hardened Security Pipeline → Frontend steps                   |
+
 ## Local Security & Quality Testing (Developer Guide)
 
 Developers can run the same checks locally before pushing a PR.
@@ -1354,7 +1422,6 @@ Both Dockerfiles follow secure image-building practices:
 - **Non-root user** — containers run as a non-privileged user
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
 - **No hardcoded secrets** — all configuration is passed via environment variables
-
 
 ---
 
