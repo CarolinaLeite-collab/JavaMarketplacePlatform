@@ -36,6 +36,12 @@ public class AuthorizationPolicy {
     /** Any authenticated user may delete a private list. */
     public boolean canDeleteList(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
+    /** Any authenticated user may view public lists. */
+    public boolean canSeePublicLists(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may consult a public list's items. */
+    public boolean canSeeItemsInPublicList(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
     /** Any authenticated user may put items for sale. */
     public boolean canSell(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);

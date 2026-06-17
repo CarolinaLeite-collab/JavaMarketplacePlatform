@@ -1,0 +1,32 @@
+@startuml
+
+'==== basic style ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+autonumber
+
+title "I want to see the publications in a public list." - SSD
+
+' --- Actor and participants ---
+
+actor User
+participant ":Mitelovers" as mite
+
+' --- Interactions ---
+
+User -> mite : Consult the items in a publicly shared list
+activate mite
+mite --> User : Show the selected list page with its items
+deactivate mite
+
+@enduml

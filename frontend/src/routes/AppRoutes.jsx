@@ -1,5 +1,8 @@
 import {Navigate, Route, Routes} from 'react-router-dom';
-import MyListsPage from '../pages/MyLists/MyListsPage.jsx';
+import ListsLandingPage from '../pages/Lists/ListsLandingPage.jsx';
+import MyListsPage from '../pages/Lists/MyListsPage.jsx';
+import PublicListsPage from '../pages/Lists/PublicListsPage.tsx';
+import ListItemsPage from '../pages/Lists/ListItemsPage.tsx';
 import MyLibraryPage from '../pages/MyLibrary/MyLibraryPage.jsx';
 import Marketplace from "@/pages/Marketplace/Marketplace.jsx";
 import ListDetailPage from '../pages/ListDetail/ListDetailPage.tsx';
@@ -22,11 +25,33 @@ export function AppRoutes() {
     return (
         <Routes>
             <Route path="/" element={<Marketplace />} />
-            <Route path="/my-lists" element={
-                <ProtectedRoute href={isLoggedIn ? myListsHref : null}>
-                    <MyListsPage />
-                </ProtectedRoute>
-            } />
+
+            {/* Lists Landing Page */}
+            <Route path="/lists" element={<ListsLandingPage />} />
+
+            {/* My Lists */}
+            <Route
+                path="/lists/my-lists"
+                element={
+                    <ProtectedRoute href={isLoggedIn ? myListsHref : null}>
+                        <MyListsPage />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* Public Lists */}
+            <Route
+                path="/lists/public"
+                element={<PublicListsPage />}
+            />
+
+            {/* List Items Page */}
+            <Route
+                path="/lists/:listId/items"
+                element={<ListItemsPage />}
+            />
+
+            {/* My Library */}
             <Route path="/my-library" element={
                 <ProtectedRoute href={isLoggedIn ? libraryHref : null}>
                     <MyLibraryPage />

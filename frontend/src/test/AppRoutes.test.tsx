@@ -62,7 +62,7 @@ describe('AppRoutes', () => {
     });
 
     it('renders MyListsPage on /my-lists route', () => {
-        renderRoutes(['/my-lists']);
+        renderRoutes(['/lists/my-lists']);
         expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
     });
 

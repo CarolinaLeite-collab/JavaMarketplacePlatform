@@ -295,4 +295,67 @@ class ListOfItemsRestControllerTest {
         _mockMvc.perform(delete("/my-lists/{listId}", "LOI-1234"))
                 .andExpect(status().isInternalServerError());
     }
+
+    @Test
+    void getPublicLists_returnsOkWithEmbeddedBodyAndLinks_whenListsExist() throws Exception {
+        ListOfItems firstDomain = mock(ListOfItems.class);
+        ListOfItems secondDomain = mock(ListOfItems.class);
+        ListOfItemsResponseDTO first =
+                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Public Favourites", "Fiction", false, null, List.of("ABCDEF1234"));
+        ListOfItemsResponseDTO second =
+                new ListOfItemsResponseDTO("LOI-1235", "user@cenas.com", "Public TBR", "Non-Fiction", false, null, List.of("ABCDEF5678"));
+
+        when(_listService.getPublicLists()).thenReturn(List.of(firstDomain, secondDomain));
+        when(_mapper.toModel(firstDomain)).thenReturn(first);
+        when(_mapper.toModel(secondDomain)).thenReturn(second);
+
+        _mockMvc.perform(get("/my-lists/public")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._embedded.*[0].listId").value("LOI-1234"))
+                .andExpect(jsonPath("$._embedded.*[1].listId").value("LOI-1235"))
+                .andExpect(jsonPath("$._embedded.*[0]._links.self.href").value("http://localhost/my-lists/LOI-1234"))
+                .andExpect(jsonPath("$._embedded.*[0]._links.items.href").value("http://localhost/my-lists/LOI-1234/items"))
+                .andExpect(jsonPath("$._embedded.*[1]._links.self.href").value("http://localhost/my-lists/LOI-1235"))
+                .andExpect(jsonPath("$._embedded.*[1]._links.items.href").value("http://localhost/my-lists/LOI-1235/items"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/public"));
+    }
+
+    @Test
+    void getPublicLists_returnsNoContent_whenServiceReturnsEmptyList() throws Exception {
+        when(_listService.getPublicLists()).thenReturn(List.of());
+
+        _mockMvc.perform(get("/my-lists/public"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getItemsInList_returnsOkWithItemIds_whenPublicListExists() throws Exception {
+        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
+                .thenReturn(List.of(new ItemId("ABCDEF1234"), new ItemId("ABCDEF5678")));
+
+        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234")
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0]").value("ABCDEF1234"))
+                .andExpect(jsonPath("$[1]").value("ABCDEF5678"));
+    }
+
+    @Test
+    void getItemsInList_returnsForbidden_whenListIsPrivate() throws Exception {
+        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
+                .thenThrow(new IllegalStateException("List is private"));
+
+        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getItemsInList_returnsNotFound_whenListDoesNotExist() throws Exception {
+        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
+                .thenThrow(new IllegalArgumentException("List not found"));
+
+        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234"))
+                .andExpect(status().isNotFound());
+    }
 }

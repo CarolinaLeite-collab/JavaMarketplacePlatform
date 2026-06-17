@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -264,6 +265,60 @@ public class ListOfItemsRestController {
 
         catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping(path = "/public", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getPublicLists() {
+
+        List<ListOfItems> publicLists = _listService.getPublicLists();
+
+        List<ListOfItemsResponseDTO> resultDTO = publicLists.stream()
+                .map(list -> {
+                    ListOfItemsResponseDTO dto = _mapper.toModel(list);
+
+                    String listId = dto.getListId();
+
+                    dto.add(linkTo(methodOn(ListOfItemsRestController.class)
+                            .getListById(listId)).withSelfRel());
+
+                    dto.add(linkTo(methodOn(ListOfItemsRestController.class)
+                            .getItemsInList(listId)).withRel("items"));
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        if (resultDTO.isEmpty()) return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        CollectionModel<ListOfItemsResponseDTO> result = CollectionModel.of(resultDTO);
+
+        result.add(linkTo(methodOn(ListOfItemsRestController.class)
+                .getPublicLists()).withSelfRel());
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(path = "/{listId}/items", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> getItemsInList(@PathVariable String listId) {
+
+        try {
+            ListOfItemsId recListId = new ListOfItemsId(listId);
+
+            List<String> itemIds = _listService.getItemsInPublicList(recListId)
+                    .stream()
+                    .map(ItemId::toString)
+                    .toList();
+
+            return new ResponseEntity<>(itemIds, HttpStatus.OK);
+
+        } catch (IllegalStateException ex) {
+
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        } catch (Exception ex) {
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
