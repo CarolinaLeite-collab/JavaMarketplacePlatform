@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Button, Group } from "@mantine/core";
+import { Button, Group, Select } from "@mantine/core";
 import {IconPlus, IconTag} from "@tabler/icons-react";
 
 import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
@@ -13,13 +13,22 @@ import { getLibrary } from '../../context/library/LibraryActions';
 
 import AppContext from "../../context/AppContext";
 
-/**
- * Page responsible for displaying the user's library and coordinating library actions.
- *
- * The library collection link is read from AppContext after the application
- * bootstrap discovers backend HATEOAS links. When a new item is added through the
- * modal, the page refreshes the library using the current library link.
- */
+const SORT_OPTIONS = [
+    { value: "title", label: "Title" },
+    { value: "authorName", label: "Author" },
+    { value: "publicationType", label: "Type" },
+    { value: "identifier", label: "ISBN/ISSN" },
+];
+
+function sortItems(items, sortBy) {
+    if (!sortBy) return items;
+
+    return [...items].sort((a, b) => {
+        const valA = a[sortBy] ?? "";
+        const valB = b[sortBy] ?? "";
+        return String(valA).localeCompare(String(valB), undefined, { sensitivity: "base" });
+    });
+}
 
 export default function MyLibraryPage() {
 
@@ -30,12 +39,19 @@ export default function MyLibraryPage() {
 
     const [addItemOpened, { open: openAddItem, close: closeAddItem }] = useDisclosure(false);
     const [createSaleOpened, { open: openCreateSale, close: closeCreateSale }] = useDisclosure(false);
+    const [sortBy, setSortBy] = useState(null);
 
     useEffect(() => {
         if (libraryHref) {
             getLibrary(dispatch, libraryHref);
         }
     }, [dispatch, libraryHref]);
+
+    const sortedItems = useMemo(
+        () => sortItems(state.items, sortBy),
+        [state.items, sortBy]
+    );
+
     return (
         <DefaultLayout title="My Library" subtitle="CHECK OUT YOUR ITEMS:">
             <Group justify="center" mt={0}>
@@ -57,10 +73,20 @@ export default function MyLibraryPage() {
                     CREATE A SALE
                 </Button>
 
+                <Select
+                    placeholder="Sort by"
+                    data={SORT_OPTIONS}
+                    value={sortBy}
+                    onChange={setSortBy}
+                    clearable
+                    radius="xl"
+                    w={160}
+                />
+
             </Group>
 
             <ItemAccordion
-                items={state.items}
+                items={sortedItems}
                 details={state.details}
                 dispatch={dispatch}
             />
