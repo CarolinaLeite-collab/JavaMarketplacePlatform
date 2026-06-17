@@ -239,6 +239,9 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Generate dependency license report
+        run: mvn license:add-third-party
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

@@ -1106,6 +1106,29 @@ Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabili
 
 This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
 
+**License Risk Management**
+
+The project defines a license policy and generates dependency license reports as part of the CI pipeline. A Maven-based license scanning step produces a report of all third-party dependency licenses used by the application. This provides visibility into the project's software supply chain and supports the identification of potential licensing risks before dependencies are merged.
+
+#### License Policy
+
+**Allowed licenses**
+- MIT
+- Apache-2.0
+- BSD-2-Clause
+- BSD-3-Clause
+- EPL-2.0
+
+**Restricted / Review Required**
+- LGPL
+
+**Not Approved**
+- GPL
+- AGPL
+- Unknown or unlicensed dependencies
+
+The generated license report is archived as a CI artifact and reviewed alongside other security and compliance reports.
+
 **CI Integration:**
 
 An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
