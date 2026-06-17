@@ -394,13 +394,13 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-      - name: Cache OWASP Dependency-Check data
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository/org/owasp/dependency-check-data
-          key: dependency-check-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            dependency-check-${{ runner.os }}
+#      - name: Cache OWASP Dependency-Check data
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.m2/repository/org/owasp/dependency-check-data
+#          key: dependency-check-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+#          restore-keys: |
+#            dependency-check-${{ runner.os }}
 
       - name: Build test and run security scans
         run: mvn clean verify
