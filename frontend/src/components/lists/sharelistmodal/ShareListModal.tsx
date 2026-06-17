@@ -2,8 +2,8 @@ import {useContext, useState} from 'react';
 import {ActionIcon, Button, Group, Modal, NumberInput, Stack, Text, Tooltip} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {IconEye, IconEyeOff} from '@tabler/icons-react';
-import AppContext from '../../context/AppContext';
-import {makeListPrivate, makeListPublic} from '../../context/lists/ListsActions';
+import AppContext from '../../../context/AppContext.tsx';
+import {makeListPrivate, makeListPublic} from '../../../context/lists/ListsActions.jsx';
 
 interface ShareListModalProps {
     listName: string;

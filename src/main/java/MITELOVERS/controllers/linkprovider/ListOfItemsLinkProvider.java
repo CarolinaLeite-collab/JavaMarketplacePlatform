@@ -45,9 +45,14 @@ public class ListOfItemsLinkProvider implements RootLinkProvider {
             links.add(linkTo(methodOn(ListOfItemsRestController.class).createAndSaveList(user.identity().toString(), null)).withRel("create-list"));
         }
 
+        if(_authorizationPolicy.canSeePublicLists(user)) {
+            links.add(linkTo(methodOn(ListOfItemsRestController.class).getPublicLists()).withRel("public-lists"));
+        }
+
+        if (_authorizationPolicy.canSeeItemsInPublicList(user)) {
+            links.add(linkTo(methodOn(ListOfItemsRestController.class).getItemsInList(null)).withRel("list-items"));
+        }
+
         return links;
     }
-
-
-
 }

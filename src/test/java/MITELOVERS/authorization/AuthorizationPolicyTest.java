@@ -383,4 +383,34 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    @Test
+    void userCanSeePublicLists() {
+        assertTrue(_authorizationPolicy.canSeePublicLists(_userDouble));
+    }
+
+    @Test
+    void adminCanSeePublicLists() {
+        assertTrue(_authorizationPolicy.canSeePublicLists(_adminDouble));
+    }
+
+    @Test
+    void guestCannotSeePublicLists() {
+        assertFalse(_authorizationPolicy.canSeePublicLists(_guestDouble));
+    }
+
+    @Test
+    void userCanSeeItemsInPublicList() {
+        assertTrue(_authorizationPolicy.canSeeItemsInPublicList(_userDouble));
+    }
+
+    @Test
+    void adminCanSeeItemsInPublicList() {
+        assertTrue(_authorizationPolicy.canSeeItemsInPublicList(_adminDouble));
+    }
+
+    @Test
+    void guestCannotSeeItemsInPublicList() {
+        assertFalse(_authorizationPolicy.canSeeItemsInPublicList(_guestDouble));
+    }
+
 }
