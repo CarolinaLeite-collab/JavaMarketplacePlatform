@@ -137,3 +137,72 @@ This accepted risk must be revisited if:
 At that point, designing and implementing authentication, authorization, and
 access control mechanisms becomes a required remediation step rather than an
 accepted limitation.
+
+## SF-003 · False positive on `spring-boot-devtools` (CVE-2022-31691)
+
+| Field | Detail |
+|---|---|
+| **Date recorded** | 2026-06-16 |
+| **Detected by** | OWASP Dependency-Check / suppression review |
+| **Affected component** | `org.springframework.boot:spring-boot-devtools` |
+| **Status** | ✅ Investigated and suppressed as false positive |
+
+---
+
+### CVE
+
+| CVE | CVSS | Description |
+|---|---|---|
+| `CVE-2022-31691` | 9.8 | Remote Code Execution via YAML editors in Spring Tools 4 extensions for Eclipse and VSCode |
+
+---
+
+### Assessment
+
+Dependency-Check reported `CVE-2022-31691` against `spring-boot-devtools`. After manual review, this was classified as a **false positive** for the application runtime dependency set. Spring’s advisory and the CVE record state that the vulnerability affects **Spring Tools 4 for Eclipse** and **Spring VSCode extensions** that use SnakeYAML for YAML editing support, not the `spring-boot-devtools` JAR used by the application at runtime. 
+
+Therefore, this finding does **not** represent an exploitable vulnerability in the delivered application artifact. The issue is related to developer tooling / IDE extensions rather than the backend service or frontend runtime. 
+
+---
+
+### Action taken
+
+A suppression entry was added to `dependency-check-suppression.xml` to prevent this false positive from recurring in CI:
+
+```xml
+<suppress>
+    <notes>
+        CVE-2022-31691 affects Spring Tools IDE extensions (Eclipse/VSCode plugin),
+        not the spring-boot-devtools JAR. Confirmed false positive.
+    </notes>
+    <gav regex="true">.*spring-boot-devtools.*</gav>
+    <cve>CVE-2022-31691</cve>
+</suppress>
+```
+
+This suppression is narrowly scoped to the specific CVE and artifact match, and includes the review rationale directly in the suppression file for traceability.
+
+---
+
+### Decision
+
+- **Decision type:** False positive suppression
+- **Reason:** The reported CVE applies to IDE tooling, not the runtime library used by the application.
+- **Status:** Closed as non-applicable to the delivered software.
+- **Owner:** Project team / security review owner
+
+---
+
+### Verification
+
+The finding was verified against the Spring security advisory and CVE record. Both sources identify the affected products as STS4 Eclipse and Spring-related VSCode extensions, with fixed versions released for those tools rather than for `spring-boot-devtools` as an application runtime dependency.
+
+---
+
+### Timeline
+
+| Date | Event |
+|---|---|
+| 2022-11-02 | Spring published the advisory for CVE-2022-31691 affecting Spring Tools / VSCode extensions |
+| 2026-06-16 | Project team reviewed Dependency-Check finding and confirmed false positive |
+| 2026-06-16 | Suppression entry added to `dependency-check-suppression.xml` |
