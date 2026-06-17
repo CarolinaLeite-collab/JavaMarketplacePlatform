@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {MantineProvider} from '@mantine/core';
 import {NewListModal} from "../components/lists/newlistmodal/NewListModal.tsx";
-import MyListsPage from "../pages/lists/MyListsPage.jsx";
+import MyListsPage from "../pages/Lists/MyListsPage.jsx";
 import AppContext from '../context/AppContext';
 import { MemoryRouter } from 'react-router-dom';
 
