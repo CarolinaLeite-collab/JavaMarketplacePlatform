@@ -89,6 +89,7 @@ class AuctionAssemblerTest {
         List<BidDataModel> bidsDouble = new ArrayList<>();
         bidsDouble.add(bidDM1);
         bidsDouble.add(bidDM2);
+        UserId sellerDouble = mock(UserId.class);
 
         when(auctionDm.getAuctionId()).thenReturn("AU-1234ABCD");
         when(auctionDm.getItemsId()).thenReturn(itensIdDouble);
@@ -110,6 +111,8 @@ class AuctionAssemblerTest {
         when(finalPriceDm.getCurrency()).thenReturn("EUR");
         when(auctionDm.getFinalPrice()).thenReturn(finalPriceDm);
         when(auctionDm.getBids()).thenReturn(bidsDouble);
+        when(sellerDouble.toString()).thenReturn("pedro@aeiou.com");
+        when(auctionDm.getSeller()).thenReturn("pedro@aeiou.com");
 
         //SUT
         AuctionAssembler assembler = new AuctionAssembler(bidAssemblerDouble, auctionFactoryDouble);
@@ -171,6 +174,7 @@ class AuctionAssemblerTest {
         AuctionDataModel auctionDm = mock(AuctionDataModel.class);
         PriceDataModel startingPriceDm = mock(PriceDataModel.class);
         PriceDataModel reservePriceDm = mock(PriceDataModel.class);
+        UserId sellerDouble = mock(UserId.class);
 
         when(auctionDm.getAuctionId()).thenReturn("AU-1234ABCD");
         when(auctionDm.getItemsId()).thenReturn(List.of());
@@ -187,6 +191,8 @@ class AuctionAssemblerTest {
         when(auctionDm.getUserId()).thenReturn(null);
         when(auctionDm.getBids()).thenReturn(List.of());
         when(auctionDm.getItemsId()).thenReturn(List.of("A1B2C3D4E5"));
+        when(sellerDouble.toString()).thenReturn("pedro@aeiou.com");
+        when(auctionDm.getSeller()).thenReturn("pedro@aeiou.com");
 
         AuctionAssembler sut = new AuctionAssembler(bidAssemblerDouble, auctionFactoryDouble);
 

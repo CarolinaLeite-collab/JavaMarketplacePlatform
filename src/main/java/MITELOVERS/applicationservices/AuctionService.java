@@ -40,7 +40,7 @@ public class AuctionService {
     private final IItemRepo _iItemRepo;
 
     @Transactional
-    public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate) {
+    public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice, Price outrightPrice, ZonedDateTime startDate, ZonedDateTime endDate, UserId seller) {
 
         for (ItemId itemId : itemsId) {
 
@@ -53,7 +53,7 @@ public class AuctionService {
         }
 
         Auction auction = addAuction(
-                itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate
+                itemsId, startPrice, reservePrice, outrightPrice, startDate, endDate, seller
         );
 
         for (ItemId itemId : itemsId) {
@@ -69,16 +69,16 @@ public class AuctionService {
 
     @Transactional
     public Auction putItemOnAuction(List<ItemId> itemsId, Price startPrice, Price reservePrice,
-                                    ZonedDateTime startDate, ZonedDateTime endDate) {
-        return putItemOnAuction(itemsId, startPrice, reservePrice, null, startDate, endDate);
+                                    ZonedDateTime startDate, ZonedDateTime endDate, UserId seller) {
+        return putItemOnAuction(itemsId, startPrice, reservePrice, null, startDate, endDate, seller);
     }
 
 
     private Auction addAuction(List<ItemId> itemsId, Price startingPrice, Price reservePrice,
-                               Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+                               Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate, UserId seller) {
 
         Auction auction = _auctionFactory.createAuction(itemsId, startingPrice, reservePrice,
-                outrightPrice, auctionStartDate, auctionEndDate);
+                outrightPrice, auctionStartDate, auctionEndDate, seller);
 
         return _iAuctionRepo.save(auction);
     }

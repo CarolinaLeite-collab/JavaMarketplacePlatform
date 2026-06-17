@@ -63,6 +63,9 @@ loop for savedAuctionDm : savedAuctionDms
   ASM -> "savedAuctionDm:AuctionDataModel" : stringUserId = getUserId()
   ASM -> "userId:UserId" : <<create>>(stringUserId)
 
+ASM -> "savedAuctionDm:AuctionDataModel" : stringSeller = getSeller()
+ASM -> "seller:UserId" : <<create>>(stringSeller)
+
   ASM -> "savedAuctionDm:AuctionDataModel" : stringFinalPrice = getFinalPrice()
   ASM -> "finalPrice:Price" : <<create>>(stringFinalPrice)
 

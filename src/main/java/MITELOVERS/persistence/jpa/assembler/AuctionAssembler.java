@@ -61,6 +61,11 @@ public class AuctionAssembler {
             userId = auction.getUserId().toString();
         }
 
+        String seller = null;
+        if(auction.getSeller() != null) {
+            seller = auction.getSeller().toString();
+        }
+
         return new AuctionDataModel(
                 auction.identity().toString(),
                 itemsIds,
@@ -71,7 +76,8 @@ public class AuctionAssembler {
                 auction.getAuctionEndDate(),
                 userId,
                 finalPrice,
-                bids);
+                bids,
+                seller);
     }
 
     public Auction toDomain(AuctionDataModel auctionDM) {
@@ -109,6 +115,11 @@ public class AuctionAssembler {
             userId = new UserId(email);
         }
 
+        UserId seller = null;
+        if (auctionDM.getSeller() != null) {
+            seller = new UserId(new Email(auctionDM.getSeller()));
+        }
+
         Price finalPrice = null;
         if (auctionDM.getFinalPrice() != null) {
             finalPrice = new Price(
@@ -130,6 +141,7 @@ public class AuctionAssembler {
                 auctionStartDate,
                 auctionEndDate,
                 userId,
+                seller,
                 finalPrice,
                 bids);
     }

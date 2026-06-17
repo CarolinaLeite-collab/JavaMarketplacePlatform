@@ -51,6 +51,7 @@ class AuctionServiceTest {
     private Item _itemDouble;
     private ZonedDateTime _startDate;
     private ZonedDateTime _endDate;
+    private UserId _seller;
 
     @BeforeEach
     void setUp() {
@@ -64,6 +65,7 @@ class AuctionServiceTest {
         _itemDouble = mock(Item.class);
         _startDate = ZonedDateTime.now().plusDays(1);
         _endDate = ZonedDateTime.now().plusDays(2);
+        _seller = mock(UserId.class);
     }
 
     @Test
@@ -76,13 +78,13 @@ class AuctionServiceTest {
                 .thenReturn(SaleStatus.NotOnSale);
 
         when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble,
-                _startDate, _endDate)).thenReturn(_auctionDouble);
+                _startDate, _endDate, _seller)).thenReturn(_auctionDouble);
 
         when(_iAuctionRepoDouble.save(any())).thenReturn(_auctionDouble);
 
         // Act
         Auction result = _auctionService.putItemOnAuction(
-                _itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate);
+                _itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, _startDate, _endDate, _seller);
 
         // Assert
         assertNotNull(result);
@@ -99,13 +101,13 @@ class AuctionServiceTest {
                 .thenReturn(SaleStatus.NotOnSale);
 
         when(_auctionFactoryDouble.createAuction(_itemsId, _startingPriceDouble, _reservePriceDouble, null,
-                _startDate, _endDate)).thenReturn(_auctionDouble);
+                _startDate, _endDate, _seller)).thenReturn(_auctionDouble);
 
         when(_iAuctionRepoDouble.save(any())).thenReturn(_auctionDouble);
 
         // Act
         Auction result = _auctionService.putItemOnAuction(
-                _itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate);
+                _itemsId, _startingPriceDouble, _reservePriceDouble, _startDate, _endDate, _seller);
 
         // Assert
         assertNotNull(result);
@@ -122,7 +124,7 @@ class AuctionServiceTest {
                 NoSuchElementException.class,
                 () -> _auctionService.putItemOnAuction(
                         _itemsId, _startingPriceDouble, _reservePriceDouble,
-                        _outrightPriceDouble, _startDate, _endDate)
+                        _outrightPriceDouble, _startDate, _endDate, _seller)
         );
 
         assertTrue(exception.getMessage().contains("Item not found"));
@@ -139,7 +141,7 @@ class AuctionServiceTest {
                 IllegalStateException.class,
                 () -> _auctionService.putItemOnAuction(
                         _itemsId, _startingPriceDouble, _reservePriceDouble,
-                        _outrightPriceDouble, _startDate, _endDate)
+                        _outrightPriceDouble, _startDate, _endDate, _seller)
         );
 
         assertTrue(exception.getMessage().contains("already on sale"));

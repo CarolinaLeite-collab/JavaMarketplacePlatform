@@ -90,7 +90,7 @@ REST -->> startDate : atZone(UTC)
 create "endDate:ZonedDateTime" as endDate
 REST -->> endDate : atZone(UTC)
 
-REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate)
+REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate, user)
 activate Service
 
 loop for each item - validation
@@ -109,7 +109,7 @@ loop for each item - validation
     deactivate Item
 end
 
-Service -> Factory : createAuction (\n  itemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate)
+Service -> Factory : createAuction (\n  itemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate, user)
 activate Factory
 Factory --> Service : auction
 deactivate Factory

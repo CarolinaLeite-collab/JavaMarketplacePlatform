@@ -34,6 +34,7 @@ package domain {
             -isAuctionEndDateValid(auctionEndDate : ZoneDateTime) : boolean
             +placeBid (userId : UserId, offerPrice : Price) : Bid
             +getHighestBid() : Bid
+            -getSeller() : UserId
         }
 
         class Bid <<Entity>> {
@@ -109,7 +110,7 @@ Auction --|> AggregateRoot
 BidFactory "1" ..> "*" Bid : <<create>>
 MemAuctionRepo "1" --> "*" Auction : persists
 Auction "1" --> "1" AuctionId : has
-Auction "*" ..> "1" UserId : references
+Auction "*" ..> "1..2" UserId : references
 Auction "1" o-- "1..*" ItemId : has
 Auction "*" --> "1" Price : has
 Auction ..> BidFactory : <<use>>

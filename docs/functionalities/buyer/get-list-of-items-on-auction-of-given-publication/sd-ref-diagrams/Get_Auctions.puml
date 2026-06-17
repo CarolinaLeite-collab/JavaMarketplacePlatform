@@ -63,6 +63,9 @@ loop for savedAuctionDm : savedAuctionDms
   ASM -> "savedAuctionDm:AuctionDataModel" : stringUserId = getUserId()
   ASM -> "userId:UserId" : <<create>>(stringUserId)
 
+ASM -> "savedAuctionDm:AuctionDataModel" : stringSeller = getSeller()
+ASM -> "seller:UserId" : <<create>>(stringSeller)
+
   ASM -> "savedAuctionDm:AuctionDataModel" : stringFinalPrice = getFinalPrice()
   ASM -> "finalPrice:Price" : <<create>>(stringFinalPrice)
 
@@ -84,6 +87,6 @@ end
 
 
 ref over CTL
-[[../Get_List_Of_Items_on_Auction_Of_Given_Publication_SD_2.puml Back to Main Diagram]]
+[[../Get_List_Of_Items_on_Auction_Of_Given_Author_SD.puml Back to Main Diagram]]
 end ref
 @enduml
