@@ -48,23 +48,24 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and scan backend image
+      - name: Build backend image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: ${{ steps.backend_meta.outputs.tags }}
+          tags: |
+            ${{ env.BACKEND_IMAGE }}:ci
+            ${{ steps.backend_meta.outputs.tags }}
           labels: ${{ steps.backend_meta.outputs.labels }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
 
       - name: Scan backend image with Trivy
-        if: github.event_name == 'pull_request'
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ${{ env.BACKEND_IMAGE }}:latest
+          image-ref: ${{ env.BACKEND_IMAGE }}:ci
           format: table
           exit-code: 1
           ignore-unfixed: true
@@ -98,23 +99,24 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and scan frontend image
+      - name: Build frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: ${{ steps.frontend_meta.outputs.tags }}
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}:ci
+            ${{ steps.frontend_meta.outputs.tags }}
           labels: ${{ steps.frontend_meta.outputs.labels }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
 
       - name: Scan frontend image with Trivy
-        if: github.event_name == 'pull_request'
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: ${{ env.FRONTEND_IMAGE }}:latest
+          image-ref: ${{ env.FRONTEND_IMAGE }}:ci
           format: table
           exit-code: 1
           ignore-unfixed: true
