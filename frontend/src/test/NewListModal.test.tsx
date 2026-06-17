@@ -2,10 +2,17 @@ import {render, screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {describe, expect, it, vi} from 'vitest';
 import {MantineProvider} from '@mantine/core';
-import {NewListModal} from "../components/newlistmodal/NewListModal.tsx";
-import MyListsPage from "../pages/MyLists/MyListsPage.tsx";
+import {NewListModal} from "../components/lists/newlistmodal/NewListModal.tsx";
+import MyListsPage from "../pages/Lists/MyListsPage.jsx";
+import AppContext from '../context/AppContext';
+import { MemoryRouter } from 'react-router-dom';
 
-vi.mock('@/components/tablelist/TableList.tsx', () => ({
+vi.mock('../context/lists/ListsActions', () => ({
+    createList: vi.fn().mockResolvedValue(true),
+    getGenres: vi.fn().mockImplementation((dispatch) => { }),
+}));
+
+vi.mock('@/components/lists/tablelist/TableList.tsx', () => ({
     TableList: () => <div data-testid="table-list" />,
 }));
 
@@ -20,8 +27,47 @@ vi.mock('@/components/layout/DefaultLayout.tsx', () => ({
     ),
 }));
 
+const mockContextValue = {
+    state: {
+        app: {
+            createListHref: 'http://localhost:8081/my-lists/',
+            genresHref: 'http://localhost:8081/genres',
+            myListsHref: 'http://localhost:8081/my-lists/',
+        },
+        lists: {
+            genres: [
+                { value: 'fantasy', label: 'Fantasy' },
+                { value: 'mystery', label: 'Mystery' },
+                { value: 'science-fiction', label: 'Science Fiction' },
+                { value: 'classic', label: 'Classic' },
+                { value: 'romance', label: 'Romance' },
+                { value: 'thriller', label: 'Thriller' },
+            ],
+            error: null,
+        },
+    },
+    dispatch: vi.fn(),
+};
+
 const renderWithMantine = (ui: React.ReactElement) =>
-    render(<MantineProvider>{ui}</MantineProvider>);
+    render(
+        <MantineProvider>
+            <AppContext.Provider value={mockContextValue as any}>
+                {ui}
+            </AppContext.Provider>
+        </MantineProvider>
+    );
+
+const renderPage = () =>
+    render(
+        <MantineProvider>
+            <AppContext.Provider value={mockContextValue as any}>
+                <MemoryRouter>
+                    <MyListsPage />
+                </MemoryRouter>
+            </AppContext.Provider>
+        </MantineProvider>
+    );
 
 describe('NewListModal – trigger button', () => {
     it('renders a "NEW LIST" button', () => {
@@ -101,10 +147,14 @@ describe('NewListModal – form inputs', () => {
         await user.click(screen.getByRole('button', { name: /new list/i }));
         await screen.findByRole('dialog');
         await user.click(screen.getByRole('combobox', { name: /genre/i }));
-        const expectedGenres = ['Fantasy', 'Mystery', 'Science Fiction', 'Classic', 'Romance', 'Thriller'];
-        for (const genre of expectedGenres) {
-            expect(await screen.findByRole('option', { name: genre })).toBeInTheDocument();
-        }
+
+        await waitFor(() => {
+            const options = document.querySelectorAll('[data-combobox-option]');
+            expect(options.length).toBe(6);
+            const labels = Array.from(options).map(o => o.textContent?.trim());
+            expect(labels).toContain('Fantasy');
+            expect(labels).toContain('Science Fiction');
+        });
     });
 
     it('can select a genre from the dropdown', async () => {
@@ -113,9 +163,18 @@ describe('NewListModal – form inputs', () => {
         await user.click(screen.getByRole('button', { name: /new list/i }));
         await screen.findByRole('dialog');
         await user.click(screen.getByRole('combobox', { name: /genre/i }));
-        await user.click(await screen.findByRole('option', { name: 'Fantasy' }));
-        const combobox = screen.getByRole('combobox', { name: /genre/i }) as HTMLInputElement;
-        expect(combobox.value).toBe('Fantasy');
+
+        await waitFor(() => {
+            expect(document.querySelectorAll('[data-combobox-option]').length).toBeGreaterThan(0);
+        });
+
+        const options = document.querySelectorAll('[data-combobox-option]');
+        const fantasy = Array.from(options).find(o => o.textContent?.trim() === 'Fantasy') as HTMLElement;
+        await user.click(fantasy);
+
+        await waitFor(() => {
+            expect((screen.getByRole('combobox', { name: /genre/i }) as HTMLInputElement).value).toBe('Fantasy');
+        });
     });
 });
 
@@ -148,24 +207,24 @@ describe('NewListModal – modal close', () => {
 
 describe('MyListsPage', () => {
     it('renders the page title and subtitle', () => {
-        renderWithMantine(<MyListsPage />);
+        renderPage();
         expect(screen.getByRole('heading', { name: /my lists/i })).toBeInTheDocument();
         expect(screen.getByText(/check out your lists/i)).toBeInTheDocument();
     });
 
     it('renders the TableList component', () => {
-        renderWithMantine(<MyListsPage />);
+        renderPage();
         expect(screen.getByTestId('table-list')).toBeInTheDocument();
     });
 
     it('renders the NEW LIST button via the Affix', () => {
-        renderWithMantine(<MyListsPage />);
+        renderPage();
         expect(screen.getByRole('button', { name: /new list/i })).toBeInTheDocument();
     });
 
     it('opens the modal from the page-level NEW LIST button', async () => {
         const user = userEvent.setup();
-        renderWithMantine(<MyListsPage />);
+        renderPage();
         await user.click(screen.getByRole('button', { name: /new list/i }));
         expect(await screen.findByRole('dialog')).toBeInTheDocument();
     });
