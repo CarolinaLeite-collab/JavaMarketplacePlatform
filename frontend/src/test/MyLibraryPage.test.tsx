@@ -363,5 +363,63 @@ describe('MyLibraryPage', () => {
 
             expect(screen.getByText('No Data')).toBeInTheDocument();
         });
+
+        it('shows a warning when no items have data for the selected sort field', async () => {
+            const user = userEvent.setup();
+            const itemsWithoutBackendFields = [
+                { itemId: 'ITEM-001', title: 'Zebra', authorName: null, publicationType: null, identifier: null, picture: null, links: [] },
+                { itemId: 'ITEM-002', title: 'Apple', authorName: null, publicationType: null, identifier: null, picture: null, links: [] },
+            ];
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: itemsWithoutBackendFields },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{Enter}'); // Author
+
+            expect(screen.getByText(/no data available to sort by this field yet/i)).toBeInTheDocument();
+        });
+
+        it('does not show a warning when sorting by title (always available)', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{Enter}'); // Title
+
+            expect(screen.queryByText(/no data available to sort by this field yet/i)).not.toBeInTheDocument();
+        });
+
+        it('does not show a warning when at least one item has the sort field populated', async () => {
+            const user = userEvent.setup();
+            const mixedItems = [
+                { itemId: 'ITEM-001', title: 'Zebra', authorName: 'Anna Author', publicationType: null, identifier: null, picture: null, links: [] },
+                { itemId: 'ITEM-002', title: 'Apple', authorName: null, publicationType: null, identifier: null, picture: null, links: [] },
+            ];
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mixedItems },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{Enter}'); // Author
+
+            expect(screen.queryByText(/no data available to sort by this field yet/i)).not.toBeInTheDocument();
+        });
+
+        it('does not show a warning when no sort is selected', () => {
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            expect(screen.queryByText(/no data available to sort by this field yet/i)).not.toBeInTheDocument();
+        });
     });
 });
