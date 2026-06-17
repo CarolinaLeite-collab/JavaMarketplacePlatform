@@ -30,4 +30,5 @@ public class AuctionResponseDTO extends RepresentationModel<AuctionResponseDTO> 
     private final String priceCurrency;
     private final Instant startDate;
     private final Instant endDate;
+    private final String seller;
 }

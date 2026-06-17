@@ -63,7 +63,8 @@ class AuctionRestControllerTest {
                 List.of("ABCDEF1234"),
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
-                Instant.parse("2099-01-01T10:00:00Z")
+                Instant.parse("2099-01-01T10:00:00Z"),
+                "pedro@aeiou.com"
         );
 
         when(_auctionService.getAllActiveAuctions()).thenReturn(List.of(auction));
@@ -97,7 +98,8 @@ class AuctionRestControllerTest {
                 List.of("ABCDEF1234"),
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
-                Instant.parse("2026-06-20T10:00:00Z")
+                Instant.parse("2026-06-20T10:00:00Z"),
+                "pedro@aeiou.com"
         );
 
         when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any(), any()))
@@ -112,7 +114,8 @@ class AuctionRestControllerTest {
                     "outrightPrice": 50.0,
                     "priceCurrency": "EUR",
                     "startDate": "2026-06-10T10:00:00Z",
-                    "endDate": "2026-06-20T10:00:00Z"
+                    "endDate": "2026-06-20T10:00:00Z",
+                    "seller": "pedro@aeiou.com"
                 }
                 """;
 
@@ -138,7 +141,8 @@ class AuctionRestControllerTest {
                 List.of("ABCDEF1234"),
                 10.0, 25.0, null, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
-                Instant.parse("2026-06-20T10:00:00Z")
+                Instant.parse("2026-06-20T10:00:00Z"),
+                "pedro@aeiou.com"
         );
 
         when(_auctionService.putItemOnAuction(any(), any(), any(), isNull(), any(), any(), any()))
@@ -152,7 +156,8 @@ class AuctionRestControllerTest {
                     "reservePrice": 25.0,
                     "priceCurrency": "EUR",
                     "startDate": "2026-06-10T10:00:00Z",
-                    "endDate": "2026-06-20T10:00:00Z"
+                    "endDate": "2026-06-20T10:00:00Z",
+                    "seller": "pedro@aeiou.com"
                 }
                 """;
 
@@ -279,7 +284,8 @@ class AuctionRestControllerTest {
                 List.of("ABCDEF1234"),
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
-                Instant.parse("2026-06-20T10:00:00Z")
+                Instant.parse("2026-06-20T10:00:00Z"),
+                "pedro@aeiou.com"
         );
 
         when(_auctionService.getAuctionById(auctionId)).thenReturn(auctionDouble);

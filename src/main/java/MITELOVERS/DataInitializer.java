@@ -877,7 +877,8 @@ public class DataInitializer {
                     new Price(5.00, Currency.EUR),
                     new Price(10.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(7)
+                    ZonedDateTime.now().plusDays(7),
+                    user.identity()
             );
             auctionRepo.save(auction1);
 
@@ -886,7 +887,8 @@ public class DataInitializer {
                     new Price(8.00, Currency.EUR),
                     new Price(15.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(3)
+                    ZonedDateTime.now().plusDays(3),
+                    user2.identity()
             );
             auctionRepo.save(auction2);
 
@@ -895,7 +897,8 @@ public class DataInitializer {
                     new Price(2.00, Currency.EUR),
                     new Price(6.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(14)
+                    ZonedDateTime.now().plusDays(14),
+                    user3.identity()
             );
             auctionRepo.save(auction3);
 
@@ -907,7 +910,8 @@ public class DataInitializer {
                     new Price(5.00, Currency.EUR),
                     new Price(10.00, Currency.EUR),
                     ZonedDateTime.now().minusDays(7),   // started in the past
-                    ZonedDateTime.now().plusMinutes(1)  // ends in 1 minute — still active
+                    ZonedDateTime.now().plusMinutes(1),  // ends in 1 minute — still active
+                    user.identity()
             );
 
             // Place bids while active
