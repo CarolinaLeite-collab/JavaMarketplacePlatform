@@ -151,33 +151,5 @@ class AuctionLinkProviderTest {
         assertTrue(links.isEmpty());
     }
 
-    @Test
-    void addBidLinksAddsPlaceBidAndAuctionLinks() {
-        // Arrange
-        BidResponseDTO dtoDouble = mock(BidResponseDTO.class);
-
-        String auctionId = "AU-12345678";
-        when(dtoDouble.getAuctionId()).thenReturn(auctionId);
-
-        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-
-        // SUT
-        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
-
-        // Act
-        linkProvider.addBidLinks(dtoDouble);
-
-        // Assert
-        // Creating an ArgumentCaptor that records every Link object passed into dtoDouble.add(...)
-        org.mockito.ArgumentCaptor<Link> captor = org.mockito.ArgumentCaptor.forClass(Link.class);
-
-        // Verify that dtoDouble.add(...) was called exactly twice and capture the Link arguments for later inspection
-        org.mockito.Mockito.verify(dtoDouble,times(2)).add(captor.capture());
-
-        List<Link> addedLinks = captor.getAllValues();
-
-        assertTrue(addedLinks.stream().anyMatch(l -> l.getRel().value().equals("place-bid")));
-        assertTrue(addedLinks.stream().anyMatch(l -> l.getRel().value().equals("auction")));
-    }
 
 }

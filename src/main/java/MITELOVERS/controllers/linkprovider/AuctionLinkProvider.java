@@ -19,7 +19,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * of the authenticated user.
  * <p>
  * This component implements {@link RootLinkProvider} and is responsible for
- * determining which auction resources should be exposed to a given user.
+ * determining which auction and bid resources should be exposed to a given user.
  * The available links are generated based on the user's authorization level,
  * as defined by the {@link AuthorizationPolicy}.
  * </p>
@@ -72,23 +72,17 @@ public class AuctionLinkProvider implements RootLinkProvider {
     }
 
 
-    // Links attached directly to a bid response (e.g., after POST /auctions/{id}/bids).
+    // Links attached directly to a bid response (e.g., after POST /auctions/{auctionId}/bids).
 
     public void addBidLinks(BidResponseDTO dto) {
 
         String auctionId = dto.getAuctionId();
 
-        // For placing another bid
-        Link placeBidLink = linkTo(methodOn(AuctionRestController.class)
-                .placeBid(auctionId, null, null))
-                .withRel("place-bid");
-
-        // Link back to the auction that was just bid on
+        // Link back to the OPTIONS for auction that was just bid on
         Link auctionLink = linkTo(methodOn(AuctionRestController.class)
                 .optionsForSpecificAuction(auctionId, null))
                 .withRel("auction");
 
-        dto.add(placeBidLink);
         dto.add(auctionLink);
     }
 
