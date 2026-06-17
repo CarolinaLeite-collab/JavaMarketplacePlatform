@@ -9,13 +9,6 @@ import {
     ADD_ITEM_ERROR
 } from './LibraryActions';
 
-/**
- * Reducer responsible for storing library items, item details, and library errors.
- *
- * Library item responses are mapped into the structure expected by the UI,
- * including item links exposed by the backend.
- */
-
 export const initialState = {
     items: [],
     details: {},
@@ -33,6 +26,9 @@ function mapItem(item) {
         itemId: item.itemId,
         title: item.title,
         picture: item.picture ?? null,
+        authorName: item.authorName ?? null,
+        publicationType: item.publicationType ? formatPublicationType(item.publicationType) : null,
+        identifier: item.identifier ?? null,
         links: links
     };
 }
