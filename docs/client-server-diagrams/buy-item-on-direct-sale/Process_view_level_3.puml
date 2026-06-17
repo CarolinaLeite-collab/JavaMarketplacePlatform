@@ -36,7 +36,7 @@ FRONTEND -> CTL : OPTIONS {add-to-cart href}
 activate CTL
 
 ref over CTL
-[[xxx.puml OPTIONS for shoppingCartLines on /shoppingCarts/shoppingCartLines]]
+[[xxx.puml OPTIONS for shoppingCartLines on /shopping-carts/shopping-cart-lines]]
 end ref
 
 CTL --> FRONTEND : 200 OK + [GET, POST]
@@ -46,7 +46,7 @@ FRONTEND -> CTL : POST {add-to-cart href}
 activate CTL
 
 ref over CTL
-[[xxx.puml POST new shoppingCartLine in /shoppingCarts/shoppingCartLines]]
+[[xxx.puml POST new shoppingCartLine in /shopping-carts/shopping-cart-lines]]
 end ref
 
 CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (new shoppingCartLine)
@@ -62,17 +62,17 @@ FRONTEND -> CTL : OPTIONS {shoppingCart self link}
 activate CTL
 
 ref over CTL
-[[xxx.puml OPTIONS for shoppingCart on /shoppingCarts/{cartId}]]
+[[xxx.puml OPTIONS for shoppingCart on /shopping-carts/{cartId}]]
 end ref
 
-CTL --> FRONTEND : 200 OK + [GET, DELETE]
+CTL --> FRONTEND : 200 OK + [GET, PATCH]
 deactivate CTL
 
 FRONTEND -> CTL : GET {shoppingCart self link}
 activate CTL
 
 ref over CTL
-[[xxx.puml GET /shoppingCarts/{cartId}]]
+[[xxx.puml GET /shopping-carts/{cartId}]]
 end ref
 
 CTL --> FRONTEND : 200 OK + self link \n+ links to each shoppingCartLine \n+ checkout link (if cartLines is not empty)
@@ -84,7 +84,7 @@ FRONTEND -> CTL : OPTIONS {shoppingCartLine href}
 activate CTL
 
 ref over CTL
-[[xxx.puml OPTIONS for /shoppingCarts/shoppingCartLines/{id}]]
+[[xxx.puml OPTIONS for /shopping-carts/{cartId}/shopping-cart-lines/{id}]]
 end ref
 
 CTL --> FRONTEND : 200 OK + [GET, DELETE]
@@ -94,7 +94,7 @@ FRONTEND -> CTL : GET {shoppingCartLine href}
 activate CTL
 
 ref over CTL
-[[xxx.puml GET /shoppingCarts/shoppingCartLines/{id}]]
+[[xxx.puml GET /shopping-carts/{cartId}/shopping-cart-lines/{id}]]
 end ref
 
 CTL --> FRONTEND : 200 OK + self link \n+ delete link
@@ -122,7 +122,7 @@ FRONTEND -> SALESCTL : POST {checkout link}
 activate SALESCTL
 
 ref over SALESCTL
-[[xxx.puml Sale creation orchestration]]
+[[xxx.puml POST /sales]]
 end ref
 
 SALESCTL --> FRONTEND : 201 Created + self link (sale)
