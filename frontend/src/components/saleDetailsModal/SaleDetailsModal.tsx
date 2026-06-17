@@ -9,6 +9,9 @@ interface SaleItemDetail {
     condition: string;
     price: string;
     seller: string;
+    saleType: "Direct Sale" | "Auction"
+    directSaleId: string | null;
+    auctionId: string | null;
 }
 
 interface SaleDetailsModalProps {
@@ -44,7 +47,7 @@ export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetai
 
     return (
         <Modal
-            opened={opened}              // ✅ use prop, not `open`
+            opened={opened}
             onClose={handleClose}
             centered
             padding={0}
