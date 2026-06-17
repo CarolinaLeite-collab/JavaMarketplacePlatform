@@ -21,6 +21,11 @@ const mockAppState = {
     },
 };
 
+const mockItemsForSort = [
+    { itemId: 'ITEM-002', title: 'Zebra', authorName: 'Anna Author', publicationType: 'Book', identifier: '111', picture: null, links: [] },
+    { itemId: 'ITEM-001', title: 'Apple', authorName: 'Zack Writer', publicationType: 'Magazine', identifier: '999', picture: null, links: [] },
+];
+
 vi.mock('@/components/createSaleModal/CreateSaleModal.tsx', () => ({
     CreateSaleModal: ({ opened }: { opened: boolean }) =>
         opened ? (
@@ -47,7 +52,13 @@ vi.mock('@/components/addItemModal/AddItemModal.tsx', () => ({
 }));
 
 vi.mock('@/components/accordion/ItemAccordion.js', () => ({
-    ItemAccordion: () => <div>Accordion</div>,
+    ItemAccordion: ({ items }: { items: { itemId: string; title: string }[] }) => (
+        <div data-testid="accordion">
+            {items.map((item) => (
+                <span key={item.itemId}>{item.title}</span>
+            ))}
+        </div>
+    ),
 }));
 
 vi.mock('../context/library/LibraryActions', () => ({
@@ -56,6 +67,7 @@ vi.mock('../context/library/LibraryActions', () => ({
 
 beforeEach(() => {
     vi.clearAllMocks();
+    Element.prototype.scrollIntoView = vi.fn();
 });
 
 function renderWithProviders({
@@ -213,5 +225,143 @@ describe('MyLibraryPage', () => {
             dispatch,
             'http://localhost:8081/my-library'
         );
+    });
+
+    describe('sorting', () => {
+        it('renders the sort select', () => {
+            renderWithProviders();
+
+            expect(screen.getByPlaceholderText(/sort by/i)).toBeInTheDocument();
+        });
+
+        it('renders items in original order when no sort is selected', () => {
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('sorts items by title when "Title" is selected', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{Enter}');
+
+            expect(select).toHaveValue('Title');
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            expect(titles).toEqual(['Apple', 'Zebra']);
+        });
+
+        it('sorts items by author when "Author" is selected', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+
+            expect(select).toHaveValue('Author');
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            // Anna Author (Zebra) comes before Zack Writer (Apple)
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('sorts items by type when "Type" is selected', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{Enter}');
+
+            expect(select).toHaveValue('Type');
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            // Book (Zebra) comes before Magazine (Apple)
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('sorts items by identifier when "ISBN/ISSN" is selected', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}{Enter}');
+
+            expect(select).toHaveValue('ISBN/ISSN');
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            // identifier "111" (Zebra) sorts before "999" (Apple)
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('reverts to original order when sort selection is cleared', async () => {
+            const user = userEvent.setup();
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: mockItemsForSort },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{Enter}');
+
+            expect(select).toHaveValue('Title');
+
+            const clearButton = select.parentElement?.querySelector('button');
+            expect(clearButton).toBeTruthy();
+            await user.click(clearButton as HTMLButtonElement);
+
+            const accordion = screen.getByTestId('accordion');
+            const titles = within(accordion).getAllByText(/Zebra|Apple/i).map((el) => el.textContent);
+
+            expect(titles).toEqual(['Zebra', 'Apple']);
+        });
+
+        it('does not crash when items are missing sort fields', async () => {
+            const user = userEvent.setup();
+            const incompleteItems = [
+                { itemId: 'ITEM-003', title: 'No Data', authorName: null, publicationType: null, identifier: null, picture: null, links: [] },
+            ];
+
+            renderWithProviders({
+                libraryState: { ...mockLibraryState, items: incompleteItems },
+            });
+
+            const select = screen.getByPlaceholderText(/sort by/i);
+            await user.click(select);
+            await user.keyboard('{ArrowDown}{ArrowDown}{Enter}');
+
+            expect(screen.getByText('No Data')).toBeInTheDocument();
+        });
     });
 });
