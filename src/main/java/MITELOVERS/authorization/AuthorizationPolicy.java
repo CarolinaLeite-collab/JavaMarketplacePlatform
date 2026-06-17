@@ -141,4 +141,22 @@ public class AuthorizationPolicy {
     /** Only admins may create a country. */
     public boolean canCreateCountry(User user) { return user.hasRole(Role.ADMIN);}
 
+    /** Any authenticated user may view a ShoppingCart. */
+    public boolean canGetShoppingCart(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may edit a ShoppingCart. */
+    public boolean canPatchShoppingCart(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get a ShoppingCartLine. */
+    public boolean canGetShoppingCartLines(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get a ShoppingCartLine. */
+    public boolean canPostShoppingCartLines(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get a ShoppingCartLine. */
+    public boolean canGetShoppingCartLine(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get a ShoppingCartLine. */
+    public boolean canDeleteShoppingCartLine(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
 }

@@ -383,4 +383,96 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // ──────────── Shopping Cart ────────────
+
+    @Test
+    void canGetShoppingCartUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCart(_userDouble));
+    }
+
+    @Test
+    void canGetShoppingCartAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCart(_adminDouble));
+    }
+
+    @Test
+    void canGetShoppingCartGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetShoppingCart(_guestDouble));
+    }
+
+    @Test
+    void canPatchShoppingCartUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPatchShoppingCart(_userDouble));
+    }
+
+    @Test
+    void canPatchShoppingCartAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPatchShoppingCart(_adminDouble));
+    }
+
+    @Test
+    void canPatchShoppingCartGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canPatchShoppingCart(_guestDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLinesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCartLines(_userDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLinesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCartLines(_adminDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLinesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetShoppingCartLines(_guestDouble));
+    }
+
+    @Test
+    void canPostShoppingCartLinesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPostShoppingCartLines(_userDouble));
+    }
+
+    @Test
+    void canPostShoppingCartLinesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPostShoppingCartLines(_adminDouble));
+    }
+
+    @Test
+    void canPostShoppingCartLinesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canPostShoppingCartLines(_guestDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLineUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCartLine(_userDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLineAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetShoppingCartLine(_adminDouble));
+    }
+
+    @Test
+    void canGetShoppingCartLineGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetShoppingCartLine(_guestDouble));
+    }
+
+    @Test
+    void canDeleteShoppingCartLineUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canDeleteShoppingCartLine(_userDouble));
+    }
+
+    @Test
+    void canDeleteShoppingCartLineAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canDeleteShoppingCartLine(_adminDouble));
+    }
+
+    @Test
+    void canDeleteShoppingCartLineGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canDeleteShoppingCartLine(_guestDouble));
+    }
+
 }
