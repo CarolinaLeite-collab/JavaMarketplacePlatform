@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout full history
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
 
@@ -102,7 +102,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Run Semgrep scan JSON report
         run: |
@@ -197,7 +197,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Install Semgrep
         run: pip install semgrep
@@ -338,7 +338,7 @@ jobs:
 
       - name: Upload License Report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.2.2
         with:
           name: third-party-licenses
           path: target/generated-sources/license/THIRD-PARTY.txt
@@ -394,13 +394,13 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-#      - name: Cache OWASP Dependency-Check data
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.m2/repository/org/owasp/dependency-check-data
-#          key: dependency-check-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            dependency-check-${{ runner.os }}
+      - name: Cache OWASP Dependency-Check data
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: dependency-check-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            dependency-check-${{ runner.os }}
 
       - name: Build test and run security scans
         run: mvn clean verify

@@ -190,8 +190,10 @@
                     <failBuildOnCVSS>7</failBuildOnCVSS>
                     <outputDirectory>${project.build.directory}</outputDirectory>
                     <format>ALL</format>
+                    <!-- suppress UnresolvedMavenProperty -->
                     <nvdApiKey>${env.NVD_API_KEY}</nvdApiKey>
                     <suppressionFile>suppression.xml</suppressionFile>
+                    <failOnError>false</failOnError> <!-- ignore NVD 503 outages -->
                 </configuration>
                 <executions>
                     <execution>
