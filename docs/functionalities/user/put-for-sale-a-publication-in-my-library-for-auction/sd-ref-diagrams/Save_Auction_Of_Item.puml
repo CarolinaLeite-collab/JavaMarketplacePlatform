@@ -72,6 +72,7 @@ Assembler -->> "bids:List<BidDataModel>": new ArrayList<>()
 Assembler -> auction: getBids()
 activate auction
 deactivate auction
+
 loop for each bid in auction.getBids()
     Assembler -> BidAssembler: toDataModel(bid)
     activate BidAssembler
@@ -91,6 +92,10 @@ Assembler -> auction: userIdString = getUserId()
 activate auction
 deactivate auction
 
+Assembler -> auction: sellerString = getSeller().toString()
+activate auction
+deactivate auction
+
 Assembler -> auction: auctionIdString = auction.identity().toString()
 activate auction
 deactivate auction
@@ -104,7 +109,7 @@ activate auction
 deactivate auction
 
 create "auctionDM %n():AuctionDataModel"
-Assembler -->> "auctionDM %n():AuctionDataModel": createAuctionDataModel(auctionIdString, itemIdString, %n()startingPriceDM, reservePriceDM, outrightPriceDM, %n()auctionStartDate, auctionEndDate(), userIdString, %n()finalPriceDM, bids)
+Assembler -->> "auctionDM %n():AuctionDataModel": createAuctionDataModel(auctionIdString, itemIdString, %n()startingPriceDM, reservePriceDM, outrightPriceDM, %n()auctionStartDate, auctionEndDate(), userIdString, %n()sellerString, finalPriceDM, bids)
 
 Assembler --> JpaAuctionRepo: auctionDM
 deactivate Assembler
@@ -186,6 +191,16 @@ Assembler -->> "email:Email" : createEmail(userIdString)
 
 create "userId:UserId"
 Assembler -->> "userId:UserId":createUserId(email)
+
+Assembler -> "auctionDM2%n():AuctionDataModel": sellerString = getSeller()
+activate "auctionDM2%n():AuctionDataModel"
+deactivate "auctionDM2%n():AuctionDataModel"
+
+create "sellerEmail:Email"
+Assembler -->> "sellerEmail:Email" : createEmail(sellerString)
+
+create "seller:UserId"
+Assembler -->> "seller:UserId":createUserId(sellerEmail)
 
 Assembler -> "auctionDM2%n():AuctionDataModel": finalPriceNumeric = getFinalPrice().getNumericValue()
 activate "auctionDM2%n():AuctionDataModel"
