@@ -247,6 +247,13 @@ jobs:
           script: |
             // paste your license comment script here
 
+      - name: Enforce license policy
+        run: |
+          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
+            exit 1
+          fi
+
       - name: Upload License Report
         if: always()
         uses: actions/upload-artifact@v4
