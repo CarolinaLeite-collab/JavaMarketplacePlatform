@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, useMemo } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Button, Group, Select } from "@mantine/core";
+import { Button, Group, Select, Text } from "@mantine/core";
 import {IconPlus, IconTag} from "@tabler/icons-react";
 
 import {DefaultLayout} from "../../components/layout/DefaultLayout.tsx";
@@ -30,6 +30,11 @@ function sortItems(items, sortBy) {
     });
 }
 
+function hasDataForSort(items, sortBy) {
+    if (!sortBy) return true;
+    return items.some(item => item[sortBy] != null && item[sortBy] !== "");
+}
+
 export default function MyLibraryPage() {
 
     const { state: appState } = useContext(AppContext);
@@ -49,6 +54,11 @@ export default function MyLibraryPage() {
 
     const sortedItems = useMemo(
         () => sortItems(state.items, sortBy),
+        [state.items, sortBy]
+    );
+
+    const sortHasData = useMemo(
+        () => hasDataForSort(state.items, sortBy),
         [state.items, sortBy]
     );
 
@@ -84,6 +94,12 @@ export default function MyLibraryPage() {
                 />
 
             </Group>
+
+            {sortBy && !sortHasData && (
+                <Text size="xs" c="dimmed" ta="center" mt={6}>
+                    No data available to sort by this field yet
+                </Text>
+            )}
 
             <ItemAccordion
                 items={sortedItems}
