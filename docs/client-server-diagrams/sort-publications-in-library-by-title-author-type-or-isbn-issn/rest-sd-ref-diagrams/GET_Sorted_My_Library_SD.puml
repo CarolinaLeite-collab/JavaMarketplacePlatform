@@ -1,0 +1,117 @@
+@startuml
+title GET user's library sorted by criterion %n()ref SD
+
+skinparam backgroundColor CornSilk
+skinparam noteBackgroundColor #FFFFE0
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":LibraryRestController" as REST
+participant ":LibrarySortRequestMapper" as SortMapper
+participant ":LibraryService" as Service
+participant ":ILibraryRepo" as LibraryRepo
+participant ":Domain Repositories" as Repositories
+participant ":LibraryItemSummaryMapper" as DTOMapper
+participant ":DB" as Database
+
+activate REST
+
+create "email2:Email" as Email2
+REST -->> Email2 : new Email(userIdFromHeader)
+
+create "userId2:UserId" as UserId2
+REST -->> UserId2 : new UserId(email2)
+
+REST -> SortMapper : toDomain(sortCriterion)
+activate SortMapper
+SortMapper -> SortMapper : LibrarySort.from(sortCriterion)
+
+alt sortCriterion = "title"
+    SortMapper --> REST : LibrarySort.TITLE
+else sortCriterion = "author"
+    SortMapper --> REST : LibrarySort.AUTHOR
+else sortCriterion = "type"
+    SortMapper --> REST : LibrarySort.PUBLICATION_TYPE
+else sortCriterion = "identifier"
+    SortMapper --> REST : LibrarySort.IDENTIFIER
+else missing or unsupported
+    SortMapper --> REST : LibrarySort.NONE
+end
+deactivate SortMapper
+
+REST -> Service : getListOfItemInfoInMyLibrary(\nuserId, librarySort)
+activate Service
+
+Service -> Service : LibraryId.fromUserId(userId)
+
+Service -> LibraryRepo : ofIdentity(libraryId)
+activate LibraryRepo
+LibraryRepo -> Database : find library
+activate Database
+Database --> LibraryRepo : library
+deactivate Database
+LibraryRepo --> Service : Optional<Library>
+deactivate LibraryRepo
+
+alt library does not exist or is empty
+    Service --> REST : empty list
+else library contains items
+    Service -> Service : library.getItemsIdInLibrary()
+
+    loop for each itemId
+        Service -> Repositories : obtain item, edition, publication,\nauthor and publication type
+        activate Repositories
+        Repositories -> Database : find domain data
+        activate Database
+        Database --> Repositories : domain data
+        deactivate Database
+        Repositories --> Service : item + edition + publication\n+ author + publicationType
+        deactivate Repositories
+
+        Service -> DTOMapper : toDTO(item, publication, edition,\nauthor, publicationType)
+        activate DTOMapper
+        DTOMapper --> Service : LibraryItemSummaryDTO
+        deactivate DTOMapper
+    end
+
+    alt LibrarySort.TITLE
+        Service -> Service : sort by title\nascending, case-insensitive
+    else LibrarySort.AUTHOR
+        Service -> Service : sort by authorName\nascending, case-insensitive
+    else LibrarySort.PUBLICATION_TYPE
+        Service -> Service : sort by publicationType\nascending, case-insensitive
+    else LibrarySort.IDENTIFIER
+        Service -> Service : sort by identifier\nascending, case-insensitive
+    else LibrarySort.NONE
+        Service -> Service : preserve original order
+    end
+
+    Service --> REST : LibraryItemSummaryDTO list
+end
+
+deactivate Service
+
+loop for each DTO
+    REST -> REST : add item self link
+end
+
+REST -> REST : create CollectionModel
+REST -> REST : add "/my-library/{?sort}" link\nwith rel "sort"
+
+note right of REST
+Returns:
+200 OK
+CollectionModel<LibraryItemSummaryDTO>
++ _links
+end note
+
+deactivate REST
+
+ref over REST
+[[../Process_View_Level_3_SD.puml Return to main diagram]]
+end ref
+
+@enduml

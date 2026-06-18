@@ -1,0 +1,62 @@
+@startuml
+title OPTIONS for user on /my-library %n()ref SD
+
+skinparam backgroundColor CornSilk
+skinparam noteBackgroundColor #FFFFE0
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":LibraryRestController" as REST
+participant ":UserService" as UserService
+participant ":IUserRepo" as UserRepo
+participant ":LibraryLinkProvider" as LinkProvider
+participant ":AuthorizationPolicy" as Authorization
+participant ":DB" as Database
+
+activate REST
+
+REST -> UserService : getUserByEmail(emailString)
+activate UserService
+
+create "email:Email" as Email
+UserService -->> Email : new Email(emailString)
+
+create "userId:UserId" as UserId
+UserService -->> UserId : new UserId(email)
+
+UserService -> UserRepo : ofIdentity(userId)
+activate UserRepo
+UserRepo -> Database : ofIdentity(userId)
+activate Database
+Database --> UserRepo : user
+deactivate Database
+UserRepo --> UserService : Optional<User>
+deactivate UserRepo
+
+UserService --> REST : user
+deactivate UserService
+
+create "options:%n()RepresentationModel<?>" as Options
+REST -->> Options : new RepresentationModel<>()
+
+REST -> LinkProvider : getLinks(user)
+activate LinkProvider
+LinkProvider --> REST : authorized links,\nincluding library href
+deactivate LinkProvider
+
+loop for each authorized link
+    REST -> Options : add(link)
+    activate Options
+    deactivate Options
+end
+
+deactivate REST
+
+ref over REST
+[[../Process_View_Level_3_SD.puml Return to main diagram]]
+end ref
+
+@enduml
