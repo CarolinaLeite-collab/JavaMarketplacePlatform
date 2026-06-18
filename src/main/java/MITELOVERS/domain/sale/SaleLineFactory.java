@@ -1,6 +1,9 @@
 package MITELOVERS.domain.sale;
 
-import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.SaleLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,4 +13,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class SaleLineFactory {
 
+    public SaleLine createSaleLine(UserId sellerId,
+                                   Price priceAtSale,
+                                   DirectSaleId directSaleId) {
+
+        return new SaleLine(sellerId, priceAtSale, directSaleId);
+    }
+
+    public SaleLine reconstituteSaleLine(SaleLineId saleLineId,
+                                         UserId sellerId,
+                                         Price priceAtSale,
+                                         DirectSaleId directSaleId) {
+
+        return new SaleLine(saleLineId, sellerId, priceAtSale, directSaleId);
+    }
 }
