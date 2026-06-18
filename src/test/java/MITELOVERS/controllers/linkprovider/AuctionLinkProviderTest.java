@@ -7,6 +7,7 @@ import MITELOVERS.dto.response.BidResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -207,6 +208,34 @@ class AuctionLinkProviderTest {
 
         // Assert
         assertTrue(links.isEmpty());
+    }
+
+    // ------------------------------------------------------------
+    // addBidLinks
+    // ------------------------------------------------------------
+
+    @Test
+    void addBidLinksAddsAuctionLinkPointingToAuctionOptions() {
+        // Arrange
+        String auctionId = "AU-12345678";
+        BidResponseDTO dto = new BidResponseDTO(
+                "bid-1",
+                auctionId,
+                "buyer@aeiou.com",
+                20.0,
+                "EUR",
+                Instant.parse("2026-06-10T10:00:00Z")
+        );
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        linkProvider.addBidLinks(dto);
+
+        // Assert
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("auction")));
     }
 
 }
