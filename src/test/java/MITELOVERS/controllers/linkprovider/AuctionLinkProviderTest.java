@@ -14,6 +14,10 @@ import static org.mockito.Mockito.*;
 
 class AuctionLinkProviderTest {
 
+    // ------------------------------------------------------------
+    // getLinks for /auction
+    // ------------------------------------------------------------
+
     @Test
     void getLinksUserCanSellContainsCreateAuctionLink() {
         // Arrange
@@ -50,8 +54,12 @@ class AuctionLinkProviderTest {
         assertTrue(links.isEmpty());
     }
 
+    // ------------------------------------------------------------
+    // getLinks for /auction/{auctionId}
+    // ------------------------------------------------------------
+
     @Test
-    void getLinksForSpecificAuctionUserCanViewAndBidContainsSelfAndPlaceBidLinks() {
+    void getLinksForSpecificAuctionUserCanViewAndBidContainsAllLinks() {
 
         //Arrange
         User userDouble = mock(User.class);
@@ -73,13 +81,14 @@ class AuctionLinkProviderTest {
         List<Link> links = linkProvider.getLinks(userDouble, auctionId);
 
         // Assert
-        assertEquals(2, links.size());
+        assertEquals(3, links.size());
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("place-bid")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("view-auction")));
     }
 
     @Test
-    void getLinksForSpecificAuctionUserCanViewButNotBidContainsOnlySelfLink() {
+    void getLinksForSpecificAuctionUserCanOnlyViewLinks() {
         // Arrange
         User userDouble = mock(User.class);
         UserId userIdDouble = mock(UserId.class);
@@ -100,12 +109,13 @@ class AuctionLinkProviderTest {
         List<Link> links = linkProvider.getLinks(userDouble, auctionId);
 
         // Assert
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
         assertTrue(links.get(0).getRel().value().equals("self"));
+        assertTrue(links.get(1).getRel().value().equals("view-auction"));
     }
 
     @Test
-    void getLinksForSpecificAuctionUserCanBidButNotViewContainsOnlyPlaceBidLink() {
+    void getLinksForSpecificAuctionUserOnlyBidLink() {
         // Arrange
         User userDouble = mock(User.class);
         UserId userIdDouble = mock(UserId.class);
@@ -151,5 +161,52 @@ class AuctionLinkProviderTest {
         assertTrue(links.isEmpty());
     }
 
+    // ------------------------------------------------------------
+    // getLinks for /auction/{auctionId}/bids
+    // ------------------------------------------------------------
+
+    @Test
+    void getBidLinksUserCanViewAuctionReturnsSelfAndViewBids() {
+        // Arrange
+        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
+        String auctionId = "AU-12345678";
+
+        when(userDouble.identity()).thenReturn(userIdDouble);
+        when(userIdDouble.toString()).thenReturn("user123");
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(true);
+
+        //SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<Link> links = linkProvider.getBidLinks(userDouble, auctionId);
+
+        // Assert
+        assertEquals(2, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("view-bids")));
+    }
+
+    @Test
+    void getBidLinksUserCannotViewAuctionReturnsEmptyList() {
+        // Arrange
+        User userDouble = mock(User.class);
+        String auctionId = "AU-12345678";
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(false);
+
+        //SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<Link> links = linkProvider.getBidLinks(userDouble, auctionId);
+
+        // Assert
+        assertTrue(links.isEmpty());
+    }
 
 }

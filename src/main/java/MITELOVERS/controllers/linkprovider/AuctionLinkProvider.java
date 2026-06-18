@@ -60,12 +60,34 @@ public class AuctionLinkProvider implements RootLinkProvider {
             links.add(linkTo(methodOn(AuctionRestController.class)
                     .optionsForSpecificAuction(auctionId, user.identity().toString()))
                     .withSelfRel());
+
+            links.add(linkTo(methodOn(AuctionRestController.class)
+                    .getAuctionById(auctionId.toString()))
+                    .withRel("view-auction"));
         }
 
         if (_authorizationPolicy.canBid(user)) {
             links.add(linkTo(methodOn(AuctionRestController.class)
                     .placeBid(auctionId, user.identity().toString(), null))
                     .withRel("place-bid"));
+        }
+
+        return links;
+    }
+
+    // Links for the bids of a specific auction (OPTIONS /auctions/{auctionId}/bids)
+
+    public List<Link> getBidLinks(User user, String auctionId) {
+        List<Link> links = new ArrayList<>();
+
+        if (_authorizationPolicy.canViewAuction(user)) {
+            links.add(linkTo(methodOn(AuctionRestController.class)
+                    .optionsForBids(auctionId, user.identity().toString()))
+                    .withSelfRel());
+
+            links.add(linkTo(methodOn(AuctionRestController.class)
+                    .getBidsForAuction(auctionId))
+                    .withRel("view-bids"));
         }
 
         return links;
