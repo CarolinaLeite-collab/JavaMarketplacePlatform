@@ -15,10 +15,7 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-participant ":Client" as Client
 participant ":AuctionRestController" as REST
-participant ":UserService" as userService
-participant ":IUserRepo" as userRepo
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
 participant ":AuctionFactory" as Factory
@@ -26,71 +23,41 @@ participant ":IAuctionRepo" as auctionRepo
 participant ":IItemRepo" as itemRepo
 participant "item:Item" as Item
 participant ":Auction\nResponseDTOMapper" as Mapper
-database DB
+participant "Database" as DB
 
-Client -> REST : OPTIONS /auctions {...}
-activate REST
-REST -> userService : getUserByEmail(email)
-activate userService
 
-create "email:Email" as email
-userService -->> email : create(email)
-
-create "userId:UserId" as userId
-userService -->> userId : create(userIdString)
-
-userService -> userRepo : user = ofIdentity(userId)
-activate userRepo
-userRepo --> userService : user
-deactivate userRepo
-
-userService --> REST : user
-deactivate userService
-
-REST -> Link : getLinks(user)
-activate Link
-Link --> REST : _links = List<Link>
-deactivate Link
-
-create "result:RepresentationModel<?>" as model
-REST -->> model : create()
-
-loop for each link
-    REST -> model : add(link)
-end
-
-REST -> Client : 200 OK + _links
-deactivate REST
-
-Client -> REST : POST /auctions {...}
-activate REST
-
-loop for each itemId
-create "itemId:ItemId" as itemId
-REST -->> itemId : create(itemIdString)
+loop for each itemIdString
+    create "itemId:ItemId" as itemId
+    REST -->> itemId : create(itemIdString)
 end
 
 create "currency:Currency" as currency
-REST -->> currency : valueOf(priceCurrency)
+REST -->> currency : currency = valueOf(priceCurrency)
 
 create "startingPrice:Price" as startingPrice
-REST -->> startingPrice : create(value, currency)
+REST -->> startingPrice : startingPrice = create(value, currency)
 
 create "reservePrice:Price" as reservePrice
-REST -->> reservePrice : create(value, currency)
+REST -->> reservePrice : reservePrice = create(value, currency)
 
 opt outrightPrice != null
     create "outrightPrice:Price" as outrightPrice
-    REST -->> outrightPrice : create(value, currency)
+    REST -->> outrightPrice : outrightPrice = create(value, currency)
 end
 
 create "startDate:ZonedDateTime" as startDate
-REST -->> startDate : atZone(UTC)
+REST -->> startDate : startDate = atZone(UTC)
 
 create "endDate:ZonedDateTime" as endDate
-REST -->> endDate : atZone(UTC)
+REST -->> endDate : endDate = atZone(UTC)
 
-REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate, user)
+create "email:Email" as email
+REST -->> email : create(emailString)
+
+create "seller:UserId" as seller
+REST -->> seller : create(email)
+
+REST -> Service : putItemOnAuction (itemIds, startingPrice, \nreservePrice, outrightPrice, startDate, endDate, seller)
 activate Service
 
 loop for each item - validation
@@ -116,11 +83,19 @@ deactivate Factory
 
 Service -> auctionRepo : containsOfIdentity(auctionId)
 activate auctionRepo
+auctionRepo -> DB : containsOfIdentity(auctionId)
+activate DB
+DB --> auctionRepo : false
+deactivate DB
 auctionRepo --> Service : false
 deactivate auctionRepo
 
 Service -> auctionRepo : save(auction)
 activate auctionRepo
+auctionRepo -> DB : save(auction)
+activate DB
+DB --> auctionRepo : auctionSaved
+deactivate DB
 auctionRepo --> Service : auctionSaved
 deactivate auctionRepo
 
@@ -157,7 +132,10 @@ Mapper --> REST : AuctionResponseDTO
 deactivate Mapper
 
 REST -> REST : dto.add(selfRel)
-REST --> Client : 201 Created
 deactivate REST
+
+ref over REST
+[[../Process_View_Level_3_SD.puml Return to main diagram]]
+end ref
 
 @enduml
