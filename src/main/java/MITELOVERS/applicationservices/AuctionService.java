@@ -83,7 +83,7 @@ public class AuctionService {
         return _iAuctionRepo.save(auction);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Auction getAuctionById(String auctionIdRaw) {
         AuctionId auctionId = new AuctionId(auctionIdRaw);
 
