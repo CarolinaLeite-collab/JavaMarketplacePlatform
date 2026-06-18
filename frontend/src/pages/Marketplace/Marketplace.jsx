@@ -37,6 +37,11 @@ function buildGenreOptions(genres) {
     ];
 }
 
+function sellerUsernameFromEmail (email) {
+    if(!email) return 'unknown';
+    return email.split('@')[0];
+}
+
 function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
     return directSales.flatMap((directSale) => {
         const itemIds = directSale.itemsId ?? [];
@@ -60,10 +65,13 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
                 author:itemDetails?.authorName ?? 'unknown',
                 condition:itemDetails?.condition ?? 'unknown',
                 cover:itemDetails?.picture ?? '',
-                seller:directSale.seller ?? 'unknown',
+                seller: sellerUsernameFromEmail(directSale.seller) ?? 'unknown',
                 saleType:'Direct Sale',
                 directSaleId: directSale.directSaleId ?? null,
                 auctionId: null,
+
+                //HATEOAS links
+                selfHref: directSale._links?.self?.href ?? null,
             };
         }).filter(Boolean);
     });
@@ -92,10 +100,13 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId) {
                 author: itemDetails?.authorName ?? 'unknown',
                 condition: itemDetails?.condition ?? 'unknown',
                 cover: itemDetails?.picture ?? '',
-                seller: 'unknown',
+                seller: sellerUsernameFromEmail(auction.seller) ?? 'unknown',
                 saleType: 'Auction',
                 directSaleId: null,
                 auctionId: auction.auctionId ?? null,
+
+                //HATEOAS links
+                selfHref: auction._links?.self?.href ?? null,
             };
         }).filter(Boolean);
     });
@@ -123,12 +134,22 @@ export default function Marketplace() {
     const handleSeeMore = () => {
         if (!selectedItem) return;
 
+        if (selectedItem.selfHref) {
+            if (selectedItem.saleType === 'Auction') {
+                navigate('/auction-details', {state: {selfHref: selectedItem.selfHref}});
+            } else if (selectedItem.saleType === 'Direct Sale') {
+                navigate('/direct-sale-details', {state: {selfHref: selectedItem.selfHref}});
+            }
+            return;
+        }
+
+        //fallback na ausência de HATEOAS ;_;
         if (selectedItem.saleType === 'Auction' && selectedItem.auctionId) {
             navigate(`/auctions/${selectedItem.auctionId}`);
         } else if (selectedItem.saleType === 'Direct Sale' && selectedItem.directSaleId) {
             navigate(`/directSales/${selectedItem.directSaleId}`);
         }
-    };
+    }
 
     useEffect(() => {
         let isMounted = true;
@@ -170,8 +191,6 @@ export default function Marketplace() {
                 );
 
                 const itemDetailsMap = new Map(itemResponses.filter(Boolean));
-                console.log('sample directSale', directSales);
-                console.log('sample itemDetails', itemDetailsMap.values().next().value);
                 const marketplaceItems = [
                     ...buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId),
                     ...buildAuctionItems(auctions, itemDetailsMap, genreNameToId),
@@ -233,6 +252,7 @@ export default function Marketplace() {
                                 saleType: selectedItem.saleType,
                                 directSaleId: selectedItem.directSaleId,
                                 auctionId: selectedItem.auctionId,
+                                selfHref: selectedItem.selfHref,
                             }
                         }
                         onClose={closeDetails}
