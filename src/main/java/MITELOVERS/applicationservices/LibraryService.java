@@ -8,10 +8,7 @@ import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibraryId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
@@ -23,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -76,7 +74,12 @@ public class LibraryService {
     public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(String userId) {
 
         UserId uid = new UserId(new Email(userId));
-        LibraryId libraryId = LibraryId.fromUserId(uid);
+        return getListOfItemInfoInMyLibrary(uid, LibrarySort.NONE);
+    }
+
+    @Transactional(readOnly = true)
+    public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(UserId userId, LibrarySort sort) {
+        LibraryId libraryId = LibraryId.fromUserId(userId);
 
         if (_libraryRepo.ofIdentity(libraryId).isEmpty()) {
             return Collections.emptyList();
@@ -102,8 +105,16 @@ public class LibraryService {
             Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
                     .orElseThrow(() -> new IllegalStateException("Publication not found!"));
 
-            result.add(_summaryMapper.toDTO(item, publication));
+            Author author = _authorRepo.ofIdentity(publication.getAuthorId())
+                    .orElseThrow(() -> new IllegalStateException("Author not found!"));
+
+            PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
+                    .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
+
+            result.add(_summaryMapper.toDTO(item, publication, edition, author, publicationType));
         }
+
+        sortLibraryItems(result, sort);
 
         return result;
     }
@@ -156,7 +167,13 @@ public class LibraryService {
         Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
                 .orElseThrow(() -> new IllegalStateException("Publication not found"));
 
-        return _summaryMapper.toDTO(item, publication);
+        Author author = _authorRepo.ofIdentity(publication.getAuthorId())
+                .orElseThrow(() -> new IllegalStateException("Author not found"));
+
+        PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
+                .orElseThrow(() -> new IllegalStateException("Publication Type not found"));
+
+        return _summaryMapper.toDTO(item, publication, edition, author, publicationType);
     }
 
     @Transactional(readOnly = true)
@@ -209,6 +226,32 @@ public class LibraryService {
         return _libraryRepo.ofIdentity(libraryId)
                 .map(Library::getItemsIdInLibrary)
                 .orElse(Collections.emptyList());
+    }
+
+    private void sortLibraryItems(List<LibraryItemSummaryDTO> items, LibrarySort sort) {
+        Comparator<LibraryItemSummaryDTO> comparator = switch (sort) {
+            case TITLE -> Comparator.comparing(
+                    LibraryItemSummaryDTO::getTitle,
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case AUTHOR -> Comparator.comparing(
+                    LibraryItemSummaryDTO::getAuthorName,
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case PUBLICATION_TYPE -> Comparator.comparing(
+                    LibraryItemSummaryDTO::getPublicationType,
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case IDENTIFIER -> Comparator.comparing(
+                    LibraryItemSummaryDTO::getIdentifier,
+                    String.CASE_INSENSITIVE_ORDER
+            );
+            case NONE -> null;
+        };
+
+        if (comparator != null) {
+            items.sort(comparator);
+        }
     }
 
 

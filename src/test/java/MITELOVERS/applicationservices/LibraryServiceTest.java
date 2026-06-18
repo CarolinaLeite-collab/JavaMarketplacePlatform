@@ -8,7 +8,10 @@ import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibrarySort;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import MITELOVERS.mapper.ItemDetailsMapper;
@@ -96,6 +99,8 @@ class LibraryServiceTest {
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
         LibraryItemSummaryDTO summaryDTODouble = mock(LibraryItemSummaryDTO.class);
 
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
@@ -103,7 +108,9 @@ class LibraryServiceTest {
         when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
         when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble)).thenReturn(summaryDTODouble);
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble)).thenReturn(summaryDTODouble);
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
 
         // Act
         List<LibraryItemSummaryDTO> result = libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com");
@@ -163,6 +170,192 @@ class LibraryServiceTest {
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
                 libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
+    }
+
+    @Test
+    void testGetListShouldSortByTitle() {
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        Library libraryDouble = mock(Library.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType typeDouble = mock(PublicationType.class);
+
+        LibraryItemSummaryDTO z = new LibraryItemSummaryDTO(
+                "1", "Zulu", "Author", "Book", "999", null);
+        LibraryItemSummaryDTO a = new LibraryItemSummaryDTO(
+                "2", "Alpha", "Author", "Book", "111", null);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(id1, id2));
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(typeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble,
+                authorDouble, typeDouble)).thenReturn(z, a);
+
+        List<LibraryItemSummaryDTO> result =
+                libraryService.getListOfItemInfoInMyLibrary(userIdDouble, LibrarySort.TITLE);
+
+        assertSame(a, result.get(0));
+        assertSame(z, result.get(1));
+    }
+
+    @Test
+    void testGetListShouldSortByAuthor() {
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        Library libraryDouble = mock(Library.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType typeDouble = mock(PublicationType.class);
+
+        LibraryItemSummaryDTO z = new LibraryItemSummaryDTO(
+                "1", "Title", "Zulu", "Book", "999", null);
+        LibraryItemSummaryDTO a = new LibraryItemSummaryDTO(
+                "2", "Title", "Alpha", "Book", "111", null);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(id1, id2));
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(typeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble,
+                authorDouble, typeDouble)).thenReturn(z, a);
+
+        List<LibraryItemSummaryDTO> result =
+                libraryService.getListOfItemInfoInMyLibrary(userIdDouble, LibrarySort.AUTHOR);
+
+        assertSame(a, result.get(0));
+        assertSame(z, result.get(1));
+    }
+
+    @Test
+    void testGetListShouldSortByPublicationType() {
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        Library libraryDouble = mock(Library.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType typeDouble = mock(PublicationType.class);
+
+        LibraryItemSummaryDTO z = new LibraryItemSummaryDTO(
+                "1", "Title", "Author", "Zine", "999", null);
+        LibraryItemSummaryDTO a = new LibraryItemSummaryDTO(
+                "2", "Title", "Author", "Book", "111", null);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(id1, id2));
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(typeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble,
+                authorDouble, typeDouble)).thenReturn(z, a);
+
+        List<LibraryItemSummaryDTO> result =
+                libraryService.getListOfItemInfoInMyLibrary(
+                        userIdDouble, LibrarySort.PUBLICATION_TYPE);
+
+        assertSame(a, result.get(0));
+        assertSame(z, result.get(1));
+    }
+
+    @Test
+    void testGetListShouldSortByIdentifier() {
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        Library libraryDouble = mock(Library.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType typeDouble = mock(PublicationType.class);
+
+        LibraryItemSummaryDTO z = new LibraryItemSummaryDTO(
+                "1", "Title", "Author", "Book", "999", null);
+        LibraryItemSummaryDTO a = new LibraryItemSummaryDTO(
+                "2", "Title", "Author", "Book", "111", null);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(id1, id2));
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(typeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble,
+                authorDouble, typeDouble)).thenReturn(z, a);
+
+        List<LibraryItemSummaryDTO> result =
+                libraryService.getListOfItemInfoInMyLibrary(
+                        userIdDouble, LibrarySort.IDENTIFIER);
+
+        assertSame(a, result.get(0));
+        assertSame(z, result.get(1));
+    }
+
+    @Test
+    void getListWithNoneShouldKeepOriginalOrder() {
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        Library libraryDouble = mock(Library.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+        Item itemDouble = mock(Item.class);
+        Edition editionDouble = mock(Edition.class);
+        Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType typeDouble = mock(PublicationType.class);
+
+        LibraryItemSummaryDTO first = new LibraryItemSummaryDTO(
+                "1", "Zulu", "Author", "Book", "999", null
+        );
+        LibraryItemSummaryDTO second = new LibraryItemSummaryDTO(
+                "2", "Alpha", "Author", "Book", "111", null
+        );
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getItemsIdInLibrary()).thenReturn(List.of(id1, id2));
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(typeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble, authorDouble, typeDouble)).thenReturn(first, second);
+
+        List<LibraryItemSummaryDTO> result =
+                libraryService.getListOfItemInfoInMyLibrary(
+                        userIdDouble,
+                        LibrarySort.NONE
+                );
+
+        assertSame(first, result.get(0));
+        assertSame(second, result.get(1));
     }
 
     // ----------------------------------------------------------------
@@ -378,12 +571,52 @@ class LibraryServiceTest {
     }
 
     @Test
+    void testAddItemToLibraryAuthorNotFoundThrowsIllegalStateException() {
+        Item item = mock(Item.class);
+        Library library = mock(Library.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(item));
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
+        when(library.addItemIdToLibrary(any())).thenReturn(true);
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () ->
+                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+    }
+
+    @Test
+    void testAddItemToLibraryPublicationTypeNotFoundThrowsIllegalStateException() {
+        Item item = mock(Item.class);
+        Library library = mock(Library.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+        Author author = mock(Author.class);
+
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(item));
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
+        when(library.addItemIdToLibrary(any())).thenReturn(true);
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(author));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () ->
+                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+    }
+
+    @Test
     void testAddItemToLibraryNewLibraryCreatedAndItemAddedReturnsSummaryDTO() {
         // Arrange
         Item itemDouble = mock(Item.class);
         Library libraryDouble = mock(Library.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
         LibraryItemSummaryDTO summaryDTODouble = mock(LibraryItemSummaryDTO.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
@@ -392,8 +625,9 @@ class LibraryServiceTest {
         when(libraryDouble.addItemIdToLibrary(any())).thenReturn(true);
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
         when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble)).thenReturn(summaryDTODouble);
-
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble)).thenReturn(summaryDTODouble);
         // Act
         LibraryItemSummaryDTO result = libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com");
 
@@ -409,6 +643,8 @@ class LibraryServiceTest {
         Library libraryDouble = mock(Library.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
         LibraryItemSummaryDTO summaryDTODouble = mock(LibraryItemSummaryDTO.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
@@ -416,8 +652,9 @@ class LibraryServiceTest {
         when(libraryDouble.addItemIdToLibrary(any())).thenReturn(true);
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
         when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
-        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble)).thenReturn(summaryDTODouble);
-
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
+        when(summaryMapperDouble.toDTO(itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble)).thenReturn(summaryDTODouble);
         // Act
         LibraryItemSummaryDTO result = libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com");
 
@@ -578,6 +815,46 @@ class LibraryServiceTest {
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
                 libraryService.getListOfItemInfoInMyLibraryFull("pedro@aeiou.com"));
+    }
+
+    @Test
+    void testGetListOfItemInfoInMyLibraryAuthorNotFoundThrowsIllegalStateException() {
+        ItemId itemId = mock(ItemId.class);
+        Library library = mock(Library.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
+        when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
+        when(itemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () ->
+                libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
+    }
+
+    @Test
+    void testGetListOfItemInfoInMyLibraryPublicationTypeNotFoundThrowsIllegalStateException() {
+        ItemId itemId = mock(ItemId.class);
+        Library library = mock(Library.class);
+        Item item = mock(Item.class);
+        Edition edition = mock(Edition.class);
+        Publication publication = mock(Publication.class);
+        Author author = mock(Author.class);
+
+        when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
+        when(library.getItemsIdInLibrary()).thenReturn(List.of(itemId));
+        when(itemRepoDouble.ofIdentity(itemId)).thenReturn(Optional.of(item));
+        when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(edition));
+        when(publicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publication));
+        when(authorRepoDouble.ofIdentity(any())).thenReturn(Optional.of(author));
+        when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        assertThrows(IllegalStateException.class, () ->
+                libraryService.getListOfItemInfoInMyLibrary("pedro@aeiou.com"));
     }
 }
 
