@@ -4,6 +4,7 @@ import { Affix } from '@mantine/core';
 import { NewListModal } from "../../components/lists/newlistmodal/NewListModal.tsx";
 import { useEffect, useState, useContext } from "react";
 import { FiltersBar } from "../../components/lists/FiltersBar.tsx";
+import { ListsTabs } from "../../components/lists/ListsTabs.tsx";
 import AppContext from "../../context/AppContext.tsx";
 import { getGenres } from "../../context/lists/ListsActions.jsx";
 
@@ -31,6 +32,9 @@ export default function MyListsPage() {
 
     return (
         <DefaultLayout title="My Lists" subtitle="CHECK OUT YOUR LISTS:">
+
+            {/* Tabs to switch between My Lists and Public Lists */}
+            <ListsTabs />
 
             {/* Filters Section */}
             <FiltersBar

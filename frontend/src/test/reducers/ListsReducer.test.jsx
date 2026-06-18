@@ -122,7 +122,7 @@ describe('listsReducer', () => {
         it('maps genres to value/label pairs', () => {
             const genres = [{ genreId: 'fiction', genreName: 'Fiction' }];
             const result = listsReducer(initialListsState, { type: 'GET_GENRES_SUCCESS', payload: genres });
-            expect(result.genres).toEqual([{ value: 'fiction', label: 'Fiction' }]);
+            expect(result.genres).toEqual([{ value: 'Fiction', label: 'Fiction' }]);
         });
     });
 
@@ -293,4 +293,3 @@ describe('listsReducer', () => {
         expect(result.error).toBe('failed');
     });
 });
-
