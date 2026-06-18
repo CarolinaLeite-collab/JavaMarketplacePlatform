@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import static org.hamcrest.core.StringContains.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -50,12 +52,8 @@ class AuctionRestControllerTest {
     @MockitoBean
     private UserService _userService;
 
-    // ------------------------------------------------------------
-    // GET /auctions
-    // ------------------------------------------------------------
-
     @Test
-    void getAllActiveAuctions_shouldReturnOk() throws Exception {
+    void getAllActiveAuctionsShouldReturnOk() throws Exception {
         // arrange
         Auction auction = mock(Auction.class);
         AuctionResponseDTO dto = new AuctionResponseDTO(
@@ -80,7 +78,7 @@ class AuctionRestControllerTest {
     }
 
     @Test
-    void getAllActiveAuctions_shouldReturnNoContentWhenEmpty() throws Exception {
+    void getAllActiveAuctionsShouldReturnNoContentWhenEmpty() throws Exception {
         // arrange
         when(_auctionService.getAllActiveAuctions()).thenReturn(List.of());
 
@@ -206,35 +204,54 @@ class AuctionRestControllerTest {
     // ------------------------------------------------------------
 
     @Test
-    void optionsUserCanSellReturnsCreateAuctionLink() throws Exception {
+    void shouldReturnAllowHeaderWithOptionsAndPost() throws Exception {
         // arrange
         User user = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail("user@test.com"))
                 .thenReturn(user);
 
-        when(_auctionLinkProvider.getLinks(user))
-                .thenReturn(List.of(Link.of("/auctions", "create-auction")));
+        when(_auctionLinkProvider.getAllowedMethods(user))
+                .thenReturn(List.of(
+                        HttpMethod.OPTIONS,
+                        HttpMethod.POST));
 
         // act + assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions")
-                        .param("email", "user@example.com"))
+        mockMvc.perform(
+                        options("/auctions")
+                                .header("X-User-Id", "user@test.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links['create-auction']").exists());
+                .andExpect(header().string(
+                        "Allow",
+                        containsString("OPTIONS")))
+                .andExpect(header().string(
+                        "Allow",
+                        containsString("POST")))
+                .andExpect(content().string(""));
     }
 
     @Test
-    void optionsUserCannotSellReturnsNoLinks() throws Exception {
+    void shouldReturnAllowHeaderWithOnlyOptions() throws Exception {
         // arrange
         User user = mock(User.class);
-        when(_userService.getUserByEmail("user@example.com")).thenReturn(user);
-        when(_auctionLinkProvider.getLinks(user)).thenReturn(List.of());
+
+        when(_userService.getUserByEmail("user@test.com"))
+                .thenReturn(user);
+
+        when(_auctionLinkProvider.getAllowedMethods(user))
+        .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // act + assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions")
-                        .param("email", "user@example.com"))
+        mockMvc.perform(
+                options("/auctions")
+                        .header("X-User-Id", "user@test.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links").doesNotExist());
+                .andExpect(header().string("Allow",
+                        containsString("OPTIONS")))
+                .andExpect(header().string(
+                        "Allow",
+                        not(containsString("POST"))))
+                .andExpect(content().string(""));
     }
 
     // ------------------------------------------------------------
