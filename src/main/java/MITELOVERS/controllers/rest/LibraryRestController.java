@@ -4,13 +4,18 @@ import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.LibrarySort;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.AddItemRequestDTO;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
+import MITELOVERS.mapper.LibrarySortRequestMapper;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +39,13 @@ public class LibraryRestController {
     private final LibraryService _libraryService;
     private final LibraryLinkProvider _libraryLinkProvider;
     private final UserService _userService;
+    private final LibrarySortRequestMapper _sortRequestMapper;
 
-    public LibraryRestController(LibraryService libraryService, LibraryLinkProvider  libraryLinkProvider, UserService userService) {
+    public LibraryRestController(LibraryService libraryService, LibraryLinkProvider libraryLinkProvider, UserService userService, LibrarySortRequestMapper sortRequestMapper) {
         _libraryService = libraryService;
         _libraryLinkProvider = libraryLinkProvider;
         _userService = userService;
+        _sortRequestMapper = sortRequestMapper;
 
     }
 
@@ -58,53 +65,66 @@ public class LibraryRestController {
 
         _libraryLinkProvider.getLinks(user).forEach(model::add);
 
-        return ResponseEntity.ok(model);
+        return ResponseEntity
+                .ok()
+                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .body(model);
     }
 
-    @GetMapping(path ="/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(value = "sort", required = false) String sort) {
 
-            List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(userId);
+        UserId uid = new UserId(new Email(userId));
+        LibrarySort librarySort = _sortRequestMapper.toDomain(sort);
 
-            for (LibraryItemSummaryDTO dto : dtos) {
-                Link link = linkTo(methodOn(LibraryRestController.class)
-                        .getItemDetail(dto.getItemId())).withSelfRel();
-                dto.add(link);
-            }
-            CollectionModel<LibraryItemSummaryDTO> result = CollectionModel.of(dtos,
-                    linkTo(methodOn(LibraryRestController.class)
-                            .getMyLibrary(userId)).withSelfRel());
+        List<LibraryItemSummaryDTO> dtos =
+                _libraryService.getListOfItemInfoInMyLibrary(uid, librarySort);
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+        for (LibraryItemSummaryDTO dto : dtos) {
+            Link link = linkTo(methodOn(LibraryRestController.class)
+                    .getItemDetail(dto.getItemId())).withSelfRel();
+            dto.add(link);
+        }
+        CollectionModel<LibraryItemSummaryDTO> result = CollectionModel.of(dtos,
+                linkTo(methodOn(LibraryRestController.class)
+                        .getMyLibrary(userId, sort)).withSelfRel());
+
+        result.add(
+                Link.of("/my-library/{?sort}")
+                        .withRel("sort")
+        );
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
 
     }
 
-        @GetMapping(path ="/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
+    @GetMapping(path = "/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
 
-                LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
+        LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
 
-                Link link = linkTo(methodOn(LibraryRestController.class)
-                        .getItemDetail(itemId)).withSelfRel();
-                dto.add(link);
+        Link link = linkTo(methodOn(LibraryRestController.class)
+                .getItemDetail(itemId)).withSelfRel();
+        dto.add(link);
 
-                return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
 
-        }
+    }
 
-    @PostMapping(path ="/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LibraryItemSummaryDTO> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
 
-            LibraryItemSummaryDTO dto = _libraryService.addItemToLibrary(request.getItemId(), userId);
+        LibraryItemSummaryDTO dto = _libraryService.addItemToLibrary(request.getItemId(), userId);
 
-            Link selfLink = linkTo(methodOn(LibraryRestController.class)
-                    .getItemDetail(dto.getItemId())).withSelfRel();
-            dto.add(selfLink);
+        Link selfLink = linkTo(methodOn(LibraryRestController.class)
+                .getItemDetail(dto.getItemId())).withSelfRel();
+        dto.add(selfLink);
 
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 
     }

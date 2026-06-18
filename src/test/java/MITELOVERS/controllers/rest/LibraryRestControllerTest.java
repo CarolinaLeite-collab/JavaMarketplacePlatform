@@ -5,8 +5,12 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.LibrarySort;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.LibraryItemDetailsDTO;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
+import MITELOVERS.mapper.LibrarySortRequestMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -19,12 +23,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LibraryRestController.class)
 @Import(CustomRestExceptionHandler.class)
@@ -42,6 +47,14 @@ class LibraryRestControllerTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private LibrarySortRequestMapper sortRequestMapper;
+
+    @BeforeEach
+    void setUp() {
+        when(sortRequestMapper.toDomain(null))
+                .thenReturn(LibrarySort.NONE);
+    }
 
     @Test
     void shouldReturn200WithItemsWhenLibraryExists() throws Exception {
@@ -49,9 +62,16 @@ class LibraryRestControllerTest {
         LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
                 "3C5D126F8B",
                 "1984",
+                "George Orwell",
+                "Book",
+                "9780451524935",
                 "https://example.com/1984.jpg"
         );
-        when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of(dto));
+
+        when(libraryService.getListOfItemInfoInMyLibrary(
+                any(UserId.class),
+                eq(LibrarySort.NONE)
+        )).thenReturn(List.of(dto));
 
         // Act
         var result = mockMvc.perform(get("/my-library/")
@@ -60,13 +80,29 @@ class LibraryRestControllerTest {
         // Assert
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath("$._embedded.libraryItemSummaryDTOList[0]._links.self").exists());
+                .andExpect(jsonPath(
+                        "$._embedded.libraryItemSummaryDTOList[0]._links.self"
+                ).exists())
+                .andExpect(jsonPath(
+                        "$._embedded.libraryItemSummaryDTOList[0].authorName"
+                ).value("George Orwell"))
+                .andExpect(jsonPath(
+                        "$._embedded.libraryItemSummaryDTOList[0].publicationType"
+                ).value("Book"))
+                .andExpect(jsonPath(
+                        "$._embedded.libraryItemSummaryDTOList[0].identifier"
+                ).value("9780451524935"))
+                .andExpect(jsonPath("$._links.sort").exists())
+                .andExpect(jsonPath("$._links.sort.templated").value(true));
     }
 
     @Test
     void shouldReturn200WithEmptyListWhenLibraryIsEmpty() throws Exception {
         // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
+        when(libraryService.getListOfItemInfoInMyLibrary(
+                any(UserId.class),
+                eq(LibrarySort.NONE)
+        )).thenReturn(List.of());
 
         // Act
         var result = mockMvc.perform(get("/my-library/")
@@ -80,7 +116,11 @@ class LibraryRestControllerTest {
     @Test
     void shouldReturn200WithEmptyListWhenNoLibraryExists() throws Exception {
         // Arrange
-        when(libraryService.getListOfItemInfoInMyLibrary(any())).thenReturn(List.of());
+
+        when(libraryService.getListOfItemInfoInMyLibrary(
+                any(UserId.class),
+                eq(LibrarySort.NONE)
+        )).thenReturn(List.of());
 
         // Act
         var result = mockMvc.perform(get("/my-library/")
@@ -89,6 +129,23 @@ class LibraryRestControllerTest {
         // Assert
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists());
+    }
+
+
+    @Test
+    void shouldSortLibraryByAuthor() throws Exception {
+        when(sortRequestMapper.toDomain("author"))
+                .thenReturn(LibrarySort.AUTHOR);
+
+        when(libraryService.getListOfItemInfoInMyLibrary(
+                any(UserId.class),
+                eq(LibrarySort.AUTHOR)
+        )).thenReturn(List.of());
+
+        mockMvc.perform(get("/my-library/")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .param("sort", "author"))
+                .andExpect(status().isOk());
     }
 
 
@@ -117,6 +174,9 @@ class LibraryRestControllerTest {
         LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
                 "3C5D126F8B",
                 "1984",
+                "George Orwell",
+                "Book",
+                "9780451524935",
                 "https://example.com/1984.jpg"
         );
         when(libraryService.addItemToLibrary(any(), any())).thenReturn(dto);
@@ -127,7 +187,17 @@ class LibraryRestControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"itemId\": \"3C5D126F8B\"}"))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$._links.self").exists());
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath(
+                        "$.authorName"
+                ).value("George Orwell"))
+                .andExpect(jsonPath(
+                        "$.publicationType"
+                ).value("Book"))
+                .andExpect(jsonPath(
+                        "$.identifier"
+                ).value("9780451524935"));
+
     }
 
 
@@ -146,6 +216,9 @@ class LibraryRestControllerTest {
                         .param("email", "pedro@aeiou.com")
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
+                .andExpect(header().string("Allow", containsString("GET")))
+                .andExpect(header().string("Allow", containsString("POST")))
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links.library").exists())
                 .andExpect(jsonPath("$._links.library-add").exists());
@@ -163,6 +236,9 @@ class LibraryRestControllerTest {
                         .param("email", "readonly@aeiou.com")
                         .accept(MediaTypes.HAL_JSON))
                 .andExpect(status().isOk())
+                .andExpect(header().string("Allow", containsString("GET")))
+                .andExpect(header().string("Allow", containsString("POST")))
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
