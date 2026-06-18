@@ -1,5 +1,4 @@
 import {Navigate, Route, Routes} from 'react-router-dom';
-import ListsLandingPage from '../pages/Lists/ListsLandingPage.jsx';
 import MyListsPage from '../pages/Lists/MyListsPage.jsx';
 import PublicListsPage from '../pages/Lists/PublicListsPage.tsx';
 import ListItemsPage from '../pages/Lists/ListItemsPage.tsx';
@@ -25,8 +24,8 @@ export function AppRoutes() {
         <Routes>
             <Route path="/" element={<Marketplace />} />
 
-            {/* Lists Landing Page */}
-            <Route path="/lists" element={<ListsLandingPage />} />
+            {/* /lists now redirects straight into My Lists; tabs handle switching to Public */}
+            <Route path="/lists" element={<Navigate to="/lists/my-lists" replace />} />
 
             {/* My Lists */}
             <Route
