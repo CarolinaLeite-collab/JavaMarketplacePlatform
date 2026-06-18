@@ -24,12 +24,12 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * Application service responsible for managing the authenticated user's library.
+ * Application service responsible for managing a user's library.
  *
  * <p>
- * Coordinates domain repositories and mappers to expose library-related
- * use cases, including retrieving item summaries, item details, and
- * adding items to a user's library.
+ * Coordinates domain repositories and mappers to support library-related
+ * use cases, including retrieving and sorting item summaries, retrieving
+ * item details, listing item identifiers, and adding items to a library.
  * </p>
  */
 
