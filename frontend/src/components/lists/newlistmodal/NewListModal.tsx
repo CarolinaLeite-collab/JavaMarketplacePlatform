@@ -2,8 +2,8 @@ import {useContext, useEffect, useState} from 'react';
 import {Button, Modal, Select, Stack, Text, TextInput} from '@mantine/core';
 import {useDisclosure} from '@mantine/hooks';
 import {IconPlus} from '@tabler/icons-react';
-import AppContext from '../../context/AppContext';
-import {createList, getGenres} from '../../context/lists/ListsActions';
+import AppContext from '../../../context/AppContext.tsx';
+import {createList, getGenres} from '../../../context/lists/ListsActions.jsx';
 
 export function NewListModal() {
     const [opened, { open, close }] = useDisclosure(false);
@@ -31,6 +31,7 @@ export function NewListModal() {
                 title="Create New List"
                 overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
                 centered
+                transitionProps={{ duration: 0 }}
             >
                 <Stack>
                     {error && <Text fz="sm" c="red">{error}</Text>}

@@ -96,7 +96,10 @@ async function patchByHref(href, body) {
         },
         body: JSON.stringify(body)
     });
-    if (!response.ok) throw new Error(`${response.status}`);
+    if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage || `${response.status}`);
+    }
     if (response.status === 204) return null;
     return response.json();
 }
