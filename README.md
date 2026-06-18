@@ -34,6 +34,8 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Insecure Configuration Detection (config-scan)](#insecure-configuration-detection-config-scan)
     * [Run Tests on Pull Request](#run-tests-on-pull-request)
     * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [License Risk Management](#license-risk-management)
+      * [License Policy](#license-policy)
   * [SpringBoot application.properties](#springboot-applicationproperties)
     * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
   * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
@@ -585,6 +587,27 @@ jobs:
           java-version: '21'
           cache: maven
 
+        - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies (deterministic)
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --run
+
+      - name: Verify frontend coverage
+        working-directory: frontend
+        run: npm run test:coverage
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        
       - name: Cache OWASP Dependency-Check data
         uses: actions/cache@v4
         with:
@@ -1106,6 +1129,7 @@ Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabili
 
 This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
 
+
 **CI Integration:**
 
 An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
@@ -1124,6 +1148,189 @@ To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat w
 After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
 
 ---
+
+### License Risk Management
+
+License risk is managed automatically in CI using a Maven-based scanning step.
+
+```xml
+<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7.1</version>
+            </plugin>
+```
+
+It is used to identify licensing risks before dependencies are merged, by generating a report of all third-party licenses used by the application.
+
+The generated license report is archived as a CI artifact and reviewed alongside other security and compliance reports.
+
+The project's license policy is divided into three categories: `Allowed licenses`, `Restricted` and `Not Approved`.
+
+| Category | Licenses |
+|----------|----------|
+| ✅ **Allowed** | MIT<br>Apache-2.0<br>BSD-2-Clause<br>BSD-3-Clause<br>EPL-2.0 |
+| ⚠️ **Restricted / Review Required** | LGPL |
+| ❌ **Not Approved** | GPL<br>AGPL<br>Unknown or unlicensed dependencies |
+
+  Note: LGPL dependencies trigger a warning comment but do not fail the pipeline
+
+**CI Integration:**
+
+The license-scan job runs in parallel with `semgrep-sast` and `config-scan`, both gated behind `gitleaks`. 
+It performs the following steps:
+    - Generates a `THIRD-PARTY.txt` report via `mvn license:add-third-party`.
+    - Posts a PR comment listing all dependencies grouped by license status (✅ approved / ❌ blocked)
+    - Fails the pipeline if any dependency uses a non-approved license (AGPL, GPL-3, or GPL without a classpath exception)
+    - Uploads `THIRD-PARTY.txt as a CI artifact
+
+```yml
+  license-scan:
+    name: License Risk Scan
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Generate dependency license report
+        run: mvn license:add-third-party
+
+      - name: Post License Report comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let body = '## 📜 License Risk Analysis\n\n';
+
+            try {
+              const report = fs.readFileSync(
+                'target/generated-sources/license/THIRD-PARTY.txt',
+                'utf8'
+              );
+
+              const lines = report.split('\n');
+
+              let totalDependencies = 0;
+              const findings = [];
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+
+                if (!trimmed.startsWith('(')) continue;
+
+                const coordinatesMatch = trimmed.match(/\(([^():]+:[^():]+:[^()\s]+)\s*-\s*.*\)$/);
+                if (!coordinatesMatch) continue;
+
+                totalDependencies++;
+
+                const dependency = coordinatesMatch[1];
+
+                const licensePart = trimmed
+                  .replace(/\s*\([^():]+:[^():]+:[^()\s]+\s*-\s*.*\)$/, '')
+                  .trim();
+
+                const normalizedLicense = licensePart.toUpperCase();
+
+                const hasAgpl = normalizedLicense.includes('AGPL');
+
+                const hasPureGpl =
+                  normalizedLicense.includes('GPL-3') ||
+                  normalizedLicense.includes('GPL 3') ||
+                  normalizedLicense.includes('GPLV3') ||
+                  normalizedLicense.includes('GNU GENERAL PUBLIC LICENSE');
+
+                const hasException =
+                  normalizedLicense.includes('CPE') ||
+                  normalizedLicense.includes('CLASSPATH EXCEPTION');
+
+                const hasAllowedAlternative =
+                  normalizedLicense.includes('EPL') ||
+                  normalizedLicense.includes('ECLIPSE PUBLIC LICENSE') ||
+                  normalizedLicense.includes('APACHE') ||
+                  normalizedLicense.includes('MIT') ||
+                  normalizedLicense.includes('BSD');
+
+                const blocked =
+                  hasAgpl ||
+                  (hasPureGpl && !hasException && !hasAllowedAlternative);
+
+                if (blocked) {
+                  findings.push({
+                    dependency,
+                    license: licensePart
+                  });
+                }
+              }
+
+              body += `✅ ${totalDependencies} dependencies reviewed\n\n`;
+
+              if (findings.length === 0) {
+                body += 'No dependencies with non-approved licenses were detected.';
+              } else {
+                body += '| Dependency | License | Status |\n';
+                body += '|---|---|---|\n';
+
+                for (const finding of findings) {
+                  body += `| \`${finding.dependency}\` | ${finding.license} | ❌ Replace or request exception |\n`;
+                }
+
+                body += '\n> ⚠️ Dependencies using AGPL or GPL without an approved exception require replacement or an approved exception.';
+              }
+
+            } catch (e) {
+              body += '_Could not read THIRD-PARTY.txt report._';
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+
+      - name: Upload License Report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: third-party-licenses
+          path: target/generated-sources/license/THIRD-PARTY.txt
+
+
+      - name: Enforce license policy
+        run: |
+          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
+            exit 1
+          fi
+
+```
+The `build-and-test-with-coverage` job declares `license-scan` as a dependency (needs: `[semgrep-sast, config-scan, license-scan]`), ensuring no build or test runs until the license gate passes.
+
+The license scan was validated on a real Pull Request.
+The pipeline correctly posted a PR comment summarising the license analysis:
+
+![](docs/readme-printscreens/LicenseRiskAnalyses.jpg)
+
+On validation, 144 dependencies were reviewed with no violations detected.
+
+---
+
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined.
@@ -1190,9 +1397,9 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality Gates
 
- - Build must succeed with mvn clean verify
+ - Build must succeed with mvn clean verify (Backend) and npm run build (Frontend)
 
- - All unit tests must pass
+ - All unit tests must pass (JUnit 5 for backend / Vitest for frontend)
 
  - JaCoCo line coverage must be ≥ 95% (enforced in Maven verify)
 
@@ -1212,28 +1419,34 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality & Security Gates Summary Table
 
-| **Gate**                             | **Tool**               | **Threshold / Condition**             | **Enforcement Workflow**                                      |
-|--------------------------------------|------------------------|---------------------------------------|---------------------------------------------------------------|
-| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                   | Maven ``verify`` phase                                        |
-| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                      | Hardened Security Pipeline → ``semgrep-sast``                 |
-| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings             | Hardened Security Pipeline → `config-scan`                    |
-| **Secret Detection**                 | Gitleaks               | 0 secrets detected                    | Hardened Security Pipeline → ``gitleaks``                     |
-| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities            | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully           | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **PR Notifications**                 | Discord Webhooks       | Informational only                    | Notify PR Creation / Notify PR Merge                          |
+| **Gate**                             | **Tool**               | **Threshold / Condition**                    | **Enforcement Workflow**                                      |
+|--------------------------------------|------------------------|----------------------------------------------|---------------------------------------------------------------|
+| **Build & Unit Tests**               | Maven / JUnit          | `mvn clean verify` must succeed              | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                          | Maven `verify` phase                                          |
+| **Static Analysis (SAST)**           | Semgrep                | 0 ERROR findings                             | Hardened Security Pipeline → `semgrep-sast`                   |
+| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings                    | Hardened Security Pipeline → `config-scan`                    |
+| **Secret Detection**                 | Gitleaks               | 0 secrets detected                           | Hardened Security Pipeline → `gitleaks`                       |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities                   | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **License Risk (SCA)**               | Maven License Plugin   | 0 non-approved licenses (GPL / AGPL)         | Hardened Security Pipeline → `license-scan`                   |
+| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully                  | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **PR Notifications**                 | Discord Webhooks       | Informational only                           | Notify PR Creation / Notify PR Merge                          |
+| **Frontend Build & Logic**           | Vitest / npm           | `npm test -- --run` and build must succeed   | Hardened Security Pipeline → Frontend steps                   |
+| **Frontend Test Coverage**           | Vitest Coverage        | Execution of `test:coverage` without errors  | Hardened Security Pipeline → Frontend steps                   |
 
 ## Local Security & Quality Testing (Developer Guide)
 
 Developers can run the same checks locally before pushing a PR.
 
-1. Run full build + coverage + SCA ('mvn clean verify');
 
-2. Run Gitleaks locally ('gitleaks detect --source . --verbose');
+1. Run full backend build + coverage + SCA (`mvn clean verify`);
 
-3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/ .github/ pom.xml');
+2. Run full frontend isolation check (`cd frontend && npm ci && npm test -- --run && npm run test:coverage`);
 
-4. Generate SBOM locally ('mvn cyclonedx:makeAggregateBom');
+3. Run Gitleaks locally (`gitleaks detect --source . --verbose`);
+
+4. Run Semgrep locally (`semgrep scan --config auto --config p/java src/ .github/ pom.xml`);
+
+5. Generate SBOM locally (`mvn cyclonedx:makeAggregateBom`);
 
 ### How to fix Failing Gates
 
@@ -1306,7 +1519,6 @@ Both Dockerfiles follow secure image-building practices:
 - **Non-root user** — containers run as a non-privileged user
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
 - **No hardcoded secrets** — all configuration is passed via environment variables
-
 
 ---
 
@@ -1470,6 +1682,109 @@ curl http://localhost:8081/actuator/health
 NAME                          IMAGE               COMMAND               SERVICE   CREATED         STATUS                   PORTS
 switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
 ```
+
+### Build, Scan, and Publish Docker Images
+
+A dedicated CI workflow was added to automate the build, security scanning, and publication of both backend and frontend Docker images.
+This workflow runs on:
+
+- Pushes to main
+- Pull requests targeting main
+- Manual triggers via workflow_dispatch
+- It ensures that every container image is reproducible, cached, vulnerability‑scanned, and safely published to GitHub Container Registry (GHCR).
+
+##### Workflow Overview
+
+The workflow consists of two independent jobs, one for each image:
+- Backend image (mitelovers-backend)
+- Frontend image (mitelovers-frontend)
+
+Each job performs the following steps:
+
+1. Checkout the repository.
+   Uses the latest version of actions/checkout to retrieve the source code.
+
+2. Set up Docker Buildx.
+   Buildx enables multi-platform builds, caching, and advanced build features.
+
+3. Authenticate to GHCR (only on push to main).
+   Pull requests do not push images, but they still build them for validation.
+
+4. Generate image metadata.
+   Uses docker/metadata-action to automatically generate:
+
+    - Tags (latest, commit SHA)
+    - OCI-compliant labels
+    - Versioning metadata
+
+5. Build the Docker image
+   Using docker/build-push-action:
+
+    - On PRs → image is built and loaded locally (load: true)
+    - On pushes to main → image is pushed to GHCR
+    - Build caching is enabled for faster builds
+
+6. Scan the image with Trivy
+   Each image is scanned for vulnerabilities:
+
+    - Only CRITICAL and HIGH severities fail the job
+    - Unfixed vulnerabilities are ignored to reduce noise
+    - Output is shown in table format for readability
+
+    This ensures that no vulnerable image is published to GHCR.
+
+##### Security Enforcement
+
+Trivy is configured with:
+````
+severity: CRITICAL,HIGH
+exit-code: 1
+ignore-unfixed: true
+````
+This means:
+
+- Any CRITICAL or HIGH vulnerability blocks the workflow
+- Medium/Low findings are reported but do not fail the build
+- Only vulnerabilities with available fixes are considered blocking
+
+This aligns with the project's Security Gates policy.
+
+##### Image Publication
+
+When the workflow runs on main, images are published to:
+````
+ghcr.io/<owner>/mitelovers-backend:latest
+ghcr.io/<owner>/mitelovers-frontend:latest
+````
+
+Additionally, each build receives a unique SHA tag:
+````
+ghcr.io/<owner>/<image>:<commit-sha>
+````
+
+This ensures:
+
+- Reproducibility
+- Traceability
+- Immutable versioning
+
+##### Summary Table
+
+| Stage | Backend | Frontend | Blocking |
+| --- | --- | --- | --- |
+| Build image | ✔️ | ✔️ | Yes |
+| Trivy scan | ✔️ | ✔️ | CRITICAL/HIGH |
+| Push to GHCR | ✔️ (main only) | ✔️ (main only) | Yes |
+| Metadata & labels | ✔️ | ✔️ | No |
+| Build caching | ✔️ | ✔️ | No |
+
+##### How to Use the Images Locally
+
+Pull the latest backend image: ````docker pull ghcr.io/<owner>/mitelovers-backend:latest````
+
+Pull the latest frontend image: ````docker pull ghcr.io/<owner>/mitelovers-frontend:latest````
+
+Or run them together using Docker Compose (see the Docker section).
 
 ---
 
