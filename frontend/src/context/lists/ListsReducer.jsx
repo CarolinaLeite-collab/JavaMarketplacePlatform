@@ -80,7 +80,7 @@ export function listsReducer(state, action) {
                 ...state,
                 error: null,
                 genres: action.payload.map((g) => ({
-                    value: g.genreId,
+                    value: formatGenre(g.genreId),
                     label: g.genreName
                 }))
             };
