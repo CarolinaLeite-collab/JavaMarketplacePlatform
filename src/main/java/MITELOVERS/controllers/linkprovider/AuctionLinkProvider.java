@@ -62,14 +62,8 @@ public class AuctionLinkProvider implements RootLinkProvider {
                     .withSelfRel());
 
             links.add(linkTo(methodOn(AuctionRestController.class)
-                    .getAuctionById(auctionId.toString()))
+                    .getAuctionById(auctionId))
                     .withRel("view-auction"));
-        }
-
-        if (_authorizationPolicy.canBid(user)) {
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .placeBid(auctionId, user.identity().toString(), null))
-                    .withRel("place-bid"));
         }
 
         return links;

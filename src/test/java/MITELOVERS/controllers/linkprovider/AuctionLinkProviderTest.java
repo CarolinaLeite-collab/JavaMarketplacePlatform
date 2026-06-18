@@ -60,7 +60,7 @@ class AuctionLinkProviderTest {
     // ------------------------------------------------------------
 
     @Test
-    void getLinksForSpecificAuctionUserCanViewAndBidContainsAllLinks() {
+    void getLinksForSpecificAuctionUserCanViewAuctionContainsViewAndSelfLinks() {
 
         //Arrange
         User userDouble = mock(User.class);
@@ -82,67 +82,13 @@ class AuctionLinkProviderTest {
         List<Link> links = linkProvider.getLinks(userDouble, auctionId);
 
         // Assert
-        assertEquals(3, links.size());
+        assertEquals(2, links.size());
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("place-bid")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("view-auction")));
     }
 
     @Test
-    void getLinksForSpecificAuctionUserCanOnlyViewLinks() {
-        // Arrange
-        User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
-        String auctionId = "AU-12345678";
-
-        when(userDouble.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user123");
-
-        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-
-        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(true);
-        when(authorizationPolicy.canBid(userDouble)).thenReturn(false);
-
-        // SUT
-        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
-
-        // Act
-        List<Link> links = linkProvider.getLinks(userDouble, auctionId);
-
-        // Assert
-        assertEquals(2, links.size());
-        assertTrue(links.get(0).getRel().value().equals("self"));
-        assertTrue(links.get(1).getRel().value().equals("view-auction"));
-    }
-
-    @Test
-    void getLinksForSpecificAuctionUserOnlyBidLink() {
-        // Arrange
-        User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
-        String auctionId = "AU-12345678";
-
-        when(userDouble.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user123");
-
-        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-
-        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(false);
-        when(authorizationPolicy.canBid(userDouble)).thenReturn(true);
-
-        // SUT
-        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
-
-        // Act
-        List<Link> links = linkProvider.getLinks(userDouble, auctionId);
-
-        // Assert
-        assertEquals(1, links.size());
-        assertEquals("place-bid", links.get(0).getRel().value());
-    }
-
-    @Test
-    void getLinksForSpecificAuctionUserCannotViewOrBidReturnsEmptyList() {
+    void getLinksForSpecificAuctionUserCannotViewAuctionReturnsEmptyList() {
         // Arrange
         User userDouble = mock(User.class);
         String auctionId = "AU-12345678";
