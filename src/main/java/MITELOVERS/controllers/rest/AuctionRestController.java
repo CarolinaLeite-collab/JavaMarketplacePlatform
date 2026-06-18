@@ -17,6 +17,7 @@ import MITELOVERS.mapper.BidResponseDTOMapper;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
+import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpMethod;
@@ -98,7 +99,7 @@ public class AuctionRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAuction (@RequestBody CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
+    public ResponseEntity<Object> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
         try {
             List<ItemId> itemIds = request.getItemIds().stream()
                     .map(ItemId::new)
@@ -231,7 +232,7 @@ public class AuctionRestController {
     public ResponseEntity<Object> placeBid(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String userIdFromHeader,
-            @RequestBody PlaceBidRequestDTO request) {
+            @RequestBody @Valid PlaceBidRequestDTO request) {
         try {
             Email email = new Email(userIdFromHeader);
             UserId userId = new UserId(email);
