@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { Modal, Stack, Text, NumberInput, Button, ActionIcon } from '@mantine/core';
+import { Modal, Stack, Text, NumberInput, Button, ActionIcon, Group } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 
 interface PlaceBidModalProps {
     opened: boolean;
-    currentPrice: number | null;      // highest bid or starting price
+    currentPrice: number | null;
     currency: string;
     onClose?: () => void;
     onConfirm?: (bidValue: number) => void;
 }
+
+const presets = [5, 10, 20];
 
 export function PlaceBidModal({
                                   opened,
@@ -74,7 +76,7 @@ export function PlaceBidModal({
                 <IconX size={24} stroke={1.8} />
             </ActionIcon>
 
-            <Stack gap="sm" mt={20}>
+            <Stack gap="sm">
                 <Text fw={700} size="xl" c="#111">
                     Place a bid
                 </Text>
@@ -93,21 +95,48 @@ export function PlaceBidModal({
                     suffix={` ${currency}`}
                     error={error}
                 />
+                <Group gap="sm">
+                    {presets.map((increment) => (
+                        <Button
+                            key={increment}
+                            variant="light"
+                            radius="xl"
+                            style={{ flex: 1 }}
+                            onClick={() => {
+                                const base = minBid || 0;
+                                setValue(base + increment);
+                                setError(null);
+                            }}
+                        >
+                            +{increment} {currency}
+                        </Button>
+                    ))}
+                </Group>
 
-                <Button
-                    fullWidth
-                    radius="sm"
-                    size="md"
-                    onClick={handleSubmit}
-                    style={{
-                        backgroundColor: '#4f6df5',
-                        height: 40,
-                        boxShadow: '0 4px 10px rgba(79,109,245,0.35)',
-                        fontWeight: 700,
-                    }}
-                >
-                    Confirm bid
-                </Button>
+
+                <Group grow mt="sm">
+                    <Button
+                        variant="light"
+                        radius="sm"
+                        size="md"
+                        onClick={handleClose}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        radius="sm"
+                        size="md"
+                        onClick={handleSubmit}
+                        style={{
+                            backgroundColor: '#4f6df5',
+                            height: 40,
+                            boxShadow: '0 4px 10px rgba(79,109,245,0.35)',
+                            fontWeight: 700,
+                        }}
+                    >
+                        Confirm bid
+                    </Button>
+                </Group>
             </Stack>
         </Modal>
     );
