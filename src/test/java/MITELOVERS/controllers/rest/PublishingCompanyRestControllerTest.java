@@ -3,6 +3,7 @@ package MITELOVERS.controllers.rest;
 import MITELOVERS.applicationservices.PublishingCompanyService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublishingCompanyLinkProvider;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
@@ -79,6 +80,9 @@ class PublishingCompanyRestControllerTest {
     @Test
     void registerPublishingCompanyReturnsOk() throws Exception {
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
+                .thenReturn(mock(PublishingCompany.class));
+
+        when(_publishingCompanyResponseDTOMapperDouble.toModel(any()))
                 .thenReturn(mock(PublishingCompanyResponseDTO.class));
 
         _mockMvc.perform(post("/publishingCompanies")
@@ -102,7 +106,11 @@ class PublishingCompanyRestControllerTest {
     void getAllPublishingCompaniesReturnsOk() throws Exception {
         //Arrange
         when(_publishingCompanyServiceDouble.getAllPublishingCompanies())
-                .thenReturn(List.of(mock(PublishingCompanyResponseDTO.class)));
+                .thenReturn(List.of(mock(PublishingCompany.class)));
+
+        when(_publishingCompanyResponseDTOMapperDouble.toModel(any()))
+                .thenReturn(mock(PublishingCompanyResponseDTO.class));
+
         //Act and Assert
         _mockMvc.perform(get("/publishingCompanies"))
                 .andExpect(status().isOk())
