@@ -457,4 +457,137 @@ describe('apiClient', () => {
         });
 
     });
+
+    describe('getEditionById', () => {
+
+        it('calls correct URL without auth header', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: { editionId: 'ED-001' }
+                })
+            );
+
+            await apiClient.getEditionById('ED-001');
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/editions/ED-001`
+            );
+        });
+
+        it('throws when getEditionById fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: false,
+                    status: 404
+                })
+            );
+
+            await expect(
+                apiClient.getEditionById('ED-001')
+            ).rejects.toThrow('404');
+        });
+
+        it('returns null when getEditionById receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getEditionById('ED-001');
+
+            expect(result).toBeNull();
+        });
+
+    });
+
+    describe('getPublishingCompanyById', () => {
+
+        it('calls correct URL without auth header', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: { publishingCompanyId: 'PUB-001' }
+                })
+            );
+
+            await apiClient.getPublishingCompanyById('PUB-001');
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/publishingCompanies/PUB-001`
+            );
+        });
+
+        it('throws when getPublishingCompanyById fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: false,
+                    status: 404
+                })
+            );
+
+            await expect(
+                apiClient.getPublishingCompanyById('PUB-001')
+            ).rejects.toThrow('404');
+        });
+
+        it('returns null when getPublishingCompanyById receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getPublishingCompanyById('PUB-001');
+
+            expect(result).toBeNull();
+        });
+
+    });
+
+    describe('getAuctionOptions', () => {
+
+        it('calls OPTIONS on auction endpoint', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    text: JSON.stringify({
+                        _links: {}
+                    })
+                })
+            );
+
+            await apiClient.getAuctionOptions('AUC-001');
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/auctions/AUC-001?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+        });
+
+        it('throws when getAuctionOptions fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: false,
+                    status: 500
+                })
+            );
+
+            await expect(
+                apiClient.getAuctionOptions('AUC-001')
+            ).rejects.toThrow('500');
+        });
+
+    });
 });

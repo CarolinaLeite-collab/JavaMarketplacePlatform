@@ -206,6 +206,7 @@ public class DataInitializer {
             Author ruiTavares = authorFactory.createAuthor(new AuthorId("Tavares R.-483561"), new Name("Rui Tavares"));
             Author saramago = authorFactory.createAuthor(new AuthorId("Saramago J.-A1B2C3"), new Name("José Saramago"));
             Author delahaye = authorFactory.createAuthor(new AuthorId("Delahaye G.-C1D2E3"), new Name("Gilbert Delahaye"));
+            Author berghauserPont = authorFactory.createAuthor(new AuthorId("BerghauserPont M.-A7F2D1"), new Name("Meta Berghauser Pont"));
 
             authorRepo.save(ruiTavares);
             authorRepo.save(alexander);
@@ -219,8 +220,9 @@ public class DataInitializer {
             authorRepo.save(asimov);
             authorRepo.save(saramago);
             authorRepo.save(delahaye);
+            authorRepo.save(berghauserPont);
 
-            log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca");
+            log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Meta Berghauser Pont");
             // -------------------------------------------------------
             // Publications
             Publication novaYorkDelirante = publicationFactory.createPublication(
@@ -298,6 +300,13 @@ public class DataInitializer {
                     genre8.identity()  // Other
             );
 
+            Publication spaceMatrix = publicationFactory.createPublication(
+                    new Title("Spacematrix: Space, Density and Urban Form"),
+                    berghauserPont.identity(),
+                    Year.of(2005),
+                    genre1.identity()
+            );
+
             publicationRepo.save(shortnessOfLife);
             publicationRepo.save(novaYorkDelirante);
             publicationRepo.save(nineteenEightyFour);
@@ -310,8 +319,9 @@ public class DataInitializer {
             publicationRepo.save(hipocritoesEOlhigarcas);
             publicationRepo.save(intermitencias);
             publicationRepo.save(anitaVasCompras);
+            publicationRepo.save(spaceMatrix);
 
-            log.info("Publications saved: 1984, E.1027, Foundation, Nova York Delirante, Sapiens, Space Settlements, A Pattern Language");
+            log.info("Publications saved: 1984, E.1027, Foundation, Nova York Delirante, Sapiens, Space Settlements, A Pattern Language, Spacematrix");
 
             // -------------------------------------------------------
             // Cities
@@ -372,7 +382,10 @@ public class DataInitializer {
             PublishingCompany hachette = publishingCompanyFactory.createPublishingCompany("Hachette");
             publishingCompanyRepo.save(hachette);
 
-            log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China");
+            PublishingCompany nai010Publishers = publishingCompanyFactory.createPublishingCompany("naiOIO Publishers");
+            publishingCompanyRepo.save(nai010Publishers);
+
+            log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China, naiOIO Publishers");
 
             // -------------------------------------------------------
             // Editions
@@ -524,6 +537,22 @@ public class DataInitializer {
 
             log.info("Editions saved: 1984, Foundation, Nova York Delirante, E.1027");
 
+            Edition editionSpaceMatrix = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9780471989677"),
+                    spaceMatrix.identity(),
+                    nai010Publishers.identity(),
+                    Year.of(2005),
+                    Language.ENGLISH,
+                    new Dimension(17.0, 24.0, 2.5, DimensionUnit.CENTIMETERS),
+                    new Weight(794, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(320),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
+
+            );
+
+            editionRepo.save(editionSpaceMatrix);
 
             // -------------------------------------------------------
             // Lists of Items
@@ -684,6 +713,17 @@ public class DataInitializer {
             );
             itemRepo.save(item6);
 
+            ItemId spaceMatrixItemId = new ItemId("5FA7B1C2D3");
+            Item spaceMatrixItem = itemFactory.createItem(
+                    spaceMatrixItemId,
+                    editionSpaceMatrix.identity(),
+                    Condition.GOOD,
+                    new Description("Paperback in good condition. Minimal shelf wear, pages clean and unmarked. Spine intact. Essential reading on urban density and spatial form. Ships from Porto within 2 business days."),
+                    SaleStatus.NotOnSale,
+                    new Picture("https://books.open.tudelft.nl/public/presses/1/submission_38_40_coverImage_en_US_t.jpg")
+            );
+            itemRepo.save(spaceMatrixItem);
+
             // -------------------------------------------------------
             // Direct Sales
             DirectSale hipocritoesSale = directSaleFactory.createDirectSale(
@@ -765,6 +805,22 @@ public class DataInitializer {
                     new NumberOfPages(255),              // Pages
                     new EditionNumber(1),                // Edition number
                     Binding.PUR                          // Binding
+            );
+            editionRepo.save(editionFoundationSeries);
+
+            // Edition for Spacematrix
+            Edition editionSpacematrix = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9780553293357"),
+                    foundationSeries.identity(),
+                    gg.identity(),
+                    Year.of(1991),
+                    Language.ENGLISH,
+                    new Dimension(17,24,3, DimensionUnit.CENTIMETERS) ,                                // Dimension
+                    new Weight(794, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(255),
+                    new EditionNumber(1),
+                    Binding.PUR
             );
             editionRepo.save(editionFoundationSeries);
 
@@ -873,7 +929,7 @@ public class DataInitializer {
             // -------------------------------------------------------
             // Auctions
             Auction auction1 = auctionFactory.createAuction(
-                    List.of(new ItemId()),
+                    List.of(itemId1),
                     new Price(5.00, Currency.EUR),
                     new Price(10.00, Currency.EUR),
                     ZonedDateTime.now(),
@@ -902,7 +958,19 @@ public class DataInitializer {
             );
             auctionRepo.save(auction3);
 
-            log.info("Auctions saved: 3 auctions");
+            Auction spaceMatrixAuction = auctionFactory.createAuction(
+                    List.of(spaceMatrixItemId),
+                    new Price(20.00, Currency.EUR),
+                    new Price(30.00, Currency.EUR),
+                    new Price(50.00, Currency.EUR),
+                    ZonedDateTime.now(),
+                    ZonedDateTime.now().plusDays(7),
+                    user3.identity()
+            );
+
+            auctionRepo.save(spaceMatrixAuction);
+
+            log.info("Auctions saved: 4 auctions");
 
             // Auction with bids and winner
             Auction auctionWithBids = auctionFactory.createAuction(
