@@ -172,6 +172,52 @@ public class AuctionRestController {
         }
     }
 
+    @RequestMapping(path = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
+    public ResponseEntity<RepresentationModel<?>> optionsForBids(
+            @PathVariable String auctionId,
+            @RequestParam("email") String email) {
+
+        User user = _userService.getUserByEmail(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        for (Link link : _auctionLinkProvider.getBidLinks(user, auctionId)) {
+            model.add(link);
+        }
+
+        return ResponseEntity.ok(model);
+    }
+
+    @GetMapping(
+            path = "/{auctionId}/bids",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<Object> getBidsForAuction(@PathVariable String auctionId) {
+        try {
+            Auction auction = _auctionService.getAuctionById(auctionId);
+
+            // Map each Bid to BidResponseDTO
+            List<BidResponseDTO> dtos = auction.getBids().stream()
+                    .map(bid -> _bidResponseDTOMapper.toDTO(auction, bid))
+                    .toList();
+
+            // after GETting bids, user can consult OPTIONS they have on /auctions/{auctionId}/bids again
+            dtos.forEach(dto -> dto.add(
+                    linkTo(methodOn(AuctionRestController.class)
+                            .optionsForBids(auctionId, null))
+                            .withRel("bids-options")
+            ));
+
+            return new ResponseEntity<>(dtos, HttpStatus.OK);
+
+        } catch (NoSuchElementException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @PostMapping(
             path = "/{auctionId}/bids",
             consumes = MediaType.APPLICATION_JSON_VALUE,

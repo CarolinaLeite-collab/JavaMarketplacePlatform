@@ -89,6 +89,10 @@ class AuctionRestControllerTest {
                 .andExpect(status().isNoContent());
     }
 
+    // ------------------------------------------------------------
+    // POST /auctions
+    // ------------------------------------------------------------
+
     @Test
     void createAuctionValidRequestReturns201() throws Exception {
         // arrange
@@ -197,6 +201,10 @@ class AuctionRestControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    // ------------------------------------------------------------
+    // OPTIONS /auctions
+    // ------------------------------------------------------------
+
     @Test
     void optionsUserCanSellReturnsCreateAuctionLink() throws Exception {
         // arrange
@@ -228,6 +236,10 @@ class AuctionRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links").doesNotExist());
     }
+
+    // ------------------------------------------------------------
+    // OPTIONS /auctions/{auctionId}
+    // ------------------------------------------------------------
 
     @Test
     void optionsForSpecificAuctionReturnsSelfAndPlaceBidLinks() throws Exception {
@@ -271,6 +283,10 @@ class AuctionRestControllerTest {
                 .andExpect(jsonPath("$._links").doesNotExist());
     }
 
+    // ------------------------------------------------------------
+    // GET /auctions/{auctionId}
+    // ------------------------------------------------------------
+
     @Test
     void getAuctionByIdReturns200AndBody() throws Exception {
 
@@ -313,6 +329,121 @@ class AuctionRestControllerTest {
         mockMvc.perform(get("/auctions/{auctionId}", auctionIdString))
                 .andExpect(status().isNotFound());
     }
+
+    // ------------------------------------------------------------
+    // OPTIONS /auctions/{auctionId}/bids
+    // ------------------------------------------------------------
+
+    @Test
+    void optionsForBidsUserCanViewAuctionReturnsSelfAndViewBidsLinks() throws Exception {
+        // Arrange
+        String auctionId = "AU-12345678";
+        User userDouble = mock(User.class);
+
+        when(_userService.getUserByEmail("user@example.com"))
+                .thenReturn(userDouble);
+
+        when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))
+                .thenReturn(List.of(
+                        Link.of("/auctions/" + auctionId + "/bids", "self"),
+                        Link.of("/auctions/" + auctionId + "/bids", "view-bids")
+                ));
+
+        // Act + Assert
+        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
+                        .param("email", "user@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$._links['view-bids']").exists());
+    }
+
+    @Test
+    void optionsForBidsNoActionsReturnsNoLinks() throws Exception {
+        // Arrange
+        String auctionId = "AU-12345678";
+        User userDouble = mock(User.class);
+
+        when(_userService.getUserByEmail("user@example.com"))
+                .thenReturn(userDouble);
+
+        when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))
+                .thenReturn(List.of());
+
+        // Act + Assert
+        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
+                        .param("email", "user@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links").doesNotExist());
+    }
+
+    // ------------------------------------------------------------
+    // GET /auctions/{auctionId}/bids
+    // ------------------------------------------------------------
+
+    @Test
+    void getBidsForAuctionReturns200AndListOfBids() throws Exception {
+        // Arrange
+        String auctionId = "AU-12345678";
+
+        Auction auctionDouble = mock(Auction.class);
+        Bid bid1Double = mock(Bid.class);
+        Bid bid2Double = mock(Bid.class);
+
+        when(_auctionService.getAuctionById(auctionId)).thenReturn(auctionDouble);
+        when(auctionDouble.getBids()).thenReturn(List.of(bid1Double, bid2Double));
+
+        BidResponseDTO dto1 = new BidResponseDTO(
+                "bid-1",
+                auctionId,
+                "buyer1@aeiou.com",
+                20.0,
+                "EUR",
+                Instant.parse("2026-06-10T10:00:00Z")
+        );
+        BidResponseDTO dto2 = new BidResponseDTO(
+                "bid-2",
+                auctionId,
+                "buyer2@aeiou.com",
+                30.0,
+                "EUR",
+                Instant.parse("2026-06-11T10:00:00Z")
+        );
+
+        when(_bidResponseDTOMapper.toDTO(auctionDouble, bid1Double)).thenReturn(dto1);
+        when(_bidResponseDTOMapper.toDTO(auctionDouble, bid2Double)).thenReturn(dto2);
+
+        // Act + Assert
+        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                // list size 2
+                .andExpect(jsonPath("$.length()").value(2))
+                // first bid basic fields
+                .andExpect(jsonPath("$[0].auctionId").value(auctionId))
+                .andExpect(jsonPath("$[0].offerPrice").value(20.0))
+                .andExpect(jsonPath("$[0].currency").value("EUR"))
+                // second bid basic fields
+                .andExpect(jsonPath("$[1].auctionId").value(auctionId))
+                .andExpect(jsonPath("$[1].offerPrice").value(30.0))
+                .andExpect(jsonPath("$[1].currency").value("EUR"));
+    }
+
+    @Test
+    void getBidsForAuctionReturns404WhenAuctionNotFound() throws Exception {
+        // Arrange
+        String auctionId = "AU-99999999";
+
+        when(_auctionService.getAuctionById(auctionId))
+                .thenThrow(new NoSuchElementException("Auction not found: " + auctionId));
+
+        // Act + Assert
+        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionId))
+                .andExpect(status().isNotFound());
+    }
+
+    // ------------------------------------------------------------
+    // POST /auctions/{auctionId}/bids
+    // ------------------------------------------------------------
 
     @Test
     void placeBidValidRequestReturns201() throws Exception {
