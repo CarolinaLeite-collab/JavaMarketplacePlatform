@@ -5,7 +5,6 @@ import MITELOVERS.controllers.rest.LibraryRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,8 +29,7 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canGetLibrary(user)) {
             links.add(
-                    WebMvcLinkBuilder.linkTo(methodOn(LibraryRestController.class)
-                            .getMyLibrary(null))
+                    Link.of("/my-library/{?sort}")
                             .withRel("library")
             );
         }

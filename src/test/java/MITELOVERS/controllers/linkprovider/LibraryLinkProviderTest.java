@@ -51,6 +51,7 @@ class LibraryLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
+
         when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(true);
         when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(false);
 
@@ -60,7 +61,12 @@ class LibraryLinkProviderTest {
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
+
+        Link libraryLink = links.getFirst();
+
+        assertEquals("library", libraryLink.getRel().value());
+        assertEquals("/my-library/{?sort}", libraryLink.getHref());
+        assertTrue(libraryLink.isTemplated());
     }
 
     @Test
