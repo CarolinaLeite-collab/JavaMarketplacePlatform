@@ -2,6 +2,13 @@ package MITELOVERS.domain.valueobject;
 
 import MITELOVERS.ddd.ValueObject;
 
+/**
+ * Defines the supported sorting criteria for items in a user's library.
+ *
+ * <p>It converts HTTP sorting values and their aliases into domain values.
+ * {@link #NONE} represents the absence of a valid sorting criterion.</p>
+ */
+
 public enum LibrarySort implements ValueObject {
 
     TITLE,
