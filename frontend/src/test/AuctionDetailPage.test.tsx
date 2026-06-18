@@ -32,6 +32,7 @@ const mockAuction = {
     endDate: '2026-06-25T00:00:00Z',
     bidCount: 3,
     highestBid: 28.5,
+    seller: 'pedro@aeiou.com',
     _links: { placeBid: { href: 'http://localhost:8081/auctions/test-123/bids' } },
 };
 
@@ -82,10 +83,12 @@ function renderAuctionDetail({ auctionId = 'test-123' } = {}) {
 describe('AuctionDetailPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+
         vi.mocked(useUser).mockReturnValue({
             currentUser: 'pedro@aeiou.com',
             toggleUser: vi.fn(),
         });
+
         vi.mocked(apiClient.getAuctionById).mockResolvedValue(mockAuction);
         vi.mocked(apiClient.getItemById).mockResolvedValue(mockItem);
         vi.mocked(apiClient.getEditionById).mockResolvedValue(mockEdition);
@@ -95,16 +98,14 @@ describe('AuctionDetailPage', () => {
     it('renders publication type and title', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByText(/Book:/);
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByText(/Book:/)).toBeInTheDocument();
         expect(screen.getByText('Spacematrix: Space, Density and Urban Form')).toBeInTheDocument();
     });
 
     it('renders highest bid when bids exist', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByText(/28.5 EUR/);
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByText(/28.5 EUR/)).toBeInTheDocument();
     });
 
     it('renders starting price when no bids', async () => {
@@ -113,6 +114,7 @@ describe('AuctionDetailPage', () => {
             highestBid: null,
             bidCount: 0,
         });
+
         renderAuctionDetail();
 
         const results = await screen.findAllByText(/20 EUR/);
@@ -122,36 +124,43 @@ describe('AuctionDetailPage', () => {
     it('renders starting price label', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByText(/Starting price: 20 EUR/);
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByText(/Starting price: 20 EUR/)).toBeInTheDocument();
     });
 
     it('renders bid count button', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByRole('button', { name: /3 bids/ });
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /3 bids/i })).toBeInTheDocument();
     });
 
-    it('renders seller', async () => {
+    it('renders seller username derived from email', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByText(/Sold by Unknown/);
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByText(/Sold by pedro/i)).toBeInTheDocument();
+    });
+
+    it('renders unknown seller when seller is missing', async () => {
+        vi.mocked(apiClient.getAuctionById).mockResolvedValue({
+            ...mockAuction,
+            seller: null,
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByText(/Sold by unknown/i)).toBeInTheDocument();
     });
 
     it('renders status badge', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByText('Active');
-        expect(result).toBeInTheDocument();
+        expect(await screen.findByText('Active')).toBeInTheDocument();
     });
 
     it('renders seller description', async () => {
         renderAuctionDetail();
 
         expect(await screen.findByText("Seller's description:")).toBeInTheDocument();
-        expect(screen.getByText(/Essential reading on urban density/)).toBeInTheDocument();
+        expect(screen.getByText(/Essential reading on urban density/i)).toBeInTheDocument();
     });
 
     it('renders quick info cards', async () => {
@@ -212,12 +221,19 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('17 x 24 x 2.5 CENTIMETERS')).toBeInTheDocument();
     });
 
-    it('renders Place Bid button for logged-in user', async () => {
+    it('renders synopsis fallback', async () => {
         renderAuctionDetail();
 
-        const result = await screen.findByRole('button', { name: /place bid/i });
-        expect(result).toBeInTheDocument();
-        expect(result).not.toBeDisabled();
+        expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
+        expect(screen.getByText('N/A')).toBeInTheDocument();
+    });
+
+    it('renders Place Bid button enabled for logged-in user when link exists and auction is active', async () => {
+        renderAuctionDetail();
+
+        const button = await screen.findByRole('button', { name: /place bid/i });
+        expect(button).toBeInTheDocument();
+        expect(button).not.toBeDisabled();
     });
 
     it('disables Place Bid for guest user', async () => {
@@ -225,10 +241,33 @@ describe('AuctionDetailPage', () => {
             currentUser: 'guest@aeiou.com',
             toggleUser: vi.fn(),
         });
+
         renderAuctionDetail();
 
-        const result = await screen.findByRole('button', { name: /place bid/i });
-        expect(result).toBeDisabled();
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
+    it('disables Place Bid when placeBid link is missing', async () => {
+        vi.mocked(apiClient.getAuctionById).mockResolvedValue({
+            ...mockAuction,
+            _links: {},
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
+    it('disables Place Bid when auction is ended', async () => {
+        vi.mocked(apiClient.getAuctionById).mockResolvedValue({
+            ...mockAuction,
+            endDate: '2020-01-01T00:00:00Z',
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+        expect(screen.getByText('Ended')).toBeInTheDocument();
     });
 
     it('renders Buy Now and Add to Cart buttons', async () => {
@@ -240,10 +279,18 @@ describe('AuctionDetailPage', () => {
 
     it('shows N/A for edition fields when edition fails to load', async () => {
         vi.mocked(apiClient.getEditionById).mockRejectedValue(new Error('404'));
+
         renderAuctionDetail();
 
         expect(await screen.findByText('Publisher')).toBeInTheDocument();
-        const naCells = screen.getAllByText('N/A');
-        expect(naCells.length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText('N/A').length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('shows not found state when auction is missing', async () => {
+        vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
+
+        renderAuctionDetail();
+
+        expect(await screen.findByText(/auction not found/i)).toBeInTheDocument();
     });
 });

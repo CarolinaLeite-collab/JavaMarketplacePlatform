@@ -158,6 +158,11 @@ export default function AuctionDetailPage() {
         );
     }
 
+    function sellerUsernameFromEmail (email) {
+        if(!email) return 'unknown';
+        return email.split('@')[0];
+    }
+
     // Auction fields
     const startingPrice = auction.startingPrice;
     const priceCurrency = auction.priceCurrency ?? 'EUR';
@@ -193,7 +198,7 @@ export default function AuctionDetailPage() {
     const dimensions = edition?.dimension
         ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.depth} ${edition.dimension.unit}`
         : 'N/A';
-    const seller          = auction.seller ?? 'Unknown';
+    const seller          = sellerUsernameFromEmail(auction.seller) ?? 'Unknown';
 
     // Edition fields (from /publications/{id})
     const synopsis        = publication?.synopsis ?? 'N/A';
@@ -298,6 +303,7 @@ export default function AuctionDetailPage() {
                                 <Button
                                     onClick={openBidModal}
                                     disabled={!isLoggedIn || !placeBidHref || status !== 'Active'}
+                                    color="var(--mantine-color-indigo-7)"
                                     fullWidth
                                     size="md"
                                 >
