@@ -57,9 +57,10 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: |
-            ${{ env.BACKEND_IMAGE }}:ci
-            ${{ steps.backend_meta.outputs.tags }}
+          tags: >-
+            ${{ github.event_name == 'pull_request'
+              && format('{0}:ci', env.BACKEND_IMAGE)
+              || steps.backend_meta.outputs.tags }}
           labels: ${{ steps.backend_meta.outputs.labels }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
@@ -89,14 +90,14 @@ jobs:
           script: |
             const fs = require('fs');
             let body = '## 🐳 Trivy – Backend Image Scan\n\n';
-              
+            
             try {
               const report = fs.readFileSync('trivy-backend-report.txt', 'utf8');
               body += '```\n' + report.substring(0, 6000) + '\n```';
             } catch (e) {
               body += '_Could not read Trivy backend report._';
             }
-              
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -139,9 +140,10 @@ jobs:
           file: ./frontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           load: ${{ github.event_name == 'pull_request' }}
-          tags: |
-            ${{ env.FRONTEND_IMAGE }}:ci
-            ${{ steps.frontend_meta.outputs.tags }}
+          tags: >-
+            ${{ github.event_name == 'pull_request'
+              && format('{0}:ci', env.FRONTEND_IMAGE)
+              || steps.frontend_meta.outputs.tags }}
           labels: ${{ steps.frontend_meta.outputs.labels }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
