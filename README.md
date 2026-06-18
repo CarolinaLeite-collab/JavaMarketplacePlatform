@@ -20,20 +20,49 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [Build, Test and Run](#build-test-and-run)
   * [DevSecOps Workflow](#devsecops-workflow)
     * [Branching Strategy](#branching-strategy)
+    * [Branch Protection Rules](#branch-protection-rules)
     * [Development Flow](#development-flow)
     * [Quality Gates](#quality-gates)
+    * [Security Findings Severity Reporting](#security-findings-severity-reporting)
   * [Test Coverage](#test-coverage)
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
     * [Hardened Security Pipeline](#hardened-security-pipeline)
-      * [Secret Detection with Gitleaks](#secret-detection-with-gitleaks)
-      * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
-      * [Run Tests on Pull Request](#run-tests-on-pull-request)
-      * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [Secret Detection with `Gitleaks`](#secret-detection-with-gitleaks)
+    * [Static Code Analysis and Security Checks with Semgrep](#static-code-analysis-and-security-checks-with-semgrep)
+    * [Insecure Configuration Detection (config-scan)](#insecure-configuration-detection-config-scan)
+    * [Run Tests on Pull Request](#run-tests-on-pull-request)
+    * [Dependency Inventory (SBOM) and Scanning (SCA - OWASP Dependency-Check)](#dependency-inventory-sbom-and-scanning-sca---owasp-dependency-check)
+    * [License Risk Management](#license-risk-management)
+      * [License Policy](#license-policy)
   * [SpringBoot application.properties](#springboot-applicationproperties)
+    * [Development-only settings (`dev` profile)](#development-only-settings-dev-profile)
+  * [Quality & Security Gates (Authoritative Section)](#quality--security-gates-authoritative-section)
+    * [Purpose of the Gates](#purpose-of-the-gates)
+    * [Blocking Behaviour](#blocking-behaviour)
+    * [Quality Gates](#quality-gates-1)
+    * [Security Gates](#security-gates)
+    * [Quality & Security Gates Summary Table](#quality--security-gates-summary-table)
+  * [Local Security & Quality Testing (Developer Guide)](#local-security--quality-testing-developer-guide)
+    * [How to fix Failing Gates](#how-to-fix-failing-gates)
+      * [Coverage < 95%](#coverage--95)
+      * [Semgrep ERROR finding](#semgrep-error-finding)
+      * [Gitleaks secret detected](#gitleaks-secret-detected)
+      * [Dependency‑Check CVSS ≥ 7](#dependencycheck-cvss--7)
+      * [SBOM or build failure](#sbom-or-build-failure)
+  * [Docker](#docker)
+    * [Prerequisites](#prerequisites-1)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
+    * [Image Security](#image-security)
+  * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
+      * [Application service and image build](#application-service-and-image-build)
+      * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
+      * [Health check](#health-check)
+      * [Running it](#running-it)
+      * [Validation](#validation)
 <!-- TOC -->
-
 ___
 
 
@@ -558,6 +587,27 @@ jobs:
           java-version: '21'
           cache: maven
 
+        - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies (deterministic)
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test -- --run
+
+      - name: Verify frontend coverage
+        working-directory: frontend
+        run: npm run test:coverage
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        
       - name: Cache OWASP Dependency-Check data
         uses: actions/cache@v4
         with:
@@ -1079,6 +1129,7 @@ Following these updates, the local build succeeded with 0 CVSS ≥ 7 vulnerabili
 
 This plugin generates **bom.json** and **bom.xml** with full dependency metadata (including versions, licenses, and package coordinates).
 
+
 **CI Integration:**
 
 An **NVD API key** was generated and added as a GitHub secret to prevent rate limiting and slow builds during dependency scans.
@@ -1097,6 +1148,189 @@ To verify the CVSS ≥ 7 gate enforces correctly on **GitHub Actions**, Tomcat w
 After restoring Tomcat to 11.0.22,the pipeline passed, showing the pipeline enforces the CVSS threshold as an automated quality gate.
 
 ---
+
+### License Risk Management
+
+License risk is managed automatically in CI using a Maven-based scanning step.
+
+```xml
+<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>2.7.1</version>
+            </plugin>
+```
+
+It is used to identify licensing risks before dependencies are merged, by generating a report of all third-party licenses used by the application.
+
+The generated license report is archived as a CI artifact and reviewed alongside other security and compliance reports.
+
+The project's license policy is divided into three categories: `Allowed licenses`, `Restricted` and `Not Approved`.
+
+| Category | Licenses |
+|----------|----------|
+| ✅ **Allowed** | MIT<br>Apache-2.0<br>BSD-2-Clause<br>BSD-3-Clause<br>EPL-2.0 |
+| ⚠️ **Restricted / Review Required** | LGPL |
+| ❌ **Not Approved** | GPL<br>AGPL<br>Unknown or unlicensed dependencies |
+
+  Note: LGPL dependencies trigger a warning comment but do not fail the pipeline
+
+**CI Integration:**
+
+The license-scan job runs in parallel with `semgrep-sast` and `config-scan`, both gated behind `gitleaks`. 
+It performs the following steps:
+    - Generates a `THIRD-PARTY.txt` report via `mvn license:add-third-party`.
+    - Posts a PR comment listing all dependencies grouped by license status (✅ approved / ❌ blocked)
+    - Fails the pipeline if any dependency uses a non-approved license (AGPL, GPL-3, or GPL without a classpath exception)
+    - Uploads `THIRD-PARTY.txt as a CI artifact
+
+```yml
+  license-scan:
+    name: License Risk Scan
+    runs-on: ubuntu-latest
+    needs: gitleaks
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Generate dependency license report
+        run: mvn license:add-third-party
+
+      - name: Post License Report comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let body = '## 📜 License Risk Analysis\n\n';
+
+            try {
+              const report = fs.readFileSync(
+                'target/generated-sources/license/THIRD-PARTY.txt',
+                'utf8'
+              );
+
+              const lines = report.split('\n');
+
+              let totalDependencies = 0;
+              const findings = [];
+
+              for (const line of lines) {
+                const trimmed = line.trim();
+
+                if (!trimmed.startsWith('(')) continue;
+
+                const coordinatesMatch = trimmed.match(/\(([^():]+:[^():]+:[^()\s]+)\s*-\s*.*\)$/);
+                if (!coordinatesMatch) continue;
+
+                totalDependencies++;
+
+                const dependency = coordinatesMatch[1];
+
+                const licensePart = trimmed
+                  .replace(/\s*\([^():]+:[^():]+:[^()\s]+\s*-\s*.*\)$/, '')
+                  .trim();
+
+                const normalizedLicense = licensePart.toUpperCase();
+
+                const hasAgpl = normalizedLicense.includes('AGPL');
+
+                const hasPureGpl =
+                  normalizedLicense.includes('GPL-3') ||
+                  normalizedLicense.includes('GPL 3') ||
+                  normalizedLicense.includes('GPLV3') ||
+                  normalizedLicense.includes('GNU GENERAL PUBLIC LICENSE');
+
+                const hasException =
+                  normalizedLicense.includes('CPE') ||
+                  normalizedLicense.includes('CLASSPATH EXCEPTION');
+
+                const hasAllowedAlternative =
+                  normalizedLicense.includes('EPL') ||
+                  normalizedLicense.includes('ECLIPSE PUBLIC LICENSE') ||
+                  normalizedLicense.includes('APACHE') ||
+                  normalizedLicense.includes('MIT') ||
+                  normalizedLicense.includes('BSD');
+
+                const blocked =
+                  hasAgpl ||
+                  (hasPureGpl && !hasException && !hasAllowedAlternative);
+
+                if (blocked) {
+                  findings.push({
+                    dependency,
+                    license: licensePart
+                  });
+                }
+              }
+
+              body += `✅ ${totalDependencies} dependencies reviewed\n\n`;
+
+              if (findings.length === 0) {
+                body += 'No dependencies with non-approved licenses were detected.';
+              } else {
+                body += '| Dependency | License | Status |\n';
+                body += '|---|---|---|\n';
+
+                for (const finding of findings) {
+                  body += `| \`${finding.dependency}\` | ${finding.license} | ❌ Replace or request exception |\n`;
+                }
+
+                body += '\n> ⚠️ Dependencies using AGPL or GPL without an approved exception require replacement or an approved exception.';
+              }
+
+            } catch (e) {
+              body += '_Could not read THIRD-PARTY.txt report._';
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
+
+      - name: Upload License Report
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: third-party-licenses
+          path: target/generated-sources/license/THIRD-PARTY.txt
+
+
+      - name: Enforce license policy
+        run: |
+          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+            echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
+            exit 1
+          fi
+
+```
+The `build-and-test-with-coverage` job declares `license-scan` as a dependency (needs: `[semgrep-sast, config-scan, license-scan]`), ensuring no build or test runs until the license gate passes.
+
+The license scan was validated on a real Pull Request.
+The pipeline correctly posted a PR comment summarising the license analysis:
+
+![](docs/readme-printscreens/LicenseRiskAnalyses.jpg)
+
+On validation, 144 dependencies were reviewed with no violations detected.
+
+---
+
 ## SpringBoot application.properties
 
 The `application.properties` file is the central configuration file for a Spring Boot application, where settings like database connections, server port, and framework behavior can be defined.
@@ -1163,9 +1397,9 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality Gates
 
- - Build must succeed with mvn clean verify
+ - Build must succeed with mvn clean verify (Backend) and npm run build (Frontend)
 
- - All unit tests must pass
+ - All unit tests must pass (JUnit 5 for backend / Vitest for frontend)
 
  - JaCoCo line coverage must be ≥ 95% (enforced in Maven verify)
 
@@ -1185,28 +1419,34 @@ If any gate fails, the CI pipeline fails and the pull request cannot be merged u
 
 ### Quality & Security Gates Summary Table
 
-| **Gate**                             | **Tool**               | **Threshold / Condition**             | **Enforcement Workflow**                                      |
-|--------------------------------------|------------------------|---------------------------------------|---------------------------------------------------------------|
-| **Build & Unit Tests**               | Maven / JUnit          | ``mvn ``clean ``verify`` must succeed | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                   | Maven ``verify`` phase                                        |
-| **Static Analysis (SAST)             | Semgrep                | 0 ERROR findings                      | Hardened Security Pipeline → ``semgrep-sast``                 |
-| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings             | Hardened Security Pipeline → `config-scan`                    |
-| **Secret Detection**                 | Gitleaks               | 0 secrets detected                    | Hardened Security Pipeline → ``gitleaks``                     |
-| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities            | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully           | Hardened Security Pipeline → ``build-and-test-with-coverage`` |
-| **PR Notifications**                 | Discord Webhooks       | Informational only                    | Notify PR Creation / Notify PR Merge                          |
+| **Gate**                             | **Tool**               | **Threshold / Condition**                    | **Enforcement Workflow**                                      |
+|--------------------------------------|------------------------|----------------------------------------------|---------------------------------------------------------------|
+| **Build & Unit Tests**               | Maven / JUnit          | `mvn clean verify` must succeed              | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **Line Coverage**                    | JaCoCo                 | ≥ 95% line coverage                          | Maven `verify` phase                                          |
+| **Static Analysis (SAST)**           | Semgrep                | 0 ERROR findings                             | Hardened Security Pipeline → `semgrep-sast`                   |
+| **Insecure Config Detection**        | Semgrep (custom rules) | 0 ERROR-severity findings                    | Hardened Security Pipeline → `config-scan`                    |
+| **Secret Detection**                 | Gitleaks               | 0 secrets detected                           | Hardened Security Pipeline → `gitleaks`                       |
+| **Dependency Vulnerabilities (SCA)** | OWASP Dependency‑Check | 0 CVSS ≥ 7 vulnerabilities                   | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **License Risk (SCA)**               | Maven License Plugin   | 0 non-approved licenses (GPL / AGPL)         | Hardened Security Pipeline → `license-scan`                   |
+| **SBOM Generation**                  | CycloneDX              | SBOM generated successfully                  | Hardened Security Pipeline → `build-and-test-with-coverage`   |
+| **PR Notifications**                 | Discord Webhooks       | Informational only                           | Notify PR Creation / Notify PR Merge                          |
+| **Frontend Build & Logic**           | Vitest / npm           | `npm test -- --run` and build must succeed   | Hardened Security Pipeline → Frontend steps                   |
+| **Frontend Test Coverage**           | Vitest Coverage        | Execution of `test:coverage` without errors  | Hardened Security Pipeline → Frontend steps                   |
 
 ## Local Security & Quality Testing (Developer Guide)
 
 Developers can run the same checks locally before pushing a PR.
 
-1. Run full build + coverage + SCA ('mvn clean verify');
 
-2. Run Gitleaks locally ('gitleaks detect --source . --verbose');
+1. Run full backend build + coverage + SCA (`mvn clean verify`);
 
-3. Run Semgrep locally ('semgrep scan --config auto --config p/java src/ .github/ pom.xml');
+2. Run full frontend isolation check (`cd frontend && npm ci && npm test -- --run && npm run test:coverage`);
 
-4. Generate SBOM locally ('mvn cyclonedx:makeAggregateBom');
+3. Run Gitleaks locally (`gitleaks detect --source . --verbose`);
+
+4. Run Semgrep locally (`semgrep scan --config auto --config p/java src/ .github/ pom.xml`);
+
+5. Generate SBOM locally (`mvn cyclonedx:makeAggregateBom`);
 
 ### How to fix Failing Gates
 
@@ -1238,3 +1478,313 @@ Developers can run the same checks locally before pushing a PR.
 
 1. Fix dependency resolution issues
 2. Ensure Maven plugins run correctly
+
+## Docker
+
+The application is containerized using Docker with multi-stage builds and pinned base images for reproducibility and security.
+
+### Prerequisites
+
+- Docker 24+
+
+### Backend
+
+Build and run the backend container:
+
+```bash
+docker build -t mitelovers-backend .
+docker run -p 8081:8081 mitelovers-backend
+```
+
+The application will be available at `http://localhost:8081/h2-console/`.
+
+### Frontend
+
+Build and run the frontend container:
+
+```bash
+cd frontend
+docker build -t mitelovers-frontend .
+docker run -p 5173:80 mitelovers-frontend
+```
+
+The application will be available at `http://localhost:5173`.
+
+### Image Security
+
+Both Dockerfiles follow secure image-building practices:
+
+- **Multi-stage builds** — build tools are not present in the final image
+- **Pinned base images** — SHA256 digests ensure reproducible builds
+- **Non-root user** — containers run as a non-privileged user
+- **.dockerignore** — excludes build output, IDE files, logs, and local configs
+- **No hardcoded secrets** — all configuration is passed via environment variables
+
+---
+
+## Container Orchestration with Docker Compose
+
+Containerising the application involves two complementary pieces. The `Dockerfile` describes **how the image is built**, the layers, the base image, how the application is compiled and packaged.
+
+The `docker-compose.yml`, described here, describes **how that image is run** as a container: which ports are published to the host, which volumes are mounted, which environment variables are injected, and how the container's health is monitored.
+
+Instead of a long `docker run` command with flags that live only in someone's terminal history, the entire runtime setup is committed to the repository, making the application environment **reproducible** and **auditable**.
+
+In line with the user story, the configuration follows **least-privilege principles**: only the port, volume, and environment variables the application genuinely needs are exposed, nothing more. The file orchestrates a single service, `app`, which is the Spring Boot backend.
+
+The complete `docker-compose.yml` is shown below, the following sections break it down piece by piece.
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mitelovers:${APP_VERSION:-latest}
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
+    volumes:
+      - mitelovers-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mitelovers-data:
+```
+
+#### Application service and image build
+
+The service builds its image from the project's `Dockerfile` and tags it. The `${APP_VERSION:-latest}` syntax uses the `APP_VERSION` environment variable if set, otherwise defaults to `latest`.
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mitelovers:${APP_VERSION:-latest}
+    restart: unless-stopped
+```
+
+-`restart: unless-stopped` makes the container restart automatically if it crashes, but not if it is stopped deliberately.
+
+---
+
+#### Least-privilege configuration: ports, volumes, environment
+
+Only the single port the application listens on is exposed, `8081`, the backend's HTTP port. No database console port, no management port, nothing else is published to the host.
+
+```yaml
+    ports:
+      - "8081:8081"
+```
+
+---
+
+Environment variables are passed explicitly and **contain no hardcoded secrets**. The active Spring profiles are provided through `SPRING_PROFILES_ACTIVE`, defaulting to `bootstrap,jpa`. This makes the same image reusable across environments without rebuilding it, and keeps configuration out of the image itself.
+
+```yaml
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
+```
+
+---
+
+A single named volume is mounted — only the directory where the H2 database file is written (`/app/data`, matching the `jdbc:h2:file:./data/miteloversdb` JDBC URL relative to the container's `/app` working directory). No source code or other host directories are mounted, in line with least-privilege.
+
+```yaml
+    volumes:
+      - mitelovers-data:/app/data
+
+volumes:
+  mitelovers-data:
+```
+
+---
+
+#### Health check
+
+A health check was added so Docker can verify that the application is genuinely **responding**, not just that the container process started. The container's health is monitored through the Spring Boot Actuator endpoint `/actuator/health`, which reports `{"status":"UP"}` once the application is fully ready.
+
+The health check itself is declared in `docker-compose.yml`, on the `app` service:
+```yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+```
+
+Each field: 
+- `test` is the command Docker runs to check health (only checks that the endpoint responds); 
+- `interval` is how often it checks; `timeout` how long it waits for a response; 
+- `retries` how many consecutive failures mark the container `unhealthy`; 
+- `start_period` gives the app 40s of grace on startup, during which failures don't count against it.
+
+For this to work, the Actuator was added as a dependency in `pom.xml`:
+
+```xml
+    <!-- Actuator (health checks) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+```
+
+And configured in `src/main/resources/application.properties` to expose **only** the health endpoint, with no internal details:
+
+```properties
+# Actuator — exposes the health check endpoint only
+management.endpoints.web.exposure.include=health
+management.endpoint.health.show-details=never
+```
+
+This restraint matters because exposing all Actuator endpoints (`include=*`) or health details (`show-details=always`) would itself be an insecure configuration.
+
+--- 
+
+#### Running it
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+The application becomes available at `http://localhost:8081`.
+
+#### Validation
+
+The configuration was validated locally:
+
+- `docker compose build` successfully built the image (`mitelovers:latest`) from the multi-stage Dockerfile.
+- `docker compose up` started the container; the Spring Boot application booted on port **8081** and the data seeding (`DataInitializer`) completed.
+- The health endpoint was confirmed responding:
+
+```bash
+curl http://localhost:8081/actuator/health
+
+# output
+{"groups":["liveness","readiness"],"status":"UP"}% 
+```
+
+- `docker compose ps` reports the container as **`healthy`** once the start period elapses:
+
+```bash
+NAME                          IMAGE               COMMAND               SERVICE   CREATED         STATUS                   PORTS
+switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+```
+
+### Build, Scan, and Publish Docker Images
+
+A dedicated CI workflow was added to automate the build, security scanning, and publication of both backend and frontend Docker images.
+This workflow runs on:
+
+- Pushes to main
+- Pull requests targeting main
+- Manual triggers via workflow_dispatch
+- It ensures that every container image is reproducible, cached, vulnerability‑scanned, and safely published to GitHub Container Registry (GHCR).
+
+##### Workflow Overview
+
+The workflow consists of two independent jobs, one for each image:
+- Backend image (mitelovers-backend)
+- Frontend image (mitelovers-frontend)
+
+Each job performs the following steps:
+
+1. Checkout the repository.
+   Uses the latest version of actions/checkout to retrieve the source code.
+
+2. Set up Docker Buildx.
+   Buildx enables multi-platform builds, caching, and advanced build features.
+
+3. Authenticate to GHCR (only on push to main).
+   Pull requests do not push images, but they still build them for validation.
+
+4. Generate image metadata.
+   Uses docker/metadata-action to automatically generate:
+
+    - Tags (latest, commit SHA)
+    - OCI-compliant labels
+    - Versioning metadata
+
+5. Build the Docker image
+   Using docker/build-push-action:
+
+    - On PRs → image is built and loaded locally (load: true)
+    - On pushes to main → image is pushed to GHCR
+    - Build caching is enabled for faster builds
+
+6. Scan the image with Trivy
+   Each image is scanned for vulnerabilities:
+
+    - Only CRITICAL and HIGH severities fail the job
+    - Unfixed vulnerabilities are ignored to reduce noise
+    - Output is shown in table format for readability
+
+    This ensures that no vulnerable image is published to GHCR.
+
+##### Security Enforcement
+
+Trivy is configured with:
+````
+severity: CRITICAL,HIGH
+exit-code: 1
+ignore-unfixed: true
+````
+This means:
+
+- Any CRITICAL or HIGH vulnerability blocks the workflow
+- Medium/Low findings are reported but do not fail the build
+- Only vulnerabilities with available fixes are considered blocking
+
+This aligns with the project's Security Gates policy.
+
+##### Image Publication
+
+When the workflow runs on main, images are published to:
+````
+ghcr.io/<owner>/mitelovers-backend:latest
+ghcr.io/<owner>/mitelovers-frontend:latest
+````
+
+Additionally, each build receives a unique SHA tag:
+````
+ghcr.io/<owner>/<image>:<commit-sha>
+````
+
+This ensures:
+
+- Reproducibility
+- Traceability
+- Immutable versioning
+
+##### Summary Table
+
+| Stage | Backend | Frontend | Blocking |
+| --- | --- | --- | --- |
+| Build image | ✔️ | ✔️ | Yes |
+| Trivy scan | ✔️ | ✔️ | CRITICAL/HIGH |
+| Push to GHCR | ✔️ (main only) | ✔️ (main only) | Yes |
+| Metadata & labels | ✔️ | ✔️ | No |
+| Build caching | ✔️ | ✔️ | No |
+
+##### How to Use the Images Locally
+
+Pull the latest backend image: ````docker pull ghcr.io/<owner>/mitelovers-backend:latest````
+
+Pull the latest frontend image: ````docker pull ghcr.io/<owner>/mitelovers-frontend:latest````
+
+Or run them together using Docker Compose (see the Docker section).
+
+---
+

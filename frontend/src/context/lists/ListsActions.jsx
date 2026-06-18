@@ -20,6 +20,8 @@ export const ADD_ITEM_TO_LIST_SUCCESS = 'ADD_ITEM_TO_LIST_SUCCESS';
 export const ADD_ITEM_TO_LIST_ERROR = 'ADD_ITEM_TO_LIST_ERROR';
 export const REMOVE_ITEM_FROM_LIST_SUCCESS = 'REMOVE_ITEM_FROM_LIST_SUCCESS';
 export const REMOVE_ITEM_FROM_LIST_ERROR = 'REMOVE_ITEM_FROM_LIST_ERROR';
+export const GET_PUBLIC_LISTS_SUCCESS = 'GET_PUBLIC_LISTS_SUCCESS';
+export const GET_PUBLIC_LISTS_ERROR   = 'GET_PUBLIC_LISTS_ERROR';
 
 export function getListsSuccess(lists) {
     return { type: GET_LISTS_SUCCESS, payload: lists };
@@ -126,17 +128,6 @@ export async function addItemToList(dispatch, links, itemId) {
     }
 }
 
-export async function removeItemFromList(dispatch, links, itemId, listId) {
-    const href = links?.find(l => l.rel === 'remove-item')?.href;
-    if (!href) return;
-    try {
-        await apiClient.deleteByHref(`${href}/${itemId}`);
-        dispatch({ type: REMOVE_ITEM_FROM_LIST_SUCCESS, payload: { listId, itemId } });
-    } catch (e) {
-        dispatch({ type: REMOVE_ITEM_FROM_LIST_ERROR, payload: String(e) });
-    }
-}
-
 export async function deleteList(dispatch, links, myListsHref) {
     const href = links?.find(l => l.rel === 'delete')?.href;
     if (!href) return;
@@ -146,5 +137,26 @@ export async function deleteList(dispatch, links, myListsHref) {
         await getMyLists(dispatch, myListsHref);
     } catch (e) {
         dispatch({ type: DELETE_LIST_ERROR, payload: String(e) });
+    }
+}
+
+export async function removeItemFromList(dispatch, links, itemId) {
+    const href = links?.find(l => l.rel === 'remove-item')?.href;
+    if (!href) return;
+
+    try {
+        const result = await apiClient.patchByHref(href, { itemId });
+        dispatch({ type: REMOVE_ITEM_FROM_LIST_SUCCESS, payload: result });
+    } catch (e) {
+        dispatch({ type: REMOVE_ITEM_FROM_LIST_ERROR, payload: String(e) });
+    }
+}
+
+export async function getPublicLists(dispatch, href) {
+    try {
+        const result = await apiClient.getByHref(href);
+        dispatch({ type: GET_PUBLIC_LISTS_SUCCESS, payload: result ?? [] });
+    } catch (e) {
+        dispatch({ type: GET_PUBLIC_LISTS_ERROR, payload: String(e) });
     }
 }

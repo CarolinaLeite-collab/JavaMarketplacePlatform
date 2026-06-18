@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Application service responsible for retrieving List of Items information
@@ -132,6 +133,30 @@ public class ListOfItemsService {
     public void deleteList(ListOfItemsId listOfItemsId) {
 
         _listOfItemsRepo.deleteListOfItems(listOfItemsId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ListOfItems> getPublicLists() {
+
+        List<ListOfItems> result = new ArrayList<>();
+
+        _listOfItemsRepo.findAll().forEach(result::add);
+
+        return result.stream()
+                .filter(list -> !list.isPrivate())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemId> getItemsInPublicList(ListOfItemsId listId) {
+        ListOfItems list = _listOfItemsRepo.ofIdentity(listId)
+                .orElseThrow(() -> new IllegalArgumentException("List not found"));
+
+        if (list.isPrivate()) {
+            throw new IllegalStateException("List is private");
+        }
+
+        return list.getItemIds();
     }
 
 }
