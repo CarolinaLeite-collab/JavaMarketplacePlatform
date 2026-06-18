@@ -240,25 +240,25 @@ jobs:
       - name: Generate dependency license report
         run: mvn license:add-third-party
 
-      - name: Post License Report comment on PR
-        if: always() && github.event_name == 'pull_request'
+      - name: Analyze license report
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
 
-            let body = '## 📜 License Risk Analysis\n\n';
+            const reportPath = 'target/generated-sources/license/THIRD-PARTY.txt';
+            const findingsPath = 'target/generated-sources/license/license-findings.json';
+
+            const result = {
+              totalDependencies: 0,
+              blockingFindings: [],
+              warningFindings: []
+            };
 
             try {
-              const report = fs.readFileSync(
-                'target/generated-sources/license/THIRD-PARTY.txt',
-                'utf8'
-              );
-
+              const report = fs.readFileSync(reportPath, 'utf8');
               const lines = report.split('\n');
-
-              let totalDependencies = 0;
-              const findings = [];
 
               for (const line of lines) {
                 const trimmed = line.trim();
@@ -268,7 +268,7 @@ jobs:
                 const coordinatesMatch = trimmed.match(/\(([^():]+:[^():]+:[^()\s]+)\s*-\s*.*\)$/);
                 if (!coordinatesMatch) continue;
 
-                totalDependencies++;
+                result.totalDependencies++;
 
                 const dependency = coordinatesMatch[1];
 
@@ -297,35 +297,75 @@ jobs:
                   normalizedLicense.includes('MIT') ||
                   normalizedLicense.includes('BSD');
 
+                const isUnknownLicense =
+                  normalizedLicense.includes('UNKNOWN');
+
                 const blocked =
                   hasAgpl ||
                   (hasPureGpl && !hasException && !hasAllowedAlternative);
 
                 if (blocked) {
-                  findings.push({
+                  result.blockingFindings.push({
+                    dependency,
+                    license: licensePart
+                  });
+                } else if (isUnknownLicense) {
+                  result.warningFindings.push({
                     dependency,
                     license: licensePart
                   });
                 }
               }
+            } catch (e) {
+              result.warningFindings.push({
+                dependency: 'License report',
+                license: 'THIRD-PARTY.txt could not be read'
+              });
+            }
 
-              body += `✅ ${totalDependencies} dependencies reviewed\n\n`;
+            fs.writeFileSync(findingsPath, JSON.stringify(result, null, 2));
 
-              if (findings.length === 0) {
-                body += 'No dependencies with non-approved licenses were detected.';
+      - name: Post License Report comment on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            let body = '## 📜 License Risk Analysis\n\n';
+
+            try {
+              const result = JSON.parse(
+                fs.readFileSync(
+                  'target/generated-sources/license/license-findings.json',
+                  'utf8'
+                )
+              );
+
+              body += `✅ ${result.totalDependencies} dependencies reviewed\n\n`;
+
+              if (
+                result.blockingFindings.length === 0 &&
+                result.warningFindings.length === 0
+              ) {
+                body += 'No dependencies with non-approved or unknown licenses were detected.';
               } else {
                 body += '| Dependency | License | Status |\n';
                 body += '|---|---|---|\n';
 
-                for (const finding of findings) {
+                for (const finding of result.blockingFindings) {
                   body += `| \`${finding.dependency}\` | ${finding.license} | ❌ Replace or request exception |\n`;
                 }
 
-                body += '\n> ⚠️ Dependencies using AGPL or GPL without an approved exception require replacement or an approved exception.';
+                for (const finding of result.warningFindings) {
+                  body += `| \`${finding.dependency}\` | ${finding.license} | ⚠️ Review manually |\n`;
+                }
+
+                body += '\n> ⚠️ AGPL or GPL licenses without an approved exception block the build. Unknown licenses require manual review.';
               }
 
             } catch (e) {
-              body += '_Could not read THIRD-PARTY.txt report._';
+              body += '_Could not read license findings report._';
             }
 
             await github.rest.issues.createComment({
@@ -335,18 +375,20 @@ jobs:
               body
             });
 
-
       - name: Upload License Report
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
           name: third-party-licenses
-          path: target/generated-sources/license/THIRD-PARTY.txt
-
+          path: |
+            target/generated-sources/license/THIRD-PARTY.txt
+            target/generated-sources/license/license-findings.json
 
       - name: Enforce license policy
         run: |
-          if grep -iE "AGPL|GPL-3|GPL 3|GPLv3|GNU General Public License" target/generated-sources/license/THIRD-PARTY.txt; then
+          BLOCKING_COUNT=$(node -e "const r=require('./target/generated-sources/license/license-findings.json'); console.log(r.blockingFindings.length)")
+
+          if [ "$BLOCKING_COUNT" -gt 0 ]; then
             echo "::error::Non-approved dependency license detected. Replace the dependency or request an exception."
             exit 1
           fi
