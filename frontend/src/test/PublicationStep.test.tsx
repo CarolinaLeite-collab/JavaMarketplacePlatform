@@ -19,13 +19,14 @@ describe('PublicationStep', () => {
         { value: 'GENRE-001', label: 'Software Engineering' },
     ];
 
-    const renderPublicationStep = (setData = vi.fn()) => {
+    const renderPublicationStep = (setData = vi.fn(), errors = {}) => {
         render(
             <PublicationStep
                 data={data}
                 setData={setData}
                 authors={authors}
                 genres={genres}
+                errors={errors}
             />
         );
 
@@ -86,5 +87,36 @@ describe('PublicationStep', () => {
         await user.click(await screen.findByText('Software Engineering'));
 
         expect(setData).toHaveBeenCalled();
+    });
+
+    it('renders no error messages when errors prop is empty', () => {
+        renderPublicationStep(vi.fn(), {});
+
+        expect(screen.queryByText(/title is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/author is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/release year is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/genre is required/i)).not.toBeInTheDocument();
+    });
+
+    it('renders inline error messages for each invalid field', () => {
+        renderPublicationStep(vi.fn(), {
+            title: 'Title is required',
+            authorName: 'Author is required',
+            releaseYear: 'Release year is required',
+            genreName: 'Genre is required',
+        });
+
+        expect(screen.getByText(/title is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/author is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/release year is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/genre is required/i)).toBeInTheDocument();
+    });
+
+    it('marks fields with errors as invalid', () => {
+        renderPublicationStep(vi.fn(), {
+            title: 'Title is required',
+        });
+
+        expect(screen.getByLabelText(/title/i)).toHaveAttribute('aria-invalid', 'true');
     });
 });

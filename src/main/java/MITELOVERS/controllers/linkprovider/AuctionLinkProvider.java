@@ -6,6 +6,7 @@ import MITELOVERS.controllers.rest.AuctionRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.BidResponseDTO;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -35,7 +36,6 @@ public class AuctionLinkProvider implements RootLinkProvider {
     }
 
     // Links for the /auctions root resource (OPTIONS /auctions)
-
     @Override
     public List<Link> getLinks(User user) {
 
@@ -47,6 +47,19 @@ public class AuctionLinkProvider implements RootLinkProvider {
         }
 
         return links;
+    }
+
+    // Allowed HTTP methods for /auctions (OPTIONS /auctions)
+    public List<HttpMethod> getAllowedMethods(User user) {
+        List<HttpMethod> methods = new ArrayList<>();
+
+        methods.add(HttpMethod.OPTIONS);
+
+        if(_authorizationPolicy.canSell(user)) {
+            methods.add(HttpMethod.POST);
+        }
+
+        return methods;
     }
 
 

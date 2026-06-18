@@ -1,0 +1,61 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for sale in an auction a publication in my library" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":AuctionRestController" as REST
+participant ":UserService" as userService
+participant ":IUserRepo" as userRepo
+participant ":AuctionLinkProvider" as link
+participant "Database" as DB
+
+REST -> userService : getUserByEmail(email)
+activate userService
+activate REST
+
+create "email:Email" as email
+userService -->> email : create(email)
+
+userService -> userRepo : user = ofIdentity(userId)
+activate userRepo
+userRepo -> DB : user = ofIdentity(userId)
+activate DB
+DB -->> userRepo : user
+deactivate DB
+userRepo --> userService : user
+deactivate userRepo
+
+userService --> REST : user
+deactivate userService
+
+REST -> link : getAllowedMethods(user)
+activate link
+
+create "methods:List<HttpMethod>" as method
+link -->> method : create(methods)
+
+link -> method : add(OPTIONS)
+
+opt canSell(user) == true
+    link -> method : add(POST)
+end
+
+link --> REST : methods
+
+ref over REST
+[[../Process_View_Level_3_SD.puml Return to main diagram]]
+end ref
+
+@enduml

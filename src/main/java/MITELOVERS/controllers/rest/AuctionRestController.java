@@ -17,9 +17,9 @@ import MITELOVERS.mapper.BidResponseDTOMapper;
 import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
-import org.springframework.hateoas.IanaUriSchemes;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -64,17 +64,15 @@ public class AuctionRestController {
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> options(
-            @RequestParam("email") String email) {
+    public ResponseEntity<Void> options(
+            @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
+        List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethods(user);
 
-        RepresentationModel<?> model = new RepresentationModel<>();
-        for (Link link : _auctionLinkProvider.getLinks(user)) {
-            model.add(link);
-        }
-
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok()
+                .allow(methods.toArray(HttpMethod[]::new))
+                .build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

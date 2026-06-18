@@ -5,8 +5,6 @@ import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
-import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,28 +21,23 @@ class PublishingCompanyServiceTest {
 
     private PublishingCompanyFactory _publishingCompanyFactoryDouble;
     private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
-    private PublishingCompanyResponseDTOMapper _responseMapperDouble;
 
     private PublishingCompany _publishingCompanyDouble;
     private PublishingCompanyId _publishingCompanyIdDouble;
-    private PublishingCompanyResponseDTO _responseDTODouble;
 
     @BeforeEach
     void setUp() {
         _publishingCompanyFactoryDouble = mock(PublishingCompanyFactory.class);
         _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
-        _responseMapperDouble = mock(PublishingCompanyResponseDTOMapper.class);
 
         _publishingCompanyDouble = mock(PublishingCompany.class);
         _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
-        _responseDTODouble = mock(PublishingCompanyResponseDTO.class);
 
         when(_publishingCompanyDouble.identity()).thenReturn(_publishingCompanyIdDouble);
-        when(_responseMapperDouble.toModel(_publishingCompanyDouble)).thenReturn(_responseDTODouble);
     }
 
     @Test
-    void registerPublishingCompanyNewReturnsDTO() {
+    void registerPublishingCompanyNewReturnsPublishingCompany() {
         // Arrange
         PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
@@ -57,18 +50,18 @@ class PublishingCompanyServiceTest {
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
         // Act
-        PublishingCompanyResponseDTO result = service.registerPublishingCompany(dtoDouble);
+        PublishingCompany result = service.registerPublishingCompany(dtoDouble);
 
         // Assert
         assertNotNull(result);
+        assertEquals(_publishingCompanyDouble, result);
     }
 
     @Test
-    void registerPublishingCompanyAlreadyExistsReturnsExisting() {
+    void registerPublishingCompanyAlreadyExistsThrowsException() {
         // Arrange
         PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
@@ -80,30 +73,26 @@ class PublishingCompanyServiceTest {
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
-        // Act
-        PublishingCompanyResponseDTO result = service.registerPublishingCompany(dtoDouble);
-
-        // Assert
-        assertNotNull(result);
+        // Act & Assert
+        assertThrows(IllegalStateException.class, () ->
+                service.registerPublishingCompany(dtoDouble));
     }
 
 
     @Test
-    void getAllPublishingCompaniesReturnsListOfDTOs() {
+    void getAllPublishingCompaniesReturnsListOfPublishingCompanies() {
         // Arrange
         when(_iPublishingCompanyRepoDouble.findAll()).thenReturn(List.of(_publishingCompanyDouble));
 
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
         // Act
-        List<PublishingCompanyResponseDTO> result = service.getAllPublishingCompanies();
+        List<PublishingCompany> result = service.getAllPublishingCompanies();
 
         // Assert
         assertNotNull(result);
@@ -118,11 +107,10 @@ class PublishingCompanyServiceTest {
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
         // Act
-        List<PublishingCompanyResponseDTO> result = service.getAllPublishingCompanies();
+        List<PublishingCompany> result = service.getAllPublishingCompanies();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -137,8 +125,7 @@ class PublishingCompanyServiceTest {
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
         // Act
         PublishingCompany result = service.getPublishingCompanyById("PORTO EDITORA");
@@ -155,8 +142,7 @@ class PublishingCompanyServiceTest {
         // SUT
         PublishingCompanyService service = new PublishingCompanyService(
                 _publishingCompanyFactoryDouble,
-                _iPublishingCompanyRepoDouble,
-                _responseMapperDouble);
+                _iPublishingCompanyRepoDouble);
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->

@@ -6,6 +6,7 @@ import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.BidResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,10 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class AuctionLinkProviderTest {
-
-    // ------------------------------------------------------------
-    // getLinks for /auction
-    // ------------------------------------------------------------
 
     @Test
     void getLinksUserCanSellContainsCreateAuctionLink() {
@@ -55,9 +52,42 @@ class AuctionLinkProviderTest {
         assertTrue(links.isEmpty());
     }
 
-    // ------------------------------------------------------------
-    // getLinks for /auction/{auctionId}
-    // ------------------------------------------------------------
+    @Test
+    void getAllowedMethodsUserCanSellContainsPost() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canSell(user)).thenReturn(true);
+
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<HttpMethod> links = linkProvider.getAllowedMethods(user);
+
+        // Assert
+        assertTrue(links.contains(HttpMethod.POST));
+        assertTrue(links.contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void getAllowedMethodsUserCannotSellContainsOnlyOptions() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canSell(user)).thenReturn(false);
+
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<HttpMethod> links = linkProvider.getAllowedMethods(user);
+
+        assertFalse(links.contains(HttpMethod.POST));
+        assertTrue(links.contains(HttpMethod.OPTIONS));
+    }
 
     @Test
     void getLinksForSpecificAuctionUserCanViewAuctionContainsViewAndSelfLinks() {
