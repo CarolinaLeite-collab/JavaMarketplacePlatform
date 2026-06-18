@@ -9,6 +9,19 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * Represents a single item purchased within a {@link Sale}.
+ * <p>
+ * A sale line captures the direct sale being purchased, the seller involved,
+ * and the price paid at the moment the transaction is completed.
+ * </p>
+ * <p>
+ * The price is immutable after creation, ensuring that the sale preserves
+ * the historical value of the transaction independently of future price
+ * changes to the original direct sale.
+ * </p>
+ */
+
 @Getter
 public class SaleLine implements DomainEntity<SaleLineId> {
 

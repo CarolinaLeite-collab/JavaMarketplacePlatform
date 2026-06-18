@@ -8,6 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents a completed or pending purchase made by a buyer.
+ * <p>
+ * A sale aggregates one or more {@link SaleLine}s, records the buyer,
+ * tracks the total amount of the transaction, and maintains its lifecycle
+ * status from creation until completion or cancellation.
+ * </p>
+ * <p>
+ * Enforces that a sale contains at least one sale line, that all monetary
+ * values are valid, and that the total amount corresponds to the sum of
+ * the sale lines.
+ * </p>
+ */
+
 public class Sale implements AggregateRoot<SaleId> {
 
     private final SaleId _saleId;
