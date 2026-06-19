@@ -31,7 +31,7 @@ public class SaleLine implements DomainEntity<SaleLineId> {
     private final DirectSaleId _directSaleId;
 
     //Re-hydration
-    public SaleLine(SaleLineId saleLineId,
+    SaleLine(SaleLineId saleLineId,
                     UserId sellerId,
                     Price priceAtSale,
                     DirectSaleId directSaleId) {
@@ -43,7 +43,7 @@ public class SaleLine implements DomainEntity<SaleLineId> {
     }
 
     // creation
-    public SaleLine(UserId sellerId,
+    SaleLine(UserId sellerId,
                     Price priceAtSale,
                     DirectSaleId directSaleId) {
 
