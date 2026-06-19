@@ -136,7 +136,7 @@ public class AuctionRestController {
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
             @PathVariable String auctionId,
-            @RequestParam("X-User-Id") String email) {
+            @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
 
@@ -181,7 +181,7 @@ public class AuctionRestController {
     @RequestMapping(path = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> optionsForBids(
             @PathVariable String auctionId,
-            @RequestParam("X-User-Id") String email) {
+            @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
 

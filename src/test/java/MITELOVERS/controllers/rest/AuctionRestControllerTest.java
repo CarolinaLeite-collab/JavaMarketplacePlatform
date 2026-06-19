@@ -275,7 +275,7 @@ class AuctionRestControllerTest {
 
         // Act + Assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}", auctionId)
-                        .param("X-User-Id", "user@example.com"))
+                        .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links['place-bid']").exists());
@@ -295,7 +295,7 @@ class AuctionRestControllerTest {
 
         // Act + Assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}", auctionId)
-                        .param("X-User-Id", "user@example.com"))
+                        .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links").doesNotExist());
     }
@@ -374,7 +374,7 @@ class AuctionRestControllerTest {
 
         // Act + Assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
-                        .param("X-User-Id", "user@example.com"))
+                        .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links['view-bids']").exists());
@@ -394,7 +394,7 @@ class AuctionRestControllerTest {
 
         // Act + Assert
         mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
-                        .param("X-User-Id", "user@example.com"))
+                        .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links").doesNotExist());
     }
