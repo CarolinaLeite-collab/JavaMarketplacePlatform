@@ -39,7 +39,7 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canGetLibrary(user)) {
             links.add(
-                    Link.of("/my-library/{?sort}")
+                    linkTo(LibraryRestController.class)
                             .withRel("library")
             );
         }

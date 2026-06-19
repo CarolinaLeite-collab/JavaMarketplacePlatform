@@ -7,8 +7,7 @@ import org.springframework.hateoas.Link;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,8 +64,8 @@ class LibraryLinkProviderTest {
         Link libraryLink = links.getFirst();
 
         assertEquals("library", libraryLink.getRel().value());
-        assertEquals("/my-library/{?sort}", libraryLink.getHref());
-        assertTrue(libraryLink.isTemplated());
+        assertEquals("/my-library", libraryLink.getHref());
+        assertFalse(libraryLink.isTemplated());
     }
 
     @Test
