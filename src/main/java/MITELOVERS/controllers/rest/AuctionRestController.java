@@ -99,8 +99,7 @@ public class AuctionRestController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
-        try {
+    public ResponseEntity<AuctionResponseDTO> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
             List<ItemId> itemIds = request.getItemIds().stream()
                     .map(ItemId::new)
                     .toList();
@@ -127,10 +126,6 @@ public class AuctionRestController {
                     .withSelfRel());
 
             return new ResponseEntity<>(dto, HttpStatus.CREATED);
-
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)

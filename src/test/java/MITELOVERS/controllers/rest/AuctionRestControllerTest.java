@@ -175,28 +175,28 @@ class AuctionRestControllerTest {
     }
 
     @Test
-    void createAuctionServiceThrowsExceptionReturns500() throws Exception {
-        // arrange
-        when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any(), any()))
-                .thenThrow(new IllegalStateException("Item not found"));
+    void createAuctionReturns404WhenItemNotFound() throws Exception {
+
+        when(_auctionService.putItemOnAuction(
+                any(), any(), any(), any(), any(), any(), any()))
+                .thenThrow(new NoSuchElementException("Item not found"));
 
         String requestBody = """
-                {
-                    "itemIds": ["item-nao-existe"],
-                    "startingPrice": 10.0,
-                    "reservePrice": 25.0,
-                    "priceCurrency": "EUR",
-                    "startDate": "2026-06-10T10:00:00Z",
-                    "endDate": "2026-06-20T10:00:00Z"
-                }
-                """;
+        {
+            "itemIds": ["ABCDEF1234"],
+            "startingPrice": 10.0,
+            "reservePrice": 25.0,
+            "priceCurrency": "EUR",
+            "startDate": "2026-06-10T10:00:00Z",
+            "endDate": "2026-06-20T10:00:00Z"
+        }
+        """;
 
-        // act + assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-User-Id", "pedro@aeiou.com")
                         .content(requestBody))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
     // ------------------------------------------------------------
