@@ -513,7 +513,7 @@ class AuctionRestControllerTest {
     }
 
     @Test
-    void placeBidServiceThrowsExceptionReturns500() throws Exception {
+    void placeBidServiceThrowsExceptionReturns404() throws Exception {
         // Arrange
         String auctionId = "AU-12345678";
 
@@ -532,7 +532,7 @@ class AuctionRestControllerTest {
                         .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 
 }

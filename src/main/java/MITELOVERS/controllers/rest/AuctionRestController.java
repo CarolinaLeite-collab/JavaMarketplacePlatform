@@ -154,7 +154,7 @@ public class AuctionRestController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Object> getAuctionById(@PathVariable String auctionId) {
-        try {
+
             Auction auction = _auctionService.getAuctionById(auctionId);
 
             AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
@@ -162,20 +162,17 @@ public class AuctionRestController {
             dto.add(
                     linkTo(methodOn(AuctionRestController.class)
                             .getAuctionById(auctionId))
-                            .withSelfRel(),
+                            .withSelfRel()
+                    );
 
+            dto.add(
                     linkTo(methodOn(AuctionRestController.class)
-                        .getBidsForAuction(auctionId))
-                        .withRel("bid-options"));
+                            .getBidsForAuction(auctionId))
+                            .withRel("bid-options")
+            );
 
             return new ResponseEntity<>(dto, HttpStatus.OK);
 
-        } catch (NoSuchElementException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(),  HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @RequestMapping(path = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
@@ -199,7 +196,7 @@ public class AuctionRestController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Object> getBidsForAuction(@PathVariable String auctionId) {
-        try {
+
             Auction auction = _auctionService.getAuctionById(auctionId);
 
             // Map each Bid to BidResponseDTO
@@ -216,12 +213,6 @@ public class AuctionRestController {
 
             return new ResponseEntity<>(dtos, HttpStatus.OK);
 
-        } catch (NoSuchElementException ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
     @PostMapping(
@@ -233,7 +224,7 @@ public class AuctionRestController {
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String userIdFromHeader,
             @RequestBody @Valid PlaceBidRequestDTO request) {
-        try {
+
             Email email = new Email(userIdFromHeader);
             UserId userId = new UserId(email);
 
@@ -250,9 +241,6 @@ public class AuctionRestController {
 
             return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 }
