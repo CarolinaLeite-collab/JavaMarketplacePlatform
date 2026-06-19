@@ -19,7 +19,7 @@ autonumber
 actor Buyer as User
 participant ":Client" as CLI
 participant ":Server" as SER
-database "DB" as DB
+participant "DB" as DB
 
 User -> CLI : I would like to know %n() what I can do in %n() regard to an existing %n()auction
 activate CLI
