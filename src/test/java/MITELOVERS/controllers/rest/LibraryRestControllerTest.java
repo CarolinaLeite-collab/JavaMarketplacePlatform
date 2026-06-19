@@ -1,14 +1,20 @@
 package MITELOVERS.controllers.rest;
 
+import MITELOVERS.applicationservices.LibraryItemDetails;
 import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
+import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.LibrarySort;
 import MITELOVERS.domain.valueobject.UserId;
-import MITELOVERS.dto.response.LibraryItemDetailsDTO;
-import MITELOVERS.dto.response.LibraryItemSummaryDTO;
+import MITELOVERS.dto.response.LibraryItemResponseDTO;
+import MITELOVERS.mapper.LibraryItemResponseDTOMapper;
 import MITELOVERS.mapper.LibrarySortRequestMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +56,9 @@ class LibraryRestControllerTest {
     @MockitoBean
     private LibrarySortRequestMapper sortRequestMapper;
 
+    @MockitoBean
+    private LibraryItemResponseDTOMapper libraryItemResponseDTOMapper;
+
     @BeforeEach
     void setUp() {
         when(sortRequestMapper.toDomain(null))
@@ -59,7 +68,16 @@ class LibraryRestControllerTest {
     @Test
     void shouldReturn200WithItemsWhenLibraryExists() throws Exception {
         // Arrange
-        LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
+        Item itemDouble = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
+        Edition editionDouble = mock(Edition.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        LibraryItemDetails details = new LibraryItemDetails(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble);
+
+        LibraryItemResponseDTO dto = new LibraryItemResponseDTO(
                 "3C5D126F8B",
                 "1984",
                 "George Orwell",
@@ -71,7 +89,11 @@ class LibraryRestControllerTest {
         when(libraryService.getListOfItemInfoInMyLibrary(
                 any(UserId.class),
                 eq(LibrarySort.NONE)
-        )).thenReturn(List.of(dto));
+        )).thenReturn(List.of(details));
+
+        when(libraryItemResponseDTOMapper.toDTO(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble
+        )).thenReturn(dto);
 
         // Act
         var result = mockMvc.perform(get("/my-library")
@@ -81,16 +103,16 @@ class LibraryRestControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath(
-                        "$._embedded.libraryItemSummaryDTOList[0]._links.self"
+                        "$._embedded.libraryItemResponseDTOList[0]._links.self"
                 ).exists())
                 .andExpect(jsonPath(
-                        "$._embedded.libraryItemSummaryDTOList[0].authorName"
+                        "$._embedded.libraryItemResponseDTOList[0].authorName"
                 ).value("George Orwell"))
                 .andExpect(jsonPath(
-                        "$._embedded.libraryItemSummaryDTOList[0].publicationType"
+                        "$._embedded.libraryItemResponseDTOList[0].publicationType"
                 ).value("Book"))
                 .andExpect(jsonPath(
-                        "$._embedded.libraryItemSummaryDTOList[0].identifier"
+                        "$._embedded.libraryItemResponseDTOList[0].identifier"
                 ).value("9780451524935"))
                 .andExpect(jsonPath("$._links.sort").exists())
                 .andExpect(jsonPath("$._links.sort.href")
@@ -118,7 +140,6 @@ class LibraryRestControllerTest {
     @Test
     void shouldReturn200WithEmptyListWhenNoLibraryExists() throws Exception {
         // Arrange
-
         when(libraryService.getListOfItemInfoInMyLibrary(
                 any(UserId.class),
                 eq(LibrarySort.NONE)
@@ -133,9 +154,9 @@ class LibraryRestControllerTest {
                 .andExpect(jsonPath("$._links.self").exists());
     }
 
-
     @Test
     void shouldSortLibraryByAuthor() throws Exception {
+        // Arrange
         when(sortRequestMapper.toDomain("author"))
                 .thenReturn(LibrarySort.AUTHOR);
 
@@ -144,36 +165,63 @@ class LibraryRestControllerTest {
                 eq(LibrarySort.AUTHOR)
         )).thenReturn(List.of());
 
+        // Act + Assert
         mockMvc.perform(get("/my-library")
                         .header("X-User-Id", "pedro@aeiou.com")
                         .param("sort", "author"))
                 .andExpect(status().isOk());
     }
 
-
     @Test
     void shouldReturn200WithItemDetailsWhenItemExists() throws Exception {
         // Arrange
-        LibraryItemDetailsDTO dto = new LibraryItemDetailsDTO(
+        Item itemDouble = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
+        Edition editionDouble = mock(Edition.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        LibraryItemDetails details = new LibraryItemDetails(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble);
+
+        LibraryItemResponseDTO dto = new LibraryItemResponseDTO(
+                "3C5D126F8B",
+                "1984",
                 "George Orwell",
+                "BOOK",
                 "no identifier",
-                "BOOK"
+                null
         );
-        when(libraryService.getItemDetail(any())).thenReturn(dto);
+
+        when(libraryService.getItemDetail(any())).thenReturn(details);
+        when(libraryItemResponseDTOMapper.toDTO(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble
+        )).thenReturn(dto);
 
         // Act
         var result = mockMvc.perform(get("/my-library/3C5D126F8B"));
 
         // Assert
         result.andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self").exists());
+                .andExpect(jsonPath("$._links.self").exists())
+                .andExpect(jsonPath("$.authorName").value("George Orwell"))
+                .andExpect(jsonPath("$.publicationType").value("BOOK"))
+                .andExpect(jsonPath("$.identifier").value("no identifier"));
     }
-
 
     @Test
     void shouldReturn201WhenItemAddedToLibrary() throws Exception {
         // Arrange
-        LibraryItemSummaryDTO dto = new LibraryItemSummaryDTO(
+        Item itemDouble = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
+        Edition editionDouble = mock(Edition.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        LibraryItemDetails details = new LibraryItemDetails(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble);
+
+        LibraryItemResponseDTO dto = new LibraryItemResponseDTO(
                 "3C5D126F8B",
                 "1984",
                 "George Orwell",
@@ -181,7 +229,11 @@ class LibraryRestControllerTest {
                 "9780451524935",
                 "https://example.com/1984.jpg"
         );
-        when(libraryService.addItemToLibrary(any(), any())).thenReturn(dto);
+
+        when(libraryService.addItemToLibrary(any(), any())).thenReturn(details);
+        when(libraryItemResponseDTOMapper.toDTO(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble
+        )).thenReturn(dto);
 
         // Act & Assert
         mockMvc.perform(post("/my-library")
@@ -190,25 +242,17 @@ class LibraryRestControllerTest {
                         .content("{\"itemId\": \"3C5D126F8B\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath(
-                        "$.authorName"
-                ).value("George Orwell"))
-                .andExpect(jsonPath(
-                        "$.publicationType"
-                ).value("Book"))
-                .andExpect(jsonPath(
-                        "$.identifier"
-                ).value("9780451524935"));
-
+                .andExpect(jsonPath("$.authorName").value("George Orwell"))
+                .andExpect(jsonPath("$.publicationType").value("Book"))
+                .andExpect(jsonPath("$.identifier").value("9780451524935"));
     }
-
 
     @Test
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
         // Arrange
-        User _userDouble = mock(User.class);
-        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
-        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of(
+        User userDouble = mock(User.class);
+        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(libraryLinkProvider.getLinks(userDouble)).thenReturn(List.of(
                 Link.of("/my-library").withRel("library"),
                 Link.of("/my-library").withRel("library-add")
         ));
@@ -229,9 +273,9 @@ class LibraryRestControllerTest {
     @Test
     void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
-        User _userDouble = mock(User.class);
-        when(userService.getUserByEmail("readonly@aeiou.com")).thenReturn(_userDouble);
-        when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of());
+        User userDouble = mock(User.class);
+        when(userService.getUserByEmail("readonly@aeiou.com")).thenReturn(userDouble);
+        when(libraryLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
         // Act & Assert
         mockMvc.perform(options("/my-library")
@@ -246,12 +290,10 @@ class LibraryRestControllerTest {
 
     @Test
     void shouldReturn400WhenHeaderIsMissing() throws Exception {
-
         // Act
         var result = mockMvc.perform(get("/my-library"));
 
         // Assert
         result.andExpect(status().isBadRequest());
     }
-
 }
