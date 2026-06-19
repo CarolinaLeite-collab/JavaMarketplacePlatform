@@ -73,6 +73,14 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
             throw new IllegalArgumentException("Cannot mix currencies in a shopping cart!");
         }
 
+        for(ShoppingCartLine cartLine : _cartLines) {
+
+            if (cartLine.getDirectSaleId().equals(shoppingCartLine.getDirectSaleId())) {
+                throw new IllegalArgumentException("This DirectSale is already present in the cart!");
+            }
+
+        }
+
         _cartLines.add(shoppingCartLine);
         recalculateTotalAmount();
     }
@@ -140,7 +148,21 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
 
     @Override
     public boolean sameAs(Object object) {
-        return equals(object);
+
+        if (object instanceof ShoppingCart) {
+            ShoppingCart oShoppingCart = (ShoppingCart) object;
+
+            if ((Objects.equals(_buyerId, oShoppingCart._buyerId))
+                    && (Objects.equals(_totalAmount, oShoppingCart._totalAmount))
+                    && (Objects.equals(_cartLines, oShoppingCart._cartLines))
+            )
+
+                return true;
+
+        }
+
+        return false;
+
     }
 
     @Override
@@ -148,7 +170,7 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ShoppingCart that = (ShoppingCart) o;
-        return _cartId.equals(that._cartId) && _buyerId.equals(that._buyerId);
+        return _cartId.equals(that._cartId);
     }
 
     @Override

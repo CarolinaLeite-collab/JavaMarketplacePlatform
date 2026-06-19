@@ -21,7 +21,6 @@ actor User as USER
 participant ":apiClient" as FRONTEND
 participant ":ShoppingCartRESTController" as CTL
 participant ":SalesRESTController" as SALESCTL
-participant ":Database" as DB
 
 note over FRONTEND
   Assumes the user already opened a DirectSale via
@@ -36,16 +35,19 @@ activate FRONTEND
 FRONTEND -> CTL : OPTIONS {add-to-cart href}
 activate CTL
 
+ref over CTL
+[[xxx.puml OPTIONS for shoppingCartLines on /shopping-carts/shopping-cart-lines]]
+end ref
+
 CTL --> FRONTEND : 200 OK + [GET, POST]
 deactivate CTL
 
 FRONTEND -> CTL : POST {add-to-cart href}
 activate CTL
 
-CTL -> DB : select
-activate DB
-DB --> CTL : data
-deactivate DB
+ref over CTL
+[[xxx.puml POST new shoppingCartLine in /shopping-carts/shopping-cart-lines]]
+end ref
 
 CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (new shoppingCartLine)
 deactivate CTL
@@ -59,16 +61,19 @@ activate FRONTEND
 FRONTEND -> CTL : OPTIONS {shoppingCart self link}
 activate CTL
 
-CTL --> FRONTEND : 200 OK + [GET, DELETE]
+ref over CTL
+[[xxx.puml OPTIONS for shoppingCart on /shopping-carts/{cartId}]]
+end ref
+
+CTL --> FRONTEND : 200 OK + [GET, PATCH]
 deactivate CTL
 
 FRONTEND -> CTL : GET {shoppingCart self link}
 activate CTL
 
-CTL -> DB : select
-activate DB
-DB --> CTL : data
-deactivate DB
+ref over CTL
+[[xxx.puml GET /shopping-carts/{cartId}]]
+end ref
 
 CTL --> FRONTEND : 200 OK + self link \n+ links to each shoppingCartLine \n+ checkout link (if cartLines is not empty)
 deactivate CTL
@@ -78,16 +83,19 @@ loop for each shoppingCartLine href received above
 FRONTEND -> CTL : OPTIONS {shoppingCartLine href}
 activate CTL
 
+ref over CTL
+[[xxx.puml OPTIONS for /shopping-carts/{cartId}/shopping-cart-lines/{id}]]
+end ref
+
 CTL --> FRONTEND : 200 OK + [GET, DELETE]
 deactivate CTL
 
 FRONTEND -> CTL : GET {shoppingCartLine href}
 activate CTL
 
-CTL -> DB : select
-activate DB
-DB --> CTL : data
-deactivate DB
+ref over CTL
+[[xxx.puml GET /shopping-carts/{cartId}/shopping-cart-lines/{id}]]
+end ref
 
 CTL --> FRONTEND : 200 OK + self link \n+ delete link
 deactivate CTL
@@ -103,16 +111,19 @@ activate FRONTEND
 FRONTEND -> SALESCTL : OPTIONS {checkout link}
 activate SALESCTL
 
+ref over SALESCTL
+[[xxx.puml OPTIONS for sales on /sales]]
+end ref
+
 SALESCTL --> FRONTEND : 200 OK + [GET, POST]
 deactivate SALESCTL
 
 FRONTEND -> SALESCTL : POST {checkout link}
 activate SALESCTL
 
-SALESCTL -> DB : select
-activate DB
-DB --> SALESCTL : data
-deactivate DB
+ref over SALESCTL
+[[xxx.puml POST /sales]]
+end ref
 
 SALESCTL --> FRONTEND : 201 Created + self link (sale)
 deactivate SALESCTL
