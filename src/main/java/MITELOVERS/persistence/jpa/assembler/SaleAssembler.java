@@ -1,6 +1,11 @@
 package MITELOVERS.persistence.jpa.assembler;
 
 import MITELOVERS.domain.sale.Sale;
+import MITELOVERS.domain.sale.SaleFactory;
+import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import MITELOVERS.persistence.jpa.datamodel.SaleLineDataModel;
 import lombok.AllArgsConstructor;
@@ -13,11 +18,13 @@ import java.util.List;
  * Assembler responsible for converting between {@link Sale} domain objects
  * and {@link SaleDataModel} persistence objects.
  */
+
 @Component
 @AllArgsConstructor
 public class SaleAssembler {
 
     private final SaleLineAssembler _saleLineAssembler;
+    private final SaleFactory _saleFactory;
 
     public SaleDataModel toDataModel(Sale sale) {
 
@@ -38,5 +45,22 @@ public class SaleAssembler {
         saleDataModel.getSaleLines().addAll(saleLines);
 
         return saleDataModel;
+    }
+
+    public Sale toDomain(SaleDataModel saleDataModel) {
+
+        List<SaleLine> saleLines = saleDataModel.getSaleLines()
+                .stream()
+                .map(_saleLineAssembler::toDomain)
+                .toList();
+
+        return _saleFactory.reconstituteSale(
+                new SaleId(saleDataModel.getSaleId()),
+                new UserId(new Email(saleDataModel.getUserId())),
+                saleLines,
+                saleDataModel.getCreatedAt(),
+                saleDataModel.getCompletedAt(),
+                saleDataModel.getStatus()
+        );
     }
 }
