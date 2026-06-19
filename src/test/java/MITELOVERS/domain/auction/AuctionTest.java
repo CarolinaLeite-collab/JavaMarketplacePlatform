@@ -387,7 +387,7 @@ class AuctionTest {
     }
 
     @Test
-    void placeBidShouldThrowWhenPriceIsTooLow() {
+    void firstBidBelowStartingPriceShouldThrow() {
         // Arrange
         ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
         ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
@@ -500,5 +500,87 @@ class AuctionTest {
 
         // Assert
         assertEquals(_seller, seller2);
+    }
+
+    @Test
+    void secondBidMustBeHigherThanCurrentHighestBid() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        // SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        UserId user = mock(UserId.class);
+
+        Price firstBidPrice = mock(Price.class);
+        when(firstBidPrice.getValue()).thenReturn(20.0);
+        when(firstBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        Price secondBidPrice = mock(Price.class);
+        when(secondBidPrice.getValue()).thenReturn(30.0); // higher than 20
+        when(secondBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        auction.placeBid(user, firstBidPrice);
+
+        // Act
+        Bid secondBid = auction.placeBid(user, secondBidPrice);
+
+        // Assert
+        assertNotNull(secondBid);
+        assertEquals(2, auction.getBids().size());
+        assertEquals(30.0, auction.getHighestBid().getOfferPrice().getValue());
+    }
+
+    @Test
+    void secondBidLowerThanCurrentHighestBidShouldThrow() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        // SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        UserId user = mock(UserId.class);
+
+        Price firstBidPrice = mock(Price.class);
+        when(firstBidPrice.getValue()).thenReturn(40.0);
+        when(firstBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        Price secondBidPrice = mock(Price.class);
+        when(secondBidPrice.getValue()).thenReturn(30.0); // lower than 40
+        when(secondBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        auction.placeBid(user, firstBidPrice);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, secondBidPrice));
+    }
+
+    @Test
+    void secondBidEqualToCurrentHighestBidShouldThrow() {
+        // Arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        // SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        UserId user = mock(UserId.class);
+
+        Price firstBidPrice = mock(Price.class);
+        when(firstBidPrice.getValue()).thenReturn(40.0);
+        when(firstBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        Price secondBidPrice = mock(Price.class);
+        when(secondBidPrice.getValue()).thenReturn(40.0); // equal to 40
+        when(secondBidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        auction.placeBid(user, firstBidPrice);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, secondBidPrice));
     }
 }

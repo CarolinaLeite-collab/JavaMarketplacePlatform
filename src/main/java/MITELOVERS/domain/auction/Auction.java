@@ -259,12 +259,24 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalStateException("Auction not active");
         }
 
+        if (offerPrice == null) {
+            throw new IllegalArgumentException("Offer price must not be null");
+        }
+
         if (!offerPrice.getCurrency().equals(_startingPrice.getCurrency())) {
             throw new IllegalArgumentException("Bid currency must match auction currency");
         }
 
-        if (offerPrice.getValue() <= _startingPrice.getValue()) {
-            throw new IllegalArgumentException("Bid must be higher than starting price");
+        Price minimumAcceptedPrice = _bids.isEmpty()
+                ? _startingPrice
+                : getHighestBid().getOfferPrice();
+
+        if (offerPrice.getValue() <= minimumAcceptedPrice.getValue()) {
+            throw new IllegalArgumentException(
+                    _bids.isEmpty()
+                            ? "Bid must be higher than starting price"
+                            : "Bid must be higher than current highest bid"
+            );
         }
 
         Bid bid = Objects.requireNonNull(
