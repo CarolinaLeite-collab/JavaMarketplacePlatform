@@ -20,6 +20,7 @@ autonumber
 actor User as USER
 participant ":apiClient" as FRONTEND
 participant ":ShoppingCartRESTController" as CTL
+participant ":DirectSaleRESTController" as DSCTL
 participant ":SalesRESTController" as SALESCTL
 
 note over FRONTEND
@@ -32,7 +33,7 @@ end note
 USER -> FRONTEND : I want to add a Direct Sale to my Shopping Cart
 activate FRONTEND
 
-FRONTEND -> CTL : OPTIONS {add-to-cart href}
+FRONTEND -> CTL : OPTIONS {shopping-cart href}
 activate CTL
 
 ref over CTL
@@ -42,14 +43,14 @@ end ref
 CTL --> FRONTEND : 200 OK + [GET, POST]
 deactivate CTL
 
-FRONTEND -> CTL : POST {add-to-cart href}
+FRONTEND -> CTL : POST {... + shopping-cart href}
 activate CTL
 
 ref over CTL
 [[xxx.puml POST new shoppingCartLine in /shopping-carts/shopping-cart-lines]]
 end ref
 
-CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (new shoppingCartLine)
+CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (shoppingCartLine)
 deactivate CTL
 
 FRONTEND --> USER : Direct Sale successfully added to cart!
@@ -58,7 +59,7 @@ deactivate FRONTEND
 USER -> FRONTEND : I want to access my Shopping Cart
 activate FRONTEND
 
-FRONTEND -> CTL : OPTIONS {shoppingCart self link}
+FRONTEND -> CTL : OPTIONS {shopping-cart self link}
 activate CTL
 
 ref over CTL
@@ -68,19 +69,19 @@ end ref
 CTL --> FRONTEND : 200 OK + [GET, PATCH]
 deactivate CTL
 
-FRONTEND -> CTL : GET {shoppingCart self link}
+FRONTEND -> CTL : GET {shopping-cart self link}
 activate CTL
 
 ref over CTL
 [[xxx.puml GET /shopping-carts/{cartId}]]
 end ref
 
-CTL --> FRONTEND : 200 OK + self link \n+ links to each shoppingCartLine \n+ checkout link (if cartLines is not empty)
+CTL --> FRONTEND : 200 OK + self link (shopping-cart) \n+ {...} + links to each shopping-cart-line \n+ sales link (if shopping-cart-lines is not empty)
 deactivate CTL
 
 loop for each shoppingCartLine href received above
 
-FRONTEND -> CTL : OPTIONS {shoppingCartLine href}
+FRONTEND -> CTL : OPTIONS {shopping-cart-line href}
 activate CTL
 
 ref over CTL
@@ -97,8 +98,28 @@ ref over CTL
 [[xxx.puml GET /shopping-carts/{cartId}/shopping-cart-lines/{id}]]
 end ref
 
-CTL --> FRONTEND : 200 OK + self link \n+ delete link
+CTL --> FRONTEND : 200 OK + {...} + self link +\n + direct-sale link
 deactivate CTL
+
+FRONTEND -> DSCTL : OPTIONS {direct-sale href}
+activate DSCTL
+
+ref over DSCTL
+[[xxx.puml OPTIONS for /direct-sales/{id}]]
+end ref
+
+DSCTL --> FRONTEND : 200 OK + [GET]
+deactivate DSCTL
+
+FRONTEND -> DSCTL : GET {direct-sale href}
+activate DSCTL
+
+ref over DSCTL
+[[xxx.puml GET /direct-sales/{id}]]
+end ref
+
+DSCTL --> FRONTEND : 200 OK + {...} + self link \n+ links to each item
+deactivate DSCTL
 
 end loop
 
@@ -108,7 +129,7 @@ deactivate FRONTEND
 USER -> FRONTEND : I want to checkout my ShoppingCart
 activate FRONTEND
 
-FRONTEND -> SALESCTL : OPTIONS {checkout link}
+FRONTEND -> SALESCTL : OPTIONS {sales link}
 activate SALESCTL
 
 ref over SALESCTL
@@ -118,7 +139,7 @@ end ref
 SALESCTL --> FRONTEND : 200 OK + [GET, POST]
 deactivate SALESCTL
 
-FRONTEND -> SALESCTL : POST {checkout link}
+FRONTEND -> SALESCTL : POST {... + sales link}
 activate SALESCTL
 
 ref over SALESCTL
