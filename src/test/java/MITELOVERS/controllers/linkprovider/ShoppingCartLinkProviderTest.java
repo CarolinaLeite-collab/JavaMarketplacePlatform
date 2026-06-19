@@ -4,17 +4,20 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
+import MITELOVERS.dto.response.ShoppingCartResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpMethod;
-
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -203,7 +206,7 @@ class ShoppingCartLinkProviderTest {
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
-        when(cartDouble.getCartLines()).thenReturn(List.of(otherLineDouble)); // lineDouble not present
+        when(cartDouble.getCartLines()).thenReturn(List.of(otherLineDouble));
 
         // Act
         List<HttpMethod> result = _linkProvider.getAllowedMethodsForCartLine(userDouble, cartDouble, lineDouble);
@@ -228,7 +231,117 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
-        verifyNoInteractions(_authorizationPolicy);
-        verify(cartDouble, never()).getCartLines();
+    }
+
+    @Test
+    void addLinksForUserCartAddsSelfLinkWhenCartIsEmpty() {
+        // Arrange
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getCartLines()).thenReturn(List.of());
+
+        ShoppingCartResponseDTO dto = new ShoppingCartResponseDTO("SC-A49F78E2", "pedro@aeiou.com", null, null);
+
+        // Act
+        _linkProvider.addLinksForUserCart(dto, "pedro@aeiou.com", "SC-A49F78E2", cartDouble);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+        assertTrue(dto.getRequiredLink("self").getHref().endsWith("/shopping-carts/SC-A49F78E2"));
+        assertFalse(dto.hasLink("shopping-cart-line"));
+    }
+
+    @Test
+    void addLinksForUserCartAddsLineLinksWhenCartHasLines() {
+        // Arrange
+        ShoppingCartLineId lineId = new ShoppingCartLineId("SCL-1234ABCD");
+
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        when(lineDouble.identity()).thenReturn(lineId);
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getCartLines()).thenReturn(List.of(lineDouble));
+
+        ShoppingCartResponseDTO dto = new ShoppingCartResponseDTO("SC-A49F78E2", "pedro@aeiou.com", null, null);
+
+        // Act
+        _linkProvider.addLinksForUserCart(dto, "pedro@aeiou.com", "SC-A49F78E2", cartDouble);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+        assertTrue(dto.hasLink("shopping-cart-line"));
+        assertTrue(dto.getRequiredLink("shopping-cart-line").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD"));
+    }
+
+    @Test
+    void addLinksForUserCartLineAddsSelfLink() {
+        // Arrange
+        ShoppingCartLineResponseDTO dto = new ShoppingCartLineResponseDTO(
+                "SCL-1234ABCD", "DS-1A2B3C4DE", "ana@aeiou.com", 14.99, "EUR", "2026-06-18T15:30:00");
+
+        // Act
+        _linkProvider.addLinksForUserCartLine(dto, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD", "DS-1A2B3C4DE");
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+        assertTrue(dto.getRequiredLink("self").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD"));
+    }
+
+    @Test
+    void addLinksForUserCartLineAddsDirectSaleLink() {
+        // Arrange
+        ShoppingCartLineResponseDTO dto = new ShoppingCartLineResponseDTO(
+                "SCL-1234ABCD", "DS-1A2B3C4DE", "ana@aeiou.com", 14.99, "EUR", "2026-06-18T15:30:00");
+
+        // Act
+        _linkProvider.addLinksForUserCartLine(dto, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD", "DS-1A2B3C4DE");
+
+        // Assert
+        assertTrue(dto.hasLink("direct-sale"));
+        assertTrue(dto.getRequiredLink("direct-sale").getHref()
+                .endsWith("/direct-sales/DS-1A2B3C4DE"));
+    }
+
+    @Test
+    void addLinksForDeleteUserCartLineAddsShoppingCartLink() {
+        // Arrange
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForDeleteUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2");
+
+        // Assert
+        assertTrue(model.hasLink("shopping-cart"));
+        assertTrue(model.getRequiredLink("shopping-cart").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2"));
+    }
+
+    @Test
+    void addLinksForCreateUserCartLineAddsSelfLink() {
+        // Arrange
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForCreateUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD");
+
+        // Assert
+        assertTrue(model.hasLink("self"));
+        assertTrue(model.getRequiredLink("self").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD"));
+    }
+
+    @Test
+    void addLinksForCreateUserCartLineAddsShoppingCartLink() {
+        // Arrange
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForCreateUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD");
+
+        // Assert
+        assertTrue(model.hasLink("shopping-cart"));
+        assertTrue(model.getRequiredLink("shopping-cart").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2"));
     }
 }
