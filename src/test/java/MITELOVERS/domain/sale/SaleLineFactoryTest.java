@@ -42,7 +42,7 @@ class SaleLineFactoryTest {
     }
 
     @Test
-    void shouldCreateSale() {
+    void shouldRehydratSale() {
 
         //SUT
         SaleLineFactory saleLineFactory = new SaleLineFactory();

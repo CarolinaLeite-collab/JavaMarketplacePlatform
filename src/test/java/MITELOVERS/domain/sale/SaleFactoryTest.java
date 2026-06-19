@@ -43,7 +43,7 @@ class SaleFactoryTest {
     }
 
     @Test
-    void shouldCreateSale() {
+    void shouldRehydrateSale() {
 
         //SUT
         SaleFactory saleFactory = new SaleFactory();
