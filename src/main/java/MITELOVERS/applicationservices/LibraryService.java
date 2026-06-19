@@ -9,12 +9,6 @@ import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.valueobject.*;
-import MITELOVERS.dto.response.ItemDetailsDTO;
-import MITELOVERS.dto.response.LibraryItemDetailsDTO;
-import MITELOVERS.dto.response.LibraryItemSummaryDTO;
-import MITELOVERS.mapper.ItemDetailsMapper;
-import MITELOVERS.mapper.LibraryItemDetailsMapper;
-import MITELOVERS.mapper.LibraryItemSummaryMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,13 +17,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+
 /**
  * Application service responsible for managing a user's library.
  *
  * <p>
- * Coordinates domain repositories and mappers to support library-related
- * use cases, including retrieving and sorting item summaries, retrieving
- * item details, listing item identifiers, and adding items to a library.
+ * Coordinates domain repositories to support library-related use cases:
+ * retrieving and sorting library items, retrieving a single item's details,
+ * listing item identifiers, and adding items to a library.
  * </p>
  */
 
@@ -42,9 +37,6 @@ public class LibraryService {
     private final IPublicationRepo _publicationRepo;
     private final IAuthorRepo _authorRepo;
     private final IPublicationTypeRepo _publicationTypeRepo;
-    private final LibraryItemSummaryMapper _summaryMapper;
-    private final LibraryItemDetailsMapper _detailsMapper;
-    private final ItemDetailsMapper _itemDetailsMapper;
     private final LibraryFactory _libraryFactory;
 
     public LibraryService(ILibraryRepo libraryRepo,
@@ -53,9 +45,6 @@ public class LibraryService {
                           IPublicationRepo publicationRepo,
                           IAuthorRepo authorRepo,
                           IPublicationTypeRepo publicationTypeRepo,
-                          LibraryItemDetailsMapper detailsMapper,
-                          LibraryItemSummaryMapper summaryMapper,
-                          ItemDetailsMapper itemDetailsMapper,
                           LibraryFactory libraryFactory) {
         _libraryRepo = libraryRepo;
         _itemRepo = itemRepo;
@@ -63,22 +52,20 @@ public class LibraryService {
         _publicationRepo = publicationRepo;
         _authorRepo = authorRepo;
         _publicationTypeRepo = publicationTypeRepo;
-        _detailsMapper = detailsMapper;
-        _summaryMapper = summaryMapper;
-        _itemDetailsMapper = itemDetailsMapper;
         _libraryFactory = libraryFactory;
 
     }
 
     @Transactional(readOnly = true)
-    public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(String userId) {
+    public List<LibraryItemDetails> getListOfItemInfoInMyLibrary(String userId) {
 
         UserId uid = new UserId(new Email(userId));
+
         return getListOfItemInfoInMyLibrary(uid, LibrarySort.NONE);
     }
 
     @Transactional(readOnly = true)
-    public List<LibraryItemSummaryDTO> getListOfItemInfoInMyLibrary(UserId userId, LibrarySort sort) {
+    public List<LibraryItemDetails> getListOfItemInfoInMyLibrary(UserId userId, LibrarySort sort) {
         LibraryId libraryId = LibraryId.fromUserId(userId);
 
         if (_libraryRepo.ofIdentity(libraryId).isEmpty()) {
@@ -92,26 +79,10 @@ public class LibraryService {
             return Collections.emptyList();
         }
 
-        List<LibraryItemSummaryDTO> result = new ArrayList<>();
+        List<LibraryItemDetails> result = new ArrayList<>();
 
         for (ItemId itemId : itemIds) {
-
-            Item item = _itemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalStateException("Item not found!"));
-
-            Edition edition = _editionRepo.ofIdentity(item.getEditionId())
-                    .orElseThrow(() -> new IllegalStateException("Edition not found!"));
-
-            Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
-                    .orElseThrow(() -> new IllegalStateException("Publication not found!"));
-
-            Author author = _authorRepo.ofIdentity(publication.getAuthorId())
-                    .orElseThrow(() -> new IllegalStateException("Author not found!"));
-
-            PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
-                    .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
-
-            result.add(_summaryMapper.toDTO(item, publication, edition, author, publicationType));
+            result.add(loadItemDetails(itemId));
         }
 
         sortLibraryItems(result, sort);
@@ -120,28 +91,12 @@ public class LibraryService {
     }
 
     @Transactional(readOnly = true)
-    public LibraryItemDetailsDTO getItemDetail(String itemId) {
-
-        Item item = _itemRepo.ofIdentity(new ItemId(itemId))
-                .orElseThrow(() -> new IllegalStateException("Item not found!"));
-
-        Edition edition = _editionRepo.ofIdentity(item.getEditionId())
-                .orElseThrow(() -> new IllegalStateException("Edition not found!"));
-
-        Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
-                .orElseThrow(() -> new IllegalStateException("Publication not found!"));
-
-        Author author = _authorRepo.ofIdentity(publication.getAuthorId())
-                .orElseThrow(() -> new IllegalStateException("Author not found!"));
-
-        PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
-                .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
-
-        return _detailsMapper.toDTO(author, edition, publicationType);
+    public LibraryItemDetails getItemDetail(String itemId) {
+        return loadItemDetails(new ItemId(itemId));
     }
 
     @Transactional
-    public LibraryItemSummaryDTO addItemToLibrary(String itemId, String userId) {
+    public LibraryItemDetails addItemToLibrary(String itemId, String userId) {
 
         ItemId itemId1 = new ItemId(itemId);
         UserId uid = new UserId(new Email(userId));
@@ -161,23 +116,11 @@ public class LibraryService {
 
         _libraryRepo.save(library);
 
-        Edition edition = _editionRepo.ofIdentity(item.getEditionId())
-                .orElseThrow(() -> new IllegalStateException("Edition not found"));
-
-        Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
-                .orElseThrow(() -> new IllegalStateException("Publication not found"));
-
-        Author author = _authorRepo.ofIdentity(publication.getAuthorId())
-                .orElseThrow(() -> new IllegalStateException("Author not found"));
-
-        PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
-                .orElseThrow(() -> new IllegalStateException("Publication Type not found"));
-
-        return _summaryMapper.toDTO(item, publication, edition, author, publicationType);
+        return loadItemDetails(itemId1);
     }
 
     @Transactional(readOnly = true)
-    public List<ItemDetailsDTO> getListOfItemInfoInMyLibraryFull(String userId) {
+    public List<LibraryItemDetails> getListOfItemInfoInMyLibraryFull(String userId) {
 
         UserId uid = new UserId(new Email(userId));
         LibraryId libraryId = LibraryId.fromUserId(uid);
@@ -193,26 +136,10 @@ public class LibraryService {
             return Collections.emptyList();
         }
 
-        List<ItemDetailsDTO> result = new ArrayList<>();
+        List<LibraryItemDetails> result = new ArrayList<>();
 
         for (ItemId itemId : itemIds) {
-
-            Item item = _itemRepo.ofIdentity(itemId)
-                    .orElseThrow(() -> new IllegalStateException("Item not found!"));
-
-            Edition edition = _editionRepo.ofIdentity(item.getEditionId())
-                    .orElseThrow(() -> new IllegalStateException("Edition not found!"));
-
-            Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
-                    .orElseThrow(() -> new IllegalStateException("Publication not found!"));
-
-            PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
-                    .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
-
-            Author author = _authorRepo.ofIdentity(publication.getAuthorId())
-                    .orElseThrow(() -> new IllegalStateException("Author not found!"));
-
-            result.add(_itemDetailsMapper.toDTO(edition, publication, publicationType, author));
+            result.add(loadItemDetails(itemId));
         }
 
         return result;
@@ -228,22 +155,43 @@ public class LibraryService {
                 .orElse(Collections.emptyList());
     }
 
-    private void sortLibraryItems(List<LibraryItemSummaryDTO> items, LibrarySort sort) {
-        Comparator<LibraryItemSummaryDTO> comparator = switch (sort) {
+    private LibraryItemDetails loadItemDetails(ItemId itemId) {
+
+        Item item = _itemRepo.ofIdentity(itemId)
+                .orElseThrow(() -> new IllegalStateException("Item not found!"));
+
+        Edition edition = _editionRepo.ofIdentity(item.getEditionId())
+                .orElseThrow(() -> new IllegalStateException("Edition not found!"));
+
+        Publication publication = _publicationRepo.ofIdentity(edition.getPublicationId())
+                .orElseThrow(() -> new IllegalStateException("Publication not found!"));
+
+        Author author = _authorRepo.ofIdentity(publication.getAuthorId())
+                .orElseThrow(() -> new IllegalStateException("Author not found!"));
+
+        PublicationType publicationType = _publicationTypeRepo.ofIdentity(edition.getPublicationTypeId())
+                .orElseThrow(() -> new IllegalStateException("Publication Type not found!"));
+
+        return new LibraryItemDetails(item, publication, edition, author, publicationType);
+    }
+
+
+    private void sortLibraryItems(List<LibraryItemDetails> items, LibrarySort sort) {
+        Comparator<LibraryItemDetails> comparator = switch (sort) {
             case TITLE -> Comparator.comparing(
-                    LibraryItemSummaryDTO::getTitle,
+                    details -> details.publication().getTitle().toString(),
                     String.CASE_INSENSITIVE_ORDER
             );
             case AUTHOR -> Comparator.comparing(
-                    LibraryItemSummaryDTO::getAuthorName,
+                    details -> details.author().getName().toString(),
                     String.CASE_INSENSITIVE_ORDER
             );
             case PUBLICATION_TYPE -> Comparator.comparing(
-                    LibraryItemSummaryDTO::getPublicationType,
+                    details -> details.publicationType().toString(),
                     String.CASE_INSENSITIVE_ORDER
             );
             case IDENTIFIER -> Comparator.comparing(
-                    LibraryItemSummaryDTO::getIdentifier,
+                    details -> details.edition().getIdentifier().toString(),
                     String.CASE_INSENSITIVE_ORDER
             );
             case NONE -> null;
