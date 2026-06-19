@@ -6,6 +6,7 @@ import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
@@ -254,6 +255,10 @@ class DirectSaleRestControllerTest {
                         Instant.now()
                 );
 
+        ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
+        when(domain.getItemsId()).thenReturn(List.of(itemIdDouble));
+
         when(_service.getDirectSaleById("DS-A1B2C3D4")).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
@@ -265,6 +270,81 @@ class DirectSaleRestControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertSame(dto, result.getBody());
         assertTrue(result.getBody().getLinks().hasLink("self"));
+        assertTrue(result.getBody().getLinks().hasLink("item"));
+        assertTrue(result.getBody().getRequiredLink("item").getHref()
+                .endsWith("/items/ABCDEF1234"));
+    }
+
+    @Test
+    void getDirectSaleById_shouldAddItemLinkForEachItemId() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleResponseDTO dto =
+                new DirectSaleResponseDTO(
+                        "DS-A1B2C3D4",
+                        List.of("ABCDEF1234", "1234ABCDEF"),
+                        10.0,
+                        "EUR",
+                        3600L,
+                        Instant.now()
+                );
+
+        ItemId itemId1Double = mock(ItemId.class);
+        when(itemId1Double.toString()).thenReturn("ABCDEF1234");
+
+        ItemId itemId2Double = mock(ItemId.class);
+        when(itemId2Double.toString()).thenReturn("1234ABCDEF");
+
+        when(domain.getItemsId()).thenReturn(List.of(itemId1Double, itemId2Double));
+
+        when(_service.getDirectSaleById("DS-A1B2C3D4")).thenReturn(domain);
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<DirectSaleResponseDTO> result =
+                _controller.getDirectSaleById("DS-A1B2C3D4");
+
+        // Assert
+        List<Link> itemLinks = result.getBody().getLinks().stream()
+                .filter(l -> l.getRel().value().equals("item"))
+                .toList();
+
+        assertEquals(2, itemLinks.size());
+        assertTrue(itemLinks.stream().anyMatch(l -> l.getHref().endsWith("/items/ABCDEF1234")));
+        assertTrue(itemLinks.stream().anyMatch(l -> l.getHref().endsWith("/items/1234ABCDEF")));
+    }
+
+    @Test
+    void getDirectSaleById_shouldAddNoItemLinksWhenNoItems() {
+
+        // Arrange
+        DirectSale domain = mock(DirectSale.class);
+
+        DirectSaleResponseDTO dto =
+                new DirectSaleResponseDTO(
+                        "DS-A1B2C3D4",
+                        List.of(),
+                        10.0,
+                        "EUR",
+                        3600L,
+                        Instant.now()
+                );
+
+        when(domain.getItemsId()).thenReturn(List.of());
+
+        when(_service.getDirectSaleById("DS-A1B2C3D4")).thenReturn(domain);
+        when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
+
+        // Act
+        ResponseEntity<DirectSaleResponseDTO> result =
+                _controller.getDirectSaleById("DS-A1B2C3D4");
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.getBody().getLinks().hasLink("self"));
+        assertFalse(result.getBody().getLinks().hasLink("item"));
     }
 
     // ------------------------------------------------------------

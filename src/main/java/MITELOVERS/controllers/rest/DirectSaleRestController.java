@@ -4,6 +4,8 @@ import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.valueobject.ItemId;
 import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
@@ -166,6 +168,15 @@ public class DirectSaleRestController {
                         .getDirectSaleById(id))
                         .withSelfRel()
         );
+
+        for (ItemId itemId : directSale.getItemsId()) {
+
+            responseDTO.add(
+                    linkTo(methodOn(ItemRestController.class)
+                    .getItemById(itemId.toString()))
+                    .withRel("item"));
+
+        }
 
         return ResponseEntity.ok(responseDTO);
     }
