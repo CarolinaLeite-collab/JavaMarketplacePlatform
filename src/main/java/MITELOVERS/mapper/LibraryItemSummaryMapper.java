@@ -8,6 +8,15 @@ import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.dto.response.LibraryItemSummaryDTO;
 import org.springframework.stereotype.Component;
 
+/**
+ * Maps library domain objects to {@link LibraryItemSummaryDTO} instances.
+ *
+ * <p>
+ * Creates summaries containing an item's identifier, publication title,
+ * author, publication type, publication identifier and optional picture URL.
+ * </p>
+ */
+
 @Component
 public class LibraryItemSummaryMapper {
 
