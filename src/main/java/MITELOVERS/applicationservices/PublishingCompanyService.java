@@ -33,9 +33,9 @@ public class PublishingCompanyService {
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
     }
 
-    public PublishingCompany registerPublishingCompany(PublishingCompanyRequestDTO publishingCompanyName) {
+    public PublishingCompany registerPublishingCompany(PublishingCompanyRequestDTO publishingCompanyRequestDTO) {
 
-        String newPubCompName = publishingCompanyName.toString();
+        String newPubCompName = publishingCompanyRequestDTO.getPublishingCompanyName();
 
         PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(newPubCompName);
 
