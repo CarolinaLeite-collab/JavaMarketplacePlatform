@@ -41,8 +41,8 @@ class PublishingCompanyServiceTest {
         // Arrange
         PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
-        when(dtoDouble.toString()).thenReturn("Porto Editora");
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(any(String.class)))
+        when(dtoDouble.getPublishingCompanyName()).thenReturn("Porto Editora");
+        when(_publishingCompanyFactoryDouble.createPublishingCompany("Porto Editora"))
                 .thenReturn(_publishingCompanyDouble);
         when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(false);
         when(_iPublishingCompanyRepoDouble.save(_publishingCompanyDouble)).thenReturn(_publishingCompanyDouble);
@@ -65,8 +65,8 @@ class PublishingCompanyServiceTest {
         // Arrange
         PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
 
-        when(dtoDouble.toString()).thenReturn("Porto Editora");
-        when(_publishingCompanyFactoryDouble.createPublishingCompany(any(String.class)))
+        when(dtoDouble.getPublishingCompanyName()).thenReturn("Porto Editora");
+        when(_publishingCompanyFactoryDouble.createPublishingCompany("Porto Editora"))
                 .thenReturn(_publishingCompanyDouble);
         when(_iPublishingCompanyRepoDouble.containsOfIdentity(_publishingCompanyIdDouble)).thenReturn(true);
 
@@ -79,7 +79,6 @@ class PublishingCompanyServiceTest {
         assertThrows(IllegalStateException.class, () ->
                 service.registerPublishingCompany(dtoDouble));
     }
-
 
     @Test
     void getAllPublishingCompaniesReturnsListOfPublishingCompanies() {
@@ -116,7 +115,6 @@ class PublishingCompanyServiceTest {
         assertTrue(result.isEmpty());
     }
 
-
     @Test
     void getPublishingCompanyByIdReturns() {
         // Arrange
@@ -148,5 +146,4 @@ class PublishingCompanyServiceTest {
         assertThrows(NoSuchElementException.class, () ->
                 service.getPublishingCompanyById("UNKNOWN"));
     }
-
 }
