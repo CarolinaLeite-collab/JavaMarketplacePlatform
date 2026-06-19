@@ -71,7 +71,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canViewAuction(user)) {
             links.add(linkTo(methodOn(AuctionRestController.class)
-                    .optionsForSpecificAuction(auctionId, user.identity().toString()))
+                    .optionsForSpecificAuction(auctionId, null))
                     .withSelfRel());
 
             links.add(linkTo(methodOn(AuctionRestController.class)
@@ -89,7 +89,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canViewAuction(user)) {
             links.add(linkTo(methodOn(AuctionRestController.class)
-                    .optionsForBids(auctionId, user.identity().toString()))
+                    .optionsForBids(auctionId, null))
                     .withSelfRel());
 
             links.add(linkTo(methodOn(AuctionRestController.class)
