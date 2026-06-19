@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sale_lines")
+@Table(name = "SaleLines")
 public class SaleLineDataModel {
 
     @Id
