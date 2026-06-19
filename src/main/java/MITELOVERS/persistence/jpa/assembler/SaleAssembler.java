@@ -54,7 +54,7 @@ public class SaleAssembler {
                 .map(_saleLineAssembler::toDomain)
                 .toList();
 
-        return _saleFactory.reconstituteSale(
+        return _saleFactory.createSale(
                 new SaleId(saleDataModel.getSaleId()),
                 new UserId(new Email(saleDataModel.getUserId())),
                 saleLines,

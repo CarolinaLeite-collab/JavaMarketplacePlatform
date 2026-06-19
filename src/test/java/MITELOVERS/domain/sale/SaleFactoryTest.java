@@ -43,7 +43,7 @@ class SaleFactoryTest {
     }
 
     @Test
-    void shouldReconstituteSale() {
+    void shouldCreateSale() {
 
         //SUT
         SaleFactory saleFactory = new SaleFactory();
@@ -59,7 +59,7 @@ class SaleFactoryTest {
             SaleSaleStatus saleSaleStatus = SaleSaleStatus.PENDING;
 
             //Act
-            Sale sale = saleFactory.reconstituteSale(
+            Sale sale = saleFactory.createSale(
                     saleIdDouble,
                     buyerIdDouble,
                     saleLinesDouble,

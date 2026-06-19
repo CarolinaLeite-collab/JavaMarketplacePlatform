@@ -21,12 +21,12 @@ public class SaleFactory {
         return new Sale(buyerId, saleLines);
     }
 
-    public Sale reconstituteSale(SaleId saleId,
-                                 UserId buyerId,
-                                 List<SaleLine> saleLines,
-                                 LocalDateTime createdAt,
-                                 LocalDateTime completedAt,
-                                 SaleSaleStatus saleSaleStatus) {
+    public Sale createSale(SaleId saleId,
+                           UserId buyerId,
+                           List<SaleLine> saleLines,
+                           LocalDateTime createdAt,
+                           LocalDateTime completedAt,
+                           SaleSaleStatus saleSaleStatus) {
 
         return new Sale(saleId, buyerId, saleLines, createdAt, completedAt, saleSaleStatus
         );

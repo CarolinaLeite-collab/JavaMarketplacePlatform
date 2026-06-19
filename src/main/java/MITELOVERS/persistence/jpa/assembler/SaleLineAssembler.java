@@ -33,7 +33,7 @@ public class SaleLineAssembler {
     }
 
     public SaleLine toDomain(SaleLineDataModel saleLineDataModel) {
-        return _factory.reconstituteSaleLine(
+        return _factory.createSale(
                 new SaleLineId(saleLineDataModel.getSaleLineId()),
                 new UserId(new Email(saleLineDataModel.getSellerId())),
                 new Price(

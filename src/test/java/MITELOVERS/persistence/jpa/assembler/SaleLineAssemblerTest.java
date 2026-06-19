@@ -68,7 +68,7 @@ class SaleLineAssemblerTest {
         when(priceDataModelDouble.getNumericValue()).thenReturn(20.0);
         when(priceDataModelDouble.getCurrency()).thenReturn("EUR");
 
-        when(_saleLineFactoryDouble.reconstituteSaleLine(
+        when(_saleLineFactoryDouble.createSale(
                 any(SaleLineId.class),
                 any(UserId.class),
                 any(Price.class),

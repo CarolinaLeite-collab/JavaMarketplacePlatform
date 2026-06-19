@@ -104,7 +104,7 @@ class SaleAssemblerTest {
 
         when(_saleLineAssembler.toDomain(_saleLineDataModelDouble)).thenReturn(_saleLineDouble);
 
-        when(_saleFactory.reconstituteSale(
+        when(_saleFactory.createSale(
                 any(SaleId.class),
                 any(UserId.class),
                 eq(List.of(_saleLineDouble)),
@@ -122,7 +122,7 @@ class SaleAssemblerTest {
 
         verify(_saleLineAssembler).toDomain(_saleLineDataModelDouble);
 
-        verify(_saleFactory).reconstituteSale(
+        verify(_saleFactory).createSale(
                 eq(new SaleId("SA-12345678")),
                 eq(new UserId(new Email("buyer@email.com"))),
                 eq(List.of(_saleLineDouble)),
@@ -147,7 +147,7 @@ class SaleAssemblerTest {
 
         when(_saleLineAssembler.toDomain(_saleLineDataModelDouble)).thenReturn(_saleLineDouble);
 
-        when(_saleFactory.reconstituteSale(
+        when(_saleFactory.createSale(
                 any(SaleId.class),
                 any(UserId.class),
                 eq(List.of(_saleLineDouble)),

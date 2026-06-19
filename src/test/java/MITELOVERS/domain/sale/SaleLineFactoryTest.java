@@ -42,7 +42,7 @@ class SaleLineFactoryTest {
     }
 
     @Test
-    void shouldReconstituteSaleLine() {
+    void shouldCreateSale() {
 
         //SUT
         SaleLineFactory saleLineFactory = new SaleLineFactory();
@@ -56,7 +56,7 @@ class SaleLineFactoryTest {
             DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
 
             //Act
-            SaleLine saleLine = saleLineFactory.reconstituteSaleLine(
+            SaleLine saleLine = saleLineFactory.createSale(
                     saleLineIdDouble,
                     sellerIdDouble,
                     priceAtSaleDouble,

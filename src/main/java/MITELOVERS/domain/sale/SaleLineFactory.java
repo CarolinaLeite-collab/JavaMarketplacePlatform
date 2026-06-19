@@ -20,10 +20,10 @@ public class SaleLineFactory {
         return new SaleLine(sellerId, priceAtSale, directSaleId);
     }
 
-    public SaleLine reconstituteSaleLine(SaleLineId saleLineId,
-                                         UserId sellerId,
-                                         Price priceAtSale,
-                                         DirectSaleId directSaleId) {
+    public SaleLine createSale(SaleLineId saleLineId,
+                               UserId sellerId,
+                               Price priceAtSale,
+                               DirectSaleId directSaleId) {
 
         return new SaleLine(saleLineId, sellerId, priceAtSale, directSaleId);
     }
