@@ -24,11 +24,12 @@ public class SaleLineDataModel {
     @Column(name = "direct_sale_id", nullable = false)
     private String directSaleId;
 
-    @Column(name = "price_value", nullable = false)
-    private double priceValue;
-
-    @Column(name = "price_currency", nullable = false)
-    private String priceCurrency;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "numericValue", column = @Column(name = "price_value", nullable = false)),
+            @AttributeOverride(name = "currency", column = @Column(name = "price_currency", nullable = false))
+    })
+    private PriceDataModel price;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sale_id", nullable = false)

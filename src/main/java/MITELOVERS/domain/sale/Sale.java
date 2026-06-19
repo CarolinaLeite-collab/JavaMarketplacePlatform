@@ -2,6 +2,7 @@ package MITELOVERS.domain.sale;
 
 import MITELOVERS.ddd.AggregateRoot;
 import MITELOVERS.domain.valueobject.*;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.Objects;
  * </p>
  */
 
+@Getter
 public class Sale implements AggregateRoot<SaleId> {
 
     private final SaleId _saleId;
