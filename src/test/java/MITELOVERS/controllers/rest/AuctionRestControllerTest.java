@@ -177,7 +177,7 @@ class AuctionRestControllerTest {
     @Test
     void createAuctionServiceThrowsExceptionReturns500() throws Exception {
         // arrange
-        when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any()))
+        when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalStateException("Item not found"));
 
         String requestBody = """
