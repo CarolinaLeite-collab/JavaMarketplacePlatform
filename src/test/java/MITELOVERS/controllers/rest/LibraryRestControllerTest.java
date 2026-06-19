@@ -74,7 +74,7 @@ class LibraryRestControllerTest {
         )).thenReturn(List.of(dto));
 
         // Act
-        var result = mockMvc.perform(get("/my-library/")
+        var result = mockMvc.perform(get("/my-library")
                 .header("X-User-Id", "pedro@aeiou.com"));
 
         // Assert
@@ -93,6 +93,8 @@ class LibraryRestControllerTest {
                         "$._embedded.libraryItemSummaryDTOList[0].identifier"
                 ).value("9780451524935"))
                 .andExpect(jsonPath("$._links.sort").exists())
+                .andExpect(jsonPath("$._links.sort.href")
+                        .value("/my-library{?sort}"))
                 .andExpect(jsonPath("$._links.sort.templated").value(true));
     }
 
@@ -105,7 +107,7 @@ class LibraryRestControllerTest {
         )).thenReturn(List.of());
 
         // Act
-        var result = mockMvc.perform(get("/my-library/")
+        var result = mockMvc.perform(get("/my-library")
                 .header("X-User-Id", "pedro@aeiou.com"));
 
         // Assert
@@ -123,7 +125,7 @@ class LibraryRestControllerTest {
         )).thenReturn(List.of());
 
         // Act
-        var result = mockMvc.perform(get("/my-library/")
+        var result = mockMvc.perform(get("/my-library")
                 .header("X-User-Id", "naoexiste@aeiou.com"));
 
         // Assert
@@ -142,7 +144,7 @@ class LibraryRestControllerTest {
                 eq(LibrarySort.AUTHOR)
         )).thenReturn(List.of());
 
-        mockMvc.perform(get("/my-library/")
+        mockMvc.perform(get("/my-library")
                         .header("X-User-Id", "pedro@aeiou.com")
                         .param("sort", "author"))
                 .andExpect(status().isOk());
@@ -182,7 +184,7 @@ class LibraryRestControllerTest {
         when(libraryService.addItemToLibrary(any(), any())).thenReturn(dto);
 
         // Act & Assert
-        mockMvc.perform(post("/my-library/")
+        mockMvc.perform(post("/my-library")
                         .header("X-User-Id", "pedro@aeiou.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"itemId\": \"3C5D126F8B\"}"))
@@ -207,8 +209,8 @@ class LibraryRestControllerTest {
         User _userDouble = mock(User.class);
         when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
         when(libraryLinkProvider.getLinks(_userDouble)).thenReturn(List.of(
-                Link.of("/my-library/").withRel("library"),
-                Link.of("/my-library/").withRel("library-add")
+                Link.of("/my-library").withRel("library"),
+                Link.of("/my-library").withRel("library-add")
         ));
 
         // Act & Assert
@@ -246,7 +248,7 @@ class LibraryRestControllerTest {
     void shouldReturn400WhenHeaderIsMissing() throws Exception {
 
         // Act
-        var result = mockMvc.perform(get("/my-library/"));
+        var result = mockMvc.perform(get("/my-library"));
 
         // Assert
         result.andExpect(status().isBadRequest());

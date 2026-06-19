@@ -71,7 +71,7 @@ public class LibraryRestController {
                 .body(model);
     }
 
-    @GetMapping(path = "/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
             @RequestHeader("X-User-Id") String userId,
             @RequestParam(value = "sort", required = false) String sort) {
@@ -92,7 +92,7 @@ public class LibraryRestController {
                         .getMyLibrary(userId, sort)).withSelfRel());
 
         result.add(
-                Link.of("/my-library/{?sort}")
+                Link.of("/my-library{?sort}")
                         .withRel("sort")
         );
 
@@ -113,7 +113,10 @@ public class LibraryRestController {
 
     }
 
-    @PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<LibraryItemSummaryDTO> addItemToLibrary(
             @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
