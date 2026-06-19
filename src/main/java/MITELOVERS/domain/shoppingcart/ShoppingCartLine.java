@@ -60,19 +60,34 @@ public class ShoppingCartLine implements DomainEntity<ShoppingCartLineId> {
 
     @Override
     public boolean sameAs(Object object) {
-        return equals(object);
+
+        if (object instanceof ShoppingCartLine) {
+            ShoppingCartLine oShoppingCartLine = (ShoppingCartLine) object;
+
+            if ((Objects.equals(_sellerId, oShoppingCartLine._sellerId))
+                    && (Objects.equals(_directSaleId, oShoppingCartLine._directSaleId))
+                    && (Objects.equals(_priceAtAddition, oShoppingCartLine._priceAtAddition))
+                    && (Objects.equals(_addedAt, oShoppingCartLine._addedAt))
+            )
+
+                return true;
+        }
+
+        return false;
+
     }
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ShoppingCartLine that = (ShoppingCartLine) o;
-        return Objects.equals(_shoppingCartLineId, that._shoppingCartLineId) && Objects.equals(_directSaleId, that._directSaleId) && Objects.equals(_sellerId, that._sellerId) && Objects.equals(_priceAtAddition, that._priceAtAddition) && Objects.equals(_addedAt, that._addedAt);
+        return _shoppingCartLineId.equals(that._shoppingCartLineId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(_shoppingCartLineId, _directSaleId, _sellerId, _priceAtAddition, _addedAt);
+        return _shoppingCartLineId.hashCode();
     }
 
 }

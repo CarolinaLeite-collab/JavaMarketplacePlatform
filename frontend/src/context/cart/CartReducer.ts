@@ -1,5 +1,16 @@
 import { ADD_TO_CART, REMOVE_FROM_CART, CLEAR_CART } from './CartActions';
 
+/**
+ * Reducer responsible for managing the shopping cart state.
+ *
+ * Supported actions:
+ * - ADD_TO_CART: adds an item to the cart if it is not already present.
+ * - REMOVE_FROM_CART: removes an item from the cart by its identifier.
+ * - CLEAR_CART: removes all items from the cart.
+ *
+ * The cart state consists of a collection of items selected by the user.
+ */
+
 export const initialCartState = {
     items: [],
 };
