@@ -27,6 +27,10 @@ import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLineFactory;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
@@ -80,7 +84,10 @@ public class DataInitializer {
             IPublishingCompanyRepo publishingCompanyRepo,
             PublishingCompanyFactory publishingCompanyFactory,
             IEditionRepo editionRepo,
-            EditionFactory editionFactory
+            EditionFactory editionFactory,
+            IShoppingCartRepo shoppingCartRepo,
+            ShoppingCartFactory shoppingCartFactory,
+            ShoppingCartLineFactory shoppingCartLineFactory
     ) {
 
         return args -> {
@@ -972,6 +979,29 @@ public class DataInitializer {
             listOfItemsRepo.save(list3);
             listOfItemsRepo.save(list4);
             listOfItemsRepo.save(list5);
+
+            // -------------------------------------------------------
+            // Shopping Cart for Pedro
+            ShoppingCart pedroCart = shoppingCartFactory.createShoppingCart(user.identity());
+
+            ShoppingCartLine line1 = shoppingCartLineFactory.createNewShoppingCartLine(
+                    directSale2.identity(),
+                    user2.identity(),
+                    directSale2.getPrice()
+            );
+
+            ShoppingCartLine line2 = shoppingCartLineFactory.createNewShoppingCartLine(
+                    directSale4.identity(),
+                    user3.identity(),
+                    directSale4.getPrice()
+            );
+
+            pedroCart.addCartLine(line1);
+            pedroCart.addCartLine(line2);
+
+            shoppingCartRepo.save(pedroCart);
+
+            log.info("Shopping cart saved for Pedro with 2 lines");
 
             log.info("DataInitializer completed successfully.");
 
