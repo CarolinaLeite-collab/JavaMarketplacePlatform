@@ -1,12 +1,11 @@
 package MITELOVERS.applicationservices;
 
+import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.repository.IShoppingCartRepo;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.ShoppingCartId;
-import MITELOVERS.domain.valueobject.ShoppingCartLineId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLineFactory;
+import MITELOVERS.domain.valueobject.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +17,8 @@ import java.util.NoSuchElementException;
 public class ShoppingCartService {
 
     private final IShoppingCartRepo _shoppingCartRepo;
+    private final DirectSaleService _directSaleService;
+    private final ShoppingCartLineFactory _shoppingCartLineFactory;
 
     @Transactional
     public ShoppingCart findCartByCartId(String cartId) {
@@ -40,7 +41,20 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCartLine findCartLineByUserId(String cartId, String cartLineId) {
+    public ShoppingCart clearShoppingCartLines(String cartId) {
+
+        ShoppingCart shoppingCart = findCartByCartId(cartId);
+
+        shoppingCart.clearShoppingCart();
+
+        _shoppingCartRepo.save(shoppingCart);
+
+        return shoppingCart;
+
+    }
+
+    @Transactional
+    public ShoppingCartLine findCartLineByLineCartId(String cartId, String cartLineId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
         ShoppingCartLineId shoppingCartLineId = new ShoppingCartLineId(cartLineId);
@@ -50,6 +64,35 @@ public class ShoppingCartService {
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("ShoppingCartLine not found: " + cartLineId));
 
+
+    }
+
+    @Transactional
+    public ShoppingCart addCartLineToCart(String cartId, String directSaleId) {
+
+        ShoppingCart shoppingCart = findCartByCartId(cartId);
+        DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
+
+        ShoppingCartLine newCartLine = _shoppingCartLineFactory.createNewShoppingCartLine(
+                directSale.identity(),
+                directSale.getSellerId(),
+                directSale.getPrice()
+        );
+
+        shoppingCart.addCartLine(newCartLine);
+
+        return _shoppingCartRepo.save(shoppingCart);
+
+    }
+
+    @Transactional
+    public ShoppingCart deleteCartLineByLineCartId(String cartId, String cartLineId) {
+
+        ShoppingCart shoppingCart = findCartByCartId(cartId);
+        ShoppingCartLine shoppingCartLine = findCartLineByLineCartId(cartId, cartLineId);
+        shoppingCart.removeCartLine(shoppingCartLine.identity());
+
+        return _shoppingCartRepo.save(shoppingCart);
 
     }
 
