@@ -589,6 +589,33 @@ class ShoppingCartTest {
     }
 
     @Test
+    void testAddCartLineShouldThrowWhenDirectSaleIsAlreadyInCart() {
+
+        // Arrange
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+
+        ShoppingCartLine existingLineDouble = mock(ShoppingCartLine.class);
+        Price existingPriceDouble = mock(Price.class);
+        when(existingPriceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(existingPriceDouble.getValue()).thenReturn(10.0);
+        when(existingLineDouble.getPriceAtAddition()).thenReturn(existingPriceDouble);
+        when(existingLineDouble.getDirectSaleId()).thenReturn(directSaleIdDouble);
+
+        ShoppingCartLine duplicateLineDouble = mock(ShoppingCartLine.class);
+        Price duplicatePriceDouble = mock(Price.class);
+        when(duplicatePriceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(duplicateLineDouble.getPriceAtAddition()).thenReturn(duplicatePriceDouble);
+        when(duplicateLineDouble.getDirectSaleId()).thenReturn(directSaleIdDouble);
+
+        ShoppingCart cart = new ShoppingCart(_buyerIdDouble);
+        cart.addCartLine(existingLineDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> cart.addCartLine(duplicateLineDouble));
+    }
+
+    @Test
     void testAddCartLineShouldThrowWhenCartLineIsNull() {
 
         //SUT
@@ -626,9 +653,12 @@ class ShoppingCartTest {
     @Test
     void testRemoveCartLineShouldOnlyRemoveTheCorrectLine() {
 
-        //Arrange
+        // Arrange
         ShoppingCartLineId lineId1Double = mock(ShoppingCartLineId.class);
         ShoppingCartLineId lineId2Double = mock(ShoppingCartLineId.class);
+
+        DirectSaleId directSaleId1Double = mock(DirectSaleId.class);
+        DirectSaleId directSaleId2Double = mock(DirectSaleId.class);
 
         ShoppingCartLine line1Double = mock(ShoppingCartLine.class);
         ShoppingCartLine line2Double = mock(ShoppingCartLine.class);
@@ -641,16 +671,18 @@ class ShoppingCartTest {
         when(line2Double.getPriceAtAddition()).thenReturn(priceDouble);
         when(line1Double.identity()).thenReturn(lineId1Double);
         when(line2Double.identity()).thenReturn(lineId2Double);
+        when(line1Double.getDirectSaleId()).thenReturn(directSaleId1Double);
+        when(line2Double.getDirectSaleId()).thenReturn(directSaleId2Double);
 
-        //SUT
+        // SUT
         ShoppingCart cart = new ShoppingCart(_buyerIdDouble);
 
-        //Act
+        // Act
         cart.addCartLine(line1Double);
         cart.addCartLine(line2Double);
         cart.removeCartLine(lineId1Double);
 
-        //Assert
+        // Assert
         assertEquals(1, cart.getCartLines().size());
         assertFalse(cart.getCartLines().contains(line1Double));
         assertTrue(cart.getCartLines().contains(line2Double));

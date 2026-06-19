@@ -73,6 +73,14 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
             throw new IllegalArgumentException("Cannot mix currencies in a shopping cart!");
         }
 
+        for(ShoppingCartLine cartLine : _cartLines) {
+
+            if (cartLine.getDirectSaleId().equals(shoppingCartLine.getDirectSaleId())) {
+                throw new IllegalArgumentException("This DirectSale is already present in the cart!");
+            }
+
+        }
+
         _cartLines.add(shoppingCartLine);
         recalculateTotalAmount();
     }
