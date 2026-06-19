@@ -348,7 +348,8 @@ class AuthorizationPolicyTest {
     @Test
     void guestCannotBid() {
         assertFalse(_authorizationPolicy.canBid(_guestDouble));
-    // ──────────── Shopping Cart ────────────
+        // ──────────── Shopping Cart ────────────
+    }
 
     @Test
     void canGetShoppingCartUserReturnsTrue() {
