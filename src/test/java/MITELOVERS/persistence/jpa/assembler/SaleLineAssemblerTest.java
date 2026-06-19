@@ -1,5 +1,6 @@
 package MITELOVERS.persistence.jpa.assembler;
 
+import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.sale.SaleLineFactory;
 import MITELOVERS.domain.valueobject.*;
@@ -26,6 +27,7 @@ class SaleLineAssemblerTest {
 
         // Arrange
         SaleLine saleLineDouble = mock(SaleLine.class);
+        SaleDataModel saleDataModelDouble = mock(SaleDataModel.class);
         SaleLineId saleLineIdDouble = mock(SaleLineId.class);
         UserId sellerIdDouble = mock(UserId.class);
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
@@ -44,7 +46,7 @@ class SaleLineAssemblerTest {
         SaleLineAssembler assembler = new SaleLineAssembler(_saleLineFactoryDouble);
 
         // Act
-        SaleLineDataModel result = assembler.toDataModel(saleLineDouble);
+        SaleLineDataModel result = assembler.toDataModel(saleLineDouble, saleDataModelDouble);
 
         // Assert
         assertNotNull(result);
@@ -91,7 +93,7 @@ class SaleLineAssemblerTest {
 
         // Act + Assert
         assertThrows(NullPointerException.class,
-                () -> assembler.toDataModel(null)
+                () -> assembler.toDataModel(null, mock(SaleDataModel.class))
         );
     }
 
