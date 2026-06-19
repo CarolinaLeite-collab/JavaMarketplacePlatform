@@ -24,13 +24,6 @@ public class SaleLineDataModel {
     @Column(name = "direct_sale_id", nullable = false)
     private String directSaleId;
 
-    @Column(name = "price_value", nullable = false)
-    private double priceValue;
-
-    @Column(name = "price_currency", nullable = false)
-    private String priceCurrency;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sale_id", nullable = false)
-    private SaleDataModel sale;
+    @Embedded
+    private PriceDataModel price;
 }
