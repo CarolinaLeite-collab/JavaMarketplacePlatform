@@ -1516,7 +1516,7 @@ The application will be available at `http://localhost:5173`.
 Both Dockerfiles follow secure image-building practices:
 
 - **Multi-stage builds** — build tools are not present in the final image
-- **Pinned base images** — images use fixed versions and pinned digests where applicable for reproducibility and security
+- **Pinned base images** — SHA256 digests ensure reproducible builds
 - **Non-root user** — containers run as a non-privileged user; the backend runs as `appuser`, and the frontend runs as the unprivileged `nginx` user
 - **Unprivileged frontend image** — the frontend uses `nginxinc/nginx-unprivileged`, which avoids the privileged port binding model of the standard `nginx:alpine` image by serving on port `8080` instead of `80`
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
