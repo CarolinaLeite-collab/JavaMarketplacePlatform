@@ -1506,10 +1506,10 @@ Build and run the frontend container:
 ```bash
 cd frontend
 docker build -t mitelovers-frontend .
-docker run -p 8080:8080 mitelovers-frontend
+docker run -p 5173:8080 mitelovers-frontend
 ```
 
-The application will be available at `http://localhost:8080`.
+The application will be available at `http://localhost:5173`.
 
 ### Image Security
 
