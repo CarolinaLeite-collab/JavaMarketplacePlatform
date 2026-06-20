@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Data model object representing {@link MITELOVERS.domain.directsale.DirectSale} information, allowing its persistence in a database.
  */
+
 @Generated
 @Getter
 @NoArgsConstructor

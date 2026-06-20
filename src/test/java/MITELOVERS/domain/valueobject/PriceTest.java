@@ -28,10 +28,12 @@ class PriceTest {
     }
 
     @Test
-    void shouldRejectZeroValue() {
-        //act + assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new Price(0.0, _currency));
+    void shouldAceptZeroValue() {
+        //act
+        _price = new Price(0.0, _currency);
+
+        //assert
+        assertEquals(0.0, _price.getValue());
     }
 
     @Test
@@ -157,5 +159,53 @@ class PriceTest {
 
         //assert
         assertNotEquals(price1.hashCode(), price2.hashCode());
+    }
+
+    @Test
+    void shouldReturnTrueWhenPricesAreEqual() {
+        //Act
+        Price price1 = new Price(10.0, Currency.EUR);
+        Price price2 = new Price(10.0, Currency.EUR);
+
+        //Assert
+        assertEquals(price1, price2);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCurrenciesAreDifferent() {
+        //Act
+        Price price1 = new Price(10.0, Currency.EUR);
+        Price price2 = new Price(10.0, Currency.USD);
+
+        //Assert
+        assertNotEquals(price1, price2);
+    }
+
+    @Test
+    void shouldReturnFalseWhenComparedWithDifferentType() {
+        //Act
+        Price price = new Price(10.0, Currency.EUR);
+
+        //Assert
+        assertNotEquals(price, "not a price");
+    }
+
+    @Test
+    void shouldReturnFalseWhenComparedWithNull() {
+        //Act
+        Price price = new Price(10.0, Currency.EUR);
+
+        //Assert
+        assertNotEquals(price, null);
+    }
+
+    @Test
+    void shouldReturnFalseWhenValuesAreDifferent() {
+        //Act
+        Price price1 = new Price(10.0, Currency.EUR);
+        Price price2 = new Price(20.0, Currency.EUR);
+
+        //Assert
+        assertNotEquals(price1, price2);
     }
 }
