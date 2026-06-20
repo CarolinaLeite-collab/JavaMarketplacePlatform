@@ -385,11 +385,16 @@ class DirectSaleTest {
     @Test
     void shouldBeMarkedAsExpiredAfterBeingMarkedExpired() {
         // Arrange
+        Instant creationDate = Instant.now().minus(Duration.ofDays(10));
+
         DirectSale directSale = new DirectSale(
+                _dsIdDouble,
                 _itemsIdDouble,
                 _sellerIdDouble,
                 _priceDouble,
-                null
+                Duration.ofDays(3),
+                creationDate,
+                DirectSaleStatus.ACTIVE
         );
 
         // Act
@@ -402,11 +407,16 @@ class DirectSaleTest {
     @Test
     void shouldThrowIfDirectSaleIsAlreadyExpired() {
         // Arrange
+        Instant creationDate = Instant.now().minus(Duration.ofDays(10));
+
         DirectSale directSale = new DirectSale(
+                _dsIdDouble,
                 _itemsIdDouble,
                 _sellerIdDouble,
                 _priceDouble,
-                null
+                Duration.ofDays(3),
+                creationDate,
+                DirectSaleStatus.ACTIVE
         );
 
         // Act
@@ -434,5 +444,121 @@ class DirectSaleTest {
                 IllegalStateException.class,
                 () -> directSale.markAsExpired()
         );
+    }
+
+    @Test
+    void shouldReturnNullEndDateWhenTimeLimitIsNull() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _dsIdDouble,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null,
+                _creationDate,
+                _saleStatus
+        );
+
+        // Act
+        Instant result = directSale.getEndDate();
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
+    void shouldReturnEndDateWhenTimeLimitExists() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _dsIdDouble,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                _timeLimit,
+                _creationDate,
+                _saleStatus
+        );
+
+        Instant expected = _creationDate.plus(_timeLimit);
+
+        // Act
+        Instant result = directSale.getEndDate();
+
+        // Assert
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void shouldThrowIfDirectSaleHasNoTimeLimit() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act + Assert
+        assertThrows(
+                IllegalStateException.class,
+                () -> directSale.markAsExpired()
+        );
+    }
+
+    @Test
+    void shouldReturnFalseWhenDirectSaleHasNoTimeLimit() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                null
+        );
+
+        // Act
+        boolean result = directSale.isExpired();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenDirectSaleIsStillWithinTimeLimit() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _dsIdDouble,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                Duration.ofDays(10),
+                Instant.now(),
+                DirectSaleStatus.ACTIVE
+        );
+
+        // Act
+        boolean result = directSale.isExpired();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldReturnTrueWhenDirectSaleHasPassedEndDate() {
+        // Arrange
+        DirectSale directSale = new DirectSale(
+                _dsIdDouble,
+                _itemsIdDouble,
+                _sellerIdDouble,
+                _priceDouble,
+                Duration.ofDays(3),
+                Instant.now().minus(Duration.ofDays(10)),
+                DirectSaleStatus.ACTIVE
+        );
+
+        // Act
+        boolean result = directSale.isExpired();
+
+        // Assert
+        assertTrue(result);
     }
 }

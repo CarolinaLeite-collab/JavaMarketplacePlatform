@@ -1,5 +1,6 @@
 package MITELOVERS.dto.response;
 
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
@@ -26,5 +27,7 @@ public class DirectSaleResponseDTO extends RepresentationModel<DirectSaleRespons
     private final String priceCurrency;
     private final Long timeLimitSeconds;
     private final Instant creationDate;
+    private final Instant endDate;
+    private final DirectSaleStatus status;
 
 }
