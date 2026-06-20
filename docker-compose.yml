@@ -13,6 +13,18 @@ services:
       - mitelovers-data:/app/data
     restart: unless-stopped
 
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
       interval: 30s
@@ -31,6 +43,18 @@ services:
       backend:
         condition: service_healthy
     restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
 
     healthcheck:
       test: [ "CMD", "wget", "--spider", "-q", "http://localhost:80/" ]
