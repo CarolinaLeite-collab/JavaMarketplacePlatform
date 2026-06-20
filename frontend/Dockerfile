@@ -6,7 +6,7 @@ RUN npm ci --ignore-scripts
 COPY . .
 RUN npm run build
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine-slim@sha256:ec6b8b1f1bfa594db13e99fc692b9fb816cb7e365927196610f622659de95913
+FROM nginxinc/nginx-unprivileged@sha256:557201bef46137df29721e3c14ab969775ddfb277ac2de8b693cb4decec8ce76
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
