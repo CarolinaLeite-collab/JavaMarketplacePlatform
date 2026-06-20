@@ -122,7 +122,7 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
     public boolean addLinksForUserCartLine(ShoppingCartLineResponseDTO dto, String email, String cartId, String cartLineId, String directSaleId) {
 
         dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCartLine(email, cartId, cartLineId)).withSelfRel());
-        dto.add(linkTo(methodOn(DirectSaleRestController.class).getDirectSaleById(directSaleId)).withRel("direct-sale"));
+        dto.add(linkTo(methodOn(DirectSaleRestController.class).getDirectSaleById(email,directSaleId)).withRel("direct-sale"));
 
         return true;
     }

@@ -4,7 +4,6 @@ import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
-import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.valueobject.ItemId;
 import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
@@ -15,7 +14,6 @@ import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
@@ -99,7 +97,7 @@ public class DirectSaleRestController {
 
         responseDTO.add(
                 linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(responseDTO.getDirectSaleId()))
+                        .getDirectSaleById(null,responseDTO.getDirectSaleId()))
                         .withSelfRel()
         );
 
@@ -122,7 +120,7 @@ public class DirectSaleRestController {
         response.forEach(dto ->
                 dto.add(
                         linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSaleById(dto.getDirectSaleId()))
+                                .getDirectSaleById(null,dto.getDirectSaleId()))
                                 .withSelfRel()
                 )
         );
@@ -157,17 +155,14 @@ public class DirectSaleRestController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> getDirectSaleById(
+            @RequestHeader("X-User-Id") String userId,
             @PathVariable String id) {
 
         DirectSale directSale = _directSaleService.getDirectSaleById(id);
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
-        responseDTO.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(id))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addResourceLinks(responseDTO, userId);
 
         for (ItemId itemId : directSale.getItemsId()) {
 
@@ -193,7 +188,7 @@ public class DirectSaleRestController {
         // 2. Add links to each entry
         dto.getDirectSales().forEach(entry ->
                 entry.add(linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(entry.getDirectSaleId()))
+                        .getDirectSaleById(null,entry.getDirectSaleId()))
                         .withSelfRel())
         );
 

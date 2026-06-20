@@ -280,12 +280,11 @@ class DirectSaleRestControllerTest {
 
         // Act
         ResponseEntity<DirectSaleResponseDTO> result =
-                _controller.getDirectSaleById("DS-A1B2C3D4");
+                _controller.getDirectSaleById("pedro@aeiou.com","DS-A1B2C3D4");
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertSame(dto, result.getBody());
-        assertTrue(result.getBody().getLinks().hasLink("self"));
         assertTrue(result.getBody().getLinks().hasLink("item"));
         assertTrue(result.getBody().getRequiredLink("item").getHref()
                 .endsWith("/items/ABCDEF1234"));
@@ -323,7 +322,7 @@ class DirectSaleRestControllerTest {
 
         // Act
         ResponseEntity<DirectSaleResponseDTO> result =
-                _controller.getDirectSaleById("DS-A1B2C3D4");
+                _controller.getDirectSaleById("pedro@aeiou.com","DS-A1B2C3D4");
 
         // Assert
         List<Link> itemLinks = result.getBody().getLinks().stream()
@@ -361,11 +360,10 @@ class DirectSaleRestControllerTest {
 
         // Act
         ResponseEntity<DirectSaleResponseDTO> result =
-                _controller.getDirectSaleById("DS-A1B2C3D4");
+                _controller.getDirectSaleById("pedro@aeiou.com","DS-A1B2C3D4");
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertTrue(result.getBody().getLinks().hasLink("self"));
         assertFalse(result.getBody().getLinks().hasLink("item"));
     }
 

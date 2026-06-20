@@ -3,17 +3,18 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
-import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
+import MITELOVERS.applicationservices.ShoppingCartService;
+import MITELOVERS.controllers.rest.ShoppingCartRestController;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,11 +41,13 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
     private final UserService _userService;
+    private final ShoppingCartService _shoppingCartService;
 
-    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy, UserService userService) {
+    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy, UserService userService, ShoppingCartService shoppingCartService) {
 
         _authorizationPolicy = authorizationPolicy;
         _userService = userService;
+        _shoppingCartService = shoppingCartService;
     }
 
     @Override
@@ -71,7 +74,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canGetDirectSale(user)) {
             links.add(
                     WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
-                            .getDirectSaleById(null))
+                            .getDirectSaleById(null,null))
                             .withRel("direct-sale")
             );
         }
@@ -107,7 +110,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         dto.add(
                 linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(null))
+                        .getDirectSaleById(email,dto.getDirectSaleId()))
                         .withSelfRel()
         );
 
@@ -121,6 +124,23 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         }
 
+        if (_authorizationPolicy.canPostShoppingCartLines(user)
+                && dto.getStatus() == DirectSaleStatus.ACTIVE
+                && !dto.getSellerId().equals(email)) {
+
+            ShoppingCart cart =
+                    _shoppingCartService.findCartByUserId(email);
+
+            dto.add(
+                    linkTo(methodOn(ShoppingCartRestController.class)
+                            .addCartLine(
+                                    email,
+                                    cart.identity().toString(),
+                                    null
+                            ))
+                            .withRel("add-to-cart")
+            );
+        }
     }
 
     public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
