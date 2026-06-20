@@ -1536,24 +1536,69 @@ The complete `docker-compose.yml` is shown below, the following sections break i
 
 ```yaml
 services:
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mitelovers:${APP_VERSION:-latest}
+    image: mitelovers-backend:${APP_VERSION:-latest}
     ports:
       - "8081:8081"
+
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
     volumes:
       - mitelovers-data:/app/data
     restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 40s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: mitelovers-frontend:${APP_VERSION:-latest}
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
+
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:80/" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
 volumes:
   mitelovers-data:
@@ -1608,6 +1653,54 @@ volumes:
 ```
 
 ---
+
+#### Runtime security hardening
+
+Along with exposing only the necessary ports, volumes, and environment variables, the containers are also **hardened at runtime** to reduce the impact of a possible compromise.
+
+Both services (frontend and backend) run as **non-root users**, as is defined in their respective Dockerfiles. The backend runs as `appuser`, and the frontend as `ngnix`. Running containers as non‑root users ensures that, even if an attacker were to gain code execution inside the container, they would be unable to automatically perform privileged operations or escalate to full control of the host. Having non-root users reduces the blast radius of any compromise and aligns with least‑privilege principles.
+
+The `docker-compose.yml` file further applies runtime security settings to both services, as you can see below.
+
+**backend**:
+```yaml
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+```
+
+**The frontend service has the same runtime hardening applied, with adjusted resource limits:**
+```yaml
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
+```
+
+These settings strengthen the runtime environment by including:
+
+- `no-new-privileges:true`, which prevents processes inside the container from gaining any additional privileges during execution (**Note**: the Compose file already does not use `privileged: true` for any service, so containers never run in fully privileged mode)
+- `cap_drop: ALL`, which removes _all_ Linux capabilities by default; both services run with _minimum possible privileges_ unless a specific capability is explicitly required
+- **CPU** and **memory limits** reduce the risk of a misbehaving or compromised container exhausting host resources
+
+Together, these measures ensure that the containers run with a hardened runtime configuration: non-root users, no privileged mode, no privilege escalation, dropped capabilities, and explicit resource limits.
+
+___
 
 #### Health check
 
