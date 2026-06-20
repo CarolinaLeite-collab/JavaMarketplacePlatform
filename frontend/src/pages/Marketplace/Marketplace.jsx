@@ -42,7 +42,7 @@ function sellerUsernameFromEmail (email) {
     return email.split('@')[0];
 }
 
-function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
+function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSeePrice) {
     return directSales.flatMap((directSale) => {
         const itemIds = directSale.itemsId ?? [];
 
@@ -59,7 +59,9 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
                 genreId: genreNameToId.get(genreName) ?? 'unknown',
                 genreName,
                 type: 'Direct Sale',
-                price: formatPrice(directSale.priceValue, directSale.priceCurrency),
+                price: canSeePrice
+                    ? formatPrice(directSale.priceValue, directSale.priceCurrency)
+                    : null,
 
                 //details card fields
                 author:itemDetails?.authorName ?? 'unknown',
@@ -77,7 +79,7 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
     });
 }
 
-function buildAuctionItems(auctions, itemDetailsMap, genreNameToId) {
+function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice) {
     return auctions.flatMap((auction) => {
         const itemIds = auction.itemIds ?? [];
 
@@ -88,15 +90,15 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId) {
             const genreName = itemDetails?.genreName ?? 'Unknown';
 
             return {
-                //main table details
                 id: `${auction.auctionId}-${itemId}`,
                 item: itemDetails?.title ?? itemId,
                 genreId: genreNameToId.get(genreName) ?? 'unknown',
                 genreName,
                 type: 'Auction',
-                price: formatPrice(auction.startingPrice, auction.priceCurrency),
+                price: canSeePrice
+                    ? formatPrice(auction.startingPrice, auction.priceCurrency)
+                    : null,
 
-                //details card fields
                 author: itemDetails?.authorName ?? 'unknown',
                 condition: itemDetails?.condition ?? 'unknown',
                 cover: itemDetails?.picture ?? '',
@@ -104,8 +106,6 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId) {
                 saleType: 'Auction',
                 directSaleId: null,
                 auctionId: auction.auctionId ?? null,
-
-                //HATEOAS links
                 selfHref: auction._links?.self?.href ?? null,
             };
         }).filter(Boolean);
@@ -134,22 +134,19 @@ export default function Marketplace() {
     const handleSeeMore = () => {
         if (!selectedItem) return;
 
-        if (selectedItem.selfHref) {
-            if (selectedItem.saleType === 'Auction') {
-                navigate('/auction-details', {state: {selfHref: selectedItem.selfHref}});
-            } else if (selectedItem.saleType === 'Direct Sale') {
-                navigate('/direct-sale-details', {state: {selfHref: selectedItem.selfHref}});
-            }
+        if (selectedItem.saleType === 'Auction' && selectedItem.auctionId) {
+            navigate(`/auctions/${selectedItem.auctionId}`, {
+                state: { selfHref: selectedItem.selfHref }
+            });
             return;
         }
 
-        //fallback na ausência de HATEOAS ;_;
-        if (selectedItem.saleType === 'Auction' && selectedItem.auctionId) {
-            navigate(`/auctions/${selectedItem.auctionId}`);
-        } else if (selectedItem.saleType === 'Direct Sale' && selectedItem.directSaleId) {
-            navigate(`/directSales/${selectedItem.directSaleId}`);
+        if (selectedItem.saleType === 'Direct Sale' && selectedItem.directSaleId) {
+            navigate(`/directSales/${selectedItem.directSaleId}`, {
+                state: { selfHref: selectedItem.selfHref }
+            });
         }
-    }
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -192,8 +189,8 @@ export default function Marketplace() {
 
                 const itemDetailsMap = new Map(itemResponses.filter(Boolean));
                 const marketplaceItems = [
-                    ...buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId),
-                    ...buildAuctionItems(auctions, itemDetailsMap, genreNameToId),
+                    ...buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSeePrice),
+                    ...buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice),
                 ];
 
                 if (!isMounted) return;
@@ -255,6 +252,7 @@ export default function Marketplace() {
                                 selfHref: selectedItem.selfHref,
                             }
                         }
+                        canSeePrice={canSeePrice}
                         onClose={closeDetails}
                         onSeeMore={handleSeeMore}
                         />
