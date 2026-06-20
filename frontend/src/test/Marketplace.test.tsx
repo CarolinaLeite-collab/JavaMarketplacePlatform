@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, waitFor, within } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import AppContext from '../context/AppContext';
@@ -274,8 +274,6 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
         expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/public');
         expect(apiClient.getDirectSales).not.toHaveBeenCalled();
-
-        // table: no price column, no concrete price text
         expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
         expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
         expect(screen.queryByText('15 EUR')).not.toBeInTheDocument();
@@ -289,8 +287,11 @@ describe('Marketplace', () => {
         const item = await screen.findByText('Book 1');
         await user.click(item);
 
-        expect(await screen.findByText('Sold by: pedro')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /see more/i })).toBeInTheDocument();
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/book 1/i);
+        expect(dialog).toHaveTextContent(/author:\s*author 1/i);
+        expect(dialog).toHaveTextContent(/genre:\s*horror/i);
+        expect(within(dialog).getByRole('button', { name: /see more/i })).toBeInTheDocument();
     });
 
     it('shows price in details modal for logged-in users', async () => {
@@ -301,8 +302,8 @@ describe('Marketplace', () => {
         const item = await screen.findByText('Book 1');
         await user.click(item);
 
-        // From directSales: 10 EUR should be visible for logged-in user
-        expect(await screen.findByText('10 EUR')).toBeInTheDocument();
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/10 eur/i);
     });
 
     it('hides price in details modal for guest users', async () => {
@@ -322,11 +323,9 @@ describe('Marketplace', () => {
         const item = await screen.findByText('Book 1');
         await user.click(item);
 
-        // The modal should not show a concrete price for guests
-        expect(
-            screen.getByText(/register or log in to see price/i),
-        ).toBeInTheDocument();
-        expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/register or log in to see price/i);
+        expect(dialog).not.toHaveTextContent(/10 eur/i);
     });
 
     it('navigates to auction details when see more is clicked for auction item', async () => {
@@ -337,7 +336,8 @@ describe('Marketplace', () => {
         const auctionItem = await screen.findByText('Book 3');
         await user.click(auctionItem);
 
-        await user.click(screen.getByRole('button', { name: /see more/i }));
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
 
         expect(mockNavigate).toHaveBeenCalledWith('/auctions/AU-001', {
             state: { selfHref: 'http://localhost:8081/auctions/AU-001' },
@@ -352,7 +352,8 @@ describe('Marketplace', () => {
         const directSaleItem = await screen.findByText('Book 1');
         await user.click(directSaleItem);
 
-        await user.click(screen.getByRole('button', { name: /see more/i }));
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
 
         expect(mockNavigate).toHaveBeenCalledWith('/directSales/DS-001', {
             state: { selfHref: 'http://localhost:8081/directSales/DS-001' },
