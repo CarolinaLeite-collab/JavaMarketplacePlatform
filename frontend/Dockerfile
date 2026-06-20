@@ -10,6 +10,8 @@ FROM nginxinc/nginx-unprivileged:1.27-alpine-slim@sha256:ec6b8b1f1bfa594db13e99f
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+USER nginx
+
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
