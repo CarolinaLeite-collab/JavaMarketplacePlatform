@@ -296,4 +296,22 @@ class LibraryRestControllerTest {
         // Assert
         result.andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldReturn400WhenItemIdIsBlank() throws Exception {
+        mockMvc.perform(post("/my-library")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"itemId\": \" \"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturn400WhenItemIdIsMissing() throws Exception {
+        mockMvc.perform(post("/my-library")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest());
+    }
 }
