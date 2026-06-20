@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -128,7 +129,7 @@ public class LibraryRestController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<LibraryItemResponseDTO> addItemToLibrary(
-            @RequestBody AddItemRequestDTO request,
+            @Valid @RequestBody AddItemRequestDTO request,
             @RequestHeader("X-User-Id") String userId) {
 
         LibraryItemDetails itemDetails = _libraryService.addItemToLibrary(request.getItemId(), userId);
