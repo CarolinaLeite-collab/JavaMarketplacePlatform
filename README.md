@@ -1661,7 +1661,11 @@ Along with exposing only the necessary ports, volumes, and environment variables
 
 Both services (frontend and backend) run as **non-root users**, as is defined in their respective Dockerfiles. The backend runs as `appuser`, and the frontend as the unprivileged `nginx` user. Running containers as non‑root users ensures that, even if an attacker were to gain code execution inside the container, they would be unable to automatically perform privileged operations or escalate to full control of the host. Having non-root users reduces the blast radius of any compromise and aligns with least‑privilege principles.
 
-For the frontend specifically, the base image was changed from `nginx:alpine` to `nginxinc/nginx-unprivileged:1.27-alpine-slim`. In the standard `nginx:alpine` image, the NGINX master process typically has to start as root in order to bind directly to port `80`, even if worker processes drop to the `nginx` user. By switching to the unprivileged image and having NGINX listen on port `8080` inside the container, the frontend no longer needs to bind to a privileged port and can run fully as a non‑root service.
+For the frontend specifically, the base image was changed from `nginx:alpine` to `nginxinc/nginx-unprivileged:stable-alpine-slim`, pinned by digest. The chosen unprivileged image (stable-alpine-slim) is scanned with Trivy in CI, and the pinned digest corresponds to a build with no HIGH or CRITICAL vulnerabilities under our policy at the time of writing.
+
+In the standard `nginx:alpine` image, the NGINX master process typically has to start as root in order to bind directly to port `80`, even if worker processes drop to the `nginx` user. By switching to the unprivileged image and having NGINX listen on port `8080` inside the container, the frontend no longer needs to bind to a privileged port and can run fully as a non‑root service.
+
+
 
 The `docker-compose.yml` file further applies runtime security settings to both services, as you can see below.
 
