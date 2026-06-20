@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@/test-utils';
+import { render, screen, waitFor, within } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import AppContext from '../context/AppContext';
@@ -76,7 +76,7 @@ const genres = [
     { genreId: 'SCIFI', genreName: 'Science Fiction' },
 ];
 
-const itemDetails = {
+const itemDetails: Record<string, any> = {
     'ITEM-001': {
         itemId: 'ITEM-001',
         title: 'Book 1',
@@ -127,7 +127,7 @@ function renderMarketplace({ appState = {} } = {}) {
             }}
         >
             <Marketplace />
-        </AppContext.Provider>
+        </AppContext.Provider>,
     );
 }
 
@@ -182,7 +182,7 @@ describe('Marketplace', () => {
         vi.mocked(apiClient.getDirectSales).mockReturnValue(
             new Promise((resolve) => {
                 resolveDirectSales = resolve;
-            })
+            }),
         );
 
         renderMarketplace();
@@ -203,7 +203,7 @@ describe('Marketplace', () => {
 
         await user.type(
             screen.getByPlaceholderText(/search by item, genre, type or price/i),
-            'Book 2'
+            'Book 2',
         );
 
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
@@ -259,7 +259,7 @@ describe('Marketplace', () => {
         expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
     });
 
-    it('uses the guest marketplace feed and hides prices for guest users', async () => {
+    it('uses the guest marketplace feed and hides prices for guest users (table)', async () => {
         vi.mocked(useUser).mockReturnValue({
             currentUser: 'guest@aeiou.com',
             toggleUser: vi.fn(),
@@ -276,6 +276,7 @@ describe('Marketplace', () => {
         expect(apiClient.getDirectSales).not.toHaveBeenCalled();
         expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
         expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
+        expect(screen.queryByText('15 EUR')).not.toBeInTheDocument();
     });
 
     it('opens details modal when an item is clicked', async () => {
@@ -286,8 +287,45 @@ describe('Marketplace', () => {
         const item = await screen.findByText('Book 1');
         await user.click(item);
 
-        expect(await screen.findByText('Sold by: pedro')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /see more/i })).toBeInTheDocument();
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/book 1/i);
+        expect(dialog).toHaveTextContent(/author:\s*author 1/i);
+        expect(dialog).toHaveTextContent(/genre:\s*horror/i);
+        expect(within(dialog).getByRole('button', { name: /see more/i })).toBeInTheDocument();
+    });
+
+    it('shows price in details modal for logged-in users', async () => {
+        const user = userEvent.setup();
+
+        renderMarketplace();
+
+        const item = await screen.findByText('Book 1');
+        await user.click(item);
+
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/10 eur/i);
+    });
+
+    it('hides price in details modal for guest users', async () => {
+        const user = userEvent.setup();
+
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'guest@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderMarketplace({
+            appState: {
+                directSalesWithoutPriceHref: '/direct-sales/public',
+            },
+        });
+
+        const item = await screen.findByText('Book 1');
+        await user.click(item);
+
+        const dialog = await screen.findByRole('dialog');
+        expect(dialog).toHaveTextContent(/register or log in to see price/i);
+        expect(dialog).not.toHaveTextContent(/10 eur/i);
     });
 
     it('navigates to auction details when see more is clicked for auction item', async () => {
@@ -298,9 +336,10 @@ describe('Marketplace', () => {
         const auctionItem = await screen.findByText('Book 3');
         await user.click(auctionItem);
 
-        await user.click(screen.getByRole('button', { name: /see more/i }));
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
 
-        expect(mockNavigate).toHaveBeenCalledWith('/auction-details', {
+        expect(mockNavigate).toHaveBeenCalledWith('/auctions/AU-001', {
             state: { selfHref: 'http://localhost:8081/auctions/AU-001' },
         });
     });
@@ -313,9 +352,10 @@ describe('Marketplace', () => {
         const directSaleItem = await screen.findByText('Book 1');
         await user.click(directSaleItem);
 
-        await user.click(screen.getByRole('button', { name: /see more/i }));
+        const dialog = await screen.findByRole('dialog');
+        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
 
-        expect(mockNavigate).toHaveBeenCalledWith('/direct-sale-details', {
+        expect(mockNavigate).toHaveBeenCalledWith('/directSales/DS-001', {
             state: { selfHref: 'http://localhost:8081/directSales/DS-001' },
         });
     });

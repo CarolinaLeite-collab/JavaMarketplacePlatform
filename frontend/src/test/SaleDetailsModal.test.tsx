@@ -19,10 +19,11 @@ describe('SaleDetailsModal', () => {
     };
 
     it('renders nothing when item is null', () => {
-        const { container } = render(
+        render(
             <SaleDetailsModal
                 opened={true}
                 item={null}
+                canSeePrice={true}
                 onClose={vi.fn()}
                 onSeeMore={vi.fn()}
             />
@@ -37,6 +38,7 @@ describe('SaleDetailsModal', () => {
             <SaleDetailsModal
                 opened={true}
                 item={baseItem}
+                canSeePrice={true}
                 onClose={vi.fn()}
                 onSeeMore={vi.fn()}
             />
@@ -51,6 +53,36 @@ describe('SaleDetailsModal', () => {
         expect(screen.getByText(/sold by:\s*user123/i)).toBeInTheDocument();
     });
 
+    it('shows the login message instead of price when canSeePrice is false', () => {
+        render(
+            <SaleDetailsModal
+                opened={true}
+                item={baseItem}
+                canSeePrice={false}
+                onClose={vi.fn()}
+                onSeeMore={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText(/register or log in to see price/i)).toBeInTheDocument();
+        expect(screen.queryByText(/9\.99 eur/i)).not.toBeInTheDocument();
+    });
+
+    it('renders null price safely for logged-in users', () => {
+        render(
+            <SaleDetailsModal
+                opened={true}
+                item={{ ...baseItem, price: null }}
+                canSeePrice={true}
+                onClose={vi.fn()}
+                onSeeMore={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText('Dune')).toBeInTheDocument();
+        expect(screen.queryByText(/9\.99 eur/i)).not.toBeInTheDocument();
+    });
+
     it('calls onClose when close button is clicked', async () => {
         const user = userEvent.setup();
         const onClose = vi.fn();
@@ -59,6 +91,7 @@ describe('SaleDetailsModal', () => {
             <SaleDetailsModal
                 opened={true}
                 item={baseItem}
+                canSeePrice={true}
                 onClose={onClose}
                 onSeeMore={vi.fn()}
             />
@@ -78,6 +111,7 @@ describe('SaleDetailsModal', () => {
             <SaleDetailsModal
                 opened={true}
                 item={baseItem}
+                canSeePrice={true}
                 onClose={vi.fn()}
                 onSeeMore={onSeeMore}
             />

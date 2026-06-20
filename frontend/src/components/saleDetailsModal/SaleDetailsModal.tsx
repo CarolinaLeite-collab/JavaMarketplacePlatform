@@ -6,7 +6,7 @@ interface SaleItemDetail {
     author: string;
     genre: string;
     condition: string;
-    price: string;
+    price: string | null;
     seller: string;
     saleType: "Direct Sale" | "Auction";
     directSaleId: string | null;
@@ -17,11 +17,12 @@ interface SaleItemDetail {
 interface SaleDetailsModalProps {
     opened: boolean;
     item: SaleItemDetail | null;
+    canSeePrice: boolean;
     onClose?: () => void;
     onSeeMore?: () => void;
 }
 
-export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetailsModalProps) {
+export function SaleDetailsModal({ opened, item, canSeePrice, onClose, onSeeMore }: SaleDetailsModalProps) {
     if (!item) return null;
 
     const handleSeeMore = () => {
@@ -58,7 +59,7 @@ export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetai
                 <Stack gap="lg" flex={1}>
                     <Text fz="sm"><b>Author:</b> {item.author}</Text>
                     <Text fz="sm"><b>Genre:</b> {item.genre}</Text>
-                    <Text fz="sm"><b>Type:</b> Auction</Text>
+                    <Text fz="sm"><b>Type:</b> {item.saleType}</Text>
 
                     <Group gap="xs">
                         <Text fz="sm"><b>Condition:</b></Text>
@@ -86,8 +87,8 @@ export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetai
                             textAlign: 'center',
                         }}
                     >
-                        <Text fw={600} size="md" c="#4f6df5">
-                            {item.price}
+                        <Text fw={600} size="sm" c="#4f6df5">
+                            {canSeePrice ? item.price : 'Register or log in to see price'}
                         </Text>
                     </Box>
                 </Stack>
