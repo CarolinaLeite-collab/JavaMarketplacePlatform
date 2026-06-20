@@ -59,6 +59,7 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
       * [Application service and image build](#application-service-and-image-build)
       * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
+      * [Runtime security hardening](#runtime-security-hardening)
       * [Health check](#health-check)
       * [Running it](#running-it)
       * [Validation](#validation)
@@ -1505,18 +1506,19 @@ Build and run the frontend container:
 ```bash
 cd frontend
 docker build -t mitelovers-frontend .
-docker run -p 5173:80 mitelovers-frontend
+docker run -p 8080:8080 mitelovers-frontend
 ```
 
-The application will be available at `http://localhost:5173`.
+The application will be available at `http://localhost:8080`.
 
 ### Image Security
 
 Both Dockerfiles follow secure image-building practices:
 
 - **Multi-stage builds** — build tools are not present in the final image
-- **Pinned base images** — SHA256 digests ensure reproducible builds
-- **Non-root user** — containers run as a non-privileged user
+- **Pinned base images** — images use fixed versions and pinned digests where applicable for reproducibility and security
+- **Non-root user** — containers run as a non-privileged user; the backend runs as `appuser`, and the frontend runs as the unprivileged `nginx` user
+- **Unprivileged frontend image** — the frontend uses `nginxinc/nginx-unprivileged`, which avoids the privileged port binding model of the standard `nginx:alpine` image by serving on port `8080` instead of `80`
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
 - **No hardcoded secrets** — all configuration is passed via environment variables
 
@@ -1657,7 +1659,9 @@ volumes:
 
 Along with exposing only the necessary ports, volumes, and environment variables, the containers are also **hardened at runtime** to reduce the impact of a possible compromise.
 
-Both services (frontend and backend) run as **non-root users**, as is defined in their respective Dockerfiles. The backend runs as `appuser`, and the frontend as `ngnix`. Running containers as non‑root users ensures that, even if an attacker were to gain code execution inside the container, they would be unable to automatically perform privileged operations or escalate to full control of the host. Having non-root users reduces the blast radius of any compromise and aligns with least‑privilege principles.
+Both services (frontend and backend) run as **non-root users**, as is defined in their respective Dockerfiles. The backend runs as `appuser`, and the frontend as the unprivileged `nginx` user. Running containers as non‑root users ensures that, even if an attacker were to gain code execution inside the container, they would be unable to automatically perform privileged operations or escalate to full control of the host. Having non-root users reduces the blast radius of any compromise and aligns with least‑privilege principles.
+
+For the frontend specifically, the base image was changed from `nginx:alpine` to `nginxinc/nginx-unprivileged:1.27-alpine-slim`. In the standard `nginx:alpine` image, the NGINX master process typically has to start as root in order to bind directly to port `80`, even if worker processes drop to the `nginx` user. By switching to the unprivileged image and having NGINX listen on port `8080` inside the container, the frontend no longer needs to bind to a privileged port and can run fully as a non‑root service.
 
 The `docker-compose.yml` file further applies runtime security settings to both services, as you can see below.
 
@@ -1676,7 +1680,7 @@ The `docker-compose.yml` file further applies runtime security settings to both 
           memory: "512M"
 ```
 
-**The frontend service has the same runtime hardening applied, with adjusted resource limits:**
+**frontend** (same runtime hardening, with adjusted resource limits):
 ```yaml
     security_opt:
       - no-new-privileges:true
