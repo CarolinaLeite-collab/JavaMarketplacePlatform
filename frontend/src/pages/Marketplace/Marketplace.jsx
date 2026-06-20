@@ -28,13 +28,10 @@ function buildGenreMaps(genres) {
 }
 
 function buildGenreOptions(genres) {
-    return [
-        { value: 'all', label: 'All genres' },
-        ...genres.map((genre) => ({
-            value: genre.genreId,
-            label: genre.genreName,
-        })),
-    ];
+    return genres.map((genre) => ({
+        value: genre.genreId,
+        label: genre.genreName,
+    }));
 }
 
 function sellerUsernameFromEmail (email) {
@@ -64,11 +61,13 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
                     : null,
 
                 //details card fields
-                author:itemDetails?.authorName ?? 'unknown',
-                condition:itemDetails?.condition ?? 'unknown',
-                cover:itemDetails?.picture ?? '',
+                author: itemDetails?.authorName ?? 'unknown',
+                publication: itemDetails?.title ?? 'unknown',
+                publisher: itemDetails?.publisherName ?? 'unknown',
+                condition: itemDetails?.condition ?? 'unknown',
+                cover: itemDetails?.picture ?? '',
                 sellerId: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
-                saleType:'Direct Sale',
+                saleType: 'Direct Sale',
                 directSaleId: directSale.directSaleId ?? null,
                 auctionId: null,
 
@@ -100,6 +99,8 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                     : null,
 
                 author: itemDetails?.authorName ?? 'unknown',
+                publication: itemDetails?.title ?? 'unknown',
+                publisher: itemDetails?.publisherName ?? 'unknown',
                 condition: itemDetails?.condition ?? 'unknown',
                 cover: itemDetails?.picture ?? '',
                 seller: sellerUsernameFromEmail(auction.seller) ?? 'unknown',
@@ -121,8 +122,7 @@ export default function Marketplace() {
     const marketplaceHref = !isLoggedIn ? directSalesWithoutPriceHref : null;
 
     const [items, setItems] = useState([]);
-    const [genres, setGenres] = useState([{ value: 'all', label: 'All genres' }]);
-    const [selectedGenre, setSelectedGenre] = useState('all');
+    const [genres, setGenres] = useState([]);
     const [showDirectSales, setShowDirectSales] = useState(false);
     const [showAuctions, setShowAuctions] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -157,12 +157,14 @@ export default function Marketplace() {
                 setError('');
 
                 const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
-                    marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getDirectSales(),
+                    marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getActiveDirectSales(),
                     apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
 
-                const directSales = directSalesResponse ?? [];
+                const directSales = directSalesResponse?._embedded
+                    ? Object.values(directSalesResponse._embedded)[0] ?? []
+                    : directSalesResponse ?? [];
                 const auctions = auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
@@ -225,8 +227,6 @@ export default function Marketplace() {
                     <MarketPlaceTable
                         items={items}
                         genres={genres}
-                        selectedGenre={selectedGenre}
-                        onGenreChange={setSelectedGenre}
                         showDirectSales={showDirectSales}
                         showAuctions={showAuctions}
                         onShowDirectSalesChange={setShowDirectSales}
@@ -255,9 +255,9 @@ export default function Marketplace() {
                         canSeePrice={canSeePrice}
                         onClose={closeDetails}
                         onSeeMore={handleSeeMore}
-                        />
+                    />
                 </>
-                )}
+            )}
         </DefaultLayout>
     );
 }
