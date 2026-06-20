@@ -67,7 +67,7 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
                 author:itemDetails?.authorName ?? 'unknown',
                 condition:itemDetails?.condition ?? 'unknown',
                 cover:itemDetails?.picture ?? '',
-                seller: sellerUsernameFromEmail(directSale.seller) ?? 'unknown',
+                sellerId: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
                 saleType:'Direct Sale',
                 directSaleId: directSale.directSaleId ?? null,
                 auctionId: null,
