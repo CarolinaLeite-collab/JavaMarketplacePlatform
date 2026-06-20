@@ -8,10 +8,12 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.SaleStatus;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -48,15 +50,18 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
     private final IPublicationRepo _publicationRepo;
     private final IAuthorRepo _authorRepo;
     private final IGenreRepo _genreRepo;
+    private final IPublishingCompanyRepo _publishingCompanyRepo;
 
     public ItemResponseDTOMapper(IEditionRepo editionRepo,
                                  IPublicationRepo publicationRepo,
                                  IAuthorRepo authorRepo,
-                                 IGenreRepo genreRepo) {
-        _editionRepo     = Objects.requireNonNull(editionRepo,     "EditionRepo is required");
-        _publicationRepo = Objects.requireNonNull(publicationRepo, "PublicationRepo is required");
-        _authorRepo      = Objects.requireNonNull(authorRepo,      "AuthorRepo is required");
-        _genreRepo       = Objects.requireNonNull(genreRepo,       "GenreRepo is required");
+                                 IGenreRepo genreRepo,
+                                 IPublishingCompanyRepo publishingCompanyRepo) {
+        _editionRepo            = Objects.requireNonNull(editionRepo,            "EditionRepo is required");
+        _publicationRepo        = Objects.requireNonNull(publicationRepo,        "PublicationRepo is required");
+        _authorRepo             = Objects.requireNonNull(authorRepo,             "AuthorRepo is required");
+        _genreRepo              = Objects.requireNonNull(genreRepo,              "GenreRepo is required");
+        _publishingCompanyRepo  = Objects.requireNonNull(publishingCompanyRepo,  "PublishingCompanyRepo is required");
     }
 
     @Override
@@ -78,6 +83,10 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
                 .orElseThrow(() -> new NoSuchElementException(
                         "Genre does not exist in the repository"));
 
+        PublishingCompany publisher = _publishingCompanyRepo.ofIdentity(edition.getPublishingCompanyId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "PublishingCompany does not exist in the repository"));
+
         String pictureUrl = item.getPicture() != null
                 ? item.getPicture().toString()
                 : null;
@@ -96,7 +105,8 @@ public class ItemResponseDTOMapper implements RepresentationModelAssembler<Item,
                 publication.getTitle().toString(),
                 author.getName().toString(),
                 publication.getReleaseYear().getValue(),
-                genre.getGenre().toString()
+                genre.getGenre().toString(),
+                publisher.getPublishingCompanyName()
         );
 
         dto.add(linkTo(methodOn(ItemRestController.class)
