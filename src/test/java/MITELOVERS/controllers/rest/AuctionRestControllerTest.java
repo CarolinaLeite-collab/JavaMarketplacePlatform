@@ -496,7 +496,7 @@ class AuctionRestControllerTest {
 
         String requestBody = """
             {
-              "offerPrice": 20.0,
+              "bidValue": 20.0,
               "currency": "EUR"
             }
             """;
@@ -522,7 +522,7 @@ class AuctionRestControllerTest {
 
         String requestBody = """
         {
-          "offerPrice": 5.0,
+          "bidValue": 5.0,
           "currency": "EUR"
         }
         """;
