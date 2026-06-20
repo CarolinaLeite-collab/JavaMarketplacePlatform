@@ -5,10 +5,12 @@ import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -30,18 +32,21 @@ class ItemResponseDTOMapperTest {
     private ItemResponseDTOMapper buildMapper(Edition editionDouble,
                                               Publication publicationDouble,
                                               Author authorDouble,
-                                              Genre genreDouble) {
-        IEditionRepo     editionRepo     = mock(IEditionRepo.class);
-        IPublicationRepo publicationRepo = mock(IPublicationRepo.class);
-        IAuthorRepo      authorRepo      = mock(IAuthorRepo.class);
-        IGenreRepo       genreRepo       = mock(IGenreRepo.class);
+                                              Genre genreDouble,
+                                              PublishingCompany publisherDouble) {
+        IEditionRepo            editionRepo            = mock(IEditionRepo.class);
+        IPublicationRepo        publicationRepo        = mock(IPublicationRepo.class);
+        IAuthorRepo             authorRepo             = mock(IAuthorRepo.class);
+        IGenreRepo              genreRepo              = mock(IGenreRepo.class);
+        IPublishingCompanyRepo  publishingCompanyRepo  = mock(IPublishingCompanyRepo.class);
 
         when(editionRepo.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
         when(publicationRepo.ofIdentity(any())).thenReturn(Optional.of(publicationDouble));
         when(authorRepo.ofIdentity(any())).thenReturn(Optional.of(authorDouble));
         when(genreRepo.ofIdentity(any())).thenReturn(Optional.of(genreDouble));
+        when(publishingCompanyRepo.ofIdentity(any())).thenReturn(Optional.of(publisherDouble));
 
-        return new ItemResponseDTOMapper(editionRepo, publicationRepo, authorRepo, genreRepo);
+        return new ItemResponseDTOMapper(editionRepo, publicationRepo, authorRepo, genreRepo, publishingCompanyRepo);
     }
 
     @Test
@@ -80,6 +85,7 @@ class ItemResponseDTOMapperTest {
         when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
         when(editionDouble.getPublishingYear()).thenReturn(Year.of(2003));
         when(editionDouble.getPublicationTypeId()).thenReturn(typeIdDouble);
+        when(editionDouble.getPublishingCompanyId()).thenReturn(mock(PublishingCompanyId.class));
 
         Publication publicationDouble = mock(Publication.class);
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
@@ -91,7 +97,10 @@ class ItemResponseDTOMapperTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenre()).thenReturn("Fiction");
 
-        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+        PublishingCompany publisherDouble = mock(PublishingCompany.class);
+        when(publisherDouble.getPublishingCompanyName()).thenReturn("Secker & Warburg");
+
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble, publisherDouble);
 
         // Act
         ItemResponseDTO dto = mapper.toModel(itemDouble);
@@ -104,6 +113,7 @@ class ItemResponseDTOMapperTest {
         assertEquals("978-0-451-52493-5", dto.getIdentifier());
         assertEquals("BOOK", dto.getPublicationTypeName());
         assertEquals("Fiction", dto.getGenreName());
+        assertEquals("Secker & Warburg", dto.getPublisherName());
         assertTrue(dto.hasLinks());
     }
 
@@ -143,6 +153,7 @@ class ItemResponseDTOMapperTest {
         when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
         when(editionDouble.getPublishingYear()).thenReturn(Year.of(1949));
         when(editionDouble.getPublicationTypeId()).thenReturn(typeIdDouble);
+        when(editionDouble.getPublishingCompanyId()).thenReturn(mock(PublishingCompanyId.class));
 
         Publication publicationDouble = mock(Publication.class);
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
@@ -154,7 +165,10 @@ class ItemResponseDTOMapperTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenre()).thenReturn("Fiction");
 
-        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+        PublishingCompany publisherDouble = mock(PublishingCompany.class);
+        when(publisherDouble.getPublishingCompanyName()).thenReturn("Secker & Warburg");
+
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble, publisherDouble);
 
         // Act
         ItemResponseDTO dto = mapper.toModel(itemDouble);
@@ -176,7 +190,8 @@ class ItemResponseDTOMapperTest {
                 editionRepo,
                 mock(IPublicationRepo.class),
                 mock(IAuthorRepo.class),
-                mock(IGenreRepo.class)
+                mock(IGenreRepo.class),
+                mock(IPublishingCompanyRepo.class)
         );
 
         NoSuchElementException ex = assertThrows(NoSuchElementException.class,
@@ -197,7 +212,8 @@ class ItemResponseDTOMapperTest {
 
         ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
                 editionRepo, publicationRepo,
-                mock(IAuthorRepo.class), mock(IGenreRepo.class)
+                mock(IAuthorRepo.class), mock(IGenreRepo.class),
+                mock(IPublishingCompanyRepo.class)
         );
 
         NoSuchElementException ex = assertThrows(NoSuchElementException.class,
@@ -220,7 +236,8 @@ class ItemResponseDTOMapperTest {
 
         ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
                 editionRepo, publicationRepo,
-                authorRepo, mock(IGenreRepo.class)
+                authorRepo, mock(IGenreRepo.class),
+                mock(IPublishingCompanyRepo.class)
         );
 
         NoSuchElementException ex = assertThrows(NoSuchElementException.class,
@@ -244,7 +261,8 @@ class ItemResponseDTOMapperTest {
         when(genreRepo.ofIdentity(any())).thenReturn(Optional.empty());
 
         ItemResponseDTOMapper mapper = new ItemResponseDTOMapper(
-                editionRepo, publicationRepo, authorRepo, genreRepo
+                editionRepo, publicationRepo, authorRepo, genreRepo,
+                mock(IPublishingCompanyRepo.class)
         );
 
         NoSuchElementException ex = assertThrows(NoSuchElementException.class,
@@ -276,18 +294,21 @@ class ItemResponseDTOMapperTest {
         Publication pubDouble     = mock(Publication.class);
         Author authorDouble       = mock(Author.class);
         Genre genreDouble         = mock(Genre.class);
+        PublishingCompany publisherDouble = mock(PublishingCompany.class);
 
         when(editionDouble.getEditionId()).thenReturn(mock(EditionId.class));
         when(editionDouble.getPublishingYear()).thenReturn(Year.of(2003));
         when(editionDouble.getPublicationTypeId()).thenReturn(mock(PublicationTypeId.class));
         when(editionDouble.getIdentifier()).thenReturn(mock(ISBN.class));
         when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
+        when(editionDouble.getPublishingCompanyId()).thenReturn(mock(PublishingCompanyId.class));
         when(pubDouble.getTitle()).thenReturn(mock(Title.class));
         when(pubDouble.getReleaseYear()).thenReturn(Year.of(1949));
         when(genreDouble.getGenre()).thenReturn("Fiction");
         when(authorDouble.getName()).thenReturn(mock(Name.class));
+        when(publisherDouble.getPublishingCompanyName()).thenReturn("Some Publisher");
 
-        ItemResponseDTOMapper mapper = buildMapper(editionDouble, pubDouble, authorDouble, genreDouble);
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, pubDouble, authorDouble, genreDouble, publisherDouble);
 
         // Act
         ItemResponseDTO dto = mapper.toModel(itemDouble);
@@ -333,6 +354,7 @@ class ItemResponseDTOMapperTest {
         when(editionDouble.getEditionLanguage()).thenReturn(Language.ENGLISH);
         when(editionDouble.getPublishingYear()).thenReturn(Year.of(1949));
         when(editionDouble.getPublicationTypeId()).thenReturn(typeIdDouble);
+        when(editionDouble.getPublishingCompanyId()).thenReturn(mock(PublishingCompanyId.class));
 
         Publication publicationDouble = mock(Publication.class);
         when(publicationDouble.getTitle()).thenReturn(titleDouble);
@@ -344,7 +366,10 @@ class ItemResponseDTOMapperTest {
         Genre genreDouble = mock(Genre.class);
         when(genreDouble.getGenre()).thenReturn("Fiction");
 
-        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble);
+        PublishingCompany publisherDouble = mock(PublishingCompany.class);
+        when(publisherDouble.getPublishingCompanyName()).thenReturn("Secker & Warburg");
+
+        ItemResponseDTOMapper mapper = buildMapper(editionDouble, publicationDouble, authorDouble, genreDouble, publisherDouble);
 
         // Act
         ItemResponseDTO dto = mapper.toModel(itemDouble);
