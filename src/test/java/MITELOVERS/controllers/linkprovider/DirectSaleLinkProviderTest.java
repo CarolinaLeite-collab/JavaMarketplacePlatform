@@ -3,6 +3,7 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -202,7 +203,10 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         String email = "user@email.com";
@@ -228,7 +232,10 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         String email = "admin@email.com";
@@ -255,7 +262,10 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         CollectionModel<DirectSaleResponseDTO> dtos = CollectionModel.of(List.of(dto));

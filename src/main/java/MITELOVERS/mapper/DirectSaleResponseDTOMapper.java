@@ -29,7 +29,8 @@ public class DirectSaleResponseDTOMapper {
                 directSale.getTimeLimit() != null ? directSale.getTimeLimit().getSeconds() : null,
                 directSale.getCreationDate(),
                 directSale.getEndDate(),
-                directSale.getDSStatus()
+                directSale.getDSStatus(),
+                directSale.getSellerId().toString()
         );
     }
 

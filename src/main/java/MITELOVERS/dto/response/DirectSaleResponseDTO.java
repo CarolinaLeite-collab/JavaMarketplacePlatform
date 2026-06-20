@@ -29,5 +29,6 @@ public class DirectSaleResponseDTO extends RepresentationModel<DirectSaleRespons
     private final Instant creationDate;
     private final Instant endDate;
     private final DirectSaleStatus status;
+    private final String sellerId;
 
 }

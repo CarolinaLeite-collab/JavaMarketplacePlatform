@@ -6,7 +6,9 @@ import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
@@ -110,6 +112,7 @@ class DirectSaleRestControllerTest {
         DirectSale domain = mock(DirectSale.class);
 
         String email = "email@email.com";
+        UserId userIdDouble = mock(UserId.class);
 
         DirectSaleResponseDTO response =
                 new DirectSaleResponseDTO(
@@ -118,7 +121,11 @@ class DirectSaleRestControllerTest {
                         10.0,
                         "EUR",
                         3600L,
-                        Instant.now()
+                        Instant.now(),
+                        null,
+                        DirectSaleStatus.ACTIVE,
+                        email
+
                 );
 
         when(_service.createDirectSale(request, email)).thenReturn(domain);
@@ -151,7 +158,10 @@ class DirectSaleRestControllerTest {
                         10.0,
                         "EUR",
                         3600L,
-                        Instant.now()
+                        Instant.now(),
+                        null,
+                        DirectSaleStatus.ACTIVE,
+                        "pedro@aeiou.com"
                 );
 
         when(_service.getAllDirectSales()).thenReturn(List.of(domain));
@@ -198,7 +208,10 @@ class DirectSaleRestControllerTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.now()
+                Instant.now(),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         String userId = "user@email.com";
@@ -252,7 +265,10 @@ class DirectSaleRestControllerTest {
                         10.0,
                         "EUR",
                         3600L,
-                        Instant.now()
+                        Instant.now(),
+                        null,
+                        DirectSaleStatus.ACTIVE,
+                        "pedro@aeiou.com"
                 );
 
         ItemId itemIdDouble = mock(ItemId.class);
@@ -288,7 +304,10 @@ class DirectSaleRestControllerTest {
                         10.0,
                         "EUR",
                         3600L,
-                        Instant.now()
+                        Instant.now(),
+                        null,
+                        DirectSaleStatus.ACTIVE,
+                        "pedro@aeiou.com"
                 );
 
         ItemId itemId1Double = mock(ItemId.class);
@@ -329,7 +348,10 @@ class DirectSaleRestControllerTest {
                         10.0,
                         "EUR",
                         3600L,
-                        Instant.now()
+                        Instant.now(),
+                        null,
+                        DirectSaleStatus.ACTIVE,
+                        "pedro@aeiou.com"
                 );
 
         when(domain.getItemsId()).thenReturn(List.of());
