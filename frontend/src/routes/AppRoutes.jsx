@@ -66,7 +66,7 @@ export function AppRoutes() {
 
 
             {/* DirectSale */}
-            <Route path="/directSale/:directSaleId"
+            <Route path="/directSales/:directSaleId"
                    element={<DirectSaleDetailPage />} />
 
         </Routes>
