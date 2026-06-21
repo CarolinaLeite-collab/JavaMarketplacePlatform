@@ -29,6 +29,17 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
         _authorizationPolicy = authorizationPolicy;
     }
 
+    public List<HttpMethod> getAllowedMethodsForCarts(User user) {
+        List<HttpMethod> methods = new ArrayList<>();
+
+        if (_authorizationPolicy.canGetShoppingCart(user)) {
+            methods.add(HttpMethod.GET);
+        }
+
+        methods.add(HttpMethod.OPTIONS);
+        return methods;
+    }
+
 
     public List <HttpMethod> getAllowedMethodsForCart(User user, ShoppingCart shoppingCart) {
 
@@ -100,6 +111,15 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
 
     }
 
+    public boolean addLinksForUserCartDiscovery (RepresentationModel<?> model, String email, String cartId) {
+
+         model.add(linkTo(methodOn(ShoppingCartRestController.class)
+                .getUserCart(email, cartId)).withSelfRel());
+
+         return true;
+
+    }
+
     public boolean addLinksForUserCart(ShoppingCartResponseDTO dto, String email, String cartId, ShoppingCart cart) {
 
         dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(email, cartId)).withSelfRel());
@@ -145,6 +165,14 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
 
     @Override
     public List<Link> getLinks(User user) {
+
+        if (_authorizationPolicy.canGetShoppingCart(user)) {
+            return List.of(
+                    linkTo(methodOn(ShoppingCartRestController.class)
+                            .getUserCartLink(null)).withRel("shopping-cart")
+            );
+        }
+
         return List.of();
     }
 

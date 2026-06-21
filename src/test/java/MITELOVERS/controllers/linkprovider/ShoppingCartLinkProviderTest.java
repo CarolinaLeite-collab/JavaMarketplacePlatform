@@ -13,8 +13,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpMethod;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,6 +30,32 @@ class ShoppingCartLinkProviderTest {
 
     @InjectMocks
     private ShoppingCartLinkProvider _linkProvider;
+
+    @Test
+    void getAllowedMethodsForCartsReturnsGetAndOptionsWhenAuthorized() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetShoppingCart(userDouble)).thenReturn(true);
+
+        // Act
+        List<HttpMethod> result = _linkProvider.getAllowedMethodsForCarts(userDouble);
+
+        // Assert
+        assertEquals(List.of(HttpMethod.GET, HttpMethod.OPTIONS), result);
+    }
+
+    @Test
+    void getAllowedMethodsForCartsReturnsOnlyOptionsWhenNotAuthorized() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetShoppingCart(userDouble)).thenReturn(false);
+
+        // Act
+        List<HttpMethod> result = _linkProvider.getAllowedMethodsForCarts(userDouble);
+
+        // Assert
+        assertEquals(List.of(HttpMethod.OPTIONS), result);
+    }
 
     @Test
     void getAllowedMethodsForCartReturnsGetAndPatchWhenOwnerAndAuthorized() {
@@ -231,6 +259,48 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
+    }
+
+    @Test
+    void getLinksReturnsShoppingCartLinkWhenAuthorized() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetShoppingCart(userDouble)).thenReturn(true);
+
+        // Act
+        List<Link> result = _linkProvider.getLinks(userDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("shopping-cart", result.get(0).getRel().value());
+        assertTrue(result.get(0).getHref().endsWith("/shopping-carts"));
+    }
+
+    @Test
+    void getLinksReturnsEmptyWhenNotAuthorized() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetShoppingCart(userDouble)).thenReturn(false);
+
+        // Act
+        List<Link> result = _linkProvider.getLinks(userDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void addLinksForUserCartDiscoveryAddsSelfLink() {
+        // Arrange
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForUserCartDiscovery(model, "pedro@aeiou.com", "SC-A49F78E2");
+
+        // Assert
+        assertTrue(model.hasLink("self"));
+        assertTrue(model.getRequiredLink("self").getHref()
+                .endsWith("/shopping-carts/SC-A49F78E2"));
     }
 
     @Test

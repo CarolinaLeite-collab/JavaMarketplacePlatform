@@ -50,6 +50,41 @@ public class ShoppingCartRestController {
         _cartLineMapper = cartLineMapper;
     }
 
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsForCarts(
+            @RequestHeader("X-User-Id") String email) {
+
+        List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
+
+        if (!email.isBlank()) {
+            User user = _userService.getUserByEmail(email);
+            allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCarts(user);
+        }
+
+        return ResponseEntity
+                .ok()
+                .allow(allowedMethods.toArray(new HttpMethod[0]))
+                .build();
+
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RepresentationModel<?>> getUserCartLink(
+            @RequestHeader("X-User-Id") String email) {
+
+        if (email.isBlank()) {
+            throw new SecurityException("Not authorized!");
+        }
+
+        ShoppingCart cart = _shoppingCartService.findCartByUserId(email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        _shoppingCartLinkProvider.addLinksForUserCartDiscovery(model, email, cart.identity().toString());
+
+        return ResponseEntity.ok(model);
+    }
+
     @RequestMapping(path= "/{cartId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsForCart(
             @RequestHeader("X-User-Id") String email,

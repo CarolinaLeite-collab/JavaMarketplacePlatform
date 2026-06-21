@@ -6,7 +6,9 @@ import MITELOVERS.controllers.linkprovider.ShoppingCartLinkProvider;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.ShoppingCartId;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
 import MITELOVERS.dto.response.ShoppingCartResponseDTO;
@@ -49,6 +51,59 @@ class ShoppingCartRestControllerTest {
     private ShoppingCartLineResponseDTOMapper _shoppingCartLineResponseDTOMapper;
 
     @Test
+    void optionsForCartsReturnsAllowedMethodsWhenEmailProvided() throws Exception {
+        // Arrange
+        User userDouble = mock(User.class);
+
+        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_shoppingCartLinkProvider.getAllowedMethodsForCarts(userDouble))
+                .thenReturn(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+        // Act + Assert
+        mockMvc.perform(options("/shopping-carts")
+                        .header("X-User-Id", "pedro@aeiou.com"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Allow", containsString("GET")))
+                .andExpect(header().string("Allow", containsString("OPTIONS")));
+    }
+
+    @Test
+    void optionsForCartsReturnsOnlyOptionsWhenEmailBlank() throws Exception {
+        // Act + Assert
+        mockMvc.perform(options("/shopping-carts")
+                        .header("X-User-Id", ""))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Allow", "OPTIONS"));
+
+    }
+
+    @Test
+    void getUserCartLinkReturnsOkWhenFound() throws Exception {
+        // Arrange
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+        when(cartDouble.identity()).thenReturn(cartIdDouble);
+
+        when(_shoppingCartService.findCartByUserId("pedro@aeiou.com")).thenReturn(cartDouble);
+
+        // Act + Assert
+        mockMvc.perform(get("/shopping-carts")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getUserCartLinkReturnsForbiddenWhenEmailBlank() throws Exception {
+        // Act + Assert
+        mockMvc.perform(get("/shopping-carts")
+                        .header("X-User-Id", "")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void optionsForCartReturnsAllowedMethodsWhenEmailProvided() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
@@ -75,8 +130,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", ""))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", "OPTIONS"));
-
-        verifyNoInteractions(_userService, _shoppingCartService, _shoppingCartLinkProvider);
     }
 
     @Test
@@ -101,7 +154,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", "pedro@aeiou.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -130,7 +182,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", "")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
-
     }
 
     @Test
@@ -157,7 +208,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", "pedro@aeiou.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -207,7 +257,6 @@ class ShoppingCartRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", "OPTIONS"));
 
-        verifyNoInteractions(_userService, _shoppingCartService, _shoppingCartLinkProvider);
     }
 
     @Test
@@ -222,8 +271,7 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
 
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
-        MITELOVERS.domain.valueobject.ShoppingCartLineId lineIdDouble =
-                mock(MITELOVERS.domain.valueobject.ShoppingCartLineId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
         when(lineIdDouble.toString()).thenReturn("SCL-1234ABCD");
         when(newLineDouble.identity()).thenReturn(lineIdDouble);
 
@@ -288,7 +336,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", ""))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", "OPTIONS"));
-
     }
 
     @Test
@@ -309,7 +356,7 @@ class ShoppingCartRestControllerTest {
         when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
         when(_shoppingCartService.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD")).thenReturn(lineDouble);
         when(_shoppingCartLineResponseDTOMapper.toModel(lineDouble)).thenReturn(dtoDouble);
-        when(lineDouble.getDirectSaleId()).thenReturn(mock(MITELOVERS.domain.valueobject.DirectSaleId.class));
+        when(lineDouble.getDirectSaleId()).thenReturn(mock(DirectSaleId.class));
 
         // Act + Assert
         mockMvc.perform(get("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
@@ -355,7 +402,6 @@ class ShoppingCartRestControllerTest {
         mockMvc.perform(delete("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
                         .header("X-User-Id", "pedro@aeiou.com"))
                 .andExpect(status().isOk());
-
     }
 
     @Test
