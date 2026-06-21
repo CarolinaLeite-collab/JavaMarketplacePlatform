@@ -723,10 +723,9 @@ public class DataInitializer {
                     List.of(new ItemId()),
                     user2.identity(),
                     new Price(4.99, Currency.EUR),
-                    null  // unlimited duration
+                    Duration.ofDays(1)
             );
 
-            directSale3.markAsExpired();
             directSaleRepo.save(directSale3);
 
             DirectSale directSale4 = directSaleFactory.createDirectSale(
@@ -755,7 +754,8 @@ public class DataInitializer {
                     null,                                // Weight
                     new NumberOfPages(498),              // Pages
                     new EditionNumber(1),                // Edition number
-                    Binding.PUR                          // Binding
+                    Binding.PUR                         // Binding
+
             );
             editionRepo.save(editionSapiens);
 
@@ -784,7 +784,8 @@ public class DataInitializer {
                     editionSapiens.identity(), // Publication Sapiens → Non-Fiction
                     Condition.GOOD,
                     new Description("Non-Fiction test item"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/sapiens.png")
             );
             itemRepo.save(nfItem);
 
@@ -1000,6 +1001,16 @@ public class DataInitializer {
             pedroCart.addCartLine(line2);
 
             shoppingCartRepo.save(pedroCart);
+
+            ShoppingCart anaCart =
+                    shoppingCartFactory.createShoppingCart(user2.identity());
+
+            shoppingCartRepo.save(anaCart);
+
+            ShoppingCart angeloCart =
+                    shoppingCartFactory.createShoppingCart(user3.identity());
+
+            shoppingCartRepo.save(angeloCart);
 
             log.info("Shopping cart saved for Pedro with 2 lines");
 
