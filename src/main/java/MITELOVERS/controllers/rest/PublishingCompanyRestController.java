@@ -21,10 +21,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
- * REST controller responsible for exposing publication-related endpoints
+ * REST controller responsible for exposing publishing-company-related endpoints
  * via HTTP endpoints.
  */
-
 @Validated
 @RequestMapping("/publishingCompanies")
 @RestController
@@ -34,7 +33,6 @@ public class PublishingCompanyRestController {
     private final PublishingCompanyLinkProvider _publishingCompanyLinkProvider;
     private final UserService _userService;
     private final PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapper;
-
 
     public PublishingCompanyRestController(PublishingCompanyService publishingCompanyService,
                                            PublishingCompanyLinkProvider publishingCompanyLinkProvider,
@@ -63,18 +61,33 @@ public class PublishingCompanyRestController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> registerPublishingCompany(@RequestBody PublishingCompanyRequestDTO dto) {
 
-        PublishingCompanyResponseDTO result = _publishingCompanyService.registerPublishingCompany(dto);
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+        PublishingCompany publishingCompany = _publishingCompanyService.registerPublishingCompany(dto);
+
+        PublishingCompanyResponseDTO response = _publishingCompanyResponseDTOMapper.toModel(publishingCompany);
+
+        response.add(linkTo(methodOn(PublishingCompanyRestController.class)
+                .getPublishingCompanyById(response.getPublishingCompanyId()))
+                .withSelfRel());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getAllPublishingCompanies() {
 
-            List<PublishingCompanyResponseDTO> result = _publishingCompanyService.getAllPublishingCompanies();
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+        List<PublishingCompany> publishingCompanies = _publishingCompanyService.getAllPublishingCompanies();
 
+        List<PublishingCompanyResponseDTO> response = publishingCompanies.stream()
+                .map(_publishingCompanyResponseDTOMapper::toModel)
+                .toList();
+
+        response.forEach(item -> item.add(linkTo(methodOn(PublishingCompanyRestController.class)
+                .getPublishingCompanyById(item.getPublishingCompanyId()))
+                .withSelfRel()));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(path = "/{publishingCompanyId}", produces = MediaType.APPLICATION_JSON_VALUE)

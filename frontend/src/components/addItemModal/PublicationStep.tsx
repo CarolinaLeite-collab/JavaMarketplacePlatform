@@ -13,6 +13,7 @@ interface PublicationStepProps {
     setData: Dispatch<SetStateAction<PublicationData>>;
     authors: { value: string; label: string }[];
     genres: { value: string; label: string }[];
+    errors?: Record<string, string>;
 }
 
 /**
@@ -20,7 +21,8 @@ interface PublicationStepProps {
  *
  * Author and genre values are selected from backend-loaded options instead of being
  * entered as free text, ensuring that the submitted payload references existing
- * backend resources.
+ * backend resources. Validation errors, when provided, are shown inline under each
+ * corresponding field.
  */
 
 export function PublicationStep({
@@ -28,6 +30,7 @@ export function PublicationStep({
                                     setData,
                                     authors,
                                     genres,
+                                    errors = {},
                                 }: PublicationStepProps) {
     return (
         <Stack>
@@ -44,6 +47,7 @@ export function PublicationStep({
                     }));
                 }}
                 required
+                error={errors.title}
             />
 
             <Select
@@ -59,6 +63,7 @@ export function PublicationStep({
                 }
                 searchable
                 required
+                error={errors.authorName}
             />
 
             <NumberInput
@@ -72,6 +77,7 @@ export function PublicationStep({
                     }))
                 }
                 required
+                error={errors.releaseYear}
             />
 
             <Select
@@ -87,6 +93,7 @@ export function PublicationStep({
                 }
                 searchable
                 required
+                error={errors.genreName}
             />
         </Stack>
     );

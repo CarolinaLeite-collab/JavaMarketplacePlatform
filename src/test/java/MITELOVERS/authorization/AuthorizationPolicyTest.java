@@ -73,165 +73,98 @@ class AuthorizationPolicyTest {
 
     @Test
     void userCanListPublicationTypes() {
-        // Arrange
-        User _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canListPublicationTypes(_userDouble));
+        assertTrue(_authorizationPolicy.canListPublicationTypes(_userDouble));
     }
 
     @Test
     void adminCanListPublicationTypes() {
-        // Arrange
-        User _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canListPublicationTypes(_userDouble));
+        assertTrue(_authorizationPolicy.canListPublicationTypes(_userDouble));
     }
 
     @Test
     void userWithNoRoleCannotListPublicationTypes() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(false);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
 
         // Assert
-        assertFalse(policy.canListPublicationTypes(_userDouble));
+        assertFalse(_authorizationPolicy.canListPublicationTypes(_userDouble));
     }
 
     @Test
     void adminCanCreatePublicationType() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canCreatePublicationType(_userDouble));
+        assertTrue(_authorizationPolicy.canCreatePublicationType(_userDouble));
     }
 
     @Test
     void userCannotCreatePublicationType() {
-        // Arrange
-        User _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
 
         // Assert
-        assertFalse(policy.canCreatePublicationType(_userDouble));
+        assertFalse(_authorizationPolicy.canCreatePublicationType(_userDouble));
     }
 
     @Test
     void userWithNoRoleCannotCreatePublicationType() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(false);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
 
         // Assert
-        assertFalse(policy.canCreatePublicationType(_userDouble));
+        assertFalse(_authorizationPolicy.canCreatePublicationType(_userDouble));
     }
 
     // ──────────── Edition ────────────
 
     @Test
     void userCanListEditions() {
-        // Arrange
-        User _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canListEditions(_userDouble));
+        assertTrue(_authorizationPolicy.canListEditions(_userDouble));
     }
 
     @Test
     void adminCanListEditions() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canListEditions(_userDouble));
+        assertTrue(_authorizationPolicy.canListEditions(_userDouble));
     }
 
     @Test
     void userWithNoRoleCannotListEditions() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(false);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
 
         // Assert
-        assertFalse(policy.canListEditions(_userDouble));
+        assertFalse(_authorizationPolicy.canListEditions(_userDouble));
     }
 
     @Test
     void userCanCreateEdition() {
-        // Arrange
-        User _userDouble = mock(User.class);
-        when(_userDouble.hasRole(Role.USER)).thenReturn(true);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canCreateEdition(_userDouble));
+        assertTrue(_authorizationPolicy.canCreateEdition(_userDouble));
     }
 
     @Test
     void adminCanCreateEdition() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(true);
 
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
-
         // Assert
-        assertTrue(policy.canCreateEdition(_userDouble));
+        assertTrue(_authorizationPolicy.canCreateEdition(_userDouble));
     }
 
     @Test
     void userWithNoRoleCannotCreateEdition() {
         // Arrange
-        User _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(false);
-        when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
-
-        // SUT
-        AuthorizationPolicy policy = new AuthorizationPolicy();
 
         // Assert
-        assertFalse(policy.canCreateEdition(_userDouble));
+        assertFalse(_authorizationPolicy.canCreateEdition(_userDouble));
     }
 
     // ── Direct Sale ─────────────────────────────────────────────────────────
@@ -383,7 +316,40 @@ class AuthorizationPolicyTest {
         assertFalse(result);
     }
 
-    // ──────────── Shopping Cart ────────────
+    // ──────────── Auction viewing ────────────
+
+    @Test
+    void userCanViewAuction() {
+        assertTrue(_authorizationPolicy.canViewAuction(_userDouble));
+    }
+
+    @Test
+    void adminCanViewAuction() {
+        assertTrue(_authorizationPolicy.canViewAuction(_adminDouble));
+    }
+
+    @Test
+    void guestCannotViewAuction() {
+        assertFalse(_authorizationPolicy.canViewAuction(_guestDouble));
+    }
+
+// ──────────── Bidding on auctions ────────────
+
+    @Test
+    void userCanBid() {
+        assertTrue(_authorizationPolicy.canBid(_userDouble));
+    }
+
+    @Test
+    void adminCanBid() {
+        assertTrue(_authorizationPolicy.canBid(_adminDouble));
+    }
+
+    @Test
+    void guestCannotBid() {
+        assertFalse(_authorizationPolicy.canBid(_guestDouble));
+        // ──────────── Shopping Cart ────────────
+    }
 
     @Test
     void canGetShoppingCartUserReturnsTrue() {

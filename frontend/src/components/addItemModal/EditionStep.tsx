@@ -27,22 +27,26 @@ interface EditionStepProps {
     setData: Dispatch<SetStateAction<EditionData>>;
     publicationTypes: { value: string; label: string }[];
     publishingCompanies: { value: string; label: string }[];
+    errors?: Record<string, string>;
 }
 
 /**
  * Step responsible for collecting edition data for the selected publication.
  *
  * Publication type and publishing company values are provided by backend-loaded
- * options. Optional edition fields are collected independently and are only sent
- * by the parent modal when they contain valid values.
+ * options. Optional edition fields (identifier, dimension, weight, number of pages,
+ * edition number, binding) are collected independently and are only sent by the
+ * parent modal when they contain valid values. Validation errors, when provided,
+ * are shown inline under each corresponding required field.
  */
 
 export function EditionStep({
-                                 data,
-                                 setData,
-                                 publicationTypes,
-                                 publishingCompanies,
-                             }: EditionStepProps) {
+                                data,
+                                setData,
+                                publicationTypes,
+                                publishingCompanies,
+                                errors = {},
+                            }: EditionStepProps) {
     return (
         <Stack>
 
@@ -60,6 +64,7 @@ export function EditionStep({
                     }
                     searchable
                     required
+                    error={errors.publicationTypeId}
                 />
 
                 <TextInput
@@ -149,6 +154,7 @@ export function EditionStep({
                         }))
                     }
                     required
+                    error={errors.language}
                 />
 
                 <Select
@@ -164,6 +170,7 @@ export function EditionStep({
                     }
                     searchable
                     required
+                    error={errors.publishingCompanyId}
                 />
 
                 <NumberInput
@@ -177,6 +184,7 @@ export function EditionStep({
                         }))
                     }
                     required
+                    error={errors.publishingYear}
                 />
             </SimpleGrid>
 
@@ -211,20 +219,6 @@ export function EditionStep({
                     }
                 />
 
-                <NumberInput
-                    label="Width"
-                    value={data.dimension.width}
-                    onChange={(value) =>
-                    setData((current) => ({
-                        ...current,
-                        dimension: {
-                            ...current.dimension,
-                            width: Number(value) || 0,
-                        },
-                    }))
-                }
-                    />
-
                 <Select
                     label="Binding"
                     placeholder="Select binding"
@@ -244,6 +238,68 @@ export function EditionStep({
                         setData((current) => ({
                             ...current,
                             binding: value || '',
+                        }))
+                    }
+                />
+            </SimpleGrid>
+
+            <SimpleGrid cols={4}>
+                <NumberInput
+                    label="Width"
+                    placeholder="Enter width"
+                    value={data.dimension.width}
+                    onChange={(value) =>
+                        setData((current) => ({
+                            ...current,
+                            dimension: {
+                                ...current.dimension,
+                                width: Number(value) || 0,
+                            },
+                        }))
+                    }
+                />
+
+                <NumberInput
+                    label="Height"
+                    placeholder="Enter height"
+                    value={data.dimension.height}
+                    onChange={(value) =>
+                        setData((current) => ({
+                            ...current,
+                            dimension: {
+                                ...current.dimension,
+                                height: Number(value) || 0,
+                            },
+                        }))
+                    }
+                />
+
+                <NumberInput
+                    label="Thickness"
+                    placeholder="Enter thickness"
+                    value={data.dimension.thickness}
+                    onChange={(value) =>
+                        setData((current) => ({
+                            ...current,
+                            dimension: {
+                                ...current.dimension,
+                                thickness: Number(value) || 0,
+                            },
+                        }))
+                    }
+                />
+
+                <TextInput
+                    label="Dimension Unit"
+                    placeholder="CM"
+                    value={data.dimension.unit}
+                    onChange={(event) =>
+                        setData((current) => ({
+                            ...current,
+                            dimension: {
+                                ...current.dimension,
+                                unit: event.currentTarget.value,
+                            },
                         }))
                     }
                 />

@@ -43,12 +43,14 @@ class PublicationSaleAuctionControllerTest {
     private List<ItemId> _itemsId;
     private ZonedDateTime _startDate;
     private ZonedDateTime _endDate;
+    private UserId _seller;
 
     @BeforeEach
     void setUp() {
         _itemsId = List.of(_itemIdDouble);
         _startDate = ZonedDateTime.now();
         _endDate = _startDate.plusDays(7);
+        _seller = mock(UserId.class);
     }
 
     @Test
@@ -67,7 +69,8 @@ class PublicationSaleAuctionControllerTest {
                 _reservePriceDouble,
                 _outrightPriceDouble,
                 _startDate,
-                _endDate))
+                _endDate,
+                _seller))
                 .thenReturn(_auctionDouble);
 
         // SUT
@@ -81,7 +84,8 @@ class PublicationSaleAuctionControllerTest {
                         _reservePriceDouble,
                         _outrightPriceDouble,
                         _startDate,
-                        _endDate);
+                        _endDate,
+                        _seller);
 
         // Assert
         assertSame(_auctionDouble, result);
@@ -92,7 +96,8 @@ class PublicationSaleAuctionControllerTest {
                 _reservePriceDouble,
                 _outrightPriceDouble,
                 _startDate,
-                _endDate);
+                _endDate,
+                _seller);
     }
 
     @Test
@@ -104,7 +109,8 @@ class PublicationSaleAuctionControllerTest {
                 _startingPriceDouble,
                 _reservePriceDouble,
                 _startDate,
-                _endDate))
+                _endDate,
+                _seller))
                 .thenReturn(_auctionDouble);
 
         // SUT
@@ -117,7 +123,8 @@ class PublicationSaleAuctionControllerTest {
                         _startingPriceDouble,
                         _reservePriceDouble,
                         _startDate,
-                        _endDate);
+                        _endDate,
+                        _seller);
 
         // Assert
         assertSame(_auctionDouble, result);
@@ -127,6 +134,7 @@ class PublicationSaleAuctionControllerTest {
                 _startingPriceDouble,
                 _reservePriceDouble,
                 _startDate,
-                _endDate);
+                _endDate,
+                _seller);
     }
 }

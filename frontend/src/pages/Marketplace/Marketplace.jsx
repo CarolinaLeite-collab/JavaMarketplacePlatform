@@ -5,6 +5,9 @@ import {MarketPlaceTable} from '../../components/marketPlaceTable/MarketPlaceTab
 import {apiClient} from '../../services/apiClient';
 import AppContext from '../../context/AppContext';
 import {useUser} from '../../context/UserContext';
+import {useDisclosure} from "@mantine/hooks";
+import {SaleDetailsModal} from "@/components/saleDetailsModal/SaleDetailsModal.tsx";
+import {useNavigate} from "react-router-dom";
 
 function formatPrice(priceValue, priceCurrency) {
     if (priceValue == null) return '';
@@ -34,9 +37,14 @@ function buildGenreOptions(genres) {
     ];
 }
 
-function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
-    return directSales.flatMap((sale) => {
-        const itemIds = sale.itemsId ?? [];
+function sellerUsernameFromEmail (email) {
+    if(!email) return 'unknown';
+    return email.split('@')[0];
+}
+
+function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSeePrice) {
+    return directSales.flatMap((directSale) => {
+        const itemIds = directSale.itemsId ?? [];
 
         return itemIds.map((itemId) => {
             const itemDetails = itemDetailsMap.get(itemId);
@@ -45,12 +53,60 @@ function buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId) {
             const genreName = itemDetails?.genreName ?? 'Unknown';
 
             return {
-                id: `${sale.directSaleId}-${itemId}`,
+                //main table details
+                id: `${directSale.directSaleId}-${itemId}`,
                 item: itemDetails?.title ?? itemId,
                 genreId: genreNameToId.get(genreName) ?? 'unknown',
                 genreName,
                 type: 'Direct Sale',
-                price: formatPrice(sale.priceValue, sale.priceCurrency),
+                price: canSeePrice
+                    ? formatPrice(directSale.priceValue, directSale.priceCurrency)
+                    : null,
+
+                //details card fields
+                author:itemDetails?.authorName ?? 'unknown',
+                condition:itemDetails?.condition ?? 'unknown',
+                cover:itemDetails?.picture ?? '',
+                sellerId: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
+                saleType:'Direct Sale',
+                directSaleId: directSale.directSaleId ?? null,
+                auctionId: null,
+
+                //HATEOAS links
+                selfHref: directSale._links?.self?.href ?? null,
+            };
+        }).filter(Boolean);
+    });
+}
+
+function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice) {
+    return auctions.flatMap((auction) => {
+        const itemIds = auction.itemIds ?? [];
+
+        return itemIds.map((itemId) => {
+            const itemDetails = itemDetailsMap.get(itemId);
+            if (!itemDetails) return null;
+
+            const genreName = itemDetails?.genreName ?? 'Unknown';
+
+            return {
+                id: `${auction.auctionId}-${itemId}`,
+                item: itemDetails?.title ?? itemId,
+                genreId: genreNameToId.get(genreName) ?? 'unknown',
+                genreName,
+                type: 'Auction',
+                price: canSeePrice
+                    ? formatPrice(auction.startingPrice, auction.priceCurrency)
+                    : null,
+
+                author: itemDetails?.authorName ?? 'unknown',
+                condition: itemDetails?.condition ?? 'unknown',
+                cover: itemDetails?.picture ?? '',
+                seller: sellerUsernameFromEmail(auction.seller) ?? 'unknown',
+                saleType: 'Auction',
+                directSaleId: null,
+                auctionId: auction.auctionId ?? null,
+                selfHref: auction._links?.self?.href ?? null,
             };
         }).filter(Boolean);
     });
@@ -71,6 +127,26 @@ export default function Marketplace() {
     const [showAuctions, setShowAuctions] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [detailsOpened, { open: openDetails, close: closeDetails}] = useDisclosure(false);
+    const handleItemClick = (item) => {setSelectedItem(item);openDetails();}
+    const navigate = useNavigate();
+    const handleSeeMore = () => {
+        if (!selectedItem) return;
+
+        if (selectedItem.saleType === 'Auction' && selectedItem.auctionId) {
+            navigate(`/auctions/${selectedItem.auctionId}`, {
+                state: { selfHref: selectedItem.selfHref }
+            });
+            return;
+        }
+
+        if (selectedItem.saleType === 'Direct Sale' && selectedItem.directSaleId) {
+            navigate(`/directSales/${selectedItem.directSaleId}`, {
+                state: { selfHref: selectedItem.selfHref }
+            });
+        }
+    };
 
     useEffect(() => {
         let isMounted = true;
@@ -80,18 +156,21 @@ export default function Marketplace() {
                 setLoading(true);
                 setError('');
 
-                const [directSalesResponse, genresResponse] = await Promise.all([
+                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
                     marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getDirectSales(),
+                    apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
 
                 const directSales = directSalesResponse ?? [];
+                const auctions = auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
 
-                const uniqueItemIds = [...new Set(
-                    directSales.flatMap((sale) => sale.itemsId ?? [])
-                )];
+                const uniqueItemIds = [...new Set([
+                    ...directSales.flatMap((directSale) => directSale.itemsId ?? []),
+                    ...auctions.flatMap((auction) => auction.itemIds ?? []),
+                ])];
 
                 const itemResponses = await Promise.all(
                     uniqueItemIds.map(async (itemId) => {
@@ -109,7 +188,10 @@ export default function Marketplace() {
                 );
 
                 const itemDetailsMap = new Map(itemResponses.filter(Boolean));
-                const marketplaceItems = buildMarketplaceItems(directSales, itemDetailsMap, genreNameToId);
+                const marketplaceItems = [
+                    ...buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSeePrice),
+                    ...buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice),
+                ];
 
                 if (!isMounted) return;
 
@@ -139,18 +221,43 @@ export default function Marketplace() {
             ) : error ? (
                 <Text c="red">{error}</Text>
             ) : (
-                <MarketPlaceTable
-                    items={items}
-                    genres={genres}
-                    selectedGenre={selectedGenre}
-                    onGenreChange={setSelectedGenre}
-                    showDirectSales={showDirectSales}
-                    showAuctions={showAuctions}
-                    onShowDirectSalesChange={setShowDirectSales}
-                    onShowAuctionsChange={setShowAuctions}
-                    canSeePrice={canSeePrice}
-                />
-            )}
+                <>
+                    <MarketPlaceTable
+                        items={items}
+                        genres={genres}
+                        selectedGenre={selectedGenre}
+                        onGenreChange={setSelectedGenre}
+                        showDirectSales={showDirectSales}
+                        showAuctions={showAuctions}
+                        onShowDirectSalesChange={setShowDirectSales}
+                        onShowAuctionsChange={setShowAuctions}
+                        canSeePrice={canSeePrice}
+                        onSaleClick={handleItemClick}
+                    />
+
+                    <SaleDetailsModal
+                        opened={detailsOpened}
+                        item={
+                            selectedItem && {
+                                cover: selectedItem.cover,
+                                title: selectedItem.item,
+                                author: selectedItem.author,
+                                genre: selectedItem.genreName,
+                                condition: selectedItem.condition,
+                                price: selectedItem.price,
+                                seller: selectedItem.seller,
+                                saleType: selectedItem.saleType,
+                                directSaleId: selectedItem.directSaleId,
+                                auctionId: selectedItem.auctionId,
+                                selfHref: selectedItem.selfHref,
+                            }
+                        }
+                        canSeePrice={canSeePrice}
+                        onClose={closeDetails}
+                        onSeeMore={handleSeeMore}
+                        />
+                </>
+                )}
         </DefaultLayout>
     );
 }

@@ -245,20 +245,54 @@ describe('AddItemModal', () => {
         expect(onItemAdded).toHaveBeenCalledWith(createdItem);
     }, 25000);
 
-    it('does not submit when required fields are missing', async () => {
+    it('does not advance past the publication step when required fields are missing', async () => {
         const user = userEvent.setup({ delay: null });
-        const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
         renderAddItemModal();
 
-        await user.click(screen.getByRole('button', { name: /next/i }));
-        await user.click(screen.getByRole('button', { name: /next/i }));
-        await user.click(screen.getByRole('button', { name: /create item/i }));
+        await waitFor(() => {
+            expect(apiClient.getByHref).toHaveBeenCalledTimes(4);
+        });
 
-        expect(alertSpy).toHaveBeenCalledWith('Please fill all required fields.');
+        await user.click(screen.getByRole('button', { name: /next/i }));
+
+        expect(await screen.findByText(/title is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/author is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/genre is required/i)).toBeInTheDocument();
+
+        // Still on the Publication step — Edition fields shouldn't be visible
+        expect(
+            screen.queryByRole('combobox', { name: /publication type/i })
+        ).not.toBeInTheDocument();
+
         expect(apiClient.postByHref).not.toHaveBeenCalled();
+    });
 
-        alertSpy.mockRestore();
+    it('does not advance past the publication step when release year is cleared', async () => {
+        const user = userEvent.setup({ delay: null });
+
+        renderAddItemModal();
+
+        await waitFor(() => {
+            expect(apiClient.getByHref).toHaveBeenCalledTimes(4);
+        });
+
+        await user.type(screen.getByLabelText(/title/i), 'Clean Code');
+
+        await user.click(screen.getByRole('combobox', { name: /author/i }));
+        await user.click(await screen.findByText('Robert C. Martin'));
+
+        await user.clear(screen.getByLabelText(/release year/i));
+
+        await user.click(screen.getByRole('combobox', { name: /genre/i }));
+        await user.click(await screen.findByText('Software Engineering'));
+
+        await user.click(screen.getByRole('button', { name: /next/i }));
+
+        expect(await screen.findByText(/release year is required/i)).toBeInTheDocument();
+        expect(
+            screen.queryByRole('combobox', { name: /publication type/i })
+        ).not.toBeInTheDocument();
     });
 
     it('disables create item button when required HATEOAS links are missing', async () => {
@@ -270,8 +304,12 @@ describe('AddItemModal', () => {
             },
         });
 
-        await user.click(screen.getByRole('button', { name: /next/i }));
-        await user.click(screen.getByRole('button', { name: /next/i }));
+        await waitFor(() => {
+            expect(apiClient.getByHref).toHaveBeenCalledTimes(4);
+        });
+
+        await fillPublicationStep(user);
+        await fillEditionStep(user);
 
         expect(screen.getByRole('button', { name: /create item/i })).toBeDisabled();
     });
