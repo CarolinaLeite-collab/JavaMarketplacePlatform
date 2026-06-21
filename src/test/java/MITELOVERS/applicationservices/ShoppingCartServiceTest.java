@@ -150,6 +150,7 @@ class ShoppingCartServiceTest {
         // Arrange
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
         UserId sellerIdDouble = mock(UserId.class);
+        UserId buyerIdDouble = mock(UserId.class); // different from seller
         Price priceDouble = mock(Price.class);
 
         DirectSale directSaleDouble = mock(DirectSale.class);
@@ -159,6 +160,7 @@ class ShoppingCartServiceTest {
 
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getBuyerId()).thenReturn(buyerIdDouble);
 
         when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
         when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
@@ -170,6 +172,25 @@ class ShoppingCartServiceTest {
 
         // Assert
         assertSame(newLineDouble, result);
+    }
+
+    @Test
+    void addCartLineToCartThrowsWhenBuyerIsAlsoSeller() {
+        // Arrange
+        UserId sharedUserId = mock(UserId.class);
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+
+        DirectSale directSaleDouble = mock(DirectSale.class);
+        when(directSaleDouble.getSellerId()).thenReturn(sharedUserId);
+
+        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE"));
     }
 
     @Test

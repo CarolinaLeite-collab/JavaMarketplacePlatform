@@ -73,6 +73,12 @@ public class ShoppingCartService {
         ShoppingCart shoppingCart = findCartByCartId(cartId);
         DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
 
+        if (shoppingCart.getBuyerId().equals(directSale.getSellerId())) {
+
+            throw new IllegalStateException("Cannot buy own direct sale!");
+
+        }
+
         ShoppingCartLine newCartLine = _shoppingCartLineFactory.createNewShoppingCartLine(
                 directSale.identity(),
                 directSale.getSellerId(),
