@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import {
     Text, Group, Stack, Button, Badge, Alert,
-    Grid, Table, Image, Title, Card, SimpleGrid
+    Grid, Table, Image, Title, Card, SimpleGrid, Tooltip
 } from '@mantine/core';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
 import { useUser } from '../../context/UserContext';
@@ -32,12 +32,14 @@ function formatTimeRemaining(endDateIso, status) {
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
 }
+    const detailsBackground = 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))';
+
 
 export default function DirectSaleDetailPage() {
     const { directSaleId } = useParams();
     const location = useLocation();
     const { currentUser } = useUser();
-    const { dispatch } = useContext(AppContext);
+    const { state, dispatch } = useContext(AppContext);
 
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
 
@@ -134,6 +136,23 @@ export default function DirectSaleDetailPage() {
     const status = directSale.status ?? 'ACTIVE';
     const addToCartHref = directSale?._links?.['add-to-cart']?.href ?? null;
 
+    const isOwnSale = directSale.sellerId === currentUser;
+
+    const isInCart = state.cart?.items?.some(cartItem => cartItem.id === directSale.directSaleId) ?? false;
+
+    const addToCartDisabled =
+        !isLoggedIn ||
+        isOwnSale ||
+        isInCart ||
+        !addToCartHref ||
+        status !== 'ACTIVE';
+
+    const addToCartTooltip = isOwnSale
+        ? 'Cannot buy own direct sale!'
+        : isInCart
+            ? 'This DirectSale is already present in the cart!'
+            : '';
+
     const title = item?.title ?? 'DirectSale';
     const publicationType = item?.publicationTypeName
         ? item.publicationTypeName.charAt(0) + item.publicationTypeName.slice(1).toLowerCase()
@@ -186,6 +205,8 @@ export default function DirectSaleDetailPage() {
                     id: directSale.directSaleId,
                     name: title,
                     price: `${price} ${priceCurrency}`,
+                    priceValue: price,
+                    currency: priceCurrency,
                     deleteHref: response?._links?.self?.href,
                     image: imageUrl,
                 },
@@ -280,26 +301,30 @@ export default function DirectSaleDetailPage() {
                                     </Card>
                                 </SimpleGrid>
 
-                                <Button
-                                    variant="outline"
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
-                                    disabled={!isLoggedIn || !addToCartHref || status !== 'ACTIVE'}
-                                    onClick={handleAddToCart}
+                                <Tooltip
+                                    label={addToCartTooltip}
+                                    disabled={!isOwnSale && !isInCart}
+                                    withArrow
                                 >
-                                    Add to Cart
-                                </Button>
-
-                                <Button
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
-                                    disabled={!isLoggedIn || !addToCartHref || status !== 'ACTIVE'}
-                                    onClick={handleAddToCart}
-                                >
-                                    Buy Now
-                                </Button>
+                                    <div style={{ width: '100%' }}>
+                                        <Button
+                                            variant={isInCart ? 'outline' : 'filled'}
+                                            color={
+                                                isInCart
+                                                    ? 'gray'
+                                                    : 'var(--mantine-color-indigo-7)'
+                                            }
+                                            fullWidth
+                                            size="md"
+                                            disabled={addToCartDisabled}
+                                            onClick={handleAddToCart}
+                                        >
+                                            {isInCart
+                                                ? 'Already in Cart'
+                                                : 'Add to Cart'}
+                                        </Button>
+                                    </div>
+                                </Tooltip>
                             </Stack>
                         </Stack>
                     </Grid.Col>
@@ -308,7 +333,7 @@ export default function DirectSaleDetailPage() {
                 <Stack gap="md">
                     <Stack gap={4}>
                         <Text size="m" fw={700} c="dimmed">Synopsis:</Text>
-                        <Card padding="md" radius="md" withBorder bg="gray.0">
+                        <Card padding="md" radius="md" withBorder bg={detailsBackground}>
                             <Text size="sm" fs="italic">{synopsis}</Text>
                         </Card>
                     </Stack>
@@ -320,30 +345,30 @@ export default function DirectSaleDetailPage() {
                             <Table.Tbody>
                                 <Table.Tr>
                                     <Table.Td fw={600} w="15%">Publisher</Table.Td>
-                                    <Table.Td w="35%" bg="gray.0">{publisher}</Table.Td>
+                                    <Table.Td w="35%" bg={detailsBackground}>{publisher}</Table.Td>
                                     <Table.Td fw={600}>Genre</Table.Td>
-                                    <Table.Td bg="gray.0">{genre}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{genre}</Table.Td>
                                 </Table.Tr>
 
                                 <Table.Tr>
                                     <Table.Td fw={600}>Year</Table.Td>
-                                    <Table.Td bg="gray.0">{year}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{year}</Table.Td>
                                     <Table.Td fw={600}>Language</Table.Td>
-                                    <Table.Td bg="gray.0">{language}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{language}</Table.Td>
                                 </Table.Tr>
 
                                 <Table.Tr>
                                     <Table.Td fw={600}>Pages</Table.Td>
-                                    <Table.Td bg="gray.0">{pages}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{pages}</Table.Td>
                                     <Table.Td fw={600}>Binding</Table.Td>
-                                    <Table.Td bg="gray.0">{binding}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{binding}</Table.Td>
                                 </Table.Tr>
 
                                 <Table.Tr>
                                     <Table.Td fw={600}>Weight</Table.Td>
-                                    <Table.Td bg="gray.0">{weight}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{weight}</Table.Td>
                                     <Table.Td fw={600}>Dimensions</Table.Td>
-                                    <Table.Td bg="gray.0">{dimensions}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{dimensions}</Table.Td>
                                 </Table.Tr>
                             </Table.Tbody>
                         </Table>
