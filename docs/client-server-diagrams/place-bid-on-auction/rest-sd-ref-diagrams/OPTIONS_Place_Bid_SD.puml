@@ -17,7 +17,7 @@ participant ":AuctionRestController" as REST
 participant ":UserService" as userService
 participant ":IUserRepo" as userRepo
 participant ":AuctionLinkProvider" as Link
-database DB
+participant "Database" as DB
 
 
 REST -> userService : getUserByEmail(emailString)
@@ -59,7 +59,7 @@ end
 deactivate REST
 
 ref over REST
-[[../Process_Diagram_Level_3_SD.puml Return to main diagram]]
+[[../Process_View_Level_3_SD.puml Back to main diagram]]
 end ref
 
 @enduml

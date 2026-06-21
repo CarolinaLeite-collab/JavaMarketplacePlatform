@@ -68,4 +68,41 @@ describe('ItemStep', () => {
 
         expect(setData).toHaveBeenCalled();
     });
+
+    it('renders no error messages when errors prop is empty', () => {
+        render(<ItemStep data={data} setData={vi.fn()} errors={{}} />);
+
+        expect(screen.queryByText(/condition is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/description is required/i)).not.toBeInTheDocument();
+    });
+
+    it('renders inline error messages for each invalid field', () => {
+        render(
+            <ItemStep
+                data={data}
+                setData={vi.fn()}
+                errors={{
+                    condition: 'Condition is required',
+                    description: 'Description is required',
+                }}
+            />
+        );
+
+        expect(screen.getByText(/condition is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/description is required/i)).toBeInTheDocument();
+    });
+
+    it('marks fields with errors as invalid', () => {
+        render(
+            <ItemStep
+                data={data}
+                setData={vi.fn()}
+                errors={{
+                    description: 'Description is required',
+                }}
+            />
+        );
+
+        expect(screen.getByLabelText(/description/i)).toHaveAttribute('aria-invalid', 'true');
+    });
 });

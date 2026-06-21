@@ -5,73 +5,66 @@ import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.PublishingCompanyId;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
-import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
-import MITELOVERS.mapper.PublishingCompanyResponseDTOMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Application service responsible for publishing company registration and retrieval.
+ * <p>
+ * Acts as the entry point between controllers and the publishing company domain,
+ * delegating creation to {@link PublishingCompanyFactory} and persistence to
+ * {@link IPublishingCompanyRepo}. Returns pure domain objects; mapping to DTOs and
+ * adding HATEOAS links is the responsibility of the calling controller.
+ * </p>
+ */
 @Service
 public class PublishingCompanyService {
 
-    private PublishingCompanyFactory _publishingCompanyFactory;
-    private IPublishingCompanyRepo _iPublishingCompanyRepo;
-    private final PublishingCompanyResponseDTOMapper _publishingCompanyResponseDTOMapper;
+    private final PublishingCompanyFactory _publishingCompanyFactory;
+    private final IPublishingCompanyRepo _iPublishingCompanyRepo;
 
     public PublishingCompanyService(PublishingCompanyFactory publishingCompanyFactory,
-                                    IPublishingCompanyRepo iPublishingCompanyRepo,
-                                    PublishingCompanyResponseDTOMapper publishingCompanyResponseDTOMapper) {
+                                    IPublishingCompanyRepo iPublishingCompanyRepo) {
 
         _publishingCompanyFactory = publishingCompanyFactory;
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
-        _publishingCompanyResponseDTOMapper = publishingCompanyResponseDTOMapper;
     }
 
-    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyRequestDTO publishingCompanyName) {
+    public PublishingCompany registerPublishingCompany(PublishingCompanyRequestDTO publishingCompanyRequestDTO) {
 
-        String newPubCompName = publishingCompanyName.toString();
+        String newPubCompName = publishingCompanyRequestDTO.getPublishingCompanyName();
 
         PublishingCompany newPublishingCompany = _publishingCompanyFactory.createPublishingCompany(newPubCompName);
 
         if (_iPublishingCompanyRepo.containsOfIdentity(newPublishingCompany.identity())) {
-
-            return _publishingCompanyResponseDTOMapper.toModel(newPublishingCompany);
-
+            throw new IllegalStateException("Publishing company already exists");
         }
 
-        PublishingCompany saved = _iPublishingCompanyRepo.save(newPublishingCompany);
-
-        return _publishingCompanyResponseDTOMapper.toModel(saved);
-
+        return _iPublishingCompanyRepo.save(newPublishingCompany);
     }
 
-    public List<PublishingCompanyResponseDTO> getAllPublishingCompanies() {
+    public List<PublishingCompany> getAllPublishingCompanies() {
 
         Iterable<PublishingCompany> publishingCompanies = _iPublishingCompanyRepo.findAll();
 
-        List<PublishingCompanyResponseDTO> responseDTOs = new ArrayList<>();
+        List<PublishingCompany> result = new ArrayList<>();
 
         for (PublishingCompany publishingCompany : publishingCompanies) {
-
-            responseDTOs.add(_publishingCompanyResponseDTOMapper.toModel(publishingCompany));
-
+            result.add(publishingCompany);
         }
 
-        return responseDTOs;
-
+        return result;
     }
 
     public PublishingCompany getPublishingCompanyById(String publishingCompanyId) {
 
-        PublishingCompanyId id = new  PublishingCompanyId(publishingCompanyId);
+        PublishingCompanyId id = new PublishingCompanyId(publishingCompanyId);
 
-        PublishingCompany publishingCompany = _iPublishingCompanyRepo.ofIdentity(id)
+        return _iPublishingCompanyRepo.ofIdentity(id)
                 .orElseThrow(() -> new NoSuchElementException("Publishing Company not found"));
-
-        return publishingCompany;
-
     }
 
 }

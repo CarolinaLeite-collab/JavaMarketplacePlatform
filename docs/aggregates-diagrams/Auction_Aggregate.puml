@@ -34,6 +34,7 @@ package domain {
             -isAuctionEndDateValid(auctionEndDate : ZoneDateTime) : boolean
             +placeBid (userId : UserId, offerPrice : Price) : Bid
             +getHighestBid() : Bid
+            -getSeller() : UserId
         }
 
         class Bid <<Entity>> {
@@ -75,12 +76,6 @@ package domain {
     }
 }
 
-package persistence {
-
-    package mem {
-        class MemAuctionRepo <<Repo>>
-    }
-}
 
 package ddd {
     interface IRepository<ID, T> <<Interface>> {
@@ -99,7 +94,6 @@ package ddd {
     }
 }
 
-MemAuctionRepo ..|> IAuctionRepo
 IAuctionRepo "1" --> "*" Auction : manages
 IAuctionRepo --|> IRepository
 AggregateRoot --|> DomainEntity
@@ -107,9 +101,8 @@ AuctionFactory "1" ..> "*" Auction : <<create>>
 Auction "1" *---- "*" Bid : aggregates
 Auction --|> AggregateRoot
 BidFactory "1" ..> "*" Bid : <<create>>
-MemAuctionRepo "1" --> "*" Auction : persists
 Auction "1" --> "1" AuctionId : has
-Auction "*" ..> "1" UserId : references
+Auction "*" ..> "1..2" UserId : references
 Auction "1" o-- "1..*" ItemId : has
 Auction "*" --> "1" Price : has
 Auction ..> BidFactory : <<use>>

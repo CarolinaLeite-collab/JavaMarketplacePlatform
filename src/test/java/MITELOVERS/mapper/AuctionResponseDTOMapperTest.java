@@ -26,6 +26,8 @@ class AuctionResponseDTOMapperTest {
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(2);
 
+        UserId sellerDouble = mock(UserId.class);
+
         when(auctionDouble.identity()).thenReturn(auctionIdDouble);
         when(auctionIdDouble.toString()).thenReturn("A1");
 
@@ -42,6 +44,8 @@ class AuctionResponseDTOMapperTest {
 
         when(auctionDouble.getAuctionStartDate()).thenReturn(startDate.toInstant());
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());
+
+        when(auctionDouble.getSeller()).thenReturn(sellerDouble);
 
         // SUT
         AuctionResponseDTOMapper mapper = new AuctionResponseDTOMapper();
@@ -71,6 +75,8 @@ class AuctionResponseDTOMapperTest {
         ZonedDateTime startDate = ZonedDateTime.now().plusDays(1);
         ZonedDateTime endDate = ZonedDateTime.now().plusDays(2);
 
+        UserId sellerDouble = mock(UserId.class);
+
         when(auctionDouble.identity()).thenReturn(auctionIdDouble);
         when(auctionIdDouble.toString()).thenReturn("A1");
 
@@ -84,6 +90,8 @@ class AuctionResponseDTOMapperTest {
 
         when(auctionDouble.getAuctionStartDate()).thenReturn(startDate.toInstant());
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());
+
+        when(auctionDouble.getSeller()).thenReturn(sellerDouble);
 
         // SUT
         AuctionResponseDTOMapper mapper = new AuctionResponseDTOMapper();

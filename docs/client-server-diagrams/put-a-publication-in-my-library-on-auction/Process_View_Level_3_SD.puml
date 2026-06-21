@@ -1,0 +1,57 @@
+@startuml
+'==== Title ====
+title "As a User, I want to use a Web UI to put for sale in \nan auction a publication in my library" - SD
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+actor "User" as user
+participant ":Frontend" as frontend
+participant ":Backend" as backend
+
+note over frontend
+  Assumes the user has already opened My Library.
+  GET /my-library returned item representations
+  containing the "create-auction" HATEOAS link
+  pointing to /auctions.
+  That resource was previously discovered and is
+  used by the Frontend below.
+end note
+
+user -> frontend : I want to put an item %n()in my library on auction
+activate frontend
+
+frontend -> backend : OPTIONS {create-auction href}
+activate backend
+
+ref over backend
+[[rest-sd-ref-diagrams/OPTIONS_Create_Auction_SD.puml OPTIONS for user on /auctions]]
+end ref
+
+backend --> frontend : 200 OK + [POST, OPTIONS]
+deactivate backend
+
+frontend -> backend : POST {create-auction href}
+activate backend
+
+ref over backend
+[[rest-sd-ref-diagrams/POST_Create_Auction_SD.puml POST new auction in /auctions]]
+end ref
+
+backend --> frontend : 201 Created + self link {auctions}
+deactivate backend
+
+frontend --> user : The item was successfully %n()put on auction
+deactivate frontend
+
+@enduml
