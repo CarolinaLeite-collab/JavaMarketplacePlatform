@@ -15,11 +15,19 @@ const mockContextValue = {
                     id: 'cart-line-1',
                     name: 'Dune',
                     price: '12.50 EUR',
+                    priceValue: 12.50,
+                    currency: 'EUR',
+                    deleteHref:
+                        'http://localhost:8081/shopping-carts/SC-1/shopping-cart-lines/SCL-1',
                 },
                 {
                     id: 'cart-line-2',
                     name: '1984',
                     price: '10.00 EUR',
+                    priceValue: 10.00,
+                    currency: 'EUR',
+                    deleteHref:
+                        'http://localhost:8081/shopping-carts/SC-1/shopping-cart-lines/SCL-2',
                 },
             ],
         },
@@ -113,4 +121,12 @@ describe('ShoppingCart', () => {
         expect(screen.queryByText('Dune')).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /checkout/i })).not.toBeInTheDocument();
     });
+
+    vi.mock('../services/apiClient', () => ({
+        apiClient: {
+            getByHref: vi.fn(),
+            deleteByHref: vi.fn(),
+            patchNoBodyByHref: vi.fn(),
+        },
+    }));
 });

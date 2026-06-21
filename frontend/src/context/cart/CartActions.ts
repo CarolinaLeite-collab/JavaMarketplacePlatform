@@ -12,7 +12,19 @@ export async function loadCart(dispatch, shoppingCartHref) {
         return;
     }
 
-    const cart = await apiClient.getByHref(shoppingCartHref);
+    const cartDiscovery = await apiClient.getByHref(shoppingCartHref);
+
+    const cartHref = cartDiscovery?._links?.self?.href;
+
+    if (!cartHref) {
+        dispatch({
+            type: LOAD_CART,
+            payload: [],
+        });
+        return;
+    }
+
+    const cart = await apiClient.getByHref(cartHref);
 
     const rawLinks = cart?._links?.['shopping-cart-line'];
 
@@ -26,11 +38,33 @@ export async function loadCart(dispatch, shoppingCartHref) {
         links.map(async link => {
             const cartLine = await apiClient.getByHref(link.href);
 
+            const directSaleHref =
+                cartLine?._links?.['direct-sale']?.href;
+
+            const directSale = directSaleHref
+                ? await apiClient.getByHref(directSaleHref)
+                : null;
+
+            const rawItemLinks =
+                directSale?._links?.item;
+
+            const itemLinks = !rawItemLinks
+                ? []
+                : Array.isArray(rawItemLinks)
+                    ? rawItemLinks
+                    : [rawItemLinks];
+
+            const item = itemLinks[0]?.href
+                ? await apiClient.getByHref(itemLinks[0].href)
+                : null;
+
             return {
                 id: cartLine.directSaleId,
-                name: cartLine.directSaleId,
+                name: item?.title ?? cartLine.directSaleId,
                 price: `${cartLine.priceAtAddition} ${cartLine.currency}`,
-                image: null,
+                priceValue: cartLine.priceAtAddition,
+                currency: cartLine.currency,
+                image: item?.picture ?? null,
                 deleteHref: cartLine?._links?.self?.href,
             };
         })
