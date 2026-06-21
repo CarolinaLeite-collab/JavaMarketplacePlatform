@@ -59,6 +59,7 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
   * [Container Orchestration with Docker Compose](#container-orchestration-with-docker-compose)
       * [Application service and image build](#application-service-and-image-build)
       * [Least-privilege configuration: ports, volumes, environment](#least-privilege-configuration-ports-volumes-environment)
+      * [Runtime security hardening](#runtime-security-hardening)
       * [Health check](#health-check)
       * [Running it](#running-it)
       * [Validation](#validation)
@@ -1505,7 +1506,7 @@ Build and run the frontend container:
 ```bash
 cd frontend
 docker build -t mitelovers-frontend .
-docker run -p 5173:80 mitelovers-frontend
+docker run -p 5173:8080 mitelovers-frontend
 ```
 
 The application will be available at `http://localhost:5173`.
@@ -1516,7 +1517,8 @@ Both Dockerfiles follow secure image-building practices:
 
 - **Multi-stage builds** — build tools are not present in the final image
 - **Pinned base images** — SHA256 digests ensure reproducible builds
-- **Non-root user** — containers run as a non-privileged user
+- **Non-root user** — containers run as a non-privileged user; the backend runs as `appuser`, and the frontend runs as the unprivileged `nginx` user
+- **Unprivileged frontend image** — the frontend uses `nginxinc/nginx-unprivileged`, which avoids the privileged port binding model of the standard `nginx:alpine` image by serving on port `8080` instead of `80`
 - **.dockerignore** — excludes build output, IDE files, logs, and local configs
 - **No hardcoded secrets** — all configuration is passed via environment variables
 
@@ -1524,30 +1526,44 @@ Both Dockerfiles follow secure image-building practices:
 
 ## Container Orchestration with Docker Compose
 
-Containerising the application involves two complementary pieces. The `Dockerfile` describes **how the image is built**, the layers, the base image, how the application is compiled and packaged.
+Containerising the application involves two complementary pieces. The `Dockerfile`s describe **how each image is built**, the layers, the base image, how each part is compiled and packaged.
 
-The `docker-compose.yml`, described here, describes **how that image is run** as a container: which ports are published to the host, which volumes are mounted, which environment variables are injected, and how the container's health is monitored.
+The `docker-compose.yml`, described here, describes **how those images are run** as containers: which ports are published to the host, which volumes are mounted, which environment variables are injected, and how each container's health is monitored.
 
-Instead of a long `docker run` command with flags that live only in someone's terminal history, the entire runtime setup is committed to the repository, making the application environment **reproducible** and **auditable**.
+Instead of a long `docker run` command per container with flags that live only in someone's terminal history, the entire runtime setup is committed to the repository, making the application environment **reproducible** and **auditable**.
 
-In line with the user story, the configuration follows **least-privilege principles**: only the port, volume, and environment variables the application genuinely needs are exposed, nothing more. The file orchestrates a single service, `app`, which is the Spring Boot backend.
+In line with the user story, the configuration follows **least-privilege principles**: only the ports, volumes, and environment variables each part genuinely needs are exposed, nothing more. The file orchestrates two services: `backend` (the Spring Boot API) and `frontend` (the nginx-served React build).
 
 The complete `docker-compose.yml` is shown below, the following sections break it down piece by piece.
 
 ```yaml
 services:
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mitelovers:${APP_VERSION:-latest}
+    image: mitelovers-backend:${APP_VERSION:-latest}
     ports:
       - "8081:8081"
+
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-bootstrap,jpa}
     volumes:
       - mitelovers-data:/app/data
     restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
       interval: 30s
@@ -1555,31 +1571,61 @@ services:
       retries: 3
       start_period: 40s
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: mitelovers-frontend:${APP_VERSION:-latest}
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
+
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:80/" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
 volumes:
   mitelovers-data:
 ```
 
-#### Application service and image build
+#### Backend service and image build
 
-The service builds its image from the project's `Dockerfile` and tags it. The `${APP_VERSION:-latest}` syntax uses the `APP_VERSION` environment variable if set, otherwise defaults to `latest`.
+The `backend` service builds its image from the project's root `Dockerfile` and tags it. The `${APP_VERSION:-latest}` syntax uses the `APP_VERSION` environment variable if set, otherwise defaults to `latest`.
 
 ```yaml
-services:
-  app:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: mitelovers:${APP_VERSION:-latest}
+    image: mitelovers-backend:${APP_VERSION:-latest}
     restart: unless-stopped
 ```
 
--`restart: unless-stopped` makes the container restart automatically if it crashes, but not if it is stopped deliberately.
+`restart: unless-stopped` makes the container restart automatically if it crashes, but not if it is stopped deliberately.
 
 ---
 
 #### Least-privilege configuration: ports, volumes, environment
 
-Only the single port the application listens on is exposed, `8081`, the backend's HTTP port. No database console port, no management port, nothing else is published to the host.
+Only the single port the backend listens on is exposed, `8081`, the API's HTTP port. No database console port, no management port, nothing else is published to the host.
 
 ```yaml
     ports:
@@ -1609,11 +1655,90 @@ volumes:
 
 ---
 
-#### Health check
+#### Runtime security hardening
 
-A health check was added so Docker can verify that the application is genuinely **responding**, not just that the container process started. The container's health is monitored through the Spring Boot Actuator endpoint `/actuator/health`, which reports `{"status":"UP"}` once the application is fully ready.
+Along with exposing only the necessary ports, volumes, and environment variables, the containers are also **hardened at runtime** to reduce the impact of a possible compromise.
 
-The health check itself is declared in `docker-compose.yml`, on the `app` service:
+Both services (frontend and backend) run as **non-root users**, as is defined in their respective Dockerfiles. The backend runs as `appuser`, and the frontend as the unprivileged `nginx` user. Running containers as non‑root users ensures that, even if an attacker were to gain code execution inside the container, they would be unable to automatically perform privileged operations or escalate to full control of the host. Having non-root users reduces the blast radius of any compromise and aligns with least‑privilege principles.
+
+For the frontend specifically, the base image was changed from `nginx:alpine` to `nginxinc/nginx-unprivileged:stable-alpine-slim`, pinned by digest. The chosen unprivileged image (stable-alpine-slim) is scanned with Trivy in CI, and the pinned digest corresponds to a build with no HIGH or CRITICAL vulnerabilities under our policy at the time of writing.
+
+In the standard `nginx:alpine` image, the NGINX master process typically has to start as root in order to bind directly to port `80`, even if worker processes drop to the `nginx` user. By switching to the unprivileged image and having NGINX listen on port `8080` inside the container, the frontend no longer needs to bind to a privileged port and can run fully as a non‑root service.
+
+
+
+The `docker-compose.yml` file further applies runtime security settings to both services, as you can see below.
+
+**backend**:
+```yaml
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: "512M"
+```
+
+**frontend** (same runtime hardening, with adjusted resource limits):
+```yaml
+    security_opt:
+      - no-new-privileges:true
+
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
+```
+
+These settings strengthen the runtime environment by including:
+
+- `no-new-privileges:true`, which prevents processes inside the container from gaining any additional privileges during execution (**Note**: the Compose file already does not use `privileged: true` for any service, so containers never run in fully privileged mode)
+- `cap_drop: ALL`, which removes _all_ Linux capabilities by default; both services run with _minimum possible privileges_ unless a specific capability is explicitly required
+- **CPU** and **memory limits** reduce the risk of a misbehaving or compromised container exhausting host resources
+
+Together, these measures ensure that the containers run with a hardened runtime configuration: non-root users, no privileged mode, no privilege escalation, dropped capabilities, and explicit resource limits.
+
+___
+
+#### Frontend service
+
+The `frontend` service builds its image from the `Dockerfile` inside the `frontend/` directory (note the `context: ./frontend`), which produces a static React build served by nginx.
+
+```yaml
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: mitelovers-frontend:${APP_VERSION:-latest}
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+```
+
+Following least-privilege, the frontend exposes only its HTTP port (`8080` on the host, mapped to nginx's `80` inside the container) and mounts **no volumes and no environment variables** — a static build needs neither.
+
+The `depends_on` with `condition: service_healthy` means the frontend only starts once the backend is reporting healthy, not merely started. This relies on the backend's health check (below) and ensures the API is actually ready before the UI that depends on it comes up.
+
+---
+
+#### Health checks
+
+A health check was added to **both** services so Docker can verify each container is genuinely **responding**, not just that its process started.
+
+The backend's health is monitored through the Spring Boot Actuator endpoint `/actuator/health`, which reports `{"status":"UP"}` once the application is fully ready:
+
 ```yaml
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
@@ -1623,13 +1748,24 @@ The health check itself is declared in `docker-compose.yml`, on the `app` servic
       start_period: 40s
 ```
 
-Each field: 
-- `test` is the command Docker runs to check health (only checks that the endpoint responds); 
-- `interval` is how often it checks; `timeout` how long it waits for a response; 
-- `retries` how many consecutive failures mark the container `unhealthy`; 
-- `start_period` gives the app 40s of grace on startup, during which failures don't count against it.
+The frontend's health is checked against the nginx root:
 
-For this to work, the Actuator was added as a dependency in `pom.xml`:
+```yaml
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+```
+
+Each field:
+- `test` is the command Docker runs to check health (only checks that the endpoint responds);
+- `interval` is how often it checks; `timeout` how long it waits for a response;
+- `retries` how many consecutive failures mark the container `unhealthy`;
+- `start_period` is the grace given on startup, during which failures don't count, 40s for the backend (Spring Boot takes a few seconds to boot), 10s for the frontend (nginx serves almost immediately).
+
+For the backend check to work, the Actuator was added as a dependency in `pom.xml`:
 
 ```xml
     <!-- Actuator (health checks) -->
@@ -1659,28 +1795,29 @@ From the repository root:
 docker compose up --build
 ```
 
-The application becomes available at `http://localhost:8081`.
+The backend becomes available at `http://localhost:8081` and the frontend at `http://localhost:8080`.
 
 #### Validation
 
 The configuration was validated locally:
 
-- `docker compose build` successfully built the image (`mitelovers:latest`) from the multi-stage Dockerfile.
-- `docker compose up` started the container; the Spring Boot application booted on port **8081** and the data seeding (`DataInitializer`) completed.
-- The health endpoint was confirmed responding:
+- `docker compose build` successfully built both images (`mitelovers-backend:latest` and `mitelovers-frontend:latest`) from their respective Dockerfiles.
+- `docker compose up` started both containers; the backend booted on port **8081** (data seeding via `DataInitializer` completed) and the frontend on **8080**.
+- The backend health endpoint was confirmed responding:
 
 ```bash
 curl http://localhost:8081/actuator/health
 
 # output
-{"groups":["liveness","readiness"],"status":"UP"}% 
+{"groups":["liveness","readiness"],"status":"UP"}
 ```
 
-- `docker compose ps` reports the container as **`healthy`** once the start period elapses:
+- `docker compose ps` reports both containers as **`healthy`** once their start periods elapse:
 
 ```bash
-NAME                          IMAGE               COMMAND               SERVICE   CREATED         STATUS                   PORTS
-switch-project-team_b-app-1   mitelovers:latest   "java -jar app.jar"   app       2 minutes ago   Up 2 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+NAME                               IMAGE                        COMMAND                  SERVICE    STATUS
+switch-project-team_b-backend-1    mitelovers-backend:latest    "java -jar app.jar"      backend    Up (healthy)
+switch-project-team_b-frontend-1   mitelovers-frontend:latest   "/docker-entrypoint.…"   frontend   Up (healthy)
 ```
 
 ### Build, Scan, and Publish Docker Images
