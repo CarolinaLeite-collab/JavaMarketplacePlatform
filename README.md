@@ -25,6 +25,10 @@ A second-hand book and magazine marketplace built with Java and Spring Boot, dev
     * [Quality Gates](#quality-gates)
     * [Security Findings Severity Reporting](#security-findings-severity-reporting)
   * [Test Coverage](#test-coverage)
+  * [OWASP Security Tests](#owasp-security-tests)
+    * [Accepted-Risk Documentation Pattern](#accepted-risk-documentation-pattern)
+    * [Test Classes](#test-classes)
+    * [Running the Security Tests](#running-the-security-tests)
   * [CI Pipeline](#ci-pipeline)
     * [Notify Discord on PR Creation](#notify-discord-on-pr-creation)
     * [Notify Discord on PR Merge](#notify-discord-on-pr-merge)
@@ -236,6 +240,53 @@ mvn clean verify
 ```
 
 The HTML report is available at `target/site/jacoco/index.html`.
+
+___
+
+## OWASP Security Tests
+
+The project maintains a dedicated security test suite under `src/test/java/MITELOVERS/security/`, covering all ten categories of the OWASP Top 10 across the 2021 and 2025 editions. These tests do **not** verify that the application is secure — they document known vulnerabilities and formally record accepted risks as executable specifications.
+
+### Accepted-Risk Documentation Pattern
+
+Each test is designed to **pass precisely because the vulnerability it describes is present**. This creates a traceable, version-controlled record of acknowledged risk: if the underlying issue is resolved (e.g. authentication is added, inputs are validated, or cryptographic configuration is hardened), the corresponding test will fail, prompting the team to either update the test to reflect the new security posture or confirm that the fix was intentional.
+
+All test classes carry Javadoc headers that explain:
+
+- what the vulnerability is and how it manifests in the current code;
+- why the test is expected to pass (the risk is acknowledged, not fixed);
+- what remediation would look like, and why it is out of scope for the current sprint.
+
+### Test Classes
+
+| Class | OWASP Category | Test Mechanism | What It Documents |
+|---|---|---|---|
+| `ListOfItemsOWASPSecurityTest` | A01:2021 Broken Access Control | `@WebMvcTest` + MockMvc | List endpoints accept mutating requests without ownership verification (IDOR) |
+| `UserEnumerationSecurityTest` | A04:2021 Insecure Design | `@WebMvcTest` + MockMvc | Email existence is inferrable from distinct error responses, enabling account enumeration |
+| `InsecureConfigurationSecurityTest` | A05:2021 Security Misconfiguration | Plain JUnit + properties file | H2 console enabled in dev profile without auth; no Spring Security configured in any profile |
+| `SupplyChainSecurityTest` | A03:2025 Supply Chain Failures | Plain JUnit + `package.json` | Frontend dependencies use unpinned `^` version ranges with no lockfile shrinkwrap |
+| `CryptographicFailuresSecurityTest` | A04:2025 Cryptographic Failures | Plain JUnit + properties file | Empty datasource password; no TLS keystore configured in any profile |
+| `InjectionSecurityTest` | A05:2025 Injection | `@WebMvcTest` + MockMvc | SQL-like and special-character payloads reach the service layer unsanitised |
+| `AuthenticationFailuresSecurityTest` | A07:2025 Authentication Failures | `@WebMvcTest` + MockMvc | Fabricated `X-User-Id` headers are accepted; absent header is not rejected |
+| `DataIntegritySecurityTest` | A08:2025 Data Integrity Failures | `@WebMvcTest` + MockMvc | Mutating requests succeed on replay; `X-Content-Type-Options` header is absent |
+| `SecurityLoggingSecurityTest` | A09:2025 Logging & Alerting Failures | Plain JUnit + Logback context | No dedicated security log level or audit logger is configured |
+| `ExceptionHandlingSecurityTest` | A10:2025 Mishandling of Exceptions | `@WebMvcTest` + MockMvc | Internal domain exception messages (aggregate IDs, class names) propagated verbatim in HTTP responses |
+
+### Running the Security Tests
+
+All security test classes are annotated with `@Tag("security")` and participate in the standard Maven test phase. No running application or database connection is required: `@WebMvcTest` tests use mocked service beans, and plain JUnit tests read configuration files directly from `src/main/resources/`.
+
+Run the full test suite (includes security tests):
+
+```bash
+mvn test
+```
+
+Run only the security tests:
+
+```bash
+mvn test -Dtest="*SecurityTest"
+```
 
 ___
 
