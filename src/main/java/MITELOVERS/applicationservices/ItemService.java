@@ -58,17 +58,24 @@ public class ItemService {
         }
     }
 
-
+    @Transactional
     public List<Item> getAllItems() {
         List<Item> result = new ArrayList<>();
         _iItemRepo.findAll().forEach(result::add);
         return result;
     }
 
-
+    @Transactional
     public Item getItemById(String itemId) {
         return _iItemRepo.ofIdentity(new ItemId(itemId))
                 .orElseThrow(() -> new NoSuchElementException(
                         "Item does not exist in the repository"));
+    }
+
+    @Transactional
+    public Item markItemAsSold(String itemId) {
+        Item item = getItemById(itemId);
+        item.markAsSold();
+        return _iItemRepo.save(item);
     }
 }

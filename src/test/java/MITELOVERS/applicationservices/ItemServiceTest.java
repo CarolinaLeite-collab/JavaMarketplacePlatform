@@ -200,4 +200,32 @@ class ItemServiceTest {
         // Assert
         assertSame(existingItemDouble, result);
     }
+
+    @Test
+    void markItemAsSoldReturnsSavedItem() {
+        // Arrange
+        Item itemDouble = mock(Item.class);
+        Item savedItemDouble = mock(Item.class);
+
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
+        when(itemRepoDouble.save(itemDouble)).thenReturn(savedItemDouble);
+
+        // Act
+        Item result = itemService.markItemAsSold("3C5D126F8B");
+
+        // Assert
+        assertSame(savedItemDouble, result);
+    }
+
+    @Test
+    void markItemAsSoldThrowsWhenItemNotFound() {
+        // Arrange
+        when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act + Assert
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.markItemAsSold("3C5D126F8B"));
+
+        assertEquals(ITEM_NOT_FOUND, ex.getMessage());
+    }
 }
