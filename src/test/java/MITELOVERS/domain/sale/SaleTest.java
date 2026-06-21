@@ -640,4 +640,130 @@ class SaleTest {
         // Assert
         assertEquals(saleStatusNullMessage, exception.getMessage());
     }
+
+    @Test
+    void markSaleAsCompletedSetsStatusToCompleted() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.PENDING
+        );
+
+        // Act
+        sale.markSaleAsCompleted();
+
+        // Assert
+        assertEquals(SaleSaleStatus.COMPLETED, sale.get_saleSaleStatus());
+    }
+
+    @Test
+    void markSaleAsCompletedThrowsWhenAlreadyCompleted() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.COMPLETED
+        );
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, sale::markSaleAsCompleted);
+    }
+
+    @Test
+    void markSaleAsCompletedThrowsWhenCancelled() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.CANCELLED
+        );
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, sale::markSaleAsCompleted);
+    }
+
+    @Test
+    void markSaleAsCancelledSetsStatusToCancelled() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.PENDING
+        );
+
+        // Act
+        sale.markSaleAsCancelled();
+
+        // Assert
+        assertEquals(SaleSaleStatus.CANCELLED, sale.get_saleSaleStatus());
+    }
+
+    @Test
+    void markSaleAsCancelledThrowsWhenAlreadyCancelled() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.CANCELLED
+        );
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, sale::markSaleAsCancelled);
+    }
+
+    @Test
+    void markSaleAsCancelledThrowsWhenCompleted() {
+        // Arrange
+        when(_saleLineDouble.get_priceAtSale()).thenReturn(_priceDouble);
+        when(_priceDouble.getCurrency()).thenReturn(Currency.EUR);
+        when(_priceDouble.getValue()).thenReturn(10.0);
+
+        Sale sale = new Sale(
+                _saleIdDouble,
+                _buyerIdDouble,
+                List.of(_saleLineDouble),
+                LocalDateTime.now(),
+                null,
+                SaleSaleStatus.COMPLETED
+        );
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, sale::markSaleAsCancelled);
+    }
 }

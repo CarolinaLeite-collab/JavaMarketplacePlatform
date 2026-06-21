@@ -103,6 +103,31 @@ public class Sale implements AggregateRoot<SaleId> {
         return new ArrayList<>(saleLines);
     }
 
+    public void markSaleAsCompleted() {
+        if (_saleSaleStatus == SaleSaleStatus.CANCELLED) {
+
+            throw new IllegalStateException("Cannot complete a cancelled sale!");
+        }
+
+        if (_saleSaleStatus == SaleSaleStatus.COMPLETED) {
+            throw new IllegalStateException("Sale is already completed!");
+        }
+
+        _saleSaleStatus = SaleSaleStatus.COMPLETED;
+    }
+
+    public void markSaleAsCancelled() {
+        if (_saleSaleStatus == SaleSaleStatus.COMPLETED) {
+
+            throw new IllegalStateException("Cannot cancel a completed sale!");
+        }
+
+        if (_saleSaleStatus == SaleSaleStatus.CANCELLED) {
+            throw new IllegalStateException("Sale is already cancelled!");
+        }
+
+        _saleSaleStatus = SaleSaleStatus.CANCELLED;
+    }
 
     @Override
     public SaleId identity() {
