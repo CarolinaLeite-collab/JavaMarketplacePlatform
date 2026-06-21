@@ -199,7 +199,7 @@ public class DirectSaleRestController {
     @GetMapping(value = "/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DirectSaleNoPriceResponseDTO>> getDirectSalesWithoutPrice() {
 
-        List<DirectSale> sales = _directSaleService.getAllDirectSales();
+        List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
         if (sales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
