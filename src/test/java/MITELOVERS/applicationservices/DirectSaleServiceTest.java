@@ -526,4 +526,30 @@ class DirectSaleServiceTest {
         assertNotNull(id);
     }
 
+    @Test
+    void markDirectSaleAsCompleted_shouldReturnSavedDirectSale() {
+        // Arrange
+        DirectSale directSaleDouble = mock(DirectSale.class);
+        DirectSale savedDirectSaleDouble = mock(DirectSale.class);
+
+        when(_iDirectSaleRepo.ofIdentity(any())).thenReturn(Optional.of(directSaleDouble));
+        when(_iDirectSaleRepo.save(directSaleDouble)).thenReturn(savedDirectSaleDouble);
+
+        // Act
+        DirectSale result = _service.markDirectSaleAsCompleted("DS-A1B2C3D4");
+
+        // Assert
+        assertSame(savedDirectSaleDouble, result);
+    }
+
+    @Test
+    void markDirectSaleAsCompleted_shouldThrowWhenDirectSaleNotFound() {
+        // Arrange
+        when(_iDirectSaleRepo.ofIdentity(any())).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(NoSuchElementException.class,
+                () -> _service.markDirectSaleAsCompleted("DS-A1B2C3D4"));
+    }
+
 }

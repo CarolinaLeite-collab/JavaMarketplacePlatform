@@ -197,4 +197,11 @@ public class DirectSaleService {
         _iDirectSaleRepo.deleteDirectSale(directSaleId);
     }
 
+    @Transactional
+    public DirectSale markDirectSaleAsCompleted(String directSaleId) {
+        DirectSale directSale = getDirectSaleById(directSaleId);
+        directSale.markAsCompleted();
+        return _iDirectSaleRepo.save(directSale);
+    }
+
 }
