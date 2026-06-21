@@ -741,10 +741,8 @@ public class DataInitializer {
             );
             directSaleRepo.save(hipocritoesSale);
 
-            ItemId randomItemId = new ItemId();
-
             DirectSale directSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
+                    List.of(itemId1),
                     user.identity(),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
@@ -752,7 +750,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(randomItemId),
+                    List.of(shortnessOfLifeItemId),
                     user2.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
@@ -864,34 +862,12 @@ public class DataInitializer {
 
             // Fiction — DirectSale #1 (existing items)
             DirectSale fictionSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
+                    List.of(itemId1),
                     user.identity(),
                     new Price(7.99, Currency.EUR),
                     Duration.ofDays(15)
             );
             directSaleRepo.save(fictionSale1);
-
-            // Fiction — DirectSale #2 (new item)
-            ItemId fictionExtraId = new ItemId("0A1B2C3D4E");
-            Item fictionExtraItem = itemFactory.createItem(
-                    fictionExtraId,
-                    edition1984.identity(),
-                    Condition.FAIR,
-                    new Description("Extra Fiction item"),
-                    SaleStatus.OnDirectSale
-            );
-            itemRepo.save(fictionExtraItem);
-
-            DirectSale fictionSale2 = directSaleFactory.createDirectSale(
-                    List.of(fictionExtraId),
-                    user.identity(),
-                    new Price(5.99, Currency.EUR),
-                    Duration.ofDays(10)
-            );
-
-            fictionSale2.markAsCompleted();
-
-            directSaleRepo.save(fictionSale2);
 
             // Non-Fiction
             DirectSale nonFictionSale = directSaleFactory.createDirectSale(
