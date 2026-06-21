@@ -302,9 +302,25 @@ class SaleLinkProviderTest {
     }
 
     @Test
-    void getLinksReturnsEmptyList() {
+    void getLinksReturnsSalesLinkWhenAuthorized() {
         // Arrange
         User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetSales(userDouble)).thenReturn(true);
+
+        // Act
+        List<Link> result = _linkProvider.getLinks(userDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("sales", result.get(0).getRel().value());
+        assertTrue(result.get(0).getHref().endsWith("/sales"));
+    }
+
+    @Test
+    void getLinksReturnsEmptyListWhenNotAuthorized() {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(_authorizationPolicy.canGetSales(userDouble)).thenReturn(false);
 
         // Act
         List<Link> result = _linkProvider.getLinks(userDouble);

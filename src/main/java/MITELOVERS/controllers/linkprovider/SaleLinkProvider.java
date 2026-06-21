@@ -6,8 +6,6 @@ import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.SaleId;
-import MITELOVERS.domain.valueobject.SaleLineId;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import org.springframework.hateoas.Link;
@@ -112,6 +110,14 @@ public class SaleLinkProvider implements RootLinkProvider {
 
     @Override
     public List<Link> getLinks(User user) {
+
+        if (_authorizationPolicy.canGetSales(user)) {
+            return List.of(
+                    linkTo(methodOn(SaleRestController.class)
+                            .getUserSales(null)).withRel("sales")
+            );
+        }
+
         return List.of();
     }
 }
