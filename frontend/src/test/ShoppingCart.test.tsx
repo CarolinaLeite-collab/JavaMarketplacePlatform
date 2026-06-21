@@ -1,7 +1,9 @@
 import { render, screen } from '@/test-utils';
 import AppContext from '../context/AppContext';
 import { ShoppingCart } from '../components/shoppingCart/ShoppingCart.tsx';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { REMOVE_FROM_CART } from '../context/cart/CartActions';
 
 const mockDispatch = vi.fn();
 
@@ -34,6 +36,10 @@ function renderComponent(props = {}, contextValue = mockContextValue) {
 }
 
 describe('ShoppingCart', () => {
+    beforeEach(() => {
+        mockDispatch.mockClear();
+    });
+
     it('renders modal title when opened', () => {
         renderComponent();
 
@@ -84,6 +90,20 @@ describe('ShoppingCart', () => {
         expect(
             screen.getByRole('button', { name: /checkout/i })
         ).toBeInTheDocument();
+    });
+
+    it('removes the selected item from the cart', async () => {
+        const user = userEvent.setup();
+        renderComponent();
+
+        await user.click(
+            screen.getByRole('button', { name: /remove dune from cart/i })
+        );
+
+        expect(mockDispatch).toHaveBeenCalledWith({
+            type: REMOVE_FROM_CART,
+            payload: { id: 'cart-line-1' },
+        });
     });
 
     it('does not render modal content when closed', () => {

@@ -37,6 +37,8 @@ export function Header() {
                     <Group visibleFrom="sm">
                         <ColorSchemeToggle />
 
+                        {isLoggedIn && (
+
                         <Indicator label={cartCount} size={16} disabled={cartCount === 0}>
                             <ActionIcon
                                 variant="subtle"
@@ -54,6 +56,7 @@ export function Header() {
                                 <ShoppingCart size={20} />
                             </ActionIcon>
                         </Indicator>
+                        )}
 
                         <Button color="var(--mantine-color-indigo-7)" radius="xl" onClick={toggleUser}>
                             {isLoggedIn ? 'LOG OUT' : 'LOG IN'}
@@ -91,12 +94,23 @@ export function Header() {
                     </Group>
                 </ScrollArea>
 
-                <ActionIcon variant="subtle" size="lg" onClick={() => { closeDrawer(); openCart(); }}>
-                    <ShoppingCart size={20} />
-                </ActionIcon>
+                {isLoggedIn && (
+                    <ActionIcon
+                        variant="subtle"
+                        size="lg"
+                        onClick={() => {
+                            closeDrawer();
+                            openCart();
+                        }}
+                    >
+                        <ShoppingCart size={20} />
+                    </ActionIcon>
+                )}
 
             </Drawer>
-            <ShoppingCartModal opened={cartOpened} onClose={closeCart} />
+            {isLoggedIn && (
+                <ShoppingCartModal opened={cartOpened} onClose={closeCart} />
+            )}
 
         </>
     );

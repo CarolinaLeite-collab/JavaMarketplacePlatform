@@ -9,6 +9,7 @@ import {useContext} from 'react';
 import AppContext from '../context/AppContext';
 import {useUser} from '../context/UserContext';
 import AuctionDetailPage from '../pages/AuctionDetail/AuctionDetailPage.jsx';
+import DirectSaleDetailPage from '../pages/DirectSale/DirectSaleDetailPage.jsx';
 
 function ProtectedRoute({ href, children }) {
     if (!href) return <Navigate to="/" replace />;
@@ -62,6 +63,11 @@ export function AppRoutes() {
                 </ProtectedRoute>
             } />
             <Route path="/auctions/:auctionId" element={<AuctionDetailPage />} />
+
+
+            {/* DirectSale */}
+            <Route path="/directSale/:directSaleId"
+                   element={<DirectSaleDetailPage />} />
 
         </Routes>
     );

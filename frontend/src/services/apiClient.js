@@ -146,6 +146,7 @@ export const apiClient = {
     getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),
     getAuctionById: (auctionId) => getPublic(`/auctions/${auctionId}`),
     getPublishingCompanyById: (id) => getPublic(`/publishingCompanies/${id}`),
+    getDirectSalesOptions: () => optionsByPath('/direct-sales'),
 
     /**
      * Extracts the resource identifier from a HATEOAS self link.

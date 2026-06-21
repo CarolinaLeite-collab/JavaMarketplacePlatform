@@ -156,8 +156,14 @@ export default function Marketplace() {
                 setLoading(true);
                 setError('');
 
-                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
-                    marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getDirectSales(),
+                const [
+                    directSalesResponse,
+                    auctionsResponse,
+                    genresResponse
+                ] = await Promise.all([
+                    marketplaceHref
+                        ? apiClient.getByHref(marketplaceHref)
+                        : apiClient.getDirectSales(),
                     apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
