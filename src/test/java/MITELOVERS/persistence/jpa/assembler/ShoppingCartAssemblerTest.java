@@ -31,90 +31,189 @@ class ShoppingCartAssemblerTest {
     @Mock
     private ShoppingCartLineAssembler _shoppingCartLineAssemblerDouble;
 
-    @Test
-    void testToDomainShouldThrowIfShoppingCartDmIsNull() {
+    // ──────────── toDomain ────────────
 
-        //SUT
+    @Test
+    void toDomainThrowsWhenShoppingCartDmIsNull() {
+        // SUT
         ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
 
-        //Act + Assert
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDomain(null)
-
-        );
-
+                () -> assembler.toDomain(null));
     }
 
     @Test
-    void testToDomainShouldReturnAShoppingCart() {
-
+    void toDomainReturnsShoppingCartWhenTotalAmountIsPresent() {
         // Arrange
-        ShoppingCartDataModel shoppingCartDataModelDouble = mock(ShoppingCartDataModel.class);
+        ShoppingCartDataModel shoppingCartDMDouble = mock(ShoppingCartDataModel.class);
         PriceDataModel priceDataModelDouble = mock(PriceDataModel.class);
         ShoppingCartLineDataModel cartLineDmDouble = mock(ShoppingCartLineDataModel.class);
         ShoppingCartLine cartLineDouble = mock(ShoppingCartLine.class);
 
-        when(shoppingCartDataModelDouble.getShoppingCartId()).thenReturn("SC-A1B2C3D4");
-        when(shoppingCartDataModelDouble.getBuyerId()).thenReturn("email@email.com");
-        when(shoppingCartDataModelDouble.getTotalAmount()).thenReturn(priceDataModelDouble);
+        when(shoppingCartDMDouble.getShoppingCartId()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDMDouble.getBuyerId()).thenReturn("email@email.com");
+        when(shoppingCartDMDouble.getTotalAmount()).thenReturn(priceDataModelDouble);
         when(priceDataModelDouble.getNumericValue()).thenReturn(20.0);
         when(priceDataModelDouble.getCurrency()).thenReturn("EUR");
-        when(shoppingCartDataModelDouble.getShoppingCartLines()).thenReturn(List.of(cartLineDmDouble));
+        when(shoppingCartDMDouble.getShoppingCartLines()).thenReturn(List.of(cartLineDmDouble));
         when(_shoppingCartLineAssemblerDouble.toDomain(cartLineDmDouble)).thenReturn(cartLineDouble);
 
         ShoppingCart expected = mock(ShoppingCart.class);
-
-        when(_shoppingCartFactoryDouble.createShoppingCart(
-                any(), any(), any(), any()
-        )).thenReturn(expected);
+        when(_shoppingCartFactoryDouble.createShoppingCart(any(), any(), any(), any())).thenReturn(expected);
 
         // SUT
         ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
 
         // Act
-        ShoppingCart result = assembler.toDomain(shoppingCartDataModelDouble);
+        ShoppingCart result = assembler.toDomain(shoppingCartDMDouble);
 
         // Assert
         assertSame(expected, result);
     }
 
     @Test
-    void testToDataModelShouldThrowIfShoppingCartIsNull() {
+    void toDomainReturnsShoppingCartWhenTotalAmountIsNull() {
+        // Arrange
+        ShoppingCartDataModel shoppingCartDMDouble = mock(ShoppingCartDataModel.class);
 
-        //SUT
+        when(shoppingCartDMDouble.getShoppingCartId()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDMDouble.getBuyerId()).thenReturn("email@email.com");
+        when(shoppingCartDMDouble.getTotalAmount()).thenReturn(null);
+        when(shoppingCartDMDouble.getShoppingCartLines()).thenReturn(List.of());
+
+        ShoppingCart expected = mock(ShoppingCart.class);
+        when(_shoppingCartFactoryDouble.createShoppingCart(any(), any(), any(), any())).thenReturn(expected);
+
+        // SUT
         ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
 
-        //Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> assembler.toDataModel(null)
+        // Act
+        ShoppingCart result = assembler.toDomain(shoppingCartDMDouble);
 
-        );
-
+        // Assert
+        assertSame(expected, result);
     }
 
     @Test
-    void testToDataModelShouldReturnAShoppingCartDataModel() {
+    void toDomainReturnsShoppingCartWithEmptyLines() {
+        // Arrange
+        ShoppingCartDataModel shoppingCartDMDouble = mock(ShoppingCartDataModel.class);
 
-        //Arrange
-        ShoppingCart shoppingCartDouble = mock(ShoppingCart.class);
-        UserId buyerIdDouble = mock(UserId.class);
-        ShoppingCartId shoppingCartIdDouble = mock(ShoppingCartId.class);
-        Price priceDouble = mock(Price.class);
+        when(shoppingCartDMDouble.getShoppingCartId()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDMDouble.getBuyerId()).thenReturn("email@email.com");
+        when(shoppingCartDMDouble.getTotalAmount()).thenReturn(null);
+        when(shoppingCartDMDouble.getShoppingCartLines()).thenReturn(List.of());
 
-        when(priceDouble.getCurrency()).thenReturn(mock(Currency.class));
-        when(shoppingCartDouble.getBuyerId()).thenReturn(buyerIdDouble);
-        when(shoppingCartDouble.identity()).thenReturn(shoppingCartIdDouble);
-        when(shoppingCartDouble.getTotalAmount()).thenReturn(priceDouble);
-        when(shoppingCartDouble.getCartLines()).thenReturn(List.of(mock(ShoppingCartLine.class)));
+        ShoppingCart expected = mock(ShoppingCart.class);
+        when(_shoppingCartFactoryDouble.createShoppingCart(any(), any(), any(), any())).thenReturn(expected);
 
-        //SUT
+        // SUT
         ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
 
-        //Act
+        // Act
+        ShoppingCart result = assembler.toDomain(shoppingCartDMDouble);
+
+        // Assert
+        assertSame(expected, result);
+    }
+
+    // ──────────── toDataModel ────────────
+
+    @Test
+    void toDataModelThrowsWhenShoppingCartIsNull() {
+        // SUT
+        ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> assembler.toDataModel(null));
+    }
+
+    @Test
+    void toDataModelReturnsDataModelWhenTotalAmountIsPresent() {
+        // Arrange
+        ShoppingCart shoppingCartDouble = mock(ShoppingCart.class);
+        ShoppingCartId shoppingCartIdDouble = mock(ShoppingCartId.class);
+        UserId buyerIdDouble = mock(UserId.class);
+        Price priceDouble = mock(Price.class);
+        Currency currencyDouble = mock(Currency.class);
+
+        when(shoppingCartDouble.identity()).thenReturn(shoppingCartIdDouble);
+        when(shoppingCartIdDouble.toString()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDouble.getBuyerId()).thenReturn(buyerIdDouble);
+        when(buyerIdDouble.toString()).thenReturn("email@email.com");
+        when(shoppingCartDouble.getTotalAmount()).thenReturn(priceDouble);
+        when(priceDouble.getValue()).thenReturn(20.0);
+        when(priceDouble.getCurrency()).thenReturn(currencyDouble);
+        when(currencyDouble.toString()).thenReturn("EUR");
+        when(shoppingCartDouble.getCartLines()).thenReturn(List.of(mock(ShoppingCartLine.class)));
+
+        // SUT
+        ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
+
+        // Act
         ShoppingCartDataModel result = assembler.toDataModel(shoppingCartDouble);
 
-        //Assert
+        // Assert
         assertNotNull(result);
+        assertEquals("SC-A1B2C3D4", result.getShoppingCartId());
+        assertEquals("email@email.com", result.getBuyerId());
+        assertNotNull(result.getTotalAmount());
+        assertEquals(20.0, result.getTotalAmount().getNumericValue());
+        assertEquals("EUR", result.getTotalAmount().getCurrency());
+    }
 
+    @Test
+    void toDataModelReturnsDataModelWhenTotalAmountIsNull() {
+        // Arrange
+        ShoppingCart shoppingCartDouble = mock(ShoppingCart.class);
+        ShoppingCartId shoppingCartIdDouble = mock(ShoppingCartId.class);
+        UserId buyerIdDouble = mock(UserId.class);
+
+        when(shoppingCartDouble.identity()).thenReturn(shoppingCartIdDouble);
+        when(shoppingCartIdDouble.toString()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDouble.getBuyerId()).thenReturn(buyerIdDouble);
+        when(buyerIdDouble.toString()).thenReturn("email@email.com");
+        when(shoppingCartDouble.getTotalAmount()).thenReturn(null);
+        when(shoppingCartDouble.getCartLines()).thenReturn(List.of());
+
+        // SUT
+        ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
+
+        // Act
+        ShoppingCartDataModel result = assembler.toDataModel(shoppingCartDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("SC-A1B2C3D4", result.getShoppingCartId());
+        assertEquals("email@email.com", result.getBuyerId());
+        assertNull(result.getTotalAmount());
+        assertTrue(result.getShoppingCartLines().isEmpty());
+    }
+
+    @Test
+    void toDataModelReturnsDataModelWithEmptyLines() {
+        // Arrange
+        ShoppingCart shoppingCartDouble = mock(ShoppingCart.class);
+        ShoppingCartId shoppingCartIdDouble = mock(ShoppingCartId.class);
+        UserId buyerIdDouble = mock(UserId.class);
+
+        when(shoppingCartDouble.identity()).thenReturn(shoppingCartIdDouble);
+        when(shoppingCartIdDouble.toString()).thenReturn("SC-A1B2C3D4");
+        when(shoppingCartDouble.getBuyerId()).thenReturn(buyerIdDouble);
+        when(buyerIdDouble.toString()).thenReturn("email@email.com");
+        when(shoppingCartDouble.getTotalAmount()).thenReturn(null);
+        when(shoppingCartDouble.getCartLines()).thenReturn(List.of());
+
+        // SUT
+        ShoppingCartAssembler assembler = new ShoppingCartAssembler(_shoppingCartFactoryDouble, _shoppingCartLineAssemblerDouble);
+
+        // Act
+        ShoppingCartDataModel result = assembler.toDataModel(shoppingCartDouble);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.getShoppingCartLines().isEmpty());
     }
 }

@@ -7,8 +7,7 @@ import java.util.Objects;
 /**
  * Represents a monetary price with a specific value and {@link Currency}.
  * <p>
- * Ensures that the price value is greater than zero and that the currency is not null.
- * Provides getters for value and currency, and overrides {@link #equals(Object)}, {@link #hashCode()}, and {@link #toString()}.
+ * Ensures that the price value is zero or greater and that the currency is not null.
  * </p>
  */
 
@@ -18,8 +17,8 @@ public class Price implements ValueObject {
     private final Currency _currency;
 
     public Price(double value, Currency currency) {
-        if (value <= 0) {
-            throw new IllegalArgumentException("Invalid price value, must be greater than zero");
+        if (value < 0) {
+            throw new IllegalArgumentException("Invalid price value, must not be negative");
         }
         if (currency == null) {
             throw new IllegalArgumentException("Currency must not be null");

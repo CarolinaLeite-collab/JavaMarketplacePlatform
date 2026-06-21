@@ -35,18 +35,14 @@ public class ShoppingCartAssembler {
         ShoppingCartId shoppingCartId = new ShoppingCartId(shoppingCartDM.getShoppingCartId());
         UserId buyerId = new UserId(new Email(shoppingCartDM.getBuyerId()));
 
-        Price totalAmount = new Price(
-                shoppingCartDM.getTotalAmount().getNumericValue(),
-                Currency.valueOf(shoppingCartDM.getTotalAmount().getCurrency())
-        );
+        PriceDataModel totalAmountDM = shoppingCartDM.getTotalAmount();
+        Price totalAmount = (totalAmountDM == null)
+                ? null
+                : new Price(totalAmountDM.getNumericValue(), Currency.valueOf(totalAmountDM.getCurrency()));
 
         List<ShoppingCartLine> shoppingCartLines = new ArrayList<>();
         for (ShoppingCartLineDataModel cartLine : shoppingCartDM.getShoppingCartLines()) {
-
-            shoppingCartLines.add(
-                    _shoppingCartLineAssembler.toDomain(cartLine)
-            );
-
+            shoppingCartLines.add(_shoppingCartLineAssembler.toDomain(cartLine));
         }
 
         return _shoppingCartFactory.createShoppingCart(
@@ -55,7 +51,6 @@ public class ShoppingCartAssembler {
                 totalAmount,
                 shoppingCartLines
         );
-
     }
 
     public ShoppingCartDataModel toDataModel(ShoppingCart shoppingCart) {
@@ -67,18 +62,14 @@ public class ShoppingCartAssembler {
         String shoppingCartId = shoppingCart.identity().toString();
         String buyerId = shoppingCart.getBuyerId().toString();
 
-        PriceDataModel totalAmountDm = new PriceDataModel(
-                shoppingCart.getTotalAmount().getValue(),
-                shoppingCart.getTotalAmount().getCurrency().toString()
-                );
+        Price totalAmountPrice = shoppingCart.getTotalAmount();
+        PriceDataModel totalAmountDm = (totalAmountPrice == null)
+                ? null
+                : new PriceDataModel(totalAmountPrice.getValue(), totalAmountPrice.getCurrency().toString());
 
         List<ShoppingCartLineDataModel> cartLineDMs = new ArrayList<>();
         for (ShoppingCartLine cartLine : shoppingCart.getCartLines()) {
-
-            cartLineDMs.add(
-                    _shoppingCartLineAssembler.toDataModel(cartLine)
-            );
-
+            cartLineDMs.add(_shoppingCartLineAssembler.toDataModel(cartLine));
         }
 
         return new ShoppingCartDataModel(
@@ -86,7 +77,7 @@ public class ShoppingCartAssembler {
                 buyerId,
                 totalAmountDm,
                 cartLineDMs
-                );
+        );
     }
 
 
