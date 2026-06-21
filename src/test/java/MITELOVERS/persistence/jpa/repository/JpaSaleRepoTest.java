@@ -2,6 +2,7 @@ package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.assembler.SaleAssembler;
 import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import MITELOVERS.persistence.springdata.ISaleSpringDataRepo;
@@ -160,5 +161,47 @@ class JpaSaleRepoTest {
 
         // Assert
         assertFalse(result);
+    }
+
+    @Test
+    void findByUserIdReturnsListOfSalesWhenFound() {
+        // Arrange
+        SaleDataModel dm1Double = mock(SaleDataModel.class);
+        SaleDataModel dm2Double = mock(SaleDataModel.class);
+
+        Sale sale1Double = mock(Sale.class);
+        Sale sale2Double = mock(Sale.class);
+
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        when(_saleSpringDataRepoDouble.findByUserId("pedro@aeiou.com"))
+                .thenReturn(List.of(dm1Double, dm2Double));
+        when(_saleAssemblerDouble.toDomain(dm1Double)).thenReturn(sale1Double);
+        when(_saleAssemblerDouble.toDomain(dm2Double)).thenReturn(sale2Double);
+
+        // Act
+        List<Sale> result = _jpaSaleRepo.findByUserId(userIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertSame(sale1Double, result.get(0));
+        assertSame(sale2Double, result.get(1));
+    }
+
+    @Test
+    void findByUserIdReturnsEmptyListWhenNoSalesFound() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        when(_saleSpringDataRepoDouble.findByUserId("pedro@aeiou.com"))
+                .thenReturn(List.of());
+
+        // Act
+        List<Sale> result = _jpaSaleRepo.findByUserId(userIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }

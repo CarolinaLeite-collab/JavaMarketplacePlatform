@@ -3,5 +3,10 @@ package MITELOVERS.persistence.springdata;
 import MITELOVERS.persistence.jpa.datamodel.SaleDataModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface ISaleSpringDataRepo extends JpaRepository<SaleDataModel,String> {
+
+    List<SaleDataModel> findByUserId(String userId);
+
 }
