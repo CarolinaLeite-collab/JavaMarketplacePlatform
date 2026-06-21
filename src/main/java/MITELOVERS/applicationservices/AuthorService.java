@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Application service responsible for author registration and retrieval.
+ * <p>
+ * Acts as the entry point between controllers and the author domain, delegating
+ * creation to {@link AuthorFactory} and persistence to {@link IAuthorRepo}. Enforces
+ * that an author cannot be registered if one with the same identity already exists.
+ * </p>
+ */
+
 @Service
 public class AuthorService {
 

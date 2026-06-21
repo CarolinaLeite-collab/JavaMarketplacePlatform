@@ -15,8 +15,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Application service responsible for retrieving List of Items information
- * and converting domain objects into response DTOs.
+ * Application service responsible for managing lists of items: creation, retrieval,
+ * adding items, toggling visibility (public/private), and genre-based queries.
+ * <p>
+ * Coordinates repositories and domain objects to enforce invariants such as genre
+ * existence, item existence, and visibility rules before delegating persistence to
+ * {@link IListOfItemsRepo}. Returns pure domain objects ({@link ListOfItems}, item
+ * identities).
+ * </p>
  */
 
 @Service

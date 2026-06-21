@@ -1,6 +1,6 @@
 import {Text, Title} from '@mantine/core';
 
-export function PageTitle({ children, subtitle }) {
+export function PageTitle({subtitle, children }: { subtitle?: string; children: React.ReactNode }) {
     return (
         <>
             <Title

@@ -33,13 +33,14 @@ describe('EditionStep', () => {
         { value: 'COMPANY-001', label: 'Prentice Hall' },
     ];
 
-    const renderEditionStep = (setData = vi.fn()) => {
+    const renderEditionStep = (setData = vi.fn(), errors = {}) => {
         render(
             <EditionStep
                 data={data}
                 setData={setData}
                 publicationTypes={publicationTypes}
                 publishingCompanies={publishingCompanies}
+                errors={errors}
             />
         );
 
@@ -56,7 +57,10 @@ describe('EditionStep', () => {
         expect(screen.getByLabelText(/publishing year/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/^weight$/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/weight unit/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/width/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^width$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^height$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^thickness$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/dimension unit/i)).toBeInTheDocument();
         expect(screen.getByRole('combobox', { name: /binding/i })).toBeInTheDocument();
         expect(screen.getByLabelText(/number of pages/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/edition number/i)).toBeInTheDocument();
@@ -150,8 +154,43 @@ describe('EditionStep', () => {
 
         renderEditionStep(setData);
 
-        await user.clear(screen.getByLabelText(/width/i));
-        await user.type(screen.getByLabelText(/width/i), '23');
+        await user.clear(screen.getByLabelText(/^width$/i));
+        await user.type(screen.getByLabelText(/^width$/i), '23');
+
+        expect(setData).toHaveBeenCalled();
+    });
+
+    it('updates height when user types', async () => {
+        const user = userEvent.setup();
+        const setData = vi.fn();
+
+        renderEditionStep(setData);
+
+        await user.clear(screen.getByLabelText(/^height$/i));
+        await user.type(screen.getByLabelText(/^height$/i), '15');
+
+        expect(setData).toHaveBeenCalled();
+    });
+
+    it('updates thickness when user types', async () => {
+        const user = userEvent.setup();
+        const setData = vi.fn();
+
+        renderEditionStep(setData);
+
+        await user.clear(screen.getByLabelText(/^thickness$/i));
+        await user.type(screen.getByLabelText(/^thickness$/i), '3');
+
+        expect(setData).toHaveBeenCalled();
+    });
+
+    it('updates dimension unit when user types', async () => {
+        const user = userEvent.setup();
+        const setData = vi.fn();
+
+        renderEditionStep(setData);
+
+        await user.type(screen.getByLabelText(/dimension unit/i), 'CM');
 
         expect(setData).toHaveBeenCalled();
     });
@@ -190,5 +229,36 @@ describe('EditionStep', () => {
         await user.type(screen.getByLabelText(/edition number/i), '1');
 
         expect(setData).toHaveBeenCalled();
+    });
+
+    it('renders no error messages when errors prop is empty', () => {
+        renderEditionStep(vi.fn(), {});
+
+        expect(screen.queryByText(/publication type is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/language is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/publishing company is required/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/publishing year is required/i)).not.toBeInTheDocument();
+    });
+
+    it('renders inline error messages for each invalid field', () => {
+        renderEditionStep(vi.fn(), {
+            publicationTypeId: 'Publication type is required',
+            language: 'Language is required',
+            publishingCompanyId: 'Publishing company is required',
+            publishingYear: 'Publishing year is required',
+        });
+
+        expect(screen.getByText(/publication type is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/language is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/publishing company is required/i)).toBeInTheDocument();
+        expect(screen.getByText(/publishing year is required/i)).toBeInTheDocument();
+    });
+
+    it('marks fields with errors as invalid', () => {
+        renderEditionStep(vi.fn(), {
+            publishingYear: 'Publishing year is required',
+        });
+
+        expect(screen.getByLabelText(/publishing year/i)).toHaveAttribute('aria-invalid', 'true');
     });
 });

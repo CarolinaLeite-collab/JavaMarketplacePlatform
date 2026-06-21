@@ -6,7 +6,6 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
-import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
@@ -22,11 +21,8 @@ import java.util.*;
  * <p>This service coordinates domain operations such as creating new direct
  * sales, validating item availability, retrieving existing sales, and
  * performing filtered queries (e.g., by genre). It acts as the orchestration
- * layer between repositories, factories, and DTO mappers, ensuring that
- * domain invariants are respected.</p>
- *
- * <p>All returned objects are mapped into DTOs suitable for exposure at the
- * API layer, keeping domain objects internal to the application.</p>
+ * layer between repositories and factories, ensuring that domain invariants
+ * are respected.</p>
  */
 
 @Service

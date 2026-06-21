@@ -1,5 +1,9 @@
 package MITELOVERS.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;
@@ -21,12 +25,25 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateAuctionRequestDTO {
 
+    @NotEmpty
     private final List<String> itemIds;
+
+    @Positive
     private final double startingPrice;
+
+    @Positive
     private final double reservePrice;
+
+    @Positive
     private final Double outrightPrice;
+
+    @NotBlank
     private final String priceCurrency;
+
+    @NotNull
     private final Instant startDate;
+
+    @NotNull
     private final Instant endDate;
 
 }

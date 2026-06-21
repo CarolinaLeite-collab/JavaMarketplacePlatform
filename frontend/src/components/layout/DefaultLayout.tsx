@@ -3,7 +3,7 @@ import {Footer} from '../footer/Footer';
 import {useComputedColorScheme} from '@mantine/core';
 import {PageContent} from "./PageContent.tsx";
 
-export function DefaultLayout({ title, subtitle, children }) {
+export function DefaultLayout({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
     const colorScheme = useComputedColorScheme('light');
 
     return (

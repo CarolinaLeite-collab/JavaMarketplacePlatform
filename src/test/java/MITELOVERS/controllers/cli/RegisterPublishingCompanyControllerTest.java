@@ -1,8 +1,8 @@
 package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.PublishingCompanyService;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
-import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,20 +22,20 @@ class RegisterPublishingCompanyControllerTest {
     }
 
     @Test
-    void registerPublishingCompanyReturnsDTO() {
+    void registerPublishingCompanyReturnsPublishingCompany() {
         // Arrange
         PublishingCompanyRequestDTO dtoDouble = mock(PublishingCompanyRequestDTO.class);
-        PublishingCompanyResponseDTO responseDouble = mock(PublishingCompanyResponseDTO.class);
+        PublishingCompany publishingCompanyDouble = mock(PublishingCompany.class);
 
         when(_publishingCompanyServiceDouble.registerPublishingCompany(any()))
-                .thenReturn(responseDouble);
+                .thenReturn(publishingCompanyDouble);
 
         // SUT
         RegisterPublishingCompanyController controller =
                 new RegisterPublishingCompanyController(_publishingCompanyServiceDouble);
 
         // Act
-        PublishingCompanyResponseDTO result = controller.registerPublishingCompany(dtoDouble);
+        PublishingCompany result = controller.registerPublishingCompany(dtoDouble);
 
         // Assert
         assertNotNull(result);
@@ -58,5 +58,3 @@ class RegisterPublishingCompanyControllerTest {
                 controller.registerPublishingCompany(dtoDouble));
     }
 }
-
-

@@ -1,0 +1,70 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to use the Web UI to list of items on sale of a given author %n()(direct sales and auctions)." %n() SD
+
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+
+' ==== Actor and participants ====
+actor "Buyer"
+participant ":Client" as Client
+participant ":Server" as Server
+participant "DB" as DB
+
+Buyer -> Client : Show me what I can do
+activate Client
+Client -> Server : OPTIONS /api?email={email}
+activate Server
+Server --> Client : available links
+note right of Client
+Links include:
+- authors
+- direct-sales
+- auctions
+end note
+deactivate Server
+Client --> Buyer : Here is what you can do
+deactivate Client
+
+Buyer -> Client : Selects an author
+activate Client
+Client -> Server : GET /direct-sales/author/{authorId}
+activate Server
+Server -> DB : select direct sales %n()by author
+DB --> Server : data
+Server --> Client : 200 [DirectSaleResponseDTO + links]
+note right of Client
+Returns direct sales
+containing items from
+the selected author
+end note
+deactivate Server
+
+
+Client -> Server : GET /auctions/author/{authorId}
+activate Server
+Server -> DB : select auctions %n()by author
+DB --> Server : data
+Server --> Client : 200 [AuctionResponseDTO + links]
+note right of Client
+Returns auctions
+containing items from
+the selected author
+end note
+deactivate Server
+Client --> Buyer : Displays direct sales and %n()auctions of the selected author
+deactivate Client
+
+@enduml

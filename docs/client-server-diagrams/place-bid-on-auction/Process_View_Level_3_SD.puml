@@ -1,0 +1,67 @@
+@startuml
+'==== Title ====
+title "As a Buyer, I want to use the Web UI to bid on an auction." - SD %n()
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User
+participant ":Frontend" as FE
+participant ":Backend" as BE
+
+note over FE
+Assumes the user already opened the Auction
+they want to bid on, via GET /auctions/{auctionId}.
+To know what actions are allowed on that auction,
+the Frontend calls OPTIONS /auctions/{auctionId},
+whose response includes a "place-bid" link pointing
+to /auctions/{auctionId}/bids. That href is what
+"Frontend" follows below, not a hardcoded URL.
+end note
+
+User -> FE : I want to place a bid for %n() x value on an auction.
+activate FE
+note over FE
+currency is predetermined
+by the auction's starting
+price currency
+end note
+FE -> BE : OPTIONS /auctions/{auctionId}
+activate BE
+
+ref over BE
+[[rest-sd-ref-diagrams/OPTIONS_Place_Bid_SD.puml OPTIONS for user on /auctions/{auctionId}]]
+end ref
+
+BE --> FE : 200 OK + [GET, POST]
+note over BE
+This POST means the user may place a bid
+by sending a request to the place-bid href
+(/auctions/{auctionId}/bids).
+end note
+deactivate BE
+
+FE -> BE : POST {place-bid href} %n(){ placeBidRequestDTO } + %n()userIdFromHeader
+activate BE
+
+ref over BE
+[[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST (place bid on auction)]]
+end ref
+
+BE --> FE : 201 Created + bidResponseDTO
+deactivate BE
+FE --> User : Bid successfully %n() placed on auction.
+deactivate FE
+
+@enduml
