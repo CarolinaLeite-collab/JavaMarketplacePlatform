@@ -114,6 +114,7 @@ public class Sale implements AggregateRoot<SaleId> {
         }
 
         _saleSaleStatus = SaleSaleStatus.COMPLETED;
+        _completedAt = LocalDateTime.now();
     }
 
     public void markSaleAsCancelled() {

@@ -662,6 +662,7 @@ class SaleTest {
 
         // Assert
         assertEquals(SaleSaleStatus.COMPLETED, sale.get_saleSaleStatus());
+        assertNotNull(sale.get_completedAt());
     }
 
     @Test
