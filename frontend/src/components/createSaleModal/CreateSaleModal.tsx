@@ -88,6 +88,8 @@ export function CreateSaleModal({ opened, onClose }) {
         if (!auctionCurrency) errors.auctionCurrency = "Currency is required.";
         if (!startDate) errors.startDate = "Start date is required.";
         if (!endDate) errors.endDate = "End date is required.";
+        if (startDate && new Date(startDate) < new Date())
+            errors.startDate = "Start date cannot be in the past.";
         if (startDate && endDate && new Date(endDate) <= new Date(startDate))
             errors.endDate = "End date must be after start date.";
         setFieldErrors(errors);
@@ -352,9 +354,18 @@ export function CreateSaleModal({ opened, onClose }) {
                                     type="datetime-local"
                                     value={startDate}
                                     onChange={(e) => {
-                                        setStartDate(e.target.value);
-                                        if (fieldErrors.startDate)
-                                            setFieldErrors((prev) => ({ ...prev, startDate: undefined }));
+                                        const value = e.target.value;
+                                        setStartDate(value);
+
+                                        setFieldErrors((prev) => {
+                                            const next = { ...prev };
+                                            if (value && new Date(value) < new Date()) {
+                                                next.startDate = "Start date cannot be in the past.";
+                                            } else {
+                                                delete next.startDate;
+                                            }
+                                            return next;
+                                        });
                                     }}
                                     style={{
                                         padding: '8px 12px',
@@ -371,9 +382,18 @@ export function CreateSaleModal({ opened, onClose }) {
                                     type="datetime-local"
                                     value={endDate}
                                     onChange={(e) => {
-                                        setEndDate(e.target.value);
-                                        if (fieldErrors.endDate)
-                                            setFieldErrors((prev) => ({ ...prev, endDate: undefined }));
+                                        const value = e.target.value;
+                                        setEndDate(value);
+
+                                        setFieldErrors((prev) => {
+                                            const next = { ...prev };
+                                            if (value && startDate && new Date(value) <= new Date(startDate)) {
+                                                next.endDate = "End date must be after start date.";
+                                            } else {
+                                                delete next.endDate;
+                                            }
+                                            return next;
+                                        });
                                     }}
                                     style={{
                                         padding: '8px 12px',

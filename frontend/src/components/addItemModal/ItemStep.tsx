@@ -10,6 +10,7 @@ interface ItemData {
 interface ItemStepProps {
     data: ItemData;
     setData: Dispatch<SetStateAction<ItemData>>;
+    errors?: Record<string, string>;
 }
 
 /**
@@ -17,12 +18,14 @@ interface ItemStepProps {
  *
  * The condition options are aligned with the backend item condition enum. The
  * picture URL is kept as UI data but is not currently submitted in the item
- * creation request.
+ * creation request. Validation errors, when provided, are shown inline under
+ * each corresponding required field.
  */
 
 export function ItemStep({
                              data,
                              setData,
+                             errors = {},
                          }: ItemStepProps) {
     return (
         <Stack>
@@ -44,6 +47,7 @@ export function ItemStep({
                     }))
                 }
                 required
+                error={errors.condition}
             />
 
             <Textarea
@@ -60,6 +64,7 @@ export function ItemStep({
                     }));
                 }}
                 required
+                error={errors.description}
             />
 
             <TextInput

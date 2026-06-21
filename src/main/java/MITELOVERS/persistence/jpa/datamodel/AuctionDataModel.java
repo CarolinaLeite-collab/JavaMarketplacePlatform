@@ -54,4 +54,7 @@ public class AuctionDataModel {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "auction_id")
     private List<BidDataModel> bids;
+
+    @Column(name="seller", nullable = false)
+    private String seller;
 }

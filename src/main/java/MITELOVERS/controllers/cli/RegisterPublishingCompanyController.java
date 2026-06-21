@@ -5,7 +5,6 @@ import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.dto.request.PublishingCompanyRequestDTO;
-import MITELOVERS.dto.response.PublishingCompanyResponseDTO;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -20,13 +19,13 @@ public class RegisterPublishingCompanyController {
 
     private final PublishingCompanyService _publishingCompanyService;
 
-    public RegisterPublishingCompanyController( PublishingCompanyService publishingCompanyFactory) {
+    public RegisterPublishingCompanyController(PublishingCompanyService publishingCompanyService) {
 
-        _publishingCompanyService = publishingCompanyFactory;
+        _publishingCompanyService = publishingCompanyService;
 
     }
 
-    public PublishingCompanyResponseDTO registerPublishingCompany(PublishingCompanyRequestDTO dto) {
+    public PublishingCompany registerPublishingCompany(PublishingCompanyRequestDTO dto) {
 
         return _publishingCompanyService.registerPublishingCompany(dto);
 

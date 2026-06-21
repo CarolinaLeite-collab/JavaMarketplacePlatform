@@ -5,6 +5,7 @@ import MITELOVERS.domain.auction.AuctionFactory;
 import MITELOVERS.domain.valueobject.AuctionId;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,7 @@ class MemAuctionRepoTest {
     private Price _reservePriceDouble;
     private ZonedDateTime _startDate;
     private ZonedDateTime _endDate;
+    private UserId _seller;
 
     @BeforeEach
     void setUp() {
@@ -62,6 +64,8 @@ class MemAuctionRepoTest {
 
         _startDate = ZonedDateTime.now().plusDays(1);
         _endDate = ZonedDateTime.now().plusDays(2);
+
+        _seller =  mock(UserId.class);
     }
 
     @Test
@@ -92,7 +96,7 @@ class MemAuctionRepoTest {
         when(auctionDouble2.identity()).thenReturn(_idDouble2);
 
         when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
-                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+                _outrightPriceDouble, _startDate, _endDate, _seller)).thenReturn(auctionDouble2);
 
         //SUT
         _repo = new MemAuctionRepo();
@@ -134,7 +138,7 @@ class MemAuctionRepoTest {
         when(auctionDouble2.identity()).thenReturn(_idDouble2);
 
         when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
-                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+                _outrightPriceDouble, _startDate, _endDate, _seller)).thenReturn(auctionDouble2);
 
         //SUT
         _repo = new MemAuctionRepo();
@@ -175,7 +179,7 @@ class MemAuctionRepoTest {
         when(auctionDouble2.identity()).thenReturn(_idDouble2);
 
         when(auctionFactoryDouble.createAuction(_itemsId2, _startingPriceDouble, _reservePriceDouble,
-                _outrightPriceDouble, _startDate, _endDate)).thenReturn(auctionDouble2);
+                _outrightPriceDouble, _startDate, _endDate, _seller)).thenReturn(auctionDouble2);
 
         //SUT
         _repo = new MemAuctionRepo();

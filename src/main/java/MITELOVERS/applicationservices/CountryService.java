@@ -10,6 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+/**
+ * Application service responsible for country registration and retrieval.
+ * <p>
+ * Acts as the entry point between controllers and the country domain, delegating
+ * creation to {@link CountryFactory} and persistence to {@link ICountryRepo}. Enforces
+ * that a country cannot be created if one with the same identity already exists.
+ * </p>
+ */
+
 @Service
 public class CountryService {
 

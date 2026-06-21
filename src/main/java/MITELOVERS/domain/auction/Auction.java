@@ -46,16 +46,18 @@ public class Auction implements AggregateRoot<AuctionId> {
     private final Price _outrightPrice;
     private final ZonedDateTime _auctionStartDate;
     private final ZonedDateTime _auctionEndDate;
-    private UserId _userId;
+    private UserId _buyer;
     private Price _finalPrice;
     private final BidFactory _bidFactory;
     private List<Bid> _bids;
+    private UserId _seller;
 
-    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, Price outrightPrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate, UserId seller) {
         _startingPrice = startingPrice;
         _auctionId = new AuctionId();
         _bidFactory = new BidFactory();
         _bids = new ArrayList<>();
+        _seller = seller;
 
         if (isOutrightPriceValid(outrightPrice)) {
             _outrightPrice = outrightPrice;
@@ -88,8 +90,8 @@ public class Auction implements AggregateRoot<AuctionId> {
         _itemsId = itemsId;
     }
 
-    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate) {
-        this(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate);
+    Auction(List<ItemId> itemsId, Price startingPrice, Price reservePrice, ZonedDateTime auctionStartDate, ZonedDateTime auctionEndDate, UserId seller) {
+        this(itemsId, startingPrice, reservePrice, null, auctionStartDate, auctionEndDate, seller);
     }
 
     Auction(AuctionId auctionId,
@@ -101,7 +103,8 @@ public class Auction implements AggregateRoot<AuctionId> {
             ZonedDateTime auctionEndDate,
             UserId userId,
             Price finalPrice,
-            List<Bid> bids) {
+            List<Bid> bids,
+            UserId seller) {
 
         if (auctionId == null) {
             throw new IllegalArgumentException("AuctionId cannot be null");
@@ -134,10 +137,11 @@ public class Auction implements AggregateRoot<AuctionId> {
         _outrightPrice = outrightPrice;
         _auctionStartDate = auctionStartDate;
         _auctionEndDate = auctionEndDate;
-        _userId = userId;
+        _buyer = userId;
         _finalPrice = finalPrice;
         _bids = (bids == null) ? new ArrayList<>() : new ArrayList<>(bids);
         _bidFactory = new BidFactory();
+        _seller = seller;
     }
 
     @Override
@@ -155,7 +159,8 @@ public class Auction implements AggregateRoot<AuctionId> {
                     Objects.equals(_reservePrice, other._reservePrice) &&
                     Objects.equals(_outrightPrice, other._outrightPrice) &&
                     Objects.equals(_auctionStartDate, other._auctionStartDate) &&
-                    Objects.equals(_auctionEndDate, other._auctionEndDate)
+                    Objects.equals(_auctionEndDate, other._auctionEndDate) &&
+                    Objects.equals(_seller, other._seller)
             )
                 return true;
         }
@@ -185,7 +190,11 @@ public class Auction implements AggregateRoot<AuctionId> {
     }
 
     public UserId getUserId() {
-        return _userId;
+        return _buyer;
+    }
+
+    public UserId getSeller() {
+        return _seller;
     }
 
     public Price getFinalPrice() {
@@ -206,7 +215,7 @@ public class Auction implements AggregateRoot<AuctionId> {
 
     public void finalizeAuction() {
         if (_bids.isEmpty()) {
-            _userId = null;
+            _buyer = null;
             _finalPrice = null;
             return;
         }
@@ -214,10 +223,10 @@ public class Auction implements AggregateRoot<AuctionId> {
         Bid highestBid = getHighestBid();
 
         if (isReserveMet(highestBid.getOfferPrice())) {
-            _userId = highestBid.getUserId();
+            _buyer = highestBid.getUserId();
             _finalPrice = highestBid.getOfferPrice();
         } else {
-            _userId = null;
+            _buyer = null;
             _finalPrice = null;
         }
     }
@@ -250,8 +259,24 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalStateException("Auction not active");
         }
 
-        if (offerPrice.getValue() <= _startingPrice.getValue()) {
-            throw new IllegalArgumentException("Bid must be higher than starting price");
+        if (offerPrice == null) {
+            throw new IllegalArgumentException("Offer price must not be null");
+        }
+
+        if (!offerPrice.getCurrency().equals(_startingPrice.getCurrency())) {
+            throw new IllegalArgumentException("Bid currency must match auction currency");
+        }
+
+        Price minimumAcceptedPrice = _bids.isEmpty()
+                ? _startingPrice
+                : getHighestBid().getOfferPrice();
+
+        if (offerPrice.getValue() <= minimumAcceptedPrice.getValue()) {
+            throw new IllegalArgumentException(
+                    _bids.isEmpty()
+                            ? "Bid must be higher than starting price"
+                            : "Bid must be higher than current highest bid"
+            );
         }
 
         Bid bid = Objects.requireNonNull(
