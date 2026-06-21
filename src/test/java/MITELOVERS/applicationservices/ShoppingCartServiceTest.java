@@ -146,7 +146,7 @@ class ShoppingCartServiceTest {
     }
 
     @Test
-    void addCartLineToCartReturnsUpdatedCart() {
+    void addCartLineToCartReturnsNewCartLine() {
         // Arrange
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
         UserId sellerIdDouble = mock(UserId.class);
@@ -159,19 +159,17 @@ class ShoppingCartServiceTest {
 
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
-        ShoppingCart savedCartDouble = mock(ShoppingCart.class);
 
         when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
         when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
         when(_shoppingCartLineFactory.createNewShoppingCartLine(
                 directSaleIdDouble, sellerIdDouble, priceDouble)).thenReturn(newLineDouble);
-        when(_shoppingCartrepo.save(cartDouble)).thenReturn(savedCartDouble);
 
         // Act
-        ShoppingCart result = _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE");
+        ShoppingCartLine result = _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE");
 
         // Assert
-        assertSame(savedCartDouble, result);
+        assertSame(newLineDouble, result);
     }
 
     @Test

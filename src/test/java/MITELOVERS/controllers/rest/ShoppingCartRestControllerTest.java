@@ -221,14 +221,15 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
 
-        ShoppingCart updatedCartDouble = mock(ShoppingCart.class);
-        ShoppingCartId updatedCartIdDouble = mock(ShoppingCartId.class);
-        when(updatedCartIdDouble.toString()).thenReturn("SC-A49F78E2");
-        when(updatedCartDouble.identity()).thenReturn(updatedCartIdDouble);
+        ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
+        MITELOVERS.domain.valueobject.ShoppingCartLineId lineIdDouble =
+                mock(MITELOVERS.domain.valueobject.ShoppingCartLineId.class);
+        when(lineIdDouble.toString()).thenReturn("SCL-1234ABCD");
+        when(newLineDouble.identity()).thenReturn(lineIdDouble);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_shoppingCartService.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4D")).thenReturn(updatedCartDouble);
+        when(_shoppingCartService.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4D")).thenReturn(newLineDouble);
 
         // Act + Assert
         mockMvc.perform(post("/shopping-carts/SC-A49F78E2/shopping-cart-lines")

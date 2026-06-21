@@ -68,7 +68,7 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCart addCartLineToCart(String cartId, String directSaleId) {
+    public ShoppingCartLine addCartLineToCart(String cartId, String directSaleId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
         DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
@@ -81,7 +81,9 @@ public class ShoppingCartService {
 
         shoppingCart.addCartLine(newCartLine);
 
-        return _shoppingCartRepo.save(shoppingCart);
+        _shoppingCartRepo.save(shoppingCart);
+
+        return newCartLine;
 
     }
 

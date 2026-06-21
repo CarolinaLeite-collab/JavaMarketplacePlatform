@@ -159,7 +159,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        ShoppingCart addedLineShoppingCart = _shoppingCartService.addCartLineToCart(cartId, requestDTO.getDirectSaleId());
+        ShoppingCartLine addedLineShoppingCart = _shoppingCartService.addCartLineToCart(cartId, requestDTO.getDirectSaleId());
 
         RepresentationModel<?> model = new RepresentationModel<>();
         _shoppingCartLinkProvider.addLinksForCreateUserCartLine(model, email, cartId, addedLineShoppingCart.identity().toString());
