@@ -11,7 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 public class SaleLineResponseDTO extends RepresentationModel<SaleLineResponseDTO> {
 
     private String saleLineId;
-    private String userId;
+    private String sellerId;
     private String directSaleId;
     private double price;
     private String currency;
