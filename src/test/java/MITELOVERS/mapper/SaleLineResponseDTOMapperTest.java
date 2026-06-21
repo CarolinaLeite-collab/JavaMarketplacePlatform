@@ -45,7 +45,7 @@ class SaleLineResponseDTOMapperTest {
 
         // Assert
         assertEquals("SL-1234ABCD", result.getSaleLineId());
-        assertEquals("ana@aeiou.com", result.getUserId());
+        assertEquals("ana@aeiou.com", result.getSellerId());
         assertEquals("DS-1A2B3C4DE", result.getDirectSaleId());
         assertEquals(14.99, result.getPrice());
         assertEquals("EUR", result.getCurrency());
@@ -120,7 +120,7 @@ class SaleLineResponseDTOMapperTest {
         SaleLineResponseDTO result = mapper.toModel(saleLineDouble);
 
         // Assert
-        assertEquals("ana@aeiou.com", result.getUserId());
+        assertEquals("ana@aeiou.com", result.getSellerId());
     }
 
     @Test
