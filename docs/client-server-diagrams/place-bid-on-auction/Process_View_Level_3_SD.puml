@@ -19,30 +19,29 @@ autonumber
 actor Buyer
 participant ":Frontend" as FE
 participant ":Backend" as BE
+participant ":db" as db
 
 note over FE
-Assumes the buyer already opened an Auction
-via GET /auctions/{auctionId}, whose response
-includes a "bids" link pointing to
-/auctions/{auctionId}/bids.
+This diagram assumes that a list of auctions is
+displayed and that, for each individual auction,
+there are buttons for the possible actions on
+that auction, including **creating a bid**.
 
-That href is what Frontend follows below, not a
-hardcoded URL.
+To view how the Buyer has this OPTION to
+create a bid, please see [[pre-condition-diagram/OPTIONS_Before_POST.puml this diagram]]
 end note
 
-Buyer -> FE : I want to place a bid on an auction.
+
+
+
+
+Buyer -> FE : I want to place a bid on %n()an auction with a value of x.
 activate FE
 
-FE -> BE : OPTIONS {bids href}
-activate BE
-
-ref over BE
-[[rest-sd-ref-diagrams/OPTIONS_Place_Bid_SD.puml OPTIONS for buyer on /auctions/{auctionId}/bids]]
-end ref
-
-BE --> FE : 200 OK + Allow: [GET, POST]
-
-deactivate BE
+note over FE
+Currency is predetermined
+by the currency of the auction
+end note
 
 FE -> BE : POST {bids href} + %n(){placeBidRequestDTO}
 activate BE
@@ -53,7 +52,7 @@ end ref
 
 BE --> FE : 201 Created + bidResponseDTO %n() + auction link + bids link
 deactivate BE
-FE --> Buyer : Bid successfully placed on auction.
+FE --> Buyer : Bid successfully %n()placed on auction.
 deactivate FE
 
 @enduml
