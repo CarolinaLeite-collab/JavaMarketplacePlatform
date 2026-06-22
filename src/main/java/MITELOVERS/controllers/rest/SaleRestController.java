@@ -80,7 +80,7 @@ public class SaleRestController {
         List<Sale> userSales = _saleService.findUserSales(user);
 
         RepresentationModel<?> model = new RepresentationModel<>();
-        _saleLinkProvider.addLinksForSales(model, email, userSales);
+        _saleLinkProvider.addLinksForSales(model, user.identity(), userSales);
 
         return ResponseEntity.ok(model);
     }
@@ -97,18 +97,17 @@ public class SaleRestController {
         User user = _userService.getUserByEmail(email);
         ShoppingCartId shoppingCartId = new ShoppingCartId(dto.getShoppingCartId());
 
-        // MUDAR O METODO PARA ACEITAR IDS
-        ShoppingCart shoppingCart = _shoppingCartService.findCartByCartId(dto.getShoppingCartId());
+        ShoppingCart shoppingCart = _shoppingCartService.findCartByCartId(shoppingCartId);
 
         if(!shoppingCart.getBuyerId().equals(user.identity())) {
             throw new SecurityException("ShoppingCart does not match the user!");
         }
 
-        Sale newSale = _saleService.createSaleFromCart(shoppingCartId, email);
+        Sale newSale = _saleService.createSaleFromCart(shoppingCartId);
 
         RepresentationModel<?> model = new RepresentationModel<>();
 
-        _saleLinkProvider.addLinksForCreatedSale(model, email, newSale.get_saleId().toString());
+        _saleLinkProvider.addLinksForCreatedSale(model, user.identity(), newSale.get_saleId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(model);
 
@@ -152,7 +151,7 @@ public class SaleRestController {
         }
 
         SaleResponseDTO dto = _saleMapper.toModel(sale);
-        _saleLinkProvider.addLinksForSale(dto, email, saleId, sale);
+        _saleLinkProvider.addLinksForSale(dto, user.identity(), reconstructedSaleId, sale);
 
         return ResponseEntity.ok(dto);
     }
@@ -199,7 +198,7 @@ public class SaleRestController {
         SaleLine saleline = _saleService.getSaleLineById(reconstructedSaleId, reconstructedSaleLineId);
 
         SaleLineResponseDTO dto = _saleLineMapper.toModel(saleline);
-        _saleLinkProvider.addLinksForSaleLine(dto, email, saleId, saleLineId);
+        _saleLinkProvider.addLinksForSaleLine(dto, user.identity(), reconstructedSaleId, reconstructedSaleLineId);
 
         return ResponseEntity.ok(dto);
     }

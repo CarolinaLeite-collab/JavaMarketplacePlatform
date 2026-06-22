@@ -9,6 +9,7 @@ import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.ShoppingCartId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
@@ -125,8 +126,8 @@ class SaleRestControllerTest {
         when(saleDouble.get_saleId()).thenReturn(saleIdDouble);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_saleService.createSaleFromCart(any(), eq("pedro@aeiou.com"))).thenReturn(saleDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
+        when(_saleService.createSaleFromCart(any())).thenReturn(saleDouble);
 
         // Act + Assert
         mockMvc.perform(post("/sales")
@@ -146,7 +147,7 @@ class SaleRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(post("/sales")
