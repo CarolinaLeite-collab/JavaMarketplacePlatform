@@ -28,4 +28,7 @@ public class PublicationRequestDTO {
     @NotBlank
     private final String genreId;
 
+    @NotBlank
+    private final String synopsis;
+
 }
