@@ -66,7 +66,7 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
                 publisher: itemDetails?.publisherName ?? 'unknown',
                 condition: itemDetails?.condition ?? 'unknown',
                 cover: itemDetails?.picture ?? '',
-                sellerId: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
+                seller: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
                 saleType: 'Direct Sale',
                 directSaleId: directSale.directSaleId ?? null,
                 auctionId: null,
@@ -115,11 +115,11 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
 
 export default function Marketplace() {
     const { state } = useContext(AppContext);
-    const { directSalesWithoutPriceHref } = state.app;
+    const { activeDirectSalesHref, directSalesWithoutPriceHref } = state.app;
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
     const canSeePrice = isLoggedIn;
-    const marketplaceHref = !isLoggedIn ? directSalesWithoutPriceHref : null;
+    const marketplaceHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
 
     const [items, setItems] = useState([]);
     const [genres, setGenres] = useState([]);
@@ -214,7 +214,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, [marketplaceHref]);
+    }, [marketplaceHref, canSeePrice]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">
