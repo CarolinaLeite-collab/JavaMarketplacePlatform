@@ -9,6 +9,15 @@ import {
     ADD_ITEM_ERROR
 } from './LibraryActions';
 
+/**
+ * Reducer responsible for storing library items, items details, and library errors.
+ *
+ * Library item responses are mapped into the structure expected by the UI,
+ * including item links exposed by the backend.
+ */
+
+
+
 export const initialState = {
     items: [],
     details: {},
