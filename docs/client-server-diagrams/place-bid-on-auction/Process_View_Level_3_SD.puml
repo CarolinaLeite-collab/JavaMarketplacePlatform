@@ -16,52 +16,44 @@ hidefootbox
 autonumber
 
 ' ==== Actor and participants ====
-actor User
+actor Buyer
 participant ":Frontend" as FE
 participant ":Backend" as BE
 
 note over FE
-Assumes the user already opened the Auction
-they want to bid on, via GET /auctions/{auctionId}.
-To know what actions are allowed on that auction,
-the Frontend calls OPTIONS /auctions/{auctionId},
-whose response includes a "place-bid" link pointing
-to /auctions/{auctionId}/bids. That href is what
-"Frontend" follows below, not a hardcoded URL.
+Assumes the buyer already opened an Auction
+via GET /auctions/{auctionId}, whose response
+includes a "bids" link pointing to
+/auctions/{auctionId}/bids.
+
+That href is what Frontend follows below, not a
+hardcoded URL.
 end note
 
-User -> FE : I want to place a bid for %n() x value on an auction.
+Buyer -> FE : I want to place a bid on an auction.
 activate FE
-note over FE
-currency is predetermined
-by the auction's starting
-price currency
-end note
-FE -> BE : OPTIONS /auctions/{auctionId}
+
+FE -> BE : OPTIONS {bids href}
 activate BE
 
 ref over BE
-[[rest-sd-ref-diagrams/OPTIONS_Place_Bid_SD.puml OPTIONS for user on /auctions/{auctionId}]]
+[[rest-sd-ref-diagrams/OPTIONS_Place_Bid_SD.puml OPTIONS for buyer on /auctions/{auctionId}/bids]]
 end ref
 
-BE --> FE : 200 OK + [GET, POST]
-note over BE
-This POST means the user may place a bid
-by sending a request to the place-bid href
-(/auctions/{auctionId}/bids).
-end note
+BE --> FE : 200 OK + Allow: [GET, POST]
+
 deactivate BE
 
-FE -> BE : POST {place-bid href} %n(){ placeBidRequestDTO } + %n()userIdFromHeader
+FE -> BE : POST {bids href} + %n(){placeBidRequestDTO}
 activate BE
 
 ref over BE
-[[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST (place bid on auction)]]
+[[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST new bid on /auctions/{auctionId}/bids]]
 end ref
 
-BE --> FE : 201 Created + bidResponseDTO
+BE --> FE : 201 Created + bidResponseDTO %n() + auction link + bids link
 deactivate BE
-FE --> User : Bid successfully %n() placed on auction.
+FE --> Buyer : Bid successfully placed on auction.
 deactivate FE
 
 @enduml
