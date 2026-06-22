@@ -3,8 +3,10 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpMethod;
 
@@ -90,85 +92,29 @@ class AuctionLinkProviderTest {
     }
 
     @Test
-    void getLinksForSpecificAuctionUserCanViewAuctionContainsViewAndSelfLinks() {
+    void getLinksForSpecificAuctionUserCanViewAuctionContainsGetAndOptions() {
 
         //Arrange
         User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
         String auctionId = "AU-12345678";
 
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-
-        when(userDouble.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user123");
-
         when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(true);
-        when(authorizationPolicy.canBid(userDouble)).thenReturn(true);
 
         // SUT
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
         // Act
-        List<Link> links = linkProvider.getLinks(userDouble, auctionId);
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionId);
 
         // Assert
-        assertEquals(2, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("view-auction")));
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertTrue(methods.contains(HttpMethod.GET));
+        assertEquals(2, methods.size());
     }
 
     @Test
-    void getLinksForSpecificAuctionUserCannotViewAuctionReturnsEmptyList() {
-        // Arrange
-        User userDouble = mock(User.class);
-        String auctionId = "AU-12345678";
-
-        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-
-        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(false);
-        when(authorizationPolicy.canBid(userDouble)).thenReturn(false);
-
-        // SUT
-        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
-
-        // Act
-        List<Link> links = linkProvider.getLinks(userDouble, auctionId);
-
-        // Assert
-        assertTrue(links.isEmpty());
-    }
-
-    // ------------------------------------------------------------
-    // getLinks for /auction/{auctionId}/bids
-    // ------------------------------------------------------------
-
-    @Test
-    void getBidLinksUserCanViewAuctionReturnsSelfAndViewBids() {
-        // Arrange
-        User userDouble = mock(User.class);
-        UserId userIdDouble = mock(UserId.class);
-        String auctionId = "AU-12345678";
-
-        when(userDouble.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user123");
-
-        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
-        when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(true);
-
-        //SUT
-        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
-
-        // Act
-        List<Link> links = linkProvider.getBidLinks(userDouble, auctionId);
-
-        // Assert
-        assertEquals(2, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("view-bids")));
-    }
-
-    @Test
-    void getBidLinksUserCannotViewAuctionReturnsEmptyList() {
+    void getAllowedMethodsForSpecificAuctionUserCannotViewAuctionContainsOnlyOptions() {
         // Arrange
         User userDouble = mock(User.class);
         String auctionId = "AU-12345678";
@@ -176,24 +122,137 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
         when(authorizationPolicy.canViewAuction(userDouble)).thenReturn(false);
 
-        //SUT
+        // SUT
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
         // Act
-        List<Link> links = linkProvider.getBidLinks(userDouble, auctionId);
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionId);
 
         // Assert
-        assertTrue(links.isEmpty());
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertFalse(methods.contains(HttpMethod.GET));
+        assertEquals(1, methods.size());
     }
 
     // ------------------------------------------------------------
-    // addBidLinks
+    // addLinksForAuction
     // ------------------------------------------------------------
 
     @Test
-    void addBidLinksAddsAuctionLinkPointingToAuctionOptions() {
-        // Arrange
+    void addLinksForAuctionAddsSelfAndBidsLinks() {
         String auctionId = "AU-12345678";
+
+        AuctionResponseDTO dto = new AuctionResponseDTO(
+                auctionId,
+                List.of("ABCDEF1234"),
+                10.0,
+                25.0,
+                50.0,
+                "EUR",
+                Instant.parse("2026-06-10T10:00:00Z"),
+                Instant.parse("2026-06-20T10:00:00Z"),
+                "pedro@aeiou.com"
+        );
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        linkProvider.addLinksForAuction(dto, auctionId);
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("self")));
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("bids")));
+    }
+
+    // ------------------------------------------------------------
+    // getAllowedMethodsForBids
+    // ------------------------------------------------------------
+
+    @Test
+    void getAllowedMethodsForBidsUserCanViewAndBidContainsOptionsGetAndPost() {
+        User user = mock(User.class);
+        String auctionId = "AU-12345678";
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(true);
+        when(authorizationPolicy.canBid(user)).thenReturn(true);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForBids(user, auctionId);
+
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertTrue(methods.contains(HttpMethod.GET));
+        assertTrue(methods.contains(HttpMethod.POST));
+        assertEquals(3, methods.size());
+    }
+
+    @Test
+    void getAllowedMethodsForBidsUserCanViewButCannotBidContainsOptionsAndGetOnly() {
+        User user = mock(User.class);
+        String auctionId = "AU-12345678";
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(true);
+        when(authorizationPolicy.canBid(user)).thenReturn(false);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForBids(user, auctionId);
+
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertTrue(methods.contains(HttpMethod.GET));
+        assertFalse(methods.contains(HttpMethod.POST));
+        assertEquals(2, methods.size());
+    }
+
+    @Test
+    void getAllowedMethodsForBidsUserCannotViewButCanBidContainsOptionsAndPostOnly() {
+        User user = mock(User.class);
+        String auctionId = "AU-12345678";
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(false);
+        when(authorizationPolicy.canBid(user)).thenReturn(true);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForBids(user, auctionId);
+
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertFalse(methods.contains(HttpMethod.GET));
+        assertTrue(methods.contains(HttpMethod.POST));
+        assertEquals(2, methods.size());
+    }
+
+    @Test
+    void getAllowedMethodsForBidsUserCannotViewAndCannotBidContainsOnlyOptions() {
+        User user = mock(User.class);
+        String auctionId = "AU-12345678";
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(false);
+        when(authorizationPolicy.canBid(user)).thenReturn(false);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForBids(user, auctionId);
+
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertFalse(methods.contains(HttpMethod.GET));
+        assertFalse(methods.contains(HttpMethod.POST));
+        assertEquals(1, methods.size());
+    }
+
+    // ------------------------------------------------------------
+    // addLinksForCreatedBid
+    // ------------------------------------------------------------
+
+    @Test
+    void addLinksForCreatedBidAddsAuctionAndBidsLinks() {
+        String auctionId = "AU-12345678";
+
         BidResponseDTO dto = new BidResponseDTO(
                 "bid-1",
                 auctionId,
@@ -206,12 +265,80 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
-        // Act
-        linkProvider.addBidLinks(dto);
+        linkProvider.addLinksForCreatedBid(dto);
 
-        // Assert
         assertTrue(dto.getLinks().stream()
                 .anyMatch(l -> l.getRel().value().equals("auction")));
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("bids")));
     }
 
+    // ------------------------------------------------------------
+    // addLinksForBidInCollection
+    // ------------------------------------------------------------
+
+    @Test
+    void addLinksForBidInCollectionAddsOnlyAuctionLink() {
+        String auctionId = "AU-12345678";
+
+        BidResponseDTO dto = new BidResponseDTO(
+                "bid-1",
+                auctionId,
+                "buyer@aeiou.com",
+                20.0,
+                "EUR",
+                Instant.parse("2026-06-10T10:00:00Z")
+        );
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        linkProvider.addLinksForBidInCollection(dto);
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("auction")));
+        assertFalse(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("bids")));
+        assertFalse(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("self")));
+    }
+
+    // ------------------------------------------------------------
+    // addLinksForBidCollection
+    // ------------------------------------------------------------
+
+    @Test
+    void addLinksForBidCollectionAddsSelfAndAuctionLinksToCollection() {
+        String auctionId = "AU-12345678";
+
+        BidResponseDTO dto1 = new BidResponseDTO(
+                "bid-1",
+                auctionId,
+                "buyer1@aeiou.com",
+                20.0,
+                "EUR",
+                Instant.parse("2026-06-10T10:00:00Z")
+        );
+
+        BidResponseDTO dto2 = new BidResponseDTO(
+                "bid-2",
+                auctionId,
+                "buyer2@aeiou.com",
+                30.0,
+                "EUR",
+                Instant.parse("2026-06-11T10:00:00Z")
+        );
+
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        CollectionModel<BidResponseDTO> collectionModel =
+                linkProvider.addLinksForBidCollection(List.of(dto1, dto2), auctionId);
+
+        assertEquals(2, collectionModel.getContent().size());
+        assertTrue(collectionModel.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("self")));
+        assertTrue(collectionModel.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("auction")));
+    }
 }
