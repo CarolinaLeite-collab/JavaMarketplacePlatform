@@ -391,7 +391,7 @@ class DirectSaleRestControllerTest {
                         Instant.now()
                 );
 
-        when(_service.getAllDirectSales()).thenReturn(List.of(domain));
+        when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
         when(_noPriceMapper.toModel(domain)).thenReturn(dto);
 
         // Act
