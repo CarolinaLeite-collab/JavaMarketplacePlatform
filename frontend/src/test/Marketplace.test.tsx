@@ -117,6 +117,7 @@ function renderMarketplace({ appState = {} } = {}) {
                         genresHref: null,
                         libraryHref: null,
                         directSalesHref: null,
+                        activeDirectSalesHref: null,
                         directSalesWithoutPriceHref: null,
                         ...appState,
                     },
@@ -166,17 +167,30 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
 
-    it('calls getActiveDirectSales for logged-in users', async () => {
-        renderMarketplace();
+    it('uses the discovered active direct sales feed for logged-in users', async () => {
+        renderMarketplace({
+            appState: {
+                activeDirectSalesHref: '/direct-sales/active',
+            },
+        });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
-        expect(apiClient.getActiveDirectSales).toHaveBeenCalled();
+        expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/active');
+        expect(apiClient.getActiveDirectSales).not.toHaveBeenCalled();
         expect(apiClient.getAuctions).toHaveBeenCalled();
         expect(apiClient.getGenres).toHaveBeenCalled();
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-001');
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-002');
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-003');
+    });
+
+    it('falls back to getActiveDirectSales for logged-in users without a discovered active feed', async () => {
+        renderMarketplace();
+
+        expect(await screen.findByText('Book 1')).toBeInTheDocument();
+
+        expect(apiClient.getActiveDirectSales).toHaveBeenCalled();
     });
 
     it('shows loading state while marketplace data is being fetched', async () => {
@@ -237,8 +251,9 @@ describe('Marketplace', () => {
         renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
-        expect(screen.getByText('Book 3')).toBeInTheDocument();
-        expect(screen.queryByText('Book 2')).not.toBeInTheDocument();
+        const table = screen.getByRole('table');
+        expect(within(table).getByText('Book 3')).toBeInTheDocument();
+        expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
         expect(screen.queryByText(/could not load marketplace/i)).not.toBeInTheDocument();
     });
 
