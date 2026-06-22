@@ -18,9 +18,9 @@ actor Buyer
 participant ":MiteLovers" as System
 
 ' --- System dialog ---
-Buyer -> System: Request list of items \n on sale of a given author
+Buyer -> System : show me want I can do
 activate System
-System --> Buyer: Displays list of authors \nfor selection
+System --> Buyer : here is what you can do
 deactivate System
 Buyer -> System: Selects an author
 activate System

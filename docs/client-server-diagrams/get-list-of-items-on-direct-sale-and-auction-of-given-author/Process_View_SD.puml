@@ -21,7 +21,7 @@ autonumber
 actor "Buyer"
 participant ":Client" as Client
 participant ":Server" as Server
-database "DB" as DB
+participant "DB" as DB
 
 Buyer -> Client : Show me what I can do
 activate Client
@@ -37,19 +37,6 @@ end note
 deactivate Server
 Client --> Buyer : Here is what you can do
 deactivate Client
-
-
-Buyer -> Client : I want to see items on sale %n()of a given author
-activate Client
-Client -> Server : GET /authors
-activate Server
-Server -> DB : select authors
-DB --> Server : data
-Server --> Client : 200 [AuthorResponseDTO + links]
-deactivate Server
-Client --> Buyer : Displays list of authors %n()for selection
-deactivate Client
-
 
 Buyer -> Client : Selects an author
 activate Client
@@ -79,6 +66,5 @@ end note
 deactivate Server
 Client --> Buyer : Displays direct sales and %n()auctions of the selected author
 deactivate Client
-
 
 @enduml
