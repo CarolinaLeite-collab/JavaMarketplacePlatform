@@ -137,17 +137,18 @@ class PublicationServiceTest {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication newPublicationDouble = mock(Publication.class);
         Publication existingPublicationDouble = mock(Publication.class);
-        PublicationId publicationIdDouble = mock(PublicationId.class);
+        PublicationId newPublicationIdDouble = mock(PublicationId.class);
+        PublicationId existingPublicationIdDouble = mock(PublicationId.class);
         String synopsis = "synopsis";
 
         when(_iAuthorRepoDouble.containsOfIdentity(authorIdDouble)).thenReturn(true);
         when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
         when(_publicationFactoryDouble.createPublication(titleDouble, authorIdDouble, yearDouble,
-                genreIdDouble,synopsis)).thenReturn(existingPublicationDouble);
-        when(newPublicationDouble.identity()).thenReturn(publicationIdDouble);
-        when(_iPublicationRepoDouble.containsOfIdentity(publicationIdDouble)).thenReturn(true);
-        when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
-                .thenReturn(Optional.of(existingPublicationDouble));
+                genreIdDouble,synopsis)).thenReturn(newPublicationDouble);
+        when(newPublicationDouble.identity()).thenReturn(newPublicationIdDouble);
+
+        when(_iPublicationRepoDouble.containsOfIdentity(newPublicationIdDouble)).thenReturn(true);
+        when(_iPublicationRepoDouble.ofIdentity(newPublicationIdDouble)).thenReturn(Optional.of(existingPublicationDouble));
 
         // Act
         Publication result = _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble, synopsis);
