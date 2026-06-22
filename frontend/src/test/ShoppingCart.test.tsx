@@ -34,7 +34,7 @@ const mockContextValue = {
                     id: 'cart-line-2',
                     name: '1984',
                     price: '10.00 EUR',
-                    priceValue: 10.00,
+                    priceValue: 10,
                     currency: 'EUR',
                     deleteHref:
                         'http://localhost:8081/shopping-carts/SC-1/shopping-cart-lines/SCL-2',
@@ -137,4 +137,23 @@ describe('ShoppingCart', () => {
         expect(screen.queryByText('Dune')).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /checkout/i })).not.toBeInTheDocument();
     });
+
+    //Test denied DELETE
+    vi.mocked(
+        apiClient.getAllowedMethodsByHref
+    ).mockResolvedValue(['GET', 'OPTIONS']);
+    expect(apiClient.deleteByHref).not.toHaveBeenCalled();
+    expect(mockDispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+            type: REMOVE_FROM_CART,
+        }),
+    );
+
+    //Test denied PATCH
+    expect(
+        apiClient.patchNoBodyByHref
+    ).not.toHaveBeenCalled();
+
+
+
 });

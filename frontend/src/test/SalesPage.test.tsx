@@ -227,4 +227,12 @@ describe('SalesPage', () => {
             await screen.findByText(/could not load your purchases/i),
         ).toBeInTheDocument();
     });
+
+    //Add denied-permission tests
+    mockGetSalesAllowedMethods.mockResolvedValue([
+        'OPTIONS',
+    ]);
+    expect(mockGetByHref).not.toHaveBeenCalled();
+
+
 });

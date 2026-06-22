@@ -9,6 +9,7 @@ import { useUser } from '../../context/UserContext';
 import AppContext from '../../context/AppContext';
 import { ADD_TO_CART } from '../../context/cart/CartActions';
 import { apiClient } from '../../services/apiClient';
+import { notifications } from '@mantine/notifications';
 
 function formatTimeRemaining(endDateIso, status) {
     if (!endDateIso) return 'N/A';
@@ -49,7 +50,6 @@ export default function DirectSaleDetailPage() {
     const [publisherInfo, setPublisherInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
 
     async function loadDirectSale() {
         try {
@@ -187,13 +187,17 @@ export default function DirectSaleDetailPage() {
 
     async function handleAddToCart() {
         if (!addToCartHref) {
-            setError('Add to cart is not available.');
+            notifications.show({
+                title: 'Item could not be added to cart',
+                message: 'Adding this item to the cart is not available.',
+                color: 'red',
+                autoClose: 3000,
+            });
             return;
         }
 
         try {
             setError('');
-            setSuccessMessage('');
 
             const response = await apiClient.postByHref(addToCartHref, {
                 directSaleId: directSale.directSaleId,
@@ -212,10 +216,20 @@ export default function DirectSaleDetailPage() {
                 },
             });
 
-            setSuccessMessage('Item added to cart.');
+            notifications.show({
+                title: 'Item added to cart',
+                message: 'The item was successfully added to your cart.',
+                color: 'green',
+                autoClose: 3000,
+            });
         } catch (error) {
             console.error(error);
-            setError('Could not add item to cart.');
+            notifications.show({
+                title: 'Item could not be added to cart',
+                message: 'There was an issue adding this item to your cart.',
+                color: 'red',
+                autoClose: 3000,
+            });
         }
     }
 
@@ -223,7 +237,6 @@ export default function DirectSaleDetailPage() {
         <DefaultLayout title="" subtitle="">
             <Stack gap="xl">
                 {error && <Alert color="red" title="Error">{error}</Alert>}
-                {successMessage && <Alert color="green" title="Success">{successMessage}</Alert>}
 
                 <Title order={1} fz={50} fw={600} style={{ fontFamily: 'EB Garamond, serif' }}>
                     <Text span fz={30} fw={500}>{publicationType}:</Text>{' '}
