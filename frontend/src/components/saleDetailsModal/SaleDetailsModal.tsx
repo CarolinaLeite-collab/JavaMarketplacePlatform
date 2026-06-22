@@ -6,7 +6,7 @@ interface SaleItemDetail {
     author: string;
     genre: string;
     condition: string;
-    price: string;
+    price: string | null;
     seller: string;
     saleType: "Direct Sale" | "Auction";
     directSaleId: string | null;
@@ -17,11 +17,12 @@ interface SaleItemDetail {
 interface SaleDetailsModalProps {
     opened: boolean;
     item: SaleItemDetail | null;
+    canSeePrice: boolean;
     onClose?: () => void;
     onSeeMore?: () => void;
 }
 
-export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetailsModalProps) {
+export function SaleDetailsModal({ opened, item, canSeePrice, onClose, onSeeMore }: SaleDetailsModalProps) {
     if (!item) return null;
 
     const handleSeeMore = () => {
@@ -75,21 +76,29 @@ export function SaleDetailsModal({ opened, item, onClose, onSeeMore }: SaleDetai
                         </Badge>
                     </Group>
 
-                    <Box
-                        mt={6}
-                        px={10}
-                        py={4}
-                        style={{
-                            borderRadius: '999px',
-                            backgroundColor: '#eef0ff',
-                            display: 'inline-block',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Text fw={600} size="md" c="#4f6df5">
-                            {item.price}
+                    {canSeePrice ? (
+                        item.price && (
+                            <Box
+                                mt={6}
+                                px={10}
+                                py={4}
+                                style={{
+                                    borderRadius: '999px',
+                                    backgroundColor: '#eef0ff',
+                                    display: 'inline-block',
+                                    textAlign: 'center',
+                                }}
+                            >
+                                <Text fw={600} size="md" c="#4f6df5">
+                                    {item.price}
+                                </Text>
+                            </Box>
+                        )
+                    ) : (
+                        <Text c="dimmed">
+                            Register or log in to see price
                         </Text>
-                    </Box>
+                    )}
                 </Stack>
             </Group>
 
