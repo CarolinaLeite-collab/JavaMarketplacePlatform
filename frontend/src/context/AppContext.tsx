@@ -27,6 +27,7 @@ interface AppState {
         directSalesHref: string | null;
         directSalesWithoutPriceHref: string | null;
         shoppingCartHref: string | null;
+        salesHref: string | null;
     };
     lists: {
         lists: RowData[];
@@ -58,6 +59,7 @@ const defaultState: AppState = {
         directSalesHref: null,
         directSalesWithoutPriceHref: null,
         shoppingCartHref: null,
+        salesHref: null,
     },
     lists: {
         lists: [],

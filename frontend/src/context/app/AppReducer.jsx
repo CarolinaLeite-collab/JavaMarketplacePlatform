@@ -16,6 +16,7 @@ export const initialAppState = {
     authorsHref: null,
     libraryAddHref: null,
     shoppingCartHref: null,
+    salesHref: null,
 };
 
 /**
@@ -47,6 +48,7 @@ export function appReducer(state, action) {
                     'http://localhost:8081/publishingCompanies',
                 shoppingCartHref:
                     action.payload?.['shopping-cart']?.href ?? null,
+                salesHref: action.payload?.sales?.href ?? null,
             };
 
         case GET_LIST_OPTIONS_SUCCESS:
