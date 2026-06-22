@@ -45,10 +45,9 @@ public class PublicationService {
 
 
     @Transactional
-    public Publication registerPublication(Title title,
-                                                      AuthorId authorId,
-                                                      Year releaseYear,
-                                                      GenreId genreId
+    public Publication registerPublication(Title title, AuthorId authorId, Year releaseYear,
+                                           GenreId genreId, String synopsis
+
     ) {
 
         if (!_iAuthorRepo.containsOfIdentity(authorId)) {
@@ -59,7 +58,7 @@ public class PublicationService {
             throw new NoSuchElementException("Genre does not exist");
         }
 
-        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId);
+        Publication newPublication = _publicationFactory.createPublication(title, authorId, releaseYear, genreId, synopsis);
 
         if (_iPublicationRepo.containsOfIdentity(newPublication.identity())) {
             return _iPublicationRepo.ofIdentity(newPublication.identity())

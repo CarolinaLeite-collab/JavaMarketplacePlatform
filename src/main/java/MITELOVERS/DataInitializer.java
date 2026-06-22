@@ -223,88 +223,145 @@ public class DataInitializer {
             authorRepo.save(berghauserPont);
 
             log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Meta Berghauser Pont");
+
+            // -------------------------------------------------------
+            // Synopsis
+
+            String novaYorkDeliranteSynopsis =
+                    "An exploration of New York City's urban evolution, presenting Manhattan as a laboratory of architecture, culture, and imagination where density and chaos shaped the modern metropolis.";
+
+            String nineteenEightyFourSynopsis =
+                    "In a totalitarian regime where the State controls truth and constantly watches its citizens, Winston Smith struggles to preserve freedom of thought and his own identity.";
+
+            String foundationSeriesSynopsis =
+                    "As a galactic empire collapses, scientists use psychohistory to preserve knowledge and reduce centuries of chaos by establishing the Foundation.";
+
+            String sapiensSynopsis =
+                    "A journey through the history of humankind, from early hunter-gatherers to modern civilization, exploring how ideas, cultures, and revolutions shaped Homo sapiens.";
+
+            String patternSynopsis =
+                    "An exploration of the relationship between architecture, nature, and human behavior, showing how recurring patterns can inspire more vibrant and functional spaces.";
+
+            String shortnessOfLifeSynopsis =
+                    "Seneca reflects on the value of time and existence, arguing that life is long enough when lived with purpose, wisdom, and virtue.";
+
+            String e1027Synopsis =
+                    "A study of the iconic E-1027 house, highlighting Eileen Gray's innovative vision and the building's lasting importance in the history of modern architecture.";
+
+            String spaceSettlementsSynopsis =
+                    "A visionary proposal for human colonies in space, exploring scientific and technological solutions for living beyond Earth.";
+
+            String hipocritoesEOlhigarcasSynopsis =
+                    "A critique of political and economic elites, examining the structures of power, inequality, and influence that shape contemporary societies.";
+
+            String intermitenciasSynopsis =
+                    "When nobody dies in an entire country, society faces unexpected consequences while Death herself questions her role and the meaning of human existence.";
+
+            String anitaVasComprasSynopsis =
+                    "Anita joins her family on a shopping trip, discovering products, people, and everyday lessons through a simple and educational adventure.";
+
+            String spaceMatrixSynopsis =
+                    "A reflection on architecture and urbanism through the relationship between space, culture, and technology, proposing new ways of understanding the built environment.";
+
             // -------------------------------------------------------
             // Publications
             Publication novaYorkDelirante = publicationFactory.createPublication(
                     new Title("Nova York Delirante"),
                     koolhaas.identity(),
                     Year.of(1978),
-                    genre1.identity()  // Arts
+                    genre1.identity(),  // Arts
+                    novaYorkDeliranteSynopsis
+
             );
 
             Publication nineteenEightyFour = publicationFactory.createPublication(
                     new Title("1984"),
                     orwell.identity(),
                     Year.of(1949),
-                    genre4.identity()  // Fiction
+                    genre4.identity(),  // Fiction
+                    nineteenEightyFourSynopsis
+
+
             );
             Publication foundationSeries = publicationFactory.createPublication(
                     new Title("Foundation"),
                     asimov.identity(),
                     Year.of(1951),
-                    genre10.identity()  // Science Fiction
+                    genre10.identity(),  // Science Fiction
+                    foundationSeriesSynopsis
             );
             Publication sapiens = publicationFactory.createPublication(
                     new Title("Sapiens"),
                     yuval.identity(),
                     Year.of(2011),
-                    genre7.identity()  // Non-Fiction
+                    genre7.identity(),  // Non-Fiction
+                    sapiensSynopsis
+
             );
 
             Publication pattern = publicationFactory.createPublication(
                     new Title("A Pattern Language"),
                     alexander.identity(),
                     Year.of(1977),
-                    genre11.identity()  // Non-Fiction
+                    genre11.identity(),  // Non-Fiction
+                    patternSynopsis
             );
 
             Publication shortnessOfLife = publicationFactory.createPublication(
                     new Title("On the Shortness of Life"),
                     seneca.identity(),
                     Year.of(49),
-                    genre7.identity() // Non-Fiction
+                    genre7.identity(), // Non-Fiction
+                    shortnessOfLifeSynopsis
             );
 
             Publication e1027 = publicationFactory.createPublication(
                     new Title("E.1027. Maison en Bord de Mer"),
                     eg.identity(),
                     Year.of(1929),
-                    genre1.identity() // Arts / Architecture
+                    genre1.identity(), // Arts / Architecture
+                    e1027Synopsis
             );
 
             Publication spaceSettlements = publicationFactory.createPublication(
                     new Title("Space Settlements"),
                     scharmen.identity(),
                     Year.of(2019),
-                    genre1.identity() // Arts / Architecture
+                    genre1.identity(), // Arts / Architecture
+                    spaceSettlementsSynopsis
             );
 
             Publication hipocritoesEOlhigarcas = publicationFactory.createPublication(
                     new Title("Hipocritões e Oligarcas"),
                     ruiTavares.identity(),
                     Year.of(2025),
-                    genre7.identity() // Non-Fiction
+                    genre7.identity(), // Non-Fiction
+                    hipocritoesEOlhigarcasSynopsis
             );
 
             Publication intermitencias = publicationFactory.createPublication(
                     new Title("As Intermitências da Morte"),
                     saramago.identity(),
                     Year.of(2005),
-                    genre4.identity()  // Fiction
+                    genre4.identity(),  // Fiction
+                    intermitenciasSynopsis
+
             );
 
             Publication anitaVasCompras = publicationFactory.createPublication(
                     new Title("Anita vai às Compras"),
                     delahaye.identity(),
                     Year.of(1954),
-                    genre8.identity()  // Other
+                    genre8.identity(),  // Other
+                    anitaVasComprasSynopsis
             );
 
             Publication spaceMatrix = publicationFactory.createPublication(
                     new Title("Spacematrix: Space, Density and Urban Form"),
                     berghauserPont.identity(),
                     Year.of(2005),
-                    genre1.identity()
+                    genre1.identity(),
+                    spaceMatrixSynopsis
             );
 
             publicationRepo.save(shortnessOfLife);

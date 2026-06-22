@@ -23,9 +23,10 @@ public class PublicationAssembler {
         AuthorId authorId = publication.getAuthorId();
         Year releaseYear = publication.getReleaseYear();
         GenreId genreId = publication.getGenreId();
+        String synopsis = publication.getSynopsis();
 
 
-        return new PublicationDataModel(publicationId.toString(), title.toString(), authorId.toString(), releaseYear.toString(), genreId.toString());
+        return new PublicationDataModel(publicationId.toString(), title.toString(), authorId.toString(), releaseYear.toString(), genreId.toString(), synopsis);
     }
 
     public Publication toDomain(PublicationDataModel publicationDataModel) {
@@ -33,10 +34,11 @@ public class PublicationAssembler {
         AuthorId authorId = new AuthorId (publicationDataModel.getAuthorId());
         Year releaseYear = Year.parse(publicationDataModel.getReleaseYear());
         GenreId genreId = new GenreId(publicationDataModel.getGenreId());
+        String synopsis = publicationDataModel.getSynopsis();
 
         PublicationId publicationId = new PublicationId(title, authorId, releaseYear);
 
-        Publication publication = _publicationFactory.createPublication(publicationId, title, authorId, releaseYear, genreId);
+        Publication publication = _publicationFactory.createPublication(publicationId, title, authorId, releaseYear, genreId, synopsis);
 
         return publication;
     }

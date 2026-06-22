@@ -47,10 +47,13 @@ deactivate Pub
 ASSMBLR -> Pub : stringGenreId = getGenreId().toString()
 activate Pub
 deactivate Pub
+ASSMBLR -> Pub : stringSynopsis = getSynopsis()
+activate Pub
+deactivate Pub
 
 
 create "dmToSave:PublicationDataModel"
-ASSMBLR -->> "dmToSave:PublicationDataModel" : <<create>>(stringId, stringTitle, stringAuthorId, stringReleaseYear, stringGenreId)
+ASSMBLR -->> "dmToSave:PublicationDataModel" : <<create>>(stringId, stringTitle, stringAuthorId, stringReleaseYear, stringGenreId, synopsis)
 ASSMBLR --> JPAREPO : dmToSave
 deactivate ASSMBLR
 
@@ -91,17 +94,25 @@ deactivate "savedDM:PublicationDataModel"
 create "releaseYear:Year"
 ASSMBLR -> "releaseYear:Year" : <<create>>(stringYear)
 
+ASSMBLR -> "savedDM:PublicationDataModel" : stringSynopsis = getSynopsis()
+activate "savedDM:PublicationDataModel"
+deactivate "savedDM:PublicationDataModel"
+create "synopsis:String"
+ASSMBLR -> "synopsis:String" : <<create>>(synopsis)
+
+
 ASSMBLR -> "savedDM:PublicationDataModel" : stringGenreId = getGenreStringId()
 activate "savedDM:PublicationDataModel"
 deactivate "savedDM:PublicationDataModel"
 create "genreId:GenreId"
+
+
+
 ASSMBLR -> "genreId:GenreId" : <<create>>(genreId)
-
-
-ASSMBLR -> FACTORY : createPublication(publicationId, title, authorId, releaseYear, genreId)
+ASSMBLR -> FACTORY : createPublication(publicationId, title, authorId, releaseYear, genreId, synopsis)
 activate FACTORY
 create "reconstructedPublication:Publication"
-FACTORY -->> "reconstructedPublication:Publication" : <<create>>(publicationId, title, authorId, releaseYear, genreId)
+FACTORY -->> "reconstructedPublication:Publication" : <<create>>(publicationId, title, authorId, releaseYear, genreId, synopsis)
 FACTORY --> ASSMBLR : reconstructedPublication
 deactivate FACTORY
 ASSMBLR --> JPAREPO : reconstructedPublication

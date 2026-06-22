@@ -34,6 +34,9 @@ describe('libraryReducer', () => {
                 itemId: 'ITM-001',
                 title: 'Dune',
                 picture: null,
+                authorName: 'Frank Herbert',
+                publicationType: 'BOOK',
+                identifier: '9780441172719',
                 _links: {
                     self: { href: `${BASE_URL}/my-library/ITM-001` }
                 }
@@ -52,6 +55,9 @@ describe('libraryReducer', () => {
                 itemId: 'ITM-001',
                 title: 'Dune',
                 picture: null,
+                authorName: 'Frank Herbert',
+                publicationType: 'Book',
+                identifier: '9780441172719',
                 links: [
                     {
                         rel: 'self',
@@ -154,6 +160,9 @@ describe('libraryReducer', () => {
                     itemId: 'ITM-001',
                     title: 'Dune',
                     picture: null,
+                    authorName: null,
+                    publicationType: null,
+                    identifier: null,
                     links: []
                 }
             ]
@@ -165,6 +174,9 @@ describe('libraryReducer', () => {
                 itemId: 'ITM-002',
                 title: 'Foundation',
                 picture: 'cover.jpg',
+                authorName: 'Isaac Asimov',
+                publicationType: 'BOOK',
+                identifier: '9780553293357',
                 _links: {
                     self: { href: `${BASE_URL}/my-library/ITM-002` }
                 }
@@ -180,6 +192,9 @@ describe('libraryReducer', () => {
                 itemId: 'ITM-002',
                 title: 'Foundation',
                 picture: 'cover.jpg',
+                authorName: 'Isaac Asimov',
+                publicationType: 'Book',
+                identifier: '9780553293357',
                 links: [
                     {
                         rel: 'self',
@@ -232,6 +247,9 @@ describe('libraryReducer', () => {
                 itemId: 'ITM-003',
                 title: 'No Links Book',
                 picture: null,
+                authorName: null,
+                publicationType: null,
+                identifier: null,
                 links: []
             }
         ]);
@@ -245,6 +263,45 @@ describe('libraryReducer', () => {
         const result = libraryReducer(initialState, action);
 
         expect(result).toEqual(initialState);
+    });
+
+    it('maps authorName, publicationType and identifier to null when absent on FETCH_LIBRARY_SUCCESS', () => {
+        const action = {
+            type: FETCH_LIBRARY_SUCCESS,
+            payload: [
+                {
+                    itemId: 'ITM-004',
+                    title: 'Partial Book',
+                    picture: null
+                }
+            ]
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.items[0].authorName).toBeNull();
+        expect(result.items[0].publicationType).toBeNull();
+        expect(result.items[0].identifier).toBeNull();
+    });
+
+    it('formats publicationType to title case on FETCH_LIBRARY_SUCCESS', () => {
+        const action = {
+            type: FETCH_LIBRARY_SUCCESS,
+            payload: [
+                {
+                    itemId: 'ITM-005',
+                    title: 'Magazine Item',
+                    picture: null,
+                    authorName: 'Some Author',
+                    publicationType: 'MAGAZINE',
+                    identifier: '1234-5678'
+                }
+            ]
+        };
+
+        const result = libraryReducer(initialState, action);
+
+        expect(result.items[0].publicationType).toBe('Magazine');
     });
 
 });

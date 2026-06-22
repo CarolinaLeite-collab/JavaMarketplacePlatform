@@ -76,6 +76,7 @@ class PublicationAssemblerTest {
         when(_publicationDataModelDouble.getReleaseYear()).thenReturn("2000");
         when(_publicationDataModelDouble.getGenreId()).thenReturn("Romance");
         when(_publicationDataModelDouble.getTitle()).thenReturn("titleDouble");
+        when(_publicationDataModelDouble.getSynopsis()).thenReturn("Test synopsis");
 
 
         when(_publicationDouble.getAuthorId()).thenReturn(_authorIdDouble);
@@ -84,7 +85,7 @@ class PublicationAssemblerTest {
         when(_publicationDouble.getReleaseYear()).thenReturn(_releaseYearDouble);
         when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
 
-        when(_publicationFactoryDouble.createPublication(any(PublicationId.class), any(Title.class), any(AuthorId.class), any(Year.class), any(GenreId.class))).thenReturn(_publicationDouble);
+        when(_publicationFactoryDouble.createPublication(any(PublicationId.class), any(Title.class), any(AuthorId.class), any(Year.class), any(GenreId.class), any(String.class))).thenReturn(_publicationDouble);
 
         //SUT
         PublicationAssembler assembler = new PublicationAssembler(_publicationFactoryDouble);
@@ -110,6 +111,7 @@ class PublicationAssemblerTest {
         when(_publicationDataModelDouble.getReleaseYear()).thenReturn("2000");
         when(_publicationDataModelDouble.getGenreId()).thenReturn("genreIdDouble");
         when(_publicationDataModelDouble.getTitle()).thenReturn("titleDouble");
+        when(_publicationDataModelDouble.getSynopsis()).thenReturn("Test synopsis");
 
         when(_publicationDouble.identity()).thenReturn(_publicationIdDouble);
         when(_publicationDouble.getReleaseYear()).thenReturn(_releaseYearDouble);
@@ -124,7 +126,7 @@ class PublicationAssemblerTest {
         when(_titleDouble.toString()).thenReturn("titleDouble");
 
 
-        when(_publicationFactoryDouble.createPublication(any(PublicationId.class), any(Title.class), any(AuthorId.class), any(Year.class), any(GenreId.class))).thenReturn(_publicationDouble);
+        when(_publicationFactoryDouble.createPublication(any(PublicationId.class), any(Title.class), any(AuthorId.class), any(Year.class), any(GenreId.class), any(String.class))).thenReturn(_publicationDouble);
 
         // SUT
         PublicationAssembler assembler = new PublicationAssembler(_publicationFactoryDouble);
