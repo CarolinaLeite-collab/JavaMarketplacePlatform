@@ -1,0 +1,34 @@
+@startuml
+'==== basic style ====
+hide stereotype
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+
+autonumber
+
+title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/ISSN - SSD"
+
+' --- Actor and participants ---
+
+actor User
+participant ":Mitelovers" as mite
+
+User -> mite : I want to access "My Library"
+activate mite
+mite --> User : Items of your library
+deactivate mite
+
+User -> mite : I want to sort the list of items in library by \nby title/ author/ type/ ISBN/ISSN
+activate mite
+mite --> User : Sorted items of your library
+deactivate mite
+
+@enduml
