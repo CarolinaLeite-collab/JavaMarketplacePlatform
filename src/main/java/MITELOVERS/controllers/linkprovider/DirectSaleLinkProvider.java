@@ -129,7 +129,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                 && !dto.getSellerId().equals(email)) {
 
             ShoppingCart cart =
-                    _shoppingCartService.findCartByUserId(email);
+                    _shoppingCartService.findCartByUserId(user.identity());
 
             dto.add(
                     linkTo(methodOn(ShoppingCartRestController.class)
@@ -138,7 +138,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                                     cart.identity().toString(),
                                     null
                             ))
-                            .withRel("add-to-cart")
+                            .withRel("shopping-cart")
             );
         }
     }
