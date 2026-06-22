@@ -1,0 +1,73 @@
+@startuml
+title "As a User, in the Web UI, I want to sort the list of publications\nin my library by title, author, type or ISBN/ISSN." - SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+actor User
+participant ":Frontend" as Frontend
+participant ":Backend" as Backend
+
+note over User, Frontend
+Assumes the user has already opened their library.
+
+To determine the actions allowed on the library,
+the Frontend calls OPTIONS /my-library.
+
+The response includes a "library" link pointing to
+"/my-library/{?sort}".
+
+The Frontend follows and expands this href instead
+of using a hardcoded URL.
+end note
+
+User -> Frontend : I want to sort the list of publications in my library
+activate Frontend
+
+note right of Frontend
+Supported values:
+- title
+- author
+- type
+- identifier (ISBN/ISSN)
+end note
+
+Frontend -> Backend : OPTIONS /my-library\nX-User-Id: {email}
+activate Backend
+
+ref over Backend
+[[rest-sd-ref-diagrams/OPTIONS_My_Library_SD.puml OPTIONS for user on /my-library]]
+end ref
+
+Backend --> Frontend : 200 OK + [GET, POST, OPTIONS]\n+ _links
+deactivate Backend
+
+note over Frontend
+The "library" href means that the user may
+retrieve their library using the optional
+"sort" query parameter.
+end note
+
+Frontend -> Backend : GET {library href expanded with sort={sort}}\n+ X-User-Id header
+activate Backend
+
+ref over Backend
+[[rest-sd-ref-diagrams/GET_Sorted_My_Library_SD.puml GET user's library sorted by selected field]]
+end ref
+
+Backend --> Frontend : 200 OK\n+ Collection of LibraryItemResponseDTO\n+ _links
+deactivate Backend
+
+Frontend --> User : Display sorted library publications
+deactivate Frontend
+
+@enduml
