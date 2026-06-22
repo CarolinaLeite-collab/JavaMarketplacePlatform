@@ -12,6 +12,18 @@ export async function loadCart(dispatch, shoppingCartHref) {
         return;
     }
 
+    const allowedMethods = await apiClient.getShoppingCartAllowedMethods();
+
+    //Options - confirms if user can do the GET
+    if (!allowedMethods.includes('GET')) {
+        dispatch({
+            type: LOAD_CART,
+            payload: [],
+        });
+        return;
+    }
+    //
+
     const cartDiscovery = await apiClient.getByHref(shoppingCartHref);
 
     const cartHref = cartDiscovery?._links?.self?.href;

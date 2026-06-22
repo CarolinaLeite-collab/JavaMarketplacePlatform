@@ -30,6 +30,13 @@ export default function SalesPage() {
             setSales([]);
 
             try {
+                const allowedMethods = await apiClient.getSalesAllowedMethods();
+
+                if (!allowedMethods.includes('GET')) {
+                    setSales([]);
+                    return;
+                }
+
                 const collection = await apiClient.getByHref(salesHref);
                 const links = normalizeLinks(collection?._links?.sale);
 

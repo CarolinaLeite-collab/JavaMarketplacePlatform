@@ -9,8 +9,11 @@ import { apiClient } from '../services/apiClient';
 vi.mock('../services/apiClient', () => ({
     apiClient: {
         getByHref: vi.fn(),
+        getSalesAllowedMethods: vi.fn(),
     },
 }));
+
+const mockGetSalesAllowedMethods = vi.mocked(apiClient.getSalesAllowedMethods);
 
 const mockGetByHref = vi.mocked(apiClient.getByHref);
 
@@ -60,6 +63,7 @@ function renderSalesPage() {
 describe('SalesPage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockGetSalesAllowedMethods.mockResolvedValue(['GET', 'OPTIONS']);
     });
 
     it('fetches the Sales collection through salesHref', async () => {

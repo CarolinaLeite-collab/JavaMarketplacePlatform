@@ -42,6 +42,19 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
         }
 
         try {
+            //Hateoas
+            const allowedMethods =
+                await apiClient.getAllowedMethodsByHref(
+                    item.deleteHref
+                );
+
+            if (!allowedMethods.includes('DELETE')) {
+                console.error(
+                    'User is not allowed to remove this cart item'
+                );
+                return;
+            }
+            //
             await apiClient.deleteByHref(item.deleteHref);
 
             dispatch({
@@ -68,6 +81,12 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                 cartDiscovery?._links?.self?.href;
 
             if (!cartHref) {
+                return;
+            }
+            const allowedMethods = await apiClient.getAllowedMethodsByHref(cartHref);
+
+            if (!allowedMethods.includes('PATCH')) {
+                console.error('User is not allowed to clear this cart');
                 return;
             }
 

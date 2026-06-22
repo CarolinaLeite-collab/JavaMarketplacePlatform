@@ -4,6 +4,16 @@ import { ShoppingCart } from '../components/shoppingCart/ShoppingCart.tsx';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { REMOVE_FROM_CART } from '../context/cart/CartActions';
+import { apiClient } from '../services/apiClient';
+
+vi.mock('../services/apiClient', () => ({
+    apiClient: {
+        getByHref: vi.fn(),
+        deleteByHref: vi.fn(),
+        patchNoBodyByHref: vi.fn(),
+        getAllowedMethodsByHref: vi.fn(),
+    },
+}));
 
 const mockDispatch = vi.fn();
 
@@ -46,6 +56,12 @@ function renderComponent(props = {}, contextValue = mockContextValue) {
 describe('ShoppingCart', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
+        vi.mocked(apiClient.getAllowedMethodsByHref).mockResolvedValue([
+            'GET',
+            'PATCH',
+            'DELETE',
+            'OPTIONS',
+        ]);
     });
 
     it('renders modal title when opened', () => {
@@ -121,12 +137,4 @@ describe('ShoppingCart', () => {
         expect(screen.queryByText('Dune')).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /checkout/i })).not.toBeInTheDocument();
     });
-
-    vi.mock('../services/apiClient', () => ({
-        apiClient: {
-            getByHref: vi.fn(),
-            deleteByHref: vi.fn(),
-            patchNoBodyByHref: vi.fn(),
-        },
-    }));
 });
