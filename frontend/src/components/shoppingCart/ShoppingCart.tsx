@@ -159,7 +159,7 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                                 </Box>
 
                                 <Text fw={700} miw={100} ta="right">
-                                    {item.price}
+                                    {Number(item.priceValue).toFixed(2)} {item.currency}
                                 </Text>
 
                                 <Button
