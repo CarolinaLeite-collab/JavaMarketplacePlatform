@@ -29,20 +29,19 @@ public class SaleService {
     private final SaleLineFactory _saleLineFactory;
 
     public SaleService(ISaleRepo saleRepo,
-                       SaleLineFactory saleLineFactory,
                        ShoppingCartService shoppingCartService,
                        PaymentService paymentService,
                        DirectSaleService directSaleService,
                        ItemService itemService,
                        SaleFactory saleFactory,
-                       SaleLineFactory saleLineFactory1) {
+                       SaleLineFactory saleLineFactory) {
         _saleRepo = saleRepo;
         _shoppingCartService = shoppingCartService;
         _paymentService = paymentService;
         _directSaleService = directSaleService;
         _itemService = itemService;
         _saleFactory = saleFactory;
-        _saleLineFactory = saleLineFactory1;
+        _saleLineFactory = saleLineFactory;
     }
 
     @Transactional
@@ -77,10 +76,9 @@ public class SaleService {
     }
 
     @Transactional
-    public Sale createSaleFromCart(ShoppingCartId cartId, String email) {
+    public Sale createSaleFromCart(ShoppingCartId cartId) {
 
-        // MUDAR METODO PARA ACEITAR CARTID
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId.toString());
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
 
         if (cart.getCartLines().isEmpty()) {
             throw new IllegalStateException("Cannot checkout an empty cart!");
@@ -126,7 +124,7 @@ public class SaleService {
             }
 
             newSale.markSaleAsCompleted();
-            _shoppingCartService.clearShoppingCartLines(cart.identity().toString());
+            _shoppingCartService.clearShoppingCartLines(cartId);
             _saleRepo.save(newSale);
 
         } else {
