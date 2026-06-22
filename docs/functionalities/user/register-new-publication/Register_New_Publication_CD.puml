@@ -19,7 +19,7 @@ class RegisterPublicationUI {}
 
 package "controller" {
 class RegisterNewPublicationController {
-  + registerPublication(Title title, AuthorId authorId, Year releaseYear,\nGenreId genreId) : Publication
+  + registerPublication(title : Title, authorId : AuthorId, releaseYear : Year,\n genreId : GenreId, synopsis : String) : Publication
 }
 }
 
@@ -50,8 +50,8 @@ package "domain"{
         }
 
         class PublicationFactory <<Factory>> {
-            + createPublication(Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
-            + createPublication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear,\n GenreId genreId) : Publication
+            + createPublication(title : Title, authorId : AuthorId, releaseYear : Year,\n genreId : GenreId, synopsis : String) : Publication
+            + createPublication(publicationId : PublicationId, title : Title, authorId : AuthorId, releaseYear : Year,\n genreId :  GenreId, synopsis : String) : Publication
         }
     }
 }
