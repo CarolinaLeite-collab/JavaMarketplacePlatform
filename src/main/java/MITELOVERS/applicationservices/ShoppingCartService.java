@@ -21,19 +21,15 @@ public class ShoppingCartService {
     private final ShoppingCartLineFactory _shoppingCartLineFactory;
 
     @Transactional
-    public ShoppingCart findCartByCartId(String cartId) {
+    public ShoppingCart findCartByCartId(ShoppingCartId cartId) {
 
-        ShoppingCartId shoppingCartId = new ShoppingCartId(cartId);
-
-        return _shoppingCartRepo.ofIdentity(shoppingCartId)
+        return _shoppingCartRepo.ofIdentity(cartId)
                 .orElseThrow(() -> new NoSuchElementException("ShoppingCart not found!"));
 
     }
 
     @Transactional
-    public ShoppingCart findCartByUserId(String email) {
-
-        UserId userId = new UserId(new Email(email));
+    public ShoppingCart findCartByUserId(UserId userId) {
 
         return _shoppingCartRepo.findShoppingCartByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("ShoppingCart not found for user: " + userId));
@@ -41,7 +37,7 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCart clearShoppingCartLines(String cartId) {
+    public ShoppingCart clearShoppingCartLines(ShoppingCartId cartId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
 
@@ -54,13 +50,12 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCartLine findCartLineByLineCartId(String cartId, String cartLineId) {
+    public ShoppingCartLine findCartLineByLineCartId(ShoppingCartId cartId, ShoppingCartLineId cartLineId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
-        ShoppingCartLineId shoppingCartLineId = new ShoppingCartLineId(cartLineId);
 
         return shoppingCart.getCartLines().stream()
-                .filter(shoppingCartLine -> shoppingCartLine.identity().equals(shoppingCartLineId))
+                .filter(shoppingCartLine -> shoppingCartLine.identity().equals(cartLineId))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("ShoppingCartLine not found: " + cartLineId));
 
@@ -68,10 +63,10 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCartLine addCartLineToCart(String cartId, String directSaleId) {
+    public ShoppingCartLine addCartLineToCart(ShoppingCartId cartId, DirectSaleId directSaleId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
-        DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
+        DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId.toString());
 
         if (shoppingCart.getBuyerId().equals(directSale.getSellerId())) {
 
@@ -94,7 +89,7 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCart deleteCartLineByLineCartId(String cartId, String cartLineId) {
+    public ShoppingCart deleteCartLineByLineCartId(ShoppingCartId cartId, ShoppingCartLineId cartLineId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
         ShoppingCartLine shoppingCartLine = findCartLineByLineCartId(cartId, cartLineId);

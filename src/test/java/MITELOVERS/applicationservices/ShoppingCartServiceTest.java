@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class ShoppingCartServiceTest {
 
     @Mock
-    private IShoppingCartRepo _shoppingCartrepo;
+    private IShoppingCartRepo _shoppingCartRepo;
 
     @Mock
     private DirectSaleService _directSaleService;
@@ -37,11 +37,13 @@ class ShoppingCartServiceTest {
     @Test
     void findCartByCartIdReturnsCartWhenFound() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
 
         // Act
-        ShoppingCart result = _service.findCartByCartId("SC-A49F78E2");
+        ShoppingCart result = _service.findCartByCartId(cartIdDouble);
 
         // Assert
         assertSame(cartDouble, result);
@@ -50,21 +52,25 @@ class ShoppingCartServiceTest {
     @Test
     void findCartByCartIdThrowsWhenNotFound() {
         // Arrange
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.empty());
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.findCartByCartId("SC-A49F78E2"));
+                () -> _service.findCartByCartId(cartIdDouble));
     }
 
     @Test
     void findCartByUserIdReturnsCartWhenFound() {
         // Arrange
+        UserId userIdDouble = mock(UserId.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
-        when(_shoppingCartrepo.findShoppingCartByUserId(any())).thenReturn(Optional.of(cartDouble));
+
+        when(_shoppingCartRepo.findShoppingCartByUserId(userIdDouble)).thenReturn(Optional.of(cartDouble));
 
         // Act
-        ShoppingCart result = _service.findCartByUserId("pedro@aeiou.com");
+        ShoppingCart result = _service.findCartByUserId(userIdDouble);
 
         // Assert
         assertSame(cartDouble, result);
@@ -73,22 +79,26 @@ class ShoppingCartServiceTest {
     @Test
     void findCartByUserIdThrowsWhenNotFound() {
         // Arrange
-        when(_shoppingCartrepo.findShoppingCartByUserId(any())).thenReturn(Optional.empty());
+        UserId userIdDouble = mock(UserId.class);
+
+        when(_shoppingCartRepo.findShoppingCartByUserId(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.findCartByUserId("pedro@aeiou.com"));
+                () -> _service.findCartByUserId(userIdDouble));
     }
 
     @Test
     void clearShoppingCartLinesReturnsClearedCart() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
-        when(_shoppingCartrepo.save(cartDouble)).thenReturn(cartDouble);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
+        when(_shoppingCartRepo.save(cartDouble)).thenReturn(cartDouble);
 
         // Act
-        ShoppingCart result = _service.clearShoppingCartLines("SC-A49F78E2");
+        ShoppingCart result = _service.clearShoppingCartLines(cartIdDouble);
 
         // Assert
         assertSame(cartDouble, result);
@@ -97,27 +107,31 @@ class ShoppingCartServiceTest {
     @Test
     void clearShoppingCartLinesThrowsWhenCartNotFound() {
         // Arrange
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.empty());
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.clearShoppingCartLines("SC-A49F78E2"));
+                () -> _service.clearShoppingCartLines(cartIdDouble));
     }
 
     @Test
     void findCartLineByLineCartIdReturnsLineWhenFound() {
         // Arrange
-        ShoppingCartLineId shoppingCartLineId = new ShoppingCartLineId("SCL-1234ABCD");
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
 
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
-        when(lineDouble.identity()).thenReturn(shoppingCartLineId);
+        when(lineDouble.identity()).thenReturn(lineIdDouble);
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getCartLines()).thenReturn(List.of(lineDouble));
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
 
         // Act
-        ShoppingCartLine result = _service.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD");
+        ShoppingCartLine result = _service.findCartLineByLineCartId(cartIdDouble, lineIdDouble);
 
         // Assert
         assertSame(lineDouble, result);
@@ -126,31 +140,41 @@ class ShoppingCartServiceTest {
     @Test
     void findCartLineByLineCartIdThrowsWhenLineNotFound() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
+
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getCartLines()).thenReturn(List.of());
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD"));
+                () -> _service.findCartLineByLineCartId(cartIdDouble, lineIdDouble));
     }
 
     @Test
     void findCartLineByLineCartIdThrowsWhenCartNotFound() {
         // Arrange
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.empty());
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD"));
+                () -> _service.findCartLineByLineCartId(cartIdDouble, lineIdDouble));
     }
 
     @Test
     void addCartLineToCartReturnsNewCartLine() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
         UserId sellerIdDouble = mock(UserId.class);
-        UserId buyerIdDouble = mock(UserId.class); // different from seller
+        UserId buyerIdDouble = mock(UserId.class);
         Price priceDouble = mock(Price.class);
 
         DirectSale directSaleDouble = mock(DirectSale.class);
@@ -158,17 +182,18 @@ class ShoppingCartServiceTest {
         when(directSaleDouble.getSellerId()).thenReturn(sellerIdDouble);
         when(directSaleDouble.getPrice()).thenReturn(priceDouble);
 
-        ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(buyerIdDouble);
 
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+        ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
         when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
         when(_shoppingCartLineFactory.createNewShoppingCartLine(
                 directSaleIdDouble, sellerIdDouble, priceDouble)).thenReturn(newLineDouble);
 
         // Act
-        ShoppingCartLine result = _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE");
+        ShoppingCartLine result = _service.addCartLineToCart(cartIdDouble, directSaleIdDouble);
 
         // Assert
         assertSame(newLineDouble, result);
@@ -177,6 +202,10 @@ class ShoppingCartServiceTest {
     @Test
     void addCartLineToCartThrowsWhenBuyerIsAlsoSeller() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
         UserId sharedUserId = mock(UserId.class);
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
@@ -185,55 +214,63 @@ class ShoppingCartServiceTest {
         DirectSale directSaleDouble = mock(DirectSale.class);
         when(directSaleDouble.getSellerId()).thenReturn(sharedUserId);
 
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
         when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
 
         // Act + Assert
         assertThrows(IllegalStateException.class,
-                () -> _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE"));
+                () -> _service.addCartLineToCart(cartIdDouble, directSaleIdDouble));
     }
 
     @Test
     void addCartLineToCartThrowsWhenCartNotFound() {
         // Arrange
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.empty());
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE"));
+                () -> _service.addCartLineToCart(cartIdDouble, directSaleIdDouble));
     }
 
     @Test
     void addCartLineToCartThrowsWhenDirectSaleNotFound() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
         ShoppingCart cartDouble = mock(ShoppingCart.class);
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
         when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE"))
                 .thenThrow(new NoSuchElementException("DirectSale not found"));
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4DE"));
+                () -> _service.addCartLineToCart(cartIdDouble, directSaleIdDouble));
     }
 
     @Test
     void deleteCartLineByLineCartIdReturnsUpdatedCart() {
         // Arrange
-        ShoppingCartLineId lineId = new ShoppingCartLineId("SCL-1234ABCD");
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
 
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
-        when(lineDouble.identity()).thenReturn(lineId);
+        when(lineDouble.identity()).thenReturn(lineIdDouble);
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getCartLines()).thenReturn(List.of(lineDouble));
 
         ShoppingCart savedCartDouble = mock(ShoppingCart.class);
 
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
-        when(_shoppingCartrepo.save(cartDouble)).thenReturn(savedCartDouble);
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
+        when(_shoppingCartRepo.save(cartDouble)).thenReturn(savedCartDouble);
 
         // Act
-        ShoppingCart result = _service.deleteCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD");
+        ShoppingCart result = _service.deleteCartLineByLineCartId(cartIdDouble, lineIdDouble);
 
         // Assert
         assertSame(savedCartDouble, result);
@@ -242,22 +279,29 @@ class ShoppingCartServiceTest {
     @Test
     void deleteCartLineByLineCartIdThrowsWhenCartNotFound() {
         // Arrange
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.empty());
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.deleteCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD"));
+                () -> _service.deleteCartLineByLineCartId(cartIdDouble, lineIdDouble));
     }
 
     @Test
     void deleteCartLineByLineCartIdThrowsWhenLineNotFound() {
         // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
+
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getCartLines()).thenReturn(List.of());
-        when(_shoppingCartrepo.ofIdentity(any())).thenReturn(Optional.of(cartDouble));
+
+        when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
-                () -> _service.deleteCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD"));
+                () -> _service.deleteCartLineByLineCartId(cartIdDouble, lineIdDouble));
     }
 }
