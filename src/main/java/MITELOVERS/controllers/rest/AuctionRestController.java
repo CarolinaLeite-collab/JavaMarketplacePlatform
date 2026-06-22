@@ -123,7 +123,7 @@ public class AuctionRestController {
 
         User user = _userService.getUserByEmail(email);
 
-        List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethodsForSpecificAuction(user, auctionId);
+        List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethodsForSpecificAuction(user);
 
         return ResponseEntity.ok()
                 .allow(methods.toArray(HttpMethod[]::new))
@@ -154,7 +154,7 @@ public class AuctionRestController {
         User user = _userService.getUserByEmail(email);
 
         List<HttpMethod> methods =
-                _auctionLinkProvider.getAllowedMethodsForBids(user, auctionId);
+                _auctionLinkProvider.getAllowedMethodsForBids(user);
 
         ResponseEntity<Void> response = ResponseEntity.ok()
                 .allow(methods.toArray(HttpMethod[]::new))

@@ -266,7 +266,7 @@ class AuctionRestControllerTest {
         when(_auctionService.getAuctionById(auctionIdString))
                 .thenReturn(mock(Auction.class));
 
-        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionIdString))
+        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET));
 
         // Act + Assert
@@ -290,7 +290,7 @@ class AuctionRestControllerTest {
         when(_auctionService.getAuctionById(auctionIdString))
                 .thenReturn(mock(Auction.class));
 
-        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionIdString))
+        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
@@ -373,7 +373,7 @@ class AuctionRestControllerTest {
         when(_auctionService.getAuctionById(auctionIdString))
                 .thenReturn(mock(Auction.class));
 
-        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionIdString))
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET, HttpMethod.POST));
 
         // Act + Assert
@@ -398,7 +398,7 @@ class AuctionRestControllerTest {
         when(_auctionService.getAuctionById(auctionIdString))
                 .thenReturn(mock(Auction.class));
 
-        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionIdString))
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert

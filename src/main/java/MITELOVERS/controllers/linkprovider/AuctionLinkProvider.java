@@ -67,7 +67,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
     // Allowed HTTP methods for /auctions/{auctionId}
 
-    public List<HttpMethod> getAllowedMethodsForSpecificAuction(User user, String auctionId) {
+    public List<HttpMethod> getAllowedMethodsForSpecificAuction(User user) {
 
         List<HttpMethod> methods = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
     // Allowed HTTP methods for /auctions/{auctionId}/bids
 
-    public List<HttpMethod> getAllowedMethodsForBids(User user, String auctionId) {
+    public List<HttpMethod> getAllowedMethodsForBids(User user) {
         List<HttpMethod> methods = new ArrayList<>();
 
         methods.add(HttpMethod.OPTIONS);
