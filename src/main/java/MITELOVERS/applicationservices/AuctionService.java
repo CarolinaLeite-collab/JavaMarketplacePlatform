@@ -107,13 +107,13 @@ public class AuctionService {
     public record BidPlacementResult(Auction auction, Bid bid) {}
 
     @Transactional
-    public BidPlacementResult placeBid(String auctionIdRaw,
+    public BidPlacementResult placeBid(String auctionIdString,
                                        UserId userId,
                                        Price offerPrice) {
 
-        AuctionId auctionId = new AuctionId(auctionIdRaw);
+        AuctionId auctionId = new AuctionId(auctionIdString);
         Auction auction = _iAuctionRepo.ofIdentity(auctionId)
-                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
+                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdString));
 
         Bid bid = auction.placeBid(userId, offerPrice);
 
