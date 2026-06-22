@@ -18,8 +18,7 @@ import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
 import jakarta.validation.Valid;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -100,48 +98,46 @@ public class AuctionRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuctionResponseDTO> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
-            List<ItemId> itemIds = request.getItemIds().stream()
-                    .map(ItemId::new)
-                    .toList();
+        List<ItemId> itemIds = request.getItemIds().stream()
+                .map(ItemId::new)
+                .toList();
 
-            Currency currency = Currency.valueOf(request.getPriceCurrency());
-            Price startingPrice = new Price(request.getStartingPrice(), currency);
-            Price reservePrice = new Price(request.getReservePrice(), currency);
-            Price outrightPrice = request.getOutrightPrice() != null
-                    ? new Price(request.getOutrightPrice(), currency)
-                    : null;
+        Currency currency = Currency.valueOf(request.getPriceCurrency());
+        Price startingPrice = new Price(request.getStartingPrice(), currency);
+        Price reservePrice = new Price(request.getReservePrice(), currency);
+        Price outrightPrice = request.getOutrightPrice() != null
+                ? new Price(request.getOutrightPrice(), currency)
+                : null;
 
-            ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
-            ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
+        ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
+        ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
 
-            UserId seller = new UserId(new Email(email));
+        UserId seller = new UserId(new Email(email));
 
-            Auction auction = _auctionService.putItemOnAuction(
-                    itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller
-            );
+        Auction auction = _auctionService.putItemOnAuction(
+                itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller
+        );
 
-            AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
+        AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-            dto.add(linkTo(AuctionRestController.class)
-                    .withSelfRel());
+        dto.add(linkTo(AuctionRestController.class)
+                .withSelfRel());
 
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
 
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
+    public ResponseEntity<Void> optionsForSpecificAuction(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
 
-        RepresentationModel<?> model = new RepresentationModel<>();
+        List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethodsForSpecificAuction(user, auctionId);
 
-        for (Link link : _auctionLinkProvider.getLinks(user, auctionId)) {
-            model.add(link);
-        }
-
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok()
+                .allow(methods.toArray(HttpMethod[]::new))
+                .build();
     }
 
     @GetMapping(
@@ -150,63 +146,51 @@ public class AuctionRestController {
     )
     public ResponseEntity<Object> getAuctionById(@PathVariable String auctionId) {
 
-            Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(auctionId);
 
-            AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
+        AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-            dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .getAuctionById(auctionId))
-                            .withSelfRel()
-                    );
+        _auctionLinkProvider.addLinksForAuction(dto, auctionId);
 
-            dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .getBidsForAuction(auctionId))
-                            .withRel("bid-options")
-            );
-
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
 
     }
 
     @RequestMapping(path = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> optionsForBids(
+    public ResponseEntity<Void> optionsForBids(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
+        Auction auction = _auctionService.getAuctionById(auctionId);
 
-        RepresentationModel<?> model = new RepresentationModel<>();
+        List<HttpMethod> methods =
+                _auctionLinkProvider.getAllowedMethodsForBids(user, auctionId);
 
-        for (Link link : _auctionLinkProvider.getBidLinks(user, auctionId)) {
-            model.add(link);
-        }
-
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok()
+                .allow(methods.toArray(HttpMethod[]::new))
+                .build();
     }
 
     @GetMapping(
             path = "/{auctionId}/bids",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> getBidsForAuction(@PathVariable String auctionId) {
+    public ResponseEntity<CollectionModel<BidResponseDTO>> getBidsForAuction(@PathVariable String auctionId) {
 
-            Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(auctionId);
 
-            // Map each Bid to BidResponseDTO
-            List<BidResponseDTO> dtos = auction.getBids().stream()
-                    .map(bid -> _bidResponseDTOMapper.toDTO(auction, bid))
-                    .toList();
+        // Map each Bid to BidResponseDTO
+        List<BidResponseDTO> dtos = auction.getBids().stream()
+                .map(bid -> _bidResponseDTOMapper.toDTO(auction, bid))
+                .toList();
 
-            // after GETting bids, user can consult OPTIONS they have on /auctions/{auctionId}/bids again
-            dtos.forEach(dto -> dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .optionsForBids(auctionId, null))
-                            .withRel("bids-options")
-            ));
+        dtos.forEach(_auctionLinkProvider::addLinksForBidInCollection);
 
-            return new ResponseEntity<>(dtos, HttpStatus.OK);
+        CollectionModel<BidResponseDTO> collectionModel =
+                _auctionLinkProvider.addLinksForBidCollection(dtos, auctionId);
+
+        return new ResponseEntity<>(collectionModel, HttpStatus.OK);
 
     }
 
@@ -220,21 +204,21 @@ public class AuctionRestController {
             @RequestHeader("X-User-Id") String userIdFromHeader,
             @RequestBody @Valid PlaceBidRequestDTO request) {
 
-            Email email = new Email(userIdFromHeader);
-            UserId userId = new UserId(email);
+        Email email = new Email(userIdFromHeader);
+        UserId userId = new UserId(email);
 
-            Currency currency = Currency.valueOf(request.getCurrency());
-            Price offerPrice = new Price(request.getOfferPrice(), currency);
+        Currency currency = Currency.valueOf(request.getCurrency());
+        Price offerPrice = new Price(request.getOfferPrice(), currency);
 
-            var result = _auctionService.placeBid(auctionId, userId, offerPrice);
-            Auction auction = result.auction();
-            Bid bid = result.bid();
+        var result = _auctionService.placeBid(auctionId, userId, offerPrice);
+        Auction auction = result.auction();
+        Bid bid = result.bid();
 
-            BidResponseDTO dto = _bidResponseDTOMapper.toDTO(auction, bid);
+        BidResponseDTO dto = _bidResponseDTOMapper.toDTO(auction, bid);
 
-            _auctionLinkProvider.addBidLinks(dto);
+        _auctionLinkProvider.addLinksForCreatedBid(dto);
 
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
     }
 

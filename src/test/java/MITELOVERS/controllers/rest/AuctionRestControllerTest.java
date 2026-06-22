@@ -13,7 +13,6 @@ import MITELOVERS.mapper.BidResponseDTOMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -259,45 +258,52 @@ class AuctionRestControllerTest {
     // ------------------------------------------------------------
 
     @Test
-    void optionsForSpecificAuctionReturnsSelfAndPlaceBidLinks() throws Exception {
+    void optionsForSpecificAuctionReturnsAllowHeaderWithOptionsAndGet() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionLinkProvider.getLinks(userDouble, auctionId))
-                .thenReturn(List.of(
-                        Link.of("/auctions/" + auctionId, "self"),
-                        Link.of("/auctions/" + auctionId + "/bids", "place-bid")
-                ));
+        when(_auctionService.getAuctionById(auctionIdString))
+                .thenReturn(mock(Auction.class));
+
+        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionIdString))
+                .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET));
 
         // Act + Assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}", auctionId)
+        mockMvc.perform(options("/auctions/{auctionId}", auctionIdString)
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath("$._links['place-bid']").exists());
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
+                .andExpect(header().string("Allow", containsString("GET")))
+                .andExpect(content().string(""));
     }
 
     @Test
-    void optionsForSpecificAuctionNoActionsReturnsNoLinks() throws Exception {
+    void optionsForSpecificAuctionReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionLinkProvider.getLinks(userDouble, auctionId))
-                .thenReturn(List.of());
+        when(_auctionService.getAuctionById(auctionIdString))
+                .thenReturn(mock(Auction.class));
+
+        when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble, auctionIdString))
+                .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}", auctionId)
+        mockMvc.perform(options("/auctions/{auctionId}", auctionIdString)
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links").doesNotExist());
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
+                .andExpect(header().string("Allow", not(containsString("GET"))))
+                .andExpect(header().string("Allow", not(containsString("POST"))))
+                .andExpect(content().string(""));
     }
 
     // ------------------------------------------------------------
@@ -307,13 +313,12 @@ class AuctionRestControllerTest {
     @Test
     void getAuctionByIdReturns200AndBody() throws Exception {
 
-        // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
 
         Auction auctionDouble = mock(Auction.class);
 
         AuctionResponseDTO dto = new AuctionResponseDTO(
-                auctionId,
+                auctionIdString,
                 List.of("ABCDEF1234"),
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
@@ -321,23 +326,25 @@ class AuctionRestControllerTest {
                 "pedro@aeiou.com"
         );
 
-        when(_auctionService.getAuctionById(auctionId)).thenReturn(auctionDouble);
+        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString, "self"));
+        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString + "/bids", "bids"));
+
+        when(_auctionService.getAuctionById(auctionIdString)).thenReturn(auctionDouble);
         when(_auctionMapper.toDTO(auctionDouble)).thenReturn(dto);
 
-        // Act + Assert
-        mockMvc.perform(get("/auctions/{auctionId}", auctionId)
+        mockMvc.perform(get("/auctions/{auctionId}", auctionIdString)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.auctionId").value(auctionId))
+                .andExpect(jsonPath("$.auctionId").value(auctionIdString))
                 .andExpect(jsonPath("$.startingPrice").value(10.0))
                 .andExpect(jsonPath("$.reservePrice").value(25.0))
                 .andExpect(jsonPath("$.priceCurrency").value("EUR"))
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/auctions/" + auctionId))
-                .andExpect(jsonPath("$._links['bid-options']").exists())
-                .andExpect(jsonPath("$._links['bid-options'].href")
-                        .value("http://localhost/auctions/" + auctionId + "/bids"));
+                        .value("http://localhost/auctions/" + auctionIdString))
+                .andExpect(jsonPath("$._links.bids").exists())
+                .andExpect(jsonPath("$._links.bids.href")
+                        .value("http://localhost/auctions/" + auctionIdString + "/bids"));
     }
 
     @Test
@@ -358,45 +365,53 @@ class AuctionRestControllerTest {
     // ------------------------------------------------------------
 
     @Test
-    void optionsForBidsUserCanViewAuctionReturnsSelfAndViewBidsLinks() throws Exception {
+    void optionsForBidsReturnsAllowHeaderWithOptionsGetAndPost() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))
-                .thenReturn(List.of(
-                        Link.of("/auctions/" + auctionId + "/bids", "self"),
-                        Link.of("/auctions/" + auctionId + "/bids", "view-bids")
-                ));
+        when(_auctionService.getAuctionById(auctionIdString))
+                .thenReturn(mock(Auction.class));
+
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionIdString))
+                .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET, HttpMethod.POST));
 
         // Act + Assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
+        mockMvc.perform(options("/auctions/{auctionId}/bids", auctionIdString)
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self").exists())
-                .andExpect(jsonPath("$._links['view-bids']").exists());
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
+                .andExpect(header().string("Allow", containsString("GET")))
+                .andExpect(header().string("Allow", containsString("POST")))
+                .andExpect(content().string(""));
     }
 
     @Test
-    void optionsForBidsNoActionsReturnsNoLinks() throws Exception {
+    void optionsForBidsReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionLinkProvider.getBidLinks(userDouble, auctionId))
-                .thenReturn(List.of());
+        when(_auctionService.getAuctionById(auctionIdString))
+                .thenReturn(mock(Auction.class));
+
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionIdString))
+                .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
-        mockMvc.perform(request(HttpMethod.OPTIONS, "/auctions/{auctionId}/bids", auctionId)
+        mockMvc.perform(options("/auctions/{auctionId}/bids", auctionIdString)
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links").doesNotExist());
+                .andExpect(header().string("Allow", containsString("OPTIONS")))
+                .andExpect(header().string("Allow", not(containsString("GET"))))
+                .andExpect(header().string("Allow", not(containsString("POST"))))
+                .andExpect(content().string(""));
     }
 
     // ------------------------------------------------------------
@@ -404,20 +419,19 @@ class AuctionRestControllerTest {
     // ------------------------------------------------------------
 
     @Test
-    void getBidsForAuctionReturns200AndListOfBids() throws Exception {
-        // Arrange
-        String auctionId = "AU-12345678";
+    void getBidsForAuctionReturns200AndCollectionRepresentation() throws Exception {
+        String auctionIdString = "AU-12345678";
 
         Auction auctionDouble = mock(Auction.class);
         Bid bid1Double = mock(Bid.class);
         Bid bid2Double = mock(Bid.class);
 
-        when(_auctionService.getAuctionById(auctionId)).thenReturn(auctionDouble);
+        when(_auctionService.getAuctionById(auctionIdString)).thenReturn(auctionDouble);
         when(auctionDouble.getBids()).thenReturn(List.of(bid1Double, bid2Double));
 
         BidResponseDTO dto1 = new BidResponseDTO(
                 "bid-1",
-                auctionId,
+                auctionIdString,
                 "buyer1@aeiou.com",
                 20.0,
                 "EUR",
@@ -425,7 +439,7 @@ class AuctionRestControllerTest {
         );
         BidResponseDTO dto2 = new BidResponseDTO(
                 "bid-2",
-                auctionId,
+                auctionIdString,
                 "buyer2@aeiou.com",
                 30.0,
                 "EUR",
@@ -435,32 +449,41 @@ class AuctionRestControllerTest {
         when(_bidResponseDTOMapper.toDTO(auctionDouble, bid1Double)).thenReturn(dto1);
         when(_bidResponseDTOMapper.toDTO(auctionDouble, bid2Double)).thenReturn(dto2);
 
-        // Act + Assert
-        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionId)
+        org.springframework.hateoas.CollectionModel<BidResponseDTO> collectionModel =
+                org.springframework.hateoas.CollectionModel.of(
+                        List.of(dto1, dto2),
+                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString + "/bids", "self"),
+                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString, "auction")
+                );
+
+        when(_auctionLinkProvider.addLinksForBidCollection(any(), any()))
+                .thenReturn(collectionModel);
+
+        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionIdString)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // list size 2
-                .andExpect(jsonPath("$.length()").value(2))
-                // first bid basic fields
-                .andExpect(jsonPath("$[0].auctionId").value(auctionId))
-                .andExpect(jsonPath("$[0].offerPrice").value(20.0))
-                .andExpect(jsonPath("$[0].currency").value("EUR"))
-                // second bid basic fields
-                .andExpect(jsonPath("$[1].auctionId").value(auctionId))
-                .andExpect(jsonPath("$[1].offerPrice").value(30.0))
-                .andExpect(jsonPath("$[1].currency").value("EUR"));
+                .andExpect(jsonPath("$._links.self.href")
+                        .value("http://localhost/auctions/" + auctionIdString + "/bids"))
+                .andExpect(jsonPath("$._links.auction.href")
+                        .value("http://localhost/auctions/" + auctionIdString))
+                .andExpect(jsonPath("$._embedded.*[0].auctionId").value(auctionIdString))
+                .andExpect(jsonPath("$._embedded.*[0].offerPrice").value(20.0))
+                .andExpect(jsonPath("$._embedded.*[0].currency").value("EUR"))
+                .andExpect(jsonPath("$._embedded.*[1].auctionId").value(auctionIdString))
+                .andExpect(jsonPath("$._embedded.*[1].offerPrice").value(30.0))
+                .andExpect(jsonPath("$._embedded.*[1].currency").value("EUR"));
     }
 
     @Test
     void getBidsForAuctionReturns404WhenAuctionNotFound() throws Exception {
         // Arrange
-        String auctionId = "AU-99999999";
+        String auctionIdString = "AU-99999999";
 
-        when(_auctionService.getAuctionById(auctionId))
-                .thenThrow(new NoSuchElementException("Auction not found: " + auctionId));
+        when(_auctionService.getAuctionById(auctionIdString))
+                .thenThrow(new NoSuchElementException("Auction not found: " + auctionIdString));
 
         // Act + Assert
-        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionId))
+        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionIdString))
                 .andExpect(status().isNotFound());
     }
 
@@ -471,7 +494,7 @@ class AuctionRestControllerTest {
     @Test
     void placeBidValidRequestReturns201() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
 
         Auction auctionDouble = mock(Auction.class);
         Bid bidDouble = mock(Bid.class);
@@ -485,12 +508,17 @@ class AuctionRestControllerTest {
 
         BidResponseDTO dto = new BidResponseDTO(
                 "0bc6c8bf-6f51-4f1a-b6af-cde1dbfbb1ad",
-                auctionId,
+                auctionIdString,
                 "buyer@aeiou.com",
                 20.0,
                 "EUR",
                 Instant.parse("2026-06-10T10:00:00Z")
         );
+
+        dto.add(org.springframework.hateoas.Link.of(
+                "http://localhost/auctions/" + auctionIdString, "auction"));
+        dto.add(org.springframework.hateoas.Link.of(
+                "http://localhost/auctions/" + auctionIdString + "/bids", "bids"));
 
         when(_bidResponseDTOMapper.toDTO(auctionDouble, bidDouble)).thenReturn(dto);
 
@@ -502,20 +530,26 @@ class AuctionRestControllerTest {
             """;
 
         // Act + Assert
-        mockMvc.perform(post("/auctions/{auctionId}/bids", auctionId)
+        mockMvc.perform(post("/auctions/{auctionId}/bids", auctionIdString)
                         .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.auctionId").value(auctionId))
+                .andExpect(jsonPath("$.auctionId").value(auctionIdString))
                 .andExpect(jsonPath("$.offerPrice").value(20.0))
-                .andExpect(jsonPath("$.currency").value("EUR"));
+                .andExpect(jsonPath("$.currency").value("EUR"))
+                .andExpect(jsonPath("$._links.auction").exists())
+                .andExpect(jsonPath("$._links.auction.href")
+                        .value("http://localhost/auctions/" + auctionIdString))
+                .andExpect(jsonPath("$._links.bids").exists())
+                .andExpect(jsonPath("$._links.bids.href")
+                .value("http://localhost/auctions/" + auctionIdString + "/bids"));
     }
 
     @Test
     void placeBidServiceThrowsExceptionReturns404() throws Exception {
         // Arrange
-        String auctionId = "AU-12345678";
+        String auctionIdString = "AU-12345678";
 
         when(_auctionService.placeBid(any(), any(), any()))
                 .thenThrow(new IllegalStateException("Auction not active"));
@@ -528,7 +562,7 @@ class AuctionRestControllerTest {
         """;
 
         // Act + Assert
-        mockMvc.perform(post("/auctions/{auctionId}/bids", auctionId)
+        mockMvc.perform(post("/auctions/{auctionId}/bids", auctionIdString)
                         .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
