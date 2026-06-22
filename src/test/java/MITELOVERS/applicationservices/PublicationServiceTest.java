@@ -110,17 +110,19 @@ class PublicationServiceTest {
         GenreId genreIdDouble = mock(GenreId.class);
         Publication publicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
+        String synopsis = "synopsis";
 
         when(_iAuthorRepoDouble.containsOfIdentity(authorIdDouble)).thenReturn(true);
         when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
-        when(_publicationFactoryDouble.createPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
-                .thenReturn(publicationDouble);
+        when(_publicationFactoryDouble.createPublication(titleDouble, authorIdDouble, yearDouble,
+                genreIdDouble, synopsis)).thenReturn(publicationDouble);
         when(publicationDouble.identity()).thenReturn(publicationIdDouble);
         when(_iPublicationRepoDouble.containsOfIdentity(publicationIdDouble)).thenReturn(false);
         when(_iPublicationRepoDouble.save(publicationDouble)).thenReturn(publicationDouble);
 
         // Act
-        Publication result = _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble);
+        Publication result = _service.registerPublication(titleDouble, authorIdDouble, yearDouble,
+                genreIdDouble,  synopsis);
 
         // Assert
         assertSame(publicationDouble, result);
@@ -136,18 +138,19 @@ class PublicationServiceTest {
         Publication newPublicationDouble = mock(Publication.class);
         Publication existingPublicationDouble = mock(Publication.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
+        String synopsis = "synopsis";
 
         when(_iAuthorRepoDouble.containsOfIdentity(authorIdDouble)).thenReturn(true);
         when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(true);
-        when(_publicationFactoryDouble.createPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble))
-                .thenReturn(newPublicationDouble);
+        when(_publicationFactoryDouble.createPublication(titleDouble, authorIdDouble, yearDouble,
+                genreIdDouble,synopsis)).thenReturn(existingPublicationDouble);
         when(newPublicationDouble.identity()).thenReturn(publicationIdDouble);
         when(_iPublicationRepoDouble.containsOfIdentity(publicationIdDouble)).thenReturn(true);
         when(_iPublicationRepoDouble.ofIdentity(publicationIdDouble))
                 .thenReturn(Optional.of(existingPublicationDouble));
 
         // Act
-        Publication result = _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble);
+        Publication result = _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble, synopsis);
 
         // Assert
         assertSame(existingPublicationDouble, result);
@@ -160,12 +163,13 @@ class PublicationServiceTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
+        String synopsis = "synopsis";
 
         when(_iAuthorRepoDouble.containsOfIdentity(authorIdDouble)).thenReturn(false);
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble)
+                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble, synopsis)
         );
     }
 
@@ -176,13 +180,14 @@ class PublicationServiceTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
+        String synopsis = "synopsis";
 
         when(_iAuthorRepoDouble.containsOfIdentity(authorIdDouble)).thenReturn(true);
         when(_iGenreRepoDouble.containsOfIdentity(genreIdDouble)).thenReturn(false);
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble)
+                _service.registerPublication(titleDouble, authorIdDouble, yearDouble, genreIdDouble, synopsis)
         );
     }
 
