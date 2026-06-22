@@ -6,6 +6,7 @@ import MITELOVERS.controllers.linkprovider.ShoppingCartLinkProvider;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.AddCartLineRequestDTO;
 import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
 import MITELOVERS.dto.response.ShoppingCartResponseDTO;
@@ -76,11 +77,11 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized!");
         }
 
-        ShoppingCart cart = _shoppingCartService.findCartByUserId(email);
+        UserId reconstructedUserId = new UserId(new Email(email));
+        ShoppingCart cart = _shoppingCartService.findCartByUserId(reconstructedUserId);
 
         RepresentationModel<?> model = new RepresentationModel<>();
-
-        _shoppingCartLinkProvider.addLinksForUserCartDiscovery(model, email, cart.identity().toString());
+        _shoppingCartLinkProvider.addLinksForUserCartDiscovery(model, reconstructedUserId, cart.identity());
 
         return ResponseEntity.ok(model);
     }
@@ -95,7 +96,8 @@ public class ShoppingCartRestController {
         if(!email.isBlank()) {
 
             User user = _userService.getUserByEmail(email);
-            ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+            ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+            ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCart(user, cart);
 
         }
@@ -117,14 +119,16 @@ public class ShoppingCartRestController {
         }
 
         User user = _userService.getUserByEmail(email);
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+        ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
         if (!user.identity().equals(cart.getBuyerId())) {
             throw new SecurityException("Not authorized to view this cart!");
         }
 
         ShoppingCartResponseDTO dto = _cartMapper.toModel(cart);
-        _shoppingCartLinkProvider.addLinksForUserCart(dto, email, cartId, cart);
+        _shoppingCartLinkProvider.addLinksForUserCart(dto, user.identity(), cart.identity(), cart);
 
         return ResponseEntity.ok(dto);
 
@@ -140,15 +144,16 @@ public class ShoppingCartRestController {
         }
 
         User user = _userService.getUserByEmail(email);
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+        ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
         if (!user.identity().equals(cart.getBuyerId())) {
             throw new SecurityException("Not authorized to view this cart!");
         }
 
-        ShoppingCart clearedShoppingCart = _shoppingCartService.clearShoppingCartLines(cartId);
+        ShoppingCart clearedShoppingCart = _shoppingCartService.clearShoppingCartLines(reconstructedCartId);
         ShoppingCartResponseDTO dto = _cartMapper.toModel(clearedShoppingCart);
-        _shoppingCartLinkProvider.addLinksForUserCart(dto, email, cartId, clearedShoppingCart);
+        _shoppingCartLinkProvider.addLinksForUserCart(dto, user.identity(), cart.identity(), clearedShoppingCart);
 
         return ResponseEntity.ok(dto);
 
@@ -165,7 +170,8 @@ public class ShoppingCartRestController {
         if(!email.isBlank()) {
 
             User user = _userService.getUserByEmail(email);
-            ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+            ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+            ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCartLines(user, cart);
 
         }
@@ -188,16 +194,18 @@ public class ShoppingCartRestController {
         }
 
         User user = _userService.getUserByEmail(email);
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+        ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
         if (!user.identity().equals(cart.getBuyerId())) {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        ShoppingCartLine addedLineShoppingCart = _shoppingCartService.addCartLineToCart(cartId, requestDTO.getDirectSaleId());
+        DirectSaleId reconstructedDirectSaleId = new DirectSaleId(requestDTO.getDirectSaleId());
+        ShoppingCartLine addedLineShoppingCart = _shoppingCartService.addCartLineToCart(reconstructedCartId, reconstructedDirectSaleId);
 
         RepresentationModel<?> model = new RepresentationModel<>();
-        _shoppingCartLinkProvider.addLinksForCreateUserCartLine(model, email, cartId, addedLineShoppingCart.identity().toString());
+        _shoppingCartLinkProvider.addLinksForCreateUserCartLine(model, user.identity(), cart.identity(), addedLineShoppingCart.identity());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(model);
 
@@ -214,8 +222,10 @@ public class ShoppingCartRestController {
         if(!email.isBlank()) {
 
             User user = _userService.getUserByEmail(email);
-            ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
-            ShoppingCartLine cartLine = _shoppingCartService.findCartLineByLineCartId(cartId, cartLineId);
+            ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+            ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
+            ShoppingCartLineId reconstructedCartLineId = new ShoppingCartLineId(cartLineId);
+            ShoppingCartLine cartLine = _shoppingCartService.findCartLineByLineCartId(reconstructedCartId, reconstructedCartLineId);
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCartLine(user, cart, cartLine);
 
         }
@@ -238,17 +248,20 @@ public class ShoppingCartRestController {
         }
 
         User user = _userService.getUserByEmail(email);
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+        ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
         if (!user.identity().equals(cart.getBuyerId())) {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        ShoppingCartLine cartLine = _shoppingCartService.findCartLineByLineCartId(cartId, cartLineId);
-        String directSaleId = cartLine.getDirectSaleId().toString();
+        ShoppingCartLineId reconstructedCartLineId = new ShoppingCartLineId(cartLineId);
+        ShoppingCartLine cartLine = _shoppingCartService.findCartLineByLineCartId(reconstructedCartId, reconstructedCartLineId);
 
+        DirectSaleId reconstructedDirectSaleId = cartLine.getDirectSaleId();
         ShoppingCartLineResponseDTO dto = _cartLineMapper.toModel(cartLine);
-        _shoppingCartLinkProvider.addLinksForUserCartLine(dto, email, cartId, cartLineId, directSaleId);
+
+        _shoppingCartLinkProvider.addLinksForUserCartLine(dto, user.identity(), reconstructedCartId, reconstructedCartLineId, reconstructedDirectSaleId);
 
         return ResponseEntity.ok(dto);
 
@@ -265,16 +278,18 @@ public class ShoppingCartRestController {
         }
 
         User user = _userService.getUserByEmail(email);
-        ShoppingCart cart = _shoppingCartService.findCartByCartId(cartId);
+        ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
+        ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
         if (!user.identity().equals(cart.getBuyerId())) {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        _shoppingCartService.deleteCartLineByLineCartId(cartId,cartLineId);
+        ShoppingCartLineId reconstructedCartLineId = new ShoppingCartLineId(cartLineId);
+        _shoppingCartService.deleteCartLineByLineCartId(reconstructedCartId,reconstructedCartLineId);
 
         RepresentationModel<?> model = new RepresentationModel<>();
-        _shoppingCartLinkProvider.addLinksForDeleteUserCartLine(model, email, cartId);
+        _shoppingCartLinkProvider.addLinksForDeleteUserCartLine(model, user.identity(), reconstructedCartId);
 
         return ResponseEntity.ok(model);
     }

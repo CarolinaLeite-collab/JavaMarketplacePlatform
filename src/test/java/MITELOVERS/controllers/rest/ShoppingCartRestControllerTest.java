@@ -6,10 +6,7 @@ import MITELOVERS.controllers.linkprovider.ShoppingCartLinkProvider;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.ShoppingCartId;
-import MITELOVERS.domain.valueobject.ShoppingCartLineId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
 import MITELOVERS.dto.response.ShoppingCartResponseDTO;
 import MITELOVERS.mapper.ShoppingCartLineResponseDTOMapper;
@@ -74,7 +71,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", ""))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", "OPTIONS"));
-
     }
 
     @Test
@@ -82,10 +78,9 @@ class ShoppingCartRestControllerTest {
         // Arrange
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
-        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
         when(cartDouble.identity()).thenReturn(cartIdDouble);
 
-        when(_shoppingCartService.findCartByUserId("pedro@aeiou.com")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByUserId(any(UserId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(get("/shopping-carts")
@@ -110,7 +105,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCart(userDouble, cartDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS));
 
@@ -142,11 +137,12 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+        when(cartDouble.identity()).thenReturn(mock(ShoppingCartId.class));
 
         ShoppingCartResponseDTO dtoDouble = mock(ShoppingCartResponseDTO.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartResponseDTOMapper.toModel(cartDouble)).thenReturn(dtoDouble);
 
         // Act + Assert
@@ -166,7 +162,7 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(get("/shopping-carts/SC-A49F78E2")
@@ -194,13 +190,14 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+        when(cartDouble.identity()).thenReturn(mock(ShoppingCartId.class));
 
         ShoppingCart clearedCartDouble = mock(ShoppingCart.class);
         ShoppingCartResponseDTO dtoDouble = mock(ShoppingCartResponseDTO.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_shoppingCartService.clearShoppingCartLines("SC-A49F78E2")).thenReturn(clearedCartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
+        when(_shoppingCartService.clearShoppingCartLines(any(ShoppingCartId.class))).thenReturn(clearedCartDouble);
         when(_shoppingCartResponseDTOMapper.toModel(clearedCartDouble)).thenReturn(dtoDouble);
 
         // Act + Assert
@@ -220,7 +217,7 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(patch("/shopping-carts/SC-A49F78E2")
@@ -236,7 +233,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCartLines(userDouble, cartDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
 
@@ -256,7 +253,6 @@ class ShoppingCartRestControllerTest {
                         .header("X-User-Id", ""))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", "OPTIONS"));
-
     }
 
     @Test
@@ -269,15 +265,15 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+        when(cartDouble.identity()).thenReturn(mock(ShoppingCartId.class));
 
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
-        ShoppingCartLineId lineIdDouble = mock(ShoppingCartLineId.class);
-        when(lineIdDouble.toString()).thenReturn("SCL-1234ABCD");
-        when(newLineDouble.identity()).thenReturn(lineIdDouble);
+        when(newLineDouble.identity()).thenReturn(mock(ShoppingCartLineId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_shoppingCartService.addCartLineToCart("SC-A49F78E2", "DS-1A2B3C4D")).thenReturn(newLineDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
+        when(_shoppingCartService.addCartLineToCart(any(ShoppingCartId.class), any(DirectSaleId.class)))
+                .thenReturn(newLineDouble);
 
         // Act + Assert
         mockMvc.perform(post("/shopping-carts/SC-A49F78E2/shopping-cart-lines")
@@ -297,7 +293,7 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(post("/shopping-carts/SC-A49F78E2/shopping-cart-lines")
@@ -315,8 +311,9 @@ class ShoppingCartRestControllerTest {
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_shoppingCartService.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD")).thenReturn(lineDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartLineByLineCartId(any(ShoppingCartId.class), any(ShoppingCartLineId.class)))
+                .thenReturn(lineDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCartLine(userDouble, cartDouble, lineDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.OPTIONS));
 
@@ -350,13 +347,15 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
 
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        when(lineDouble.getDirectSaleId()).thenReturn(mock(DirectSaleId.class));
+
         ShoppingCartLineResponseDTO dtoDouble = mock(ShoppingCartLineResponseDTO.class);
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
-        when(_shoppingCartService.findCartLineByLineCartId("SC-A49F78E2", "SCL-1234ABCD")).thenReturn(lineDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartLineByLineCartId(any(ShoppingCartId.class), any(ShoppingCartLineId.class)))
+                .thenReturn(lineDouble);
         when(_shoppingCartLineResponseDTOMapper.toModel(lineDouble)).thenReturn(dtoDouble);
-        when(lineDouble.getDirectSaleId()).thenReturn(mock(DirectSaleId.class));
 
         // Act + Assert
         mockMvc.perform(get("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
@@ -375,11 +374,20 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(get("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
                         .header("X-User-Id", "pedro@aeiou.com")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getUserCartLineReturnsForbiddenWhenEmailBlank() throws Exception {
+        // Act + Assert
+        mockMvc.perform(get("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
+                        .header("X-User-Id", "")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -394,9 +402,10 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+        when(cartDouble.identity()).thenReturn(mock(ShoppingCartId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(delete("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
@@ -414,11 +423,19 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
         when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
-        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
         mockMvc.perform(delete("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
                         .header("X-User-Id", "pedro@aeiou.com"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteUserCartLineReturnsForbiddenWhenEmailBlank() throws Exception {
+        // Act + Assert
+        mockMvc.perform(delete("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD")
+                        .header("X-User-Id", ""))
                 .andExpect(status().isForbidden());
     }
 }
