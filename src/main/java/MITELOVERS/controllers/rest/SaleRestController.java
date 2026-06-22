@@ -1,19 +1,22 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.SaleService;
+import MITELOVERS.applicationservices.ShoppingCartService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.SaleLinkProvider;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.SaleId;
-import MITELOVERS.domain.valueobject.SaleLineId;
+import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.dto.request.SaleRequestDTO;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import MITELOVERS.mapper.SaleLineResponseDTOMapper;
 import MITELOVERS.mapper.SaleResponseDTOMapper;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,21 +30,24 @@ import java.util.List;
 public class SaleRestController {
 
     private final SaleService _saleService;
+    private final ShoppingCartService _shoppingCartService;
     private final UserService _userService;
     private final SaleLinkProvider _saleLinkProvider;
     private SaleResponseDTOMapper _saleMapper;
     private SaleLineResponseDTOMapper _saleLineMapper;
 
     public SaleRestController(SaleService saleService,
+                              ShoppingCartService shoppingCartService,
                               UserService userService,
                               SaleLinkProvider saleLinkProvider,
                               SaleResponseDTOMapper saleMapper,
                               SaleLineResponseDTOMapper saleLineMapper) {
-        this._saleService = saleService;
-        this._userService = userService;
-        this._saleLinkProvider = saleLinkProvider;
-        this._saleMapper = saleMapper;
-        this._saleLineMapper = saleLineMapper;
+        _saleService = saleService;
+        _shoppingCartService = shoppingCartService;
+        _userService = userService;
+        _saleLinkProvider = saleLinkProvider;
+        _saleMapper = saleMapper;
+        _saleLineMapper = saleLineMapper;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -77,6 +83,35 @@ public class SaleRestController {
         _saleLinkProvider.addLinksForSales(model, email, userSales);
 
         return ResponseEntity.ok(model);
+    }
+
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RepresentationModel<?>> createSaleFromCart(
+            @RequestHeader("X-User-Id") String email,
+            @RequestBody SaleRequestDTO dto) {
+
+        if (email.isBlank()) {
+            throw new SecurityException("Not authorized!");
+        }
+
+        User user = _userService.getUserByEmail(email);
+        ShoppingCartId shoppingCartId = new ShoppingCartId(dto.getShoppingCartId());
+
+        // MUDAR O METODO PARA ACEITAR IDS
+        ShoppingCart shoppingCart = _shoppingCartService.findCartByCartId(dto.getShoppingCartId());
+
+        if(!shoppingCart.getBuyerId().equals(user.identity())) {
+            throw new SecurityException("ShoppingCart does not match the user!");
+        }
+
+        Sale newSale = _saleService.createSaleFromCart(shoppingCartId, email);
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        _saleLinkProvider.addLinksForCreatedSale(model, email, newSale.get_saleId().toString());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(model);
+
     }
 
     @RequestMapping(path = "/{saleId}", method = RequestMethod.OPTIONS)
@@ -168,4 +203,5 @@ public class SaleRestController {
 
         return ResponseEntity.ok(dto);
     }
+
 }

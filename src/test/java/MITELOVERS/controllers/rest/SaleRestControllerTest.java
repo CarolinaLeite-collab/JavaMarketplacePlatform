@@ -1,11 +1,14 @@
 package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.SaleService;
+import MITELOVERS.applicationservices.ShoppingCartService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.SaleLinkProvider;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.SaleId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
@@ -34,6 +37,9 @@ class SaleRestControllerTest {
 
     @MockitoBean
     private SaleService _saleService;
+
+    @MockitoBean
+    private ShoppingCartService _shoppingCartService;
 
     @MockitoBean
     private UserService _userService;
@@ -88,7 +94,6 @@ class SaleRestControllerTest {
                         .header("X-User-Id", "pedro@aeiou.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
 
     @Test
@@ -97,6 +102,67 @@ class SaleRestControllerTest {
         mockMvc.perform(get("/sales")
                         .header("X-User-Id", "")
                         .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
+        verifyNoInteractions(_userService, _saleService, _saleLinkProvider);
+    }
+
+    @Test
+    void createSaleFromCartReturnsCreatedWhenOwner() throws Exception {
+        // Arrange
+        UserId sharedUserId = mock(UserId.class);
+
+        User userDouble = mock(User.class);
+        when(userDouble.identity()).thenReturn(sharedUserId);
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
+
+        SaleId saleIdDouble = mock(SaleId.class);
+        when(saleIdDouble.toString()).thenReturn("SA-1234ABCD");
+
+        Sale saleDouble = mock(Sale.class);
+        when(saleDouble.get_saleId()).thenReturn(saleIdDouble);
+
+        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_saleService.createSaleFromCart(any(), eq("pedro@aeiou.com"))).thenReturn(saleDouble);
+
+        // Act + Assert
+        mockMvc.perform(post("/sales")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"shoppingCartId\": \"SC-A49F78E2\"}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void createSaleFromCartReturnsForbiddenWhenNotOwner() throws Exception {
+        // Arrange
+        User userDouble = mock(User.class);
+        when(userDouble.identity()).thenReturn(mock(UserId.class));
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
+
+        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+
+        // Act + Assert
+        mockMvc.perform(post("/sales")
+                        .header("X-User-Id", "pedro@aeiou.com")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"shoppingCartId\": \"SC-A49F78E2\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createSaleFromCartReturnsForbiddenWhenEmailBlank() throws Exception {
+        // Act + Assert
+        mockMvc.perform(post("/sales")
+                        .header("X-User-Id", "")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"shoppingCartId\": \"SC-A49F78E2\"}"))
                 .andExpect(status().isForbidden());
     }
 
