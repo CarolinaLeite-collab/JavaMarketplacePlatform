@@ -1,7 +1,12 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.applicationservices.LibraryItemDetails;
 import MITELOVERS.applicationservices.LibraryService;
-import MITELOVERS.dto.response.ItemDetailsDTO;
+import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.item.Item;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publicationtype.PublicationType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,15 +34,25 @@ class ListOfItemsInMyLibraryControllerTest {
     void shouldReturnItemListFromService() {
         // Arrange
         String userId = "pedro@aeiou.com";
-        ItemDetailsDTO dto = mock(ItemDetailsDTO.class);
-        when(_libraryService.getListOfItemInfoInMyLibraryFull(userId)).thenReturn(List.of(dto));
+
+        Item itemDouble = mock(Item.class);
+        Publication publicationDouble = mock(Publication.class);
+        Edition editionDouble = mock(Edition.class);
+        Author authorDouble = mock(Author.class);
+        PublicationType publicationTypeDouble = mock(PublicationType.class);
+
+        LibraryItemDetails details = new LibraryItemDetails(
+                itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble);
+
+        when(_libraryService.getListOfItemInfoInMyLibraryFull(userId))
+                .thenReturn(List.of(details));
 
         // Act
-        List<ItemDetailsDTO> result = _controller.getListOfItemInfoInMyLibrary(userId);
+        List<LibraryItemDetails> result = _controller.getListOfItemInfoInMyLibrary(userId);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals(dto, result.get(0));
+        assertEquals(details, result.get(0));
     }
 
     @Test
@@ -45,7 +62,7 @@ class ListOfItemsInMyLibraryControllerTest {
         when(_libraryService.getListOfItemInfoInMyLibraryFull(userId)).thenReturn(List.of());
 
         // Act
-        List<ItemDetailsDTO> result = _controller.getListOfItemInfoInMyLibrary(userId);
+        List<LibraryItemDetails> result = _controller.getListOfItemInfoInMyLibrary(userId);
 
         // Assert
         assertTrue(result.isEmpty());
