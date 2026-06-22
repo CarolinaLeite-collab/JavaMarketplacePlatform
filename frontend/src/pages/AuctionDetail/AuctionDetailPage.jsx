@@ -14,21 +14,20 @@ import { PlaceBidModal } from '../../components/placeBidModal/PlaceBidModal.tsx'
  * Formats an ISO end date into a short "in Xd Yh" string.
  * Returns "Ended" if the date is in the past.
  */
-function formatTimeRemaining(endDateIso) {
+function formatTimeRemaining(endDateIso, now) {
     if (!endDateIso) return 'N/A';
     const end = new Date(endDateIso);
-    const now = new Date();
     const diffMs = end - now;
     if (diffMs <= 0) return 'Ended';
 
-    const totalMinutes = Math.floor(diffMs / 60000);
-    const days = Math.floor(totalMinutes / (60 * 24));
-    const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-    const minutes = totalMinutes % 60;
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
-    if (days > 0) return `${days}d ${hours}h`;
-    if (hours > 0) return `${hours}h ${minutes}m`;
-    return `${minutes}m`;
+    const weekday = end.toLocaleDateString('en-US', { weekday: 'long' });
+
+    return `${days}d ${hours}h:${minutes}m:${seconds}s, ${weekday}`;
 }
 
 /**
@@ -62,6 +61,7 @@ export default function AuctionDetailPage() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [publisherInfo, setPublisherInfo] = useState(null);
+    const [now, setNow] = useState(new Date());
 
     const [bidModalOpened, { open: openBidModal, close: closeBidModal }] = useDisclosure(false);
 
@@ -76,6 +76,7 @@ export default function AuctionDetailPage() {
             let itemData = null;
             let editionData = null;
             let publisherData = null;
+            let publicationData = null;
 
             if (itemId) {
                 try {
@@ -101,10 +102,20 @@ export default function AuctionDetailPage() {
                 }
             }
 
+            if (editionData?.publicationId) {
+                try {
+                    publicationData = await apiClient.getPublicationById(editionData.publicationId);
+                } catch (e) {
+                    console.warn('Could not load publication', e);
+                }
+            }
+
             setAuction(auctionData);
             setItem(itemData);
             setEdition(editionData);
+            setPublication(editionData);
             setPublisherInfo(publisherData);
+            setPublication(publicationData);
         } catch (loadError) {
             console.error(loadError);
             setError('Could not load auction.');
@@ -116,6 +127,11 @@ export default function AuctionDetailPage() {
     useEffect(() => {
         loadAuction();
     }, [auctionId]);
+
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     async function handlePlaceBid(bidAmount) {
         setError('');
@@ -188,19 +204,18 @@ export default function AuctionDetailPage() {
     const language        = item?.language ?? 'N/A';
 
     // Edition fields (from /editions/{id})
-    const publisher       = publisherInfo?.publishingCompanyName ?? 'N/A';
+    const publisher           = publisherInfo?.publishingCompanyName ?? 'N/A';
     const pages           = edition?.numberOfPages ?? 'N/A';
     const editionNumber   = edition?.editionNumber ?? 'N/A';
     const binding         = edition?.binding ?? 'N/A';
-    const weight = edition?.weight
+    const weight              = edition?.weight
         ? `${edition.weight.value} ${edition.weight.unit}`
         : 'N/A';
-    const dimensions = edition?.dimension
+    const dimensions          = edition?.dimension
         ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.depth} ${edition.dimension.unit}`
         : 'N/A';
     const seller          = sellerUsernameFromEmail(auction.seller) ?? 'Unknown';
 
-    // Edition fields (from /publications/{id})
     const synopsis        = publication?.synopsis ?? 'N/A';
 
     return (
@@ -267,7 +282,7 @@ export default function AuctionDetailPage() {
 
                                 <Group gap="lg" c="dimmed" mt="xs">
                                     <Text size="sm">
-                                        Ends in {formatTimeRemaining(endDate)}
+                                        Ends in {formatTimeRemaining(endDate, now)}
                                     </Text>
                                     <Badge color="var(--mantine-color-indigo-7)" variant="light" size="sm">
                                         {status}
