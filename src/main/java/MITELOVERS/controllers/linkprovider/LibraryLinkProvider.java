@@ -17,9 +17,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Provides HATEOAS links for operations related to a user's library.
  *
  * <p>
- * Links are included according to the user's permissions. The library link
- * exposes the optional {@code sort} URI parameter, while the add link exposes
- * the operation for adding an item to the library.
+ * Links are included according to the user's permissions.
+ * The sort link exposes the optional {@code sort} URI parameter,
+ * while the add link exposes the operation for adding an item.
  * </p>
  */
 
@@ -54,5 +54,9 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         return links;
     }
-
+    public Link getSortLink() {
+        return linkTo(methodOn(LibraryRestController.class)
+                .getMyLibrary(null, null))
+                .withRel("sort");
+    }
 }

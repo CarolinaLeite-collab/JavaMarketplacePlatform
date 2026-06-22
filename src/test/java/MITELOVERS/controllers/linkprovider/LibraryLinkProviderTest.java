@@ -101,4 +101,19 @@ class LibraryLinkProviderTest {
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library-add")));
     }
+
+    @Test
+    void shouldProvideTemplatedSortLink() {
+        // Arrange
+        AuthorizationPolicy policyDouble = mock(AuthorizationPolicy.class);
+        LibraryLinkProvider provider = new LibraryLinkProvider(policyDouble);
+
+        // Act
+        Link sortLink = provider.getSortLink();
+
+        // Assert
+        assertEquals("sort", sortLink.getRel().value());
+        assertEquals("/my-library{?sort}", sortLink.getHref());
+        assertTrue(sortLink.isTemplated());
+    }
 }
