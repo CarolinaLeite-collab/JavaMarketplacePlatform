@@ -7,6 +7,7 @@ export const initialAppState = {
     genresHref: null,
     libraryHref: null,
     directSalesHref: null,
+    activeDirectSalesHref: null,
     directSalesWithoutPriceHref: null,
     createEditionHref: null,
     createItemHref: null,
@@ -34,6 +35,7 @@ export function appReducer(state, action) {
                 genresHref: action.payload?.['genres']?.href ?? null,
                 libraryHref: action.payload?.['library']?.href ?? null,
                 directSalesHref: action.payload?.['direct-sales']?.href ?? null,
+                activeDirectSalesHref: action.payload?.['active-direct-sales']?.href ?? null,
                 directSalesWithoutPriceHref: action.payload?.['direct-sales-without-price']?.href ?? null,
                 createPublicationHref: action.payload?.['createPublication']?.href ?? null,
                 authorsHref: action.payload?.['authors']?.href ?? null,
@@ -41,9 +43,7 @@ export function appReducer(state, action) {
                 createEditionHref: action.payload?.['edition-create']?.href ?? null,
                 createItemHref: action.payload?.['createItem']?.href ?? null,
                 publicationTypesHref: action.payload?.['publication-types']?.href ?? null,
-                publishingCompaniesHref:
-                    action.payload?.['publishingCompanies']?.href ??
-                    'http://localhost:8081/publishingCompanies',
+                publishingCompaniesHref: action.payload?.['publishingCompanies']?.href ?? null,
             };
 
         case GET_LIST_OPTIONS_SUCCESS:

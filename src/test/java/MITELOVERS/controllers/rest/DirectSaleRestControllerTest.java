@@ -130,7 +130,7 @@ class DirectSaleRestControllerTest {
         // Assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertSame(response, result.getBody());
-        assertTrue(result.getBody().getLinks().hasLink("self"));
+        verify(_linkProvider).addResourceLinks(response);
     }
 
     // ------------------------------------------------------------
@@ -163,7 +163,7 @@ class DirectSaleRestControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
+        verify(_linkProvider).addResourceLinks(dto);
     }
 
     @Test
@@ -264,7 +264,7 @@ class DirectSaleRestControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertSame(dto, result.getBody());
-        assertTrue(result.getBody().getLinks().hasLink("self"));
+        verify(_linkProvider).addResourceLinks(dto);
     }
 
     // ------------------------------------------------------------
@@ -304,12 +304,7 @@ class DirectSaleRestControllerTest {
 
         assertEquals(2, body.getDirectSales().size());
 
-        // Each entry has self link
-        assertTrue(body.getDirectSales().get(0).getLinks().hasLink("self"));
-        assertTrue(body.getDirectSales().get(1).getLinks().hasLink("self"));
-
-        // Collection has self link
-        assertTrue(body.getLinks().hasLink("self"));
+        verify(_linkProvider).addCollectionLinks(dto, genreId);
     }
 
     @Test
@@ -349,7 +344,8 @@ class DirectSaleRestControllerTest {
 
         // Assert
         var entry = result.getBody().getDirectSales().get(0);
-        assertTrue(entry.getLinks().hasLink("self"));
+        assertSame(dto.getDirectSales().get(0), entry);
+        verify(_linkProvider).addCollectionLinks(dto, genreId);
     }
 
     @Test
@@ -374,7 +370,8 @@ class DirectSaleRestControllerTest {
                 _controller.getDirectSaleItemsByGenre(genreId);
 
         // Assert
-        assertTrue(result.getBody().getLinks().hasLink("self"));
+        assertSame(dto, result.getBody());
+        verify(_linkProvider).addCollectionLinks(dto, genreId);
     }
 
     @Test
@@ -401,7 +398,7 @@ class DirectSaleRestControllerTest {
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
-        assertTrue(result.getBody().get(0).getLinks().hasLink("self"));
+        verify(_linkProvider).addResourceLinks(dto);
     }
 
     @Test
