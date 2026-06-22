@@ -14,7 +14,7 @@ hidefootbox
 
 autonumber
 
-title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/SSN - SSD"
+title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/ISSN - SSD"
 
 ' --- Actor and participants ---
 
