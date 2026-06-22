@@ -1,12 +1,15 @@
 package MITELOVERS.applicationservices;
 
+import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.repository.ISaleRepo;
 import MITELOVERS.domain.sale.Sale;
+import MITELOVERS.domain.sale.SaleFactory;
 import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.domain.sale.SaleLineFactory;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.SaleId;
-import MITELOVERS.domain.valueobject.SaleLineId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +28,24 @@ class SaleServiceTest {
 
     @Mock
     private ISaleRepo _saleRepo;
+
+    @Mock
+    private ShoppingCartService _shoppingCartService;
+
+    @Mock
+    private PaymentService _paymentService;
+
+    @Mock
+    private DirectSaleService _directSaleService;
+
+    @Mock
+    private ItemService _itemService;
+
+    @Mock
+    private SaleFactory _saleFactory;
+
+    @Mock
+    private SaleLineFactory _saleLineFactory;
 
     @InjectMocks
     private SaleService _service;
@@ -143,5 +164,118 @@ class SaleServiceTest {
         // Act + Assert
         assertThrows(NoSuchElementException.class,
                 () -> _service.getSaleLineById(saleIdDouble, saleLineId));
+    }
+
+    @Test
+    void createSaleFromCartThrowsWhenCartIsEmpty() {
+        // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getCartLines()).thenReturn(List.of());
+
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class,
+                () -> _service.createSaleFromCart(cartIdDouble, "pedro@aeiou.com"));
+    }
+
+    @Test
+    void createSaleFromCartThrowsWhenCartNotFound() {
+        // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2"))
+                .thenThrow(new NoSuchElementException("ShoppingCart not found!"));
+
+        // Act + Assert
+        assertThrows(NoSuchElementException.class,
+                () -> _service.createSaleFromCart(cartIdDouble, "pedro@aeiou.com"));
+    }
+
+    @Test
+    void createSaleFromCartReturnsSaleWhenPaymentSuccessful() {
+        // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
+        ItemId itemIdDouble = mock(ItemId.class);
+        when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
+
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        when(lineDouble.getDirectSaleId()).thenReturn(directSaleIdDouble);
+        when(lineDouble.getSellerId()).thenReturn(mock(UserId.class));
+        when(lineDouble.getPriceAtAddition()).thenReturn(mock(Price.class));
+
+        ShoppingCartId shoppingCartIdDouble = mock(ShoppingCartId.class);
+        when(shoppingCartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getCartLines()).thenReturn(List.of(lineDouble));
+        when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
+        when(cartDouble.identity()).thenReturn(shoppingCartIdDouble);
+
+        SaleLine saleLineDouble = mock(SaleLine.class);
+        when(saleLineDouble.get_directSaleId()).thenReturn(directSaleIdDouble);
+
+        Price totalAmountDouble = mock(Price.class);
+        Sale saleDouble = mock(Sale.class);
+        when(saleDouble.get_totalAmount()).thenReturn(totalAmountDouble);
+        when(saleDouble.get_saleLines()).thenReturn(List.of(saleLineDouble));
+
+        DirectSale directSaleDouble = mock(DirectSale.class);
+        when(directSaleDouble.getItemsId()).thenReturn(List.of(itemIdDouble));
+
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_saleLineFactory.createSaleLine(any(), any(), any())).thenReturn(saleLineDouble);
+        when(_saleFactory.createSale(any(), any())).thenReturn(saleDouble);
+        when(_paymentService.isPaymentSuccessful(totalAmountDouble)).thenReturn(true);
+        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
+
+        // Act
+        Sale result = _service.createSaleFromCart(cartIdDouble, "pedro@aeiou.com");
+
+        // Assert
+        assertSame(saleDouble, result);
+    }
+
+    @Test
+    void createSaleFromCartReturnsCancelledSaleWhenPaymentFails() {
+        // Arrange
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
+        when(lineDouble.getDirectSaleId()).thenReturn(mock(DirectSaleId.class));
+        when(lineDouble.getSellerId()).thenReturn(mock(UserId.class));
+        when(lineDouble.getPriceAtAddition()).thenReturn(mock(Price.class));
+
+        ShoppingCart cartDouble = mock(ShoppingCart.class);
+        when(cartDouble.getCartLines()).thenReturn(List.of(lineDouble));
+        when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
+
+        SaleLine saleLineDouble = mock(SaleLine.class);
+        Price totalAmountDouble = mock(Price.class);
+
+        Sale saleDouble = mock(Sale.class);
+        when(saleDouble.get_totalAmount()).thenReturn(totalAmountDouble);
+
+        when(_shoppingCartService.findCartByCartId("SC-A49F78E2")).thenReturn(cartDouble);
+        when(_saleLineFactory.createSaleLine(any(), any(), any())).thenReturn(saleLineDouble);
+        when(_saleFactory.createSale(any(), any())).thenReturn(saleDouble);
+        when(_paymentService.isPaymentSuccessful(totalAmountDouble)).thenReturn(false);
+        when(_saleRepo.save(saleDouble)).thenReturn(saleDouble);
+
+        // Act
+        Sale result = _service.createSaleFromCart(cartIdDouble, "pedro@aeiou.com");
+
+        // Assert
+        assertSame(saleDouble, result);
     }
 }
