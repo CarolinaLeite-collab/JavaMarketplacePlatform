@@ -1,5 +1,5 @@
 @startuml
-title "As a User, in the Web UI, I want to sort the list of publications\nin my library by title, author, type or ISBN/ISSN." - SD\nVERSION 2
+title "As a User, in the Web UI, I want to sort the list of publications\nin my library by title, author, type or ISBN/ISSN." - SD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -30,7 +30,7 @@ The Frontend follows and expands this href instead
 of using a hardcoded URL.
 end note
 
-User -> Frontend : I want to sort my library by\n{sort}
+User -> Frontend : I want to sort the list of publications in my library
 activate Frontend
 
 note right of Frontend
@@ -64,7 +64,7 @@ ref over Backend
 [[rest-sd-ref-diagrams/GET_Sorted_My_Library_SD.puml GET user's library sorted by selected field]]
 end ref
 
-Backend --> Frontend : 200 OK\n+ CollectionModel<LibraryItemSummaryDTO>\n+ _links
+Backend --> Frontend : 200 OK\n+ Collection of LibraryItemResponseDTO\n+ _links
 deactivate Backend
 
 Frontend --> User : Display sorted library publications

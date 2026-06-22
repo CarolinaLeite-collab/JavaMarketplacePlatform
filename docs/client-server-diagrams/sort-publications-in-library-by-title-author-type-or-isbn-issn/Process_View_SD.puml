@@ -14,7 +14,7 @@ hidefootbox
 
 autonumber
 
-title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/SSN - SD"
+title "As a User, in the Web UI, I want to be able to sort the list \nof publications in my library by title, author, type or ISBN/ISSN - SD"
 
 ' --- Actor and participants ---
 
@@ -48,7 +48,7 @@ deactivate backend
 frontend --> User : Items of your library
 deactivate frontend
 
-User -> frontend : sort library by title/author/type/ISBN-SSN
+User -> frontend : I want to sort the list of items in library by \nby title/ author/ type/ ISBN/ISSN
 activate frontend
 frontend -> backend : GET /my-library?sort={field}\nX-User-Id: {email}
 activate backend

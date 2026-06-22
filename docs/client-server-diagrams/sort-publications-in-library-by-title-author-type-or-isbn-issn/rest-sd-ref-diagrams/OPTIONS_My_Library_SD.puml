@@ -40,7 +40,7 @@ UserService --> REST : user
 deactivate UserService
 
 create "options:%n()RepresentationModel<?>" as Options
-REST -> Options : add self link for\nOPTIONS /my-library?email={email}
+REST -> Options : add self link for\nOPTIONS /my-library
 
 REST -> LinkProvider : getLinks(user)
 activate LinkProvider
@@ -63,10 +63,10 @@ alt user can add to library
     LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library-add"
 end
 
-LinkProvider --> REST : authorized links
+LinkProvider --> REST : List<Link> authorizedLinks
 deactivate LinkProvider
 
-loop for each authorized link
+loop for each link in authorizedLinks
     REST -> Options : add(link)
     activate Options
     deactivate Options
