@@ -107,6 +107,101 @@ describe('apiClient', () => {
 
     });
 
+    describe('getActiveDirectSales', () => {
+
+        it('calls active direct sales endpoint with X-User-Id header', async () => {
+            const response = [{ directSaleId: 'DS-001' }];
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.getActiveDirectSales();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/direct-sales/active`,
+                {
+                    headers: {
+                        'X-User-Id': USER_ID
+                    }
+                }
+            );
+            expect(result).toEqual(response);
+        });
+
+        it('throws when getActiveDirectSales fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 500 })
+            );
+
+            await expect(apiClient.getActiveDirectSales())
+                .rejects.toThrow('500');
+        });
+
+        it('returns null when getActiveDirectSales receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getActiveDirectSales();
+
+            expect(result).toBeNull();
+        });
+
+    });
+
+    describe('getPublishingCompanies', () => {
+
+        it('calls publishing companies endpoint without auth header', async () => {
+            const response = [{ publishingCompanyId: 'PUB-001' }];
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.getPublishingCompanies();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/publishingCompanies`
+            );
+            expect(result).toEqual(response);
+        });
+
+        it('throws when getPublishingCompanies fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.getPublishingCompanies())
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when getPublishingCompanies receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getPublishingCompanies();
+
+            expect(result).toBeNull();
+        });
+
+    });
+
     describe('getByHref', () => {
 
         it('calls href with X-User-Id', async () => {

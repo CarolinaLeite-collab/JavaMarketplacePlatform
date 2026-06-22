@@ -14,7 +14,8 @@ export function setUserId(id) {
     USER_ID = id;
 }
 
-// Entry point functions (hardcoded paths - initial discovery)
+// Entry point functions used for bootstrap and documented fallbacks when a
+// workflow has not yet discovered a HATEOAS href.
 async function optionsByPath(path) {
     console.log('optionsByPath - current USER_ID:', USER_ID);
     const response = await fetch(`${BASE_URL}${path}?email=${USER_ID}`, {
@@ -132,7 +133,7 @@ function extractIdFromSelfLink(response) {
 
 // Contract endpoints
 export const apiClient = {
-    // Entry points — hardcoded
+    // Entry points
     getRootOptions: () => optionsByPath('/api'),
     getListsOptions: () => optionsByPath('/my-lists'),
     getGenres: () => getPublic('/genres'),
@@ -140,8 +141,10 @@ export const apiClient = {
     getLibraryOptions: () => optionsByPath('/my-library'),
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
+    // Fallback entry point; Marketplace prefers the root "active-direct-sales" href when available.
     getActiveDirectSales: () => getPrivate('/direct-sales/active'),
     getAuctions: () => getPublic('/auctions'),
+    // Fallback entry point; item registration prefers the root "publishingCompanies" href when available.
     getPublishingCompanies: () => getPublic('/publishingCompanies'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
     getEditionById: (editionId) => getPublic(`/editions/${editionId}`),

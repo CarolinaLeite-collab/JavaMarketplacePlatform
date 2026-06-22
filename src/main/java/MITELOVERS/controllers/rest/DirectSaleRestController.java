@@ -7,13 +7,10 @@ import MITELOVERS.domain.directsale.DirectSale;
 import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
@@ -95,11 +92,7 @@ public class DirectSaleRestController {
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
-        responseDTO.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(responseDTO.getDirectSaleId()))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addResourceLinks(responseDTO);
 
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
@@ -117,13 +110,7 @@ public class DirectSaleRestController {
                 .map(_responseMapper::toResponseDTO)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(
-                        linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSaleById(dto.getDirectSaleId()))
-                                .withSelfRel()
-                )
-        );
+        response.forEach(_directSaleLinkProvider::addResourceLinks);
 
         return ResponseEntity.ok(response);
     }
@@ -161,11 +148,7 @@ public class DirectSaleRestController {
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
-        responseDTO.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(id))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addResourceLinks(responseDTO);
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -179,19 +162,7 @@ public class DirectSaleRestController {
         DSFilteredItemsResponseDTO dto =
                 _filteredResponseMapper.toDTO(ids.stream().map(DirectSaleId::toString).toList());
 
-        // 2. Add links to each entry
-        dto.getDirectSales().forEach(entry ->
-                entry.add(linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(entry.getDirectSaleId()))
-                        .withSelfRel())
-        );
-
-        // 3. Add collection self link
-        dto.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleItemsByGenre(genreId))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addCollectionLinks(dto, genreId);
 
         return ResponseEntity.ok(dto);
     }
@@ -209,13 +180,7 @@ public class DirectSaleRestController {
                 .map(_noPriceMapper::toModel)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(
-                        linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSalesWithoutPrice())
-                                .withSelfRel()
-                )
-        );
+        response.forEach(_directSaleLinkProvider::addResourceLinks);
 
         return ResponseEntity.ok(response);
     }
