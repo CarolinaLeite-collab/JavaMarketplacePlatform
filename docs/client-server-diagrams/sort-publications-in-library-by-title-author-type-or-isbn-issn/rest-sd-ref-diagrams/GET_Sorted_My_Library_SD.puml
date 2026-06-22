@@ -13,9 +13,14 @@ participant ":LibraryRestController" as REST
 participant ":LibrarySortRequestMapper" as SortMapper
 participant ":LibraryService" as Service
 participant ":ILibraryRepo" as LibraryRepo
-participant ":Domain Repositories" as Repositories
-participant ":LibraryItemSummaryMapper" as DTOMapper
-participant ":DB" as Database
+participant ":IItemRepo" as ItemRepo
+participant ":IEditionRepo" as EditionRepo
+participant ":IPublicationRepo" as PublicationRepo
+participant ":IPublicationTypeRepo" as PublicationTypeRepo
+participant ":IAuthorRepo" as AuthorRepo
+participant ":LibraryItemResponseDTOMapper" as DTOMapper
+participant ":LibraryLinkProvider" as LinkProvider
+participant ":Database" as Database
 
 activate REST
 
@@ -27,7 +32,7 @@ REST -->> UserId2 : new UserId(email2)
 
 REST -> SortMapper : toDomain(sortCriterion)
 activate SortMapper
-SortMapper -> SortMapper : LibrarySort.from(sortCriterion)
+SortMapper -> SortMapper : map API sort criterion\nto LibrarySort
 
 alt sortCriterion = "title"
     SortMapper --> REST : LibrarySort.TITLE
@@ -57,24 +62,55 @@ LibraryRepo --> Service : Optional<Library>
 deactivate LibraryRepo
 
 alt library does not exist or is empty
-    Service --> REST : empty list
+    Service --> REST : empty List<LibraryItemDetails>
 else library contains items
     Service -> Service : library.getItemsIdInLibrary()
 
     loop for each itemId
-        Service -> Repositories : obtain item, edition, publication,\nauthor and publication type
-        activate Repositories
-        Repositories -> Database : find domain data
+        Service -> ItemRepo : ofIdentity(itemId)
+        activate ItemRepo
+        ItemRepo -> Database : find item
         activate Database
-        Database --> Repositories : domain data
+        Database --> ItemRepo : item
         deactivate Database
-        Repositories --> Service : item + edition + publication\n+ author + publicationType
-        deactivate Repositories
+        ItemRepo --> Service : item
+        deactivate ItemRepo
 
-        Service -> DTOMapper : toDTO(item, publication, edition,\nauthor, publicationType)
-        activate DTOMapper
-        DTOMapper --> Service : LibraryItemSummaryDTO
-        deactivate DTOMapper
+        Service -> EditionRepo : ofIdentity(item.editionId)
+        activate EditionRepo
+        EditionRepo -> Database : find edition
+        activate Database
+        Database --> EditionRepo : edition
+        deactivate Database
+        EditionRepo --> Service : edition
+        deactivate EditionRepo
+
+        Service -> PublicationRepo : ofIdentity(edition.publicationId)
+        activate PublicationRepo
+        PublicationRepo -> Database : find publication
+        activate Database
+        Database --> PublicationRepo : publication
+        deactivate Database
+        PublicationRepo --> Service : publication
+        deactivate PublicationRepo
+
+        Service -> AuthorRepo : ofIdentity(publication.authorId)
+        activate AuthorRepo
+        AuthorRepo -> Database : find author
+        activate Database
+        Database --> AuthorRepo : author
+        deactivate Database
+        AuthorRepo --> Service : author
+        deactivate AuthorRepo
+
+        Service -> PublicationTypeRepo : ofIdentity(edition.publicationTypeId)
+        activate PublicationTypeRepo
+        PublicationTypeRepo -> Database : find publication type
+        activate Database
+        Database --> PublicationTypeRepo : publicationType
+        deactivate Database
+        PublicationTypeRepo --> Service : publicationType
+        deactivate PublicationTypeRepo
     end
 
     alt LibrarySort.TITLE
@@ -89,22 +125,33 @@ else library contains items
         Service -> Service : preserve original order
     end
 
-    Service --> REST : LibraryItemSummaryDTO list
+    Service --> REST : List<LibraryItemDetails>
 end
 
 deactivate Service
 
+loop for each LibraryItemDetails
+    REST -> DTOMapper : toDTO(item, publication, edition,\nauthor, publicationType)
+    activate DTOMapper
+    DTOMapper --> REST : LibraryItemResponseDTO
+    deactivate DTOMapper
+end
 loop for each DTO
     REST -> REST : add item self link
 end
 
-REST -> REST : create CollectionModel
-REST -> REST : add "/my-library/{?sort}" link\nwith rel "sort"
+REST -> REST : create CollectionModel<LibraryItemResponseDTO>\nwith self link
+
+REST -> LinkProvider : getSortLink()
+activate LinkProvider
+LinkProvider -> LinkProvider : linkTo(methodOn(LibraryRestController.class)\n.getMyLibrary(null, null)).withRel("sort")LinkProvider --> REST : sortLink
+deactivate LinkProvider
+REST -> REST : add(sortLink)
 
 note right of REST
 Returns:
 200 OK
-CollectionModel<LibraryItemSummaryDTO>
+CollectionModel<LibraryItemResponseDTO>
 + _links
 end note
 

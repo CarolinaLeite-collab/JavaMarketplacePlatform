@@ -19,48 +19,48 @@ title "As a User, in the Web UI, I want to be able to sort the list \nof publica
 ' --- Actor and participants ---
 
 actor User
-participant ":Client" as client
-participant ":Server" as server
-database "DB" as DB
+participant ":Frontend" as frontend
+participant ":Backend" as backend
+participant ":Database" as Database
 
-User -> client : show me what I can do
-activate client
-client -> server : OPTIONS /my-library {...}
-activate server
+User -> frontend : show me what I can do
+activate frontend
+frontend -> backend : OPTIONS /my-library\nX-User-Id: {email}
+activate backend
 
-server --> client : available links
-deactivate server
-client --> User : here is what you can do
-deactivate client
+backend --> frontend : available endpoints
+deactivate backend
+frontend --> User : here is what you can do
+deactivate frontend
 
-User -> client : access to "My Library"
-activate client
-client -> server : GET /my-library
-activate server
+User -> frontend : I want to access to "My Library"
+activate frontend
+frontend -> backend : GET /my-library\nX-User-Id: {email}
+activate backend
 
-server -> DB : select
-activate DB
-DB --> server : data
-deactivate DB
+backend -> Database : select
+activate Database
+Database --> backend : data
+deactivate Database
 
-server --> client : 200
-deactivate server
-client --> User : Items of your library
-deactivate client
+backend --> frontend : 200 OK\nCollectionModel<LibraryItemResponseDTO>\n+ _embedded + _links
+deactivate backend
+frontend --> User : Items of your library
+deactivate frontend
 
-User -> client : sort library by title/author/type/ISBN-SSN
-activate client
-client -> server : GET /my-library?sort={field}
-activate server
+User -> frontend : sort library by title/author/type/ISBN-SSN
+activate frontend
+frontend -> backend : GET /my-library?sort={field}\nX-User-Id: {email}
+activate backend
 
-server -> DB : select ordered by {field}
-activate DB
-DB --> server : sorted data
-deactivate DB
+backend -> Database : select ordered by {field}
+activate Database
+Database --> backend : sorted data
+deactivate Database
 
-server --> client : 200
-deactivate server
-client --> User : sorted items of your library
-deactivate client
+backend --> frontend : 200 OK\nCollectionModel<LibraryItemResponseDTO>\n+ _embedded + _links
+deactivate backend
+frontend --> User : sorted items of your library
+deactivate frontend
 
 @enduml

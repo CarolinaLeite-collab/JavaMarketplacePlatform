@@ -41,7 +41,7 @@ Supported values:
 - identifier (ISBN/ISSN)
 end note
 
-Frontend -> Backend : OPTIONS /my-library?email={email}
+Frontend -> Backend : OPTIONS /my-library\nX-User-Id: {email}
 activate Backend
 
 ref over Backend

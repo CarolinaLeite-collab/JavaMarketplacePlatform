@@ -14,7 +14,7 @@ participant ":UserService" as UserService
 participant ":IUserRepo" as UserRepo
 participant ":LibraryLinkProvider" as LinkProvider
 participant ":AuthorizationPolicy" as Authorization
-participant ":DB" as Database
+participant ":Database" as Database
 
 activate REST
 
@@ -33,18 +33,37 @@ UserRepo -> Database : ofIdentity(userId)
 activate Database
 Database --> UserRepo : user
 deactivate Database
-UserRepo --> UserService : Optional<User>
+UserRepo --> UserService : user
 deactivate UserRepo
 
 UserService --> REST : user
 deactivate UserService
 
 create "options:%n()RepresentationModel<?>" as Options
-REST -->> Options : new RepresentationModel<>()
+REST -> Options : add self link for\nOPTIONS /my-library?email={email}
 
 REST -> LinkProvider : getLinks(user)
 activate LinkProvider
-LinkProvider --> REST : authorized links,\nincluding library href
+
+LinkProvider -> Authorization : canGetLibrary(user)
+activate Authorization
+Authorization --> LinkProvider : true / false
+deactivate Authorization
+
+alt user can retrieve library
+    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library"
+end
+
+LinkProvider -> Authorization : canAddToLibrary(user)
+activate Authorization
+Authorization --> LinkProvider : true / false
+deactivate Authorization
+
+alt user can add to library
+    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library-add"
+end
+
+LinkProvider --> REST : authorized links
 deactivate LinkProvider
 
 loop for each authorized link
@@ -54,6 +73,13 @@ loop for each authorized link
 end
 
 deactivate REST
+
+note right of REST
+Returns:
+200 OK
+Allow: GET, POST, OPTIONS
+RepresentationModel<?> + _links
+end note
 
 ref over REST
 [[../Process_View_Level_3_SD.puml Return to main diagram]]
