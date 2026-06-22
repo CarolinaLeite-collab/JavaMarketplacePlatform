@@ -8,6 +8,10 @@ import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.ShoppingCartId;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
 import MITELOVERS.dto.response.ShoppingCartResponseDTO;
 import org.springframework.hateoas.Link;
@@ -70,10 +74,6 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
 
         if(user.identity().equals(shoppingCart.getBuyerId())) {
 
-            if (_authorizationPolicy.canGetShoppingCartLines(user)) {
-                methods.add(HttpMethod.GET);
-            }
-
             if(_authorizationPolicy.canPostShoppingCartLines(user)) {
                 methods.add(HttpMethod.POST);
             }
@@ -112,29 +112,29 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
 
     }
 
-    public boolean addLinksForUserCartDiscovery (RepresentationModel<?> model, String email, String cartId) {
+    public boolean addLinksForUserCartDiscovery (RepresentationModel<?> model, UserId userId, ShoppingCartId cartId) {
 
          model.add(linkTo(methodOn(ShoppingCartRestController.class)
-                .getUserCart(email, cartId)).withSelfRel());
+                .getUserCart(userId.toString(), cartId.toString())).withSelfRel());
 
          return true;
 
     }
 
-    public boolean addLinksForUserCart(ShoppingCartResponseDTO dto, String email, String cartId, ShoppingCart cart) {
+    public boolean addLinksForUserCart(ShoppingCartResponseDTO dto, UserId userId, ShoppingCartId cartId, ShoppingCart cart) {
 
-        dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(email, cartId)).withSelfRel());
+        dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(userId.toString(), cartId.toString())).withSelfRel());
 
         if (!cart.getCartLines().isEmpty()) {
 
-            dto.add(linkTo(methodOn(SaleRestController.class).createSaleFromCart(email, null)).withRel("sale"));
+            dto.add(linkTo(methodOn(SaleRestController.class).createSaleFromCart(userId.toString(), null)).withRel("sale"));
 
             for (ShoppingCartLine cartLine : cart.getCartLines()) {
 
                 String cartLineId = cartLine.identity().toString();
 
                 dto.add(linkTo(methodOn(ShoppingCartRestController.class)
-                        .getUserCartLine(email, cartId, cartLineId)).withRel("shopping-cart-line"));
+                        .getUserCartLine(userId.toString(), cartId.toString(), cartLineId)).withRel("shopping-cart-line"));
             }
         }
 
@@ -142,26 +142,26 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
 
     }
 
-    public boolean addLinksForUserCartLine(ShoppingCartLineResponseDTO dto, String email, String cartId, String cartLineId, String directSaleId) {
+    public boolean addLinksForUserCartLine(ShoppingCartLineResponseDTO dto, UserId userId, ShoppingCartId cartId, ShoppingCartLineId cartLineId, DirectSaleId directSaleId) {
 
-        dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCartLine(email, cartId, cartLineId)).withSelfRel());
-        dto.add(linkTo(methodOn(DirectSaleRestController.class).getDirectSaleById(email,directSaleId)).withRel("direct-sale"));
+        dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCartLine(userId.toString(), cartId.toString(), cartLineId.toString())).withSelfRel());
+        dto.add(linkTo(methodOn(DirectSaleRestController.class).getDirectSaleById(userId.toString(),directSaleId.toString())).withRel("direct-sale"));
 
         return true;
     }
 
-    public boolean addLinksForDeleteUserCartLine(RepresentationModel<?> model, String email, String cartId) {
+    public boolean addLinksForDeleteUserCartLine(RepresentationModel<?> model, UserId userId, ShoppingCartId cartId) {
 
-        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(email, cartId)).withRel("shopping-cart"));
+        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(userId.toString(), cartId.toString())).withRel("shopping-cart"));
 
         return true;
 
     }
 
-    public boolean addLinksForCreateUserCartLine(RepresentationModel<?> model, String email, String cartId, String cartLineId) {
+    public boolean addLinksForCreateUserCartLine(RepresentationModel<?> model, UserId userId, ShoppingCartId cartId, ShoppingCartLineId cartLineId) {
 
-        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCartLine(email,cartId,cartLineId)).withSelfRel());
-        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(email, cartId)).withRel("shopping-cart"));
+        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCartLine(userId.toString(),cartId.toString(),cartLineId.toString())).withSelfRel());
+        model.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(userId.toString(), cartId.toString())).withRel("shopping-cart"));
 
         return true;
     }

@@ -4,8 +4,7 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.ShoppingCartLineId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.ShoppingCartLineResponseDTO;
 import MITELOVERS.dto.response.ShoppingCartResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ class ShoppingCartLinkProviderTest {
     }
 
     @Test
-    void getAllowedMethodsForCartReturnsOnlyOptionsWhenNotAuthorized() {
+    void getAllowedMethodsForCartReturnsOnlyOptionsWhenOwnerButNotAuthorized() {
         // Arrange
         UserId sharedUserId = mock(UserId.class);
 
@@ -113,10 +112,11 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
+        verifyNoInteractions(_authorizationPolicy);
     }
 
     @Test
-    void getAllowedMethodsForCartLinesReturnsGetAndPostWhenOwnerAndAuthorized() {
+    void getAllowedMethodsForCartLinesReturnsPostWhenOwnerAndAuthorized() {
         // Arrange
         UserId sharedUserId = mock(UserId.class);
 
@@ -126,18 +126,17 @@ class ShoppingCartLinkProviderTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
 
-        when(_authorizationPolicy.canGetShoppingCartLines(userDouble)).thenReturn(true);
         when(_authorizationPolicy.canPostShoppingCartLines(userDouble)).thenReturn(true);
 
         // Act
         List<HttpMethod> result = _linkProvider.getAllowedMethodsForCartLines(userDouble, cartDouble);
 
         // Assert
-        assertEquals(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), result);
+        assertEquals(List.of(HttpMethod.POST, HttpMethod.OPTIONS), result);
     }
 
     @Test
-    void getAllowedMethodsForCartLinesReturnsOnlyOptionsWhenNotAuthorized() {
+    void getAllowedMethodsForCartLinesReturnsOnlyOptionsWhenOwnerButNotAuthorized() {
         // Arrange
         UserId sharedUserId = mock(UserId.class);
 
@@ -147,7 +146,6 @@ class ShoppingCartLinkProviderTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
 
-        when(_authorizationPolicy.canGetShoppingCartLines(userDouble)).thenReturn(false);
         when(_authorizationPolicy.canPostShoppingCartLines(userDouble)).thenReturn(false);
 
         // Act
@@ -171,6 +169,7 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
+        verifyNoInteractions(_authorizationPolicy);
     }
 
     @Test
@@ -198,7 +197,7 @@ class ShoppingCartLinkProviderTest {
     }
 
     @Test
-    void getAllowedMethodsForCartLineReturnsOnlyOptionsWhenNotAuthorized() {
+    void getAllowedMethodsForCartLineReturnsOnlyOptionsWhenOwnerButNotAuthorized() {
         // Arrange
         UserId sharedUserId = mock(UserId.class);
 
@@ -241,6 +240,7 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
+        verifyNoInteractions(_authorizationPolicy);
     }
 
     @Test
@@ -259,6 +259,7 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
+        verifyNoInteractions(_authorizationPolicy);
     }
 
     @Test
@@ -294,8 +295,14 @@ class ShoppingCartLinkProviderTest {
         // Arrange
         RepresentationModel<?> model = new RepresentationModel<>();
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
         // Act
-        _linkProvider.addLinksForUserCartDiscovery(model, "pedro@aeiou.com", "SC-A49F78E2");
+        _linkProvider.addLinksForUserCartDiscovery(model, userIdDouble, cartIdDouble);
 
         // Assert
         assertTrue(model.hasLink("self"));
@@ -311,8 +318,14 @@ class ShoppingCartLinkProviderTest {
 
         ShoppingCartResponseDTO dto = new ShoppingCartResponseDTO("SC-A49F78E2", "pedro@aeiou.com", null, null);
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
         // Act
-        _linkProvider.addLinksForUserCart(dto, "pedro@aeiou.com", "SC-A49F78E2", cartDouble);
+        _linkProvider.addLinksForUserCart(dto, userIdDouble, cartIdDouble, cartDouble);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -334,8 +347,14 @@ class ShoppingCartLinkProviderTest {
 
         ShoppingCartResponseDTO dto = new ShoppingCartResponseDTO("SC-A49F78E2", "pedro@aeiou.com", null, null);
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
         // Act
-        _linkProvider.addLinksForUserCart(dto, "pedro@aeiou.com", "SC-A49F78E2", cartDouble);
+        _linkProvider.addLinksForUserCart(dto, userIdDouble, cartIdDouble, cartDouble);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -353,8 +372,20 @@ class ShoppingCartLinkProviderTest {
         ShoppingCartLineResponseDTO dto = new ShoppingCartLineResponseDTO(
                 "SCL-1234ABCD", "DS-1A2B3C4DE", "ana@aeiou.com", 14.99, "EUR", "2026-06-18T15:30:00");
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCartLineId cartLineIdDouble = mock(ShoppingCartLineId.class);
+        when(cartLineIdDouble.toString()).thenReturn("SCL-1234ABCD");
+
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
         // Act
-        _linkProvider.addLinksForUserCartLine(dto, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD", "DS-1A2B3C4DE");
+        _linkProvider.addLinksForUserCartLine(dto, userIdDouble, cartIdDouble, cartLineIdDouble, directSaleIdDouble);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -368,8 +399,20 @@ class ShoppingCartLinkProviderTest {
         ShoppingCartLineResponseDTO dto = new ShoppingCartLineResponseDTO(
                 "SCL-1234ABCD", "DS-1A2B3C4DE", "ana@aeiou.com", 14.99, "EUR", "2026-06-18T15:30:00");
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCartLineId cartLineIdDouble = mock(ShoppingCartLineId.class);
+        when(cartLineIdDouble.toString()).thenReturn("SCL-1234ABCD");
+
+        DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
+        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
+
         // Act
-        _linkProvider.addLinksForUserCartLine(dto, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD", "DS-1A2B3C4DE");
+        _linkProvider.addLinksForUserCartLine(dto, userIdDouble, cartIdDouble, cartLineIdDouble, directSaleIdDouble);
 
         // Assert
         assertTrue(dto.hasLink("direct-sale"));
@@ -382,8 +425,14 @@ class ShoppingCartLinkProviderTest {
         // Arrange
         RepresentationModel<?> model = new RepresentationModel<>();
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
         // Act
-        _linkProvider.addLinksForDeleteUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2");
+        _linkProvider.addLinksForDeleteUserCartLine(model, userIdDouble, cartIdDouble);
 
         // Assert
         assertTrue(model.hasLink("shopping-cart"));
@@ -396,8 +445,17 @@ class ShoppingCartLinkProviderTest {
         // Arrange
         RepresentationModel<?> model = new RepresentationModel<>();
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCartLineId cartLineIdDouble = mock(ShoppingCartLineId.class);
+        when(cartLineIdDouble.toString()).thenReturn("SCL-1234ABCD");
+
         // Act
-        _linkProvider.addLinksForCreateUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD");
+        _linkProvider.addLinksForCreateUserCartLine(model, userIdDouble, cartIdDouble, cartLineIdDouble);
 
         // Assert
         assertTrue(model.hasLink("self"));
@@ -410,8 +468,17 @@ class ShoppingCartLinkProviderTest {
         // Arrange
         RepresentationModel<?> model = new RepresentationModel<>();
 
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
+        when(cartIdDouble.toString()).thenReturn("SC-A49F78E2");
+
+        ShoppingCartLineId cartLineIdDouble = mock(ShoppingCartLineId.class);
+        when(cartLineIdDouble.toString()).thenReturn("SCL-1234ABCD");
+
         // Act
-        _linkProvider.addLinksForCreateUserCartLine(model, "pedro@aeiou.com", "SC-A49F78E2", "SCL-1234ABCD");
+        _linkProvider.addLinksForCreateUserCartLine(model, userIdDouble, cartIdDouble, cartLineIdDouble);
 
         // Assert
         assertTrue(model.hasLink("shopping-cart"));
