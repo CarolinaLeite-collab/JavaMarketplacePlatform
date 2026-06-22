@@ -14,7 +14,7 @@ export function Header() {
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
     const { currentUser, toggleUser } = useUser();
     const { state } = useContext(AppContext);
-    const { myListsHref, libraryHref } = state.app;
+    const { myListsHref, libraryHref, salesHref } = state.app;
     const [cartOpened, { open: openCart, close: closeCart }] = useDisclosure(false);
     const cartCount = state.cart?.items?.length ?? 0;
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
@@ -32,6 +32,11 @@ export function Header() {
                         <Link to="/" className={classes.link}>MARKETPLACE</Link>
                         {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>LIBRARY</Link>}
                         {isLoggedIn && myListsHref && <Link to="/lists" className={classes.link}>LISTS</Link>}
+                        {isLoggedIn && salesHref && (
+                            <Link to="/sales" className={classes.link}>
+                                PURCHASES
+                            </Link>
+                        )}
                     </Group>
 
                     <Group visibleFrom="sm">
@@ -86,6 +91,11 @@ export function Header() {
                     <Link to="/" className={classes.link}>Marketplace</Link>
                     {isLoggedIn && libraryHref && <Link to="/my-library" className={classes.link}>My Library</Link>}
                     {isLoggedIn && myListsHref && <Link to="/lists" className={classes.link}>Lists</Link>}
+                    {isLoggedIn && salesHref && (
+                        <Link to="/sales" className={classes.link}>
+                            Purchases
+                        </Link>
+                    )}
                     <Divider my="sm" />
                     <Group justify="center" grow pb="xl" px="md">
                         <Button onClick={toggleUser}>
