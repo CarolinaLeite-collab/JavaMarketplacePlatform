@@ -91,24 +91,22 @@ public class LibraryService {
     }
 
     @Transactional(readOnly = true)
-    public LibraryItemDetails getItemDetail(String itemId) {
-        return loadItemDetails(new ItemId(itemId));
+    public LibraryItemDetails getItemDetail(ItemId itemId) {
+        return loadItemDetails(itemId);
     }
 
     @Transactional
-    public LibraryItemDetails addItemToLibrary(String itemId, String userId) {
+    public LibraryItemDetails addItemToLibrary(ItemId itemId, UserId userId) {
 
-        ItemId itemId1 = new ItemId(itemId);
-        UserId uid = new UserId(new Email(userId));
-        LibraryId libraryId = LibraryId.fromUserId(uid);
+        LibraryId libraryId = LibraryId.fromUserId(userId);
 
-        Item item = _itemRepo.ofIdentity(itemId1)
+        Item item = _itemRepo.ofIdentity(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Item not found"));
 
         Library library = _libraryRepo.ofIdentity(libraryId)
-                .orElseGet(() -> _libraryFactory.createLibrary(uid));
+                .orElseGet(() -> _libraryFactory.createLibrary(userId));
 
-        boolean added = library.addItemIdToLibrary(itemId1);
+        boolean added = library.addItemIdToLibrary(itemId);
 
         if (!added) {
             throw new IllegalStateException("Item already exists in library");
@@ -116,7 +114,7 @@ public class LibraryService {
 
         _libraryRepo.save(library);
 
-        return loadItemDetails(itemId1);
+        return loadItemDetails(itemId);
     }
 
     @Transactional(readOnly = true)

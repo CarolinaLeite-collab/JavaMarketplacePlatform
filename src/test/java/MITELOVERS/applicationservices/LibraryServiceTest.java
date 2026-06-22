@@ -433,6 +433,7 @@ class LibraryServiceTest {
         Publication publicationDouble = mock(Publication.class);
         Author authorDouble = mock(Author.class);
         PublicationType publicationTypeDouble = mock(PublicationType.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
@@ -441,7 +442,7 @@ class LibraryServiceTest {
         when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
 
         // Act
-        LibraryItemDetails result = libraryService.getItemDetail("3C5D126F8B");
+        LibraryItemDetails result = libraryService.getItemDetail(itemIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -453,24 +454,27 @@ class LibraryServiceTest {
     @Test
     void testGetItemDetailItemNotFoundThrowsIllegalStateException() {
         // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getItemDetail("3C5D126F8B"));
+                libraryService.getItemDetail(itemIdDouble));
     }
 
     @Test
     void testGetItemDetailEditionNotFoundThrowsIllegalStateException() {
         // Arrange
         Item itemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getItemDetail("3C5D126F8B"));
+                libraryService.getItemDetail(itemIdDouble));
     }
 
     @Test
@@ -478,6 +482,7 @@ class LibraryServiceTest {
         // Arrange
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
@@ -485,7 +490,7 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getItemDetail("3C5D126F8B"));
+                libraryService.getItemDetail(itemIdDouble));
     }
 
     @Test
@@ -494,6 +499,7 @@ class LibraryServiceTest {
         Item itemDouble = mock(Item.class);
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
+        ItemId itemIdDouble = mock(ItemId.class);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
@@ -502,7 +508,7 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getItemDetail("3C5D126F8B"));
+                libraryService.getItemDetail(itemIdDouble));
     }
 
     @Test
@@ -512,6 +518,8 @@ class LibraryServiceTest {
         Edition editionDouble = mock(Edition.class);
         Publication publicationDouble = mock(Publication.class);
         Author authorDouble = mock(Author.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
@@ -521,7 +529,7 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.getItemDetail("3C5D126F8B"));
+                libraryService.getItemDetail(itemIdDouble));
     }
 
     // ----------------------------------------------------------------
@@ -580,11 +588,17 @@ class LibraryServiceTest {
     @Test
     void testAddItemToLibraryItemNotFoundThrowsIllegalArgumentException() {
         // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -592,6 +606,12 @@ class LibraryServiceTest {
         // Arrange
         Item itemDouble = mock(Item.class);
         Library libraryDouble = mock(Library.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
@@ -599,7 +619,8 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -607,6 +628,11 @@ class LibraryServiceTest {
         // Arrange
         Item itemDouble = mock(Item.class);
         Library libraryDouble = mock(Library.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
 
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
@@ -615,7 +641,8 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -624,7 +651,11 @@ class LibraryServiceTest {
         Item itemDouble = mock(Item.class);
         Library libraryDouble = mock(Library.class);
         Edition editionDouble = mock(Edition.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
 
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
         when(libraryDouble.addItemIdToLibrary(any())).thenReturn(true);
@@ -633,7 +664,8 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -643,7 +675,11 @@ class LibraryServiceTest {
         Library library = mock(Library.class);
         Edition edition = mock(Edition.class);
         Publication publication = mock(Publication.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
 
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(item));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
         when(library.addItemIdToLibrary(any())).thenReturn(true);
@@ -653,7 +689,8 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -664,7 +701,11 @@ class LibraryServiceTest {
         Edition edition = mock(Edition.class);
         Publication publication = mock(Publication.class);
         Author author = mock(Author.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
 
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(item));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(library));
         when(library.addItemIdToLibrary(any())).thenReturn(true);
@@ -675,7 +716,8 @@ class LibraryServiceTest {
 
         // Act + Assert
         assertThrows(IllegalStateException.class, () ->
-                libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com"));
+                libraryService.addItemToLibrary(
+                        itemIdDouble, userIdDouble));
     }
 
     @Test
@@ -687,7 +729,11 @@ class LibraryServiceTest {
         Publication publicationDouble = mock(Publication.class);
         Author authorDouble = mock(Author.class);
         PublicationType publicationTypeDouble = mock(PublicationType.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
 
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
         when(libraryFactory.createLibrary(any())).thenReturn(libraryDouble);
@@ -698,7 +744,8 @@ class LibraryServiceTest {
         when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
 
         // Act
-        LibraryItemDetails result = libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com");
+        LibraryItemDetails result = libraryService.addItemToLibrary(
+                itemIdDouble, userIdDouble);
 
         // Assert
         assertNotNull(result);
@@ -716,7 +763,11 @@ class LibraryServiceTest {
         Publication publicationDouble = mock(Publication.class);
         Author authorDouble = mock(Author.class);
         PublicationType publicationTypeDouble = mock(PublicationType.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
 
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.of(itemDouble));
         when(libraryRepoDouble.ofIdentity(any())).thenReturn(Optional.of(libraryDouble));
         when(libraryDouble.addItemIdToLibrary(any())).thenReturn(true);
@@ -726,7 +777,8 @@ class LibraryServiceTest {
         when(publicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(publicationTypeDouble));
 
         // Act
-        LibraryItemDetails result = libraryService.addItemToLibrary("3C5D126F8B", "pedro@aeiou.com");
+        LibraryItemDetails result = libraryService.addItemToLibrary(
+                itemIdDouble, userIdDouble);
 
         // Assert
         assertNotNull(result);
