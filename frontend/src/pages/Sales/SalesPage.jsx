@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { Alert, Anchor, Loader, Stack, Text } from '@mantine/core';
+import { Alert, Box, Group, Loader, Paper, Stack, Text } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import AppContext from '../../context/AppContext';
 import { apiClient } from '../../services/apiClient';
+import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
+import { IconChevronRight, IconReceipt } from '@tabler/icons-react';
 
 function normalizeLinks(link) {
     if (!link) return [];
@@ -30,13 +32,6 @@ export default function SalesPage() {
             setSales([]);
 
             try {
-                const allowedMethods = await apiClient.getSalesAllowedMethods();
-
-                if (!allowedMethods.includes('GET')) {
-                    setSales([]);
-                    return;
-                }
-
                 const collection = await apiClient.getByHref(salesHref);
                 const links = normalizeLinks(collection?._links?.sale);
 
@@ -59,44 +54,66 @@ export default function SalesPage() {
 
     if (loading) {
         return (
-            <Stack align="center">
-                <Loader />
-                <Text>Loading purchases...</Text>
-            </Stack>
+            <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+                <Stack align="center" py="xl">
+                    <Loader />
+                    <Text c="dimmed">Loading purchases...</Text>
+                </Stack>
+            </DefaultLayout>
         );
     }
-    if (error) return <Alert color="red">{error}</Alert>;
+    if (error) {
+        return (
+            <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+                <Alert color="red" title="Unable to load purchases">{error}</Alert>
+            </DefaultLayout>
+        );
+    }
 
     return (
-        <Stack>
-            <Text component="h1" size="xl" fw={700}>
-                My Purchases
-            </Text>
-
+        <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+            <Box w={{ base: '100%', sm: '80%', md: '65%' }} mx="auto">
             {sales.length === 0 && (
-                <Text c="dimmed">You have no purchases yet.</Text>
+                <Text c="dimmed" ta="center" py="xl">
+                    You have no purchases yet.
+                </Text>
             )}
 
             {sales.map(sale => (
-                <Stack key={sale.saleId} gap="xs">
-                    <Anchor
-                        component={Link}
-                        to={`/sales/${sale.saleId}`}
-                    >
-                        Sale ID: {sale.saleId}
-                    </Anchor>
+                <Paper
+                    key={sale.saleId}
+                    component={Link}
+                    to={`/sales/${sale.saleId}`}
+                    withBorder
+                    radius="md"
+                    p="lg"
+                    mb="sm"
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                    <Group wrap="wrap" justify="space-between">
+                        <Group wrap="nowrap">
+                            <IconReceipt size={30} stroke={1.5} />
+                            <Stack gap={3}>
+                                <Text fw={600}>Sale ID: {sale.saleId}</Text>
+                                <Text size="sm" c="dimmed">
+                                    Created: {sale.createdAt}
+                                </Text>
+                                <Text size="sm" c="dimmed">
+                                    Completed: {sale.completedAt ?? 'Pending'}
+                                </Text>
+                            </Stack>
+                        </Group>
 
-                    <Text>Created: {sale.createdAt}</Text>
-
-                    <Text>
-                        Completed: {sale.completedAt ?? 'Pending'}
-                    </Text>
-
-                    <Text>
-                        Total: {sale.totalAmount} {sale.currency}
-                    </Text>
-                </Stack>
+                        <Group wrap="nowrap" gap="sm">
+                            <Text fw={700}>
+                                Total: {sale.totalAmount} {sale.currency}
+                            </Text>
+                            <IconChevronRight size={20} />
+                        </Group>
+                    </Group>
+                </Paper>
             ))}
-        </Stack>
+            </Box>
+        </DefaultLayout>
     );
 }

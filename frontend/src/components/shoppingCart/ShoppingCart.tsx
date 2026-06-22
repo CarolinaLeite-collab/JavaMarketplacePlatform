@@ -16,6 +16,8 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
     const cartCount = state.cart?.items?.length ?? 0;
     const shoppingCartHref = state.app?.shoppingCartHref;
     const [pendingSale, setPendingSale] = useState(null);
+    const [checkoutError, setCheckoutError] = useState('');
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [checkoutOpened, {open: openCheckout, close: closeCheckout,},] = useDisclosure(false);
     const cartItems = state.cart?.items ?? [];
     const totalPrice = cartItems.reduce(
@@ -106,27 +108,54 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
     };
 
     const handleCheckout = async () => {
-        if (cartCount === 0 || pendingSale) {
+        if (cartCount === 0 || pendingSale || !shoppingCartHref) {
             return;
         }
 
-        const mockedSale = {
-            saleId: `SALE-MOCK-${Date.now()}`,
-            status: 'COMPLETED',
-            items: cartItems,
-            totalAmount: totalPrice,
-            currency,
-                completedAt: new Date().toISOString(),
-        };
+        setCheckoutError('');
+        setCheckoutLoading(true);
 
-        setPendingSale(mockedSale);
-        await handleClearCart();
-        closeCheckout();
+        try {
+            const cartDiscovery = await apiClient.getByHref(shoppingCartHref);
+            const cartHref = cartDiscovery?._links?.self?.href;
 
-        console.log(
-            'Mocked completed sale:',
-            mockedSale
-        );
+            if (!cartHref) {
+                throw new Error('Shopping cart link is unavailable.');
+            }
+
+            const cart = await apiClient.getByHref(cartHref);
+            const saleHref = cart?._links?.sale?.href;
+
+            if (!saleHref) {
+                throw new Error('Checkout link is unavailable.');
+            }
+
+            const allowedMethods = await apiClient.getAllowedMethodsByHref(saleHref);
+            if (!allowedMethods.includes('POST')) {
+                throw new Error('Checkout is not allowed.');
+            }
+
+            const shoppingCartId = new URL(cartHref).pathname
+                .split('/')
+                .filter(Boolean)
+                .pop();
+            const createdSale = await apiClient.postByHref(saleHref, {
+                shoppingCartId,
+            });
+            const createdSaleHref = createdSale?._links?.self?.href;
+            const saleId = createdSaleHref
+                ? new URL(createdSaleHref).pathname.split('/').filter(Boolean).pop()
+                : 'completed';
+
+            setPendingSale({ saleId });
+            dispatch({ type: CLEAR_CART });
+            closeCheckout();
+        } catch (error) {
+            console.error('Could not complete purchase', error);
+            setCheckoutError('Could not complete your purchase. Please try again.');
+        } finally {
+            setCheckoutLoading(false);
+        }
     };
 
     return (
@@ -187,6 +216,12 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                 </Alert>
             )}
 
+            {checkoutError && (
+                <Alert color="red" title="Purchase failed" mb="md">
+                    {checkoutError}
+                </Alert>
+            )}
+
             <Divider my="sm" />
 
             <Group justify="space-between">
@@ -208,7 +243,7 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                         color="var(--mantine-color-indigo-7)"
                         radius="xl"
                         disabled={
-                            cartCount === 0 }
+                            cartCount === 0 || !shoppingCartHref }
                         onClick={openCheckout}
                     >
                         {pendingSale
@@ -250,6 +285,7 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                         <Button
                             color="var(--mantine-color-indigo-7)"
                             onClick={handleCheckout}
+                            loading={checkoutLoading}
                         >
                             Confirm Purchase
                         </Button>

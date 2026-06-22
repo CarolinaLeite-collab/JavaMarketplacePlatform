@@ -1,9 +1,9 @@
-import { render, screen } from '@/test-utils';
+import { render, screen, waitFor } from '@/test-utils';
 import AppContext from '../context/AppContext';
 import { ShoppingCart } from '../components/shoppingCart/ShoppingCart.tsx';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { REMOVE_FROM_CART } from '../context/cart/CartActions';
+import { CLEAR_CART, REMOVE_FROM_CART } from '../context/cart/CartActions';
 import { apiClient } from '../services/apiClient';
 
 vi.mock('../services/apiClient', () => ({
@@ -11,6 +11,8 @@ vi.mock('../services/apiClient', () => ({
         getByHref: vi.fn(),
         deleteByHref: vi.fn(),
         patchNoBodyByHref: vi.fn(),
+        postByHref: vi.fn(),
+        getShoppingCartAllowedMethods: vi.fn(),
         getAllowedMethodsByHref: vi.fn(),
     },
 }));
@@ -60,6 +62,10 @@ describe('ShoppingCart', () => {
             'GET',
             'PATCH',
             'DELETE',
+            'POST',
+            'OPTIONS',
+        ]);
+        vi.mocked(apiClient.getShoppingCartAllowedMethods).mockResolvedValue([
             'OPTIONS',
         ]);
     });
@@ -116,6 +122,50 @@ describe('ShoppingCart', () => {
         ).toBeInTheDocument();
     });
 
+    it('creates a persisted Sale from the cart during checkout', async () => {
+        const user = userEvent.setup();
+        const checkoutContext = {
+            ...mockContextValue,
+            state: {
+                ...mockContextValue.state,
+                app: {
+                    shoppingCartHref: 'http://localhost:8081/shopping-carts',
+                },
+            },
+        };
+
+        vi.mocked(apiClient.getByHref)
+            .mockResolvedValueOnce({
+                _links: {
+                    self: { href: 'http://localhost:8081/shopping-carts/SC-A49F78E2' },
+                },
+            })
+            .mockResolvedValueOnce({
+                _links: {
+                    sale: { href: 'http://localhost:8081/sales' },
+                },
+            });
+        vi.mocked(apiClient.postByHref).mockResolvedValueOnce({
+            _links: {
+                self: { href: 'http://localhost:8081/sales/SA-1234ABCD' },
+            },
+        });
+
+        renderComponent({}, checkoutContext);
+        await user.click(screen.getByRole('button', { name: /checkout/i }));
+        await user.click(await screen.findByRole('button', { name: /confirm purchase/i }));
+
+        await waitFor(() => {
+            expect(apiClient.postByHref).toHaveBeenCalledWith(
+                'http://localhost:8081/sales',
+                { shoppingCartId: 'SC-A49F78E2' },
+            );
+        });
+        expect(mockDispatch).toHaveBeenCalledWith({ type: CLEAR_CART });
+        expect(await screen.findByText(/sale sa-1234abcd was completed successfully/i))
+            .toBeInTheDocument();
+    });
+
     it('removes the selected item from the cart', async () => {
         const user = userEvent.setup();
         renderComponent();
@@ -137,23 +187,5 @@ describe('ShoppingCart', () => {
         expect(screen.queryByText('Dune')).not.toBeInTheDocument();
         expect(screen.queryByRole('button', { name: /checkout/i })).not.toBeInTheDocument();
     });
-
-    //Test denied DELETE
-    vi.mocked(
-        apiClient.getAllowedMethodsByHref
-    ).mockResolvedValue(['GET', 'OPTIONS']);
-    expect(apiClient.deleteByHref).not.toHaveBeenCalled();
-    expect(mockDispatch).not.toHaveBeenCalledWith(
-        expect.objectContaining({
-            type: REMOVE_FROM_CART,
-        }),
-    );
-
-    //Test denied PATCH
-    expect(
-        apiClient.patchNoBodyByHref
-    ).not.toHaveBeenCalled();
-
-
 
 });
