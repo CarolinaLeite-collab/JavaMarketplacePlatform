@@ -13,6 +13,7 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+participant "Router" as router
 participant ":AuctionRestController" as REST
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
@@ -24,35 +25,42 @@ participant "Database" as DB
 
 ' ===== POST /auctions/{auctionId}/bids =====
 
-create "email2:Email" as email2
+[o-> router : POST {bids href} + %n(){placeBidRequestDTO}
+activate router
+router -> REST : placeBid(auctionIdString, %n()userIdFromHeader, placeBidRequestDTO)
+create "email:Email" as email
 activate REST
 
-REST -->> email2 : createEmail(userIdFromHeader)
+REST -->> email : createEmail(userIdFromHeader)
 
-create "userId2:UserId" as userId2
-REST --> userId2 : createUserId(email2)
+create "userId:UserId" as userId
+REST -->> userId : createUserId(email)
+
+create "currency:Currency" as currency
+REST -->> currency : valueOf(placeBidRequestDTO.getCurrency())
 
 create "offerPrice:Price" as offerPrice
-REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, placeBidRequestDTO.getCurrency)
+REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
 
-REST -> Service : placeBid(auctionId, userId2, offerPrice)
+REST -> Service : placeBid(auctionIdString, userId, offerPrice)
 activate Service
+
+create "auctionId:AuctionId" as auctionId
+Service -->> auctionId : createAuctionId(auctionIdString)
 
 Service -> auctionRepo : ofIdentity(auctionId)
 activate auctionRepo
-auctionRepo -> DB : ofIdentity(auctionId)
-activate DB
-DB --> auctionRepo : auction
+auctionRepo ->o] : FETCH
+auctionRepo <--o] : DATA
 deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
 
 
-Service -> Auction : placeBid(userId2, offerPrice)
+Service -> Auction : placeBid(userId, offerPrice)
 activate Auction
-'note right Service: returns auction updated %n() with placed bid
 
-Auction -> BidFactory : createBid%n()(userId2, offerPrice)
+Auction -> BidFactory : createBid%n()(userId, offerPrice)
 activate BidFactory
 create "bid:Bid" as bid
 BidFactory -->> bid : <<create>>
@@ -63,13 +71,11 @@ deactivate Auction
 
 Service -> auctionRepo : save(auction)
 activate auctionRepo
-auctionRepo -> DB : save(auction)
-activate DB
-DB --> auctionRepo : auction
+auctionRepo ->o] : SAVE
+auctionRepo <--o] : OK
 deactivate DB
-auctionRepo --> Service : auction
+
 deactivate auctionRepo
-'Service --> REST : BidPlacementResult(auction, bid)
 create "bidPlacementResult:BidPlacementResult" as Result
 Service -->> Result : createBidPlacementResult(auction, bid)
 Service --> REST : bidPlacementResult
@@ -85,7 +91,7 @@ REST -> Result : getAuction()
 activate Result
 Result --> REST : auction
 deactivate Result
-REST -> Result : getBid
+REST -> Result : getBid()
 activate Result
 Result --> REST : bid
 deactivate Result
@@ -97,14 +103,23 @@ deactivate Mapper
 
 deactivate Service
 
-REST -> Link : addBidLinks(bidResponseDTO)
+REST -> Link : addLinksForCreatedBid(bidResponseDTO)
 activate Link
-Link --> REST : bidResponseDTO with _links
 deactivate Link
 
+note right of Link
+  Adds HATEOAS links to the same DTO instance
+end note
+
+create "response:ResponseEntity<Object>" as response
+REST -->> response : new ResponseEntity<>(bidResponseDTO, 201 Created)
+REST --> router : response
 deactivate REST
 
-ref over REST
+[o<-- router : 201 Created + bidResponseDTO %n() + auction link + bids link
+deactivate REST
+
+ref over router
 [[../Process_View_Level_3_SD.puml Back to main diagram]]
 end ref
 
