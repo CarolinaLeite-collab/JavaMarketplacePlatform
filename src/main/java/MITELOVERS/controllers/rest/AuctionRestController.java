@@ -5,17 +5,13 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Currency;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.CreateAuctionRequestDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import MITELOVERS.dto.request.PlaceBidRequestDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.BidResponseDTOMapper;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
@@ -162,14 +158,15 @@ public class AuctionRestController {
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
-        Auction auction = _auctionService.getAuctionById(auctionId);
 
         List<HttpMethod> methods =
                 _auctionLinkProvider.getAllowedMethodsForBids(user, auctionId);
 
-        return ResponseEntity.ok()
+        ResponseEntity<Void> response = ResponseEntity.ok()
                 .allow(methods.toArray(HttpMethod[]::new))
                 .build();
+
+        return response;
     }
 
     @GetMapping(
