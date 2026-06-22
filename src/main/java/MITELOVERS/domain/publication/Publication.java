@@ -26,17 +26,22 @@ public class Publication implements AggregateRoot<PublicationId> {
     private final AuthorId _authorId;
     private final Year _releaseYear;
     private final GenreId _genreId;
+    private final String _synopsis;
 
-    Publication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, GenreId genreId ){
+    Publication(PublicationId publicationId, Title title, AuthorId authorId, Year releaseYear, GenreId genreId, String synopsis ) {
         _title = Objects.requireNonNull(title, "Title is required");
         _authorId = Objects.requireNonNull(authorId, "AuthorId is required");
         _releaseYear = Objects.requireNonNull(releaseYear, "Release year is required");
         _genreId = Objects.requireNonNull(genreId, "GenreId is required");
         _publicationId  = Objects.requireNonNull(publicationId, "PublicationId is required");
+        if (synopsis != null && synopsis.length() > 300) {
+            throw new IllegalArgumentException("Synopsis must not exceed 300 characters");
+        }
+        _synopsis = synopsis;
     }
 
-    Publication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId ) {
-        this(new PublicationId(title, authorId, releaseYear), title, authorId, releaseYear, genreId);
+    Publication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId, String synopsis ) {
+        this(new PublicationId(title, authorId, releaseYear), title, authorId, releaseYear, genreId, synopsis);
     }
 
     public boolean isByAuthorId(AuthorId authorId) {
@@ -51,6 +56,7 @@ public class Publication implements AggregateRoot<PublicationId> {
     public AuthorId getAuthorId() { return _authorId; }
     public Year getReleaseYear() { return _releaseYear; }
     public GenreId getGenreId() { return _genreId; }
+    public String getSynopsis() { return _synopsis; }
 
     @Override
     public PublicationId identity() { return _publicationId; }
