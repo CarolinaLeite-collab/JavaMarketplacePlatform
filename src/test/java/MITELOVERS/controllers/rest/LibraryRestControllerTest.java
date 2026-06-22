@@ -11,6 +11,8 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.LibrarySort;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.LibraryItemResponseDTO;
@@ -22,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,6 +64,8 @@ class LibraryRestControllerTest {
     void setUp() {
         when(sortRequestMapper.toDomain(null))
                 .thenReturn(LibrarySort.NONE);
+        when(libraryLinkProvider.getSortLink())
+                .thenReturn(Link.of("/my-library{?sort}").withRel("sort"));
     }
 
     @Test
@@ -193,7 +196,8 @@ class LibraryRestControllerTest {
                 null
         );
 
-        when(libraryService.getItemDetail(any())).thenReturn(details);
+        when(libraryService.getItemDetail(
+                eq(new ItemId("3C5D126F8B")))).thenReturn(details);
         when(libraryItemResponseDTOMapper.toDTO(
                 itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble
         )).thenReturn(dto);
@@ -230,7 +234,10 @@ class LibraryRestControllerTest {
                 "https://example.com/1984.jpg"
         );
 
-        when(libraryService.addItemToLibrary(any(), any())).thenReturn(details);
+        when(libraryService.addItemToLibrary(
+                eq(new ItemId("3C5D126F8B")),
+                eq(new UserId(new Email("pedro@aeiou.com")))
+        )).thenReturn(details);
         when(libraryItemResponseDTOMapper.toDTO(
                 itemDouble, publicationDouble, editionDouble, authorDouble, publicationTypeDouble
         )).thenReturn(dto);
@@ -259,8 +266,8 @@ class LibraryRestControllerTest {
 
         // Act & Assert
         mockMvc.perform(options("/my-library")
-                        .param("email", "pedro@aeiou.com")
-                        .accept(MediaTypes.HAL_JSON))
+                        .header("X-User-Id", "pedro@aeiou.com")
+                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("GET")))
                 .andExpect(header().string("Allow", containsString("POST")))
@@ -279,8 +286,8 @@ class LibraryRestControllerTest {
 
         // Act & Assert
         mockMvc.perform(options("/my-library")
-                        .param("email", "readonly@aeiou.com")
-                        .accept(MediaTypes.HAL_JSON))
+                        .header("X-User-Id", "readonly@aeiou.com")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("GET")))
                 .andExpect(header().string("Allow", containsString("POST")))
