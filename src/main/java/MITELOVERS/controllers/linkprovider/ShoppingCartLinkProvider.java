@@ -2,6 +2,7 @@ package MITELOVERS.controllers.linkprovider;
 
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
+import MITELOVERS.controllers.rest.SaleRestController;
 import MITELOVERS.controllers.rest.ShoppingCartRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
@@ -125,6 +126,8 @@ public class ShoppingCartLinkProvider implements RootLinkProvider {
         dto.add(linkTo(methodOn(ShoppingCartRestController.class).getUserCart(email, cartId)).withSelfRel());
 
         if (!cart.getCartLines().isEmpty()) {
+
+            dto.add(linkTo(methodOn(SaleRestController.class).createSaleFromCart(email, null)).withRel("sale"));
 
             for (ShoppingCartLine cartLine : cart.getCartLines()) {
 

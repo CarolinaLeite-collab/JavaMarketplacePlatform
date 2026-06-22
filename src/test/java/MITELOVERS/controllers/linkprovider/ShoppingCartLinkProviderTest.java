@@ -318,10 +318,11 @@ class ShoppingCartLinkProviderTest {
         assertTrue(dto.hasLink("self"));
         assertTrue(dto.getRequiredLink("self").getHref().endsWith("/shopping-carts/SC-A49F78E2"));
         assertFalse(dto.hasLink("shopping-cart-line"));
+        assertFalse(dto.hasLink("sale"));
     }
 
     @Test
-    void addLinksForUserCartAddsLineLinksWhenCartHasLines() {
+    void addLinksForUserCartAddsLineLinksAndSaleLinkWhenCartHasLines() {
         // Arrange
         ShoppingCartLineId lineId = new ShoppingCartLineId("SCL-1234ABCD");
 
@@ -338,6 +339,9 @@ class ShoppingCartLinkProviderTest {
 
         // Assert
         assertTrue(dto.hasLink("self"));
+        assertTrue(dto.getRequiredLink("self").getHref().endsWith("/shopping-carts/SC-A49F78E2"));
+        assertTrue(dto.hasLink("sale"));
+        assertTrue(dto.getRequiredLink("sale").getHref().endsWith("/sales"));
         assertTrue(dto.hasLink("shopping-cart-line"));
         assertTrue(dto.getRequiredLink("shopping-cart-line").getHref()
                 .endsWith("/shopping-carts/SC-A49F78E2/shopping-cart-lines/SCL-1234ABCD"));
