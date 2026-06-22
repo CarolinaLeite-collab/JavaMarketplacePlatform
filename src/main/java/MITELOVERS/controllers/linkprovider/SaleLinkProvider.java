@@ -108,6 +108,13 @@ public class SaleLinkProvider implements RootLinkProvider {
 
     }
 
+    public void addLinksForCreatedSale(RepresentationModel<?> model, String email, String saleId) {
+
+        model.add(linkTo(methodOn(SaleRestController.class)
+                .getSaleById(null, saleId)).withSelfRel());
+
+    }
+
     @Override
     public List<Link> getLinks(User user) {
 

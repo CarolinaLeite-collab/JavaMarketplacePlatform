@@ -328,4 +328,17 @@ class SaleLinkProviderTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void addLinksForCreatedSaleAddsSelfLink() {
+        // Arrange
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForCreatedSale(model, "pedro@aeiou.com", "SA-1234ABCD");
+
+        // Assert
+        assertTrue(model.hasLink("self"));
+        assertTrue(model.getRequiredLink("self").getHref().endsWith("/sales/SA-1234ABCD"));
+    }
 }
