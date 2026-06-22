@@ -82,12 +82,7 @@ public class AuctionRestController {
                 .map(_auctionMapper::toDTO)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(linkTo(methodOn(AuctionRestController.class)
-                        .getAllActiveAuctions())
-                        .slash(dto.getAuctionId())
-                        .withSelfRel())
-        );
+        response.forEach(dto -> _auctionLinkProvider.addLinksForAuction(dto));
 
         return ResponseEntity.ok(response);
     }
@@ -116,8 +111,7 @@ public class AuctionRestController {
 
         AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-        dto.add(linkTo(AuctionRestController.class)
-                .withSelfRel());
+        _auctionLinkProvider.addLinksForAuction(dto);
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
@@ -140,13 +134,13 @@ public class AuctionRestController {
             path = "/{auctionId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> getAuctionById(@PathVariable String auctionId) {
+    public ResponseEntity<AuctionResponseDTO> getAuctionById(@PathVariable String auctionId) {
 
         Auction auction = _auctionService.getAuctionById(auctionId);
 
         AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-        _auctionLinkProvider.addLinksForAuction(dto, auctionId);
+        _auctionLinkProvider.addLinksForAuction(dto);
 
         return new ResponseEntity<>(dto, HttpStatus.OK);
 
@@ -196,7 +190,7 @@ public class AuctionRestController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> placeBid(
+    public ResponseEntity<BidResponseDTO> placeBid(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String userIdFromHeader,
             @RequestBody @Valid PlaceBidRequestDTO request) {

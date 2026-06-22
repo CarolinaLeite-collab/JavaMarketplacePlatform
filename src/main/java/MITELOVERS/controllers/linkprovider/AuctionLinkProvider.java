@@ -82,7 +82,10 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
     // Adds links to an auction representation returned by GET /auctions/{auctionId}
 
-    public void addLinksForAuction(AuctionResponseDTO dto, String auctionId) {
+    public void addLinksForAuction(AuctionResponseDTO dto) {
+
+        String auctionId = dto.getAuctionId();
+
         dto.add(linkTo(methodOn(AuctionRestController.class)
                 .getAuctionById(auctionId))
                 .withSelfRel());

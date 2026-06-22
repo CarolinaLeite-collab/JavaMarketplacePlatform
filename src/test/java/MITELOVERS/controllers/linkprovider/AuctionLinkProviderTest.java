@@ -157,7 +157,7 @@ class AuctionLinkProviderTest {
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
         AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
 
-        linkProvider.addLinksForAuction(dto, auctionId);
+        linkProvider.addLinksForAuction(dto);
 
         assertTrue(dto.getLinks().stream()
                 .anyMatch(l -> l.getRel().value().equals("self")));
