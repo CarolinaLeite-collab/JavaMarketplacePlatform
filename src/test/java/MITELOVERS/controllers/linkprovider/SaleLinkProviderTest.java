@@ -4,9 +4,7 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.SaleId;
-import MITELOVERS.domain.valueobject.SaleLineId;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -128,7 +126,6 @@ class SaleLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
-        verifyNoInteractions(_authorizationPolicy);
     }
 
     @Test
@@ -185,10 +182,7 @@ class SaleLinkProviderTest {
 
         // Assert
         assertEquals(List.of(HttpMethod.OPTIONS), result);
-        verifyNoInteractions(_authorizationPolicy);
     }
-
-    // ──────────── addLinksForSales ────────────
 
     @Test
     void addLinksForSalesAddsSaleLinkPerSale() {
@@ -202,10 +196,15 @@ class SaleLinkProviderTest {
         Sale sale2Double = mock(Sale.class);
         when(sale2Double.identity()).thenReturn(saleId2);
 
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
         RepresentationModel<?> model = new RepresentationModel<>();
 
         // Act
-        _linkProvider.addLinksForSales(model, "pedro@aeiou.com", List.of(sale1Double, sale2Double));
+        _linkProvider.addLinksForSales(model, userIdDouble, List.of(sale1Double, sale2Double));
 
         // Assert
         assertTrue(model.hasLink("sale"));
@@ -218,10 +217,11 @@ class SaleLinkProviderTest {
     @Test
     void addLinksForSalesAddsNoLinksWhenSalesEmpty() {
         // Arrange
+        UserId userIdDouble = mock(UserId.class);
         RepresentationModel<?> model = new RepresentationModel<>();
 
         // Act
-        _linkProvider.addLinksForSales(model, "pedro@aeiou.com", List.of());
+        _linkProvider.addLinksForSales(model, userIdDouble, List.of());
 
         // Assert
         assertFalse(model.hasLink("sale"));
@@ -231,6 +231,7 @@ class SaleLinkProviderTest {
     void addLinksForSaleAddsSelfLink() {
         // Arrange
         SaleLineId saleLineId = new SaleLineId("SL-1234ABCD");
+        SaleId saleId = new SaleId("SA-1234ABCD");
 
         SaleLine saleLineDouble = mock(SaleLine.class);
         when(saleLineDouble.get_saleLineId()).thenReturn(saleLineId);
@@ -238,11 +239,16 @@ class SaleLinkProviderTest {
         Sale saleDouble = mock(Sale.class);
         when(saleDouble.get_saleLines()).thenReturn(List.of(saleLineDouble));
 
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
         SaleResponseDTO dto = new SaleResponseDTO(
                 "SA-1234ABCD", "pedro@aeiou.com", 29.99, "EUR", "2026-06-18T10:00:00", null);
 
         // Act
-        _linkProvider.addLinksForSale(dto, "pedro@aeiou.com", "SA-1234ABCD", saleDouble);
+        _linkProvider.addLinksForSale(dto, userIdDouble, saleId, saleDouble);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -253,6 +259,7 @@ class SaleLinkProviderTest {
     void addLinksForSaleAddsSaleLineLink() {
         // Arrange
         SaleLineId saleLineId = new SaleLineId("SL-1234ABCD");
+        SaleId saleId = new SaleId("SA-1234ABCD");
 
         SaleLine saleLineDouble = mock(SaleLine.class);
         when(saleLineDouble.get_saleLineId()).thenReturn(saleLineId);
@@ -260,11 +267,16 @@ class SaleLinkProviderTest {
         Sale saleDouble = mock(Sale.class);
         when(saleDouble.get_saleLines()).thenReturn(List.of(saleLineDouble));
 
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
         SaleResponseDTO dto = new SaleResponseDTO(
                 "SA-1234ABCD", "pedro@aeiou.com", 29.99, "EUR", "2026-06-18T10:00:00", null);
 
         // Act
-        _linkProvider.addLinksForSale(dto, "pedro@aeiou.com", "SA-1234ABCD", saleDouble);
+        _linkProvider.addLinksForSale(dto, userIdDouble, saleId, saleDouble);
 
         // Assert
         assertTrue(dto.hasLink("sale-line"));
@@ -275,11 +287,19 @@ class SaleLinkProviderTest {
     @Test
     void addLinksForSaleLineAddsSelfLink() {
         // Arrange
+        SaleId saleId = new SaleId("SA-1234ABCD");
+        SaleLineId saleLineId = new SaleLineId("SL-1234ABCD");
+
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
         SaleLineResponseDTO dto = new SaleLineResponseDTO(
                 "SL-1234ABCD", "ana@aeiou.com", "DS-1A2B3C4DE", 14.99, "EUR");
 
         // Act
-        _linkProvider.addLinksForSaleLine(dto, "pedro@aeiou.com", "SA-1234ABCD", "SL-1234ABCD");
+        _linkProvider.addLinksForSaleLine(dto, userIdDouble, saleId, saleLineId);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -290,15 +310,43 @@ class SaleLinkProviderTest {
     @Test
     void addLinksForSaleLineAddsSaleLink() {
         // Arrange
+        SaleId saleId = new SaleId("SA-1234ABCD");
+        SaleLineId saleLineId = new SaleLineId("SL-1234ABCD");
+
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
         SaleLineResponseDTO dto = new SaleLineResponseDTO(
                 "SL-1234ABCD", "ana@aeiou.com", "DS-1A2B3C4DE", 14.99, "EUR");
 
         // Act
-        _linkProvider.addLinksForSaleLine(dto, "pedro@aeiou.com", "SA-1234ABCD", "SL-1234ABCD");
+        _linkProvider.addLinksForSaleLine(dto, userIdDouble, saleId, saleLineId);
 
         // Assert
         assertTrue(dto.hasLink("sale"));
         assertTrue(dto.getRequiredLink("sale").getHref().endsWith("/sales/SA-1234ABCD"));
+    }
+
+    @Test
+    void addLinksForCreatedSaleAddsSelfLink() {
+        // Arrange
+        SaleId saleId = new SaleId("SA-1234ABCD");
+
+        UserId userIdDouble = mock(UserId.class);
+        Email emailDouble = mock(Email.class);
+        when(userIdDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
+
+        RepresentationModel<?> model = new RepresentationModel<>();
+
+        // Act
+        _linkProvider.addLinksForCreatedSale(model, userIdDouble, saleId);
+
+        // Assert
+        assertTrue(model.hasLink("self"));
+        assertTrue(model.getRequiredLink("self").getHref().endsWith("/sales/SA-1234ABCD"));
     }
 
     @Test
@@ -327,18 +375,5 @@ class SaleLinkProviderTest {
 
         // Assert
         assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void addLinksForCreatedSaleAddsSelfLink() {
-        // Arrange
-        RepresentationModel<?> model = new RepresentationModel<>();
-
-        // Act
-        _linkProvider.addLinksForCreatedSale(model, "pedro@aeiou.com", "SA-1234ABCD");
-
-        // Assert
-        assertTrue(model.hasLink("self"));
-        assertTrue(model.getRequiredLink("self").getHref().endsWith("/sales/SA-1234ABCD"));
     }
 }

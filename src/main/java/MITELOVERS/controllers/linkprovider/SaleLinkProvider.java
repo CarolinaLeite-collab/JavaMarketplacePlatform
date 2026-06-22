@@ -6,6 +6,9 @@ import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.SaleLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import org.springframework.hateoas.Link;
@@ -73,45 +76,45 @@ public class SaleLinkProvider implements RootLinkProvider {
         return methods;
     }
 
-    public void addLinksForSales(RepresentationModel<?> model, String email, List<Sale> sales) {
+    public void addLinksForSales(RepresentationModel<?> model, UserId userId, List<Sale> sales) {
 
         for (Sale sale : sales) {
 
             String saleId = sale.identity().toString();
 
             model.add(linkTo(methodOn(SaleRestController.class)
-                    .getSaleById(email, saleId)).withRel("sale"));
+                    .getSaleById(userId.getEmail().toString(), saleId)).withRel("sale"));
 
         }
     }
 
-    public void addLinksForSale(SaleResponseDTO dto, String email, String saleId, Sale sale) {
+    public void addLinksForSale(SaleResponseDTO dto, UserId userId, SaleId saleId, Sale sale) {
 
         dto.add(linkTo(methodOn(SaleRestController.class)
-                .getSaleById(email, saleId)).withSelfRel());
+                .getSaleById(userId.getEmail().toString(), saleId.toString())).withSelfRel());
 
         for (SaleLine saleLine : sale.get_saleLines()) {
 
             String saleLineId = saleLine.get_saleLineId().toString();
 
             dto.add(linkTo(methodOn(SaleRestController.class)
-                    .getSaleLineById(email, saleId, saleLineId)).withRel("sale-line"));
+                    .getSaleLineById(userId.getEmail().toString(), saleId.toString(), saleLineId)).withRel("sale-line"));
         }
     }
 
-    public void addLinksForSaleLine(SaleLineResponseDTO dto, String email, String saleId, String saleLineId) {
+    public void addLinksForSaleLine(SaleLineResponseDTO dto, UserId userId, SaleId saleId, SaleLineId saleLineId) {
 
         dto.add(linkTo(methodOn(SaleRestController.class)
-                .getSaleLineById(email, saleId, saleLineId)).withSelfRel());
+                .getSaleLineById(userId.getEmail().toString(), saleId.toString(), saleLineId.toString())).withSelfRel());
 
-        dto.add(linkTo(methodOn(SaleRestController.class).getSaleById(email, saleId)).withRel("sale"));
+        dto.add(linkTo(methodOn(SaleRestController.class).getSaleById(userId.getEmail().toString(), saleId.toString())).withRel("sale"));
 
     }
 
-    public void addLinksForCreatedSale(RepresentationModel<?> model, String email, String saleId) {
+    public void addLinksForCreatedSale(RepresentationModel<?> model, UserId userId, SaleId saleId) {
 
         model.add(linkTo(methodOn(SaleRestController.class)
-                .getSaleById(null, saleId)).withSelfRel());
+                .getSaleById(userId.getEmail().toString(), saleId.toString())).withSelfRel());
 
     }
 
