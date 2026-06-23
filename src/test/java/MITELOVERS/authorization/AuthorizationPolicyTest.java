@@ -55,8 +55,8 @@ class AuthorizationPolicyTest {
     }
 
     @Test
-    void canGetPublishingCompaniesUserReturnsFalse() {
-        assertFalse(_authorizationPolicy.canGetAllPublishingCompanies(_userDouble));
+    void canGetPublishingCompaniesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetAllPublishingCompanies(_userDouble));
     }
 
     @Test
@@ -65,8 +65,8 @@ class AuthorizationPolicyTest {
     }
 
     @Test
-    void canGetPublishingCompanyUserReturnsFalse() {
-        assertFalse(_authorizationPolicy.canGetPublishingCompany(_userDouble));
+    void canGetPublishingCompanyUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetPublishingCompany(_userDouble));
     }
 
     // ──────────── Publication Type ────────────
