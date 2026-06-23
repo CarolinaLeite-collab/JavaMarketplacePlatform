@@ -18,7 +18,7 @@ vi.mock('react-router-dom', async () => {
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
-        getActiveDirectSales: vi.fn(),
+        getRootOptions: vi.fn(),
         getByHref: vi.fn(),
         getGenres: vi.fn(),
         getItemById: vi.fn(),
@@ -117,7 +117,7 @@ function renderMarketplace({ appState = {} } = {}) {
                         genresHref: null,
                         libraryHref: null,
                         directSalesHref: null,
-                        activeDirectSalesHref: null,
+                        activeDirectSalesHref: 'http://localhost:8081/marketplace/direct-sales',
                         directSalesWithoutPriceHref: null,
                         ...appState,
                     },
@@ -144,7 +144,16 @@ describe('Marketplace', () => {
             toggleUser: vi.fn(),
         });
 
-        vi.mocked(apiClient.getActiveDirectSales).mockResolvedValue(directSales);
+        vi.mocked(apiClient.getRootOptions).mockResolvedValue({
+            _links: {
+                'active-direct-sales': {
+                    href: 'http://localhost:8081/marketplace/direct-sales',
+                },
+                'direct-sales-without-price': {
+                    href: 'http://localhost:8081/marketplace/public-direct-sales',
+                },
+            },
+        });
         vi.mocked(apiClient.getByHref).mockResolvedValue(directSales);
         vi.mocked(apiClient.getGenres).mockResolvedValue(genres);
         vi.mocked(apiClient.getItemById).mockImplementation(async (itemId: string) => itemDetails[itemId]);
@@ -170,14 +179,14 @@ describe('Marketplace', () => {
     it('uses the discovered active direct sales feed for logged-in users', async () => {
         renderMarketplace({
             appState: {
-                activeDirectSalesHref: '/direct-sales/active',
+                activeDirectSalesHref: 'http://localhost:8081/marketplace/direct-sales',
             },
         });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
-        expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/active');
-        expect(apiClient.getActiveDirectSales).not.toHaveBeenCalled();
+        expect(apiClient.getByHref).toHaveBeenCalledWith('http://localhost:8081/marketplace/direct-sales');
+        expect(apiClient.getRootOptions).not.toHaveBeenCalled();
         expect(apiClient.getAuctions).toHaveBeenCalled();
         expect(apiClient.getGenres).toHaveBeenCalled();
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-001');
@@ -185,18 +194,23 @@ describe('Marketplace', () => {
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-003');
     });
 
-    it('falls back to getActiveDirectSales for logged-in users without a discovered active feed', async () => {
-        renderMarketplace();
+    it('discovers the active direct sales feed from root options when the app state has no link', async () => {
+        renderMarketplace({
+            appState: {
+                activeDirectSalesHref: null,
+            },
+        });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
-        expect(apiClient.getActiveDirectSales).toHaveBeenCalled();
+        expect(apiClient.getRootOptions).toHaveBeenCalled();
+        expect(apiClient.getByHref).toHaveBeenCalledWith('http://localhost:8081/marketplace/direct-sales');
     });
 
     it('shows loading state while marketplace data is being fetched', async () => {
         let resolveDirectSales: (value: typeof directSales) => void;
 
-        vi.mocked(apiClient.getActiveDirectSales).mockReturnValue(
+        vi.mocked(apiClient.getByHref).mockReturnValue(
             new Promise((resolve) => {
                 resolveDirectSales = resolve;
             }),
@@ -229,7 +243,7 @@ describe('Marketplace', () => {
     });
 
     it('shows an error message when marketplace data fails to load', async () => {
-        vi.mocked(apiClient.getActiveDirectSales).mockRejectedValueOnce(new Error('500'));
+        vi.mocked(apiClient.getByHref).mockRejectedValueOnce(new Error('500'));
 
         renderMarketplace();
 
@@ -292,7 +306,7 @@ describe('Marketplace', () => {
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
         expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/public');
-        expect(apiClient.getActiveDirectSales).not.toHaveBeenCalled();
+        expect(apiClient.getRootOptions).not.toHaveBeenCalled();
         expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
         expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
         expect(screen.queryByText('15 EUR')).not.toBeInTheDocument();

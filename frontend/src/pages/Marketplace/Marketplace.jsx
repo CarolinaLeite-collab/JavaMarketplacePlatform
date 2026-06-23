@@ -113,6 +113,13 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
     });
 }
 
+async function discoverMarketplaceHref(existingHref, relation) {
+    if (existingHref) return existingHref;
+
+    const rootOptions = await apiClient.getRootOptions();
+    return rootOptions?._links?.[relation]?.href ?? null;
+}
+
 export default function Marketplace() {
     const { state } = useContext(AppContext);
     const { activeDirectSalesHref, directSalesWithoutPriceHref } = state.app;
@@ -155,9 +162,15 @@ export default function Marketplace() {
             try {
                 setLoading(true);
                 setError('');
+                const marketplaceRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
+                const discoveredMarketplaceHref = await discoverMarketplaceHref(marketplaceHref, marketplaceRelation);
+
+                if (!discoveredMarketplaceHref) {
+                    throw new Error(`Missing ${marketplaceRelation} link`);
+                }
 
                 const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
-                    marketplaceHref ? apiClient.getByHref(marketplaceHref) : apiClient.getActiveDirectSales(),
+                    apiClient.getByHref(discoveredMarketplaceHref),
                     apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
@@ -214,7 +227,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, [marketplaceHref, canSeePrice]);
+    }, [marketplaceHref, canSeePrice, isLoggedIn]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">
