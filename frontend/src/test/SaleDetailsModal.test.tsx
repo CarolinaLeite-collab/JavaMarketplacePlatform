@@ -50,7 +50,7 @@ describe('SaleDetailsModal', () => {
         expect(screen.getByText(/auction/i)).toBeInTheDocument();
         expect(screen.getByText(/good/i)).toBeInTheDocument();
         expect(screen.getByText(/9\.99 eur/i)).toBeInTheDocument();
-        expect(screen.getByText(/sold by:\s*user123/i)).toBeInTheDocument();
+        expect(screen.getByText(/sold by\s*user123/i)).toBeInTheDocument();
     });
 
     it('shows the login message instead of price when canSeePrice is false', () => {
@@ -64,11 +64,11 @@ describe('SaleDetailsModal', () => {
             />
         );
 
-        expect(screen.getByText(/register or log in to see price/i)).toBeInTheDocument();
+        expect(screen.getByText(/register or log in/i)).toBeInTheDocument();
         expect(screen.queryByText(/9\.99 eur/i)).not.toBeInTheDocument();
     });
 
-    it('renders null price safely for logged-in users', () => {
+    it('renders safely when price is null for logged-in users', () => {
         render(
             <SaleDetailsModal
                 opened={true}
@@ -81,6 +81,7 @@ describe('SaleDetailsModal', () => {
 
         expect(screen.getByText('Dune')).toBeInTheDocument();
         expect(screen.queryByText(/9\.99 eur/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/register or log in/i)).not.toBeInTheDocument();
     });
 
     it('calls onClose when close button is clicked', async () => {

@@ -52,7 +52,7 @@ export function SaleDetailsModal({ opened, item, canSeePrice, onClose, onSeeMore
                     />
 
                     <Text size="sm" c="dimmed">
-                        Sold by: {item.seller}
+                        Sold by {item.seller}
                     </Text>
                 </Stack>
 
@@ -88,7 +88,7 @@ export function SaleDetailsModal({ opened, item, canSeePrice, onClose, onSeeMore
                         }}
                     >
                         <Text fw={600} size="sm" c="#4f6df5">
-                            {canSeePrice ? item.price : 'Register or log in to see price'}
+                            {canSeePrice ? item.price : 'REGISTER OR LOG IN'}
                         </Text>
                     </Box>
                 </Stack>
