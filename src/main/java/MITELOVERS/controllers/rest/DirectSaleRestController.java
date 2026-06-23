@@ -158,15 +158,14 @@ public class DirectSaleRestController {
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
-        _directSaleLinkProvider.addResourceLinks(responseDTO, userId);
+        User user = _userService.getUserByEmail(userId);
+        _directSaleLinkProvider.addResourceLinks(responseDTO, user);
 
         for (ItemId itemId : directSale.getItemsId()) {
-
             responseDTO.add(
                     linkTo(methodOn(ItemRestController.class)
-                    .getItemById(itemId.toString()))
-                    .withRel("item"));
-
+                            .getItemById(itemId.toString()))
+                            .withRel("item"));
         }
 
         return ResponseEntity.ok(responseDTO);
