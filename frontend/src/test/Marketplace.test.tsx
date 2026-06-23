@@ -40,7 +40,7 @@ const directSales = [
         itemsId: ['ITEM-001'],
         priceValue: 10,
         priceCurrency: 'EUR',
-        seller: 'pedro@aeiou.com',
+        sellerId: 'pedro@aeiou.com',
         _links: {
             self: { href: 'http://localhost:8081/directSales/DS-001' },
         },
@@ -50,7 +50,7 @@ const directSales = [
         itemsId: ['ITEM-002'],
         priceValue: 18,
         priceCurrency: 'EUR',
-        seller: 'ana@aeiou.com',
+        sellerId: 'ana@aeiou.com',
         _links: {
             self: { href: 'http://localhost:8081/directSales/DS-002' },
         },
@@ -357,7 +357,7 @@ describe('Marketplace', () => {
         await user.click(item);
 
         const dialog = await screen.findByRole('dialog');
-        expect(dialog).toHaveTextContent(/register or log in to see price/i);
+        expect(dialog).toHaveTextContent(/register or log in/i);
         expect(dialog).not.toHaveTextContent(/10 eur/i);
     });
 

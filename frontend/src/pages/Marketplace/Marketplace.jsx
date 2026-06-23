@@ -81,7 +81,6 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
 function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice) {
     return auctions.flatMap((auction) => {
         const itemIds = auction.itemIds ?? [];
-
         return itemIds.map((itemId) => {
             const itemDetails = itemDetailsMap.get(itemId);
             if (!itemDetails) return null;
@@ -95,7 +94,7 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                 genreName,
                 type: 'Auction',
                 price: canSeePrice
-                    ? formatPrice(auction.startingPrice, auction.priceCurrency)
+                    ? formatPrice(auction.currentPrice ?? auction.startingPrice, auction.priceCurrency)
                     : null,
 
                 author: itemDetails?.authorName ?? 'unknown',
