@@ -1956,6 +1956,34 @@ This ensures:
 - Traceability
 - Immutable versioning
 
+##### Versioning, Traceability, and Delivery Evidence
+
+To satisfy US076, the Docker image workflow was extended so that the final backend and frontend images are not only built and scanned, but also fully traceable to the source revision that produced them.
+
+During the build process, both images receive metadata that identifies:
+- the image version;
+- the source commit SHA;
+- the build timestamp.
+
+This information is passed to the Docker build and embedded in the final image as OCI labels, allowing the produced artifact to be inspected later and linked back to the exact source commit that generated it.
+
+The labels added to the final images include:
+- `org.opencontainers.image.version`
+- `org.opencontainers.image.revision`
+- `org.opencontainers.image.created`
+
+In addition to embedding metadata in the images themselves, the workflow also generates a final delivery evidence artifact named `docker-delivery-evidence`.
+
+This artifact records, for both backend and frontend images:
+- the image name;
+- the generated tags;
+- the final image digest;
+- the source commit SHA;
+- the build timestamp;
+- the workflow run information.
+
+By combining image metadata with a delivery evidence artifact, the project ensures that published Docker images are versioned, auditable, and reproducible.
+
 ##### Summary Table
 
 | Stage | Backend | Frontend | Blocking |
