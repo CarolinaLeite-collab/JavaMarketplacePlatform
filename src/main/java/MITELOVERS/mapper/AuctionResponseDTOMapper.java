@@ -34,7 +34,8 @@ public class AuctionResponseDTOMapper {
                 auction.getStartingPrice().getCurrency().name(),
                 auction.getAuctionStartDate(),
                 auction.getAuctionEndDate(),
-                auction.getSeller().toString()
+                auction.getSeller().toString(),
+                auction.getCurrentPrice().getValue()
         );
     }
 }
