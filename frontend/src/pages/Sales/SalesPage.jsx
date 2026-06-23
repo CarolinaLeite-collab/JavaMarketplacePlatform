@@ -98,7 +98,7 @@ export default function SalesPage() {
 
     if (loading) {
         return (
-            <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+            <DefaultLayout title="Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
                 <Stack align="center" py="xl">
                     <Loader />
                     <Text c="dimmed">Loading purchases...</Text>
