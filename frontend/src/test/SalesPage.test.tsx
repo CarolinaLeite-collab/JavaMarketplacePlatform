@@ -9,14 +9,22 @@ import { apiClient } from '../services/apiClient';
 vi.mock('../services/apiClient', () => ({
     apiClient: {
         getByHref: vi.fn(),
+        getDirectSalesOptions: vi.fn(),
     },
 }));
 
 const mockGetByHref = vi.mocked(apiClient.getByHref);
+const mockGetDirectSalesOptions = vi.mocked(apiClient.getDirectSalesOptions);
 
 const SALES_HREF = 'http://localhost:8081/sales';
 const FIRST_SALE_HREF = 'http://localhost:8081/sales/SALE-1';
 const SECOND_SALE_HREF = 'http://localhost:8081/sales/SALE-2';
+const FIRST_SALE_LINE_HREF = 'http://localhost:8081/sales/SALE-1/sale-lines/SL-1';
+const SECOND_SALE_LINE_HREF = 'http://localhost:8081/sales/SALE-2/sale-lines/SL-2';
+const FIRST_DIRECT_SALE_HREF = 'http://localhost:8081/direct-sales/DS-1';
+const SECOND_DIRECT_SALE_HREF = 'http://localhost:8081/direct-sales/DS-2';
+const FIRST_ITEM_HREF = 'http://localhost:8081/items/ITEM-1';
+const SECOND_ITEM_HREF = 'http://localhost:8081/items/ITEM-2';
 
 const firstSale = {
     saleId: 'SALE-1',
@@ -24,6 +32,11 @@ const firstSale = {
     completedAt: '2026-06-20T11:00:00',
     totalAmount: 25,
     currency: 'EUR',
+    _links: {
+        'sale-line': {
+            href: FIRST_SALE_LINE_HREF,
+        },
+    },
 };
 
 const secondSale = {
@@ -32,7 +45,99 @@ const secondSale = {
     completedAt: '2026-06-21T13:00:00',
     totalAmount: 40,
     currency: 'EUR',
+    _links: {
+        'sale-line': {
+            href: SECOND_SALE_LINE_HREF,
+        },
+    },
 };
+
+function mockPurchaseResponses() {
+    mockGetDirectSalesOptions.mockResolvedValue({
+        _links: {
+            'direct-sale': {
+                href: 'http://localhost:8081/direct-sales/{id}',
+            },
+        },
+    });
+
+    mockGetByHref.mockImplementation(async (href) => {
+        switch (href) {
+            case SALES_HREF:
+                return {
+                    _links: {
+                        sale: [
+                            { href: FIRST_SALE_HREF },
+                            { href: SECOND_SALE_HREF },
+                        ],
+                    },
+                };
+            case FIRST_SALE_HREF:
+                return firstSale;
+            case SECOND_SALE_HREF:
+                return secondSale;
+            case FIRST_SALE_LINE_HREF:
+                return { directSaleId: 'DS-1' };
+            case SECOND_SALE_LINE_HREF:
+                return { directSaleId: 'DS-2' };
+            case FIRST_DIRECT_SALE_HREF:
+                return {
+                    _links: {
+                        item: { href: FIRST_ITEM_HREF },
+                    },
+                };
+            case SECOND_DIRECT_SALE_HREF:
+                return {
+                    _links: {
+                        item: { href: SECOND_ITEM_HREF },
+                    },
+                };
+            case FIRST_ITEM_HREF:
+                return { title: 'Delirious New York' };
+            case SECOND_ITEM_HREF:
+                return { title: 'Invisible Cities' };
+            default:
+                throw new Error(`Unexpected href: ${href}`);
+        }
+    });
+}
+
+function mockSinglePurchaseResponse() {
+    mockGetDirectSalesOptions.mockResolvedValue({
+        _links: {
+            'direct-sale': {
+                href: 'http://localhost:8081/direct-sales/{id}',
+            },
+        },
+    });
+
+    mockGetByHref.mockImplementation(async (href) => {
+        switch (href) {
+            case SALES_HREF:
+                return {
+                    _links: {
+                        sale: {
+                            href: FIRST_SALE_HREF,
+                        },
+                    },
+                };
+            case FIRST_SALE_HREF:
+                return firstSale;
+            case FIRST_SALE_LINE_HREF:
+                return { directSaleId: 'DS-1' };
+            case FIRST_DIRECT_SALE_HREF:
+                return {
+                    _links: {
+                        item: { href: FIRST_ITEM_HREF },
+                    },
+                };
+            case FIRST_ITEM_HREF:
+                return { title: 'Delirious New York' };
+            default:
+                throw new Error(`Unexpected href: ${href}`);
+        }
+    });
+}
 
 function renderWithContext(
     component: React.ReactNode,
@@ -75,68 +180,46 @@ describe('SalesPage', () => {
     });
 
     it('normalizes a single sale link and renders one Sale', async () => {
-        mockGetByHref
-            .mockResolvedValueOnce({
-                _links: {
-                    sale: {
-                        href: FIRST_SALE_HREF,
-                    },
-                },
-            })
-            .mockResolvedValueOnce(firstSale);
+        mockSinglePurchaseResponse();
 
         renderSalesPage();
 
         expect(
-            await screen.findByRole('link', { name: /sale id: sale-1/i }),
+            await screen.findByRole('link', { name: /delirious new york/i }),
         ).toBeInTheDocument();
 
-        expect(mockGetByHref).toHaveBeenNthCalledWith(1, SALES_HREF);
-        expect(mockGetByHref).toHaveBeenNthCalledWith(2, FIRST_SALE_HREF);
+        expect(mockGetByHref).toHaveBeenCalledWith(SALES_HREF);
+        expect(mockGetByHref).toHaveBeenCalledWith(FIRST_SALE_HREF);
     });
 
     it('normalizes multiple sale links and renders multiple Sales', async () => {
-        mockGetByHref
-            .mockResolvedValueOnce({
-                _links: {
-                    sale: [
-                        { href: FIRST_SALE_HREF },
-                        { href: SECOND_SALE_HREF },
-                    ],
-                },
-            })
-            .mockResolvedValueOnce(firstSale)
-            .mockResolvedValueOnce(secondSale);
+        mockPurchaseResponses();
 
         renderSalesPage();
 
         expect(
-            await screen.findByRole('link', { name: /sale id: sale-1/i }),
+            await screen.findByRole('link', { name: /delirious new york/i }),
         ).toBeInTheDocument();
 
         expect(
-            screen.getByRole('link', { name: /sale id: sale-2/i }),
+            screen.getByRole('link', { name: /invisible cities/i }),
         ).toBeInTheDocument();
 
         expect(mockGetByHref).toHaveBeenCalledWith(FIRST_SALE_HREF);
         expect(mockGetByHref).toHaveBeenCalledWith(SECOND_SALE_HREF);
     });
 
-    it('displays the Sale ID, dates, total and currency', async () => {
-        mockGetByHref
-            .mockResolvedValueOnce({
-                _links: {
-                    sale: {
-                        href: FIRST_SALE_HREF,
-                    },
-                },
-            })
-            .mockResolvedValueOnce(firstSale);
+    it('displays the item name, Sale ID, dates, total and currency', async () => {
+        mockSinglePurchaseResponse();
 
         renderSalesPage();
 
         expect(
-            await screen.findByText('Sale ID: SALE-1'),
+            await screen.findByText('Delirious New York'),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText('Sale ID: SALE-1'),
         ).toBeInTheDocument();
 
         expect(
@@ -155,15 +238,7 @@ describe('SalesPage', () => {
     it('navigates to /sales/:saleId when a Sale is selected', async () => {
         const user = userEvent.setup();
 
-        mockGetByHref
-            .mockResolvedValueOnce({
-                _links: {
-                    sale: {
-                        href: FIRST_SALE_HREF,
-                    },
-                },
-            })
-            .mockResolvedValueOnce(firstSale);
+        mockSinglePurchaseResponse();
 
         renderWithContext(
             <Routes>
@@ -178,7 +253,7 @@ describe('SalesPage', () => {
         );
 
         const saleLink = await screen.findByRole('link', {
-            name: /sale id: sale-1/i,
+            name: /delirious new york/i,
         });
 
         await user.click(saleLink);

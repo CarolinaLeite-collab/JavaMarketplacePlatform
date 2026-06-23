@@ -134,8 +134,7 @@ export default function DirectSaleDetailPage() {
     const priceCurrency = directSale.priceCurrency;
     const endDate = directSale.endDate;
     const status = directSale.status ?? 'ACTIVE';
-    const addToCartHref = directSale?._links?.['add-to-cart']?.href ?? null;
-
+    const addToCartHref = directSale?._links?.['shopping-cart']?.href ?? null;
     const isOwnSale = directSale.sellerId === currentUser;
 
     const isInCart = state.cart?.items?.some(cartItem => cartItem.id === directSale.directSaleId) ?? false;

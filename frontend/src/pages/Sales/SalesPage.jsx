@@ -11,6 +11,47 @@ function normalizeLinks(link) {
     return Array.isArray(link) ? link : [link];
 }
 
+function formatDate(date) {
+    if (!date) return 'Pending';
+
+    return date.split('T')[0];
+}
+
+async function loadSaleWithItemNames(sale) {
+    const saleLineLinks = normalizeLinks(sale?._links?.['sale-line']);
+
+    const itemNames = await Promise.all(
+        saleLineLinks
+            .filter(link => link?.href)
+            .map(async link => {
+                const saleLine = await apiClient.getByHref(link.href);
+                const directSaleOptions = await apiClient.getDirectSalesOptions();
+                const directSaleTemplate = directSaleOptions?._links?.['direct-sale']?.href;
+                const directSaleHref = directSaleTemplate?.replace(
+                    '{id}',
+                    encodeURIComponent(saleLine.directSaleId),
+                );
+
+                if (!directSaleHref) return saleLine.directSaleId;
+
+                const directSale = await apiClient.getByHref(directSaleHref);
+                const itemLinks = normalizeLinks(directSale?._links?.item);
+                const itemHref = itemLinks[0]?.href;
+
+                if (!itemHref) return saleLine.directSaleId;
+
+                const item = await apiClient.getByHref(itemHref);
+                return item?.title ?? saleLine.directSaleId;
+            }),
+    );
+
+    return {
+        ...sale,
+        itemName: itemNames.join(', '),
+    };
+}
+
+
 export default function SalesPage() {
     const { state } = useContext(AppContext);
     const salesHref = state.app.salesHref;
@@ -38,7 +79,10 @@ export default function SalesPage() {
                 const loadedSales = await Promise.all(
                     links
                         .filter(link => link?.href)
-                        .map(link => apiClient.getByHref(link.href))
+                        .map(async link => {
+                            const sale = await apiClient.getByHref(link.href);
+                            return loadSaleWithItemNames(sale);
+                        })
                 );
 
                 setSales(loadedSales);
@@ -94,12 +138,10 @@ export default function SalesPage() {
                         <Group wrap="nowrap">
                             <IconReceipt size={30} stroke={1.5} />
                             <Stack gap={3}>
-                                <Text fw={600}>Sale ID: {sale.saleId}</Text>
+                                <Text fw={600}>{sale.itemName}</Text>
+                                <Text size="sm" c="dimmed">Sale ID: {sale.saleId}</Text>
                                 <Text size="sm" c="dimmed">
-                                    Created: {sale.createdAt}
-                                </Text>
-                                <Text size="sm" c="dimmed">
-                                    Completed: {sale.completedAt ?? 'Pending'}
+                                    Completed: {formatDate(sale.completedAt)}
                                 </Text>
                             </Stack>
                         </Group>

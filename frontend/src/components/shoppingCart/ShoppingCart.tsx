@@ -1,4 +1,5 @@
 import { Modal, ScrollArea, Group, Text, Button, Divider, Image, Paper, Box, Alert, Stack, } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import AppContext from '../../context/AppContext';
 import { useContext, useEffect, useState, } from 'react';
 import { REMOVE_FROM_CART, CLEAR_CART, loadCart,
@@ -15,7 +16,6 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
     const { state, dispatch } = useContext(AppContext);
     const cartCount = state.cart?.items?.length ?? 0;
     const shoppingCartHref = state.app?.shoppingCartHref;
-    const [pendingSale, setPendingSale] = useState(null);
     const [checkoutError, setCheckoutError] = useState('');
     const [checkoutLoading, setCheckoutLoading] = useState(false);
     const [checkoutOpened, {open: openCheckout, close: closeCheckout,},] = useDisclosure(false);
@@ -108,7 +108,7 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
     };
 
     const handleCheckout = async () => {
-        if (cartCount === 0 || pendingSale || !shoppingCartHref) {
+        if (cartCount === 0 || !shoppingCartHref) {
             return;
         }
 
@@ -142,14 +142,20 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
             const createdSale = await apiClient.postByHref(saleHref, {
                 shoppingCartId,
             });
-            const createdSaleHref = createdSale?._links?.self?.href;
-            const saleId = createdSaleHref
-                ? new URL(createdSaleHref).pathname.split('/').filter(Boolean).pop()
-                : 'completed';
+            const purchasedSaleName = cartItems
+                .map((item) => item.name)
+                .join(', ');
 
-            setPendingSale({ saleId });
             dispatch({ type: CLEAR_CART });
             closeCheckout();
+
+            notifications.show({
+                title: 'Purchase completed',
+                message: `${purchasedSaleName} was completed successfully.`,
+                color: 'green',
+                autoClose: 3000,
+            });
+
         } catch (error) {
             console.error('Could not complete purchase', error);
             setCheckoutError('Could not complete your purchase. Please try again.');
@@ -205,17 +211,6 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                 </ScrollArea>
             )}
 
-            {pendingSale && (
-                <Alert
-                    color="green"
-                    title="Purchase completed"
-                    mb="md"
-                >
-                    Sale {pendingSale.saleId} was completed
-                    successfully.
-                </Alert>
-            )}
-
             {checkoutError && (
                 <Alert color="red" title="Purchase failed" mb="md">
                     {checkoutError}
@@ -246,9 +241,7 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                             cartCount === 0 || !shoppingCartHref }
                         onClick={openCheckout}
                     >
-                        {pendingSale
-                            ? 'Purchase Completed'
-                            : 'Checkout'}
+                        Checkout
                     </Button>
                 </Group>
             </Group>
