@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -49,22 +50,32 @@ class DirectSaleRestControllerTest {
     private DirectSaleRestController _controller;
 
     @Test
-    void options_shouldReturnEndpointsAsStrings() {
+    void options_shouldReturnHateoasLinks() {
         String userId = "john@example.com";
         User user = mock(User.class);
-        when(_userService.getUserByEmail(userId)).thenReturn(user);
+        when(_userService.getUserByEmail(
+                new MITELOVERS.domain.valueobject.UserId(
+                        new MITELOVERS.domain.valueobject.Email(userId))))
+                .thenReturn(user);
 
         Link link1 = Link.of("/direct-sales").withRel("direct-sales");
         Link link2 = Link.of("/direct-sales/create").withRel("create-direct-sale");
         when(_linkProvider.getLinks(user)).thenReturn(List.of(link1, link2));
 
-        ResponseEntity<List<String>> result = _controller.options(userId);
+        ResponseEntity<RepresentationModel<?>> result = _controller.options(userId);
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().size());
-        assertEquals("/direct-sales", result.getBody().get(0));
-        assertEquals("/direct-sales/create", result.getBody().get(1));
+        assertTrue(result.getBody().getLink("direct-sales").isPresent());
+        assertEquals(
+                "/direct-sales",
+                result.getBody().getRequiredLink("direct-sales").getHref()
+        );
+        assertTrue(result.getBody().getLink("create-direct-sale").isPresent());
+        assertEquals(
+                "/direct-sales/create",
+                result.getBody().getRequiredLink("create-direct-sale").getHref()
+        );
     }
 
     @Test

@@ -58,7 +58,7 @@ public class ShoppingCartRestController {
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
         if (!email.isBlank()) {
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCarts(user);
         }
 
@@ -95,7 +95,7 @@ public class ShoppingCartRestController {
 
         if(!email.isBlank()) {
 
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
             ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCart(user, cart);
@@ -118,7 +118,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
 
         ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
@@ -143,7 +143,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
         ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
@@ -169,7 +169,7 @@ public class ShoppingCartRestController {
 
         if(!email.isBlank()) {
 
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
             ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
             allowedMethods = _shoppingCartLinkProvider.getAllowedMethodsForCartLines(user, cart);
@@ -193,7 +193,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
         ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
@@ -221,7 +221,7 @@ public class ShoppingCartRestController {
 
         if(!email.isBlank()) {
 
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
             ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
             ShoppingCartLineId reconstructedCartLineId = new ShoppingCartLineId(cartLineId);
@@ -247,7 +247,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
         ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 
@@ -277,7 +277,7 @@ public class ShoppingCartRestController {
             throw new SecurityException("Not authorized to view this cart line!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId reconstructedCartId = new ShoppingCartId(cartId);
         ShoppingCart cart = _shoppingCartService.findCartByCartId(reconstructedCartId);
 

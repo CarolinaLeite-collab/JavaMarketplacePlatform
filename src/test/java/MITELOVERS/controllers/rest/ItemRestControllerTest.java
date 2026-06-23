@@ -243,7 +243,7 @@ class ItemRestControllerTest {
     @Test
     void shouldReturn200WithLinksOnOptions() throws Exception {
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of(
                 Link.of("/items", "items"),
                 Link.of("/items", "createItem")
@@ -259,7 +259,7 @@ class ItemRestControllerTest {
     @Test
     void shouldReturn200WithSelfLinkOnlyWhenNoLinks() throws Exception {
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
         mockMvc.perform(options("/items")

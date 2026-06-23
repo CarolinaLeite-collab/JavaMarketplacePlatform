@@ -32,7 +32,7 @@ class UserServiceTest {
         UserService service = new UserService(_userRepoDouble);
 
         // Act
-        User result = service.getUserByEmail("pedro@aeiou.com");
+        User result = service.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")));
 
         // Assert
         assertNotNull(result);
@@ -48,7 +48,7 @@ class UserServiceTest {
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.getUserByEmail("unknown@aeiou.com"));
+                service.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("unknown@aeiou.com"))));
     }
 
     @Test

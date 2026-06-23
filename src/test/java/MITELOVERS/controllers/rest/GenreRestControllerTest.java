@@ -53,7 +53,7 @@ class GenreRestControllerTest {
         User mockUser = mock(User.class);
         Link sampleLink = Link.of("http://localhost/genres", "genres");
 
-        when(_userService.getUserByEmail(email)).thenReturn(mockUser);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(mockUser);
         when(_genreLinkProvider.getLinks(mockUser)).thenReturn(List.of(sampleLink));
 
         _mockMvc.perform(options("/genres").param("email", email))

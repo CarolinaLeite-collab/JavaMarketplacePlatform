@@ -21,6 +21,7 @@ import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,16 +73,16 @@ public class DirectSaleRestController {
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<List<String>> options(@RequestHeader("X-User-Id") String email) {
+    public ResponseEntity<RepresentationModel<?>> options(@RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
-        List<String> endpoints = _directSaleLinkProvider.getLinks(user)
-                .stream()
-                .map(link -> link.getHref())
-                .toList();
+        RepresentationModel<?> model = new RepresentationModel<>();
 
-        return ResponseEntity.ok(endpoints);
+        _directSaleLinkProvider.getLinks(user)
+                .forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -157,7 +158,8 @@ public class DirectSaleRestController {
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
+
         _directSaleLinkProvider.addResourceLinks(responseDTO, user);
 
         for (ItemId itemId : directSale.getItemsId()) {

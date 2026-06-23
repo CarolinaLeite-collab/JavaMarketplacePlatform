@@ -108,14 +108,14 @@ export default function SalesPage() {
     }
     if (error) {
         return (
-            <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+            <DefaultLayout title="Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
                 <Alert color="red" title="Unable to load purchases">{error}</Alert>
             </DefaultLayout>
         );
     }
 
     return (
-        <DefaultLayout title="My Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
+        <DefaultLayout title="Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
             <Box w={{ base: '100%', sm: '80%', md: '65%' }} mx="auto">
             {sales.length === 0 && (
                 <Text c="dimmed" ta="center" py="xl">

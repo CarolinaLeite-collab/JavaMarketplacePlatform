@@ -25,9 +25,9 @@ public class UserService {
 
     }
 
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(UserId email) {
 
-        return _iUserRepo.ofIdentity(new UserId(new Email(email)))
+        return _iUserRepo.ofIdentity(email)
 
                 .orElseThrow(() -> new NoSuchElementException("User not found: " + email));
 

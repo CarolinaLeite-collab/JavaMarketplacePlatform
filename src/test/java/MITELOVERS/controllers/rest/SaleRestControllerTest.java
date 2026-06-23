@@ -59,7 +59,7 @@ class SaleRestControllerTest {
         // Arrange
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleLinkProvider.getAllowedMethodsForSales(userDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
 
@@ -87,7 +87,7 @@ class SaleRestControllerTest {
         User userDouble = mock(User.class);
         Sale saleDouble = mock(Sale.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findUserSales(userDouble)).thenReturn(List.of(saleDouble));
 
         // Act + Assert
@@ -125,7 +125,7 @@ class SaleRestControllerTest {
         Sale saleDouble = mock(Sale.class);
         when(saleDouble.get_saleId()).thenReturn(saleIdDouble);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_saleService.createSaleFromCart(any())).thenReturn(saleDouble);
 
@@ -146,7 +146,7 @@ class SaleRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -173,7 +173,7 @@ class SaleRestControllerTest {
         User userDouble = mock(User.class);
         Sale saleDouble = mock(Sale.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
         when(_saleLinkProvider.getAllowedMethodsForSale(userDouble, saleDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
@@ -208,7 +208,7 @@ class SaleRestControllerTest {
 
         SaleResponseDTO dtoDouble = mock(SaleResponseDTO.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
         when(_saleMapper.toModel(saleDouble)).thenReturn(dtoDouble);
 
@@ -228,7 +228,7 @@ class SaleRestControllerTest {
         Sale saleDouble = mock(Sale.class);
         when(saleDouble.get_buyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
 
         // Act + Assert
@@ -253,7 +253,7 @@ class SaleRestControllerTest {
         User userDouble = mock(User.class);
         Sale saleDouble = mock(Sale.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
         when(_saleLinkProvider.getAllowedMethodsForSaleLine(userDouble, saleDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
@@ -289,7 +289,7 @@ class SaleRestControllerTest {
         SaleLine saleLineDouble = mock(SaleLine.class);
         SaleLineResponseDTO dtoDouble = mock(SaleLineResponseDTO.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
         when(_saleService.getSaleLineById(any(), any())).thenReturn(saleLineDouble);
         when(_saleLineMapper.toModel(saleLineDouble)).thenReturn(dtoDouble);
@@ -310,7 +310,7 @@ class SaleRestControllerTest {
         Sale saleDouble = mock(Sale.class);
         when(saleDouble.get_buyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_saleService.findSaleById(any())).thenReturn(saleDouble);
 
         // Act + Assert

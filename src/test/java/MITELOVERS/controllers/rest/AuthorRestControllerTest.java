@@ -54,7 +54,7 @@ class AuthorRestControllerTest {
         User mockUser = mock(User.class);
         Link sampleLink = Link.of("http://localhost/authors", "authors");
 
-        when(_userService.getUserByEmail(email)).thenReturn(mockUser);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(mockUser);
         when(_authorLinkProvider.getLinks(mockUser)).thenReturn(List.of(sampleLink));
 
         // Act & Assert

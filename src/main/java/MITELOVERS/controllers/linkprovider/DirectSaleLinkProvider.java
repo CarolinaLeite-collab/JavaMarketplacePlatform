@@ -11,6 +11,8 @@ import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
@@ -109,7 +111,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
     public void addResourceLinks(DirectSaleResponseDTO dto, String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         addResourceLinks(dto);
 

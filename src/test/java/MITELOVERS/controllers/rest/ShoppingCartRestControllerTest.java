@@ -52,7 +52,7 @@ class ShoppingCartRestControllerTest {
         // Arrange
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCarts(userDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
 
@@ -104,7 +104,7 @@ class ShoppingCartRestControllerTest {
         User userDouble = mock(User.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCart(userDouble, cartDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS));
@@ -141,7 +141,7 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCartResponseDTO dtoDouble = mock(ShoppingCartResponseDTO.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartResponseDTOMapper.toModel(cartDouble)).thenReturn(dtoDouble);
 
@@ -161,7 +161,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -195,7 +195,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart clearedCartDouble = mock(ShoppingCart.class);
         ShoppingCartResponseDTO dtoDouble = mock(ShoppingCartResponseDTO.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartService.clearShoppingCartLines(any(ShoppingCartId.class))).thenReturn(clearedCartDouble);
         when(_shoppingCartResponseDTOMapper.toModel(clearedCartDouble)).thenReturn(dtoDouble);
@@ -216,7 +216,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -232,7 +232,7 @@ class ShoppingCartRestControllerTest {
         User userDouble = mock(User.class);
         ShoppingCart cartDouble = mock(ShoppingCart.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartLinkProvider.getAllowedMethodsForCartLines(userDouble, cartDouble))
                 .thenReturn(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
@@ -270,7 +270,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
         when(newLineDouble.identity()).thenReturn(mock(ShoppingCartLineId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartService.addCartLineToCart(any(ShoppingCartId.class), any(DirectSaleId.class)))
                 .thenReturn(newLineDouble);
@@ -292,7 +292,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -310,7 +310,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartService.findCartLineByLineCartId(any(ShoppingCartId.class), any(ShoppingCartLineId.class)))
                 .thenReturn(lineDouble);
@@ -351,7 +351,7 @@ class ShoppingCartRestControllerTest {
 
         ShoppingCartLineResponseDTO dtoDouble = mock(ShoppingCartLineResponseDTO.class);
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
         when(_shoppingCartService.findCartLineByLineCartId(any(ShoppingCartId.class), any(ShoppingCartLineId.class)))
                 .thenReturn(lineDouble);
@@ -373,7 +373,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -404,7 +404,7 @@ class ShoppingCartRestControllerTest {
         when(cartDouble.getBuyerId()).thenReturn(sharedUserId);
         when(cartDouble.identity()).thenReturn(mock(ShoppingCartId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert
@@ -422,7 +422,7 @@ class ShoppingCartRestControllerTest {
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(cartDouble.getBuyerId()).thenReturn(mock(UserId.class));
 
-        when(_userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(_shoppingCartService.findCartByCartId(any(ShoppingCartId.class))).thenReturn(cartDouble);
 
         // Act + Assert

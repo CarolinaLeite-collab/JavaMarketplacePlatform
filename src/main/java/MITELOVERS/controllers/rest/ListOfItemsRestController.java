@@ -53,7 +53,7 @@ public class ListOfItemsRestController {
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

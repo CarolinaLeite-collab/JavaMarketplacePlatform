@@ -57,7 +57,7 @@ public class SaleRestController {
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
         if (!email.isBlank()) {
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             allowedMethods = _saleLinkProvider.getAllowedMethodsForSales(user);
         }
 
@@ -76,7 +76,7 @@ public class SaleRestController {
             throw new SecurityException("Not authorized!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         List<Sale> userSales = _saleService.findUserSales(user);
 
         RepresentationModel<?> model = new RepresentationModel<>();
@@ -94,7 +94,7 @@ public class SaleRestController {
             throw new SecurityException("Not authorized!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId shoppingCartId = new ShoppingCartId(dto.getShoppingCartId());
 
         ShoppingCart shoppingCart = _shoppingCartService.findCartByCartId(shoppingCartId);
@@ -121,7 +121,7 @@ public class SaleRestController {
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
         if (!email.isBlank()) {
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             SaleId reconstructedSaleId = new SaleId(saleId);
             Sale sale = _saleService.findSaleById(reconstructedSaleId);
             allowedMethods = _saleLinkProvider.getAllowedMethodsForSale(user, sale);
@@ -142,7 +142,7 @@ public class SaleRestController {
             throw new SecurityException("Not authorized!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         SaleId reconstructedSaleId = new SaleId(saleId);
         Sale sale = _saleService.findSaleById(reconstructedSaleId);
 
@@ -164,7 +164,7 @@ public class SaleRestController {
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
         if (!email.isBlank()) {
-            User user = _userService.getUserByEmail(email);
+            User user = _userService.getUserByEmail(new UserId(new Email(email)));
             SaleId reconstructedSaleId = new SaleId(saleId);
             Sale sale = _saleService.findSaleById(reconstructedSaleId);
             allowedMethods = _saleLinkProvider.getAllowedMethodsForSaleLine(user, sale);
@@ -186,7 +186,7 @@ public class SaleRestController {
             throw new SecurityException("Not authorized!");
         }
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         SaleId reconstructedSaleId = new SaleId(saleId);
         Sale sale = _saleService.findSaleById(reconstructedSaleId);
 

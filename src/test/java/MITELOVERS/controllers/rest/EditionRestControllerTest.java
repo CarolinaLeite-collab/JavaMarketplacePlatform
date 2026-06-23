@@ -176,7 +176,7 @@ class EditionRestControllerTest {
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
         // Arrange
         User _userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail("pedro@aeiou.com")).thenReturn(_userDouble);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(_userDouble);
         when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of(
                 Link.of("/editions").withRel("editions"),
                 Link.of("/editions").withRel("edition-create")
@@ -196,7 +196,7 @@ class EditionRestControllerTest {
     void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
         User _userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail("readonly@aeiou.com")).thenReturn(_userDouble);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("readonly@aeiou.com")))).thenReturn(_userDouble);
         when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of());
 
         // Act & Assert
@@ -210,7 +210,7 @@ class EditionRestControllerTest {
     @Test
     void optionsShouldReturn404WhenUserNotFound() throws Exception {
         // Arrange
-        when(_userServiceDouble.getUserByEmail("naoexiste@aeiou.com"))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("naoexiste@aeiou.com"))))
                 .thenThrow(new NoSuchElementException("User not found"));
 
         // Act & Assert

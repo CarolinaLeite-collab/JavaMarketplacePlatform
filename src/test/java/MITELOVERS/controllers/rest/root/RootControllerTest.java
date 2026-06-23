@@ -31,7 +31,7 @@ class RootControllerTest {
         String email = "test@email.com";
         User user = mock(User.class);
 
-        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
 
         Link myListsLink = Link.of("/api/my-lists").withRel("myLists");
 
@@ -51,7 +51,7 @@ class RootControllerTest {
         // Arrange
         String email = "missing@email.com";
 
-        when(_userServiceDouble.getUserByEmail(email))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email))))
                 .thenThrow(new NoSuchElementException("User not found: " + email));
 
         // Act + Assert
@@ -71,7 +71,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(true);
         when(user.hasRole(Role.ADMIN)).thenReturn(false);
-        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(
@@ -101,7 +101,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(true);
         when(user.hasRole(Role.ADMIN)).thenReturn(true);
-        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(
@@ -131,7 +131,7 @@ class RootControllerTest {
 
         when(user.hasRole(Role.USER)).thenReturn(false);
         when(user.hasRole(Role.ADMIN)).thenReturn(false);
-        when(_userServiceDouble.getUserByEmail(email)).thenReturn(user);
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
 
         AuthorizationPolicy authorizationPolicy = new AuthorizationPolicy();
         RootController roleAwareController = new RootController(

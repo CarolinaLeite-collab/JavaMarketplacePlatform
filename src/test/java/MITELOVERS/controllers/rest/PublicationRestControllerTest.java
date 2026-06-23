@@ -152,7 +152,7 @@ class PublicationRestControllerTest {
         User userDouble = mock(User.class);
         Link linkDouble = Link.of("/publications").withRel("publications");
 
-        when(_userServiceDouble.getUserByEmail("pedro@aeiou.com"))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com"))))
                 .thenReturn(userDouble);
 
         when(_publicationLinkProviderDouble.getLinks(userDouble))
@@ -172,7 +172,7 @@ class PublicationRestControllerTest {
         //Arrange
         User userDouble = mock(User.class);
 
-        when(_userServiceDouble.getUserByEmail("readonly@aeiou.com"))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("readonly@aeiou.com"))))
                 .thenReturn(userDouble);
 
         when(_publicationLinkProviderDouble.getLinks(userDouble))

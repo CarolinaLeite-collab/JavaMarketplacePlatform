@@ -49,7 +49,7 @@ class CountryRestControllerTest {
         String email = "maria@example.com";
 
         User userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail(email))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email))))
                 .thenReturn(userDouble);
 
         Link link1 = Link.of("/countries").withRel("countries");
@@ -185,7 +185,7 @@ class CountryRestControllerTest {
     void options_whenNoLinks_returnsOnlySelfLink() {
         // Arrange
         User userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail("maria@example.com"))
+        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("maria@example.com"))))
                 .thenReturn(userDouble);
 
         when(_countryLinkProviderDouble.getLinks(userDouble))
