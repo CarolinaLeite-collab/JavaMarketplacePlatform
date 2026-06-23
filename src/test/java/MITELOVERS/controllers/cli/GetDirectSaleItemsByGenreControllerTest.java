@@ -2,6 +2,7 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.GenreId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -41,7 +42,7 @@ class GetDirectSaleItemsByGenreControllerTest {
                 new DirectSaleId("DS-A4B2C3D4")
         );
 
-        when(_directSaleService.getDirectSaleItemsByGenreAsc(genreId))
+        when(_directSaleService.getDirectSaleItemsByGenreAsc(new GenreId(genreId)))
                 .thenReturn(expected);
 
         // Act

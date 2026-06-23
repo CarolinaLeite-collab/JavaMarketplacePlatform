@@ -2,6 +2,7 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.GenreId;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public class GetDirectSaleItemsByGenreController {
     }
 
     public List<DirectSaleId> getDirectSaleItemsByGenreAsc(String genreId) {
-        return _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+        return _directSaleService.getDirectSaleItemsByGenreAsc(new GenreId(genreId));
     }
 
 }
