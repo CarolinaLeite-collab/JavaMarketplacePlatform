@@ -1,0 +1,120 @@
+@startuml
+title POST bid on /auctions/{auctionId}/bids – future design SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as router
+participant ":AuctionRestController" as REST
+participant ":AuctionLinkProvider" as Link
+participant ":AuctionService" as Service
+participant ":IAuctionRepo" as auctionRepo
+participant "auction%n():Auction" as Auction
+participant ":BidFactory" as BidFactory
+participant ":Bid\nResponseDTOMapper" as Mapper
+participant "Database" as DB
+
+[o-> router : POST {bids href} + %n(){placeBidRequestDTO}
+activate router
+router -> REST : placeBid(auctionIdString, %n()userIdFromHeader, placeBidRequestDTO)
+activate REST
+
+create "email:Email" as email
+REST -->> email : createEmail(userIdFromHeader)
+
+create "userId:UserId" as userId
+REST -->> userId : createUserId(email)
+
+create "auctionId:AuctionId" as auctionId
+REST -->> auctionId : createAuctionId(auctionIdString)
+
+create "currency:Currency" as currency
+REST -->> currency : valueOf(placeBidRequestDTO.getCurrency())
+
+create "offerPrice:Price" as offerPrice
+REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
+
+REST -> Service : placeBid(auctionId, userId, offerPrice)
+activate Service
+
+Service -> auctionRepo : ofIdentity(auctionId)
+activate auctionRepo
+auctionRepo ->o] : FETCH
+auctionRepo <--o] : DATA
+auctionRepo --> Service : auction
+deactivate auctionRepo
+
+Service -> Auction : placeBid(userId, offerPrice)
+activate Auction
+
+Auction -> BidFactory : createBid%n()(userId, offerPrice)
+activate BidFactory
+create "bid:Bid" as bid
+BidFactory -->> bid : <<create>>
+BidFactory --> Auction : bid
+deactivate BidFactory
+Auction --> Service : bid
+deactivate Auction
+
+Service -> auctionRepo : save(auction)
+activate auctionRepo
+auctionRepo ->o] : SAVE
+auctionRepo <--o] : OK
+deactivate auctionRepo
+
+create "bidPlacementResult:BidPlacementResult" as Result
+Service -->> Result : createBidPlacementResult(auction, bid)
+Service --> REST : bidPlacementResult
+deactivate Service
+
+note right of REST
+  BidPlacementResult is a record containing:
+  - auction (updated aggregate)
+  - bid (newly created bid)
+end note
+
+REST -> Result : getAuction()
+activate Result
+Result --> REST : auction
+deactivate Result
+
+REST -> Result : getBid()
+activate Result
+Result --> REST : bid
+deactivate Result
+
+REST -> Mapper : toDTO(auction, bid)
+activate Mapper
+Mapper --> REST : bidResponseDTO
+deactivate Mapper
+
+REST -> Link : addLinksForCreatedBid(bidResponseDTO)
+activate Link
+note right of Link
+  Adds HATEOAS links to the same DTO instance
+end note
+
+deactivate Link
+
+create "response:ResponseEntity<BidResponseDTO>" as response
+REST -->> response : new ResponseEntity<>(bidResponseDTO, 201 Created)
+REST --> router : response
+deactivate REST
+
+[o<-- router : 201 Created + bidResponseDTO %n() + auction link + bids link
+deactivate router
+
+ref over router
+[[../Process_View_Level_3_SD.puml Back to main diagram]]
+end ref
+
+@enduml
