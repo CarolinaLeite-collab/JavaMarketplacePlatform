@@ -223,11 +223,11 @@ describe('SalesPage', () => {
         ).toBeInTheDocument();
 
         expect(
-            screen.getByText('Created: 2026-06-20T10:00:00'),
-        ).toBeInTheDocument();
+            screen.queryByText(/Created:/i),
+        ).not.toBeInTheDocument();
 
         expect(
-            screen.getByText('Completed: 2026-06-20T11:00:00'),
+            screen.getByText('Completed: 2026-06-20'),
         ).toBeInTheDocument();
 
         expect(

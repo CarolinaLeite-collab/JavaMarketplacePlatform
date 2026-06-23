@@ -5,6 +5,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { CLEAR_CART, REMOVE_FROM_CART } from '../context/cart/CartActions';
 import { apiClient } from '../services/apiClient';
+import { notifications } from '@mantine/notifications';
+
+vi.mock('@mantine/notifications', () => ({
+    notifications: {
+        show: vi.fn(),
+    },
+}));
 
 vi.mock('../services/apiClient', () => ({
     apiClient: {
@@ -55,7 +62,7 @@ function renderComponent(props = {}, contextValue = mockContextValue) {
     );
 }
 
-describe('ShoppingCart', () => {
+ describe('ShoppingCart', () => {
     beforeEach(() => {
         mockDispatch.mockClear();
         vi.mocked(apiClient.getAllowedMethodsByHref).mockResolvedValue([
@@ -162,8 +169,12 @@ describe('ShoppingCart', () => {
             );
         });
         expect(mockDispatch).toHaveBeenCalledWith({ type: CLEAR_CART });
-        expect(await screen.findByText(/sale sa-1234abcd was completed successfully/i))
-            .toBeInTheDocument();
+        expect(notifications.show).toHaveBeenCalledWith({
+            title: 'Purchase completed',
+            message: 'Dune, 1984 was completed successfully.',
+            color: 'green',
+            autoClose: 3000,
+        });
     });
 
     it('removes the selected item from the cart', async () => {
