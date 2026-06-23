@@ -208,7 +208,7 @@ class DirectSaleLinkProviderTest {
         String email = "user@email.com";
 
         when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
-        when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(false);
+        when(authorizationPolicyDouble.canDeleteDirectSale(userDouble)).thenReturn(false);
 
         // Act
         provider.addResourceLinks(dto, email);
@@ -234,7 +234,7 @@ class DirectSaleLinkProviderTest {
         String email = "admin@email.com";
 
         when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
-        when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(true);
+        when(authorizationPolicyDouble.canDeleteDirectSale(userDouble)).thenReturn(true);
 
         // Act
         provider.addResourceLinks(dto, email);

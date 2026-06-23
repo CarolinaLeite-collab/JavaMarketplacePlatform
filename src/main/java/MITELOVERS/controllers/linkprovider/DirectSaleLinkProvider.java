@@ -111,7 +111,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                         .withSelfRel()
         );
 
-        if(_authorizationPolicy.canDeleteList(user)) {
+        if(_authorizationPolicy.canDeleteDirectSale(user)) {
 
             dto.add(
                     linkTo(methodOn(DirectSaleRestController.class)
