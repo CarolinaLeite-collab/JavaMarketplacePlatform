@@ -8,7 +8,6 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.domain.valueobject.Currency;
-import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,15 +47,9 @@ public class DirectSaleService {
     }
 
     @Transactional
-    public DirectSale createDirectSale(DirectSaleRequestDTO request, String email) {
+    public DirectSale createDirectSale(List<ItemId> itemsId, UserId sellerId, Price price, Duration timeLimit) {
 
-        List<ItemId> itemsId = request.getItemsId()
-                .stream()
-                .map(ItemId::new)
-                .toList();
-
-        // Validate user + create userId
-        if (!(_userService.userIdExists(email))) {
+        if (!(_userService.userIdExists(sellerId.getEmail().getValue()))) {
             throw new IllegalStateException("This is user does not exist!");
         }
 
@@ -75,17 +68,6 @@ public class DirectSaleService {
                 throw new IllegalStateException(itemId + " is already on sale!");
             }
         }
-
-        Price price = new Price(
-                request.getPriceValue(),
-                Currency.valueOf(request.getPriceCurrency())
-        );
-
-        Duration timeLimit = request.getTimeLimitSeconds() != null
-                ? Duration.ofSeconds(request.getTimeLimitSeconds())
-                : null;
-
-        UserId sellerId = new UserId(new Email(email));
 
         DirectSale newDirectSale =
                 _directSaleFactory.createDirectSale(itemsId, sellerId, price, timeLimit);
@@ -135,9 +117,7 @@ public class DirectSaleService {
     }
 
     @Transactional
-    public DirectSale getDirectSaleById(String id) {
-
-        DirectSaleId directSaleId = new DirectSaleId(id);
+    public DirectSale getDirectSaleById(DirectSaleId directSaleId) {
 
         return _iDirectSaleRepo.ofIdentity(directSaleId)
                 .orElseThrow(() -> new NoSuchElementException("DirectSale not found"));
@@ -148,19 +128,13 @@ public class DirectSaleService {
     //-----------------------
 
     @Transactional
-    public List<DirectSaleId> getDirectSaleItemsByGenreAsc(String genreId) {
+    public List<DirectSaleId> getDirectSaleItemsByGenreAsc(GenreId genreId) {
 
-        if (genreId == null || genreId.isBlank()) {
-            return new ArrayList<>();
-        }
-
-        GenreId gid = new GenreId(genreId);
-
-        if (!_iGenreRepo.containsOfIdentity(gid)) {
+        if (!_iGenreRepo.containsOfIdentity(genreId)) {
             throw new IllegalArgumentException("Genre not found!");
         }
 
-        List<ItemId> filteredItems = _iItemRepo.findByGenreId(gid);
+        List<ItemId> filteredItems = _iItemRepo.findByGenreId(genreId);
 
         if (filteredItems == null || filteredItems.isEmpty()) {
             return new ArrayList<>();
