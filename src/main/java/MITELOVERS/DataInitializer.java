@@ -27,6 +27,10 @@ import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLineFactory;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
@@ -80,10 +84,18 @@ public class DataInitializer {
             IPublishingCompanyRepo publishingCompanyRepo,
             PublishingCompanyFactory publishingCompanyFactory,
             IEditionRepo editionRepo,
-            EditionFactory editionFactory
+            EditionFactory editionFactory,
+            IShoppingCartRepo shoppingCartRepo,
+            ShoppingCartFactory shoppingCartFactory,
+            ShoppingCartLineFactory shoppingCartLineFactory
     ) {
 
         return args -> {
+
+            if (genreRepo.findAllKeys().iterator().hasNext()) {
+                log.info("Database already seeded — skipping DataInitializer.");
+                return;
+            }
 
             // -------------------------------------------------------
             // Genre
@@ -366,7 +378,7 @@ public class DataInitializer {
             publishingCompanyRepo.save(gg);
 
             PublishingCompany oxfordUP = publishingCompanyFactory.createPublishingCompany("Oxford University Press");
-            publishingCompanyRepo.save(gg);
+            publishingCompanyRepo.save(oxfordUP);
             PublishingCompany penguinBooks = publishingCompanyFactory.createPublishingCompany("Penguin Books");
             publishingCompanyRepo.save(penguinBooks);
 
@@ -374,7 +386,7 @@ public class DataInitializer {
                     publishingCompanyFactory.createPublishingCompany("Éditions Albert Morancé");
             publishingCompanyRepo.save(editionsAlbertMorance);
             PublishingCompany columbia = publishingCompanyFactory.createPublishingCompany("Columbia Books");
-            publishingCompanyRepo.save(editionsAlbertMorance);
+            publishingCompanyRepo.save(columbia);
 
             PublishingCompany camiloAzurara = publishingCompanyFactory.createPublishingCompany("Caminho");
             publishingCompanyRepo.save(camiloAzurara);
@@ -734,10 +746,8 @@ public class DataInitializer {
             );
             directSaleRepo.save(hipocritoesSale);
 
-            ItemId randomItemId = new ItemId();
-
             DirectSale directSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
+                    List.of(itemId1),
                     user.identity(),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
@@ -745,7 +755,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(randomItemId),
+                    List.of(shortnessOfLifeItemId),
                     user2.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
@@ -756,10 +766,9 @@ public class DataInitializer {
                     List.of(new ItemId()),
                     user2.identity(),
                     new Price(4.99, Currency.EUR),
-                    null  // unlimited duration
+                    Duration.ofDays(1)
             );
 
-            directSale3.markAsExpired();
             directSaleRepo.save(directSale3);
 
             DirectSale directSale4 = directSaleFactory.createDirectSale(
@@ -788,7 +797,8 @@ public class DataInitializer {
                     null,                                // Weight
                     new NumberOfPages(498),              // Pages
                     new EditionNumber(1),                // Edition number
-                    Binding.PUR                          // Binding
+                    Binding.PUR                         // Binding
+
             );
             editionRepo.save(editionSapiens);
 
@@ -822,7 +832,7 @@ public class DataInitializer {
                     new EditionNumber(1),
                     Binding.PUR
             );
-            editionRepo.save(editionFoundationSeries);
+            editionRepo.save(editionSpacematrix);
 
             log.info("Two additional editions saved for DirectSales");
 
@@ -833,7 +843,8 @@ public class DataInitializer {
                     editionSapiens.identity(), // Publication Sapiens → Non-Fiction
                     Condition.GOOD,
                     new Description("Non-Fiction test item"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/sapiens.png")
             );
             itemRepo.save(nfItem);
 
@@ -856,34 +867,12 @@ public class DataInitializer {
 
             // Fiction — DirectSale #1 (existing items)
             DirectSale fictionSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
+                    List.of(itemId1),
                     user.identity(),
                     new Price(7.99, Currency.EUR),
                     Duration.ofDays(15)
             );
             directSaleRepo.save(fictionSale1);
-
-            // Fiction — DirectSale #2 (new item)
-            ItemId fictionExtraId = new ItemId("0A1B2C3D4E");
-            Item fictionExtraItem = itemFactory.createItem(
-                    fictionExtraId,
-                    edition1984.identity(),
-                    Condition.FAIR,
-                    new Description("Extra Fiction item"),
-                    SaleStatus.OnDirectSale
-            );
-            itemRepo.save(fictionExtraItem);
-
-            DirectSale fictionSale2 = directSaleFactory.createDirectSale(
-                    List.of(fictionExtraId),
-                    user.identity(),
-                    new Price(5.99, Currency.EUR),
-                    Duration.ofDays(10)
-            );
-
-            fictionSale2.markAsCompleted();
-
-            directSaleRepo.save(fictionSale2);
 
             // Non-Fiction
             DirectSale nonFictionSale = directSaleFactory.createDirectSale(
@@ -938,25 +927,25 @@ public class DataInitializer {
             );
             auctionRepo.save(auction1);
 
-            Auction auction2 = auctionFactory.createAuction(
-                    List.of(new ItemId()),
-                    new Price(8.00, Currency.EUR),
-                    new Price(15.00, Currency.EUR),
-                    ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(3),
-                    user2.identity()
-            );
-            auctionRepo.save(auction2);
+//            Auction auction2 = auctionFactory.createAuction(
+//                    List.of(new ItemId()),
+//                    new Price(8.00, Currency.EUR),
+//                    new Price(15.00, Currency.EUR),
+//                    ZonedDateTime.now(),
+//                    ZonedDateTime.now().plusDays(3),
+//                    user2.identity()
+//            );
+//            auctionRepo.save(auction2);
 
-            Auction auction3 = auctionFactory.createAuction(
-                    List.of(new ItemId()),
-                    new Price(2.00, Currency.EUR),
-                    new Price(6.00, Currency.EUR),
-                    ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(14),
-                    user3.identity()
-            );
-            auctionRepo.save(auction3);
+//            Auction auction3 = auctionFactory.createAuction(
+//                    List.of(new ItemId()),
+//                    new Price(2.00, Currency.EUR),
+//                    new Price(6.00, Currency.EUR),
+//                    ZonedDateTime.now(),
+//                    ZonedDateTime.now().plusDays(14),
+//                    user3.identity()
+//            );
+//            auctionRepo.save(auction3);
 
             Auction spaceMatrixAuction = auctionFactory.createAuction(
                     List.of(spaceMatrixItemId),
@@ -1044,6 +1033,39 @@ public class DataInitializer {
             listOfItemsRepo.save(list3);
             listOfItemsRepo.save(list4);
             listOfItemsRepo.save(list5);
+
+            // -------------------------------------------------------
+            // Shopping Cart for Pedro
+            ShoppingCart pedroCart = shoppingCartFactory.createShoppingCart(user.identity());
+
+            ShoppingCartLine line1 = shoppingCartLineFactory.createNewShoppingCartLine(
+                    directSale2.identity(),
+                    user2.identity(),
+                    directSale2.getPrice()
+            );
+
+            ShoppingCartLine line2 = shoppingCartLineFactory.createNewShoppingCartLine(
+                    directSale4.identity(),
+                    user3.identity(),
+                    directSale4.getPrice()
+            );
+
+            pedroCart.addCartLine(line1);
+            pedroCart.addCartLine(line2);
+
+            shoppingCartRepo.save(pedroCart);
+
+            ShoppingCart anaCart =
+                    shoppingCartFactory.createShoppingCart(user2.identity());
+
+            shoppingCartRepo.save(anaCart);
+
+            ShoppingCart angeloCart =
+                    shoppingCartFactory.createShoppingCart(user3.identity());
+
+            shoppingCartRepo.save(angeloCart);
+
+            log.info("Shopping cart saved for Pedro with 2 lines");
 
             log.info("DataInitializer completed successfully.");
 
