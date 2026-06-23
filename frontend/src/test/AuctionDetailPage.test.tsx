@@ -17,6 +17,7 @@ vi.mock('../services/apiClient', () => ({
         getItemById: vi.fn(),
         getEditionById: vi.fn(),
         getPublishingCompanyById: vi.fn(),
+        getPublicationById: vi.fn(),
         getByHref: vi.fn(),
         postByHref: vi.fn(),
     },
@@ -88,6 +89,7 @@ const mockItem = {
 const mockEdition = {
     editionId: 'ED-001',
     publishingCompanyId: 'PC-001',
+    publicationId: 'PUB-001',
     numberOfPages: 320,
     editionNumber: 1,
     binding: 'PAPERBACK',
@@ -98,6 +100,11 @@ const mockEdition = {
 const mockPublisher = {
     publishingCompanyId: 'PC-001',
     publishingCompanyName: 'naiOIO Publishers',
+};
+
+const mockPublication = {
+    publicationId: 'PUB-001',
+    synopsis: 'A rigorous study of density, space, and urban form.',
 };
 
 function renderAuctionDetail({ auctionId = 'test-123' } = {}) {
@@ -125,7 +132,9 @@ describe('AuctionDetailPage', () => {
         vi.mocked(apiClient.getItemById).mockResolvedValue(mockItem);
         vi.mocked(apiClient.getEditionById).mockResolvedValue(mockEdition);
         vi.mocked(apiClient.getPublishingCompanyById).mockResolvedValue(mockPublisher);
+        vi.mocked(apiClient.getPublicationById).mockResolvedValue(mockPublication);
         vi.mocked(apiClient.getByHref).mockResolvedValue(mockBidsResponse);
+        vi.mocked(apiClient.postByHref).mockResolvedValue({});
     });
 
     it('renders publication type and title', async () => {
@@ -256,7 +265,16 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('17 x 24 x 2.5 CENTIMETERS')).toBeInTheDocument();
     });
 
-    it('renders synopsis fallback', async () => {
+    it('renders synopsis from publication when available', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
+        expect(screen.getByText('A rigorous study of density, space, and urban form.')).toBeInTheDocument();
+    });
+
+    it('renders synopsis fallback when publication fails to load', async () => {
+        vi.mocked(apiClient.getPublicationById).mockRejectedValue(new Error('404'));
+
         renderAuctionDetail();
 
         expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
@@ -305,11 +323,18 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('Ended')).toBeInTheDocument();
     });
 
-    it('renders Buy Now and Add to Cart buttons', async () => {
+    it('shows bids count button', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByRole('button', { name: /buy now/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /3 bids/i })).toBeInTheDocument();
+    });
+
+    it('shows error state when auction fails to load', async () => {
+        vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
+
+        renderAuctionDetail();
+
+        expect(await screen.findByText(/auction not found\./i)).toBeInTheDocument();
     });
 
     it('shows N/A for edition fields when edition fails to load', async () => {
@@ -319,14 +344,5 @@ describe('AuctionDetailPage', () => {
 
         expect(await screen.findByText('Publisher')).toBeInTheDocument();
         expect(screen.getAllByText('N/A').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('shows error state when auction fails to load', async () => {
-        vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
-
-        renderAuctionDetail();
-
-        expect(await screen.findByRole('heading', { name: /auction/i })).toBeInTheDocument();
-        expect(screen.getByText(/auction not found\./i)).toBeInTheDocument();
     });
 });

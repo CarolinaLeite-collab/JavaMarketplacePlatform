@@ -366,21 +366,6 @@ export default function AuctionDetailPage() {
                                 >
                                     Place Bid
                                 </Button>
-                                <Button
-                                    variant="outline"
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
-                                >
-                                    Add to Cart
-                                </Button>
-                                <Button
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
-                                >
-                                    Buy Now
-                                </Button>
                             </Stack>
                         </Stack>
                     </Grid.Col>
