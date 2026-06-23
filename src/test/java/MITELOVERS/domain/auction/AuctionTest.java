@@ -1,6 +1,7 @@
 package MITELOVERS.domain.auction;
 
 import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -582,5 +583,154 @@ class AuctionTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> auction.placeBid(user, secondBidPrice));
+    }
+
+    @Test
+    void getCurrentPriceShouldReturnStartingPriceWhenThereAreNoBids() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        //act
+        Price price = auction.getCurrentPrice();
+
+        //assert
+        assertEquals(_startingPriceDouble, price);
+    }
+
+    @Test
+    void getCurrentPriceShouldReturnHighestBidWhenThereAreBids() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        Price bidPrice = mock(Price.class);
+        when(bidPrice.getValue()).thenReturn(20.0);
+        when(bidPrice.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        //act
+        auction.placeBid(_seller, bidPrice);
+
+        //assert
+        assertEquals(20.0, auction.getCurrentPrice().getValue());
+    }
+
+    @Test
+    void placeBidShouldThrowWhenOfferPriceIsNull() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        UserId user = mock(UserId.class);
+
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        //act+assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, null));
+    }
+
+    @Test
+    void firstBidEqualToStartingPriceShouldThrow() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        UserId user = mock(UserId.class);
+        Price price = mock(Price.class);
+        when(price.getValue()).thenReturn(10.0);
+        when(price.getCurrency()).thenReturn(Currency.EUR);
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        //act+assert
+        assertThrows(IllegalArgumentException.class,
+                () -> auction.placeBid(user, price));
+    }
+
+    @Test
+    void finalizeAuctionShouldClearWinnerWhenReserveNotMet() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        UserId user = mock(UserId.class);
+        Price bidPrice = mock(Price.class);
+        when(bidPrice.getValue()).thenReturn(20.0);
+        when(bidPrice.getCurrency()).thenReturn(Currency.EUR);
+        when(bidPrice.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(false);
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, start, end, _seller);
+
+        //act
+        auction.placeBid(user, bidPrice);
+
+        auction.finalizeAuction();
+
+        //assert
+        assertNull(auction.getUserId());
+        assertNull(auction.getFinalPrice());
+    }
+
+    @Test
+    void placeBidAtOrAboveOutrightPriceShouldFinalizeAuction() {
+        //arrange
+        ZonedDateTime start = ZonedDateTime.now().minusMinutes(5);
+        ZonedDateTime end = ZonedDateTime.now().plusMinutes(5);
+
+        UserId user = mock(UserId.class);
+        Price bidPrice = mock(Price.class);
+
+        when(bidPrice.getValue()).thenReturn(100.0);
+        when(bidPrice.getCurrency()).thenReturn(Currency.EUR);
+        when(bidPrice.isGreaterOrEqualThan(_reservePriceDouble)).thenReturn(true);
+
+        //SUT
+        Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _outrightPriceDouble, start, end, _seller);
+
+        //act
+        auction.placeBid(user, bidPrice);
+
+        //assert
+        assertEquals(user, auction.getUserId());
+        assertEquals(bidPrice, auction.getFinalPrice());
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenItemsAreDifferent() {
+        //arrange
+        List<ItemId> otherItems = new ArrayList<>();
+        otherItems.add(mock(ItemId.class));
+
+        //SUT
+        Auction auction1 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end, _seller);
+
+        Auction auction2 = new Auction(otherItems, _startingPriceDouble, _reservePriceDouble, _start, _end, _seller);
+
+        //act+ assert
+        assertFalse(auction1.sameAs(auction2));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenSellerIsDifferent() {
+        //arrange
+        UserId otherSeller = mock(UserId.class);
+
+        //SUT
+        Auction auction2 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end, otherSeller);
+        Auction auction1 = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end, _seller);
+
+        //assert
+        assertFalse(auction1.sameAs(auction2));
     }
 }

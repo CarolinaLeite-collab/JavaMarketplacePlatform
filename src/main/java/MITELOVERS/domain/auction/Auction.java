@@ -309,4 +309,8 @@ public class Auction implements AggregateRoot<AuctionId> {
         }
         return highestBid;
     }
+
+    public Price getCurrentPrice() {
+        return _bids.isEmpty() ? _startingPrice : getHighestBid().getOfferPrice();
+    }
 }
