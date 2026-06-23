@@ -19,55 +19,48 @@ autonumber
 
 ' ==== Actor and participants ====
 actor "User"
-participant ":Client" as Client
-participant ":Server" as Server
-database "DB" as DB
+participant ":Frontend" as FE
+participant ":Backend" as BE
+participant "db" as db
 
 
-User -> Client : I want to put an item %n()in my library on direct sale
-activate Client
-Client -> Server : GET /items/my-library {...}
-activate Server
-Server -> DB : select items in %n()user's library
-DB --> Server : data
-Server --> Client : 200 [ItemResponseDTO + links]
-note right of Client
+
+User -> FE : I want to put an item %n()in my library on direct sale
+activate FE
+FE -> BE : GET /items/my-library {...}
+activate BE
+
+BE -> db : FETCH
+db --> BE : DATA
+BE --> FE : 200 [ItemResponseDTO + links]
+note right of FE
 Each item includes:
 - self
 - create-direct-sale only if item
  can be put on direct sale
-Client populates the dropdown only
+FE populates the dropdown only
 with items containing create-direct-sale
 end note
-deactivate Server
-Client --> User : Displays direct sale form %n() with items NotOnSale only
-deactivate Client
+deactivate BE
+FE --> User : Displays direct sale form %n() with items NotOnSale only
+deactivate FE
 
-
-
-
-User -> Client : Submit selected itemId, price, %n()currency, and time limit
-activate Client
-Client -> Server : POST {href from rel="create-direct-sale"}\n{ itemsId, priceValue, priceCurrency, %n()timeLimitSeconds }
-note right of Server
-Creates DirectSale and updates %n()Item saleStatus as OnDirectSale
+User -> FE : Submit selected itemId, price, %n()currency, and time limit
+activate FE
+FE -> BE : POST {href from rel="create-direct-sale"}\n{ itemsId, priceValue, priceCurrency, %n()timeLimitSeconds }
+activate BE
+note right of BE
+Creates DirectSale
+and updates Item
+saleStatus as
+OnDirectSale
 end note
-Server -> DB : insert sale / %n() update item
-DB --> Server : success
-Server --> Client : 201 Created
-deactivate Server
-Client --> User : The item was successfully %n()put on direct sale.
-deactivate Client
-
-
-/'Client -> Server : PATCH /my-library/{itemId} %n(){ "saleStatus" : "OnDirectSale"}
-activate Client
-activate Server
-Server -> DB : select
-DB --> Server : data
-Server --> Client : 200 {...}
-deactivate Server
-deactivate Client'/
+BE -> db : INSERT
+db --> BE : SUCCESS
+BE --> FE : 201 Created
+deactivate BE
+FE --> User : The item was successfully %n()put on direct sale.
+deactivate FE
 
 
 @enduml
