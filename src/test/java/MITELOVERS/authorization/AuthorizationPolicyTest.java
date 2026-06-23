@@ -1,7 +1,9 @@
 package MITELOVERS.authorization;
 
+import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,24 +19,53 @@ class AuthorizationPolicyTest {
     private User _adminDouble;
     private User _guestDouble;
 
+    private UserId _userIdMock;
+    private UserId _adminIdMock;
+    private UserId _guestIdMock;
+
+    private ListOfItems _listOwnedByUser;
+    private ListOfItems _listOwnedByAdmin;
+    private ListOfItems _publicList;
+
     @BeforeEach
     void setUp() {
         _authorizationPolicy = new AuthorizationPolicy();
+
+        _userIdMock = mock(UserId.class);
+        when(_userIdMock.toString()).thenReturn("user@example.com");
+
+        _adminIdMock = mock(UserId.class);
+        when(_adminIdMock.toString()).thenReturn("admin@example.com");
+
+        _guestIdMock = mock(UserId.class);
+        when(_guestIdMock.toString()).thenReturn("guest@example.com");
 
         _userDouble = mock(User.class);
         when(_userDouble.hasRole(Role.USER)).thenReturn(true);
         when(_userDouble.hasRole(Role.ADMIN)).thenReturn(false);
         when(_userDouble.hasRole(Role.NONREGISTRED)).thenReturn(false);
+        when(_userDouble.identity()).thenReturn(_userIdMock);
 
         _adminDouble = mock(User.class);
         when(_adminDouble.hasRole(Role.USER)).thenReturn(false);
         when(_adminDouble.hasRole(Role.ADMIN)).thenReturn(true);
         when(_adminDouble.hasRole(Role.NONREGISTRED)).thenReturn(false);
+        when(_adminDouble.identity()).thenReturn(_adminIdMock);
 
         _guestDouble = mock(User.class);
         when(_guestDouble.hasRole(Role.USER)).thenReturn(false);
         when(_guestDouble.hasRole(Role.ADMIN)).thenReturn(false);
         when(_guestDouble.hasRole(Role.NONREGISTRED)).thenReturn(true);
+        when(_guestDouble.identity()).thenReturn(_guestIdMock);
+
+        _listOwnedByUser = mock(ListOfItems.class);
+        when(_listOwnedByUser.getUserId()).thenReturn(_userIdMock);
+
+        _listOwnedByAdmin = mock(ListOfItems.class);
+        when(_listOwnedByAdmin.getUserId()).thenReturn(_adminIdMock);
+
+        _publicList = mock(ListOfItems.class);
+        when(_publicList.isPrivate()).thenReturn(false);
     }
 
     // ──────────── Publishing Company ────────────
@@ -439,6 +470,96 @@ class AuthorizationPolicyTest {
     @Test
     void canDeleteShoppingCartLineGuestReturnsFalse() {
         assertFalse(_authorizationPolicy.canDeleteShoppingCartLine(_guestDouble));
+    }
+
+    // ──────────── Lists ───────────
+
+    @Test
+    void userCanCreateList() {
+        assertTrue(_authorizationPolicy.canCreateList(_userDouble));
+    }
+
+    @Test
+    void adminCanCreateList() {
+        assertTrue(_authorizationPolicy.canCreateList(_adminDouble));
+    }
+
+    @Test
+    void guestCannotCreateList() {
+        assertFalse(_authorizationPolicy.canCreateList(_guestDouble));
+    }
+
+    @Test
+    void userCanSeeOwnPrivateList() {
+        when(_listOwnedByUser.isPrivate()).thenReturn(true);
+        assertTrue(_authorizationPolicy.canSeeList(_userDouble, _listOwnedByUser));
+    }
+
+    @Test
+    void userCannotSeeOthersPrivateList() {
+        when(_listOwnedByAdmin.isPrivate()).thenReturn(true);
+        assertFalse(_authorizationPolicy.canSeeList(_userDouble, _listOwnedByAdmin));
+    }
+
+    @Test
+    void anyoneCanSeePublicList() {
+        assertTrue(_authorizationPolicy.canSeeList(_guestDouble, _publicList));
+    }
+
+    @Test
+    void userCanAddItemToOwnList() {
+        assertTrue(_authorizationPolicy.canAddItemTo(_userDouble, _listOwnedByUser));
+    }
+
+    @Test
+    void userCannotAddItemToOthersList() {
+        assertFalse(_authorizationPolicy.canAddItemTo(_userDouble, _listOwnedByAdmin));
+    }
+
+    @Test
+    void adminCanDeleteOwnList() {
+        assertTrue(_authorizationPolicy.canDeleteList(_adminDouble, _listOwnedByAdmin));
+    }
+
+    @Test
+    void userCannotDeleteOthersList() {
+        assertFalse(_authorizationPolicy.canDeleteList(_userDouble, _listOwnedByAdmin));
+    }
+
+    @Test
+    void ownerCanChangeVisibility() {
+        assertTrue(_authorizationPolicy.canChangeVisibility(_userDouble, _listOwnedByUser));
+    }
+
+    @Test
+    void nonOwnerCannotChangeVisibility() {
+        assertFalse(_authorizationPolicy.canChangeVisibility(_userDouble, _listOwnedByAdmin));
+    }
+
+    @Test
+    void userCanSeePublicLists() {
+        assertTrue(_authorizationPolicy.canSeePublicLists(_userDouble));
+    }
+
+    @Test
+    void adminCanSeePublicLists() {
+        assertTrue(_authorizationPolicy.canSeePublicLists(_adminDouble));
+    }
+
+    @Test
+    void guestCannotSeePublicLists() {
+        assertFalse(_authorizationPolicy.canSeePublicLists(_guestDouble));
+    }
+
+    @Test
+    void anyoneCanSeeItemsInPublicList() {
+        assertTrue(_authorizationPolicy.canSeeItemsInPublicList(_guestDouble, _publicList));
+    }
+
+    @Test
+    void cannotSeeItemsInPrivateList() {
+        when(_listOwnedByUser.isPrivate()).thenReturn(true);
+        assertFalse(_authorizationPolicy.canSeeItemsInPublicList(_guestDouble, _listOwnedByUser));
     }
 
 }

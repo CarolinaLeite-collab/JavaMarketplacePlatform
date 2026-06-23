@@ -1,5 +1,6 @@
 package MITELOVERS.authorization;
 
+import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Role;
 import org.springframework.stereotype.Component;
@@ -27,20 +28,23 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
-    /** Any authenticated user may see a private list. */
-    public boolean canSeeList(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+    /** Only the owner may see a private list. */
+    public boolean canSeeList(User user, ListOfItems list) {return !list.isPrivate() || list.getUserId().equals(user.identity());}
 
-    /** Any authenticated user may add an item to a private list. */
-    public boolean canAddItemTo(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+    /** Only the owner may add an item to a list. */
+    public boolean canAddItemTo(User user, ListOfItems list) {return list.getUserId().equals(user.identity());}
 
-    /** Any authenticated user may delete a private list. */
-    public boolean canDeleteList(User user) {return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+    /** Only the owner may delete a list. */
+    public boolean canDeleteList(User user, ListOfItems list) {return list.getUserId().equals(user.identity());}
+
+    /** Only the owner may change visibility. */
+    public boolean canChangeVisibility(User user, ListOfItems list) {return list.getUserId().equals(user.identity());}
 
     /** Any authenticated user may view public lists. */
     public boolean canSeePublicLists(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may consult a public list's items. */
-    public boolean canSeeItemsInPublicList(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+    public boolean canSeeItemsInPublicList(User user, ListOfItems list) { return !list.isPrivate();}
 
     /** Any authenticated user may put items for sale. */
     public boolean canSell(User user) {
@@ -114,6 +118,11 @@ public class AuthorizationPolicy {
 
     /** Any authenticated user may view a specific direct sale. */
     public boolean canGetDirectSale(User user) {
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
+    }
+
+    /** Any authenticated user may view a specific direct sale. */
+    public boolean canDeleteDirectSale(User user) {
         return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 

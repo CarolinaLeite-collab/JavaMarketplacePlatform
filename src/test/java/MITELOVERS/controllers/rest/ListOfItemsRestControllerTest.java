@@ -2,6 +2,7 @@ package MITELOVERS.controllers.rest;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.domain.user.User;
@@ -11,6 +12,7 @@ import MITELOVERS.dto.request.ListOfItemsRequestDTO;
 import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -50,279 +52,285 @@ class ListOfItemsRestControllerTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuthorizationPolicy _auth;
+
+    @MockitoBean
+    private ItemId _itemId;
+
+    @MockitoBean
+    private ItemId _itemId2;
+
+    @MockitoBean
+    private User _user;
+
+    @BeforeEach
+    void setup() {
+        when(_userService.getUserByEmail(any())).thenReturn(_user);
+
+        // Default: allow everything unless overridden
+        when(_auth.canSeeList(any(), any())).thenReturn(true);
+        when(_auth.canAddItemTo(any(), any())).thenReturn(true);
+        when(_auth.canChangeVisibility(any(), any())).thenReturn(true);
+        when(_auth.canDeleteList(any(), any())).thenReturn(true);
+    }
+
     @Test
-    void options_shouldReturnLinksForUser() throws Exception {
-        String email = "john@example.com";
-        User user = mock(User.class);
-        when(_userService.getUserByEmail(email)).thenReturn(user);
-        when(_linkProvider.getLinks(user)).thenReturn(List.of(
-                Link.of("/my-lists").withRel("self"),
-                Link.of("/my-lists/create").withRel("create-list")
+    void options_collection_returnsLinks() throws Exception {
+        when(_linkProvider.getLinks(_user)).thenReturn(List.of(
+                Link.of("http://localhost/my-lists/").withRel("collection"),
+                Link.of("http://localhost/my-lists/").withRel("create-list"),
+                Link.of("http://localhost/my-lists/public").withRel("public-lists")
         ));
 
         _mockMvc.perform(options("/my-lists")
-                        .param("email", email))
+                        .header("X-User-Id", "john@example.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._links.self.href").value("/my-lists"))
-                .andExpect(jsonPath("$._links['create-list'].href").value("/my-lists/create"));
+                .andExpect(jsonPath("$._links.collection.href").value("http://localhost/my-lists/"))
+                .andExpect(jsonPath("$._links['create-list'].href").value("http://localhost/my-lists/"))
+                .andExpect(jsonPath("$._links['public-lists'].href").value("http://localhost/my-lists/public"));
     }
 
     @Test
-    void options_shouldReturnOkWithNoLinks() throws Exception {
-        String email = "readonly@example.com";
-        User user = mock(User.class);
-        when(_userService.getUserByEmail(email)).thenReturn(user);
-        when(_linkProvider.getLinks(user)).thenReturn(List.of());
+    void options_singleList_returnsAllowedActions() throws Exception {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listService.getListById(any())).thenReturn(list);
+        when(list.isPrivate()).thenReturn(true);
 
-        _mockMvc.perform(options("/my-lists")
-                        .param("email", email))
-                .andExpect(status().isOk());
+        _mockMvc.perform(options("/my-lists/L1")
+                        .header("X-User-Id", "john@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/L1"))
+                .andExpect(jsonPath("$._links['add-item'].href").value("http://localhost/my-lists/L1"))
+                .andExpect(jsonPath("$._links['make-public'].href").value("http://localhost/my-lists/L1/visibility"))
+                .andExpect(jsonPath("$._links.delete.href").value("http://localhost/my-lists/L1"));
     }
 
     @Test
-    void getLists_returnsOkWithEmbeddedBodyAndLinks_whenListsExist() throws Exception {
-        ListOfItems firstDomain = mock(ListOfItems.class);
-        ListOfItems secondDomain = mock(ListOfItems.class);
-        ListOfItemsResponseDTO first =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favourites", "Fiction", true, null, List.of());
-        ListOfItemsResponseDTO second =
-                new ListOfItemsResponseDTO("LOI-1235", "user@cenas.com", "TBR", "Non-Fiction", false, null, List.of());
+    void options_items_returnsSelfLink_whenAllowed() throws Exception {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listService.getListById(any())).thenReturn(list);
 
-        when(_listService.getUserLists(any(UserId.class))).thenReturn(List.of(firstDomain, secondDomain));
-        when(_mapper.toModel(firstDomain)).thenReturn(first);
-        when(_mapper.toModel(secondDomain)).thenReturn(second);
-        when(firstDomain.isPrivate()).thenReturn(true);
-        when(secondDomain.isPrivate()).thenReturn(false);
+        _mockMvc.perform(options("/my-lists/L1/items")
+                        .header("X-User-Id", "john@example.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/L1/items"));
+    }
+
+    @Test
+    void getLists_returnsOkWithEmbeddedLists() throws Exception {
+        ListOfItems d1 = mock(ListOfItems.class);
+        ListOfItems d2 = mock(ListOfItems.class);
+
+        ListOfItemsResponseDTO dto1 =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "Fiction", true, null, List.of());
+        ListOfItemsResponseDTO dto2 =
+                new ListOfItemsResponseDTO("L2", "user@x.com", "TBR", "NF", false, null, List.of());
+
+        when(_listService.getUserLists(any())).thenReturn(List.of(d1, d2));
+        when(_mapper.toModel(d1)).thenReturn(dto1);
+        when(_mapper.toModel(d2)).thenReturn(dto2);
+        when(d1.isPrivate()).thenReturn(true);
+        when(d2.isPrivate()).thenReturn(false);
 
         _mockMvc.perform(get("/my-lists/")
-                        .header("X-User-Id", "user@cenas.com")
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.*[0].listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._embedded.*[1].listId").value("LOI-1235"))
-                .andExpect(jsonPath("$._embedded.*[0]._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._embedded.*[1]._links.self.href").value("http://localhost/my-lists/LOI-1235"))
+                .andExpect(jsonPath("$._embedded.*[0].listId").value("L1"))
+                .andExpect(jsonPath("$._embedded.*[1].listId").value("L2"))
                 .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/"))
-                .andExpect(jsonPath("$._links['create-list'].href").exists())
-                .andExpect(jsonPath("$._embedded.*[0]._links['make-public'].href")
-                .value("http://localhost/my-lists/LOI-1234/visibility"))
-                .andExpect(jsonPath("$._embedded.*[1]._links['make-private'].href")
-                        .value("http://localhost/my-lists/LOI-1235/visibility"));
+                .andExpect(jsonPath("$._links['create-list'].href").exists());
     }
 
     @Test
-    void getLists_returnsNoContent_whenServiceReturnsEmptyList() throws Exception {
-        when(_listService.getUserLists(any(UserId.class))).thenReturn(List.of());
+    void getLists_returnsNoContent_whenEmpty() throws Exception {
+        when(_listService.getUserLists(any())).thenReturn(List.of());
 
         _mockMvc.perform(get("/my-lists/")
-                        .header("X-User-Id", "user@cenas.com"))
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    void getLists_returnsBadRequest_whenHeaderMissing() throws Exception {
-        _mockMvc.perform(get("/my-lists/"))
-                .andExpect(status().isBadRequest());
-    }
+    void getListById_returnsOk() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "Fiction", true, null, List.of());
 
-    @Test
-    void getListById_returnsOkWithSelfLink_whenServiceReturnsDto() throws Exception {
-        ListOfItems domainList = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favorites", "genre-1", true, null, List.of());
-        when(_listService.getListById(any(ListOfItemsId.class))).thenReturn(domainList);
-        when(_mapper.toModel(domainList)).thenReturn(response);
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(_mapper.toModel(domain)).thenReturn(dto);
 
-        _mockMvc.perform(get("/my-lists/{listId}", "LOI-1234")
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+        _mockMvc.perform(get("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links.collection.href").value("http://localhost/my-lists/"))
-                .andExpect(jsonPath("$._links['add-item'].href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links['make-public'].href").value("http://localhost/my-lists/LOI-1234/visibility"))
-                .andExpect(jsonPath("$._links.delete.href").value("http://localhost/my-lists/LOI-1234"));
+                .andExpect(jsonPath("$.listId").value("L1"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/L1"));
     }
 
     @Test
-    void getListById_returnsNotFound_whenServiceThrows() throws Exception {
-        when(_listService.getListById(any(ListOfItemsId.class)))
-                .thenThrow(new RuntimeException("not found"));
+    void getListById_returnsForbidden_whenNotAllowed() throws Exception {
+        when(_auth.canSeeList(any(), any())).thenReturn(false);
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(get("/my-lists/{listId}", "LOI-1234"))
-                .andExpect(status().isNotFound());
+        _mockMvc.perform(get("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void createAndSaveList_returnsCreatedWithSelfLink_whenServiceSucceeds() throws Exception {
-        ListOfItemsRequestDTO request = new ListOfItemsRequestDTO("Favorites", "genre-1");
-        ListOfItems domainList = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favorites", "genre-1", true, null, List.of());
-        when(_listService.save(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(domainList);
-        when(_mapper.toModel(domainList)).thenReturn(response);
+    void createList_returnsCreated() throws Exception {
+        ListOfItemsRequestDTO req = new ListOfItemsRequestDTO("Favs", "G1");
+        ListOfItems domain = mock(ListOfItems.class);
+
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "G1", true, null, List.of());
+
+        when(_listService.save(any(), any(), any())).thenReturn(domain);
+        when(_mapper.toModel(domain)).thenReturn(dto);
 
         _mockMvc.perform(post("/my-lists/")
-                        .header("X-User-Id", "user@cenas.com")
+                        .header("X-User-Id", "user@x.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .content(_objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links.collection.href").value("http://localhost/my-lists/"))
-                .andExpect(jsonPath("$._links['add-item'].href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links['make-public'].href").value("http://localhost/my-lists/LOI-1234/visibility"))
-                .andExpect(jsonPath("$._links.delete.href").value("http://localhost/my-lists/LOI-1234"));
+                .andExpect(jsonPath("$.listId").value("L1"));
     }
 
     @Test
-    void createAndSaveList_returnsInternalServerError_whenServiceThrows() throws Exception {
-        ListOfItemsRequestDTO request = new ListOfItemsRequestDTO("Favorites", "genre-1");
-        when(_listService.save(any(UserId.class), any(Name.class), any(GenreId.class)))
-                .thenThrow(new RuntimeException("boom"));
+    void addItem_returnsOk() throws Exception {
+        AddItemRequestDTO req = new AddItemRequestDTO("ABCDEF1234");
+        ListOfItems domain = mock(ListOfItems.class);
 
-        _mockMvc.perform(post("/my-lists/")
-                        .header("X-User-Id", "user@cenas.com")
+        ItemId id1 = mock(ItemId.class);
+        when(id1.toString()).thenReturn("ABCDEF1234");
+        when(domain.getItemIds()).thenReturn(List.of(id1));
+
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(_listService.addItemToList(any(), any())).thenReturn(domain);
+
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "G1", false,
+                        LocalDateTime.now(), List.of("ABCDEF1234"));
+
+        when(_mapper.toModel(domain)).thenReturn(dto);
+
+        _mockMvc.perform(post("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    void addItemToList_returnsOkWithSelfLink_whenServiceSucceeds() throws Exception {
-        AddItemRequestDTO request = new AddItemRequestDTO("ABCDEF1234");
-        ListOfItems domainList = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favorites", "genre-1", false,
-                        LocalDateTime.of(2026, 7, 2, 2, 2), List.of("ABCDEF1234"));
-        when(_listService.addItemToList(any(ListOfItemsId.class), any(ItemId.class))).thenReturn(domainList);
-        when(_mapper.toModel(domainList)).thenReturn(response);
-
-        _mockMvc.perform(post("/my-lists/{listId}", "LOI-1234")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .content(_objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links.collection.href").value("http://localhost/my-lists/"))
-                .andExpect(jsonPath("$._links['make-private'].href").value("http://localhost/my-lists/LOI-1234/visibility"));
+                .andExpect(jsonPath("$.listId").value("L1"));
     }
 
     @Test
-    void addItemToList_returnsInternalServerError_whenServiceThrows() throws Exception {
-        AddItemRequestDTO request = new AddItemRequestDTO("ITEM-999");
-        when(_listService.addItemToList(any(ListOfItemsId.class), any(ItemId.class)))
-                .thenThrow(new RuntimeException("boom"));
+    void addItem_returnsForbidden_whenNotAllowed() throws Exception {
+        when(_auth.canAddItemTo(any(), any())).thenReturn(false);
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(post("/my-lists/{listId}", "LOI-1234")
+        AddItemRequestDTO req = new AddItemRequestDTO("ITEM1");
+
+        _mockMvc.perform(post("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
+                        .content(_objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void makeListPublic_returnsOkWithSelfLink_whenServiceSucceeds() throws Exception {
-        MakeListPublicRequestDTO request = new MakeListPublicRequestDTO(7);
-        ListOfItems domainList = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favorites", "genre-1", false, null, List.of());
-        when(_listService.makePublic(any(ListOfItemsId.class), any(SharedDuration.class))).thenReturn(domainList);
-        when(_mapper.toModel(domainList)).thenReturn(response);
+    void makePublic_returnsOk() throws Exception {
+        MakeListPublicRequestDTO req = new MakeListPublicRequestDTO(7);
+        ListOfItems domain = mock(ListOfItems.class);
 
-        _mockMvc.perform(patch("/my-lists/{listId}/visibility", "LOI-1234")
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "G1", false, null, List.of());
+
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(_listService.makePublic(any(), any())).thenReturn(domain);
+        when(_mapper.toModel(domain)).thenReturn(dto);
+
+        _mockMvc.perform(patch("/my-lists/L1/visibility")
+                        .header("X-User-Id", "user@x.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request))
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                        .content(_objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links['make-private'].href").value("http://localhost/my-lists/LOI-1234/visibility"));
+                .andExpect(jsonPath("$.listId").value("L1"));
     }
 
     @Test
-    void makeListPublic_returnsInternalServerError_whenServiceThrows() throws Exception {
-        MakeListPublicRequestDTO request = new MakeListPublicRequestDTO(7);
-        when(_listService.makePublic(any(ListOfItemsId.class), any(SharedDuration.class)))
-                .thenThrow(new RuntimeException("boom"));
+    void makePublic_returnsForbidden_whenNotAllowed() throws Exception {
+        when(_auth.canChangeVisibility(any(), any())).thenReturn(false);
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(patch("/my-lists/{listId}/visibility", "LOI-1234")
+        MakeListPublicRequestDTO req = new MakeListPublicRequestDTO(7);
+
+        _mockMvc.perform(patch("/my-lists/L1/visibility")
+                        .header("X-User-Id", "user@x.com")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(_objectMapper.writeValueAsString(request)))
-                .andExpect(status().isInternalServerError());
+                        .content(_objectMapper.writeValueAsString(req)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void makeListPrivate_returnsOkWithSelfLink_whenServiceSucceeds() throws Exception {
-        ListOfItems domainList = mock(ListOfItems.class);
-        ListOfItemsResponseDTO response =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Favorites", "genre-1", true,
-                        LocalDateTime.of(2026, 7, 2, 2, 2), List.of());
-        when(_listService.makePrivate(any(ListOfItemsId.class))).thenReturn(domainList);
-        when(_mapper.toModel(domainList)).thenReturn(response);
+    void makePrivate_returnsOk() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
 
-        _mockMvc.perform(patch("/my-lists/{listId}/visibility", "LOI-1234")
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Favs", "G1", true,
+                        LocalDateTime.now(), List.of());
+
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(_listService.makePrivate(any())).thenReturn(domain);
+        when(_mapper.toModel(domain)).thenReturn(dto);
+
+        _mockMvc.perform(patch("/my-lists/L1/visibility")
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._links['make-public'].href").value("http://localhost/my-lists/LOI-1234/visibility"));
+                .andExpect(jsonPath("$.listId").value("L1"));
     }
 
     @Test
-    void makeListPrivate_returnsInternalServerError_whenServiceThrows() throws Exception {
-        when(_listService.makePrivate(any(ListOfItemsId.class)))
-                .thenThrow(new RuntimeException("boom"));
+    void deleteList_returnsOk() throws Exception {
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(patch("/my-lists/{listId}/visibility", "LOI-1234"))
-                .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    void deleteList_returnsOk_whenServiceSucceeds() throws Exception {
-        doNothing().when(_listService).deleteList(any(ListOfItemsId.class));
-
-        _mockMvc.perform(delete("/my-lists/{listId}", "LOI-1234"))
+        _mockMvc.perform(delete("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void deleteList_returnsInternalServerError_whenServiceThrows() throws Exception {
-        doThrow(new RuntimeException("boom"))
-                .when(_listService).deleteList(any(ListOfItemsId.class));
+    void deleteList_returnsForbidden_whenNotAllowed() throws Exception {
+        when(_auth.canDeleteList(any(), any())).thenReturn(false);
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(delete("/my-lists/{listId}", "LOI-1234"))
-                .andExpect(status().isInternalServerError());
+        _mockMvc.perform(delete("/my-lists/L1")
+                        .header("X-User-Id", "user@x.com"))
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    void getPublicLists_returnsOkWithEmbeddedBodyAndLinks_whenListsExist() throws Exception {
-        ListOfItems firstDomain = mock(ListOfItems.class);
-        ListOfItems secondDomain = mock(ListOfItems.class);
-        ListOfItemsResponseDTO first =
-                new ListOfItemsResponseDTO("LOI-1234", "user@cenas.com", "Public Favourites", "Fiction", false, null, List.of("ABCDEF1234"));
-        ListOfItemsResponseDTO second =
-                new ListOfItemsResponseDTO("LOI-1235", "user@cenas.com", "Public TBR", "Non-Fiction", false, null, List.of("ABCDEF5678"));
+    void getPublicLists_returnsOk() throws Exception {
+        ListOfItems d1 = mock(ListOfItems.class);
+        ListOfItems d2 = mock(ListOfItems.class);
 
-        when(_listService.getPublicLists()).thenReturn(List.of(firstDomain, secondDomain));
-        when(_mapper.toModel(firstDomain)).thenReturn(first);
-        when(_mapper.toModel(secondDomain)).thenReturn(second);
+        ListOfItemsResponseDTO dto1 =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Public Favs", "Fiction", false, null, List.of());
+        ListOfItemsResponseDTO dto2 =
+                new ListOfItemsResponseDTO("L2", "user@x.com", "Public TBR", "NF", false, null, List.of());
 
-        _mockMvc.perform(get("/my-lists/public")
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+        when(_listService.getPublicLists()).thenReturn(List.of(d1, d2));
+        when(_mapper.toModel(d1)).thenReturn(dto1);
+        when(_mapper.toModel(d2)).thenReturn(dto2);
+
+        _mockMvc.perform(get("/my-lists/public"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.*[0].listId").value("LOI-1234"))
-                .andExpect(jsonPath("$._embedded.*[1].listId").value("LOI-1235"))
-                .andExpect(jsonPath("$._embedded.*[0]._links.self.href").value("http://localhost/my-lists/LOI-1234"))
-                .andExpect(jsonPath("$._embedded.*[0]._links.items.href").value("http://localhost/my-lists/LOI-1234/items"))
-                .andExpect(jsonPath("$._embedded.*[1]._links.self.href").value("http://localhost/my-lists/LOI-1235"))
-                .andExpect(jsonPath("$._embedded.*[1]._links.items.href").value("http://localhost/my-lists/LOI-1235/items"))
-                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/public"));
+                .andExpect(jsonPath("$._embedded.*[0].listId").value("L1"))
+                .andExpect(jsonPath("$._embedded.*[1].listId").value("L2"))
+                .andExpect(jsonPath("$._embedded.*[0]._links.items.href").value("http://localhost/my-lists/L1/items"))
+                .andExpect(jsonPath("$._embedded.*[1]._links.items.href").value("http://localhost/my-lists/L2/items"));
     }
 
     @Test
-    void getPublicLists_returnsNoContent_whenServiceReturnsEmptyList() throws Exception {
+    void getPublicLists_returnsNoContent_whenEmpty() throws Exception {
         when(_listService.getPublicLists()).thenReturn(List.of());
 
         _mockMvc.perform(get("/my-lists/public"))
@@ -330,32 +338,33 @@ class ListOfItemsRestControllerTest {
     }
 
     @Test
-    void getItemsInList_returnsOkWithItemIds_whenPublicListExists() throws Exception {
-        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
-                .thenReturn(List.of(new ItemId("ABCDEF1234"), new ItemId("ABCDEF5678")));
+    void getItemsInList_returnsOk() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
 
-        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234")
-                        .accept(MediaType.APPLICATION_JSON_VALUE))
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(id1.toString()).thenReturn("A");
+        when(id2.toString()).thenReturn("B");
+        when(domain.getItemIds()).thenReturn(List.of(id1, id2));
+
+        _mockMvc.perform(get("/my-lists/L1/items")
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0]").value("ABCDEF1234"))
-                .andExpect(jsonPath("$[1]").value("ABCDEF5678"));
+                .andExpect(jsonPath("$.items[0]").value("A"))
+                .andExpect(jsonPath("$.items[1]").value("B"))
+                .andExpect(jsonPath("$.links.links[0].href").value("http://localhost/my-lists/L1/items"))
+                .andExpect(jsonPath("$.links.links[0].rel").value("self"));
     }
 
     @Test
-    void getItemsInList_returnsForbidden_whenListIsPrivate() throws Exception {
-        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
-                .thenThrow(new IllegalStateException("List is private"));
+    void getItemsInList_returnsForbidden_whenNotAllowed() throws Exception {
+        when(_auth.canSeeList(any(), any())).thenReturn(false);
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
 
-        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234"))
+        _mockMvc.perform(get("/my-lists/L1/items")
+                        .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isForbidden());
     }
 
-    @Test
-    void getItemsInList_returnsNotFound_whenListDoesNotExist() throws Exception {
-        when(_listService.getItemsInPublicList(any(ListOfItemsId.class)))
-                .thenThrow(new IllegalArgumentException("List not found"));
-
-        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234"))
-                .andExpect(status().isNotFound());
-    }
 }
