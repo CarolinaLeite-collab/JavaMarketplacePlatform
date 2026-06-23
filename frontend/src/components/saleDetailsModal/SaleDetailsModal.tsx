@@ -59,7 +59,7 @@ export function SaleDetailsModal({ opened, item, canSeePrice, onClose, onSeeMore
                 <Stack gap="lg" flex={1}>
                     <Text fz="sm"><b>Author:</b> {item.author}</Text>
                     <Text fz="sm"><b>Genre:</b> {item.genre}</Text>
-                    <Text fz="sm"><b>Type:</b> Auction</Text>
+                    <Text fz="sm"><b>Type:</b> {item.saleType}</Text>
 
                     <Group gap="xs">
                         <Text fz="sm"><b>Condition:</b></Text>
