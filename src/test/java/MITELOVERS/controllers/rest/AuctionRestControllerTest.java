@@ -61,7 +61,8 @@ class AuctionRestControllerTest {
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2099-01-01T10:00:00Z"),
-                "pedro@aeiou.com"
+                "pedro@aeiou.com",
+                10.0
         );
 
         when(_auctionService.getAllActiveAuctions()).thenReturn(List.of(auction));
@@ -97,7 +98,8 @@ class AuctionRestControllerTest {
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z"),
-                "pedro@aeiou.com"
+                "pedro@aeiou.com",
+                30.0
         );
 
         when(_auctionService.putItemOnAuction(any(), any(), any(), any(), any(), any(), any()))
@@ -140,7 +142,8 @@ class AuctionRestControllerTest {
                 10.0, 25.0, null, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z"),
-                "pedro@aeiou.com"
+                "pedro@aeiou.com",
+                15.0
         );
 
         when(_auctionService.putItemOnAuction(any(), any(), any(), isNull(), any(), any(), any()))
@@ -320,7 +323,8 @@ class AuctionRestControllerTest {
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z"),
-                "pedro@aeiou.com"
+                "pedro@aeiou.com",
+                10.0
         );
 
         dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString, "self"));

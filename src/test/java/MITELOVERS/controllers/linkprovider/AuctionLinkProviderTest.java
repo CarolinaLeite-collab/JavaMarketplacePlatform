@@ -149,7 +149,8 @@ class AuctionLinkProviderTest {
                 "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
                 Instant.parse("2026-06-20T10:00:00Z"),
-                "pedro@aeiou.com"
+                "pedro@aeiou.com",
+                10.0
         );
 
         AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
