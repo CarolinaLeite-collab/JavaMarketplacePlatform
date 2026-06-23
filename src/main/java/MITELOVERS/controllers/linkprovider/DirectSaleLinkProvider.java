@@ -3,12 +3,11 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
-import MITELOVERS.controllers.rest.ListOfItemsRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -105,17 +104,13 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         User user = _userService.getUserByEmail(email);
 
-        dto.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(null))
-                        .withSelfRel()
-        );
+        addResourceLinks(dto);
 
         if(_authorizationPolicy.canDeleteDirectSale(user)) {
 
             dto.add(
                     linkTo(methodOn(DirectSaleRestController.class)
-                            .deleteDirectSale(null))
+                            .deleteDirectSale(dto.getDirectSaleId()))
                             .withRel("delete")
                     );
 
@@ -123,13 +118,53 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
     }
 
-    public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
+    public void addResourceLinks(DirectSaleResponseDTO dto) {
 
-        User user = _userService.getUserByEmail(email);
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(dto.getDirectSaleId()))
+                        .withSelfRel()
+        );
+
+    }
+
+    public void addResourceLinks(DirectSaleNoPriceResponseDTO dto) {
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSalesWithoutPrice())
+                        .withSelfRel()
+        );
+
+    }
+
+    public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
 
         dtos.add(linkTo(methodOn(DirectSaleRestController.class)
                 .getAllActiveDirectSales(null))
                 .withSelfRel()
+        );
+
+    }
+
+    public void addCollectionLinks(DSFilteredItemsResponseDTO dto, String genreId) {
+
+        dto.getDirectSales().forEach(this::addResourceLinks);
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleItemsByGenre(genreId))
+                        .withSelfRel()
+        );
+
+    }
+
+    public void addResourceLinks(DSFilteredItemsResponseDTO.DirectSaleEntry entry) {
+
+        entry.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(entry.getDirectSaleId()))
+                        .withSelfRel()
         );
 
     }

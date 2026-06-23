@@ -57,7 +57,7 @@ class ItemRestControllerTest {
                 "3C5D126F8B", "GOOD", "Nice copy", "NotOnSale",
                 null,
                 "E-ABCDEF12", "no identifier", "ENGLISH", 1949, "BOOK",
-                "1984", "George Orwell", 1949, "Fiction"
+                "1984", "George Orwell", 1949, "Fiction", "Some Publisher"
         );
     }
 
@@ -69,7 +69,8 @@ class ItemRestControllerTest {
     void shouldReturn201WhenItemIsCreated() throws Exception {
         Item itemDouble = mock(Item.class);
         when(itemService.registerItem(any(), any(), any())).thenReturn(itemDouble);
-        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
+        when(itemService.resolveRelated(any())).thenReturn(mock(ItemService.ItemRelated.class));
+        when(itemMapper.toModel(any(), any())).thenReturn(sampleDto());
 
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -139,7 +140,8 @@ class ItemRestControllerTest {
     void shouldReturn200WithListOfItems() throws Exception {
         Item itemDouble = mock(Item.class);
         when(itemService.getAllItems()).thenReturn(List.of(itemDouble));
-        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
+        when(itemService.resolveRelated(any())).thenReturn(mock(ItemService.ItemRelated.class));
+        when(itemMapper.toModel(any(), any())).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items"))
                 .andExpect(status().isOk())
@@ -154,7 +156,8 @@ class ItemRestControllerTest {
     void shouldReturn200WhenItemExists() throws Exception {
         Item itemDouble = mock(Item.class);
         when(itemService.getItemById(any())).thenReturn(itemDouble);
-        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
+        when(itemService.resolveRelated(any())).thenReturn(mock(ItemService.ItemRelated.class));
+        when(itemMapper.toModel(any(), any())).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items/3C5D126F8B"))
                 .andExpect(status().isOk())
@@ -190,7 +193,8 @@ class ItemRestControllerTest {
         when(itemIdDouble.getValue()).thenReturn("3C5D126F8B");
         when(libraryService.getItemIdsInLibrary(any())).thenReturn(List.of(itemIdDouble));
         when(itemService.getItemById("3C5D126F8B")).thenReturn(itemDouble);
-        when(itemMapper.toModel(itemDouble)).thenReturn(sampleDto());
+        when(itemService.resolveRelated(any())).thenReturn(mock(ItemService.ItemRelated.class));
+        when(itemMapper.toModel(any(), any())).thenReturn(sampleDto());
 
         mockMvc.perform(get("/items/my-library")
                         .header("X-User-Id", "pedro@aeiou.com"))

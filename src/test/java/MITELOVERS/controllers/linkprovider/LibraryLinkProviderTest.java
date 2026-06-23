@@ -7,8 +7,7 @@ import org.springframework.hateoas.Link;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +50,7 @@ class LibraryLinkProviderTest {
         // Arrange
         AuthorizationPolicy _policyDouble = mock(AuthorizationPolicy.class);
         User _userDouble = mock(User.class);
+
         when(_policyDouble.canGetLibrary(_userDouble)).thenReturn(true);
         when(_policyDouble.canAddToLibrary(_userDouble)).thenReturn(false);
 
@@ -60,7 +60,12 @@ class LibraryLinkProviderTest {
 
         // Assert
         assertEquals(1, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
+
+        Link libraryLink = links.getFirst();
+
+        assertEquals("library", libraryLink.getRel().value());
+        assertEquals("/my-library", libraryLink.getHref());
+        assertFalse(libraryLink.isTemplated());
     }
 
     @Test
@@ -95,5 +100,20 @@ class LibraryLinkProviderTest {
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("library-add")));
+    }
+
+    @Test
+    void shouldProvideTemplatedSortLink() {
+        // Arrange
+        AuthorizationPolicy policyDouble = mock(AuthorizationPolicy.class);
+        LibraryLinkProvider provider = new LibraryLinkProvider(policyDouble);
+
+        // Act
+        Link sortLink = provider.getSortLink();
+
+        // Assert
+        assertEquals("sort", sortLink.getRel().value());
+        assertEquals("/my-library{?sort}", sortLink.getHref());
+        assertTrue(sortLink.isTemplated());
     }
 }

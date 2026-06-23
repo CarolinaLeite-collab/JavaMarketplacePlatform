@@ -1,0 +1,88 @@
+@startuml
+title OPTIONS for user on /my-library %n()ref SD
+
+skinparam backgroundColor CornSilk
+skinparam noteBackgroundColor #FFFFE0
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":LibraryRestController" as REST
+participant ":UserService" as UserService
+participant ":IUserRepo" as UserRepo
+participant ":LibraryLinkProvider" as LinkProvider
+participant ":AuthorizationPolicy" as Authorization
+participant ":Database" as Database
+
+activate REST
+
+REST -> UserService : getUserByEmail(emailString)
+activate UserService
+
+create "email:Email" as Email
+UserService -->> Email : new Email(emailString)
+
+create "userId:UserId" as UserId
+UserService -->> UserId : new UserId(email)
+
+UserService -> UserRepo : ofIdentity(userId)
+activate UserRepo
+UserRepo -> Database : ofIdentity(userId)
+activate Database
+Database --> UserRepo : user
+deactivate Database
+UserRepo --> UserService : user
+deactivate UserRepo
+
+UserService --> REST : user
+deactivate UserService
+
+create "options:%n()RepresentationModel<?>" as Options
+REST -> Options : add self link for\nOPTIONS /my-library
+
+REST -> LinkProvider : getLinks(user)
+activate LinkProvider
+
+LinkProvider -> Authorization : canGetLibrary(user)
+activate Authorization
+Authorization --> LinkProvider : true / false
+deactivate Authorization
+
+alt user can retrieve library
+    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library"
+end
+
+LinkProvider -> Authorization : canAddToLibrary(user)
+activate Authorization
+Authorization --> LinkProvider : true / false
+deactivate Authorization
+
+alt user can add to library
+    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library-add"
+end
+
+LinkProvider --> REST : List<Link> authorizedLinks
+deactivate LinkProvider
+
+loop for each link in authorizedLinks
+    REST -> Options : add(link)
+    activate Options
+    deactivate Options
+end
+
+deactivate REST
+
+note right of REST
+Returns:
+200 OK
+Allow: GET, POST, OPTIONS
+RepresentationModel<?> + _links
+end note
+
+ref over REST
+[[../Process_View_Level_3_SD.puml Return to main diagram]]
+end ref
+
+@enduml

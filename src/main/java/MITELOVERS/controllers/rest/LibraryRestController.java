@@ -1,20 +1,27 @@
 package MITELOVERS.controllers.rest;
 
+import MITELOVERS.applicationservices.LibraryItemDetails;
 import MITELOVERS.applicationservices.LibraryService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.LibraryLinkProvider;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.LibrarySort;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.AddItemRequestDTO;
-import MITELOVERS.dto.response.LibraryItemDetailsDTO;
-import MITELOVERS.dto.response.LibraryItemSummaryDTO;
+import MITELOVERS.dto.response.LibraryItemResponseDTO;
+import MITELOVERS.mapper.LibraryItemResponseDTOMapper;
+import MITELOVERS.mapper.LibrarySortRequestMapper;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -34,17 +41,24 @@ public class LibraryRestController {
     private final LibraryService _libraryService;
     private final LibraryLinkProvider _libraryLinkProvider;
     private final UserService _userService;
+    private final LibrarySortRequestMapper _sortRequestMapper;
+    private final LibraryItemResponseDTOMapper _libraryItemResponseDTOMapper;
 
-    public LibraryRestController(LibraryService libraryService, LibraryLinkProvider  libraryLinkProvider, UserService userService) {
+    public LibraryRestController(LibraryService libraryService,
+                                 LibraryLinkProvider libraryLinkProvider,
+                                 UserService userService,
+                                 LibrarySortRequestMapper sortRequestMapper,
+                                 LibraryItemResponseDTOMapper libraryItemResponseDTOMapper) {
         _libraryService = libraryService;
         _libraryLinkProvider = libraryLinkProvider;
         _userService = userService;
-
+        _sortRequestMapper = sortRequestMapper;
+        _libraryItemResponseDTOMapper = libraryItemResponseDTOMapper;
     }
 
-    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(
-            @RequestParam("email") String email) {
+            @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
 
@@ -58,55 +72,86 @@ public class LibraryRestController {
 
         _libraryLinkProvider.getLinks(user).forEach(model::add);
 
-        return ResponseEntity.ok(model);
+        return ResponseEntity
+                .ok()
+                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .body(model);
     }
 
-    @GetMapping(path ="/", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CollectionModel<LibraryItemSummaryDTO>> getMyLibrary(
-            @RequestHeader("X-User-Id") String userId) {
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CollectionModel<LibraryItemResponseDTO>> getMyLibrary(
+            @RequestHeader("X-User-Id") String userId,
+            @RequestParam(value = "sort", required = false) String sort) {
 
-            List<LibraryItemSummaryDTO> dtos = _libraryService.getListOfItemInfoInMyLibrary(userId);
+        UserId uid = new UserId(new Email(userId));
+        LibrarySort librarySort = _sortRequestMapper.toDomain(sort);
 
-            for (LibraryItemSummaryDTO dto : dtos) {
-                Link link = linkTo(methodOn(LibraryRestController.class)
-                        .getItemDetail(dto.getItemId())).withSelfRel();
-                dto.add(link);
-            }
-            CollectionModel<LibraryItemSummaryDTO> result = CollectionModel.of(dtos,
-                    linkTo(methodOn(LibraryRestController.class)
-                            .getMyLibrary(userId)).withSelfRel());
+        List<LibraryItemDetails> itemDetailsList =
+                _libraryService.getListOfItemInfoInMyLibrary(uid, librarySort);
 
-            return new ResponseEntity<>(result, HttpStatus.OK);
+        List<LibraryItemResponseDTO> dtos = itemDetailsList.stream()
+                .map(this::toDTO)
+                .toList();
 
-    }
-
-        @GetMapping(path ="/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<LibraryItemDetailsDTO> getItemDetail(@PathVariable String itemId) {
-
-                LibraryItemDetailsDTO dto = _libraryService.getItemDetail(itemId);
-
-                Link link = linkTo(methodOn(LibraryRestController.class)
-                        .getItemDetail(itemId)).withSelfRel();
-                dto.add(link);
-
-                return new ResponseEntity<>(dto, HttpStatus.OK);
-
+        for (LibraryItemResponseDTO dto : dtos) {
+            Link link = linkTo(methodOn(LibraryRestController.class)
+                    .getItemDetail(dto.getItemId())).withSelfRel();
+            dto.add(link);
         }
 
-    @PostMapping(path ="/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LibraryItemSummaryDTO> addItemToLibrary(
-            @RequestBody AddItemRequestDTO request,
-            @RequestHeader("X-User-Id") String userId) {
+        CollectionModel<LibraryItemResponseDTO> result = CollectionModel.of(dtos,
+                linkTo(methodOn(LibraryRestController.class)
+                        .getMyLibrary(userId, sort)).withSelfRel());
 
-            LibraryItemSummaryDTO dto = _libraryService.addItemToLibrary(request.getItemId(), userId);
+        result.add(_libraryLinkProvider.getSortLink());
 
-            Link selfLink = linkTo(methodOn(LibraryRestController.class)
-                    .getItemDetail(dto.getItemId())).withSelfRel();
-            dto.add(selfLink);
-
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-
-
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping(path = "/{itemId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LibraryItemResponseDTO> getItemDetail(@PathVariable String itemId) {
+
+        ItemId itemIdVO = new ItemId(itemId);
+
+        LibraryItemDetails itemDetails =
+                _libraryService.getItemDetail(itemIdVO);
+        LibraryItemResponseDTO dto = toDTO(itemDetails);
+
+        Link link = linkTo(methodOn(LibraryRestController.class)
+                .getItemDetail(itemId)).withSelfRel();
+        dto.add(link);
+
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping(
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<LibraryItemResponseDTO> addItemToLibrary(
+            @Valid @RequestBody AddItemRequestDTO request,
+            @RequestHeader("X-User-Id") String userId) {
+
+        ItemId itemId = new ItemId(request.getItemId());
+        UserId uid = new UserId(new Email(userId));
+
+        LibraryItemDetails itemDetails =
+                _libraryService.addItemToLibrary(itemId, uid);
+        LibraryItemResponseDTO dto = toDTO(itemDetails);
+
+        Link selfLink = linkTo(methodOn(LibraryRestController.class)
+                .getItemDetail(dto.getItemId())).withSelfRel();
+        dto.add(selfLink);
+
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
+    private LibraryItemResponseDTO toDTO(LibraryItemDetails itemDetails) {
+        return _libraryItemResponseDTOMapper.toDTO(
+                itemDetails.item(),
+                itemDetails.publication(),
+                itemDetails.edition(),
+                itemDetails.author(),
+                itemDetails.publicationType());
+    }
 }
