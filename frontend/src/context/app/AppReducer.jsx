@@ -41,9 +41,7 @@ export function appReducer(state, action) {
                 createEditionHref: action.payload?.['edition-create']?.href ?? null,
                 createItemHref: action.payload?.['createItem']?.href ?? null,
                 publicationTypesHref: action.payload?.['publication-types']?.href ?? null,
-                publishingCompaniesHref:
-                    action.payload?.['publishingCompanies']?.href ??
-                    'http://localhost:8081/publishingCompanies',
+                publishingCompaniesHref: action.payload?.['publishingCompanies']?.href ?? null,
             };
 
         case GET_LIST_OPTIONS_SUCCESS:

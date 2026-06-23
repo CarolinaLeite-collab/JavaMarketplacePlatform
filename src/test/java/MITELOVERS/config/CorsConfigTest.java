@@ -40,6 +40,18 @@ class CorsConfigTest {
     }
 
     @Test
+    void corsHeadersPresentForSecondAllowedOrigin() throws Exception {
+        var result = mockMvc.perform(
+                options("/my-library/")
+                        .header("Origin", "http://localhost:8080")
+                        .header("Access-Control-Request-Method", "GET")
+        );
+
+        result.andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:8080"));
+    }
+
+    @Test
     void corsHeadersNotPresentForDisallowedOrigin() throws Exception {
         // Arrange
         // Act
@@ -57,8 +69,7 @@ class CorsConfigTest {
     void corsConfigurerIsNotNull() {
         // Arrange
         CorsConfig config = new CorsConfig();
-        ReflectionTestUtils.setField(config, "allowedOrigins", "http://localhost:5173");
-
+        ReflectionTestUtils.setField(config, "allowedOrigins", new String[]{"http://localhost:5173"});
         // SUT
         WebMvcConfigurer configurer = config.corsConfigurer();
 

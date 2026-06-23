@@ -82,14 +82,14 @@ public class AuthorizationPolicy {
         return user.hasRole(Role.ADMIN);
     }
 
-    /** Only admins can get a list of all Publishing Companies*/
+    /** Any authenticated user may list all Publishing Companies  */
     public boolean canGetAllPublishingCompanies(User user) {
-        return user.hasRole(Role.ADMIN);
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
-    /** Only admins can search for a specific Publishing Company*/
+    /** Any authenticated user may view a specific Publishing Company. */
     public boolean canGetPublishingCompany(User user) {
-        return user.hasRole(Role.ADMIN);
+        return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);
     }
 
     /** Only admins may list expired or cancelled direct sales. */

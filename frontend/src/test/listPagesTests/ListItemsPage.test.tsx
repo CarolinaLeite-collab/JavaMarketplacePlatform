@@ -9,12 +9,16 @@ import { apiClient } from "../../services/apiClient";
 
 // --- Mocks ---
 
-vi.mock("../../services/apiClient", () => ({
-    apiClient: {
-        getByHref: vi.fn(),
-        getItemById: vi.fn(),
-    },
-}));
+vi.mock("../../services/apiClient", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../../services/apiClient")>();
+    return {
+        ...actual,
+        apiClient: {
+            getByHref: vi.fn(),
+            getItemById: vi.fn(),
+        },
+    };
+});
 
 vi.mock("../../components/addItemToListModal/AddItemToListDropDown", () => ({
     AddItemToListDropDown: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,

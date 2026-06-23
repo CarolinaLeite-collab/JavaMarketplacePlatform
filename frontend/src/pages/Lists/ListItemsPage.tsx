@@ -8,7 +8,7 @@ import AppContext from "../../context/AppContext.tsx";
 import { addItemToList } from "../../context/lists/ListsActions.jsx";
 import { AddItemToListDropDown } from "../../components/addItemToListModal/AddItemToListDropDown.tsx";
 import { DeleteItemFromListModal } from "../../components/lists/DeleteItemFromListModal.tsx";
-import { apiClient } from "../../services/apiClient";
+import { apiClient, BASE_URL } from "../../services/apiClient";
 import { ItemDetailModal, ItemDTO } from "../../components/lists/ItemDetailModal.tsx";
 
 
@@ -39,8 +39,8 @@ export default function ListItemsPage() {
 
         async function fetchList() {
             try {
-                const data = await apiClient.getByHref(
-                    `http://localhost:8081/my-lists/${listId}`);
+                const data = await apiClient.getByHref(`${BASE_URL}/my-lists/${listId}`);
+
 
                 setListName(data.name);
 
