@@ -202,6 +202,27 @@ public class DirectSaleRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(value = "/{id}/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DirectSaleNoPriceResponseDTO> getDirectSaleWithoutPrice(@PathVariable String id){
+
+        DirectSale directSale = _directSaleService.getDirectSaleById(new DirectSaleId(id));
+
+        DirectSaleNoPriceResponseDTO dto = _noPriceMapper.toModel(directSale);
+
+        dto = _directSaleLinkProvider.addNoPriceResourceLinks(dto);
+
+        for (ItemId itemId : directSale.getItemsId()) {
+            dto.add(
+                    linkTo(methodOn(ItemRestController.class)
+                            .getItemById(itemId.toString()))
+                            .withRel("item")
+            );
+        }
+
+        return ResponseEntity.ok(dto);
+    }
+
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteDirectSale(@PathVariable String id) {
 

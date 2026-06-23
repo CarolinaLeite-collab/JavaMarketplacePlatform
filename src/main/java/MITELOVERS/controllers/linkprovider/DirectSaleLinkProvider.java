@@ -202,4 +202,16 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                         .withSelfRel()
         );
     }
+
+    public DirectSaleNoPriceResponseDTO addNoPriceResourceLinks(
+            DirectSaleNoPriceResponseDTO dto) {
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleWithoutPrice(dto.getDirectSaleId()))
+                        .withSelfRel()
+        );
+
+        return dto;
+    }
 }

@@ -184,7 +184,7 @@ export const apiClient = {
     getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),
     getAuctionById: (auctionId) => getPublic(`/auctions/${auctionId}`),
     getPublishingCompanyById: (id) => getPublic(`/publishingCompanies/${id}`),
-    getDirectSalesOptions: () => optionsByPath('/direct-sales'),
+    getDirectSaleWithoutPrice: (id) => getPublic(`/direct-sales/${encodeURIComponent(id)}/without-price`),    getDirectSalesOptions: () => optionsByPath('/direct-sales'),
     getSalesAllowedMethods: () => allowedMethodsByPath('/sales'),
     getShoppingCartAllowedMethods: () => allowedMethodsByPath('/shopping-carts'),
     getAllowedMethodsByHref: (href) => allowedMethodsByHref(href),

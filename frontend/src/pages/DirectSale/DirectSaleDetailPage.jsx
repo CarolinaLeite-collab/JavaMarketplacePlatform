@@ -55,20 +55,30 @@ export default function DirectSaleDetailPage() {
         try {
             setLoading(true);
             setError('');
+            setDirectSale(null);
+            setItem(null);
+            setEdition(null);
+            setPublisherInfo(null);
 
-            const options = await apiClient.getDirectSalesOptions();
+            let directSaleData;
 
-            const template = options?._links?.['direct-sale']?.href;
+            if (!isLoggedIn) {
+                directSaleData =
+                    await apiClient.getDirectSaleWithoutPrice(directSaleId);
+            } else {
+                const options = await apiClient.getDirectSalesOptions();
+                const template = options?._links?.['direct-sale']?.href;
 
-            const directSaleHref =
-                location.state?.selfHref ??
-                template?.replace('{id}', encodeURIComponent(directSaleId));
+                const directSaleHref =
+                    location.state?.selfHref ??
+                    template?.replace('{id}', encodeURIComponent(directSaleId));
 
-            if (!directSaleHref) {
-                throw new Error('Direct Sale link not available');
+                if (!directSaleHref) {
+                    throw new Error('Direct Sale link not available');
+                }
+
+                directSaleData = await apiClient.getByHref(directSaleHref);
             }
-
-            const directSaleData = await apiClient.getByHref(directSaleHref);
 
             const itemLink = directSaleData?._links?.item;
 
@@ -107,7 +117,7 @@ export default function DirectSaleDetailPage() {
 
     useEffect(() => {
         loadDirectSale();
-    }, [directSaleId]);
+    }, [directSaleId, isLoggedIn]);
 
     function sellerUsernameFromEmail(email) {
         if (!email) return 'unknown';
