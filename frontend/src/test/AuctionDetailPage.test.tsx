@@ -17,6 +17,7 @@ vi.mock('../services/apiClient', () => ({
         getItemById: vi.fn(),
         getEditionById: vi.fn(),
         getPublishingCompanyById: vi.fn(),
+        getByHref: vi.fn(),
         postByHref: vi.fn(),
     },
 }));
@@ -27,13 +28,44 @@ const mockAuction = {
     startingPrice: 20.0,
     reservePrice: 30.0,
     outrightPrice: 50.0,
+    currentPrice: 28.5,
     priceCurrency: 'EUR',
     startDate: '2026-06-01T00:00:00Z',
     endDate: '2026-06-25T00:00:00Z',
     bidCount: 3,
     highestBid: 28.5,
     seller: 'pedro@aeiou.com',
-    _links: { placeBid: { href: 'http://localhost:8081/auctions/test-123/bids' } },
+    _links: {
+        bids: { href: 'http://localhost:8081/auctions/test-123/bids' },
+    },
+};
+
+const mockBidsResponse = {
+    _embedded: {
+        bids: [
+            {
+                bidId: 'BID-001',
+                buyerId: 'pedro@aeiou.com',
+                bidValue: 28.5,
+                currency: 'EUR',
+                bidDate: '2026-06-22T18:39:05Z',
+            },
+            {
+                bidId: 'BID-002',
+                buyerId: 'maria@aeiou.com',
+                bidValue: 25,
+                currency: 'EUR',
+                bidDate: '2026-06-22T18:10:00Z',
+            },
+            {
+                bidId: 'BID-003',
+                buyerId: 'joao@aeiou.com',
+                bidValue: 22,
+                currency: 'EUR',
+                bidDate: '2026-06-22T17:50:00Z',
+            },
+        ],
+    },
 };
 
 const mockItem = {
@@ -93,6 +125,7 @@ describe('AuctionDetailPage', () => {
         vi.mocked(apiClient.getItemById).mockResolvedValue(mockItem);
         vi.mocked(apiClient.getEditionById).mockResolvedValue(mockEdition);
         vi.mocked(apiClient.getPublishingCompanyById).mockResolvedValue(mockPublisher);
+        vi.mocked(apiClient.getByHref).mockResolvedValue(mockBidsResponse);
     });
 
     it('renders publication type and title', async () => {
@@ -102,18 +135,20 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('Spacematrix: Space, Density and Urban Form')).toBeInTheDocument();
     });
 
-    it('renders highest bid when bids exist', async () => {
+    it('renders current price when available', async () => {
         renderAuctionDetail();
 
         expect(await screen.findByText(/28.5 EUR/)).toBeInTheDocument();
     });
 
-    it('renders starting price when no bids', async () => {
+    it('renders starting price when current price is missing', async () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
+            currentPrice: null,
             highestBid: null,
             bidCount: 0,
         });
+        vi.mocked(apiClient.getByHref).mockResolvedValue({ _embedded: { bids: [] } });
 
         renderAuctionDetail();
 
@@ -228,7 +263,7 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('N/A')).toBeInTheDocument();
     });
 
-    it('renders Place Bid button enabled for logged-in user when link exists and auction is active', async () => {
+    it('renders Place Bid button enabled for logged-in user when bids link exists and auction is active', async () => {
         renderAuctionDetail();
 
         const button = await screen.findByRole('button', { name: /place bid/i });
@@ -247,7 +282,7 @@ describe('AuctionDetailPage', () => {
         expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
     });
 
-    it('disables Place Bid when placeBid link is missing', async () => {
+    it('disables Place Bid when bids link is missing', async () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
             _links: {},
@@ -286,11 +321,12 @@ describe('AuctionDetailPage', () => {
         expect(screen.getAllByText('N/A').length).toBeGreaterThanOrEqual(1);
     });
 
-    it('shows not found state when auction is missing', async () => {
+    it('shows error state when auction fails to load', async () => {
         vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
 
         renderAuctionDetail();
 
-        expect(await screen.findByText(/auction not found/i)).toBeInTheDocument();
+        expect(await screen.findByRole('heading', { name: /auction/i })).toBeInTheDocument();
+        expect(screen.getByText(/auction not found\./i)).toBeInTheDocument();
     });
 });

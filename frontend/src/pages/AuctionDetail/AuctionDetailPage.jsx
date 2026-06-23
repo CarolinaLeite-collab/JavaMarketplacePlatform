@@ -9,6 +9,8 @@ import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
 import { useUser } from '../../context/UserContext';
 import { apiClient } from '../../services/apiClient';
 import { PlaceBidModal } from '../../components/placeBidModal/PlaceBidModal.tsx';
+import {ViewBidsModal} from "../../components/viewBidsModal/ViewBidsModal.tsx";
+import {notifications} from "@mantine/notifications";
 
 /**
  * Formats an ISO end date into a short "in Xd Yh" string.
@@ -52,6 +54,7 @@ export default function AuctionDetailPage() {
     const { auctionId } = useParams();
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
+    const canSeePrice = isLoggedIn;
 
     const [auction, setAuction] = useState(null);
     const [item, setItem] = useState(null);
@@ -64,6 +67,11 @@ export default function AuctionDetailPage() {
     const [now, setNow] = useState(new Date());
 
     const [bidModalOpened, { open: openBidModal, close: closeBidModal }] = useDisclosure(false);
+    const [viewBidsModalOpened, {open: openViewBidModal, close: closeViewBidModal}] = useDisclosure(false);
+    const [bids, setBids] = useState([]);
+    const placeBidHref =
+        auction?._links?.bids?.href ??
+        null;
 
     async function loadAuction() {
         try {
@@ -110,6 +118,33 @@ export default function AuctionDetailPage() {
                 }
             }
 
+            const bidsHref = auctionData?._links?.bids?.href;
+            let bidsData = [];
+
+            if (bidsHref) {
+                try {
+                    const bidsResponse = await apiClient.getByHref(bidsHref);
+                    bidsData =
+                        bidsResponse?._embedded
+                            ? Object.values(bidsResponse._embedded)[0] ?? []
+                            : Array.isArray(bidsResponse)
+                                ? bidsResponse
+                                : [];
+                } catch (e) {
+                    console.warn('Could not load bids history', e);
+                }
+            }
+
+            setBids(
+                (bidsData ?? []).map((bid) => ({
+                    bidId: bid.bidId,
+                    bidderId: bid.buyerId,
+                    bidValue: bid.bidValue ?? bid.offerPrice ?? bid.value ?? bid.amount ?? null,
+                    currency: bid.currency,
+                    time: bid.bidDate,
+                }))
+            );
+
             setAuction(auctionData);
             setItem(itemData);
             setEdition(editionData);
@@ -136,8 +171,6 @@ export default function AuctionDetailPage() {
     async function handlePlaceBid(bidAmount) {
         setError('');
         setSuccessMessage('');
-
-        const placeBidHref = auction?._links?.placeBid?.href;
         if (!placeBidHref) {
             setError('Placing bids is not available for this auction.');
             return;
@@ -149,12 +182,23 @@ export default function AuctionDetailPage() {
                 currency: auction?.priceCurrency ?? 'EUR',
             });
 
-            setSuccessMessage('Bid placed successfully.');
-            closeBidModal();
             await loadAuction();
+            notifications.show({
+                title: 'Bid placed',
+                message: 'You successfully placed a bid on this auction.',
+                color: 'green',
+                autoClose: 3000,
+            });
+            closeBidModal();
         } catch (bidError) {
             console.error(bidError);
-            setError('Could not place bid.');
+            setError('There was an issue with your bid.');
+            notifications.show({
+                title: 'Bid could not be placed',
+                message: 'There was an issue with your bid.',
+                color: 'red',
+                autoClose: 3000,
+            });
         }
     }
 
@@ -182,11 +226,11 @@ export default function AuctionDetailPage() {
     // Auction fields
     const startingPrice = auction.startingPrice;
     const priceCurrency = auction.priceCurrency ?? 'EUR';
-    const bidsCount = auction.bidCount ?? 0;
-    const highestBid = auction.highestBid ?? null;
+    const bidsCount = bids.length ?? 0;
+
+    const currentPrice = auction.currentPrice ?? startingPrice;
     const endDate       = auction.endDate;
     const status        = deriveStatus(auction.startDate, auction.endDate);
-    const placeBidHref  = auction?._links?.placeBid?.href ?? null;
 
     // Item fields
     const title           = item?.title ?? 'Auction';
@@ -253,26 +297,24 @@ export default function AuctionDetailPage() {
                             <Stack gap="sm">
                                 <Stack gap={1}>
                                     <Text fz={30} fw={700} c="var(--mantine-color-indigo-7)">
-                                        {highestBid != null
-                                            ? `${highestBid} ${priceCurrency}`
-                                            : `${startingPrice} ${priceCurrency}`}
+                                        {canSeePrice ? `${currentPrice} ${priceCurrency}` : null}
                                     </Text>
 
                                     <Group gap="lg" align="baseline">
                                         <Text size="sm" c="dimmed">
-                                            Starting price: {startingPrice} {priceCurrency}
+                                            {canSeePrice ? `Starting price: ${startingPrice} ${priceCurrency}` : null}
                                         </Text>
 
-                                        <Button
-                                            variant="transparent"
-                                            size="compact-sm"
-                                            c="dimmed"
-                                            td="underline"
-                                            p={0}
-                                            onClick={() => { /* TODO: open bids modal */ }}
-                                        >
-                                            {bidsCount} bids
-                                        </Button>
+                                            <Button
+                                                variant="transparent"
+                                                size="compact-sm"
+                                                c="dimmed"
+                                                td="underline"
+                                                p={0}
+                                                onClick= { openViewBidModal}
+                                                onClose={closeViewBidModal}>
+                                                {canSeePrice ? `${bidsCount} bids` : null}
+                                            </Button>
                                     </Group>
 
                                     <Text size="xs" c="dimmed">
@@ -389,10 +431,16 @@ export default function AuctionDetailPage() {
 
             <PlaceBidModal
                 opened={bidModalOpened}
-                currentPrice={highestBid ?? startingPrice}
+                currentPrice={currentPrice}
                 currency={priceCurrency}
                 onClose={closeBidModal}
                 onConfirm={handlePlaceBid}
+            />
+
+            <ViewBidsModal
+                opened={viewBidsModalOpened}
+                bids={bids}
+                onClose={closeViewBidModal}
             />
         </DefaultLayout>
     );
