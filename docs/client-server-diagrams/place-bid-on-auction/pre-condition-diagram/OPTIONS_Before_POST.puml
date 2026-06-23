@@ -19,7 +19,7 @@ autonumber
 actor Buyer
 participant ":Frontend" as FE
 participant ":Backend" as BE
-participant ":DB" as DB
+participant ":db" as DB
 
 
 Buyer -> FE : Render my possible actions %n() on the bids collection of an %n()auction.
@@ -29,7 +29,7 @@ FE -> BE : OPTIONS {bids href} %n() (auctions/{auctionId}/bids)
 activate BE
 
 ref over BE
-[[OPTIONS_Place_Bid_SD.puml OPTIONS for buyer on /auctions/{auctionId}/bids]]
+[[OPTIONS_On_Bids_SD.puml OPTIONS for buyer on /auctions/{auctionId}/bids]]
 end ref
 
 BE --> FE : 200 OK + Allow: [OPTIONS, GET, POST]

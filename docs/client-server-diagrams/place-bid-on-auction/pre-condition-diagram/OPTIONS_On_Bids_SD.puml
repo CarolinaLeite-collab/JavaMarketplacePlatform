@@ -26,6 +26,12 @@ activate router
 router -> REST : optionsForBids%n()(auctionIdString, emailString)
 activate REST
 
+note right of router
+  auctionIdString comes from @PathVariable
+  and identifies the resource, even if
+  this OPTIONS logic only depends on user.
+end note
+
 REST -> userService : getUserByEmail(emailString)
 activate userService
 
@@ -46,7 +52,7 @@ deactivate userRepo
 userService --> REST : user
 deactivate userService
 
-REST -> Link : getAllowedMethodsForBids(user, auctionIdString)
+REST -> Link : getAllowedMethodsForBids(user)
 activate Link
 
 create "listOfMethods: List<HttpMethod>" as listOfMethods

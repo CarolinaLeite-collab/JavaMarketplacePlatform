@@ -1,5 +1,5 @@
 @startuml
-title POST (place bid on auction) %n()ref SD
+title POST bid on /auctions/{auctionId}/bids %n()ref SD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -22,8 +22,6 @@ participant "auction%n():Auction" as Auction
 participant ":BidFactory" as BidFactory
 participant ":Bid\nResponseDTOMapper" as Mapper
 participant "Database" as DB
-
-' ===== POST /auctions/{auctionId}/bids =====
 
 [o-> router : POST {bids href} + %n(){placeBidRequestDTO}
 activate router
@@ -111,7 +109,7 @@ note right of Link
   Adds HATEOAS links to the same DTO instance
 end note
 
-create "response:ResponseEntity<Object>" as response
+create "response:ResponseEntity<BidResponseDTO>" as response
 REST -->> response : new ResponseEntity<>(bidResponseDTO, 201 Created)
 REST --> router : response
 deactivate REST

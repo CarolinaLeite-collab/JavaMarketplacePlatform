@@ -47,7 +47,7 @@ FE -> BE : POST {bids href} + %n(){placeBidRequestDTO}
 activate BE
 
 ref over BE
-[[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST new bid on /auctions/{auctionId}/bids]]
+[[rest-sd-ref-diagrams/POST_Place_Bid_SD.puml POST bid on /auctions/{auctionId}/bids]]
 end ref
 
 BE --> FE : 201 Created + bidResponseDTO %n() + auction link + bids link
