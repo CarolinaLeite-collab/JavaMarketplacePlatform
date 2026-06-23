@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --ignore-scripts
 COPY . .
+ARG VITE_API_URL=http://localhost:8081
+ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged@sha256:557201bef46137df29721e3c14ab969775ddfb277ac2de8b693cb4decec8ce76
