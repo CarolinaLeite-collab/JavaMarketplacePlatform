@@ -103,9 +103,9 @@ public class ItemRestController {
 
     @GetMapping(value = "/my-library", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponseDTO>> getItemsIdsInLibrary(
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader("X-User-Id") String email) {
 
-        List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(userId);
+        List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(email);
 
         List<ItemResponseDTO> items = itemIds.stream()
                 .map(id -> {

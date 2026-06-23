@@ -72,9 +72,9 @@ public class DirectSaleRestController {
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<List<String>> options(@RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<List<String>> options(@RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(email);
 
         List<String> endpoints = _directSaleLinkProvider.getLinks(user)
                 .stream()
@@ -86,11 +86,11 @@ public class DirectSaleRestController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
-            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-User-Id") String email,
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
         List<ItemId> itemsId = requestDTO.getItemsId().stream().map(ItemId::new).toList();
-        UserId sellerId = new UserId(new Email(userId));
+        UserId sellerId = new UserId(new Email(email));
         Price price = new Price(requestDTO.getPriceValue(), Currency.valueOf(requestDTO.getPriceCurrency()));
         Duration timeLimit = requestDTO.getTimeLimitSeconds() != null
                 ? Duration.ofSeconds(requestDTO.getTimeLimitSeconds())
@@ -125,7 +125,7 @@ public class DirectSaleRestController {
 
     @GetMapping(value="/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<DirectSaleResponseDTO>> getAllActiveDirectSales(
-            @RequestHeader("X-User-Id") @NotBlank String userId) {
+            @RequestHeader("X-User-Id") @NotBlank String email) {
 
         List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
@@ -138,12 +138,12 @@ public class DirectSaleRestController {
                 .toList();
 
         response.forEach(dto ->
-                _directSaleLinkProvider.addResourceLinks(dto, userId)
+                _directSaleLinkProvider.addResourceLinks(dto, email)
         );
 
         CollectionModel<DirectSaleResponseDTO> result = CollectionModel.of(response);
 
-        _directSaleLinkProvider.addCollectionLinks(result, userId);
+        _directSaleLinkProvider.addCollectionLinks(result, email);
 
         return ResponseEntity.ok(result);
     }
