@@ -5,7 +5,6 @@ import MITELOVERS.controllers.rest.LibraryRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -13,6 +12,16 @@ import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+/**
+ * Provides HATEOAS links for operations related to a user's library.
+ *
+ * <p>
+ * Links are included according to the user's permissions.
+ * The sort link exposes the optional {@code sort} URI parameter,
+ * while the add link exposes the operation for adding an item.
+ * </p>
+ */
 
 @Component
 public class LibraryLinkProvider implements RootLinkProvider {
@@ -30,8 +39,7 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canGetLibrary(user)) {
             links.add(
-                    WebMvcLinkBuilder.linkTo(methodOn(LibraryRestController.class)
-                            .getMyLibrary(null))
+                    linkTo(LibraryRestController.class)
                             .withRel("library")
             );
         }
@@ -46,5 +54,9 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         return links;
     }
-
+    public Link getSortLink() {
+        return linkTo(methodOn(LibraryRestController.class)
+                .getMyLibrary(null, null))
+                .withRel("sort");
+    }
 }
