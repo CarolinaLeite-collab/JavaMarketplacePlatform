@@ -25,6 +25,12 @@ jobs:
   backend:
     name: Backend image
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.backend_meta.outputs.version }}
+      tags: ${{ steps.backend_evidence.outputs.tag_list }}
+      digest: ${{ steps.backend_digest.outputs.value }}
+      build_date: ${{ steps.backend_build_info.outputs.build_date }}
+      publication_mode: ${{ steps.backend_evidence.outputs.publication_mode }}
 
     steps:
       - name: Checkout repository
@@ -50,7 +56,31 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Capture backend build metadata
+        id: backend_build_info
+        run: echo "build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve backend evidence references
+        id: backend_evidence
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            {
+              echo "tag_list<<EOF"
+              echo "${{ env.BACKEND_IMAGE }}:ci"
+              echo "EOF"
+              echo "publication_mode=local validation build (not pushed)"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tag_list<<EOF"
+              printf '%s\n' "${{ steps.backend_meta.outputs.tags }}"
+              echo "EOF"
+              echo "publication_mode=published to GHCR"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build backend image
+        id: build_backend
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -62,8 +92,25 @@ jobs:
               && format('{0}:ci', env.BACKEND_IMAGE)
               || steps.backend_meta.outputs.tags }}
           labels: ${{ steps.backend_meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.backend_meta.outputs.version }}
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ steps.backend_build_info.outputs.build_date }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
+
+      - name: Resolve backend digest for evidence
+        id: backend_digest
+        run: |
+          DIGEST="${{ steps.build_backend.outputs.digest }}"
+
+          if [ -n "$DIGEST" ]; then
+            echo "value=$DIGEST" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "value=local validation build (no published digest)" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=unavailable" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Scan backend image with Trivy
         if: github.event_name == 'pull_request'
@@ -108,6 +155,12 @@ jobs:
   frontend:
     name: Frontend image
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.frontend_meta.outputs.version }}
+      tags: ${{ steps.frontend_evidence.outputs.tag_list }}
+      digest: ${{ steps.frontend_digest.outputs.value }}
+      build_date: ${{ steps.frontend_build_info.outputs.build_date }}
+      publication_mode: ${{ steps.frontend_evidence.outputs.publication_mode }}
 
     steps:
       - name: Checkout repository
@@ -133,7 +186,31 @@ jobs:
             type=sha,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Capture frontend build metadata
+        id: frontend_build_info
+        run: echo "build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve frontend evidence references
+        id: frontend_evidence
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            {
+              echo "tag_list<<EOF"
+              echo "${{ env.FRONTEND_IMAGE }}:ci"
+              echo "EOF"
+              echo "publication_mode=local validation build (not pushed)"
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tag_list<<EOF"
+              printf '%s\n' "${{ steps.frontend_meta.outputs.tags }}"
+              echo "EOF"
+              echo "publication_mode=published to GHCR"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build frontend image
+        id: build_frontend
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
@@ -145,8 +222,25 @@ jobs:
               && format('{0}:ci', env.FRONTEND_IMAGE)
               || steps.frontend_meta.outputs.tags }}
           labels: ${{ steps.frontend_meta.outputs.labels }}
+          build-args: |
+            APP_VERSION=${{ steps.frontend_meta.outputs.version }}
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ steps.frontend_build_info.outputs.build_date }}
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
+
+      - name: Resolve frontend digest for evidence
+        id: frontend_digest
+        run: |
+          DIGEST="${{ steps.build_frontend.outputs.digest }}"
+
+          if [ -n "$DIGEST" ]; then
+            echo "value=$DIGEST" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "value=local validation build (no published digest)" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=unavailable" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Scan frontend image with Trivy
         if: github.event_name == 'pull_request'
@@ -187,3 +281,56 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+
+  delivery-evidence:
+    name: Docker delivery evidence
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+
+    steps:
+      - name: Create delivery evidence
+        run: |
+          mkdir -p docker-delivery-evidence
+
+          cat <<'EOF' > docker-delivery-evidence/backend-tags.txt
+          ${{ needs.backend.outputs.tags }}
+          EOF
+
+          cat <<'EOF' > docker-delivery-evidence/frontend-tags.txt
+          ${{ needs.frontend.outputs.tags }}
+          EOF
+
+          {
+            echo "# Docker Delivery Evidence"
+            echo
+            echo "- Workflow: ${{ github.workflow }}"
+            echo "- Run number: ${{ github.run_number }}"
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Ref: ${{ github.ref_name }}"
+            echo "- Source commit: ${{ github.sha }}"
+            echo "- Evidence generated at (UTC): $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo
+            echo "## Backend image"
+            echo "- Image: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.BACKEND_IMAGE }}"
+            echo "- Version: ${{ needs.backend.outputs.version }}"
+            echo "- Publication mode: ${{ needs.backend.outputs.publication_mode }}"
+            echo "- Digest: ${{ needs.backend.outputs.digest }}"
+            echo "- Build timestamp: ${{ needs.backend.outputs.build_date }}"
+            echo "- Tags:"
+            sed 's/^/  - /' docker-delivery-evidence/backend-tags.txt
+            echo
+            echo "## Frontend image"
+            echo "- Image: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ env.FRONTEND_IMAGE }}"
+            echo "- Version: ${{ needs.frontend.outputs.version }}"
+            echo "- Publication mode: ${{ needs.frontend.outputs.publication_mode }}"
+            echo "- Digest: ${{ needs.frontend.outputs.digest }}"
+            echo "- Build timestamp: ${{ needs.frontend.outputs.build_date }}"
+            echo "- Tags:"
+            sed 's/^/  - /' docker-delivery-evidence/frontend-tags.txt
+          } > docker-delivery-evidence/docker-delivery-evidence.md
+
+      - name: Upload Docker delivery evidence
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: docker-delivery-evidence
+          path: docker-delivery-evidence/
