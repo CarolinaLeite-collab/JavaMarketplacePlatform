@@ -200,7 +200,6 @@ class SaleServiceTest {
         ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
 
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
 
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
@@ -229,7 +228,7 @@ class SaleServiceTest {
         when(_saleLineFactory.createSaleLine(any(), any(), any())).thenReturn(saleLineDouble);
         when(_saleFactory.createSale(any(), any())).thenReturn(saleDouble);
         when(_paymentService.isPaymentSuccessful(totalAmountDouble)).thenReturn(true);
-        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
+        when(_directSaleService.getDirectSaleById(directSaleIdDouble)).thenReturn(directSaleDouble);
 
         // Act
         Sale result = _service.createSaleFromCart(cartIdDouble);

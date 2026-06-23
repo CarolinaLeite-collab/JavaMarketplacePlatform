@@ -66,7 +66,7 @@ public class ShoppingCartService {
     public ShoppingCartLine addCartLineToCart(ShoppingCartId cartId, DirectSaleId directSaleId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);
-        DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId.toString());
+        DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
 
         if (shoppingCart.getBuyerId().equals(directSale.getSellerId())) {
 

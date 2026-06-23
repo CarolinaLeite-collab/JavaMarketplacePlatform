@@ -171,7 +171,6 @@ class ShoppingCartServiceTest {
         // Arrange
         ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
 
         UserId sellerIdDouble = mock(UserId.class);
         UserId buyerIdDouble = mock(UserId.class);
@@ -188,7 +187,7 @@ class ShoppingCartServiceTest {
         ShoppingCartLine newLineDouble = mock(ShoppingCartLine.class);
 
         when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
-        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
+        when(_directSaleService.getDirectSaleById(directSaleIdDouble)).thenReturn(directSaleDouble);
         when(_shoppingCartLineFactory.createNewShoppingCartLine(
                 directSaleIdDouble, sellerIdDouble, priceDouble)).thenReturn(newLineDouble);
 
@@ -204,7 +203,6 @@ class ShoppingCartServiceTest {
         // Arrange
         ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
 
         UserId sharedUserId = mock(UserId.class);
 
@@ -215,7 +213,7 @@ class ShoppingCartServiceTest {
         when(directSaleDouble.getSellerId()).thenReturn(sharedUserId);
 
         when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
-        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE")).thenReturn(directSaleDouble);
+        when(_directSaleService.getDirectSaleById(directSaleIdDouble)).thenReturn(directSaleDouble);
 
         // Act + Assert
         assertThrows(IllegalStateException.class,
@@ -240,11 +238,10 @@ class ShoppingCartServiceTest {
         // Arrange
         ShoppingCartId cartIdDouble = mock(ShoppingCartId.class);
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
-        when(directSaleIdDouble.toString()).thenReturn("DS-1A2B3C4DE");
 
         ShoppingCart cartDouble = mock(ShoppingCart.class);
         when(_shoppingCartRepo.ofIdentity(cartIdDouble)).thenReturn(Optional.of(cartDouble));
-        when(_directSaleService.getDirectSaleById("DS-1A2B3C4DE"))
+        when(_directSaleService.getDirectSaleById(directSaleIdDouble))
                 .thenThrow(new NoSuchElementException("DirectSale not found"));
 
         // Act + Assert

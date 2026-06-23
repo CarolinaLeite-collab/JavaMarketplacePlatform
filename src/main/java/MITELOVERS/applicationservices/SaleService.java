@@ -111,7 +111,7 @@ public class SaleService {
             for (SaleLine saleLine : newSale.get_saleLines()) {
 
                 DirectSaleId directSaleId = saleLine.get_directSaleId();
-                DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId.toString());
+                DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
 
                 for (ItemId itemId : directSale.getItemsId()) {
 
@@ -119,7 +119,7 @@ public class SaleService {
 
                 }
 
-                _directSaleService.markDirectSaleAsCompleted(directSaleId.toString());
+                _directSaleService.markDirectSaleAsCompleted(directSaleId);
 
             }
 

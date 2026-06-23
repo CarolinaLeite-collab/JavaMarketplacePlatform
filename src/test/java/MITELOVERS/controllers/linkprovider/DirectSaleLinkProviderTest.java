@@ -4,6 +4,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -255,7 +257,6 @@ class DirectSaleLinkProviderTest {
     void addCollectionLinks_shouldAddSelfLink() {
 
         // Arrange
-        String email = "user@email.com";
         DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
                 "DS-ABCDEF12",
                 List.of("ABC123DEF0"),
@@ -270,13 +271,72 @@ class DirectSaleLinkProviderTest {
 
         CollectionModel<DirectSaleResponseDTO> dtos = CollectionModel.of(List.of(dto));
 
-        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
-
         // Act
-        provider.addCollectionLinks(dtos, email);
+        provider.addCollectionLinks(dtos, "user@email.com");
 
         // Assert
         assertTrue(dtos.hasLink("self"));
+    }
+
+    @Test
+    void addResourceLinks_shouldAddSelfLinkToDirectSaleResponse() {
+
+        // Arrange
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-ABCDEF12",
+                List.of("ABC123DEF0"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
+        );
+
+        // Act
+        provider.addResourceLinks(dto);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+    }
+
+    @Test
+    void addResourceLinks_shouldAddSelfLinkToNoPriceResponse() {
+
+        // Arrange
+        DirectSaleNoPriceResponseDTO dto = new DirectSaleNoPriceResponseDTO(
+                "DS-ABCDEF12",
+                List.of("ABC123DEF0"),
+                3600L,
+                Instant.parse("2024-01-01T10:00:00Z")
+        );
+
+        // Act
+        provider.addResourceLinks(dto);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+    }
+
+    @Test
+    void addCollectionLinks_shouldAddSelfLinkToFilteredCollectionAndEntries() {
+
+        // Arrange
+        String genreId = "FICTION";
+        DSFilteredItemsResponseDTO dto =
+                new DSFilteredItemsResponseDTO(List.of(
+                        new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-ABCDEF12"),
+                        new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-1234ABCD")
+                ));
+
+        // Act
+        provider.addCollectionLinks(dto, genreId);
+
+        // Assert
+        assertTrue(dto.hasLink("self"));
+        assertTrue(dto.getDirectSales().get(0).hasLink("self"));
+        assertTrue(dto.getDirectSales().get(1).hasLink("self"));
     }
 
 }

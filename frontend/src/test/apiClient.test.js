@@ -111,6 +111,51 @@ describe('apiClient', () => {
 
     });
 
+    describe('getPublishingCompanies', () => {
+
+        it('calls publishing companies endpoint without auth header', async () => {
+            const response = [{ publishingCompanyId: 'PUB-001' }];
+
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 200,
+                    json: response
+                })
+            );
+
+            const result = await apiClient.getPublishingCompanies();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/publishingCompanies`
+            );
+            expect(result).toEqual(response);
+        });
+
+        it('throws when getPublishingCompanies fails', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({ ok: false, status: 404 })
+            );
+
+            await expect(apiClient.getPublishingCompanies())
+                .rejects.toThrow('404');
+        });
+
+        it('returns null when getPublishingCompanies receives 204', async () => {
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    ok: true,
+                    status: 204
+                })
+            );
+
+            const result = await apiClient.getPublishingCompanies();
+
+            expect(result).toBeNull();
+        });
+
+    });
+
     describe('getByHref', () => {
 
         it('calls href with X-User-Id', async () => {

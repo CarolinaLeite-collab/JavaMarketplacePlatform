@@ -14,7 +14,7 @@ export function setUserId(id) {
     USER_ID = id;
 }
 
-// Entry point functions (hardcoded paths - initial discovery)
+// Entry point functions used for bootstrap before workflows follow discovered HATEOAS hrefs.
 async function optionsByPath(path) {
     console.log('optionsByPath - current USER_ID:', USER_ID);
     const response = await fetch(`${BASE_URL}${path}?email=${USER_ID}`, {
@@ -168,7 +168,7 @@ function extractIdFromSelfLink(response) {
 
 // Contract endpoints
 export const apiClient = {
-    // Entry points — hardcoded
+    // Entry points
     getRootOptions: () => optionsByPath('/api'),
     getListsOptions: () => optionsByPath('/my-lists'),
     getGenres: () => getPublic('/genres'),
@@ -177,6 +177,8 @@ export const apiClient = {
     createDirectSales: (body) => post('/direct-sales', body),
     getDirectSales: () => getPublic('/direct-sales'),
     getAuctions: () => getPublic('/auctions'),
+    // Fallback entry point; item registration prefers the root "publishingCompanies" href when available.
+    getPublishingCompanies: () => getPublic('/publishingCompanies'),
     getItemById: (itemId) => getPublic(`/items/${itemId}`),
     getEditionById: (editionId) => getPublic(`/editions/${editionId}`),
     getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),

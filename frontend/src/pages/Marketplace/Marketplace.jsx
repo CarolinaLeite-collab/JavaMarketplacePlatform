@@ -28,13 +28,10 @@ function buildGenreMaps(genres) {
 }
 
 function buildGenreOptions(genres) {
-    return [
-        { value: 'all', label: 'All genres' },
-        ...genres.map((genre) => ({
-            value: genre.genreId,
-            label: genre.genreName,
-        })),
-    ];
+    return genres.map((genre) => ({
+        value: genre.genreId,
+        label: genre.genreName,
+    }));
 }
 
 function sellerUsernameFromEmail (email) {
@@ -64,11 +61,13 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
                     : null,
 
                 //details card fields
-                author:itemDetails?.authorName ?? 'unknown',
-                condition:itemDetails?.condition ?? 'unknown',
-                cover:itemDetails?.picture ?? '',
-                sellerId: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
-                saleType:'Direct Sale',
+                author: itemDetails?.authorName ?? 'unknown',
+                publication: itemDetails?.title ?? 'unknown',
+                publisher: itemDetails?.publisherName ?? 'unknown',
+                condition: itemDetails?.condition ?? 'unknown',
+                cover: itemDetails?.picture ?? '',
+                seller: sellerUsernameFromEmail(directSale.sellerId) ?? 'unknown',
+                saleType: 'Direct Sale',
                 directSaleId: directSale.directSaleId ?? null,
                 auctionId: null,
 
@@ -100,6 +99,8 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                     : null,
 
                 author: itemDetails?.authorName ?? 'unknown',
+                publication: itemDetails?.title ?? 'unknown',
+                publisher: itemDetails?.publisherName ?? 'unknown',
                 condition: itemDetails?.condition ?? 'unknown',
                 cover: itemDetails?.picture ?? '',
                 seller: sellerUsernameFromEmail(auction.seller) ?? 'unknown',
@@ -112,17 +113,23 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
     });
 }
 
+async function discoverMarketplaceHref(existingHref, relation) {
+    if (existingHref) return existingHref;
+
+    const rootOptions = await apiClient.getRootOptions();
+    return rootOptions?._links?.[relation]?.href ?? null;
+}
+
 export default function Marketplace() {
     const { state } = useContext(AppContext);
-    const { directSalesWithoutPriceHref } = state.app;
+    const { activeDirectSalesHref, directSalesWithoutPriceHref } = state.app;
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
     const canSeePrice = isLoggedIn;
-    const marketplaceHref = !isLoggedIn ? directSalesWithoutPriceHref : null;
+    const marketplaceHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
 
     const [items, setItems] = useState([]);
-    const [genres, setGenres] = useState([{ value: 'all', label: 'All genres' }]);
-    const [selectedGenre, setSelectedGenre] = useState('all');
+    const [genres, setGenres] = useState([]);
     const [showDirectSales, setShowDirectSales] = useState(false);
     const [showAuctions, setShowAuctions] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -155,20 +162,22 @@ export default function Marketplace() {
             try {
                 setLoading(true);
                 setError('');
+                const marketplaceRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
+                const discoveredMarketplaceHref = await discoverMarketplaceHref(marketplaceHref, marketplaceRelation);
 
-                const [
-                    directSalesResponse,
-                    auctionsResponse,
-                    genresResponse
-                ] = await Promise.all([
-                    marketplaceHref
-                        ? apiClient.getByHref(marketplaceHref)
-                        : apiClient.getDirectSales(),
+                if (!discoveredMarketplaceHref) {
+                    throw new Error(`Missing ${marketplaceRelation} link`);
+                }
+
+                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
+                    apiClient.getByHref(discoveredMarketplaceHref),
                     apiClient.getAuctions(),
                     apiClient.getGenres(),
                 ]);
 
-                const directSales = directSalesResponse ?? [];
+                const directSales = directSalesResponse?._embedded
+                    ? Object.values(directSalesResponse._embedded)[0] ?? []
+                    : directSalesResponse ?? [];
                 const auctions = auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
@@ -218,7 +227,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, [marketplaceHref]);
+    }, [marketplaceHref, canSeePrice, isLoggedIn]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">
@@ -231,8 +240,6 @@ export default function Marketplace() {
                     <MarketPlaceTable
                         items={items}
                         genres={genres}
-                        selectedGenre={selectedGenre}
-                        onGenreChange={setSelectedGenre}
                         showDirectSales={showDirectSales}
                         showAuctions={showAuctions}
                         onShowDirectSalesChange={setShowDirectSales}
@@ -261,9 +268,9 @@ export default function Marketplace() {
                         canSeePrice={canSeePrice}
                         onClose={closeDetails}
                         onSeeMore={handleSeeMore}
-                        />
+                    />
                 </>
-                )}
+            )}
         </DefaultLayout>
     );
 }

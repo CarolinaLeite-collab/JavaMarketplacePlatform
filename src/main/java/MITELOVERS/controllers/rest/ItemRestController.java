@@ -78,7 +78,7 @@ public class ItemRestController {
                 new Description(info.getDescription())
         );
 
-        return new ResponseEntity<>(_mapper.toModel(item), HttpStatus.CREATED);
+        return new ResponseEntity<>(_mapper.toModel(item, _itemService.resolveRelated(item)), HttpStatus.CREATED);
     }
 
 
@@ -86,7 +86,7 @@ public class ItemRestController {
     public ResponseEntity<List<ItemResponseDTO>> getAllItems() {
 
         List<ItemResponseDTO> items = _itemService.getAllItems().stream()
-                .map(_mapper::toModel)
+                .map(item -> _mapper.toModel(item, _itemService.resolveRelated(item)))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(items);
@@ -96,19 +96,22 @@ public class ItemRestController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ItemResponseDTO> getItemById(@PathVariable String id) {
 
-        return new ResponseEntity<>(
-                _mapper.toModel(_itemService.getItemById(id)), HttpStatus.OK);
+        Item item = _itemService.getItemById(id);
+        return new ResponseEntity<>(_mapper.toModel(item, _itemService.resolveRelated(item)), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/my-library", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ItemResponseDTO>> getItemsIdsInLibrary(
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader("X-User-Id") String email) {
 
-        List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(userId);
+        List<ItemId> itemIds = _libraryService.getItemIdsInLibrary(email);
 
         List<ItemResponseDTO> items = itemIds.stream()
-                .map(id -> _mapper.toModel(_itemService.getItemById(id.getValue())))
+                .map(id -> {
+                    Item item = _itemService.getItemById(id.getValue());
+                    return _mapper.toModel(item, _itemService.resolveRelated(item));
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(items);

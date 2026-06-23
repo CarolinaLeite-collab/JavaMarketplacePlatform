@@ -7,8 +7,12 @@ import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.valueobject.ItemId;
 import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.GenreId;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.Price;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.DirectSaleRequestDTO;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
@@ -18,12 +22,12 @@ import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -69,37 +73,35 @@ public class DirectSaleRestController {
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
+    public ResponseEntity<List<String>> options(@RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
 
-        RepresentationModel<?> model = new RepresentationModel<>();
+        List<String> endpoints = _directSaleLinkProvider.getLinks(user)
+                .stream()
+                .map(link -> link.getHref())
+                .toList();
 
-        model.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .options(email))
-                        .withSelfRel()
-        );
-
-        _directSaleLinkProvider.getLinks(user).forEach(model::add);
-
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok(endpoints);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> createDirectSale(
-            @RequestHeader("X-User-Id") String userId,
+            @RequestHeader("X-User-Id") String email,
             @RequestBody DirectSaleRequestDTO requestDTO) {
 
-        DirectSale created = _directSaleService.createDirectSale(requestDTO, userId);
+        List<ItemId> itemsId = requestDTO.getItemsId().stream().map(ItemId::new).toList();
+        UserId sellerId = new UserId(new Email(email));
+        Price price = new Price(requestDTO.getPriceValue(), Currency.valueOf(requestDTO.getPriceCurrency()));
+        Duration timeLimit = requestDTO.getTimeLimitSeconds() != null
+                ? Duration.ofSeconds(requestDTO.getTimeLimitSeconds())
+                : null;
+
+        DirectSale created = _directSaleService.createDirectSale(itemsId, sellerId, price, timeLimit);
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
-        responseDTO.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(null,responseDTO.getDirectSaleId()))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addResourceLinks(responseDTO);
 
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
@@ -117,20 +119,14 @@ public class DirectSaleRestController {
                 .map(_responseMapper::toResponseDTO)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(
-                        linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSaleById(null,dto.getDirectSaleId()))
-                                .withSelfRel()
-                )
-        );
+        response.forEach(_directSaleLinkProvider::addResourceLinks);
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping(value="/active", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CollectionModel<DirectSaleResponseDTO>> getAllActiveDirectSales(
-            @RequestHeader("X-User-Id") @NotBlank String userId) {
+            @RequestHeader("X-User-Id") @NotBlank String email) {
 
         List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
@@ -143,12 +139,12 @@ public class DirectSaleRestController {
                 .toList();
 
         response.forEach(dto ->
-                _directSaleLinkProvider.addResourceLinks(dto, userId)
+                _directSaleLinkProvider.addResourceLinks(dto, email)
         );
 
         CollectionModel<DirectSaleResponseDTO> result = CollectionModel.of(response);
 
-        _directSaleLinkProvider.addCollectionLinks(result, userId);
+        _directSaleLinkProvider.addCollectionLinks(result, email);
 
         return ResponseEntity.ok(result);
     }
@@ -158,7 +154,7 @@ public class DirectSaleRestController {
             @RequestHeader("X-User-Id") String userId,
             @PathVariable String id) {
 
-        DirectSale directSale = _directSaleService.getDirectSaleById(id);
+        DirectSale directSale = _directSaleService.getDirectSaleById(new DirectSaleId(id));
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
@@ -180,24 +176,12 @@ public class DirectSaleRestController {
     public ResponseEntity<DSFilteredItemsResponseDTO> getDirectSaleItemsByGenre(
             @PathVariable String genreId) {
 
-        List<DirectSaleId> ids = _directSaleService.getDirectSaleItemsByGenreAsc(genreId);
+        List<DirectSaleId> ids = _directSaleService.getDirectSaleItemsByGenreAsc(new GenreId(genreId));
 
         DSFilteredItemsResponseDTO dto =
                 _filteredResponseMapper.toDTO(ids.stream().map(DirectSaleId::toString).toList());
 
-        // 2. Add links to each entry
-        dto.getDirectSales().forEach(entry ->
-                entry.add(linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(null,entry.getDirectSaleId()))
-                        .withSelfRel())
-        );
-
-        // 3. Add collection self link
-        dto.add(
-                linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleItemsByGenre(genreId))
-                        .withSelfRel()
-        );
+        _directSaleLinkProvider.addCollectionLinks(dto, genreId);
 
         return ResponseEntity.ok(dto);
     }
@@ -205,7 +189,7 @@ public class DirectSaleRestController {
     @GetMapping(value = "/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<DirectSaleNoPriceResponseDTO>> getDirectSalesWithoutPrice() {
 
-        List<DirectSale> sales = _directSaleService.getAllDirectSales();
+        List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
         if (sales.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -215,13 +199,7 @@ public class DirectSaleRestController {
                 .map(_noPriceMapper::toModel)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(
-                        linkTo(methodOn(DirectSaleRestController.class)
-                                .getDirectSalesWithoutPrice())
-                                .withSelfRel()
-                )
-        );
+        response.forEach(_directSaleLinkProvider::addResourceLinks);
 
         return ResponseEntity.ok(response);
     }

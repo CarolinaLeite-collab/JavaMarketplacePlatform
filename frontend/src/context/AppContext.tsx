@@ -25,6 +25,7 @@ interface AppState {
         publicationTypesHref: string | null;
         publishingCompaniesHref: string | null;
         directSalesHref: string | null;
+        activeDirectSalesHref: string | null;
         directSalesWithoutPriceHref: string | null;
         shoppingCartHref: string | null;
         salesHref: string | null;
@@ -57,6 +58,7 @@ const defaultState: AppState = {
         publicationTypesHref: null,
         publishingCompaniesHref: null,
         directSalesHref: null,
+        activeDirectSalesHref: null,
         directSalesWithoutPriceHref: null,
         shoppingCartHref: null,
         salesHref: null,

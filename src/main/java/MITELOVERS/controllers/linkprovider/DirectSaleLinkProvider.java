@@ -6,6 +6,10 @@ import MITELOVERS.controllers.rest.DirectSaleRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
+import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -108,9 +112,25 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         User user = _userService.getUserByEmail(email);
 
+        addResourceLinks(dto);
+
+        if(_authorizationPolicy.canDeleteList(user)) {
+
+            dto.add(
+                    linkTo(methodOn(DirectSaleRestController.class)
+                            .deleteDirectSale(dto.getDirectSaleId()))
+                            .withRel("delete")
+                    );
+
+        }
+
+    }
+
+    public void addResourceLinks(DirectSaleResponseDTO dto, User user) {
+
         dto.add(
                 linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(email,dto.getDirectSaleId()))
+                        .getDirectSaleById(user.identity().toString(),dto.getDirectSaleId()))
                         .withSelfRel()
         );
 
@@ -126,7 +146,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canPostShoppingCartLines(user)
                 && dto.getStatus() == DirectSaleStatus.ACTIVE
-                && !dto.getSellerId().equals(email)) {
+                && !dto.getSellerId().equals(user.identity().toString())) {
 
             ShoppingCart cart =
                     _shoppingCartService.findCartByUserId(user.identity());
@@ -134,7 +154,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
             dto.add(
                     linkTo(methodOn(ShoppingCartRestController.class)
                             .addCartLine(
-                                    email,
+                                    user.identity().toString(),
                                     cart.identity().toString(),
                                     null
                             ))
@@ -143,15 +163,54 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         }
     }
 
-    public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
+    public void addResourceLinks(DirectSaleNoPriceResponseDTO dto) {
 
-        User user = _userService.getUserByEmail(email);
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSalesWithoutPrice())
+                        .withSelfRel()
+        );
+
+    }
+
+    public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
 
         dtos.add(linkTo(methodOn(DirectSaleRestController.class)
                 .getAllActiveDirectSales(null))
                 .withSelfRel()
         );
 
+    }
+
+    public void addCollectionLinks(DSFilteredItemsResponseDTO dto, String genreId) {
+
+        dto.getDirectSales().forEach(entry ->
+                addResourceLinks(entry, new DirectSaleId(entry.getDirectSaleId())));
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleItemsByGenre(genreId))
+                        .withSelfRel()
+        );
+    }
+
+    public void addResourceLinks(DSFilteredItemsResponseDTO.DirectSaleEntry entry, DirectSaleId directSaleId) {
+
+        entry.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(entry.getDirectSaleId(), directSaleId.toString()))
+                        .withSelfRel()
+        );
+
+    }
+
+    public void addResourceLinks(DirectSaleResponseDTO dto) {
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(null, dto.getDirectSaleId()))
+                        .withSelfRel()
+        );
     }
 
 }
