@@ -4,8 +4,6 @@ import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
-import MITELOVERS.domain.valueobject.ItemId;
-import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.DirectSaleId;
@@ -21,6 +19,7 @@ import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -210,5 +209,4 @@ public class DirectSaleRestController {
 
         return ResponseEntity.noContent().build();
     }
-
 }

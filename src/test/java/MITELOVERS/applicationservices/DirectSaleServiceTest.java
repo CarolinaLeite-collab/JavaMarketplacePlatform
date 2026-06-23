@@ -175,10 +175,6 @@ class DirectSaleServiceTest {
                 () -> _service.createDirectSale(itemIds, sellerId, price, timeLimit));
     }
 
-    // ----------------------------------------------------------------
-    // getAllDirectSales
-    // ----------------------------------------------------------------
-
     @Test
     void getAllDirectSales_shouldReturnDomainList() {
         DirectSale ds = mock(DirectSale.class);
@@ -220,10 +216,6 @@ class DirectSaleServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ----------------------------------------------------------------
-    // getDirectSaleById
-    // ----------------------------------------------------------------
-
     @Test
     void getDirectSaleById_shouldReturnDTO() {
         DirectSale ds = mock(DirectSale.class);
@@ -241,10 +233,6 @@ class DirectSaleServiceTest {
         assertThrows(NoSuchElementException.class,
                 () -> _service.getDirectSaleById(new DirectSaleId("DS-A1B2C3D4")));
     }
-
-    // ----------------------------------------------------------------
-    // getDirectSaleItemsByGenreAsc
-    // ----------------------------------------------------------------
 
     @Test
     void getDirectSaleItemsByGenreAsc_shouldThrowWhenGenreNotFound() {
@@ -318,10 +306,6 @@ class DirectSaleServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // ----------------------------------------------------------------
-    // deleteDirectSale
-    // ----------------------------------------------------------------
-
     @Test
     void deleteDirectSale_shouldDeleteWithoutErrors() {
         DirectSaleId id = mock(DirectSaleId.class);
@@ -371,5 +355,4 @@ class DirectSaleServiceTest {
         assertThrows(NoSuchElementException.class,
                 () -> _service.markDirectSaleAsCompleted(directSaleIdDouble));
     }
-
 }

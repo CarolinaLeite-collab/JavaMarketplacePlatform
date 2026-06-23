@@ -38,30 +38,15 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class DirectSaleRestControllerTest {
 
-    @Mock
-    private DirectSaleService _service;
-
-    @Mock
-    private DirectSaleResponseDTOMapper _responseMapper;
-
-    @Mock
-    private DSFilteredItemsResponseMapper _filteredMapper;
-
-    @Mock
-    private DirectSaleLinkProvider _linkProvider;
-
-    @Mock
-    private UserService _userService;
-
-    @Mock
-    private DirectSaleNoPriceResponseDTOMapper _noPriceMapper;
+    @Mock private DirectSaleService              _service;
+    @Mock private DirectSaleResponseDTOMapper    _responseMapper;
+    @Mock private DSFilteredItemsResponseMapper  _filteredMapper;
+    @Mock private DirectSaleLinkProvider         _linkProvider;
+    @Mock private UserService                    _userService;
+    @Mock private DirectSaleNoPriceResponseDTOMapper _noPriceMapper;
 
     @InjectMocks
     private DirectSaleRestController _controller;
-
-    //-----------------
-    // Options test
-    //-----------------
 
     @Test
     void options_shouldReturnEndpointsAsStrings() {
@@ -75,7 +60,6 @@ class DirectSaleRestControllerTest {
 
         ResponseEntity<List<String>> result = _controller.options(userId);
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertEquals(2, result.getBody().size());
@@ -83,14 +67,8 @@ class DirectSaleRestControllerTest {
         assertEquals("/direct-sales/create", result.getBody().get(1));
     }
 
-    // ------------------------------------------------------------
-    // POST /direct-sales
-    // ------------------------------------------------------------
-
     @Test
     void createDirectSale_shouldReturnCreated() {
-
-        // Arrange
         DirectSaleRequestDTO request = mock(DirectSaleRequestDTO.class);
         when(request.getItemsId()).thenReturn(List.of("ABCDEF1234"));
         when(request.getPriceValue()).thenReturn(10.0);
@@ -98,42 +76,32 @@ class DirectSaleRestControllerTest {
         when(request.getTimeLimitSeconds()).thenReturn(3600L);
 
         DirectSale domain = mock(DirectSale.class);
-
         String email = "email@email.com";
-        UserId userIdDouble = mock(UserId.class);
 
-        DirectSaleResponseDTO response =
-                new DirectSaleResponseDTO(
-                        "DS-A1B2C3D4",
-                        List.of("ABCDEF1234"),
-                        10.0,
-                        "EUR",
-                        3600L,
-                        Instant.now(),
-                        null,
-                        DirectSaleStatus.ACTIVE,
-                        email
-
-                );
+        DirectSaleResponseDTO response = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of("ABCDEF1234"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now(),
+                null,
+                DirectSaleStatus.ACTIVE,
+                email
+        );
 
         when(_service.createDirectSale(anyList(), any(), any(), any())).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(response);
 
         ResponseEntity<DirectSaleResponseDTO> result = _controller.createDirectSale(email, request);
 
-        // Assert
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertSame(response, result.getBody());
         verify(_linkProvider).addResourceLinks(response);
     }
 
-    // ------------------------------------------------------------
-    // GET /direct-sales
-    // ------------------------------------------------------------
-
     @Test
     void getAllDirectSales_shouldReturnOk() {
-        // Arrange
         DirectSale domain = mock(DirectSale.class);
 
         DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
@@ -151,37 +119,24 @@ class DirectSaleRestControllerTest {
         when(_service.getAllDirectSales()).thenReturn(List.of(domain));
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<List<DirectSaleResponseDTO>> result = _controller.getAllDirectSales();
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
     }
 
     @Test
     void getAllDirectSales_shouldReturnNoContentWhenEmpty() {
-
-        // Arrange
         when(_service.getAllDirectSales()).thenReturn(List.of());
 
-        // Act
-        ResponseEntity<List<DirectSaleResponseDTO>> result =
-                _controller.getAllDirectSales();
+        ResponseEntity<List<DirectSaleResponseDTO>> result = _controller.getAllDirectSales();
 
-        // Assert
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         assertNull(result.getBody());
     }
 
-    // ------------------------------------------------------------
-    // GET /direct-sales/active
-    // ------------------------------------------------------------
-
     @Test
     void getAllActiveDirectSales_shouldReturnOk() {
-
-        // Arrange
         DirectSale domain = mock(DirectSale.class);
         DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
                 "DS-A1B2C3D4",
@@ -200,11 +155,9 @@ class DirectSaleRestControllerTest {
         when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
                 _controller.getAllActiveDirectSales(userId);
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, new ArrayList<>(result.getBody().getContent()).size());
         assertSame(dto, new ArrayList<>(result.getBody().getContent()).get(0));
@@ -214,42 +167,31 @@ class DirectSaleRestControllerTest {
 
     @Test
     void getAllActiveDirectSales_shouldReturnNoContentWhenEmpty() {
-
-        // Arrange
         String userId = "user@email.com";
         when(_service.getAllActiveDirectSales()).thenReturn(List.of());
 
-        // Act
         ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
                 _controller.getAllActiveDirectSales(userId);
 
-        // Assert
         assertEquals(HttpStatus.NO_CONTENT, result.getStatusCode());
         assertNull(result.getBody());
     }
 
-    // ------------------------------------------------------------
-    // GET /direct-sales/{id}
-    // ------------------------------------------------------------
-
     @Test
     void getDirectSaleById_shouldReturnOk() {
-
-        // Arrange
         DirectSale domain = mock(DirectSale.class);
 
-        DirectSaleResponseDTO dto =
-                new DirectSaleResponseDTO(
-                        "DS-A1B2C3D4",
-                        List.of("ABCDEF1234"),
-                        10.0,
-                        "EUR",
-                        3600L,
-                        Instant.now(),
-                        null,
-                        DirectSaleStatus.ACTIVE,
-                        "pedro@aeiou.com"
-                );
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of("ABCDEF1234"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now(),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
+        );
 
         ItemId itemIdDouble = mock(ItemId.class);
         when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
@@ -258,11 +200,9 @@ class DirectSaleRestControllerTest {
         when(_service.getDirectSaleById(any(DirectSaleId.class))).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<DirectSaleResponseDTO> result =
                 _controller.getDirectSaleById("pedro@aeiou.com", "DS-A1B2C3D4");
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertSame(dto, result.getBody());
         assertTrue(result.getBody().getLinks().hasLink("item"));
@@ -272,22 +212,19 @@ class DirectSaleRestControllerTest {
 
     @Test
     void getDirectSaleById_shouldAddItemLinkForEachItemId() {
-
-        // Arrange
         DirectSale domain = mock(DirectSale.class);
 
-        DirectSaleResponseDTO dto =
-                new DirectSaleResponseDTO(
-                        "DS-A1B2C3D4",
-                        List.of("ABCDEF1234", "1234ABCDEF"),
-                        10.0,
-                        "EUR",
-                        3600L,
-                        Instant.now(),
-                        null,
-                        DirectSaleStatus.ACTIVE,
-                        "pedro@aeiou.com"
-                );
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of("ABCDEF1234", "1234ABCDEF"),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now(),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
+        );
 
         ItemId itemId1Double = mock(ItemId.class);
         when(itemId1Double.toString()).thenReturn("ABCDEF1234");
@@ -300,11 +237,9 @@ class DirectSaleRestControllerTest {
         when(_service.getDirectSaleById(any(DirectSaleId.class))).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<DirectSaleResponseDTO> result =
                 _controller.getDirectSaleById("pedro@aeiou.com", "DS-A1B2C3D4");
 
-        // Assert
         List<Link> itemLinks = result.getBody().getLinks().stream()
                 .filter(l -> l.getRel().value().equals("item"))
                 .toList();
@@ -316,47 +251,35 @@ class DirectSaleRestControllerTest {
 
     @Test
     void getDirectSaleById_shouldAddNoItemLinksWhenNoItems() {
-
-        // Arrange
         DirectSale domain = mock(DirectSale.class);
 
-        DirectSaleResponseDTO dto =
-                new DirectSaleResponseDTO(
-                        "DS-A1B2C3D4",
-                        List.of(),
-                        10.0,
-                        "EUR",
-                        3600L,
-                        Instant.now(),
-                        null,
-                        DirectSaleStatus.ACTIVE,
-                        "pedro@aeiou.com"
-                );
+        DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
+                "DS-A1B2C3D4",
+                List.of(),
+                10.0,
+                "EUR",
+                3600L,
+                Instant.now(),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
+        );
 
         when(domain.getItemsId()).thenReturn(List.of());
 
         when(_service.getDirectSaleById(any(DirectSaleId.class))).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<DirectSaleResponseDTO> result =
                 _controller.getDirectSaleById("pedro@aeiou.com", "DS-A1B2C3D4");
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertFalse(result.getBody().getLinks().hasLink("item"));
     }
 
-    // ------------------------------------------------------------
-    // GET /direct-sales/genre/{genreId}
-    // ------------------------------------------------------------
-
     @Test
     void getDirectSaleItemsByGenre_shouldReturnOk() {
-
-        // Arrange
         String genreId = "FICTION";
-
         List<DirectSaleId> domainIds = List.of(
                 new DirectSaleId("DS-A1B2C3D4"),
                 new DirectSaleId("DS-1234ABCD"));
@@ -368,7 +291,6 @@ class DirectSaleRestControllerTest {
         when(_service.getDirectSaleItemsByGenreAsc(any(GenreId.class))).thenReturn(domainIds);
         when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4", "DS-1234ABCD"))).thenReturn(dto);
 
-        // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
                 _controller.getDirectSaleItemsByGenre(genreId);
 
@@ -388,10 +310,7 @@ class DirectSaleRestControllerTest {
 
     @Test
     void getDirectSaleItemsByGenre_shouldAddSelfLinkToEachEntry() {
-
-        // Arrange
         String genreId = "FICTION";
-
         List<DirectSaleId> domainIds = List.of(new DirectSaleId("DS-A1B2C3D4"));
         DSFilteredItemsResponseDTO dto = new DSFilteredItemsResponseDTO(
                 List.of(new DSFilteredItemsResponseDTO.DirectSaleEntry("DS-A1B2C3D4")));
@@ -399,7 +318,6 @@ class DirectSaleRestControllerTest {
         when(_service.getDirectSaleItemsByGenreAsc(any(GenreId.class))).thenReturn(domainIds);
         when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4"))).thenReturn(dto);
 
-        // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
                 _controller.getDirectSaleItemsByGenre(genreId);
 
@@ -409,8 +327,6 @@ class DirectSaleRestControllerTest {
 
     @Test
     void getDirectSaleItemsByGenre_shouldAddSelfLinkToCollection() {
-
-        // Arrange
         String genreId = "FICTION";
         List<DirectSaleId> domainIds = List.of(new DirectSaleId("DS-A1B2C3D4"));
         DSFilteredItemsResponseDTO dto = new DSFilteredItemsResponseDTO(
@@ -419,7 +335,6 @@ class DirectSaleRestControllerTest {
         when(_service.getDirectSaleItemsByGenreAsc(any(GenreId.class))).thenReturn(domainIds);
         when(_filteredMapper.toDTO(List.of("DS-A1B2C3D4"))).thenReturn(dto);
 
-        // Act
         ResponseEntity<DSFilteredItemsResponseDTO> result =
                 _controller.getDirectSaleItemsByGenre(genreId);
 
@@ -436,11 +351,9 @@ class DirectSaleRestControllerTest {
         when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
         when(_noPriceMapper.toModel(domain)).thenReturn(dto);
 
-        // Act
         ResponseEntity<List<DirectSaleNoPriceResponseDTO>> result =
                 _controller.getDirectSalesWithoutPrice();
 
-        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
         verify(_linkProvider).addResourceLinks(dto);

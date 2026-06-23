@@ -48,8 +48,7 @@ export function appReducer(state, action) {
                 publishingCompaniesHref:
                     action.payload?.['publishingCompanies']?.href ??
                     'http://localhost:8081/publishingCompanies',
-                shoppingCartHref:
-                    action.payload?.['shopping-cart']?.href ?? null,
+                shoppingCartHref: action.payload?.['shopping-cart']?.href ?? null,
                 salesHref: action.payload?.sales?.href ?? null,
             };
 

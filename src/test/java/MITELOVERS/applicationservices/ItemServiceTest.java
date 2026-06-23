@@ -65,10 +65,6 @@ class ItemServiceTest {
         );
     }
 
-    // ----------------------------------------------------------------
-    // Constructor null checks
-    // ----------------------------------------------------------------
-
     @Test
     void constructorWithNullItemRepoThrowsNullPointerException() {
         assertThrows(NullPointerException.class, () ->
@@ -118,10 +114,6 @@ class ItemServiceTest {
                         publicationRepoDouble, authorRepoDouble, genreRepoDouble, null));
     }
 
-    // ----------------------------------------------------------------
-    // registerItem
-    // ----------------------------------------------------------------
-
     @Test
     void registerItemEditionNotFoundThrowsNoSuchElementException() {
         when(editionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
@@ -134,7 +126,6 @@ class ItemServiceTest {
 
     @Test
     void registerItemValidRequestReturnsItem() {
-        // Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Item newItemDouble        = mock(Item.class);
         ItemId itemIdDouble       = mock(ItemId.class);
@@ -148,14 +139,12 @@ class ItemServiceTest {
 
         Item result = itemService.registerItem(editionIdDouble, Condition.GOOD, new Description("Nice copy"));
 
-        // Assert
         assertSame(savedItemDouble, result);
         verify(itemRepoDouble).save(newItemDouble);
     }
 
     @Test
     void registerItemContainsItemButOfIdentityEmptyThrowsNoSuchElementException() {
-        // Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Item newItemDouble        = mock(Item.class);
         ItemId itemIdDouble       = mock(ItemId.class);
@@ -167,11 +156,9 @@ class ItemServiceTest {
         when(itemRepoDouble.containsOfIdentity(itemIdDouble)).thenReturn(true);
         when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.empty());
 
-        // Act
         NoSuchElementException ex = assertThrows(NoSuchElementException.class, () ->
                 itemService.registerItem(editionIdDouble, Condition.GOOD, new Description("copy")));
 
-        // Assert
         assertEquals("Item with id 'TEST-ITEM-ID' does not exist", ex.getMessage());
     }
 
@@ -193,10 +180,6 @@ class ItemServiceTest {
         assertSame(existingItemDouble, result);
     }
 
-    // ----------------------------------------------------------------
-    // getAllItems
-    // ----------------------------------------------------------------
-
     @Test
     void getAllItemsEmptyReturnsEmptyList() {
         when(itemRepoDouble.findAll()).thenReturn(List.of());
@@ -217,10 +200,6 @@ class ItemServiceTest {
         assertEquals(1, result.size());
         assertSame(itemDouble, result.get(0));
     }
-
-    // ----------------------------------------------------------------
-    // getItemById
-    // ----------------------------------------------------------------
 
     @Test
     void getItemByIdItemNotFoundThrowsNoSuchElementException() {

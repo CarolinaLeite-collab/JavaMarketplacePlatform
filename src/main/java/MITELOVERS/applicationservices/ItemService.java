@@ -59,7 +59,6 @@ public class ItemService {
         _iPublishingCompanyRepo = Objects.requireNonNull(iPublishingCompanyRepo, "PublishingCompanyRepo is required");
     }
 
-
     @Transactional
     public Item registerItem(EditionId editionId,
                              Condition condition,
@@ -101,7 +100,6 @@ public class ItemService {
         item.markAsSold();
         return _iItemRepo.save(item);
     }
-
 
     public ItemRelated resolveRelated(Item item) {
 
