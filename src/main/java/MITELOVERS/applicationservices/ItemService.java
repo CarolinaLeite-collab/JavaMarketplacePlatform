@@ -1,9 +1,18 @@
 package MITELOVERS.applicationservices;
 
+import MITELOVERS.domain.author.Author;
+import MITELOVERS.domain.edition.Edition;
+import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.item.ItemFactory;
+import MITELOVERS.domain.publication.Publication;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
+import MITELOVERS.domain.repository.IAuthorRepo;
 import MITELOVERS.domain.repository.IEditionRepo;
+import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
+import MITELOVERS.domain.repository.IPublicationRepo;
+import MITELOVERS.domain.repository.IPublishingCompanyRepo;
 import MITELOVERS.domain.valueobject.Condition;
 import MITELOVERS.domain.valueobject.Description;
 import MITELOVERS.domain.valueobject.EditionId;
@@ -23,17 +32,31 @@ import java.util.Objects;
 @Service
 public class ItemService {
 
+    public record ItemRelated(Edition edition, Publication publication, Author author, Genre genre, PublishingCompany publisher) {}
+
     private final IItemRepo _iItemRepo;
     private final ItemFactory _itemFactory;
     private final IEditionRepo _iEditionRepo;
+    private final IPublicationRepo _iPublicationRepo;
+    private final IAuthorRepo _iAuthorRepo;
+    private final IGenreRepo _iGenreRepo;
+    private final IPublishingCompanyRepo _iPublishingCompanyRepo;
 
     public ItemService(IItemRepo iItemRepo,
                        ItemFactory itemFactory,
-                       IEditionRepo iEditionRepo) {
+                       IEditionRepo iEditionRepo,
+                       IPublicationRepo iPublicationRepo,
+                       IAuthorRepo iAuthorRepo,
+                       IGenreRepo iGenreRepo,
+                       IPublishingCompanyRepo iPublishingCompanyRepo) {
 
-        _iItemRepo    = Objects.requireNonNull(iItemRepo,    "ItemRepo is required");
-        _itemFactory  = Objects.requireNonNull(itemFactory,  "ItemFactory is required");
-        _iEditionRepo = Objects.requireNonNull(iEditionRepo, "EditionRepo is required");
+        _iItemRepo              = Objects.requireNonNull(iItemRepo,              "ItemRepo is required");
+        _itemFactory            = Objects.requireNonNull(itemFactory,            "ItemFactory is required");
+        _iEditionRepo           = Objects.requireNonNull(iEditionRepo,           "EditionRepo is required");
+        _iPublicationRepo       = Objects.requireNonNull(iPublicationRepo,       "PublicationRepo is required");
+        _iAuthorRepo            = Objects.requireNonNull(iAuthorRepo,            "AuthorRepo is required");
+        _iGenreRepo             = Objects.requireNonNull(iGenreRepo,             "GenreRepo is required");
+        _iPublishingCompanyRepo = Objects.requireNonNull(iPublishingCompanyRepo, "PublishingCompanyRepo is required");
     }
 
 
@@ -70,5 +93,26 @@ public class ItemService {
         return _iItemRepo.ofIdentity(new ItemId(itemId))
                 .orElseThrow(() -> new NoSuchElementException(
                         "Item does not exist in the repository"));
+    }
+
+
+    public ItemRelated resolveRelated(Item item) {
+
+        Edition edition = _iEditionRepo.ofIdentity(item.getEditionId())
+                .orElseThrow(() -> new NoSuchElementException("Edition does not exist in the repository"));
+
+        Publication publication = _iPublicationRepo.ofIdentity(edition.getPublicationId())
+                .orElseThrow(() -> new NoSuchElementException("Publication does not exist in the repository"));
+
+        Author author = _iAuthorRepo.ofIdentity(publication.getAuthorId())
+                .orElseThrow(() -> new NoSuchElementException("Author does not exist in the repository"));
+
+        Genre genre = _iGenreRepo.ofIdentity(publication.getGenreId())
+                .orElseThrow(() -> new NoSuchElementException("Genre does not exist in the repository"));
+
+        PublishingCompany publisher = _iPublishingCompanyRepo.ofIdentity(edition.getPublishingCompanyId())
+                .orElseThrow(() -> new NoSuchElementException("PublishingCompany does not exist in the repository"));
+
+        return new ItemRelated(edition, publication, author, genre, publisher);
     }
 }

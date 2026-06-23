@@ -19,8 +19,6 @@ function renderTable(overrides = {}) {
         <MarketPlaceTable
             items={items}
             genres={genres}
-            selectedGenre="all"
-            onGenreChange={() => {}}
             showDirectSales={false}
             showAuctions={false}
             onShowDirectSalesChange={() => {}}
@@ -75,16 +73,24 @@ describe('MarketPlaceTable', () => {
         expect(screen.getByText('Book 3')).toBeInTheDocument();
     });
 
-    it('filters items by selected genre', () => {
-        renderTable({ selectedGenre: 'ROMANCE' });
+    it('filters items by selected genre', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        await user.click(screen.getByPlaceholderText('All genres'));
+        await user.click(await screen.findByRole('option', { name: 'Romance', hidden: true }));
 
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
     });
 
-    it('shows the empty state when no item matches the filters', () => {
-        renderTable({ selectedGenre: 'ROMANCE', showDirectSales: true, showAuctions: false });
+    it('shows the empty state when no item matches the filters', async () => {
+        const user = userEvent.setup();
+        renderTable({ showDirectSales: true, showAuctions: false });
+
+        await user.click(screen.getByPlaceholderText('All genres'));
+        await user.click(await screen.findByRole('option', { name: 'Romance', hidden: true }));
 
         expect(screen.getByText(/nothing found/i)).toBeInTheDocument();
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();

@@ -33,4 +33,7 @@ public class ItemResponseDTO extends RepresentationModel<ItemResponseDTO> {
     private String authorName;
     private int releaseYear;
     private String genreName;
+
+    // Publisher fields (via Edition → publishingCompanyId)
+    private String publisherName;
 }
