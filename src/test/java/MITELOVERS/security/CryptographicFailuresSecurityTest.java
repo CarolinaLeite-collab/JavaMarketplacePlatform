@@ -46,11 +46,11 @@ class CryptographicFailuresSecurityTest {
 
         Properties props = loadProperties(propsFile);
         String password = props.getProperty("spring.datasource.password");
-
-        assertEquals("", password,
-                "The H2 datasource password is an empty string. Any process with network " +
-                "access to the database port can connect without credentials, exposing all " +
-                "stored data — including user emails, item details, and sale records.");
+        assertTrue(
+                password.isEmpty() || password.equals("${SPRING_DATASOURCE_PASSWORD:}"),
+                "The H2 datasource password defaults to empty: either a literal empty string or " +
+                        "a parameterised placeholder whose default is empty. No password protects the datastore at rest."
+        );
     }
 
     @Test
