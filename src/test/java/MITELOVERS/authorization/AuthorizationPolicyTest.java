@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -560,6 +561,311 @@ class AuthorizationPolicyTest {
     void cannotSeeItemsInPrivateList() {
         when(_listOwnedByUser.isPrivate()).thenReturn(true);
         assertFalse(_authorizationPolicy.canSeeItemsInPublicList(_guestDouble, _listOwnedByUser));
+    }
+
+    @Test
+    void userCanListGenres() {
+        //Act
+        boolean result = _authorizationPolicy.canListGenres(_userDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanListGenres() {
+        //Act
+        boolean result = _authorizationPolicy.canListGenres(_adminDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotListGenres() {
+        //Act
+        boolean result = _authorizationPolicy.canListGenres(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void adminCanAddGenre() {
+        //Act
+        boolean result = _authorizationPolicy.canAddGenre(_adminDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userCannotAddGenre() {
+        //Act
+        boolean result = _authorizationPolicy.canAddGenre(_userDouble);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanViewLibrary() {
+        //Act
+        boolean result = _authorizationPolicy.canViewLibrary(_userDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanViewLibrary() {
+        //Act
+        boolean result = _authorizationPolicy.canViewLibrary(_adminDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotViewLibrary() {
+        //Act
+        boolean result = _authorizationPolicy.canViewLibrary(_guestDouble);
+
+        //Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanSell() {
+        //Act
+        boolean result = _authorizationPolicy.canSell(_userDouble);
+
+        //Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanSell() {
+        // Act
+        boolean result = _authorizationPolicy.canSell(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotSell() {
+        // Act
+        boolean result = _authorizationPolicy.canSell(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanListPublications() {
+        // Act
+        boolean result = _authorizationPolicy.canListPublications(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotListPublications() {
+        // Act
+        boolean result = _authorizationPolicy.canListPublications(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreatePublication() {
+        // Act
+        boolean result = _authorizationPolicy.canCreatePublication(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotCreatePublication() {
+        // Act
+        boolean result = _authorizationPolicy.canCreatePublication(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanGetLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canGetLibrary(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCannotGetLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canGetLibrary(_adminDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotGetLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canGetLibrary(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanAddToLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canAddToLibrary(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCannotAddToLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canAddToLibrary(_adminDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotAddToLibrary() {
+        // Act
+        boolean result = _authorizationPolicy.canAddToLibrary(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Author Aggregate Authorization Tests
+    // ------------------------------------------------------------------------
+
+    @Test
+    void userCanListAuthors() {
+        // Act
+        boolean result = _authorizationPolicy.canListAuthors(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanListAuthors() {
+        // Act
+        boolean result = _authorizationPolicy.canListAuthors(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotListAuthors() {
+        // Act
+        boolean result = _authorizationPolicy.canListAuthors(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void userCanCreateAuthor() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateAuthor(_userDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void adminCanCreateAuthor() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateAuthor(_adminDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void userWithNoRoleCannotCreateAuthor() {
+        // Act
+        boolean result = _authorizationPolicy.canCreateAuthor(_guestDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void guestCannotFilterDirectSales() {
+        //Act & Assert
+        assertFalse(_authorizationPolicy.canFilterDirectSales(_guestDouble));
+    }
+
+    @Test
+    void userCanCreateItem() {
+        //Act & Assert
+        assertTrue(_authorizationPolicy.canCreateItem(_userDouble));
+    }
+
+    @Test
+    void adminCanCreateItem() {
+        //Act & Assert
+        assertTrue(_authorizationPolicy.canCreateItem(_adminDouble));
+    }
+
+    @Test
+    void guestCannotCreateItem() {
+        //Act & Assert
+        assertFalse(_authorizationPolicy.canCreateItem(_guestDouble));
+    }
+
+    @Test
+    void userCanListItems() {
+        //Act & Assert
+        assertTrue(_authorizationPolicy.canListItems(_userDouble));
+    }
+
+    @Test
+    void adminCanListItems() {
+        //Act & Assert
+        assertTrue(_authorizationPolicy.canListItems(_adminDouble));
+    }
+
+    @Test
+    void guestCannotListItems() {
+        //Act & Assert
+        assertFalse(_authorizationPolicy.canListItems(_guestDouble));
+    }
+
+    @Test
+    void userCanSeePrice() {
+        //Act & Assert
+        assertFalse(_authorizationPolicy.cannotSeePrice(_adminDouble));
+    }
+
+    @Test
+    void adminCanSeePrice() {
+        User user = mock(User.class);
+        when(user.hasRole(Role.NONREGISTRED)).thenReturn(false);
+
+        //Act & Assert
+        assertFalse(_authorizationPolicy.cannotSeePrice(user));
     }
 
 }
