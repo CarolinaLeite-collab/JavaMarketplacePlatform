@@ -1,0 +1,114 @@
+@startuml
+title POST createSaleFromCart on /sales %n() (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as router
+participant ":SaleRestController" as REST
+participant ":SaleService" as Service
+participant ":PaymentService" as Payment
+
+[o-> router : POST /sales + %n(){saleRequestDTO}
+activate router
+router -> REST : createSaleFromCart(email, saleRequestDTO)
+activate REST
+
+REST -> REST : checkEmailNotBlank(email)
+
+alt email is blank
+
+alt email is blank
+    ref over REST, router
+        [[checkEmailNotBlank.puml checkEmailNotBlank — 403 Forbidden]]
+    end ref
+
+else email is not blank
+
+ref over REST
+    [[userRetrieval.puml User retrieval]]
+end ref
+
+ref over REST
+    [[shoppingCartRetrieval.puml Shopping Cart retrieval]]
+end ref
+
+REST -> REST : isOwner = shoppingCart.getBuyerId().equals(user.identity())
+
+alt !isOwner
+
+ref over REST, router
+    [[notCartOwner.puml user is not cart owner - 403 Forbidden]]
+end ref
+
+else isOwner
+
+ref over Service
+    [[secondShoppingCartRetrieval.puml Second Shopping Cart retrieval]]
+end ref
+
+Service -> Service : areCartLinesEmpty = cart.getCartLines().isEmpty
+
+activate Service
+
+alt areCartLinesEmpty
+
+ref over Service, REST, router
+    [[cartLinesEmpty.puml cart lines are empty - 500 Internal Server Error]]
+end ref
+
+else !areCartLinesEmpty
+
+ref over Service
+    [[saleCreation.puml newSale object creation]]
+end ref
+
+Service -> Payment : isPaymentSuccessful(newSale.get_totalAmount())
+activate Payment
+Payment --> Service : isPaymentSuccessful
+deactivate Payment
+
+alt isPaymentSuccessful
+
+ref over Service
+    [[paymentSuccessful.puml createSaleFromCart — payment successful]]
+end ref
+
+else !isPaymentSuccessful
+
+ref over Service
+    [[paymentFailed.puml createSaleFromCart — payment failed]]
+end ref
+
+end
+
+Service --> REST : returnedNewSale
+deactivate Service
+
+ref over REST
+    [[addLinksAndResponse.puml createSaleFromCart — add links and response]]
+end ref
+REST --> router : response
+deactivate REST
+
+[o<-- router : 201 Created %n()+ self link → /sales/{saleId}
+deactivate router
+
+end
+end
+end
+
+ref over router
+[[../Process_View_SD.puml Back to main diagram]]
+end ref
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+title createSaleFromCart — payment failed (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":SaleService" as Service
+participant ":ISaleRepo" as SaleRepo
+participant "newSale:Sale" as newSale
+
+activate Service
+
+Service -> newSale : markSaleAsCancelled()
+activate newSale
+deactivate newSale
+
+Service -> SaleRepo : save(newSale)
+activate SaleRepo
+SaleRepo ->o] : SAVE
+SaleRepo <--o] : OK
+SaleRepo --> Service : returnedNewSale
+deactivate SaleRepo
+
+ref over Service
+[[./POST_sale.puml Back to main diagram]]
+end ref
+
+@enduml
