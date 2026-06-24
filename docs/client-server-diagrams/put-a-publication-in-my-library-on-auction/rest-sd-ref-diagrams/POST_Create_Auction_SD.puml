@@ -15,6 +15,7 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+participant "Router" as router
 participant ":AuctionRestController" as REST
 participant ":AuctionLinkProvider" as Link
 participant ":AuctionService" as Service
@@ -23,8 +24,12 @@ participant ":IAuctionRepo" as auctionRepo
 participant ":IItemRepo" as itemRepo
 participant "item:Item" as Item
 participant ":Auction\nResponseDTOMapper" as Mapper
-participant "Database" as DB
 
+[o-> router : POST {create-auction href} + %n(){CreateAuctionRequestDTO}
+activate router
+
+router -> REST : createAuction(request, emailString)
+activate REST
 
 loop for each itemIdString
     create "itemId:ItemId" as itemId
@@ -63,10 +68,8 @@ activate Service
 loop for each item - validation
     Service -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo -> DB : ofIdentity(itemId)
-    activate DB
-    DB --> itemRepo : item
-    deactivate DB
+    itemRepo ->o] : FETCH
+    itemRepo <--o] : DATA
     itemRepo --> Service : item
     deactivate itemRepo
 
@@ -76,36 +79,25 @@ loop for each item - validation
     deactivate Item
 end
 
-Service -> Factory : createAuction (\n  itemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate, user)
+Service -> Factory : createAuction (\nitemsId, startingPrice, reservePrice,\n  outrightPrice, startDate, endDate, seller)
 activate Factory
+create "auction:Auction" as auction
+Factory -->> auction : <<create>>
 Factory --> Service : auction
 deactivate Factory
 
-Service -> auctionRepo : containsOfIdentity(auctionId)
-activate auctionRepo
-auctionRepo -> DB : containsOfIdentity(auctionId)
-activate DB
-DB --> auctionRepo : false
-deactivate DB
-auctionRepo --> Service : false
-deactivate auctionRepo
-
 Service -> auctionRepo : save(auction)
 activate auctionRepo
-auctionRepo -> DB : save(auction)
-activate DB
-DB --> auctionRepo : auctionSaved
-deactivate DB
+auctionRepo ->o] : SAVE
+auctionRepo <--o] : OK
 auctionRepo --> Service : auctionSaved
 deactivate auctionRepo
 
 loop for each item - update
     Service -> itemRepo : ofIdentity(itemId)
     activate itemRepo
-    itemRepo -> DB : ofIdentity(itemId)
-    activate DB
-    DB --> itemRepo : item
-    deactivate DB
+    itemRepo ->o] : FETCH
+    itemRepo <--o] : DATA
     itemRepo --> Service : item
     deactivate itemRepo
 
@@ -115,15 +107,13 @@ loop for each item - update
 
     Service -> itemRepo : save(item)
     activate itemRepo
-    itemRepo -> DB : save(item)
-    activate DB
-    DB --> itemRepo : itemSaved
-    deactivate DB
+    itemRepo ->o] : SAVE
+    itemRepo <--o] : OK
     itemRepo --> Service : itemSaved
     deactivate itemRepo
 end
 
-Service --> REST : Auction
+Service --> REST : auction
 deactivate Service
 
 REST -> Mapper : toDTO(auction)
@@ -131,10 +121,19 @@ activate Mapper
 Mapper --> REST : AuctionResponseDTO
 deactivate Mapper
 
-REST -> REST : dto.add(selfRel)
+REST -> Link : addLinksForAuction(dto)
+activate Link
+deactivate Link
+
+create "response:ResponseEntity<AuctionResponseDTO>" as response
+REST -->> response : new ResponseEntity<>(dto, 201 Created)
+REST --> router : response
 deactivate REST
 
-ref over REST
+[o<-- router : 201 Created + dto %n() + self link + bids link
+deactivate router
+
+ref over router
 [[../Process_View_Level_3_SD.puml Return to main diagram]]
 end ref
 
