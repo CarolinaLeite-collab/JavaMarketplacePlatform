@@ -774,7 +774,7 @@ public class DataInitializer {
                     edition1977PatternLanguage.identity(),
                     Condition.FAIR,
                     new Description("First Edition"),
-                    SaleStatus.NotOnSale,
+                    SaleStatus.OnAuction,
                     new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/patternLanguage.png?raw=true")
 
             );
@@ -1136,7 +1136,7 @@ public class DataInitializer {
 
             // Auction with bids and winner
             Auction auctionWithBids = auctionFactory.createAuction(
-                    List.of(new ItemId()),
+                    List.of(itemId4),
                     new Price(5.00, Currency.EUR),
                     new Price(10.00, Currency.EUR),
                     ZonedDateTime.now().minusDays(7),   // started in the past
