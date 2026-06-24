@@ -7,6 +7,7 @@ import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuctionId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
@@ -365,14 +366,19 @@ class AuctionRestControllerTest {
     void optionsForBidsReturnsAllowHeaderWithOptionsGetAndPost() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
+        Auction auctionDouble = mock(Auction.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+        when(auctionDouble.getSeller()).thenReturn(userIdDouble);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
-                .thenReturn(mock(Auction.class));
+                .thenReturn(auctionDouble);
 
-        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET, HttpMethod.POST));
 
         // Act + Assert
@@ -389,14 +395,19 @@ class AuctionRestControllerTest {
     void optionsForBidsReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
+        Auction auctionDouble = mock(Auction.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
+        when(auctionDouble.getSeller()).thenReturn(userIdDouble);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
-                .thenReturn(mock(Auction.class));
+                .thenReturn(auctionDouble);
 
-        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
+        when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble, auctionDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
