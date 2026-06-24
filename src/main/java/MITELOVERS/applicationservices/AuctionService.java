@@ -84,11 +84,10 @@ public class AuctionService {
     }
 
     @Transactional(readOnly = true)
-    public Auction getAuctionById(String auctionIdRaw) {
-        AuctionId auctionId = new AuctionId(auctionIdRaw);
+    public Auction getAuctionById(AuctionId auctionId) {
 
         return _iAuctionRepo.ofIdentity(auctionId)
-                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdRaw));
+                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionId));
     }
 
     @Transactional(readOnly = true)
@@ -107,13 +106,12 @@ public class AuctionService {
     public record BidPlacementResult(Auction auction, Bid bid) {}
 
     @Transactional
-    public BidPlacementResult placeBid(String auctionIdString,
+    public BidPlacementResult placeBid(AuctionId auctionId,
                                        UserId userId,
                                        Price offerPrice) {
 
-        AuctionId auctionId = new AuctionId(auctionIdString);
         Auction auction = _iAuctionRepo.ofIdentity(auctionId)
-                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionIdString));
+                .orElseThrow(() -> new NoSuchElementException("Auction not found: " + auctionId));
 
         Bid bid = auction.placeBid(userId, offerPrice);
 
