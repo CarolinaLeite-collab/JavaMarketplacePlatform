@@ -244,9 +244,11 @@ class SaleLinkProviderTest {
         when(userIdDouble.getEmail()).thenReturn(emailDouble);
         when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
 
-        SaleResponseDTO dto = new SaleResponseDTO(
-                "SA-1234ABCD", "pedro@aeiou.com", 29.99, "EUR", "2026-06-18T10:00:00", null);
-
+        SaleResponseDTO dto =
+                new SaleResponseDTO(
+                "SA-1234ABCD", "pedro@aeiou.com", 29.99,
+                "EUR", "2026-06-18T10:00:00", null, List.of()
+        );
         // Act
         _linkProvider.addLinksForSale(dto, userIdDouble, saleId, saleDouble);
 
@@ -273,7 +275,9 @@ class SaleLinkProviderTest {
         when(emailDouble.toString()).thenReturn("pedro@aeiou.com");
 
         SaleResponseDTO dto = new SaleResponseDTO(
-                "SA-1234ABCD", "pedro@aeiou.com", 29.99, "EUR", "2026-06-18T10:00:00", null);
+                "SA-1234ABCD", "pedro@aeiou.com", 29.99,
+                "EUR", "2026-06-18T10:00:00", null, List.of()
+        );
 
         // Act
         _linkProvider.addLinksForSale(dto, userIdDouble, saleId, saleDouble);
