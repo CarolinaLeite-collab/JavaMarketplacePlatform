@@ -54,7 +54,7 @@ class ListOfItemsRestControllerTest {
     void options_shouldReturnLinksForUser() throws Exception {
         String email = "john@example.com";
         User user = mock(User.class);
-        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
+        when(_userService.getUserByEmail(new UserId(new Email(email)))).thenReturn(user);
         when(_linkProvider.getLinks(user)).thenReturn(List.of(
                 Link.of("/my-lists").withRel("self"),
                 Link.of("/my-lists/create").withRel("create-list")
@@ -71,7 +71,7 @@ class ListOfItemsRestControllerTest {
     void options_shouldReturnOkWithNoLinks() throws Exception {
         String email = "readonly@example.com";
         User user = mock(User.class);
-        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(user);
+        when(_userService.getUserByEmail(new UserId(new Email(email)))).thenReturn(user);
         when(_linkProvider.getLinks(user)).thenReturn(List.of());
 
         _mockMvc.perform(options("/my-lists")

@@ -4,6 +4,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
@@ -171,7 +173,7 @@ class DirectSaleLinkProviderTest {
 
         String email = "user@email.com";
 
-        when(userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(userDouble);
+        when(userServiceDouble.getUserByEmail(new UserId(new Email(email)))).thenReturn(userDouble);
         when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(false);
 
         provider.addResourceLinks(dto, email);
@@ -196,7 +198,7 @@ class DirectSaleLinkProviderTest {
 
         String email = "admin@email.com";
 
-        when(userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(userDouble);
+        when(userServiceDouble.getUserByEmail(new UserId(new Email(email)))).thenReturn(userDouble);
         when(authorizationPolicyDouble.canDeleteList(userDouble)).thenReturn(true);
 
         provider.addResourceLinks(dto, email);

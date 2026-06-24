@@ -6,6 +6,8 @@ import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.AuthorLinkProvider;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuthorResponseDTO;
 import MITELOVERS.mapper.AuthorResponseDTOMapper;
 import org.junit.jupiter.api.Tag;
@@ -54,7 +56,7 @@ class AuthorRestControllerTest {
         User mockUser = mock(User.class);
         Link sampleLink = Link.of("http://localhost/authors", "authors");
 
-        when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email)))).thenReturn(mockUser);
+        when(_userService.getUserByEmail(new UserId(new Email(email)))).thenReturn(mockUser);
         when(_authorLinkProvider.getLinks(mockUser)).thenReturn(List.of(sampleLink));
 
         // Act & Assert

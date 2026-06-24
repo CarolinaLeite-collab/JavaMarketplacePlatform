@@ -7,7 +7,9 @@ import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ItemLinkProvider;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
 import org.junit.jupiter.api.Test;
@@ -243,7 +245,7 @@ class ItemRestControllerTest {
     @Test
     void shouldReturn200WithLinksOnOptions() throws Exception {
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of(
                 Link.of("/items", "items"),
                 Link.of("/items", "createItem")
@@ -259,7 +261,7 @@ class ItemRestControllerTest {
     @Test
     void shouldReturn200WithSelfLinkOnlyWhenNoLinks() throws Exception {
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(itemLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
         mockMvc.perform(options("/items")

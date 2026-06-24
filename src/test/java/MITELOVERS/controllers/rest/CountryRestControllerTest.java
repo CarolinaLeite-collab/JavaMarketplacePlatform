@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.CountryLinkProvider;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.CountryRequestDTO;
 import MITELOVERS.dto.response.CountryResponseDTO;
 import MITELOVERS.mapper.CountryResponseDTOMapper;
@@ -49,7 +51,7 @@ class CountryRestControllerTest {
         String email = "maria@example.com";
 
         User userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email(email))))
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email(email))))
                 .thenReturn(userDouble);
 
         Link link1 = Link.of("/countries").withRel("countries");
@@ -185,7 +187,7 @@ class CountryRestControllerTest {
     void options_whenNoLinks_returnsOnlySelfLink() {
         // Arrange
         User userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("maria@example.com"))))
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("maria@example.com"))))
                 .thenReturn(userDouble);
 
         when(_countryLinkProviderDouble.getLinks(userDouble))

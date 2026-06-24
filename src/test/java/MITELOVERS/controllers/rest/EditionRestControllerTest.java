@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.EditionLinkProvider;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.mapper.EditionRequestDTOMapper;
@@ -176,7 +178,7 @@ class EditionRestControllerTest {
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
         // Arrange
         User _userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(_userDouble);
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("pedro@aeiou.com")))).thenReturn(_userDouble);
         when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of(
                 Link.of("/editions").withRel("editions"),
                 Link.of("/editions").withRel("edition-create")
@@ -196,7 +198,7 @@ class EditionRestControllerTest {
     void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
         User _userDouble = mock(User.class);
-        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("readonly@aeiou.com")))).thenReturn(_userDouble);
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("readonly@aeiou.com")))).thenReturn(_userDouble);
         when(_editionLinkProviderDouble.getLinks(_userDouble)).thenReturn(List.of());
 
         // Act & Assert
@@ -210,7 +212,7 @@ class EditionRestControllerTest {
     @Test
     void optionsShouldReturn404WhenUserNotFound() throws Exception {
         // Arrange
-        when(_userServiceDouble.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("naoexiste@aeiou.com"))))
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("naoexiste@aeiou.com"))))
                 .thenThrow(new NoSuchElementException("User not found"));
 
         // Act & Assert

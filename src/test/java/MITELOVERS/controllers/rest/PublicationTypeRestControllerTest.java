@@ -6,6 +6,8 @@ import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.PublicationTypeLinkProvider;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.junit.jupiter.api.Test;
@@ -112,7 +114,7 @@ class PublicationTypeRestControllerTest {
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(publicationTypeLinkProvider.getLinks(userDouble)).thenReturn(List.of(
                 Link.of("/publicationTypes").withRel("publication-types")
         ));
@@ -130,7 +132,7 @@ class PublicationTypeRestControllerTest {
     void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("readonly@aeiou.com")))).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("readonly@aeiou.com")))).thenReturn(userDouble);
         when(publicationTypeLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
         // Act & Assert
@@ -144,7 +146,7 @@ class PublicationTypeRestControllerTest {
     @Test
     void optionsShouldReturn404WhenUserNotFound() throws Exception {
         // Arrange
-        when(userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("naoexiste@aeiou.com"))))
+        when(userService.getUserByEmail(new UserId(new Email("naoexiste@aeiou.com"))))
                 .thenThrow(new NoSuchElementException("User not found"));
 
         // Act & Assert
