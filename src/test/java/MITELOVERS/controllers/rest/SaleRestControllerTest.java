@@ -85,10 +85,12 @@ class SaleRestControllerTest {
     void getUserSalesReturnsOkWhenFound() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         Sale saleDouble = mock(Sale.class);
 
         when(_userService.getUserByEmail(new MITELOVERS.domain.valueobject.UserId(new MITELOVERS.domain.valueobject.Email("pedro@aeiou.com")))).thenReturn(userDouble);
-        when(_saleService.findUserSales(userDouble)).thenReturn(List.of(saleDouble));
+        when(userDouble.identity()).thenReturn(userIdDouble);
+        when(_saleService.findUserSales(userIdDouble)).thenReturn(List.of(saleDouble));
 
         // Act + Assert
         mockMvc.perform(get("/sales")

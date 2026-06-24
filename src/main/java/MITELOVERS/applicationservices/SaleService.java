@@ -8,7 +8,6 @@ import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.sale.SaleLineFactory;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
-import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,17 +43,14 @@ public class SaleService {
         _saleLineFactory = saleLineFactory;
     }
 
-    @Transactional
-    public List<Sale> findUserSales(User user) {
-
-        List<Sale> userSales = new ArrayList<>();
-        UserId userId = user.identity();
+    @Transactional(readOnly = true)
+    public List<Sale> findUserSales(UserId userId) {
 
         return _saleRepo.findByUserId(userId);
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Sale findSaleById(SaleId saleId) {
 
         return _saleRepo.ofIdentity(saleId)
@@ -63,7 +59,7 @@ public class SaleService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public SaleLine getSaleLineById(SaleId saleId, SaleLineId saleLineId) {
 
         Sale sale = findSaleById(saleId);
@@ -84,57 +80,67 @@ public class SaleService {
             throw new IllegalStateException("Cannot checkout an empty cart!");
         }
 
-        List<SaleLine> saleLines = new ArrayList<>();
+        List<SaleLine> saleLines = createSaleLines(cart);
+        Sale newSale = _saleFactory.createSale(cart.getBuyerId(), saleLines);
 
-        for (ShoppingCartLine shoppingCartLine : cart.getCartLines()) {
-
-            SaleLine newSaleLine = _saleLineFactory.createSaleLine(
-                    shoppingCartLine.getSellerId(),
-                    shoppingCartLine.getPriceAtAddition(),
-                    shoppingCartLine.getDirectSaleId()
-            );
-
-            saleLines.add(newSaleLine);
-
-        }
-
-        Sale newSale = _saleFactory.createSale(
-                cart.getBuyerId(),
-                saleLines
-        );
-
-        // Fake payment
-        boolean isPaymentSuccessful = _paymentService.isPaymentSuccessful(newSale.get_totalAmount());
-
-        if (isPaymentSuccessful) {
-
-            for (SaleLine saleLine : newSale.get_saleLines()) {
-
-                DirectSaleId directSaleId = saleLine.get_directSaleId();
-                DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
-
-                for (ItemId itemId : directSale.getItemsId()) {
-
-                    _itemService.markItemAsSold(itemId.toString());
-
-                }
-
-                _directSaleService.markDirectSaleAsCompleted(directSaleId);
-
-            }
-
-            newSale.markSaleAsCompleted();
-            _shoppingCartService.clearShoppingCartLines(cartId);
-            _saleRepo.save(newSale);
-
+        if (_paymentService.isPaymentSuccessful(newSale.get_totalAmount())) {
+            completeSale(newSale, cartId);
         } else {
-
-            newSale.markSaleAsCancelled();
-            _saleRepo.save(newSale);
-
+            cancelSale(newSale);
         }
 
         return newSale;
+    }
+
+    private List<SaleLine> createSaleLines(ShoppingCart cart) {
+
+        List<SaleLine> saleLines = new ArrayList<>();
+
+        for (ShoppingCartLine line : cart.getCartLines()) {
+
+            saleLines.add(_saleLineFactory.createSaleLine(
+                    line.getSellerId(),
+                    line.getPriceAtAddition(),
+                    line.getDirectSaleId()
+            ));
+
+        }
+
+        return saleLines;
+    }
+
+    private void completeSale(Sale sale, ShoppingCartId cartId) {
+
+        completeSaleLines(sale.get_saleLines());
+        sale.markSaleAsCompleted();
+
+        _shoppingCartService.clearShoppingCartLines(cartId);
+        _saleRepo.save(sale);
+
+    }
+
+    private void completeSaleLines(List<SaleLine> saleLines) {
+
+        for (SaleLine saleLine : saleLines) {
+
+            DirectSaleId directSaleId = saleLine.get_directSaleId();
+            DirectSale directSale = _directSaleService.getDirectSaleById(directSaleId);
+
+            for (ItemId itemId : directSale.getItemsId()) {
+
+                _itemService.markItemAsSold(itemId);
+
+            }
+
+            _directSaleService.markDirectSaleAsCompleted(directSaleId);
+
+        }
+    }
+
+    private void cancelSale(Sale sale) {
+
+        sale.markSaleAsCancelled();
+        _saleRepo.save(sale);
 
     }
 }

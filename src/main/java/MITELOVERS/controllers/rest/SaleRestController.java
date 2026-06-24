@@ -33,8 +33,8 @@ public class SaleRestController {
     private final ShoppingCartService _shoppingCartService;
     private final UserService _userService;
     private final SaleLinkProvider _saleLinkProvider;
-    private SaleResponseDTOMapper _saleMapper;
-    private SaleLineResponseDTOMapper _saleLineMapper;
+    private final SaleResponseDTOMapper _saleMapper;
+    private final SaleLineResponseDTOMapper _saleLineMapper;
 
     public SaleRestController(SaleService saleService,
                               ShoppingCartService shoppingCartService,
@@ -72,12 +72,10 @@ public class SaleRestController {
     public ResponseEntity<RepresentationModel<?>> getUserSales(
             @RequestHeader("X-User-Id") String email) {
 
-        if (email.isBlank()) {
-            throw new SecurityException("Not authorized!");
-        }
+        checkEmailNotBlank(email);
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
-        List<Sale> userSales = _saleService.findUserSales(user);
+        List<Sale> userSales = _saleService.findUserSales(user.identity());
 
         RepresentationModel<?> model = new RepresentationModel<>();
         _saleLinkProvider.addLinksForSales(model, user.identity(), userSales);
@@ -90,9 +88,7 @@ public class SaleRestController {
             @RequestHeader("X-User-Id") String email,
             @RequestBody SaleRequestDTO dto) {
 
-        if (email.isBlank()) {
-            throw new SecurityException("Not authorized!");
-        }
+        checkEmailNotBlank(email);
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
         ShoppingCartId shoppingCartId = new ShoppingCartId(dto.getShoppingCartId());
@@ -138,9 +134,7 @@ public class SaleRestController {
             @RequestHeader("X-User-Id") String email,
             @PathVariable String saleId) {
 
-        if (email.isBlank()) {
-            throw new SecurityException("Not authorized!");
-        }
+        checkEmailNotBlank(email);
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
         SaleId reconstructedSaleId = new SaleId(saleId);
@@ -159,7 +153,8 @@ public class SaleRestController {
     @RequestMapping(path = "/{saleId}/sale-lines/{saleLineId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsForSaleLine(
             @RequestHeader("X-User-Id") String email,
-            @PathVariable String saleId) {
+            @PathVariable String saleId,
+            @PathVariable String saleLineId) {
 
         List<HttpMethod> allowedMethods = List.of(HttpMethod.OPTIONS);
 
@@ -182,9 +177,7 @@ public class SaleRestController {
             @PathVariable String saleId,
             @PathVariable String saleLineId) {
 
-        if (email.isBlank()) {
-            throw new SecurityException("Not authorized!");
-        }
+        checkEmailNotBlank(email);
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
         SaleId reconstructedSaleId = new SaleId(saleId);
@@ -201,6 +194,14 @@ public class SaleRestController {
         _saleLinkProvider.addLinksForSaleLine(dto, user.identity(), reconstructedSaleId, reconstructedSaleLineId);
 
         return ResponseEntity.ok(dto);
+    }
+
+    private void checkEmailNotBlank(String email) {
+
+        if (email.isBlank()) {
+            throw new SecurityException("Not authorized!");
+        }
+
     }
 
 }

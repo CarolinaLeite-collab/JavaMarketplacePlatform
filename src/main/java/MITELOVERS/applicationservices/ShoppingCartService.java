@@ -20,7 +20,7 @@ public class ShoppingCartService {
     private final DirectSaleService _directSaleService;
     private final ShoppingCartLineFactory _shoppingCartLineFactory;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ShoppingCart findCartByCartId(ShoppingCartId cartId) {
 
         return _shoppingCartRepo.ofIdentity(cartId)
@@ -28,7 +28,7 @@ public class ShoppingCartService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ShoppingCart findCartByUserId(UserId userId) {
 
         return _shoppingCartRepo.findShoppingCartByUserId(userId)
@@ -49,7 +49,7 @@ public class ShoppingCartService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ShoppingCartLine findCartLineByLineCartId(ShoppingCartId cartId, ShoppingCartLineId cartLineId) {
 
         ShoppingCart shoppingCart = findCartByCartId(cartId);

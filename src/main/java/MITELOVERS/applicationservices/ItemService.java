@@ -95,8 +95,9 @@ public class ItemService {
     }
 
     @Transactional
-    public Item markItemAsSold(String itemId) {
-        Item item = getItemById(itemId);
+    public Item markItemAsSold(ItemId itemId) {
+        Item item = _iItemRepo.ofIdentity(itemId)
+                .orElseThrow(() -> new NoSuchElementException("Item does not exist in the repository"));
         item.markAsSold();
         return _iItemRepo.save(item);
     }

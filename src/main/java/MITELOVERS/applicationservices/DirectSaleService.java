@@ -86,7 +86,7 @@ public class DirectSaleService {
         return _iDirectSaleRepo.save(newDirectSale);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DirectSale> getAllDirectSales() {
 
         List<DirectSale> result = new ArrayList<>();
@@ -96,7 +96,7 @@ public class DirectSaleService {
         return result;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DirectSale> getAllActiveDirectSales() {
 
         List<DirectSale> result = new ArrayList<>();
@@ -116,7 +116,7 @@ public class DirectSaleService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public DirectSale getDirectSaleById(DirectSaleId directSaleId) {
 
         return _iDirectSaleRepo.ofIdentity(directSaleId)
@@ -127,7 +127,7 @@ public class DirectSaleService {
     // Filtered Direct Sales
     //-----------------------
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<DirectSaleId> getDirectSaleItemsByGenreAsc(GenreId genreId) {
 
         if (!_iGenreRepo.containsOfIdentity(genreId)) {

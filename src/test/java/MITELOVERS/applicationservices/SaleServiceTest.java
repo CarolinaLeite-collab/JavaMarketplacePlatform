@@ -55,16 +55,13 @@ class SaleServiceTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
 
-        User userDouble = mock(User.class);
-        when(userDouble.identity()).thenReturn(userIdDouble);
-
         Sale sale1Double = mock(Sale.class);
         Sale sale2Double = mock(Sale.class);
 
         when(_saleRepo.findByUserId(userIdDouble)).thenReturn(List.of(sale1Double, sale2Double));
 
         // Act
-        List<Sale> result = _service.findUserSales(userDouble);
+        List<Sale> result = _service.findUserSales(userIdDouble);
 
         // Assert
         assertEquals(2, result.size());
@@ -77,13 +74,10 @@ class SaleServiceTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
 
-        User userDouble = mock(User.class);
-        when(userDouble.identity()).thenReturn(userIdDouble);
-
         when(_saleRepo.findByUserId(userIdDouble)).thenReturn(List.of());
 
         // Act
-        List<Sale> result = _service.findUserSales(userDouble);
+        List<Sale> result = _service.findUserSales(userIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -202,7 +196,6 @@ class SaleServiceTest {
         DirectSaleId directSaleIdDouble = mock(DirectSaleId.class);
 
         ItemId itemIdDouble = mock(ItemId.class);
-        when(itemIdDouble.toString()).thenReturn("ABCDEF1234");
 
         ShoppingCartLine lineDouble = mock(ShoppingCartLine.class);
         when(lineDouble.getDirectSaleId()).thenReturn(directSaleIdDouble);
@@ -229,12 +222,15 @@ class SaleServiceTest {
         when(_saleFactory.createSale(any(), any())).thenReturn(saleDouble);
         when(_paymentService.isPaymentSuccessful(totalAmountDouble)).thenReturn(true);
         when(_directSaleService.getDirectSaleById(directSaleIdDouble)).thenReturn(directSaleDouble);
+        when(_directSaleService.markDirectSaleAsCompleted(directSaleIdDouble)).thenReturn(directSaleDouble);
 
         // Act
         Sale result = _service.createSaleFromCart(cartIdDouble);
 
         // Assert
         assertSame(saleDouble, result);
+        verify(_saleLineFactory).createSaleLine(any(), any(), any());
+        verify(saleDouble).markSaleAsCompleted();
     }
 
     @Test
@@ -268,5 +264,26 @@ class SaleServiceTest {
 
         // Assert
         assertSame(saleDouble, result);
+        verify(saleDouble).markSaleAsCancelled();
+    }
+
+    @Test
+    void getSaleLineByIdThrowsWhenSaleLineNotFound() {
+        // Arrange
+        SaleId saleIdDouble = mock(SaleId.class);
+        SaleLineId wrongSaleLineId = mock(SaleLineId.class);
+
+        SaleLine saleLineDouble = mock(SaleLine.class);
+        SaleLineId correctSaleLineId = mock(SaleLineId.class);
+        when(saleLineDouble.identity()).thenReturn(correctSaleLineId);
+
+        Sale saleDouble = mock(Sale.class);
+        when(saleDouble.get_saleLines()).thenReturn(List.of(saleLineDouble));
+
+        when(_saleRepo.ofIdentity(saleIdDouble)).thenReturn(Optional.of(saleDouble));
+
+        // Act + Assert
+        assertThrows(NoSuchElementException.class,
+                () -> _service.getSaleLineById(saleIdDouble, wrongSaleLineId));
     }
 }
