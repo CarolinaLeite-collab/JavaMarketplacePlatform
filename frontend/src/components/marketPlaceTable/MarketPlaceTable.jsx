@@ -4,6 +4,7 @@ import {
     Center,
     Checkbox,
     Group,
+    Image,
     MultiSelect,
     ScrollArea,
     Stack,
@@ -137,7 +138,20 @@ export function MarketPlaceTable({
             className={classes.row}
             style={{ cursor: 'pointer' }}
         >
-            <Table.Td>{item.item}</Table.Td>
+            <Table.Td>
+                <Group wrap="nowrap" gap="sm">
+                    <Image
+                        src={item.cover}
+                        alt={`Cover of ${item.item}`}
+                        fallbackSrc="https://placehold.co/60x80?text=No+Image"
+                        w={45}
+                        h={60}
+                        radius="sm"
+                        fit="cover"
+                    />
+                    <Text lineClamp={2}>{item.item}</Text>
+                </Group>
+            </Table.Td>
             <Table.Td>{item.genreName}</Table.Td>
             <Table.Td>{item.type}</Table.Td>
             {canSeePrice && <Table.Td>{item.price}</Table.Td>}
@@ -207,7 +221,7 @@ export function MarketPlaceTable({
                     onChange={(event) => setSearch(event.currentTarget.value)}
                 />
 
-                <Table horizontalSpacing="md" verticalSpacing="xs" miw={900} layout="fixed">
+                <Table horizontalSpacing="md" verticalSpacing="sm" miw={900} layout="fixed">
                     <Table.Thead>
                         <Table.Tr>
                             <Th

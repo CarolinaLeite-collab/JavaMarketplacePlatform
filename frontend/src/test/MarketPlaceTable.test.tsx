@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import {MarketPlaceTable} from '../components/marketPlaceTable/MarketPlaceTable';
 
 const items = [
-    { id: '1', item: 'Book 1', genreId: 'HORROR', genreName: 'Horror', type: 'Direct Sale', price: '10 EUR' },
-    { id: '2', item: 'Book 2', genreId: 'ROMANCE', genreName: 'Romance', type: 'Auction', price: '20 EUR' },
-    { id: '3', item: 'Book 3', genreId: 'HORROR', genreName: 'Horror', type: 'Auction', price: '30 EUR' },
+    { id: '1', item: 'Book 1', genreId: 'HORROR', genreName: 'Horror', type: 'Direct Sale', price: '10 EUR', cover: 'https://example.com/book-1.jpg' },
+    { id: '2', item: 'Book 2', genreId: 'ROMANCE', genreName: 'Romance', type: 'Auction', price: '20 EUR', cover: 'https://example.com/book-2.jpg' },
+    { id: '3', item: 'Book 3', genreId: 'HORROR', genreName: 'Horror', type: 'Auction', price: '30 EUR', cover: 'https://example.com/book-3.jpg' },
 ];
 
 const genres = [
@@ -47,6 +47,7 @@ describe('MarketPlaceTable', () => {
         expect(screen.getByText('Book 1')).toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
         expect(screen.getByText('Book 3')).toBeInTheDocument();
+        expect(screen.getByAltText('Cover of Book 1')).toBeInTheDocument();
     });
 
     it('shows only direct sales when only direct sale is selected', () => {
