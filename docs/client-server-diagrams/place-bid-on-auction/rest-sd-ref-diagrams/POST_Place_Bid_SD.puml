@@ -1,5 +1,5 @@
 @startuml
-title POST bid on /auctions/{auctionId}/bids %n()ref SD
+title POST bid on /auctions/{auctionId}/bids – future design SD
 
 skinparam monochrome false
 skinparam shadowing false
@@ -26,13 +26,16 @@ participant "Database" as DB
 [o-> router : POST {bids href} + %n(){placeBidRequestDTO}
 activate router
 router -> REST : placeBid(auctionIdString, %n()userIdFromHeader, placeBidRequestDTO)
-create "email:Email" as email
 activate REST
 
+create "email:Email" as email
 REST -->> email : createEmail(userIdFromHeader)
 
 create "userId:UserId" as userId
 REST -->> userId : createUserId(email)
+
+create "auctionId:AuctionId" as auctionId
+REST -->> auctionId : createAuctionId(auctionIdString)
 
 create "currency:Currency" as currency
 REST -->> currency : valueOf(placeBidRequestDTO.getCurrency())
@@ -40,20 +43,15 @@ REST -->> currency : valueOf(placeBidRequestDTO.getCurrency())
 create "offerPrice:Price" as offerPrice
 REST -->> offerPrice : createPrice(placeBidRequestDTO.getOfferPrice, currency)
 
-REST -> Service : placeBid(auctionIdString, userId, offerPrice)
+REST -> Service : placeBid(auctionId, userId, offerPrice)
 activate Service
-
-create "auctionId:AuctionId" as auctionId
-Service -->> auctionId : createAuctionId(auctionIdString)
 
 Service -> auctionRepo : ofIdentity(auctionId)
 activate auctionRepo
 auctionRepo ->o] : FETCH
 auctionRepo <--o] : DATA
-deactivate DB
 auctionRepo --> Service : auction
 deactivate auctionRepo
-
 
 Service -> Auction : placeBid(userId, offerPrice)
 activate Auction
@@ -71,9 +69,8 @@ Service -> auctionRepo : save(auction)
 activate auctionRepo
 auctionRepo ->o] : SAVE
 auctionRepo <--o] : OK
-deactivate DB
-
 deactivate auctionRepo
+
 create "bidPlacementResult:BidPlacementResult" as Result
 Service -->> Result : createBidPlacementResult(auction, bid)
 Service --> REST : bidPlacementResult
@@ -89,6 +86,7 @@ REST -> Result : getAuction()
 activate Result
 Result --> REST : auction
 deactivate Result
+
 REST -> Result : getBid()
 activate Result
 Result --> REST : bid
@@ -99,15 +97,13 @@ activate Mapper
 Mapper --> REST : bidResponseDTO
 deactivate Mapper
 
-deactivate Service
-
 REST -> Link : addLinksForCreatedBid(bidResponseDTO)
 activate Link
-deactivate Link
-
 note right of Link
   Adds HATEOAS links to the same DTO instance
 end note
+
+deactivate Link
 
 create "response:ResponseEntity<BidResponseDTO>" as response
 REST -->> response : new ResponseEntity<>(bidResponseDTO, 201 Created)
@@ -115,7 +111,7 @@ REST --> router : response
 deactivate REST
 
 [o<-- router : 201 Created + bidResponseDTO %n() + auction link + bids link
-deactivate REST
+deactivate router
 
 ref over router
 [[../Process_View_Level_3_SD.puml Back to main diagram]]
