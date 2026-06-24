@@ -1057,7 +1057,9 @@ public class DataInitializer {
                     editionFoundationSeries.identity(), // Publication Foundation → Sci-Fi
                     Condition.GOOD,
                     new Description("Sci-Fi test item"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/fundacion.png?raw=true\")\n")
+
             );
             itemRepo.save(sfItem);
 
