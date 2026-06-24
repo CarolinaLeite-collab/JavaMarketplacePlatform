@@ -1,24 +1,8 @@
-# docker-compose.prod.yml — MiteLovers (DevSecOps Grupo B) — US080
-#
-# DEI cloud deployment. Images are PULLED from Harbor; nothing is built on the VM.
-# Build + push happen on a dev machine (see US080-deployment.md, section "Build & push").
-#
-# Registry : vs-gate.dei.isep.ipp.pt:10684
-# Project  : devsecops-grupo-b
-# VM       : vs992.dei.isep.ipp.pt (SSH port 2222)
-#
-# APP_VERSION MUST be set to the short source-commit SHA (US076 traceability).
-# Example:  APP_VERSION=$(git rev-parse --short HEAD) docker compose -f docker-compose.prod.yml up -d
-
 services:
 
   db:
-    build:
-      context: ./h2
-      dockerfile: Dockerfile
-    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-h2:${APP_VERSION:?set APP_VERSION to the source commit SHA}
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-h2:${APP_VERSION:?set APP_VERSION}
     environment:
-      # TCP server mode, base dir on the mounted volume so data persists.
       H2_OPTIONS: "-tcp -tcpAllowOthers -tcpPort 9092 -baseDir /opt/h2-data -ifNotExists"
     volumes:
       - mitelovers-data:/opt/h2-data
@@ -27,6 +11,8 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    # NOTE: resource limits below require Swarm; ignored by `docker compose up`.
+    # Kept as documentation of intended limits for a future orchestrated deployment.
     deploy:
       resources:
         limits:
@@ -39,19 +25,15 @@ services:
       retries: 5
       start_period: 20s
 
-
   backend:
-    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-backend:${APP_VERSION:?set APP_VERSION to the source commit SHA}
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-backend:${APP_VERSION:?set APP_VERSION}
     ports:
-      # Exposed on the VM network: the browser calls the REST API directly (no reverse proxy).
-      - "8081:8081"
+      - "2228:8081"
     environment:
+      SERVER_FORWARD_HEADERS_STRATEGY: "framework"
       SPRING_PROFILES_ACTIVE: "bootstrap,jpa"
-      # Browser origin that is allowed to call the API. MUST match where the UI is served.
-      CORS_ALLOWED_ORIGINS: "http://vs992.dei.isep.ipp.pt:8080"
-      # Connect to the H2 server container by TCP instead of an embedded file.
+      CORS_ALLOWED_ORIGINS: "https://vs-gate.dei.isep.ipp.pt:10266"
       SPRING_DATASOURCE_URL: "jdbc:h2:tcp://db:9092/miteloversdb;DB_CLOSE_ON_EXIT=FALSE"
-      # Let the JVM use 75% of the container memory limit instead of the 25% default.
       JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=75.0"
     depends_on:
       db:
@@ -74,9 +56,9 @@ services:
       start_period: 60s
 
   frontend:
-    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-frontend:${APP_VERSION:?set APP_VERSION to the source commit SHA}
+    image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-frontend:${APP_VERSION:?set APP_VERSION}
     ports:
-      - "8080:8080"
+      - "2226:8080"
     depends_on:
       backend:
         condition: service_healthy
@@ -89,7 +71,7 @@ services:
       resources:
         limits:
           cpus: "0.25"
-          memory: "256M"
+          memory: "128M"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8080/"]
       interval: 30s
