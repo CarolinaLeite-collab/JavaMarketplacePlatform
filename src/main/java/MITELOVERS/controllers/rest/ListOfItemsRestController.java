@@ -63,12 +63,8 @@ public class ListOfItemsRestController {
         RepresentationModel<?> model = new RepresentationModel<>();
 
         if (userId != null) {
-            try {
-
-                User user = _userService.getUserByEmail(userId);
-                _listOfItemsLinkProvider.getLinks(user).forEach(model::add);
-
-            } catch (Exception ignored) {}
+            User user = _userService.getUserByEmail(userId);
+            _listOfItemsLinkProvider.getLinks(user).forEach(model::add);
 
         } else {
 
@@ -86,9 +82,9 @@ public class ListOfItemsRestController {
     @RequestMapping(path = "/{listId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> optionsList(
             @PathVariable String listId,
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(userId);
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         RepresentationModel<?> model = new RepresentationModel<>();
@@ -125,9 +121,9 @@ public class ListOfItemsRestController {
     @RequestMapping(path = "/{listId}/items", method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> optionsItems(
             @PathVariable String listId,
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(userId);
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         RepresentationModel<?> model = new RepresentationModel<>();
@@ -202,9 +198,9 @@ public class ListOfItemsRestController {
     @GetMapping(path = "/{listId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> getListById(
             @PathVariable String listId,
-            @RequestHeader("X-User-Id") String userId) {
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(userId);
         ListOfItemsId recListId = new ListOfItemsId(listId);
         ListOfItems list = _listService.getListById(recListId);
 
@@ -475,9 +471,11 @@ public class ListOfItemsRestController {
 
     // GET - items in list
     @GetMapping(path = "/{listId}/items", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> getItemsInList(@PathVariable String listId, @RequestHeader("X-User-Id") String userId) {
+    public ResponseEntity<Object> getItemsInList(
+            @PathVariable String listId,
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(userId);
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         // Authorization check

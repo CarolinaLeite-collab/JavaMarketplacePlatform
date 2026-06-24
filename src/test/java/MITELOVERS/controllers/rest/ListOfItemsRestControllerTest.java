@@ -25,7 +25,7 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -118,6 +118,27 @@ class ListOfItemsRestControllerTest {
     }
 
     @Test
+    void options_singleList_withoutUserHeader_returnsOnlyPublicFacingLinks_whenPublic() throws Exception {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listService.getListById(any())).thenReturn(list);
+        when(list.isPrivate()).thenReturn(false);
+        when(_auth.canSeeList(isNull(), same(list))).thenReturn(true);
+        when(_auth.canAddItemTo(isNull(), same(list))).thenReturn(false);
+        when(_auth.canChangeVisibility(isNull(), same(list))).thenReturn(false);
+        when(_auth.canDeleteList(isNull(), same(list))).thenReturn(false);
+
+        _mockMvc.perform(options("/my-lists/L1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/L1"))
+                .andExpect(jsonPath("$._links['add-item']").doesNotExist())
+                .andExpect(jsonPath("$._links['make-public']").doesNotExist())
+                .andExpect(jsonPath("$._links['make-private']").doesNotExist())
+                .andExpect(jsonPath("$._links.delete").doesNotExist());
+
+        verify(_userService, never()).getUserByEmail(any());
+    }
+
+    @Test
     void getLists_returnsOkWithEmbeddedLists() throws Exception {
         ListOfItems d1 = mock(ListOfItems.class);
         ListOfItems d2 = mock(ListOfItems.class);
@@ -175,6 +196,41 @@ class ListOfItemsRestControllerTest {
         _mockMvc.perform(get("/my-lists/L1")
                         .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getListById_withoutUserHeader_returnsOk_whenPublicList() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        ListOfItemsResponseDTO dto =
+                new ListOfItemsResponseDTO("L1", "user@x.com", "Public Favs", "Fiction", false, null, List.of());
+
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(domain.isPrivate()).thenReturn(false);
+        when(_auth.canSeeList(isNull(), same(domain))).thenReturn(true);
+        when(_auth.canAddItemTo(isNull(), same(domain))).thenReturn(false);
+        when(_auth.canChangeVisibility(isNull(), same(domain))).thenReturn(false);
+        when(_auth.canDeleteList(isNull(), same(domain))).thenReturn(false);
+        when(_mapper.toModel(domain)).thenReturn(dto);
+
+        _mockMvc.perform(get("/my-lists/L1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listId").value("L1"))
+                .andExpect(jsonPath("$._links.self.href").value("http://localhost/my-lists/L1"));
+
+        verify(_userService, never()).getUserByEmail(any());
+    }
+
+    @Test
+    void getListById_withoutUserHeader_returnsForbidden_whenPrivateList() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(domain.isPrivate()).thenReturn(true);
+        when(_auth.canSeeList(isNull(), same(domain))).thenReturn(false);
+
+        _mockMvc.perform(get("/my-lists/L1"))
+                .andExpect(status().isForbidden());
+
+        verify(_userService, never()).getUserByEmail(any());
     }
 
     @Test
@@ -365,6 +421,42 @@ class ListOfItemsRestControllerTest {
         _mockMvc.perform(get("/my-lists/L1/items")
                         .header("X-User-Id", "user@x.com"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getItemsInList_withoutUserHeader_returnsOk_whenPublicList() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        ItemId id1 = mock(ItemId.class);
+        ItemId id2 = mock(ItemId.class);
+
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(domain.isPrivate()).thenReturn(false);
+        when(_auth.canSeeList(isNull(), same(domain))).thenReturn(true);
+        when(id1.toString()).thenReturn("A");
+        when(id2.toString()).thenReturn("B");
+        when(domain.getItemIds()).thenReturn(List.of(id1, id2));
+
+        _mockMvc.perform(get("/my-lists/L1/items"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.items[0]").value("A"))
+                .andExpect(jsonPath("$.items[1]").value("B"))
+                .andExpect(jsonPath("$.links.links[0].href").value("http://localhost/my-lists/L1/items"))
+                .andExpect(jsonPath("$.links.links[0].rel").value("self"));
+
+        verify(_userService, never()).getUserByEmail(any());
+    }
+
+    @Test
+    void getItemsInList_withoutUserHeader_returnsForbidden_whenPrivateList() throws Exception {
+        ListOfItems domain = mock(ListOfItems.class);
+        when(_listService.getListById(any())).thenReturn(domain);
+        when(domain.isPrivate()).thenReturn(true);
+        when(_auth.canSeeList(isNull(), same(domain))).thenReturn(false);
+
+        _mockMvc.perform(get("/my-lists/L1/items"))
+                .andExpect(status().isForbidden());
+
+        verify(_userService, never()).getUserByEmail(any());
     }
 
 }
