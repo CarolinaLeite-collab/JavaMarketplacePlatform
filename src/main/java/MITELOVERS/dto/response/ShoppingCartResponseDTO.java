@@ -5,6 +5,12 @@ import lombok.Generated;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
+/**
+ * Response DTO representing a shopping cart, including the buyer, total amount,
+ * and currency. {@code totalAmount} and {@code currency} are null when the cart
+ * is empty. Extends {@link RepresentationModel} to support HATEOAS links.
+ */
+
 @Getter
 @Generated
 @AllArgsConstructor

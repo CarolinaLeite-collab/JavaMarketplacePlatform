@@ -8,6 +8,12 @@ import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Request DTO for adding a direct sale to a shopping cart.
+ * Validates that the provided {@code directSaleId} is non-blank and
+ * matches the expected {@code DS-XXXXXXXX} format.
+ */
+
 @Generated
 @Getter
 @NoArgsConstructor

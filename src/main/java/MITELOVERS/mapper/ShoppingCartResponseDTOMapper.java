@@ -7,6 +7,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * Assembler that maps a {@link ShoppingCart} domain object to a
+ * {@link ShoppingCartResponseDTO}, extracting cart identity, buyer, total amount,
+ * and currency. Handles null {@code totalAmount} for empty carts.
+ */
+
 @Component
 @AllArgsConstructor
 public class ShoppingCartResponseDTOMapper implements RepresentationModelAssembler<ShoppingCart, ShoppingCartResponseDTO> {

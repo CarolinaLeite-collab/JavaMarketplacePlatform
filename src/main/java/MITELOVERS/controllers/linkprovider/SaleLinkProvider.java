@@ -22,6 +22,15 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * HATEOAS link provider for the Sale bounded context.
+ * Computes allowed HTTP methods for sales and sale line endpoints based on
+ * the current user's role and ownership, and populates representation models
+ * with navigational links following the OPTIONS-before-action discipline.
+ * Implements {@link RootLinkProvider} to expose the sales discovery link
+ * during the root bootstrap call.
+ */
+
 @Component
 public class SaleLinkProvider implements RootLinkProvider {
 

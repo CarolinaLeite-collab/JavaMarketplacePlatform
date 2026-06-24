@@ -16,6 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Application service responsible for Sale-related operations.
+ * Handles querying sales by user or ID, retrieving individual sale lines,
+ * and orchestrating the checkout flow — building a {@link Sale} from a
+ * {@link ShoppingCart}, processing payment via
+ * {@link PaymentService}, marking items and direct sales as completed on success,
+ * and clearing the cart. All operations are transactional.
+ */
+
 @Service
 public class SaleService {
 

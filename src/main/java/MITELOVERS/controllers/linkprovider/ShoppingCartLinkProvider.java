@@ -25,6 +25,15 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * HATEOAS link provider for the ShoppingCart bounded context.
+ * Computes allowed HTTP methods for cart, cart lines, and cart line endpoints
+ * based on the current user's role and ownership, and populates representation
+ * models with navigational links — including a conditional checkout link when
+ * the cart has lines. Implements {@link RootLinkProvider} to expose the
+ * shopping cart discovery link during the root bootstrap call.
+ */
+
 @Component
 public class ShoppingCartLinkProvider implements RootLinkProvider {
 

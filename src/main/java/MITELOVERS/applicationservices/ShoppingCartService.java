@@ -12,6 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+/**
+ * Application service responsible for ShoppingCart-related operations.
+ * Supports querying carts by cart ID or user ID, managing cart lines
+ * (adding, finding, and removing), and clearing all lines after checkout.
+ * Enforces the constraint that a user cannot add their own direct sale to their cart.
+ * All operations are transactional.
+ */
+
 @Service
 @AllArgsConstructor
 public class ShoppingCartService {

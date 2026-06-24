@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * REST controller responsible for exposing Shopping Cart-related endpoints
- * via HTTP endpoints.
+ * REST controller exposing ShoppingCart-related endpoints under {@code /shopping-carts}.
+ * Supports cart discovery, viewing and clearing a cart, managing cart lines
+ * (OPTIONS/POST/GET/DELETE), and enforces ownership checks before any cart or
+ * cart line operation. Delegates link construction to {@link ShoppingCartLinkProvider}
+ * following the OPTIONS-before-action HATEOAS discipline.
  */
 
 @Validated

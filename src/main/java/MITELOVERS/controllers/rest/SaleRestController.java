@@ -24,6 +24,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST controller exposing Sale-related endpoints under {@code /sales}.
+ * Supports OPTIONS/GET on the sales collection, POST for checkout (creating
+ * a sale from a shopping cart), and OPTIONS/GET on individual sales and
+ * sale lines. Enforces ownership checks before returning sale data and
+ * delegates link construction to {@link SaleLinkProvider} following the
+ * OPTIONS-before-action HATEOAS discipline.
+ */
+
 @Validated
 @RestController
 @RequestMapping("sales")

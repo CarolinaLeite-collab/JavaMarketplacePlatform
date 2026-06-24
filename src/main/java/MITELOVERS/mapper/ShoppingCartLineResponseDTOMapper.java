@@ -6,6 +6,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+/**
+ * Assembler that maps a {@link ShoppingCartLine} domain object to a
+ * {@link ShoppingCartLineResponseDTO}, extracting line identity, associated
+ * direct sale, seller, price at addition, currency, and timestamp.
+ */
+
 @Component
 @AllArgsConstructor
 public class ShoppingCartLineResponseDTOMapper implements RepresentationModelAssembler<ShoppingCartLine, ShoppingCartLineResponseDTO> {

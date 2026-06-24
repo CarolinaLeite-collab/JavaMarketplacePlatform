@@ -5,6 +5,11 @@ import lombok.Generated;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
+/**
+ * Response DTO representing a sale line, including the seller, associated direct sale,
+ * price, and currency. Extends {@link RepresentationModel} to support HATEOAS links.
+ */
+
 @Generated
 @Getter
 @AllArgsConstructor

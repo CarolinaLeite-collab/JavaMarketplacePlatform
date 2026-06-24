@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Assembler that maps a {@link Sale} domain object to a {@link SaleResponseDTO},
+ * extracting sale identity, buyer, total amount, currency, and timestamps.
+ * Handles null {@code completedAt} for pending or cancelled sales.
+ */
+
 @Component
 public class SaleResponseDTOMapper implements RepresentationModelAssembler<Sale, SaleResponseDTO> {
 
