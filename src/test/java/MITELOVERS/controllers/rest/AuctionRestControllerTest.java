@@ -6,6 +6,7 @@ import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.AuctionId;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
@@ -260,20 +261,19 @@ class AuctionRestControllerTest {
     @Test
     void optionsForSpecificAuctionReturnsAllowHeaderWithOptionsAndGet() throws Exception {
         // Arrange
-        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(auctionIdString))
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
                 .thenReturn(mock(Auction.class));
 
         when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET));
 
         // Act + Assert
-        mockMvc.perform(options("/auctions/{auctionId}", auctionIdString)
+        mockMvc.perform(options("/auctions/{auctionId}", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("OPTIONS")))
@@ -284,20 +284,19 @@ class AuctionRestControllerTest {
     @Test
     void optionsForSpecificAuctionReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
         // Arrange
-        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(auctionIdString))
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
                 .thenReturn(mock(Auction.class));
 
         when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
-        mockMvc.perform(options("/auctions/{auctionId}", auctionIdString)
+        mockMvc.perform(options("/auctions/{auctionId}", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("OPTIONS")))
@@ -312,13 +311,11 @@ class AuctionRestControllerTest {
 
     @Test
     void getAuctionByIdReturns200AndBody() throws Exception {
-
-        String auctionIdString = "AU-12345678";
-
+        // Arrange
         Auction auctionDouble = mock(Auction.class);
 
         AuctionResponseDTO dto = new AuctionResponseDTO(
-                auctionIdString,
+                "AU-12345678",
                 List.of("ABCDEF1234"),
                 10.0, 25.0, 50.0, "EUR",
                 Instant.parse("2026-06-10T10:00:00Z"),
@@ -327,37 +324,36 @@ class AuctionRestControllerTest {
                 10.0
         );
 
-        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString, "self"));
-        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString + "/bids", "bids"));
+        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + "AU-12345678", "self"));
+        dto.add(org.springframework.hateoas.Link.of("http://localhost/auctions/" + "AU-12345678" + "/bids", "bids"));
 
-        when(_auctionService.getAuctionById(auctionIdString)).thenReturn(auctionDouble);
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678"))).thenReturn(auctionDouble);
         when(_auctionMapper.toDTO(auctionDouble)).thenReturn(dto);
 
-        mockMvc.perform(get("/auctions/{auctionId}", auctionIdString)
+        // Act + Assert
+        mockMvc.perform(get("/auctions/{auctionId}", new AuctionId("AU-12345678"))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.auctionId").value(auctionIdString))
+                .andExpect(jsonPath("$.auctionId").value("AU-12345678"))
                 .andExpect(jsonPath("$.startingPrice").value(10.0))
                 .andExpect(jsonPath("$.reservePrice").value(25.0))
                 .andExpect(jsonPath("$.priceCurrency").value("EUR"))
                 .andExpect(jsonPath("$._links.self").exists())
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/auctions/" + auctionIdString))
+                        .value("http://localhost/auctions/" + "AU-12345678"))
                 .andExpect(jsonPath("$._links.bids").exists())
                 .andExpect(jsonPath("$._links.bids.href")
-                        .value("http://localhost/auctions/" + auctionIdString + "/bids"));
+                        .value("http://localhost/auctions/" + "AU-12345678" + "/bids"));
     }
 
     @Test
     void getAuctionByIdReturns404WhenNotFound() throws Exception {
         // Arrange
-        String auctionIdString = "AU-11111111";
-
-        when(_auctionService.getAuctionById(auctionIdString))
-                .thenThrow(new NoSuchElementException("Auction not found: " + auctionIdString));
+        when(_auctionService.getAuctionById(new AuctionId("AU-11111111")))
+                .thenThrow(new NoSuchElementException("Auction not found: " + "AU-11111111"));
 
         // Act + Assert
-        mockMvc.perform(get("/auctions/{auctionId}", auctionIdString))
+        mockMvc.perform(get("/auctions/{auctionId}", "AU-11111111"))
                 .andExpect(status().isNotFound());
     }
 
@@ -368,20 +364,19 @@ class AuctionRestControllerTest {
     @Test
     void optionsForBidsReturnsAllowHeaderWithOptionsGetAndPost() throws Exception {
         // Arrange
-        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(auctionIdString))
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
                 .thenReturn(mock(Auction.class));
 
         when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET, HttpMethod.POST));
 
         // Act + Assert
-        mockMvc.perform(options("/auctions/{auctionId}/bids", auctionIdString)
+        mockMvc.perform(options("/auctions/{auctionId}/bids", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("OPTIONS")))
@@ -393,20 +388,19 @@ class AuctionRestControllerTest {
     @Test
     void optionsForBidsReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
         // Arrange
-        String auctionIdString = "AU-12345678";
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail("user@example.com"))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(auctionIdString))
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
                 .thenReturn(mock(Auction.class));
 
         when(_auctionLinkProvider.getAllowedMethodsForBids(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
         // Act + Assert
-        mockMvc.perform(options("/auctions/{auctionId}/bids", auctionIdString)
+        mockMvc.perform(options("/auctions/{auctionId}/bids", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Allow", containsString("OPTIONS")))
@@ -421,18 +415,17 @@ class AuctionRestControllerTest {
 
     @Test
     void getBidsForAuctionReturns200AndCollectionRepresentation() throws Exception {
-        String auctionIdString = "AU-12345678";
 
         Auction auctionDouble = mock(Auction.class);
         Bid bid1Double = mock(Bid.class);
         Bid bid2Double = mock(Bid.class);
 
-        when(_auctionService.getAuctionById(auctionIdString)).thenReturn(auctionDouble);
+        when(_auctionService.getAuctionById(new AuctionId("AU-12345678"))).thenReturn(auctionDouble);
         when(auctionDouble.getBids()).thenReturn(List.of(bid1Double, bid2Double));
 
         BidResponseDTO dto1 = new BidResponseDTO(
                 "bid-1",
-                auctionIdString,
+                "AU-12345678",
                 "buyer1@aeiou.com",
                 20.0,
                 "EUR",
@@ -440,7 +433,7 @@ class AuctionRestControllerTest {
         );
         BidResponseDTO dto2 = new BidResponseDTO(
                 "bid-2",
-                auctionIdString,
+                "AU-12345678",
                 "buyer2@aeiou.com",
                 30.0,
                 "EUR",
@@ -453,24 +446,24 @@ class AuctionRestControllerTest {
         org.springframework.hateoas.CollectionModel<BidResponseDTO> collectionModel =
                 org.springframework.hateoas.CollectionModel.of(
                         List.of(dto1, dto2),
-                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString + "/bids", "self"),
-                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + auctionIdString, "auction")
+                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + "AU-12345678" + "/bids", "self"),
+                        org.springframework.hateoas.Link.of("http://localhost/auctions/" + "AU-12345678", "auction")
                 );
 
         when(_auctionLinkProvider.addLinksForBidCollection(any(), any()))
                 .thenReturn(collectionModel);
 
-        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionIdString)
+        mockMvc.perform(get("/auctions/{auctionId}/bids", "AU-12345678")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self.href")
-                        .value("http://localhost/auctions/" + auctionIdString + "/bids"))
+                        .value("http://localhost/auctions/" + "AU-12345678" + "/bids"))
                 .andExpect(jsonPath("$._links.auction.href")
-                        .value("http://localhost/auctions/" + auctionIdString))
-                .andExpect(jsonPath("$._embedded.*[0].auctionId").value(auctionIdString))
+                        .value("http://localhost/auctions/" + "AU-12345678"))
+                .andExpect(jsonPath("$._embedded.*[0].auctionId").value("AU-12345678"))
                 .andExpect(jsonPath("$._embedded.*[0].offerPrice").value(20.0))
                 .andExpect(jsonPath("$._embedded.*[0].currency").value("EUR"))
-                .andExpect(jsonPath("$._embedded.*[1].auctionId").value(auctionIdString))
+                .andExpect(jsonPath("$._embedded.*[1].auctionId").value("AU-12345678"))
                 .andExpect(jsonPath("$._embedded.*[1].offerPrice").value(30.0))
                 .andExpect(jsonPath("$._embedded.*[1].currency").value("EUR"));
     }
@@ -478,13 +471,11 @@ class AuctionRestControllerTest {
     @Test
     void getBidsForAuctionReturns404WhenAuctionNotFound() throws Exception {
         // Arrange
-        String auctionIdString = "AU-99999999";
-
-        when(_auctionService.getAuctionById(auctionIdString))
-                .thenThrow(new NoSuchElementException("Auction not found: " + auctionIdString));
+        when(_auctionService.getAuctionById(new AuctionId("AU-99999999")))
+                .thenThrow(new NoSuchElementException("Auction not found: " + "AU-99999999"));
 
         // Act + Assert
-        mockMvc.perform(get("/auctions/{auctionId}/bids", auctionIdString))
+        mockMvc.perform(get("/auctions/{auctionId}/bids", "AU-99999999"))
                 .andExpect(status().isNotFound());
     }
 

@@ -25,9 +25,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 /**
  * REST controller responsible for managing auction- and bidding-related HTTP requests.
  * <p>
@@ -72,6 +69,7 @@ public class AuctionRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AuctionResponseDTO>> getAllActiveAuctions() {
+
         List<Auction> auctions = _auctionService.getAllActiveAuctions();
 
         if (auctions.isEmpty()) {
@@ -118,7 +116,6 @@ public class AuctionRestController {
 
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsForSpecificAuction(
-            @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(email);
@@ -136,7 +133,7 @@ public class AuctionRestController {
     )
     public ResponseEntity<AuctionResponseDTO> getAuctionById(@PathVariable String auctionId) {
 
-        Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(new AuctionId(auctionId));
 
         AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
@@ -169,7 +166,7 @@ public class AuctionRestController {
     )
     public ResponseEntity<CollectionModel<BidResponseDTO>> getBidsForAuction(@PathVariable String auctionId) {
 
-        Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(new AuctionId(auctionId));
 
         // Map each Bid to BidResponseDTO
         List<BidResponseDTO> dtos = auction.getBids().stream()
@@ -201,7 +198,7 @@ public class AuctionRestController {
         Currency currency = Currency.valueOf(request.getCurrency());
         Price offerPrice = new Price(request.getOfferPrice(), currency);
 
-        var result = _auctionService.placeBid(auctionId, userId, offerPrice);
+        var result = _auctionService.placeBid(new AuctionId(auctionId), userId, offerPrice);
         Auction auction = result.auction();
         Bid bid = result.bid();
 
