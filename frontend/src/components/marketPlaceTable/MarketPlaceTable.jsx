@@ -73,7 +73,13 @@ function sortItems(items, { sortBy, reversed, search, selectedGenres, selectedAu
 
     if (!sortBy) return filteredItems;
 
-    return [...filteredItems].sort((a, b) => {
+    const sorted = [...filteredItems].sort((a, b) => {
+        if (sortBy === 'price') {
+            return reversed
+                ? b.priceValue - a.priceValue
+                : a.priceValue - b.priceValue;
+        }
+
         const aValue = String(a[sortBy] ?? '');
         const bValue = String(b[sortBy] ?? '');
 
@@ -81,7 +87,10 @@ function sortItems(items, { sortBy, reversed, search, selectedGenres, selectedAu
             ? bValue.localeCompare(aValue)
             : aValue.localeCompare(bValue);
     });
+
+    return sorted;
 }
+
 
 function uniqueOptions(items, field) {
     return [...new Set(items.map((i) => i[field]).filter(Boolean))]

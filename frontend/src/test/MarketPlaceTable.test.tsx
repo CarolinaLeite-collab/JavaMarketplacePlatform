@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import {MarketPlaceTable} from '../components/marketPlaceTable/MarketPlaceTable';
 
 const items = [
-    { id: '1', item: 'Book 1', genreId: 'HORROR', genreName: 'Horror', type: 'Direct Sale', price: '10 EUR', cover: 'https://example.com/book-1.jpg' },
-    { id: '2', item: 'Book 2', genreId: 'ROMANCE', genreName: 'Romance', type: 'Auction', price: '20 EUR', cover: 'https://example.com/book-2.jpg' },
-    { id: '3', item: 'Book 3', genreId: 'HORROR', genreName: 'Horror', type: 'Auction', price: '30 EUR', cover: 'https://example.com/book-3.jpg' },
+    { id: '1', item: 'Book 1', genreId: 'HORROR', genreName: 'Horror', type: 'Direct Sale', price: '10.00 EUR', priceValue: 10, cover: 'https://example.com/book-1.jpg' },
+    { id: '2', item: 'Book 2', genreId: 'ROMANCE', genreName: 'Romance', type: 'Auction', price: '3.50 EUR', priceValue: 3.5, cover: 'https://example.com/book-2.jpg' },
+    { id: '3', item: 'Book 3', genreId: 'HORROR', genreName: 'Horror', type: 'Auction', price: '20.00 EUR', priceValue: 20, cover: 'https://example.com/book-3.jpg' },
 ];
 
 const genres = [
@@ -27,6 +27,12 @@ function renderTable(overrides = {}) {
             {...overrides}
         />
     );
+}
+function getRenderedPrices() {
+    return screen
+        .getAllByRole('row')
+        .slice(1)
+        .map((row) => within(row).getAllByRole('cell')[3].textContent);
 }
 
 function getRenderedItemNames() {
@@ -127,5 +133,45 @@ describe('MarketPlaceTable', () => {
 
         expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
         expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
+    });
+
+    it('renders prices with two decimal places', () => {
+        renderTable();
+
+        expect(screen.getByText('10.00 EUR')).toBeInTheDocument();
+        expect(screen.getByText('3.50 EUR')).toBeInTheDocument();
+        expect(screen.getByText('20.00 EUR')).toBeInTheDocument();
+    });
+
+    it('sorts prices in ascending order on first click', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        await user.click(
+            screen.getByRole('button', { name: /price/i })
+        );
+
+        expect(getRenderedPrices()).toEqual([
+            '3.50 EUR',
+            '10.00 EUR',
+            '20.00 EUR',
+        ]);
+    });
+
+    it('sorts prices in descending order on second click', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        const priceHeader =
+            screen.getByRole('button', { name: /price/i });
+
+        await user.click(priceHeader);
+        await user.click(priceHeader);
+
+        expect(getRenderedPrices()).toEqual([
+            '20.00 EUR',
+            '10.00 EUR',
+            '3.50 EUR',
+        ]);
     });
 });

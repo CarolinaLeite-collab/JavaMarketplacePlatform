@@ -336,7 +336,7 @@ describe('Marketplace', () => {
         await user.click(item);
 
         const dialog = await screen.findByRole('dialog');
-        expect(dialog).toHaveTextContent(/10 eur/i);
+        expect(dialog).toHaveTextContent(/10\.00 eur/i);
     });
 
     it('hides price in details modal for guest users', async () => {
