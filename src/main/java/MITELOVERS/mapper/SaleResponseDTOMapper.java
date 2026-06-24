@@ -1,16 +1,23 @@
 package MITELOVERS.mapper;
 
 import MITELOVERS.domain.sale.Sale;
+import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class SaleResponseDTOMapper implements RepresentationModelAssembler<Sale, SaleResponseDTO> {
 
-
     @Override
     public SaleResponseDTO toModel(Sale sale) {
+
+        List<SaleLineResponseDTO> saleLines = sale.get_saleLines().stream()
+                .map(this::toSaleLineDTO)
+                .toList();
 
         String shoppingCartId = sale.get_saleId().toString();
         String buyerId = sale.get_buyerId().toString();
@@ -24,8 +31,18 @@ public class SaleResponseDTOMapper implements RepresentationModelAssembler<Sale,
                 totalAmount,
                 currency,
                 createdAt,
-                completedAt);
+                completedAt,
+                saleLines);
 
     }
 
+    private SaleLineResponseDTO toSaleLineDTO(SaleLine line) {
+        return new SaleLineResponseDTO(
+                line.get_saleLineId().toString(),
+                line.get_sellerId().toString(),
+                line.get_directSaleId().toString(),
+                line.get_priceAtSale().getValue(),
+                line.get_priceAtSale().getCurrency().toString()
+        );
+    }
 }

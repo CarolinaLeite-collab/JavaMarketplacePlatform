@@ -5,6 +5,8 @@ import lombok.Generated;
 import lombok.Getter;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.util.List;
+
 @Generated
 @Getter
 @AllArgsConstructor
@@ -16,5 +18,6 @@ public class SaleResponseDTO extends RepresentationModel<SaleResponseDTO> {
     private String currency;
     private String createdAt;
     private String completedAt;
+    private List<SaleLineResponseDTO> saleLines;
 
 }
