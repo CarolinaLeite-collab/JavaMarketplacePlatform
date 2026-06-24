@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { Alert, Box, Group, Loader, Paper, Stack, Text } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import {
+    Accordion, Alert, Badge, Box, Divider, Group, Image, Loader, Stack, Table, Text
+} from '@mantine/core';
 import AppContext from '../../context/AppContext';
 import { apiClient } from '../../services/apiClient';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
-import { IconChevronRight, IconReceipt } from '@tabler/icons-react';
+import { IconChevronDown, IconReceipt } from '@tabler/icons-react';
 
 function normalizeLinks(link) {
     if (!link) return [];
@@ -13,8 +14,14 @@ function normalizeLinks(link) {
 
 function formatDate(date) {
     if (!date) return 'Pending';
-
     return date.split('T')[0];
+}
+
+function StatusBadge({ completedAt }) {
+    if (completedAt) {
+        return <Badge color="green" variant="light" size="sm">Completed</Badge>;
+    }
+    return <Badge color="yellow" variant="light" size="sm">Pending</Badge>;
 }
 
 async function loadSaleWithItemNames(sale) {
@@ -51,6 +58,66 @@ async function loadSaleWithItemNames(sale) {
     };
 }
 
+function SaleLineDetails({ line }) {
+    const [itemDetails, setItemDetails] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadDetails() {
+            try {
+                const directSale = await apiClient.getDirectSaleById(line.directSaleId);
+                const itemId = directSale?.itemsId?.[0];
+                if (itemId) {
+                    const item = await apiClient.getItemById(itemId);
+                    setItemDetails(item);
+                }
+            } catch (e) {
+                console.warn('Could not load item details', e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadDetails();
+    }, [line.directSaleId]);
+
+    if (loading) {
+        return (
+            <Table.Tr>
+                <Table.Td colSpan={4}><Text size="sm" c="dimmed">Loading...</Text></Table.Td>
+            </Table.Tr>
+        );
+    }
+
+    return (
+        <Table.Tr>
+            <Table.Td>
+                <Group wrap="nowrap" gap="sm">
+                    <Image
+                        src={itemDetails?.picture}
+                        fallbackSrc="https://placehold.co/50x65?text=No+Image"
+                        w={50}
+                        h={65}
+                        radius="sm"
+                        fit="cover"
+                    />
+                    <Stack gap={2}>
+                        <Text size="sm" fw={500}>{itemDetails?.title ?? 'Unknown'}</Text>
+                        <Text size="xs" c="dimmed">{itemDetails?.authorName ?? ''}</Text>
+                    </Stack>
+                </Group>
+            </Table.Td>
+            <Table.Td>
+                <Text size="sm">{itemDetails?.condition ?? 'N/A'}</Text>
+            </Table.Td>
+            <Table.Td>
+                <Text size="sm">{line.sellerId?.split('@')[0] ?? 'Unknown'}</Text>
+            </Table.Td>
+            <Table.Td>
+                <Text size="sm" fw={600}>{line.price} {line.currency}</Text>
+            </Table.Td>
+        </Table.Tr>
+    );
+}
 
 export default function SalesPage() {
     const { state } = useContext(AppContext);
@@ -106,6 +173,7 @@ export default function SalesPage() {
             </DefaultLayout>
         );
     }
+
     if (error) {
         return (
             <DefaultLayout title="Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
@@ -117,44 +185,95 @@ export default function SalesPage() {
     return (
         <DefaultLayout title="Purchases" subtitle="CHECK OUT YOUR PURCHASES:">
             <Box w={{ base: '100%', sm: '80%', md: '65%' }} mx="auto">
-            {sales.length === 0 && (
-                <Text c="dimmed" ta="center" py="xl">
-                    You have no purchases yet.
-                </Text>
-            )}
+                {sales.length === 0 && (
+                    <Text c="dimmed" ta="center" py="xl">
+                        You have no purchases yet.
+                    </Text>
+                )}
 
-            {sales.map(sale => (
-                <Paper
-                    key={sale.saleId}
-                    component={Link}
-                    to={`/sales/${sale.saleId}`}
-                    withBorder
+                <Accordion
+                    variant="separated"
                     radius="md"
-                    p="lg"
-                    mb="sm"
-                    style={{ color: 'inherit', textDecoration: 'none' }}
+                    chevron={null}
+                    styles={{
+                        control: {
+                            position: 'relative',
+                            paddingBottom: 40,
+                        },
+                        content: {
+                            paddingTop: 0,
+                        },
+                    }}
                 >
-                    <Group wrap="wrap" justify="space-between">
-                        <Group wrap="nowrap">
-                            <IconReceipt size={30} stroke={1.5} />
-                            <Stack gap={3}>
-                                <Text fw={600}>{sale.itemName}</Text>
-                                <Text size="sm" c="dimmed">Sale ID: {sale.saleId}</Text>
-                                <Text size="sm" c="dimmed">
-                                    Completed: {formatDate(sale.completedAt)}
-                                </Text>
-                            </Stack>
-                        </Group>
-
-                        <Group wrap="nowrap" gap="sm">
-                            <Text fw={700}>
-                                Total: {sale.totalAmount} {sale.currency}
-                            </Text>
-                            <IconChevronRight size={20} />
-                        </Group>
-                    </Group>
-                </Paper>
-            ))}
+                    {sales.map(sale => (
+                        <Accordion.Item key={sale.saleId} value={sale.saleId}>
+                            <Accordion.Control>
+                                <Group wrap="wrap" justify="space-between">
+                                    <Group wrap="nowrap">
+                                        <IconReceipt size={30} stroke={1.5} />
+                                        <Stack gap={3}>
+                                            <Group gap="sm">
+                                                <Text fw={600}>{sale.itemName}</Text>
+                                                <StatusBadge completedAt={sale.completedAt} />
+                                            </Group>
+                                            <Text size="sm" c="dimmed">Sale ID: {sale.saleId}</Text>
+                                            <Text size="sm" c="dimmed">
+                                                Completed: {formatDate(sale.completedAt)}
+                                            </Text>
+                                        </Stack>
+                                    </Group>
+                                    <Text fw={700}>
+                                        Total: {sale.totalAmount} {sale.currency}
+                                    </Text>
+                                </Group>
+                                <Box
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: 1,
+                                        left: 20,
+                                        right: 20,
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                    }}
+                                >
+                                    <Divider style={{ flex: 1 }} />
+                                    <Box
+                                        style={{
+                                            width: 28,
+                                            height: 28,
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            margin: '0 8px',
+                                        }}
+                                    >
+                                        <IconChevronDown size={14} color="var(--mantine-color-gray-5)" />
+                                    </Box>
+                                    <Divider style={{ flex: 1 }} />
+                                </Box>
+                            </Accordion.Control>
+                            <Accordion.Panel>
+                                <Table withTableBorder withColumnBorders>
+                                    <Table.Thead>
+                                        <Table.Tr>
+                                            <Table.Th>Item</Table.Th>
+                                            <Table.Th>Condition</Table.Th>
+                                            <Table.Th>Seller</Table.Th>
+                                            <Table.Th>Price</Table.Th>
+                                        </Table.Tr>
+                                    </Table.Thead>
+                                    <Table.Tbody>
+                                        {(sale.saleLines ?? []).map(line => (
+                                            <SaleLineDetails key={line.saleLineId} line={line} />
+                                        ))}
+                                    </Table.Tbody>
+                                </Table>
+                            </Accordion.Panel>
+                        </Accordion.Item>
+                    ))}
+                </Accordion>
             </Box>
         </DefaultLayout>
     );

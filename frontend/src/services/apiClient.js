@@ -187,6 +187,7 @@ export const apiClient = {
     getDirectSaleWithoutPrice: (id) => getPublic(`/direct-sales/${encodeURIComponent(id)}/without-price`),    getDirectSalesOptions: () => optionsByPath('/direct-sales'),
     getSalesAllowedMethods: () => allowedMethodsByPath('/sales'),
     getShoppingCartAllowedMethods: () => allowedMethodsByPath('/shopping-carts'),
+    getDirectSaleById: (id) => getPrivate(`/direct-sales/${id}`),
 
     /**
      * Extracts the resource identifier from a HATEOAS self link.
