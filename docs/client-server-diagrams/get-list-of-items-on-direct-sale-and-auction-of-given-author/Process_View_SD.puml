@@ -16,53 +16,45 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-
 ' ==== Actor and participants ====
 actor "Buyer"
-participant ":Client" as Client
-participant ":Server" as Server
-participant "DB" as DB
+participant ":Frontend" as Client
+participant ":Backend" as Server
+participant ":Database" as db
 
-Buyer -> Client : Show me what I can do
+Buyer -> Client : Selects an author from the Web UI
 activate Client
-Client -> Server : OPTIONS /api?email={email}
+Client -> Server : GET /direct-sales
 activate Server
-Server --> Client : available links
-note right of Client
-Links include:
-- authors
-- direct-sales
-- auctions
-end note
-deactivate Server
-Client --> Buyer : Here is what you can do
-deactivate Client
-
-Buyer -> Client : Selects an author
-activate Client
-Client -> Server : GET /direct-sales/author/{authorId}
-activate Server
-Server -> DB : select direct sales %n()by author
-DB --> Server : data
-Server --> Client : 200 [DirectSaleResponseDTO + links]
-note right of Client
-Returns direct sales
-containing items from
-the selected author
-end note
+Server -> db : FETCH
+db --> Server : DATA
+Server --> Client : 200 OK + DirectSaleResponseDTO + direct-sales link
 deactivate Server
 
-
-Client -> Server : GET /auctions/author/{authorId}
+Client -> Server : GET /auctions
 activate Server
-Server -> DB : select auctions %n()by author
-DB --> Server : data
-Server --> Client : 200 [AuctionResponseDTO + links]
+Server -> db : FETCH
+db --> Server : DATA
+Server --> Client : 200 OK + AuctionResponseDTO + auctions links
+deactivate Server
+
+Client -> Server : GET /items/{itemId}
+activate Server
 note right of Client
-Returns auctions
-containing items from
+For each unique itemId
+from direct sales and auctions
+end note
+Server -> db : FETCH
+db --> Server : DATA
+Server --> Client : 200 OK + ItemResponseDTO + item link
+deactivate Server
+
+note over Client
+Filters results where
+item.authorName matches
 the selected author
 end note
+
 deactivate Server
 Client --> Buyer : Displays direct sales and %n()auctions of the selected author
 deactivate Client
