@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     Text, Group, Stack, Button, Badge, Alert,
-    Grid, Table, Image, Title, Card, SimpleGrid
+    Grid, Table, Image, Title, Card, SimpleGrid, Tooltip
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
@@ -262,6 +262,17 @@ export default function AuctionDetailPage() {
 
     const synopsis        = publication?.synopsis ?? 'N/A';
 
+
+    const isOwnSale = auction.seller === currentUser;
+
+    const canBidDisabled =
+        !isLoggedIn ||
+        isOwnSale ||
+        !placeBidHref ||
+        status !== 'Active';
+
+    const canBidTooltip = isOwnSale
+        ? 'Cannot bid on own auction!' : !isLoggedIn ? 'Please register or log in to place a bid.' : null;
     return (
         <DefaultLayout title="" subtitle="">
             <Stack gap="xl">
@@ -357,15 +368,21 @@ export default function AuctionDetailPage() {
                                     </Card>
                                 </SimpleGrid>
 
-                                <Button
-                                    onClick={openBidModal}
-                                    disabled={!isLoggedIn || !placeBidHref || status !== 'Active'}
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
+                                <Tooltip
+                                    label={canBidTooltip}
+                                    disabled={!isOwnSale && isLoggedIn}
+                                    withArrow
                                 >
-                                    Place Bid
-                                </Button>
+                                    <Button
+                                        onClick={openBidModal}
+                                        disabled={canBidDisabled}
+                                        color="var(--mantine-color-indigo-7)"
+                                        fullWidth
+                                        size="md"
+                                    >
+                                        Place Bid
+                                    </Button>
+                                </Tooltip>
                             </Stack>
                         </Stack>
                     </Grid.Col>

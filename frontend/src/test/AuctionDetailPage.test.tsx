@@ -300,6 +300,28 @@ describe('AuctionDetailPage', () => {
         expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
     });
 
+    it('disables Place Bid for auction owner', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'pedro@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
+    it('disables Place Bid for non-registeed user', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'guest@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
     it('disables Place Bid when bids link is missing', async () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
