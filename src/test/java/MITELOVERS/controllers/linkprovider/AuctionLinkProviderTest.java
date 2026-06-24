@@ -55,6 +55,45 @@ class AuctionLinkProviderTest {
     }
 
     @Test
+    void getAllowedMethodsUserCanViewAuctionContainsGetAndOptions() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(true);
+
+        // SUT
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForSpecificAuction(user);
+
+        // Assert
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertTrue(methods.contains(HttpMethod.GET));
+        assertEquals(2, methods.size());
+    }
+
+    @Test
+    void getAllowedMethodsUserCannotViewAuctionContainsOnlyOptions() {
+        // Arrange
+        User user = mock(User.class);
+        AuthorizationPolicy authorizationPolicy = mock(AuthorizationPolicy.class);
+
+        when(authorizationPolicy.canViewAuction(user)).thenReturn(false);
+
+        AuctionLinkProvider linkProvider = new AuctionLinkProvider(authorizationPolicy);
+
+        // Act
+        List<HttpMethod> methods = linkProvider.getAllowedMethodsForSpecificAuction(user);
+
+        // Assert
+        assertTrue(methods.contains(HttpMethod.OPTIONS));
+        assertFalse(methods.contains(HttpMethod.GET));
+        assertEquals(1, methods.size());
+    }
+
+    @Test
     void getAllowedMethodsUserCanSellContainsPost() {
         // Arrange
         User user = mock(User.class);

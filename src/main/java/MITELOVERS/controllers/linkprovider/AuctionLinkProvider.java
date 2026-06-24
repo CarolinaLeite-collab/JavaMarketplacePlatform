@@ -57,6 +57,10 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         methods.add(HttpMethod.OPTIONS);
 
+        if (_authorizationPolicy.canViewAuction(user)) {
+            methods.add(HttpMethod.GET);
+        }
+
         if(_authorizationPolicy.canSell(user)) {
             methods.add(HttpMethod.POST);
         }
