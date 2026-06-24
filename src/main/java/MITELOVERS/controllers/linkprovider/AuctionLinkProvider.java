@@ -1,5 +1,7 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.controllers.rest.ItemRestController;
+import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -45,7 +47,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canSell(user)) {
             links.add(linkTo(AuctionRestController.class)
-                    .withRel("create-auction"));
+                    .withRel("auctions"));
         }
 
         return links;
@@ -101,7 +103,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
     // Allowed HTTP methods for /auctions/{auctionId}/bids
 
-    public List<HttpMethod> getAllowedMethodsForBids(User user) {
+    public List<HttpMethod> getAllowedMethodsForBids(User user, Auction auction) {
         List<HttpMethod> methods = new ArrayList<>();
 
         methods.add(HttpMethod.OPTIONS);
@@ -110,9 +112,10 @@ public class AuctionLinkProvider implements RootLinkProvider {
             methods.add(HttpMethod.GET);
         }
 
-        if (_authorizationPolicy.canBid(user)) {
+        if (_authorizationPolicy.canBid(user) && !auction.getSeller().equals(user.identity())) {
             methods.add(HttpMethod.POST);
         }
+
 
         return methods;
     }
