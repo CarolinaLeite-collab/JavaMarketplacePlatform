@@ -19,22 +19,22 @@ title "As a User, I want to use a Web Ul to buy an item in a direct sale." - SSD
 
 ' --- Actor and participants ---
 
-actor User
+Actor Actor as BUYER
 participant ":Mitelovers" as mite
 
-User -> mite : I want to add a Direct Sale to my Shopping Cart
+BUYER -> mite : I want to add a Direct Sale to my Shopping Cart
 activate mite
-mite --> User : Direct Sale successfully added to cart!
+mite -> BUYER : Direct Sale successfully added to cart!
 deactivate mite
 
-User -> mite : I want to access my Shopping Cart
+BUYER -> mite : I want to access my Shopping Cart
 activate mite
-mite --> User : Shopping Cart displayed!
+mite -> BUYER : Shopping Cart displayed!
 deactivate mite
 
-User -> mite : I want to checkout my ShoppingCart
+BUYER -> mite : I want to checkout my ShoppingCart
 activate mite
-mite --> User : Purchase completed!
+mite -> BUYER : Purchase completed!
 deactivate mite
 
 @enduml
