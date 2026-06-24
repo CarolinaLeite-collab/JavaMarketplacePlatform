@@ -62,9 +62,9 @@ function filterItems(items, selectedGenres, selectedAuthors, selectedPublication
         if (!matchesFilters) return false;
         if (!query) return true;
 
-        return ['item', 'genreName', 'type', 'price'].some((key) =>
-            String(item[key]).toLowerCase().includes(query)
-        );
+        return String(item.item)
+            .toLowerCase()
+            .includes(query);
     });
 }
 
@@ -223,7 +223,7 @@ export function MarketPlaceTable({
 
             <ScrollArea>
                 <TextInput
-                    placeholder="Search by item, genre, type or price"
+                    placeholder="Search by item name"
                     mb="md"
                     leftSection={<IconSearch size={16} stroke={1.5} />}
                     value={search}

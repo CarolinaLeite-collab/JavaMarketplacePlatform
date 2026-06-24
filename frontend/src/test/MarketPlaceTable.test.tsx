@@ -105,18 +105,30 @@ describe('MarketPlaceTable', () => {
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
     });
 
-    it('filters items by search text', async () => {
+    it('filters items by item name', async () => {
         const user = userEvent.setup();
         renderTable();
 
         await user.type(
-            screen.getByPlaceholderText(/search by item, genre, type or price/i),
+            screen.getByPlaceholderText(/search by item name/i),
             'Book 2'
         );
 
         expect(screen.queryByText('Book 1')).not.toBeInTheDocument();
         expect(screen.getByText('Book 2')).toBeInTheDocument();
         expect(screen.queryByText('Book 3')).not.toBeInTheDocument();
+    });
+
+    it('does not search by genre', async () => {
+        const user = userEvent.setup();
+        renderTable();
+
+        await user.type(
+            screen.getByPlaceholderText(/search by item name/i),
+            'Romance'
+        );
+
+        expect(screen.getByText(/nothing found/i)).toBeInTheDocument();
     });
 
     it('sorts items by genre when the header is clicked', async () => {

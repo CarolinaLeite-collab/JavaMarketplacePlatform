@@ -225,7 +225,7 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
 
-    it('filters items by search text', async () => {
+    it('filters items by item name', async () => {
         const user = userEvent.setup();
 
         renderMarketplace();
@@ -233,7 +233,7 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
         await user.type(
-            screen.getByPlaceholderText(/search by item, genre, type or price/i),
+            screen.getByPlaceholderText(/search by item name/i),
             'Book 2',
         );
 
