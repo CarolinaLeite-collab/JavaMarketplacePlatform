@@ -26,6 +26,42 @@ async function optionsByPath(path) {
     return JSON.parse(text);
 }
 
+// Retrieves the allowed HTTP methods for a given API path from the response Allow header
+async function allowedMethodsByPath(path) {
+    const response = await fetch(`${BASE_URL}${path}?email=${USER_ID}`, {
+        method: 'OPTIONS',
+        headers: { 'X-User-Id': USER_ID },
+    });
+
+    if (!response.ok) {
+        throw new Error(`${response.status}`);
+    }
+
+    const allowHeader = response.headers.get('Allow');
+
+    return allowHeader
+        ? allowHeader.split(',').map(method => method.trim())
+        : [];
+}
+
+// Retrieves allowed HTTP methods for a given href from the response Allow header
+async function allowedMethodsByHref(href) {
+    const response = await fetch(href, {
+        method: 'OPTIONS',
+        headers: { 'X-User-Id': USER_ID },
+    });
+
+    if (!response.ok) {
+        throw new Error(`${response.status}`);
+    }
+
+    const allowHeader = response.headers.get('Allow');
+
+    return allowHeader
+        ? allowHeader.split(',').map(method => method.trim())
+        : [];
+}
+
 async function getPublic(path) {
     const response = await fetch(`${BASE_URL}${path}`);
     if (!response.ok) throw new Error(`${response.status}`);
@@ -148,6 +184,10 @@ export const apiClient = {
     getAuctionOptions: (auctionId) => optionsByPath(`/auctions/${auctionId}`),
     getAuctionById: (auctionId) => getPublic(`/auctions/${auctionId}`),
     getPublishingCompanyById: (id) => getPublic(`/publishingCompanies/${id}`),
+    getDirectSaleWithoutPrice: (id) => getPublic(`/direct-sales/${encodeURIComponent(id)}/without-price`),    getDirectSalesOptions: () => optionsByPath('/direct-sales'),
+    getSalesAllowedMethods: () => allowedMethodsByPath('/sales'),
+    getShoppingCartAllowedMethods: () => allowedMethodsByPath('/shopping-carts'),
+    getDirectSaleById: (id) => getPrivate(`/direct-sales/${id}`),
     getPublicationById: (id) => getPublic(`/publications/${id}`),
 
     /**
@@ -160,9 +200,11 @@ export const apiClient = {
     extractIdFromSelfLink: (response) => extractIdFromSelfLink(response),
 
     // HATEOAS — use full href from backend response links
+    getAllowedMethodsByHref: (href) => allowedMethodsByHref(href),
     getByHref: (href) => getByHref(href),
     postByHref: (href, body) => postByHref(href, body),
     patchByHref: (href, body) => patchByHref(href, body),
     patchNoBodyByHref: (href) => patchNoBodyByHref(href),
     deleteByHref: (href) => deleteByHref(href),
+
 };

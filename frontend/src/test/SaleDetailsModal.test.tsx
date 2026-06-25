@@ -53,6 +53,21 @@ describe('SaleDetailsModal', () => {
         expect(screen.getByText(/sold by\s*user123/i)).toBeInTheDocument();
     });
 
+    it('renders the sale type provided by the item', () => {
+        render(
+            <SaleDetailsModal
+                opened={true}
+                item={{ ...baseItem, saleType: 'Direct Sale' }}
+                canSeePrice={true}
+                onClose={vi.fn()}
+                onSeeMore={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText(/direct sale/i)).toBeInTheDocument();
+        expect(screen.queryByText(/^auction$/i)).not.toBeInTheDocument();
+    });
+
     it('shows the login message instead of price when canSeePrice is false', () => {
         render(
             <SaleDetailsModal

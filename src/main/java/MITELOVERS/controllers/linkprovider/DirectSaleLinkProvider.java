@@ -1,11 +1,18 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.applicationservices.ShoppingCartService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.DirectSaleRestController;
+import MITELOVERS.controllers.rest.ShoppingCartRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
@@ -39,11 +46,12 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
     private final AuthorizationPolicy _authorizationPolicy;
     private final UserService _userService;
+    private final ShoppingCartService _shoppingCartService;
 
-    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy, UserService userService) {
-
+    public DirectSaleLinkProvider(AuthorizationPolicy authorizationPolicy, UserService userService, ShoppingCartService shoppingCartService) {
         _authorizationPolicy = authorizationPolicy;
         _userService = userService;
+        _shoppingCartService = shoppingCartService;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canListDirectSales(user)) {
             links.add(
                     WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
-                            .getAllDirectSales())
+                                    .getAllDirectSales())
                             .withRel("direct-sales")
             );
         }
@@ -70,7 +78,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         if (_authorizationPolicy.canGetDirectSale(user)) {
             links.add(
                     WebMvcLinkBuilder.linkTo(methodOn(DirectSaleRestController.class)
-                            .getDirectSaleById(null))
+                                    .getDirectSaleById(null, null))
                             .withRel("direct-sale")
             );
         }
@@ -91,9 +99,10 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
             );
         }
 
-        if(_authorizationPolicy.cannotSeePrice(user)) {
+        if (_authorizationPolicy.cannotSeePrice(user)) {
             links.add(
-                    linkTo(methodOn(DirectSaleRestController.class).getDirectSalesWithoutPrice()).withRel("direct-sales-without-price")
+                    linkTo(methodOn(DirectSaleRestController.class)
+                            .getDirectSalesWithoutPrice()).withRel("direct-sales-without-price")
             );
         }
 
@@ -102,30 +111,51 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
     public void addResourceLinks(DirectSaleResponseDTO dto, String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         addResourceLinks(dto);
 
-        if(_authorizationPolicy.canDeleteList(user)) {
-
+        if (_authorizationPolicy.canDeleteList(user)) {
             dto.add(
                     linkTo(methodOn(DirectSaleRestController.class)
                             .deleteDirectSale(dto.getDirectSaleId()))
                             .withRel("delete")
-                    );
-
+            );
         }
-
     }
 
-    public void addResourceLinks(DirectSaleResponseDTO dto) {
+    public void addResourceLinks(DirectSaleResponseDTO dto, User user) {
 
         dto.add(
                 linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(dto.getDirectSaleId()))
+                        .getDirectSaleById(user.identity().toString(), dto.getDirectSaleId()))
                         .withSelfRel()
         );
 
+        if (_authorizationPolicy.canDeleteList(user)) {
+            dto.add(
+                    linkTo(methodOn(DirectSaleRestController.class)
+                            .deleteDirectSale(null))
+                            .withRel("delete")
+            );
+        }
+
+        if (_authorizationPolicy.canPostShoppingCartLines(user)
+                && dto.getStatus() == DirectSaleStatus.ACTIVE
+                && !dto.getSellerId().equals(user.identity().toString())) {
+
+            ShoppingCart cart = _shoppingCartService.findCartByUserId(user.identity());
+
+            dto.add(
+                    linkTo(methodOn(ShoppingCartRestController.class)
+                            .addCartLine(
+                                    user.identity().toString(),
+                                    cart.identity().toString(),
+                                    null
+                            ))
+                            .withRel("shopping-cart")
+            );
+        }
     }
 
     public void addResourceLinks(DirectSaleNoPriceResponseDTO dto) {
@@ -135,7 +165,15 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                         .getDirectSalesWithoutPrice())
                         .withSelfRel()
         );
+    }
 
+    public void addResourceLinks(DirectSaleResponseDTO dto) {
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleById(null, dto.getDirectSaleId()))
+                        .withSelfRel()
+        );
     }
 
     public void addCollectionLinks(CollectionModel<DirectSaleResponseDTO> dtos, String email) {
@@ -144,29 +182,38 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                 .getAllActiveDirectSales(null))
                 .withSelfRel()
         );
-
     }
 
     public void addCollectionLinks(DSFilteredItemsResponseDTO dto, String genreId) {
 
-        dto.getDirectSales().forEach(this::addResourceLinks);
+        dto.getDirectSales().forEach(entry ->
+                addResourceLinks(entry, new DirectSaleId(entry.getDirectSaleId())));
 
         dto.add(
                 linkTo(methodOn(DirectSaleRestController.class)
                         .getDirectSaleItemsByGenre(genreId))
                         .withSelfRel()
         );
-
     }
 
-    public void addResourceLinks(DSFilteredItemsResponseDTO.DirectSaleEntry entry) {
+    public void addResourceLinks(DSFilteredItemsResponseDTO.DirectSaleEntry entry, DirectSaleId directSaleId) {
 
         entry.add(
                 linkTo(methodOn(DirectSaleRestController.class)
-                        .getDirectSaleById(entry.getDirectSaleId()))
+                        .getDirectSaleById(entry.getDirectSaleId(), directSaleId.toString()))
+                        .withSelfRel()
+        );
+    }
+
+    public DirectSaleNoPriceResponseDTO addNoPriceResourceLinks(
+            DirectSaleNoPriceResponseDTO dto) {
+
+        dto.add(
+                linkTo(methodOn(DirectSaleRestController.class)
+                        .getDirectSaleWithoutPrice(dto.getDirectSaleId()))
                         .withSelfRel()
         );
 
+        return dto;
     }
-
 }

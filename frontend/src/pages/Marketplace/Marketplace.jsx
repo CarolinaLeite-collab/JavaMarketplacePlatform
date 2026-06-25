@@ -11,8 +11,11 @@ import {useNavigate} from "react-router-dom";
 
 function formatPrice(priceValue, priceCurrency) {
     if (priceValue == null) return '';
-    if (!priceCurrency) return String(priceValue);
-    return `${priceValue} ${priceCurrency}`;
+    const formattedPrice = Number(priceValue).toFixed(2);
+
+    if (!priceCurrency) return formattedPrice;
+    return `${formattedPrice} ${priceCurrency}`;
+
 }
 
 function buildGenreMaps(genres) {
@@ -59,6 +62,7 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
                 price: canSeePrice
                     ? formatPrice(directSale.priceValue, directSale.priceCurrency)
                     : null,
+                priceValue: Number(directSale.priceValue),
 
                 //details card fields
                 author: itemDetails?.authorName ?? 'unknown',
@@ -96,6 +100,7 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                 price: canSeePrice
                     ? formatPrice(auction.currentPrice ?? auction.startingPrice, auction.priceCurrency)
                     : null,
+                priceValue: Number(auction.startingPrice),
 
                 author: itemDetails?.authorName ?? 'unknown',
                 publication: itemDetails?.title ?? 'unknown',

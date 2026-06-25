@@ -1,6 +1,11 @@
-import { Modal, ScrollArea, Group, Text, Button, Divider } from '@mantine/core';
+import { Modal, ScrollArea, Group, Text, Button, Divider, Image, Paper, Box, Alert, Stack, } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import AppContext from '../../context/AppContext';
-import { useContext } from 'react';
+import { useContext, useEffect, useState, } from 'react';
+import { REMOVE_FROM_CART, CLEAR_CART, loadCart,
+} from '../../context/cart/CartActions';
+import { apiClient } from '../../services/apiClient';
+import { useDisclosure } from '@mantine/hooks';
 
 interface ShoppingCartProps {
     opened: boolean;
@@ -8,10 +13,159 @@ interface ShoppingCartProps {
 }
 
 export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
-    const { state } = useContext(AppContext);
+    const { state, dispatch } = useContext(AppContext);
     const cartCount = state.cart?.items?.length ?? 0;
+    const shoppingCartHref = state.app?.shoppingCartHref;
+    const [checkoutError, setCheckoutError] = useState('');
+    const [checkoutLoading, setCheckoutLoading] = useState(false);
+    const [checkoutOpened, {open: openCheckout, close: closeCheckout,},] = useDisclosure(false);
+    const cartItems = state.cart?.items ?? [];
+    const totalPrice = cartItems.reduce(
+        (total, item) =>
+            total + Number(item.priceValue ?? 0),
+        0);
+    const currency = cartItems[0]?.currency ?? '';
+
+    useEffect(() => {
+        if (shoppingCartHref) {
+            loadCart(dispatch, shoppingCartHref)
+                .catch(error => {
+                    console.error(
+                        'Could not load shopping cart',
+                        error
+                    );
+                });
+        }
+    }, [shoppingCartHref, dispatch]);
+
+    const handleRemove = async (item) => {
+        if (!item.deleteHref) {
+            return;
+        }
+
+        try {
+            //Hateoas
+            const allowedMethods =
+                await apiClient.getAllowedMethodsByHref(
+                    item.deleteHref
+                );
+
+            if (!allowedMethods.includes('DELETE')) {
+                console.error(
+                    'User is not allowed to remove this cart item'
+                );
+                return;
+            }
+            //
+            await apiClient.deleteByHref(item.deleteHref);
+
+            dispatch({
+                type: REMOVE_FROM_CART,
+                payload: { id: item.id },
+            });
+        } catch (error) {
+            console.error('Could not remove item from cart', error);
+        }
+    };
+
+    const handleClearCart = async () => {
+        if (!shoppingCartHref || cartCount === 0) {
+            return;
+        }
+
+        try {
+            const cartDiscovery =
+                await apiClient.getByHref(
+                    shoppingCartHref
+                );
+
+            const cartHref =
+                cartDiscovery?._links?.self?.href;
+
+            if (!cartHref) {
+                return;
+            }
+            const allowedMethods = await apiClient.getAllowedMethodsByHref(cartHref);
+
+            if (!allowedMethods.includes('PATCH')) {
+                console.error('User is not allowed to clear this cart');
+                return;
+            }
+
+            await apiClient.patchNoBodyByHref(
+                cartHref
+            );
+
+            dispatch({
+                type: CLEAR_CART,
+            });
+        } catch (error) {
+            console.error(
+                'Could not clear shopping cart',
+                error
+            );
+        }
+    };
+
+    const handleCheckout = async () => {
+        if (cartCount === 0 || !shoppingCartHref) {
+            return;
+        }
+
+        setCheckoutError('');
+        setCheckoutLoading(true);
+
+        try {
+            const cartDiscovery = await apiClient.getByHref(shoppingCartHref);
+            const cartHref = cartDiscovery?._links?.self?.href;
+
+            if (!cartHref) {
+                throw new Error('Shopping cart link is unavailable.');
+            }
+
+            const cart = await apiClient.getByHref(cartHref);
+            const saleHref = cart?._links?.sale?.href;
+
+            if (!saleHref) {
+                throw new Error('Checkout link is unavailable.');
+            }
+
+            const allowedMethods = await apiClient.getAllowedMethodsByHref(saleHref);
+            if (!allowedMethods.includes('POST')) {
+                throw new Error('Checkout is not allowed.');
+            }
+
+            const shoppingCartId = new URL(cartHref).pathname
+                .split('/')
+                .filter(Boolean)
+                .pop();
+            const createdSale = await apiClient.postByHref(saleHref, {
+                shoppingCartId,
+            });
+            const purchasedSaleName = cartItems
+                .map((item) => item.name)
+                .join(', ');
+
+            dispatch({ type: CLEAR_CART });
+            closeCheckout();
+
+            notifications.show({
+                title: 'Purchase completed',
+                message: `${purchasedSaleName} was completed successfully.`,
+                color: 'green',
+                autoClose: 3000,
+            });
+
+        } catch (error) {
+            console.error('Could not complete purchase', error);
+            setCheckoutError('Could not complete your purchase. Please try again.');
+        } finally {
+            setCheckoutLoading(false);
+        }
+    };
 
     return (
+        <>
         <Modal
             opened={opened}
             onClose={onClose}
@@ -23,20 +177,114 @@ export function ShoppingCart({ opened, onClose }: ShoppingCartProps) {
                 <Text c="dimmed" ta="center" py="xl">Your cart is empty.</Text>
             ) : (
                 <ScrollArea h={400}>
-                    {(state.cart?.items ?? []).map((item) => (
-                        <Group key={item.id} justify="space-between" py="sm">
-                            <Text>{item.name}</Text>
-                            <Text fw={600}>{item.price}</Text>
-                        </Group>
+                    {cartItems.map((item) => (
+                        <Paper key={item.id} withBorder radius="md" p="sm" mb="sm">
+                            <Group wrap="nowrap">
+                                <Image
+                                    src={item.image}
+                                    fallbackSrc="https://placehold.co/80x100?text=No+Image"
+                                    w={65}
+                                    h={85}
+                                    radius="sm"
+                                    fit="cover"
+                                />
+
+                                <Box style={{ flex: 1 }}>
+                                    <Text fw={600}>{item.name}</Text>
+                                </Box>
+
+                                <Text fw={700} miw={100} ta="right">
+                                    {Number(item.priceValue).toFixed(2)} {item.currency}
+                                </Text>
+
+                                <Button
+                                    variant="subtle"
+                                    color="red"
+                                    aria-label={`Remove ${item.name} from cart`}
+                                    onClick={() => handleRemove(item)}
+                                >
+                                    Remove
+                                </Button>
+                            </Group>
+                        </Paper>
                     ))}
                 </ScrollArea>
             )}
 
+            {checkoutError && (
+                <Alert color="red" title="Purchase failed" mb="md">
+                    {checkoutError}
+                </Alert>
+            )}
+
             <Divider my="sm" />
 
-            <Group justify="flex-end">
-                <Button color="var(--mantine-color-indigo-7)" radius="xl">Checkout</Button>
+            <Group justify="space-between">
+                <Text fw={700} size="lg">
+                    Total: {totalPrice.toFixed(2)} {currency}
+                </Text>
+
+                <Group>
+                    <Button
+                        variant="subtle"
+                        color="red"
+                        disabled={cartCount === 0}
+                        onClick={handleClearCart}
+                    >
+                        Clear Cart
+                    </Button>
+
+                    <Button
+                        color="var(--mantine-color-indigo-7)"
+                        radius="xl"
+                        disabled={
+                            cartCount === 0 || !shoppingCartHref }
+                        onClick={openCheckout}
+                    >
+                        Checkout
+                    </Button>
+                </Group>
             </Group>
         </Modal>
+
+            <Modal
+                opened={checkoutOpened}
+                onClose={closeCheckout}
+                title="Confirm purchase"
+                centered
+            >
+                <Stack>
+                    <Text>
+                        You are purchasing {cartCount} item(s).
+                    </Text>
+
+                    <Text fw={700} size="lg">
+                        Total: {totalPrice.toFixed(2)} {currency}
+                    </Text>
+
+                    <Alert color="blue">
+                        Payment simulation: no real payment
+                        will be processed.
+                    </Alert>
+
+                    <Group justify="flex-end">
+                        <Button
+                            variant="default"
+                            onClick={closeCheckout}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            color="var(--mantine-color-indigo-7)"
+                            onClick={handleCheckout}
+                            loading={checkoutLoading}
+                        >
+                            Confirm Purchase
+                        </Button>
+                    </Group>
+                </Stack>
+            </Modal>
+        </>
     );
 }

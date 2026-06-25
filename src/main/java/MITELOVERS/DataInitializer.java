@@ -27,6 +27,9 @@ import MITELOVERS.domain.publicationtype.PublicationTypeFactory;
 import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.publishingcompany.PublishingCompanyFactory;
 import MITELOVERS.domain.repository.*;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
+import MITELOVERS.domain.shoppingcart.ShoppingCartLineFactory;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
@@ -80,7 +83,10 @@ public class DataInitializer {
             IPublishingCompanyRepo publishingCompanyRepo,
             PublishingCompanyFactory publishingCompanyFactory,
             IEditionRepo editionRepo,
-            EditionFactory editionFactory
+            EditionFactory editionFactory,
+            IShoppingCartRepo shoppingCartRepo,
+            ShoppingCartFactory shoppingCartFactory,
+            ShoppingCartLineFactory shoppingCartLineFactory
     ) {
 
         return args -> {
@@ -88,38 +94,41 @@ public class DataInitializer {
             // -------------------------------------------------------
             // Genre
             // Create and save a few Genres
-            Genre genre1 = genreFactory.createGenre("Arts");
-            genreRepo.save(genre1);
+            Genre genreArts = genreFactory.createGenre("Arts");
+            genreRepo.save(genreArts);
 
-            Genre genre2 = genreFactory.createGenre("Biography");
-            genreRepo.save(genre2);
+            Genre genreBiography = genreFactory.createGenre("Biography");
+            genreRepo.save(genreBiography);
 
-            Genre genre3 = genreFactory.createGenre("Education");
-            genreRepo.save(genre3);
+            Genre genreEducation = genreFactory.createGenre("Education");
+            genreRepo.save(genreEducation);
 
-            Genre genre4 = genreFactory.createGenre("Fiction");
-            genreRepo.save(genre4);
+            Genre genreFiction = genreFactory.createGenre("Fiction");
+            genreRepo.save(genreFiction);
 
-            Genre genre5 = genreFactory.createGenre("History");
-            genreRepo.save(genre5);
+            Genre genreHistory = genreFactory.createGenre("History");
+            genreRepo.save(genreHistory);
 
-            Genre genre6 = genreFactory.createGenre("Literature");
-            genreRepo.save(genre6);
+            Genre genreLiterature = genreFactory.createGenre("Literature");
+            genreRepo.save(genreLiterature);
 
-            Genre genre7 = genreFactory.createGenre("Non-Fiction");
-            genreRepo.save(genre7);
+            Genre genreNonFiction = genreFactory.createGenre("Non-Fiction");
+            genreRepo.save(genreNonFiction);
 
-            Genre genre8 = genreFactory.createGenre("Other");
-            genreRepo.save(genre8);
+            Genre genreOther = genreFactory.createGenre("Other");
+            genreRepo.save(genreOther);
 
-            Genre genre9 = genreFactory.createGenre("Science");
-            genreRepo.save(genre9);
+            Genre genreScience = genreFactory.createGenre("Science");
+            genreRepo.save(genreScience);
 
-            Genre genre10 = genreFactory.createGenre("Science-Fiction");
-            genreRepo.save(genre10);
+            Genre genreSF = genreFactory.createGenre("Science-Fiction");
+            genreRepo.save(genreSF);
 
-            Genre genre11 = genreFactory.createGenre("Technology");
-            genreRepo.save(genre11);
+            Genre genreTechnology = genreFactory.createGenre("Technology");
+            genreRepo.save(genreTechnology);
+
+            Genre genreChildren = genreFactory.createGenre("Children's Literature");
+            genreRepo.save(genreChildren);
 
 
             // Fetch and log all genres
@@ -131,10 +140,10 @@ public class DataInitializer {
             log.info("");
 
             // Fetch an individual genre by ID
-            GenreId targetGenreId = genre1.identity();
+            GenreId targetGenreId = genreArts.identity();
             Optional<Genre> opGenre = genreRepo.ofIdentity(targetGenreId);
             if (opGenre.isPresent()) {
-                log.info("Genre found with ofIdentity(genre1.identity()):");
+                log.info("Genre found with ofIdentity(genreArts.identity()):");
                 log.info("--------------------------------");
                 log.info(opGenre.get().toString());
                 log.info("");
@@ -178,6 +187,13 @@ public class DataInitializer {
             user4.addRole(Role.NONREGISTRED);
             userRepo.save(user4);
 
+            Name userNameTono = new Name("Manuel António");
+            Email userEmailTono = new Email("tono@aeiou.com");
+            PhonePrefix phonePrefixTono = new PhonePrefix("+351");
+            Phone phoneTono = new Phone(phonePrefixTono, "911567890");
+            User userTono = userFactory.createUser(userNameTono, null, userEmailTono, phoneTono);
+            userRepo.save(userTono);
+
             log.info("Users found with findAll():");
             log.info("Users saved: Pedro Silva, Ana Costa, Ângelo Martins, Guest");
             log.info("-------------------------------");
@@ -207,6 +223,11 @@ public class DataInitializer {
             Author saramago = authorFactory.createAuthor(new AuthorId("Saramago J.-A1B2C3"), new Name("José Saramago"));
             Author delahaye = authorFactory.createAuthor(new AuthorId("Delahaye G.-C1D2E3"), new Name("Gilbert Delahaye"));
             Author berghauserPont = authorFactory.createAuthor(new AuthorId("BerghauserPont M.-A7F2D1"), new Name("Meta Berghauser Pont"));
+            Author varoufakis = authorFactory.createAuthor(new AuthorId("Varoufakis Y.-A7D2D1"), new Name ("Agatha Christie"));
+            Author christie = authorFactory.createAuthor(new AuthorId("Christie A.-D9D2D1"), new Name ("Agatha Christie"));
+            Author celas = authorFactory.createAuthor(new AuthorId("Celas C.-D9D0D0"), new Name ("Carolina Celas"));
+            Author solaMolares = authorFactory.createAuthor(new AuthorId("SolaMorales I.-D9D0D0"), new Name ("Ignasi de Solà-Morales"));
+            Author goethe = authorFactory.createAuthor(new AuthorId("Goethe J.-J2D0D0"), new Name ("Johann Wolfgang von Goethe"));
 
             authorRepo.save(ruiTavares);
             authorRepo.save(alexander);
@@ -221,6 +242,11 @@ public class DataInitializer {
             authorRepo.save(saramago);
             authorRepo.save(delahaye);
             authorRepo.save(berghauserPont);
+            authorRepo.save(varoufakis);
+            authorRepo.save(christie);
+            authorRepo.save(celas);
+            authorRepo.save(solaMolares);
+            authorRepo.save(goethe);
 
             log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Meta Berghauser Pont");
 
@@ -263,13 +289,14 @@ public class DataInitializer {
             String spaceMatrixSynopsis =
                     "A reflection on architecture and urbanism through the relationship between space, culture, and technology, proposing new ways of understanding the built environment.";
 
+            log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Rui Tavares, José Saramago, Gilbert Delahaye, Meta Berghauser Pont, Agatha Christie, Carolina Celas, Ignasi de Solà-Morales, Johann Wolfgang von Goethe");
             // -------------------------------------------------------
             // Publications
             Publication novaYorkDelirante = publicationFactory.createPublication(
                     new Title("Nova York Delirante"),
                     koolhaas.identity(),
                     Year.of(1978),
-                    genre1.identity(),  // Arts
+                    genreArts.identity(),  // Arts
                     novaYorkDeliranteSynopsis
 
             );
@@ -278,7 +305,7 @@ public class DataInitializer {
                     new Title("1984"),
                     orwell.identity(),
                     Year.of(1949),
-                    genre4.identity(),  // Fiction
+                    genreFiction.identity(),  // Fiction
                     nineteenEightyFourSynopsis
 
 
@@ -287,14 +314,14 @@ public class DataInitializer {
                     new Title("Foundation"),
                     asimov.identity(),
                     Year.of(1951),
-                    genre10.identity(),  // Science Fiction
+                    genreSF.identity(),  // Science Fiction
                     foundationSeriesSynopsis
             );
             Publication sapiens = publicationFactory.createPublication(
                     new Title("Sapiens"),
                     yuval.identity(),
                     Year.of(2011),
-                    genre7.identity(),  // Non-Fiction
+                    genreNonFiction.identity(),  // Non-Fiction
                     sapiensSynopsis
 
             );
@@ -303,7 +330,7 @@ public class DataInitializer {
                     new Title("A Pattern Language"),
                     alexander.identity(),
                     Year.of(1977),
-                    genre11.identity(),  // Non-Fiction
+                    genreTechnology.identity(),  // Non-Fiction
                     patternSynopsis
             );
 
@@ -311,7 +338,7 @@ public class DataInitializer {
                     new Title("On the Shortness of Life"),
                     seneca.identity(),
                     Year.of(49),
-                    genre7.identity(), // Non-Fiction
+                    genreNonFiction.identity(), // Non-Fiction
                     shortnessOfLifeSynopsis
             );
 
@@ -319,7 +346,7 @@ public class DataInitializer {
                     new Title("E.1027. Maison en Bord de Mer"),
                     eg.identity(),
                     Year.of(1929),
-                    genre1.identity(), // Arts / Architecture
+                    genreArts.identity(), // Arts / Architecture
                     e1027Synopsis
             );
 
@@ -327,7 +354,7 @@ public class DataInitializer {
                     new Title("Space Settlements"),
                     scharmen.identity(),
                     Year.of(2019),
-                    genre1.identity(), // Arts / Architecture
+                    genreArts.identity(), // Arts / Architecture
                     spaceSettlementsSynopsis
             );
 
@@ -335,7 +362,7 @@ public class DataInitializer {
                     new Title("Hipocritões e Oligarcas"),
                     ruiTavares.identity(),
                     Year.of(2025),
-                    genre7.identity(), // Non-Fiction
+                    genreNonFiction.identity(), // Non-Fiction
                     hipocritoesEOlhigarcasSynopsis
             );
 
@@ -343,7 +370,7 @@ public class DataInitializer {
                     new Title("As Intermitências da Morte"),
                     saramago.identity(),
                     Year.of(2005),
-                    genre4.identity(),  // Fiction
+                    genreFiction.identity(),  // Fiction
                     intermitenciasSynopsis
 
             );
@@ -352,7 +379,7 @@ public class DataInitializer {
                     new Title("Anita vai às Compras"),
                     delahaye.identity(),
                     Year.of(1954),
-                    genre8.identity(),  // Other
+                    genreChildren.identity(),  // Other
                     anitaVasComprasSynopsis
             );
 
@@ -360,8 +387,44 @@ public class DataInitializer {
                     new Title("Spacematrix: Space, Density and Urban Form"),
                     berghauserPont.identity(),
                     Year.of(2005),
-                    genre1.identity(),
+                    genreArts.identity(),
                     spaceMatrixSynopsis
+
+            );
+
+            Publication italienischeReise = publicationFactory.createPublication(
+                    new Title("Italienische Reise"),
+                    goethe.identity(),
+                    Year.of(1981),
+                    genreLiterature.identity()
+            );
+
+            Publication diferenciasPub = publicationFactory.createPublication(
+                    new Title("Differencias"),
+                    solaMolares.identity(),
+                    Year.of(1995),
+                    genreArts.identity()
+            );
+
+            Publication horizontePub = publicationFactory.createPublication(
+                    new Title("Horizonte"),
+                    celas.identity(),
+                    Year.of(2018),
+                    genreChildren.identity()
+            );
+
+            Publication technoFPub = publicationFactory.createPublication(
+                    new Title("Techno Feudalismo"),
+                    varoufakis.identity(),
+                    Year.of(2023),
+                    genreNonFiction.identity()
+            );
+
+            Publication agathaCristiePub = publicationFactory.createPublication(
+                    new Title("Agatha Christie na Síria"),
+                    christie.identity(),
+                    Year.of(1946),
+                    genreNonFiction.identity()
             );
 
             publicationRepo.save(shortnessOfLife);
@@ -377,9 +440,13 @@ public class DataInitializer {
             publicationRepo.save(intermitencias);
             publicationRepo.save(anitaVasCompras);
             publicationRepo.save(spaceMatrix);
+            publicationRepo.save(italienischeReise);
+            publicationRepo.save(diferenciasPub);
+            publicationRepo.save(horizontePub);
+            publicationRepo.save(technoFPub);
+            publicationRepo.save(agathaCristiePub);
 
-            log.info("Publications saved: 1984, E.1027, Foundation, Nova York Delirante, Sapiens, Space Settlements, A Pattern Language, Spacematrix");
-
+            log.info("Publications saved: On the Shortness of Life, Nova York Delirante, 1984, Foundation, Sapiens, A Pattern Language, E.1027. Maison en Bord de Mer, Space Settlements, Hipocritões e Oligarcas, As Intermitências da Morte, Anita vai às Compras, Spacematrix: Space, Density and Urban Form, Italienische Reise, Differencias, Horizonte, Techno Feudalismo");
             // -------------------------------------------------------
             // Cities
             City porto = cityFactory.createCity("Porto", new CountryId("PT"));
@@ -395,12 +462,12 @@ public class DataInitializer {
             AppraisalEntity booker = appraisalEntityFactory.createAppraisalEntity(
                     new Name("Booker Prize"),
                     List.of(book.identity()),
-                    List.of(genre4.identity())  // Fiction
+                    List.of(genreFiction.identity())  // Fiction
             );
             AppraisalEntity hugo = appraisalEntityFactory.createAppraisalEntity(
                     new Name("Hugo Awards"),
                     List.of(book.identity(), magazine.identity()),
-                    List.of(genre10.identity())  // Science Fiction
+                    List.of(genreSF.identity())  // Science Fiction
             );
             appraisalEntityRepo.save(booker);
             appraisalEntityRepo.save(hugo);
@@ -423,7 +490,7 @@ public class DataInitializer {
             publishingCompanyRepo.save(gg);
 
             PublishingCompany oxfordUP = publishingCompanyFactory.createPublishingCompany("Oxford University Press");
-            publishingCompanyRepo.save(gg);
+            publishingCompanyRepo.save(oxfordUP);
             PublishingCompany penguinBooks = publishingCompanyFactory.createPublishingCompany("Penguin Books");
             publishingCompanyRepo.save(penguinBooks);
 
@@ -431,7 +498,7 @@ public class DataInitializer {
                     publishingCompanyFactory.createPublishingCompany("Éditions Albert Morancé");
             publishingCompanyRepo.save(editionsAlbertMorance);
             PublishingCompany columbia = publishingCompanyFactory.createPublishingCompany("Columbia Books");
-            publishingCompanyRepo.save(editionsAlbertMorance);
+            publishingCompanyRepo.save(columbia);
 
             PublishingCompany camiloAzurara = publishingCompanyFactory.createPublishingCompany("Caminho");
             publishingCompanyRepo.save(camiloAzurara);
@@ -442,7 +509,16 @@ public class DataInitializer {
             PublishingCompany nai010Publishers = publishingCompanyFactory.createPublishingCompany("naiOIO Publishers");
             publishingCompanyRepo.save(nai010Publishers);
 
-            log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China, naiOIO Publishers");
+            PublishingCompany cHBeckVerlag = publishingCompanyFactory.createPublishingCompany("CH Beck");
+            publishingCompanyRepo.save(cHBeckVerlag);
+
+            PublishingCompany orfeuPublisher = publishingCompanyFactory.createPublishingCompany("Orfeu Negro");
+            publishingCompanyRepo.save(orfeuPublisher);
+
+            PublishingCompany bhPublisher = publishingCompanyFactory.createPublishingCompany("The Bodley Head");
+            publishingCompanyRepo.save(bhPublisher);
+
+            log.info("Publishing companies saved: Columbia Books, Éditions Albert Morancé, GG, Gnome Press, Orfeu Negro, Oxford University Press, Penguin Books, Secker and Warburg, Tinta da China, naiOIO Publishers");
 
             // -------------------------------------------------------
             // Editions
@@ -611,46 +687,85 @@ public class DataInitializer {
 
             editionRepo.save(editionSpaceMatrix);
 
-            // -------------------------------------------------------
-            // Lists of Items
-            ListOfItems list1 = listOfItemsFactory.createListOfItems(
-                    user.identity(),
-                    new Name("Pedro Favourites"),
-                    genre3.identity()
+            Edition editionItalienishReise = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9783406611391"),
+                    italienischeReise.identity(),
+                    cHBeckVerlag.identity(),
+                    Year.of(2002),
+                    Language.GERMAN,
+                    new Dimension(13.0, 18.6, 4.2, DimensionUnit.CENTIMETERS),
+                    new Weight(600, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(748),
+                    new EditionNumber(1),
+                    Binding.HARDCOVER
             );
-            listOfItemsRepo.save(list1);
 
-            ListOfItems list2 = listOfItemsFactory.createPublicListOfItems(
-                    user2.identity(),
-                    new Name("Ana Sci-Fi List"),
-                    genre3.identity(),
-                    new SharedDuration(30)
-            );
-            listOfItemsRepo.save(list2);
+            editionRepo.save(editionItalienishReise);
 
-            ListOfItems list3 = listOfItemsFactory.createPublicListOfItems(
-                    user3.identity(),
-                    new Name("Angelo Non-Fiction"),
-                    genre2.identity(),
-                    new SharedDuration(300)
+            Edition editiondifferencias = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("8425219124"),
+                    diferenciasPub.identity(),
+                    gg.identity(),
+                    Year.of(2003),
+                    Language.SPANISH,
+                    new Dimension(17.0, 21.0, 1.0, DimensionUnit.CENTIMETERS),
+                    new Weight(540, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(168),
+                    new EditionNumber(1),
+                    Binding.HARDCOVER
             );
-            listOfItemsRepo.save(list3);
 
-            ListOfItems list4 = listOfItemsFactory.createPublicListOfItems(
-                    user.identity(),
-                    new Name("Pedro Architecture Picks"),
-                    genre1.identity(),
-                    new SharedDuration(15)
-            );
-            listOfItemsRepo.save(list4);
+            editionRepo.save(editiondifferencias);
 
-            ListOfItems list5 = listOfItemsFactory.createPublicListOfItems(
-                    user2.identity(),
-                    new Name("Ana Classics Collection"),
-                    genre4.identity(),  // Fiction
-                    new SharedDuration(20)
+            Edition editionHorizonte = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9789898868190"),
+                    horizontePub.identity(),
+                    orfeuPublisher.identity(),
+                    Year.of(2023),
+                    Language.PORTUGUESE,
+                    new Dimension(19.5, 28.5, 1.0, DimensionUnit.CENTIMETERS),
+                    new Weight(395, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(40),
+                    new EditionNumber(2),
+                    Binding.HARDCOVER
             );
-            listOfItemsRepo.save(list5);
+
+            editionRepo.save(editionHorizonte);
+
+            Edition editionTechnoF = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9781847927279"),
+                    technoFPub.identity(),
+                    bhPublisher.identity(),
+                    Year.of(2023),
+                    Language.ENGLISH,
+                    new Dimension(16.3, 24.2, 2.9, DimensionUnit.CENTIMETERS),
+                    new Weight(503, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(304),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
+            );
+
+            editionRepo.save(editionTechnoF);
+
+            Edition editionAgatha = editionFactory.createEdition(
+                    book.identity(),
+                    new ISBN("9789896710453"),
+                    agathaCristiePub.identity(),
+                    tintaDaChinaBrasil.identity(),
+                    Year.of(2010),
+                    Language.PORTUGUESE,
+                    new Dimension(16.3, 24.2, 2.9, DimensionUnit.CENTIMETERS),
+                    new Weight(503, Weight.WeightUnit.GRAMS),
+                    new NumberOfPages(285),
+                    new EditionNumber(1),
+                    Binding.PAPERBACK
+            );
+
+            editionRepo.save(editionAgatha);
 
             // -------------------------------------------------------
             // Items
@@ -679,9 +794,9 @@ public class DataInitializer {
             );
             itemRepo.save(spaceSetlementsItem);
 
-            ItemId itemId1 = new ItemId("3C5D126F8B");
+            ItemId itemId1984 = new ItemId("3C5D126F8B");
             Item item1 = itemFactory.createItem(
-                    itemId1,
+                    itemId1984,
                     edition1984.identity(),
                     Condition.GOOD,
                     new Description("Used copy in good condition"),
@@ -718,7 +833,7 @@ public class DataInitializer {
                     edition1977PatternLanguage.identity(),
                     Condition.FAIR,
                     new Description("First Edition"),
-                    SaleStatus.NotOnSale,
+                    SaleStatus.OnAuction,
                     new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/patternLanguage.png?raw=true")
 
             );
@@ -781,8 +896,108 @@ public class DataInitializer {
             );
             itemRepo.save(spaceMatrixItem);
 
+            ItemId italienishReiseItemId = new ItemId("5FA8B1C9D3");
+            Item italienishReiseItem = itemFactory.createItem(
+                    italienishReiseItemId,
+                    editionItalienishReise.identity(),
+                    Condition.GOOD,
+                    new Description("Hardcover in good condition, with clean pages and light cover wear"),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/italienishReise.png?raw=true")
+            );
+            itemRepo.save(italienishReiseItem);
+
+            ItemId differenciasItemId = new ItemId("4DA8B1C9D3");
+            Item differenciasItem = itemFactory.createItem(
+                    differenciasItemId,
+                    editiondifferencias.identity(),
+                    Condition.LIKE_NEW,
+                    new Description("A well-preserved copy of this influential work on contemporary architectural theory. Light wear to the cover."),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/diferencias.png?raw=true")
+            );
+            itemRepo.save(differenciasItem);
+
+            ItemId horizonteItemId = new ItemId("5AA1B1C1D3");
+            Item horizonteItem = itemFactory.createItem(
+                    horizonteItemId,
+                    editionHorizonte.identity(),
+                    Condition.POOR,
+                    new Description("A worn copy with visible signs of use. Pages remain readable, making it a practical reading copy for children."),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/horizonte.png?raw=true")
+            );
+            itemRepo.save(horizonteItem);
+
+            ItemId technoItemId = new ItemId("5BB1A1A1D3");
+            Item technoItem = itemFactory.createItem(
+                    technoItemId,
+                    editionTechnoF.identity(),
+                    Condition.FAIR,
+                    new Description("Used but in good condition. Some signs of handling are present, but the book remains fully readable and complete."),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/technoFeudalism.png?raw=true")
+            );
+            itemRepo.save(technoItem);
+
+            ItemId agathaItemId = new ItemId("5AB1A1A1D3");
+            Item agathaItem = itemFactory.createItem(
+                    agathaItemId,
+                    editionAgatha.identity(),
+                    Condition.FAIR,
+                    new Description("Pre-owned copy with light wear from previous use. Great fun to read."),
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/siria.png?raw=true")
+            );
+            itemRepo.save(agathaItem);
+
+            log.info("Items saved: Hipocritões e Oligarcas, Space Settlements, 1984 first edition, 1984 modern edition, Nova York Delirante, A Pattern Language, On the Shortness of Life, E.1027. Maison en Bord de Mer, As Intermitências da Morte, Anita vai às Compras, Spacematrix, Italienische Reise, Differencias, Horizonte, Techno Feudalismo, Sapiens, Foundation");
+
+            // -------------------------------------------------------
+            // Lists of Items
+
+            ListOfItems list1 = listOfItemsFactory.createListOfItems(
+                    user.identity(),
+                    new Name("Pedro Favourites"),
+                    genreEducation.identity()
+            );
+            listOfItemsRepo.save(list1);
+
+            ListOfItems list2 = listOfItemsFactory.createPublicListOfItems(
+                    user2.identity(),
+                    new Name("Ana Sci-Fi List"),
+                    genreEducation.identity(),
+                    new SharedDuration(30)
+            );
+            listOfItemsRepo.save(list2);
+
+            ListOfItems list3 = listOfItemsFactory.createPublicListOfItems(
+                    user3.identity(),
+                    new Name("Angelo Non-Fiction"),
+                    genreBiography.identity(),
+                    new SharedDuration(300)
+            );
+            listOfItemsRepo.save(list3);
+
+            ListOfItems list4 = listOfItemsFactory.createPublicListOfItems(
+                    user.identity(),
+                    new Name("Architecture Picks"),
+                    genreArts.identity(),
+                    new SharedDuration(15)
+            );
+            listOfItemsRepo.save(list4);
+
+            ListOfItems list5 = listOfItemsFactory.createPublicListOfItems(
+                    user2.identity(),
+                    new Name("Ana Classics Collection"),
+                    genreFiction.identity(),  // Fiction
+                    new SharedDuration(20)
+            );
+            listOfItemsRepo.save(list5);
+
             // -------------------------------------------------------
             // Direct Sales
+
             DirectSale hipocritoesSale = directSaleFactory.createDirectSale(
                     List.of(hipocritoesItemId),
                     user.identity(),
@@ -791,10 +1006,8 @@ public class DataInitializer {
             );
             directSaleRepo.save(hipocritoesSale);
 
-            ItemId randomItemId = new ItemId();
-
             DirectSale directSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
+                    List.of(itemId1984),
                     user.identity(),
                     new Price(9.99, Currency.EUR),
                     Duration.ofDays(30)
@@ -802,7 +1015,7 @@ public class DataInitializer {
             directSaleRepo.save(directSale1);
 
             DirectSale directSale2 = directSaleFactory.createDirectSale(
-                    List.of(randomItemId),
+                    List.of(shortnessOfLifeItemId),
                     user2.identity(),
                     new Price(14.99, Currency.EUR),
                     Duration.ofDays(7)
@@ -810,24 +1023,24 @@ public class DataInitializer {
             directSaleRepo.save(directSale2);
 
             DirectSale directSale3 = directSaleFactory.createDirectSale(
-                    List.of(new ItemId()),
-                    user2.identity(),
-                    new Price(4.99, Currency.EUR),
-                    null  // unlimited duration
+                    List.of(differenciasItemId),
+                    userTono.identity(),
+                    new Price(75.60, Currency.EUR),
+                    Duration.ofDays(30)
             );
 
-            directSale3.markAsExpired();
             directSaleRepo.save(directSale3);
 
-            DirectSale directSale4 = directSaleFactory.createDirectSale(
-                    List.of(itemIdE1027),
-                    user3.identity(),
-                    new Price(500, Currency.EUR),
+            DirectSale directSaleSiria = directSaleFactory.createDirectSale(
+                    List.of(agathaItemId),
+                    userTono.identity(),
+                    new Price(5, Currency.EUR),
                     null  // unlimited duration
             );
-            directSaleRepo.save(directSale4);
+            directSaleRepo.save(directSaleSiria);
 
-            log.info("Direct sales saved: 3 direct sales");
+            log.info("Direct sales saved: Hipocritões e Oligarcas, 1984, On the Shortness of Life, Differencias, Techno Feudalismo, Sapiens, Foundation, Nova York Delirante, Nova York Delirante completed sale");
+
 
             // -------------------------------------------------------
             // Additional Items for missing genres
@@ -845,7 +1058,8 @@ public class DataInitializer {
                     null,                                // Weight
                     new NumberOfPages(498),              // Pages
                     new EditionNumber(1),                // Edition number
-                    Binding.PUR                          // Binding
+                    Binding.PUR                         // Binding
+
             );
             editionRepo.save(editionSapiens);
 
@@ -879,7 +1093,7 @@ public class DataInitializer {
                     new EditionNumber(1),
                     Binding.PUR
             );
-            editionRepo.save(editionFoundationSeries);
+            editionRepo.save(editionSpacematrix);
 
             log.info("Two additional editions saved for DirectSales");
 
@@ -890,7 +1104,8 @@ public class DataInitializer {
                     editionSapiens.identity(), // Publication Sapiens → Non-Fiction
                     Condition.GOOD,
                     new Description("Non-Fiction test item"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/sapiens.png")
             );
             itemRepo.save(nfItem);
 
@@ -901,7 +1116,9 @@ public class DataInitializer {
                     editionFoundationSeries.identity(), // Publication Foundation → Sci-Fi
                     Condition.GOOD,
                     new Description("Sci-Fi test item"),
-                    SaleStatus.OnDirectSale
+                    SaleStatus.OnDirectSale,
+                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/fundacion.png?raw=true\")\n")
+
             );
             itemRepo.save(sfItem);
 
@@ -910,38 +1127,6 @@ public class DataInitializer {
             // -------------------------------------------------------
             // DirectSales for ALL genres
             // -------------------------------------------------------
-
-            // Fiction — DirectSale #1 (existing items)
-            DirectSale fictionSale1 = directSaleFactory.createDirectSale(
-                    List.of(itemId1, itemId2),
-                    user.identity(),
-                    new Price(7.99, Currency.EUR),
-                    Duration.ofDays(15)
-            );
-            directSaleRepo.save(fictionSale1);
-
-            // Fiction — DirectSale #2 (new item)
-            ItemId fictionExtraId = new ItemId("0A1B2C3D4E");
-            Item fictionExtraItem = itemFactory.createItem(
-                    fictionExtraId,
-                    edition1984.identity(),
-                    Condition.FAIR,
-                    new Description("Extra Fiction item"),
-                    SaleStatus.OnDirectSale
-            );
-            itemRepo.save(fictionExtraItem);
-
-            DirectSale fictionSale2 = directSaleFactory.createDirectSale(
-                    List.of(fictionExtraId),
-                    user.identity(),
-                    new Price(5.99, Currency.EUR),
-                    Duration.ofDays(10)
-            );
-
-            fictionSale2.markAsCompleted();
-
-            directSaleRepo.save(fictionSale2);
-
             // Non-Fiction
             DirectSale nonFictionSale = directSaleFactory.createDirectSale(
                     List.of(nfItemId),
@@ -969,49 +1154,28 @@ public class DataInitializer {
             );
             directSaleRepo.save(architectureSale);
 
-            // Seneca (existing item4)
-            DirectSale architectureSale2 = directSaleFactory.createDirectSale(
-                    List.of(itemId3),
-                    user3.identity(),
-                    new Price(12.99, Currency.EUR),
-                    Duration.ofDays(30)
-            );
-
-            architectureSale2.markAsCompleted();
-
-            directSaleRepo.save(architectureSale2);
-
             log.info("DirectSales of all genres");
 
             // -------------------------------------------------------
             // Auctions
-            Auction auction1 = auctionFactory.createAuction(
-                    List.of(itemId1),
-                    new Price(5.00, Currency.EUR),
-                    new Price(10.00, Currency.EUR),
-                    ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(7),
-                    user.identity()
-            );
-            auctionRepo.save(auction1);
 
             Auction auction2 = auctionFactory.createAuction(
-                    List.of(new ItemId()),
-                    new Price(8.00, Currency.EUR),
-                    new Price(15.00, Currency.EUR),
+                    List.of(italienishReiseItemId),
+                    new Price(10.00, Currency.EUR),
+                    new Price(55.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(3),
-                    user2.identity()
+                    ZonedDateTime.now().plusDays(10),
+                    userTono.identity()
             );
             auctionRepo.save(auction2);
 
             Auction auction3 = auctionFactory.createAuction(
-                    List.of(new ItemId()),
-                    new Price(2.00, Currency.EUR),
-                    new Price(6.00, Currency.EUR),
+                    List.of(horizonteItemId),
+                    new Price(3.50, Currency.EUR),
+                    new Price(20.00, Currency.EUR),
                     ZonedDateTime.now(),
-                    ZonedDateTime.now().plusDays(14),
-                    user3.identity()
+                    ZonedDateTime.now().plusDays(31),
+                    userTono.identity()
             );
             auctionRepo.save(auction3);
 
@@ -1027,11 +1191,11 @@ public class DataInitializer {
 
             auctionRepo.save(spaceMatrixAuction);
 
-            log.info("Auctions saved: 4 auctions");
+            log.info("Auctions saved: 5 auctions");
 
             // Auction with bids and winner
             Auction auctionWithBids = auctionFactory.createAuction(
-                    List.of(new ItemId()),
+                    List.of(itemId4),
                     new Price(5.00, Currency.EUR),
                     new Price(10.00, Currency.EUR),
                     ZonedDateTime.now().minusDays(7),   // started in the past
@@ -1052,7 +1216,7 @@ public class DataInitializer {
 
             // Libraries with items
             Library libraryPedro = libraryFactory.createLibrary(user.identity());
-            libraryPedro.addItemIdToLibrary(itemId1);
+            libraryPedro.addItemIdToLibrary(itemId1984);
             libraryPedro.addItemIdToLibrary(itemId4);
             libraryPedro.addItemIdToLibrary(itemIdE1027);
             libraryPedro.addItemIdToLibrary(shortnessOfLifeItemId);
@@ -1080,7 +1244,7 @@ public class DataInitializer {
 
             // Ana Sci-Fi List
             list2.addItem(sfItemId);                // Foundation
-            list1.addItem(itemId1);                 // 1984
+            list1.addItem(itemId1984);                 // 1984
 
             // Angelo Non-Fiction
             list3.addItem(nfItemId);                // Sapiens
@@ -1092,7 +1256,7 @@ public class DataInitializer {
             list4.addItem(itemIdE1027);            // E.1027
             list4.addItem(spaceSetlementsItemId);  // Space Settlements
 
-            list5.addItem(itemId1);     // 1984
+            list5.addItem(itemId1984);     // 1984
             list5.addItem(itemId2);     // 1984 Modern Edition
             list5.addItem(nfItemId);
 
@@ -1102,7 +1266,30 @@ public class DataInitializer {
             listOfItemsRepo.save(list4);
             listOfItemsRepo.save(list5);
 
+            // -------------------------------------------------------
+            // Shopping Cart - Empty for All Users
+            ShoppingCart pedroCart = shoppingCartFactory.createShoppingCart(user.identity());
+
+            shoppingCartRepo.save(pedroCart);
+
+            ShoppingCart anaCart =
+                    shoppingCartFactory.createShoppingCart(user2.identity());
+
+            shoppingCartRepo.save(anaCart);
+
+            ShoppingCart angeloCart =
+                    shoppingCartFactory.createShoppingCart(user3.identity());
+
+            shoppingCartRepo.save(angeloCart);
+
+            log.info("Shopping cart saved for Pedro with 2 lines");
+
             log.info("DataInitializer completed successfully.");
+
+            ShoppingCart tonoCart =
+                    shoppingCartFactory.createShoppingCart(userTono.identity());
+            shoppingCartRepo.save(tonoCart);
+
 
         };
 

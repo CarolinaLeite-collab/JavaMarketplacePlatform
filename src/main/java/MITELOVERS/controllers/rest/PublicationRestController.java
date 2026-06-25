@@ -5,9 +5,7 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.AuthorId;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.Title;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
 import MITELOVERS.mapper.PublicationResponseDTOMapper;
@@ -57,7 +55,7 @@ public class PublicationRestController {
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

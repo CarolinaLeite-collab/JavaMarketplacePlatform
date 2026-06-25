@@ -4,11 +4,12 @@ import MITELOVERS.applicationservices.AuctionService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
-import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.CreateAuctionRequestDTO;
-import MITELOVERS.dto.response.*;
+import MITELOVERS.dto.response.AuctionResponseDTO;
+import MITELOVERS.dto.response.BidResponseDTO;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
 import MITELOVERS.mapper.AuctionNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import MITELOVERS.dto.request.PlaceBidRequestDTO;
@@ -16,7 +17,6 @@ import MITELOVERS.mapper.BidResponseDTOMapper;
 import MITELOVERS.domain.auction.Bid;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -63,7 +63,7 @@ public class AuctionRestController {
     public ResponseEntity<Void> options(
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethods(user);
 
         return ResponseEntity.ok()
@@ -141,7 +141,7 @@ public class AuctionRestController {
     public ResponseEntity<Void> optionsForSpecificAuction(
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethodsForSpecificAuction(user);
 
@@ -171,7 +171,7 @@ public class AuctionRestController {
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         AuctionId reconstructedAuctionId = new AuctionId(auctionId);
         Auction auction  = _auctionService.getAuctionById(reconstructedAuctionId);
 

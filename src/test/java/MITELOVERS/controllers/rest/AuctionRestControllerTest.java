@@ -9,6 +9,8 @@ import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuctionId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.AuctionNoPriceResponseDTOMapper;
@@ -248,7 +250,7 @@ class AuctionRestControllerTest {
         // arrange
         User user = mock(User.class);
 
-        when(_userService.getUserByEmail("user@test.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@test.com"))))
                 .thenReturn(user);
 
         when(_auctionLinkProvider.getAllowedMethods(user))
@@ -275,7 +277,7 @@ class AuctionRestControllerTest {
         // arrange
         User user = mock(User.class);
 
-        when(_userService.getUserByEmail("user@test.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@test.com"))))
                 .thenReturn(user);
 
         when(_auctionLinkProvider.getAllowedMethods(user))
@@ -303,7 +305,7 @@ class AuctionRestControllerTest {
         // Arrange
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
@@ -326,7 +328,7 @@ class AuctionRestControllerTest {
         // Arrange
         User userDouble = mock(User.class);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
@@ -411,7 +413,7 @@ class AuctionRestControllerTest {
         when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
         when(auctionDouble.getSeller()).thenReturn(userIdDouble);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
@@ -440,7 +442,7 @@ class AuctionRestControllerTest {
         when(userIdDouble.toString()).thenReturn("pedro@aeiou.com");
         when(auctionDouble.getSeller()).thenReturn(userIdDouble);
 
-        when(_userService.getUserByEmail("user@example.com"))
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
         when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))

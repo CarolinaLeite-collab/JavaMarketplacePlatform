@@ -31,6 +31,8 @@ function formatTimeRemaining(endDateIso, now) {
 
     return `${days}d ${hours}h:${minutes}m:${seconds}s, ${weekday}`;
 }
+    const detailsBackground = 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))';
+
 
 /**
  * Derives auction status from start/end dates.
@@ -337,6 +339,9 @@ export default function AuctionDetailPage() {
                                     <Text size="sm">
                                         Ends in {formatTimeRemaining(endDate, now)}
                                     </Text>
+                                    <Badge color="blue" variant="light" size="sm">
+                                        Auction
+                                    </Badge>
                                     <Badge color="var(--mantine-color-indigo-7)" variant="light" size="sm">
                                         {status}
                                     </Badge>
@@ -392,7 +397,7 @@ export default function AuctionDetailPage() {
                 <Stack gap="md">
                     <Stack gap={4}>
                         <Text size="m" fw={700} c="dimmed">Synopsis:</Text>
-                        <Card padding="md" radius="md" withBorder bg="gray.0">
+                        <Card padding="md" radius="md" withBorder bg={detailsBackground}>
                             <Text size="sm" fs="italic">{synopsis}</Text>
                         </Card>
                     </Stack>
@@ -403,27 +408,27 @@ export default function AuctionDetailPage() {
                             <Table.Tbody>
                                 <Table.Tr>
                                     <Table.Td fw={600} w="15%">Publisher</Table.Td>
-                                    <Table.Td w="35%" bg="gray.0">{publisher}</Table.Td>
+                                    <Table.Td w="35%" bg={detailsBackground}>{publisher}</Table.Td>
                                     <Table.Td fw={600}>Genre</Table.Td>
-                                    <Table.Td bg="gray.0">{genre}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{genre}</Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Td fw={600}>Year</Table.Td>
-                                    <Table.Td bg="gray.0">{year}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{year}</Table.Td>
                                     <Table.Td fw={600}>Language</Table.Td>
-                                    <Table.Td bg="gray.0">{language}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{language}</Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Td fw={600}>Pages</Table.Td>
-                                    <Table.Td bg="gray.0">{pages}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{pages}</Table.Td>
                                     <Table.Td fw={600}>Binding</Table.Td>
-                                    <Table.Td bg="gray.0">{binding}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{binding}</Table.Td>
                                 </Table.Tr>
                                 <Table.Tr>
                                     <Table.Td fw={600}>Weight</Table.Td>
-                                    <Table.Td bg="gray.0">{weight}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{weight}</Table.Td>
                                     <Table.Td fw={600}>Dimensions</Table.Td>
-                                    <Table.Td bg="gray.0">{dimensions}</Table.Td>
+                                    <Table.Td bg={detailsBackground}>{dimensions}</Table.Td>
                                 </Table.Tr>
                             </Table.Tbody>
                         </Table>

@@ -267,7 +267,7 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
 
-    it('filters items by search text', async () => {
+    it('filters items by item name', async () => {
         const user = userEvent.setup();
 
         renderMarketplace();
@@ -275,7 +275,7 @@ describe('Marketplace', () => {
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
         await user.type(
-            screen.getByPlaceholderText(/search by item, genre, type or price/i),
+            screen.getByPlaceholderText(/search by item name/i),
             'Book 2',
         );
 
@@ -422,7 +422,7 @@ describe('Marketplace', () => {
         await user.click(item);
 
         const dialog = await screen.findByRole('dialog');
-        expect(dialog).toHaveTextContent(/10 eur/i);
+        expect(dialog).toHaveTextContent(/10\.00 eur/i);
     });
 
     it('hides price in details modal for guest users', async () => {

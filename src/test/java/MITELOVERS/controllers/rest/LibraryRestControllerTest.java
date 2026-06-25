@@ -258,7 +258,7 @@ class LibraryRestControllerTest {
     void optionsShouldReturn200WithLinksForAuthorizedUser() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail("pedro@aeiou.com")).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com")))).thenReturn(userDouble);
         when(libraryLinkProvider.getLinks(userDouble)).thenReturn(List.of(
                 Link.of("/my-library").withRel("library"),
                 Link.of("/my-library").withRel("library-add")
@@ -281,7 +281,7 @@ class LibraryRestControllerTest {
     void optionsShouldReturn200WithNoLinksForUnauthorizedUser() throws Exception {
         // Arrange
         User userDouble = mock(User.class);
-        when(userService.getUserByEmail("readonly@aeiou.com")).thenReturn(userDouble);
+        when(userService.getUserByEmail(new UserId(new Email("readonly@aeiou.com")))).thenReturn(userDouble);
         when(libraryLinkProvider.getLinks(userDouble)).thenReturn(List.of());
 
         // Act & Assert

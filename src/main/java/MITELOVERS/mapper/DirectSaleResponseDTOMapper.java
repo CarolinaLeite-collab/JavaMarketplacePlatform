@@ -27,7 +27,10 @@ public class DirectSaleResponseDTOMapper {
                 directSale.getPrice().getValue(),
                 directSale.getPrice().getCurrency().name(),
                 directSale.getTimeLimit() != null ? directSale.getTimeLimit().getSeconds() : null,
-                directSale.getCreationDate()
+                directSale.getCreationDate(),
+                directSale.getEndDate(),
+                directSale.getDSStatus(),
+                directSale.getSellerId().toString()
         );
     }
 

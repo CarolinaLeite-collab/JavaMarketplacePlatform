@@ -1,6 +1,9 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.domain.repository.IShoppingCartRepo;
 import MITELOVERS.domain.repository.IUserRepo;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;
@@ -16,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("jpa")
 class RegisterNewUserControllerTest {
@@ -26,6 +30,12 @@ class RegisterNewUserControllerTest {
     @Mock
     UserFactory _userFactoryDouble;
 
+    @Mock
+    IShoppingCartRepo _iShoppingCartRepoDouble;
+
+    @Mock
+    ShoppingCartFactory _shoppingCartFactoryDouble;
+
     @InjectMocks
     RegisterNewUserController _registerNewUserController;
 
@@ -35,6 +45,7 @@ class RegisterNewUserControllerTest {
     private Email _emailDouble;
     private Phone _phoneDouble;
     private UserId _userIdDouble;
+    private ShoppingCart _shoppingCartDouble;
 
 
     @BeforeEach
@@ -46,6 +57,7 @@ class RegisterNewUserControllerTest {
         _emailDouble = mock(Email.class);
         _phoneDouble = mock(Phone.class);
         _userIdDouble = mock(UserId.class);
+        _shoppingCartDouble = mock(ShoppingCart.class);
 
     }
 
@@ -57,6 +69,8 @@ class RegisterNewUserControllerTest {
         when(_userDouble.identity()).thenReturn(_userIdDouble);
         when(_iUserRepoDouble.containsOfIdentity(_userIdDouble)).thenReturn(false);
         when(_iUserRepoDouble.save(_userDouble)).thenReturn(_userDouble);
+        when(_shoppingCartFactoryDouble.createShoppingCart(_userIdDouble)).thenReturn(_shoppingCartDouble);
+        when(_iShoppingCartRepoDouble.save(_shoppingCartDouble)).thenReturn(_shoppingCartDouble);
 
         // Act
         User result = _registerNewUserController.registerNewUser(
@@ -66,6 +80,8 @@ class RegisterNewUserControllerTest {
         assertEquals(_userDouble, result);
         verify(_userFactoryDouble).createUser(_nameDouble, _addressDouble, _emailDouble, _phoneDouble);
         verify(_iUserRepoDouble).save(_userDouble);
+        verify(_shoppingCartFactoryDouble).createShoppingCart(_userIdDouble);
+        verify(_iShoppingCartRepoDouble).save(_shoppingCartDouble);
     }
 
 

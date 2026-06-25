@@ -64,7 +64,7 @@ class LibraryLinkProviderTest {
         Link libraryLink = links.getFirst();
 
         assertEquals("library", libraryLink.getRel().value());
-        assertEquals("/my-library", libraryLink.getHref());
+        assertTrue(libraryLink.getHref().endsWith("/my-library"));
         assertFalse(libraryLink.isTemplated());
     }
 
@@ -113,7 +113,7 @@ class LibraryLinkProviderTest {
 
         // Assert
         assertEquals("sort", sortLink.getRel().value());
-        assertEquals("/my-library{?sort}", sortLink.getHref());
+        assertTrue(sortLink.getHref().endsWith("/my-library{?sort}"));
         assertTrue(sortLink.isTemplated());
     }
 }

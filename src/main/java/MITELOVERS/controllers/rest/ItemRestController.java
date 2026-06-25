@@ -6,10 +6,7 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.ItemLinkProvider;
 import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Condition;
-import MITELOVERS.domain.valueobject.Description;
-import MITELOVERS.domain.valueobject.EditionId;
-import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.ItemRequestDTO;
 import MITELOVERS.dto.response.ItemResponseDTO;
 import MITELOVERS.mapper.ItemResponseDTOMapper;
@@ -58,7 +55,7 @@ public class ItemRestController {
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
         model.add(linkTo(methodOn(ItemRestController.class).options(email)).withSelfRel());

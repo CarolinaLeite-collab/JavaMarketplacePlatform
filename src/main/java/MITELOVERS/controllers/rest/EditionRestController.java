@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.EditionLinkProvider;
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.EditionRequestDTO;
 import MITELOVERS.dto.response.EditionResponseDTO;
 import MITELOVERS.mapper.EditionResponseDTOMapper;
@@ -49,7 +51,7 @@ public class EditionRestController {
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

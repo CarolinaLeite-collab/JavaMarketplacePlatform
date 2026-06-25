@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.AuthorLinkProvider;
 import MITELOVERS.domain.author.Author;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.AuthorRequestDTO;
 import MITELOVERS.dto.response.AuthorResponseDTO;
 import MITELOVERS.mapper.AuthorResponseDTOMapper;
@@ -40,7 +42,7 @@ public class AuthorRestController {
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         RepresentationModel<?> model = new RepresentationModel<>();
         _authorLinkProvider.getLinks(user).forEach(model::add);
         return ResponseEntity.ok(model);

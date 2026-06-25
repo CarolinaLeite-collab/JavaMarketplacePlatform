@@ -5,9 +5,7 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublicationLinkProvider;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.AuthorId;
-import MITELOVERS.domain.valueobject.GenreId;
-import MITELOVERS.domain.valueobject.Title;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.PublicationRequestDTO;
 import MITELOVERS.dto.response.PublicationResponseDTO;
 import MITELOVERS.mapper.PublicationResponseDTOMapper;
@@ -156,7 +154,7 @@ class PublicationRestControllerTest {
         User userDouble = mock(User.class);
         Link linkDouble = Link.of("/publications").withRel("publications");
 
-        when(_userServiceDouble.getUserByEmail("pedro@aeiou.com"))
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("pedro@aeiou.com"))))
                 .thenReturn(userDouble);
 
         when(_publicationLinkProviderDouble.getLinks(userDouble))
@@ -176,7 +174,7 @@ class PublicationRestControllerTest {
         //Arrange
         User userDouble = mock(User.class);
 
-        when(_userServiceDouble.getUserByEmail("readonly@aeiou.com"))
+        when(_userServiceDouble.getUserByEmail(new UserId(new Email("readonly@aeiou.com"))))
                 .thenReturn(userDouble);
 
         when(_publicationLinkProviderDouble.getLinks(userDouble))

@@ -1,4 +1,4 @@
-import { ADD_TO_CART, REMOVE_FROM_CART, CLEAR_CART } from './CartActions';
+import { ADD_TO_CART, REMOVE_FROM_CART, CLEAR_CART, LOAD_CART } from './CartActions';
 
 /**
  * Reducer responsible for managing the shopping cart state.
@@ -27,6 +27,12 @@ export function cartReducer(state, action) {
 
         case CLEAR_CART:
             return { ...state, items: [] };
+
+        case LOAD_CART:
+            return {
+                ...state,
+                items: action.payload,
+            };
 
         default:
             return state;

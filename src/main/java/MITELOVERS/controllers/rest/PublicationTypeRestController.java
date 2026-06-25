@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.PublicationTypeLinkProvider;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.PublicationTypeResponseDTO;
 import MITELOVERS.mapper.PublicationTypeResponseDTOMapper;
 import org.springframework.hateoas.MediaTypes;
@@ -45,7 +47,7 @@ public class PublicationTypeRestController {
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 
