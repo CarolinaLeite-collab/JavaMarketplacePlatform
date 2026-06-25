@@ -20,11 +20,8 @@ actor "User" as U
 participant ":MiteLovers" as System
 
 U -> System : I want to put an item %n()in my library on auction
-activate System
-System --> U : Displays auction form %n() with items NotOnSale only
-deactivate System
 
-U -> System : Submit selected itemId, starting price, %n()reserve price, currency, %n()start date and end date
+
 
 activate System
 System --> U : The item was successfully %n()put on auction.
