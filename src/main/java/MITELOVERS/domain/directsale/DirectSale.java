@@ -100,8 +100,10 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
             throw new IllegalStateException("This Direct Sale was already expired!");
         }
 
-        if (_timeLimit != null && _creationDate.plus(_timeLimit).isAfter(Instant.now())) {
-            throw new IllegalStateException("Cannot marked as expired - still within the time limit!");
+        Instant endDate = getEndDate();
+
+        if (endDate == null || endDate.isAfter(Instant.now())) {
+            throw new IllegalStateException("Cannot mark as expired - still within the time limit!");
         }
 
         _status = DirectSaleStatus.EXPIRED;
@@ -140,6 +142,20 @@ public class DirectSale implements AggregateRoot<DirectSaleId> {
         if (unique.size() != itemsId.size()) {
             throw new IllegalArgumentException("DirectSale cannot contain duplicate items.");
         }
+    }
+
+    public Instant getEndDate(){
+        if (_timeLimit == null) {
+            return null;
+        }
+
+        return _creationDate.plus(_timeLimit);
+    }
+
+    public boolean isExpired(){
+        Instant endDate = getEndDate();
+
+        return  endDate != null && !endDate.isAfter(Instant.now());
     }
 
 }

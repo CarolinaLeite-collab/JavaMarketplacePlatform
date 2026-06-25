@@ -270,11 +270,20 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('Ended')).toBeInTheDocument();
     });
 
-    it('renders Buy Now and Add to Cart buttons', async () => {
+    it('renders Add to Cart without Buy Now', async () => {
         renderAuctionDetail();
 
-        expect(await screen.findByRole('button', { name: /buy now/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /add to cart/i })).toBeInTheDocument();
+        expect(
+            await screen.findByRole('button', {
+                name: /add to cart/i,
+            })
+        ).toBeInTheDocument();
+
+        expect(
+            screen.queryByRole('button', {
+                name: /buy now/i,
+            })
+        ).not.toBeInTheDocument();
     });
 
     it('shows N/A for edition fields when edition fails to load', async () => {

@@ -5,6 +5,7 @@ import MITELOVERS.domain.item.Item;
 import MITELOVERS.domain.repository.IDirectSaleRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
 import MITELOVERS.domain.valueobject.ItemId;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,8 +59,6 @@ class SaleExpirationServiceTest {
 
         when(_iDirectSaleRepo.findExpired()).thenReturn(expired);
         when(_iDirectSaleRepo.ofIdentity(saleId)).thenReturn(Optional.of(_directSale));
-        when(_directSale.getItemsId()).thenReturn(items);
-        when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.of(_item));
 
         // Act
         _service.expireAllExpiredSales();
@@ -90,8 +92,25 @@ class SaleExpirationServiceTest {
         when(_iDirectSaleRepo.ofIdentity(saleId)).thenReturn(Optional.empty());
 
         // Act + Assert
-        Assertions.assertThrows(IllegalStateException.class,
+        assertThrows(IllegalStateException.class,
                 () -> _service.expireAllExpiredSales());
+    }
+
+    @Test
+    void expireAllExpiredSales_shouldExpireMultipleSales() {
+
+        // Arrange
+        DirectSaleId saleId1 = mock(DirectSaleId.class);
+        DirectSaleId saleId2 = mock(DirectSaleId.class);
+        DirectSale sale1 = mock(DirectSale.class);
+        DirectSale sale2 = mock(DirectSale.class);
+
+        when(_iDirectSaleRepo.findExpired()).thenReturn(List.of(saleId1, saleId2));
+        when(_iDirectSaleRepo.ofIdentity(saleId1)).thenReturn(Optional.of(sale1));
+        when(_iDirectSaleRepo.ofIdentity(saleId2)).thenReturn(Optional.of(sale2));
+
+        // Act + Assert
+        Assertions.assertDoesNotThrow(() -> _service.expireAllExpiredSales());
     }
 
     @Test
@@ -105,35 +124,13 @@ class SaleExpirationServiceTest {
         when(_iDirectSaleRepo.ofIdentity(saleId)).thenReturn(Optional.of(_directSale));
         when(_directSale.getItemsId()).thenReturn(List.of(itemId));
         when(_iItemRepo.ofIdentity(itemId)).thenReturn(Optional.empty());
+        when(_directSale.isExpired()).thenReturn(true);
 
         // Act + Assert
-        Assertions.assertThrows(IllegalStateException.class,
-                () -> _service.expireAllExpiredSales());
-    }
-
-    @Test
-    void expireAllExpiredSales_shouldExpireMultipleSales() {
-
-        // Arrange
-        DirectSaleId saleId1 = mock(DirectSaleId.class);
-        DirectSaleId saleId2 = mock(DirectSaleId.class);
-        DirectSale sale1 = mock(DirectSale.class);
-        DirectSale sale2 = mock(DirectSale.class);
-        ItemId itemId1 = mock(ItemId.class);
-        ItemId itemId2 = mock(ItemId.class);
-        Item item1 = mock(Item.class);
-        Item item2 = mock(Item.class);
-
-        when(_iDirectSaleRepo.findExpired()).thenReturn(List.of(saleId1, saleId2));
-        when(_iDirectSaleRepo.ofIdentity(saleId1)).thenReturn(Optional.of(sale1));
-        when(_iDirectSaleRepo.ofIdentity(saleId2)).thenReturn(Optional.of(sale2));
-        when(sale1.getItemsId()).thenReturn(List.of(itemId1));
-        when(sale2.getItemsId()).thenReturn(List.of(itemId2));
-        when(_iItemRepo.ofIdentity(itemId1)).thenReturn(Optional.of(item1));
-        when(_iItemRepo.ofIdentity(itemId2)).thenReturn(Optional.of(item2));
-
-        // Act + Assert
-        Assertions.assertDoesNotThrow(() -> _service.expireAllExpiredSales());
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> _service.expireAllExpiredSales()
+        );
     }
 
 }

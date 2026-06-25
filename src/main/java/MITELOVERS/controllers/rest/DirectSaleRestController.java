@@ -4,7 +4,6 @@ import MITELOVERS.applicationservices.DirectSaleService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.DirectSaleLinkProvider;
 import MITELOVERS.domain.directsale.DirectSale;
-import jakarta.validation.constraints.NotBlank;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.Currency;
 import MITELOVERS.domain.valueobject.DirectSaleId;
@@ -20,7 +19,9 @@ import MITELOVERS.dto.response.DirectSaleResponseDTO;
 import MITELOVERS.mapper.DSFilteredItemsResponseMapper;
 import MITELOVERS.mapper.DirectSaleNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.DirectSaleResponseDTOMapper;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -72,16 +73,16 @@ public class DirectSaleRestController {
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<List<String>> options(@RequestHeader("X-User-Id") String email) {
+    public ResponseEntity<RepresentationModel<?>> options(@RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
-        List<String> endpoints = _directSaleLinkProvider.getLinks(user)
-                .stream()
-                .map(link -> link.getHref())
-                .toList();
+        RepresentationModel<?> model = new RepresentationModel<>();
 
-        return ResponseEntity.ok(endpoints);
+        _directSaleLinkProvider.getLinks(user)
+                .forEach(model::add);
+
+        return ResponseEntity.ok(model);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -150,13 +151,23 @@ public class DirectSaleRestController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DirectSaleResponseDTO> getDirectSaleById(
+            @RequestHeader("X-User-Id") String userId,
             @PathVariable String id) {
 
         DirectSale directSale = _directSaleService.getDirectSaleById(new DirectSaleId(id));
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(directSale);
 
-        _directSaleLinkProvider.addResourceLinks(responseDTO);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
+
+        _directSaleLinkProvider.addResourceLinks(responseDTO, user);
+
+        for (ItemId itemId : directSale.getItemsId()) {
+            responseDTO.add(
+                    linkTo(methodOn(ItemRestController.class)
+                            .getItemById(itemId.toString()))
+                            .withRel("item"));
+        }
 
         return ResponseEntity.ok(responseDTO);
     }
@@ -193,6 +204,27 @@ public class DirectSaleRestController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(value = "/{id}/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<DirectSaleNoPriceResponseDTO> getDirectSaleWithoutPrice(@PathVariable String id){
+
+        DirectSale directSale = _directSaleService.getDirectSaleById(new DirectSaleId(id));
+
+        DirectSaleNoPriceResponseDTO dto = _noPriceMapper.toModel(directSale);
+
+        dto = _directSaleLinkProvider.addNoPriceResourceLinks(dto);
+
+        for (ItemId itemId : directSale.getItemsId()) {
+            dto.add(
+                    linkTo(methodOn(ItemRestController.class)
+                            .getItemById(itemId.toString()))
+                            .withRel("item")
+            );
+        }
+
+        return ResponseEntity.ok(dto);
+    }
+
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteDirectSale(@PathVariable String id) {
 
@@ -200,5 +232,4 @@ public class DirectSaleRestController {
 
         return ResponseEntity.noContent().build();
     }
-
 }
