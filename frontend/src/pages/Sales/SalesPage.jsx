@@ -223,7 +223,7 @@ export default function SalesPage() {
                                         </Stack>
                                     </Group>
                                     <Text fw={700}>
-                                        Total: {sale.totalAmount} {sale.currency}
+                                        Total: {Number(sale.totalAmount).toFixed(2)} {sale.currency}
                                     </Text>
                                 </Group>
                                 <Box

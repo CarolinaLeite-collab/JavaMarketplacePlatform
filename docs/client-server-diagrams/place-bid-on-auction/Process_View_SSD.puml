@@ -19,15 +19,9 @@ autonumber
 actor Buyer as User
 participant ":Mitelovers" as System
 
-User -> System : I would like to know %n() what I can do in %n() regard to an existing %n()auction
+User -> System : I want to place a bid on this\n auction with a value of x.
 activate System
-System --> User : display HATEOAS links
-deactivate System
-
-
-User -> System : I want to place a %n() bid on this auction
-activate System
-System --> User: Sucess!
+System --> User: Bid successfully \nplaced on auction.
 deactivate System
 
 @enduml

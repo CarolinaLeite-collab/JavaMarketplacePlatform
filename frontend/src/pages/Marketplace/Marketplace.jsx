@@ -85,7 +85,6 @@ function buildDirectSaleItems(directSales, itemDetailsMap, genreNameToId, canSee
 function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice) {
     return auctions.flatMap((auction) => {
         const itemIds = auction.itemIds ?? [];
-
         return itemIds.map((itemId) => {
             const itemDetails = itemDetailsMap.get(itemId);
             if (!itemDetails) return null;
@@ -99,9 +98,9 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                 genreName,
                 type: 'Auction',
                 price: canSeePrice
-                    ? formatPrice(auction.startingPrice, auction.priceCurrency)
+                    ? formatPrice(auction.currentPrice ?? auction.startingPrice, auction.priceCurrency)
                     : null,
-                priceValue: Number(auction.startingPrice),
+                priceValue: Number(auction.currentPrice ?? auction.startingPrice),
 
                 author: itemDetails?.authorName ?? 'unknown',
                 publication: itemDetails?.title ?? 'unknown',
@@ -128,10 +127,12 @@ async function discoverMarketplaceHref(existingHref, relation) {
 export default function Marketplace() {
     const { state } = useContext(AppContext);
     const { activeDirectSalesHref, directSalesWithoutPriceHref } = state.app;
+    const {activeAuctionsHref, auctionsWithoutPriceHref} = state.app;
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
     const canSeePrice = isLoggedIn;
-    const marketplaceHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
+    const directSalesHref = isLoggedIn ? activeDirectSalesHref : directSalesWithoutPriceHref;
+    const auctionsHref = isLoggedIn ? activeAuctionsHref : auctionsWithoutPriceHref;
 
     const [items, setItems] = useState([]);
     const [genres, setGenres] = useState([]);
@@ -167,23 +168,47 @@ export default function Marketplace() {
             try {
                 setLoading(true);
                 setError('');
-                const marketplaceRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
-                const discoveredMarketplaceHref = await discoverMarketplaceHref(marketplaceHref, marketplaceRelation);
+                const directSaleRelation = isLoggedIn ? 'active-direct-sales' : 'direct-sales-without-price';
+                const auctionRelation = isLoggedIn ? 'auctions' : 'auctions-without-price';
+                const discoveredDirectSalesHref = await discoverMarketplaceHref(directSalesHref, directSaleRelation);
+                const discoveredAuctionsHref = await discoverMarketplaceHref(auctionsHref, auctionRelation);
 
-                if (!discoveredMarketplaceHref) {
-                    throw new Error(`Missing ${marketplaceRelation} link`);
+                if (!discoveredDirectSalesHref) {
+                    throw new Error(`Missing ${directSaleRelation} link`);
                 }
 
-                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
-                    apiClient.getByHref(discoveredMarketplaceHref),
-                    apiClient.getAuctions(),
+                if (!discoveredAuctionsHref) {
+                    throw new Error(`Missing ${auctionRelation} link`);
+                }
+
+                const [directSalesResult, auctionsResult, genresResult] = await Promise.allSettled([
+                    apiClient.getByHref(discoveredDirectSalesHref),
+                    apiClient.getByHref(discoveredAuctionsHref),
                     apiClient.getGenres(),
                 ]);
+
+                const directSalesResponse =
+                    directSalesResult.status === 'fulfilled' ? directSalesResult.value : null;
+
+                const auctionsResponse =
+                    auctionsResult.status === 'fulfilled' ? auctionsResult.value : null;
+
+                const genresResponse =
+                    genresResult.status === 'fulfilled' ? genresResult.value : [];
+
+                if (
+                    directSalesResult.status === 'rejected' &&
+                    auctionsResult.status === 'rejected'
+                ) {
+                    throw new Error('Could not load marketplace');
+                }
 
                 const directSales = directSalesResponse?._embedded
                     ? Object.values(directSalesResponse._embedded)[0] ?? []
                     : directSalesResponse ?? [];
-                const auctions = auctionsResponse ?? [];
+                const auctions = auctionsResponse?._embedded
+                    ? Object.values(auctionsResponse._embedded)[0] ?? []
+                    : auctionsResponse ?? [];
                 const genreList = genresResponse ?? [];
                 const { genreNameToId } = buildGenreMaps(genreList);
 
@@ -232,7 +257,7 @@ export default function Marketplace() {
         return () => {
             isMounted = false;
         };
-    }, [marketplaceHref, canSeePrice, isLoggedIn]);
+    }, [directSalesHref, auctionsHref, canSeePrice, isLoggedIn]);
 
     return (
         <DefaultLayout title="Marketplace" subtitle="CHECK ALL SALES:">

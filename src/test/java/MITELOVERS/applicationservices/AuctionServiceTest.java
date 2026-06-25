@@ -198,13 +198,11 @@ class AuctionServiceTest {
     @Test
     void getAuctionByIdReturnsAuctionWhenFound() {
         // Arrange
-        String rawAuctionId = "AU-12345678";
-
         when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
                 .thenReturn(Optional.of(_auctionDouble));
 
         // Act
-        Auction result = _auctionService.getAuctionById(rawAuctionId);
+        Auction result = _auctionService.getAuctionById(new AuctionId("AU-12345678"));
 
         // Assert
         assertSame(_auctionDouble, result);
@@ -213,20 +211,17 @@ class AuctionServiceTest {
     @Test
     void getAuctionByIdThrowsWhenNotFound() {
         // Arrange
-        String rawAuctionId = "AU-12345678";
-
         when(_iAuctionRepoDouble.ofIdentity(any(AuctionId.class)))
                 .thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class,
-                () -> _auctionService.getAuctionById(rawAuctionId));
+                () -> _auctionService.getAuctionById(new AuctionId("AU-12345678")));
     }
 
     @Test
     void placeBidShouldReturnResultAndSaveAuction() {
         // Arrange
-        String rawAuctionId = "AU-12345678";
         UserId userIdDouble = mock(UserId.class);
         Price offerPriceDouble = mock(Price.class);
 
@@ -241,7 +236,7 @@ class AuctionServiceTest {
 
         // Act
         AuctionService.BidPlacementResult result =
-                _auctionService.placeBid(rawAuctionId, userIdDouble, offerPriceDouble);
+                _auctionService.placeBid(new AuctionId("AU-12345678"), userIdDouble, offerPriceDouble);
 
         // Assert
         assertNotNull(result);
@@ -252,7 +247,6 @@ class AuctionServiceTest {
     @Test
     void placeBidShouldThrowWhenAuctionNotFound() {
         // Arrange
-        String rawAuctionId = "AU-12345678";
         UserId userId = mock(UserId.class);
         Price offerPrice = mock(Price.class);
 
@@ -262,7 +256,7 @@ class AuctionServiceTest {
         // Act + Assert
         NoSuchElementException ex = assertThrows(
                 NoSuchElementException.class,
-                () -> _auctionService.placeBid(rawAuctionId, userId, offerPrice)
+                () -> _auctionService.placeBid(new AuctionId("AU-12345678"), userId, offerPrice)
         );
 
         assertTrue(ex.getMessage().contains("Auction not found"));

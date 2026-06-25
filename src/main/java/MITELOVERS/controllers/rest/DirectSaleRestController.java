@@ -92,6 +92,8 @@ public class DirectSaleRestController {
 
         List<ItemId> itemsId = requestDTO.getItemsId().stream().map(ItemId::new).toList();
         UserId sellerId = new UserId(new Email(email));
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
+
         Price price = new Price(requestDTO.getPriceValue(), Currency.valueOf(requestDTO.getPriceCurrency()));
         Duration timeLimit = requestDTO.getTimeLimitSeconds() != null
                 ? Duration.ofSeconds(requestDTO.getTimeLimitSeconds())
@@ -101,7 +103,7 @@ public class DirectSaleRestController {
 
         DirectSaleResponseDTO responseDTO = _responseMapper.toResponseDTO(created);
 
-        _directSaleLinkProvider.addResourceLinks(responseDTO);
+        _directSaleLinkProvider.addResourceLinks(responseDTO, user);
 
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
@@ -128,6 +130,7 @@ public class DirectSaleRestController {
     public ResponseEntity<CollectionModel<DirectSaleResponseDTO>> getAllActiveDirectSales(
             @RequestHeader("X-User-Id") @NotBlank String email) {
 
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         List<DirectSale> sales = _directSaleService.getAllActiveDirectSales();
 
         if (sales.isEmpty()) {
@@ -139,7 +142,7 @@ public class DirectSaleRestController {
                 .toList();
 
         response.forEach(dto ->
-                _directSaleLinkProvider.addResourceLinks(dto, email)
+                _directSaleLinkProvider.addResourceLinks(dto, user)
         );
 
         CollectionModel<DirectSaleResponseDTO> result = CollectionModel.of(response);

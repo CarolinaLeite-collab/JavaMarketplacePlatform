@@ -38,7 +38,7 @@ ref over backend
 [[rest-sd-ref-diagrams/OPTIONS_Create_Auction_SD.puml OPTIONS for user on /auctions]]
 end ref
 
-backend --> frontend : 200 OK + [POST, OPTIONS]
+backend --> frontend : 200 OK \nAllow: OPTIONS, GET, POST
 deactivate backend
 
 frontend -> backend : POST {create-auction href}
@@ -48,7 +48,7 @@ ref over backend
 [[rest-sd-ref-diagrams/POST_Create_Auction_SD.puml POST new auction in /auctions]]
 end ref
 
-backend --> frontend : 201 Created + self link {auctions}
+backend --> frontend : 201 Created + AuctionResponseDTO\n+self link + bids link
 deactivate backend
 
 frontend --> user : The item was successfully %n()put on auction

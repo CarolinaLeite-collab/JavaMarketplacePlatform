@@ -46,6 +46,7 @@ class AuctionResponseDTOMapperTest {
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());
 
         when(auctionDouble.getSeller()).thenReturn(sellerDouble);
+        when(auctionDouble.getCurrentPrice()).thenReturn(startingPriceDouble);
 
         // SUT
         AuctionResponseDTOMapper mapper = new AuctionResponseDTOMapper();
@@ -92,6 +93,7 @@ class AuctionResponseDTOMapperTest {
         when(auctionDouble.getAuctionEndDate()).thenReturn(endDate.toInstant());
 
         when(auctionDouble.getSeller()).thenReturn(sellerDouble);
+        when(auctionDouble.getCurrentPrice()).thenReturn(startingPriceDouble);
 
         // SUT
         AuctionResponseDTOMapper mapper = new AuctionResponseDTOMapper();

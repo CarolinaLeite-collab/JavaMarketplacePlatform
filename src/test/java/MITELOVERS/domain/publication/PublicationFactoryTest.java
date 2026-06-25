@@ -22,6 +22,7 @@ class PublicationFactoryTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
+        String _synopsis = "Synopsis";
 
         //SUT
         PublicationFactory factory = new PublicationFactory();
@@ -33,11 +34,12 @@ class PublicationFactoryTest {
                                  when(mock.getAuthorId()).thenReturn(authorIdDouble);
                                  when(mock.getReleaseYear()).thenReturn(yearDouble);
                                  when(mock.getGenreId()).thenReturn(genreIdDouble);
+                                 when(mock.getSynopsis()).thenReturn(_synopsis);
                              })) {
 
             // Act
             Publication result = factory.createPublication(titleDouble, authorIdDouble,
-                    yearDouble, genreIdDouble); // SUT
+                    yearDouble, genreIdDouble, _synopsis); // SUT
 
             // Assert
             assertNotNull(result);
@@ -45,6 +47,7 @@ class PublicationFactoryTest {
             assertEquals(authorIdDouble, result.getAuthorId());
             assertEquals(yearDouble, result.getReleaseYear());
             assertEquals(genreIdDouble, result.getGenreId());
+            assertEquals(_synopsis, result.getSynopsis());
         }
     }
 
@@ -56,6 +59,7 @@ class PublicationFactoryTest {
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
         PublicationId publicationIdDouble = mock(PublicationId.class);
+        String _synopsis = "Synopsis";
 
         PublicationFactory factory = new PublicationFactory();
 
@@ -67,11 +71,12 @@ class PublicationFactoryTest {
                                  when(mock.getAuthorId()).thenReturn(authorIdDouble);
                                  when(mock.getReleaseYear()).thenReturn(yearDouble);
                                  when(mock.getGenreId()).thenReturn(genreIdDouble);
+                                 when(mock.getSynopsis()).thenReturn(_synopsis);
                      })) {
 
             // Act
             Publication result = factory.createPublication(publicationIdDouble, titleDouble, authorIdDouble,
-                    yearDouble, genreIdDouble); // SUT
+                    yearDouble, genreIdDouble, _synopsis); // SUT
 
             // Assert
             assertNotNull(result);
@@ -80,6 +85,7 @@ class PublicationFactoryTest {
             assertEquals(authorIdDouble, result.getAuthorId());
             assertEquals(yearDouble, result.getReleaseYear());
             assertEquals(genreIdDouble, result.getGenreId());
+            assertEquals(_synopsis, result.getSynopsis());
         }
     }
 

@@ -2,13 +2,13 @@ package MITELOVERS.mapper;
 
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.dto.response.AuctionResponseDTO;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
- * Maps {@link Auction} domain entities to {@link AuctionResponseDTO} instances.
+ * Maps {@link Auction} domain entities to {@link AuctionNoPriceResponseDTO} instances.
  * <p>
  * This component is responsible for transforming auction domain objects into
  * a representation suitable for API responses. It extracts the relevant auction
@@ -18,24 +18,19 @@ import java.util.List;
  */
 
 @Component
-public class AuctionResponseDTOMapper {
-    public AuctionResponseDTO toDTO(Auction auction) {
+public class AuctionNoPriceResponseDTOMapper {
+    public AuctionNoPriceResponseDTO toDTO(Auction auction) {
 
         List<String> itemIds = auction.getItemsId().stream()
                 .map(ItemId::toString)
                 .toList();
 
-        return new AuctionResponseDTO(
+        return new AuctionNoPriceResponseDTO(
                 auction.identity().toString(),
                 itemIds,
-                auction.getStartingPrice().getValue(),
-                auction.getReservePrice().getValue(),
-                auction.getOutrightPrice() != null ? auction.getOutrightPrice().getValue() : null,
-                auction.getStartingPrice().getCurrency().name(),
                 auction.getAuctionStartDate(),
                 auction.getAuctionEndDate(),
-                auction.getSeller().toString(),
-                auction.getCurrentPrice().getValue()
+                auction.getSeller().toString()
         );
     }
 }

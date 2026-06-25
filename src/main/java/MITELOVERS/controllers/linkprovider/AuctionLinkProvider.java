@@ -1,11 +1,18 @@
 package MITELOVERS.controllers.linkprovider;
 
+import MITELOVERS.controllers.rest.DirectSaleRestController;
+import MITELOVERS.controllers.rest.ItemRestController;
+import MITELOVERS.domain.auction.Auction;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
+import MITELOVERS.dto.response.AuctionResponseDTO;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.rest.AuctionRestController;
 import MITELOVERS.controllers.rest.root.RootLinkProvider;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.dto.response.BidResponseDTO;
+import org.springframework.hateoas.Links;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +50,12 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         if (_authorizationPolicy.canSell(user)) {
             links.add(linkTo(AuctionRestController.class)
-                    .withRel("create-auction"));
+                    .withRel("auctions"));
+        }
+        if(_authorizationPolicy.cannotSeePrice(user)) {
+            links.add(
+                    linkTo(methodOn(AuctionRestController.class).getAuctionsWithoutPrice()).withRel("auctions-without-price")
+            );
         }
 
         return links;
@@ -55,6 +67,10 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         methods.add(HttpMethod.OPTIONS);
 
+        if (_authorizationPolicy.canViewAuction(user)) {
+            methods.add(HttpMethod.GET);
+        }
+
         if(_authorizationPolicy.canSell(user)) {
             methods.add(HttpMethod.POST);
         }
@@ -63,56 +79,100 @@ public class AuctionLinkProvider implements RootLinkProvider {
     }
 
 
-    // Links for a specific auction (OPTIONS /auctions/{auctionId})
+    // Allowed HTTP methods for /auctions/{auctionId}
 
-    public List<Link> getLinks(User user, String auctionId) {
+    public List<HttpMethod> getAllowedMethodsForSpecificAuction(User user) {
 
-        List<Link> links = new ArrayList<>();
+        List<HttpMethod> methods = new ArrayList<>();
 
-        if (_authorizationPolicy.canViewAuction(user)) {
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .optionsForSpecificAuction(auctionId, null))
-                    .withSelfRel());
-
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .getAuctionById(auctionId))
-                    .withRel("view-auction"));
-        }
-
-        return links;
-    }
-
-    // Links for the bids of a specific auction (OPTIONS /auctions/{auctionId}/bids)
-
-    public List<Link> getBidLinks(User user, String auctionId) {
-        List<Link> links = new ArrayList<>();
+        methods.add(HttpMethod.OPTIONS);
 
         if (_authorizationPolicy.canViewAuction(user)) {
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .optionsForBids(auctionId, null))
-                    .withSelfRel());
-
-            links.add(linkTo(methodOn(AuctionRestController.class)
-                    .getBidsForAuction(auctionId))
-                    .withRel("view-bids"));
+            methods.add(HttpMethod.GET);
         }
 
-        return links;
+        return methods;
     }
 
+    // Adds links to an auction representation returned by GET /auctions/{auctionId}
 
-    // Links attached directly to a bid response (e.g., after POST /auctions/{auctionId}/bids).
-
-    public void addBidLinks(BidResponseDTO dto) {
+    public void addLinksForAuction(AuctionResponseDTO dto) {
 
         String auctionId = dto.getAuctionId();
 
-        // Link back to the OPTIONS for auction that was just bid on
-        Link auctionLink = linkTo(methodOn(AuctionRestController.class)
-                .optionsForSpecificAuction(auctionId, null))
-                .withRel("auction");
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAuctionById(auctionId))
+                .withSelfRel());
 
-        dto.add(auctionLink);
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getBidsForAuction(auctionId))
+                .withRel("bids"));
+    }
+
+    public void addLinksForAuction(AuctionNoPriceResponseDTO dto) {
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAllActiveAuctions())
+                .withRel("auctions"));
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAuctionsWithoutPrice())
+                .withRel("auctions-without-price"));
+    }
+
+    // Allowed HTTP methods for /auctions/{auctionId}/bids
+
+    public List<HttpMethod> getAllowedMethodsForBids(User user, Auction auction) {
+        List<HttpMethod> methods = new ArrayList<>();
+
+        methods.add(HttpMethod.OPTIONS);
+
+        if (_authorizationPolicy.canViewAuction(user)) {
+            methods.add(HttpMethod.GET);
+        }
+
+        if (_authorizationPolicy.canBid(user) && !auction.getSeller().equals(user.identity())) {
+            methods.add(HttpMethod.POST);
+        }
+
+
+        return methods;
+    }
+
+    // Add links to a bid representation returned by POST /auctions/{auctionId}/bids.
+
+    public void addLinksForCreatedBid(BidResponseDTO dto) {
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAuctionById(dto.getAuctionId()))
+                .withRel("auction"));
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getBidsForAuction(dto.getAuctionId()))
+                .withRel("bids"));
+    }
+
+    // Add links to bids in a bid collection returned by GET /auctions/{auctionId}/bids
+
+    public void addLinksForBidInCollection(BidResponseDTO dto) {
+
+        dto.add(linkTo(methodOn(AuctionRestController.class)
+                .getAuctionById(dto.getAuctionId()))
+                .withRel("auction"));
+    }
+
+    // Add links to the whole bid collection returned by GET /auctions/{auctionId}/bids
+
+    public CollectionModel<BidResponseDTO> addLinksForBidCollection(List<BidResponseDTO> bids, String auctionId) {
+        return CollectionModel.of(
+                bids,
+                linkTo(methodOn(AuctionRestController.class)
+                        .getBidsForAuction(auctionId))
+                        .withSelfRel(),
+                linkTo(methodOn(AuctionRestController.class)
+                        .getAuctionById(auctionId))
+                        .withRel("auction")
+        );
     }
 
 }

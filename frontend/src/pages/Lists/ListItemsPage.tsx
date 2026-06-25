@@ -1,5 +1,19 @@
 import { DefaultLayout } from "../../components/layout/DefaultLayout.tsx";
-import { Table, Affix, ActionIcon, Container, Center, Text, Modal, Stack, Badge, Image, Group, Divider } from "@mantine/core";
+import {
+    Table,
+    Affix,
+    ActionIcon,
+    Container,
+    Center,
+    Text,
+    Modal,
+    Stack,
+    Badge,
+    Image,
+    Group,
+    Divider,
+    Button
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPlus } from "@tabler/icons-react";
 import { useEffect, useState, useContext } from "react";
@@ -24,8 +38,8 @@ export default function ListItemsPage() {
     const [selectedItem, setSelectedItem] = useState<ItemDTO | null>(null);
     const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
 
-    // True if the user owns this list — determined by presence of remove-item link
-    const isOwner = links.some(l => l.rel === 'remove-item');
+    // True if the user owns this list — determined by presence of add-item link
+    const isOwner = links.some(l => l.rel === 'add-item');
 
     // Footer height for floating button
     useEffect(() => {
@@ -103,7 +117,7 @@ export default function ListItemsPage() {
                             <Table.Th style={{ width: 200, fontWeight: 500 }}>Author</Table.Th>
                             <Table.Th style={{ width: 80, fontWeight: 500 }}>Year</Table.Th>
                             {isOwner && (
-                                <Table.Th style={{ width: 50, fontWeight: 500 }}>
+                                <Table.Th style={{ width: 50, fontWeight: 500, textAlign: "center"}}>
                                     Remove
                                 </Table.Th>
                             )}
@@ -181,15 +195,14 @@ export default function ListItemsPage() {
                                 ids.forEach((id) => addItemToList(dispatch, links, id))
                             }
                         >
-                            <ActionIcon
-                                size="xl"
+                            <Button
+                                leftSection={<IconPlus size={18} />}
                                 radius="xl"
-                                color="blue"
+                                color="indigo"
                                 variant="filled"
-                                aria-label="Add item"
                             >
-                                <IconPlus size={24} />
-                            </ActionIcon>
+                                Add Item To List
+                            </Button>
                         </AddItemToListDropDown>
                     </Affix>
                 )}

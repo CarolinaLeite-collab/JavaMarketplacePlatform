@@ -18,13 +18,10 @@ actor Buyer
 participant ":MiteLovers" as System
 
 ' --- System dialog ---
-Buyer -> System : show me want I can do
+
+Buyer -> System: Selects an author from the Web UI
 activate System
-System --> Buyer : here is what you can do
-deactivate System
-Buyer -> System: Selects an author
-activate System
-System --> Buyer: List of items on direct sale\nand auction of a given author
+System --> Buyer: Displays direct sales\nand auctions of the selected author
 deactivate System
 
 @enduml

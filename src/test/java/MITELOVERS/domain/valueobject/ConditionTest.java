@@ -15,7 +15,7 @@ class ConditionTest {
 
     @Test
     void shouldReturnCorrectDescription() {
-        assertEquals("Used but in perfect condition", Condition.LIKE_NEW.getDescription());
+        assertEquals("Used but in perfect condition", Condition.MINT.getDescription());
         assertEquals("Minor imperfections", Condition.GOOD.getDescription());
         assertEquals("Visible imperfections but readable", Condition.FAIR.getDescription());
         assertEquals("Damaged or incomplete", Condition.POOR.getDescription());

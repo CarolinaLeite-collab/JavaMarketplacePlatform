@@ -3,6 +3,7 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,159 +13,94 @@ import org.springframework.hateoas.Link;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ListOfItemsLinkProviderTest {
 
     @Mock
-    AuthorizationPolicy authorizationPolicy;
+    AuthorizationPolicy _authorizationPolicy;
 
     @Mock
-    User user;
+    User _user;
+
+    @Mock
+    UserId _userId;
 
     @InjectMocks
-    ListOfItemsLinkProvider linkProvider;
+    ListOfItemsLinkProvider _linkProvider;
+
+    @BeforeEach
+    void setup() {
+        when(_userId.toString()).thenReturn("john@example.com");
+        when(_user.identity()).thenReturn(_userId);
+    }
 
     @Test
-    void getLinks_returnsAllLinks_whenUserHasAllPermissions() {
-        // Arrange
-        when(authorizationPolicy.canSeeList(user)).thenReturn(true);
-        when(authorizationPolicy.canDeleteList(user)).thenReturn(true);
-        when(authorizationPolicy.canAddItemTo(user)).thenReturn(true);
-        when(authorizationPolicy.canCreateList(user)).thenReturn(true);
-        when(authorizationPolicy.canSeePublicLists(user)).thenReturn(true);
-        when(authorizationPolicy.canSeeItemsInPublicList(user)).thenReturn(true);
-        UserId userIdDouble = mock(UserId.class);
-        when(user.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user@cenas.com");
+    void getLinks_shouldAlwaysContainCollectionLink() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(false);
 
-        // Act
-        List<Link> links = linkProvider.getLinks(user);
-
-        // Assert
-        assertFalse(links.isEmpty());
+        List<Link> links = _linkProvider.getLinks(_user);
 
         assertTrue(
-                links.stream().anyMatch(l -> "self".equals(l.getRel().value())),
-                "should contain self link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "collection".equals(l.getRel().value())),
-                "should contain collection link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "delete".equals(l.getRel().value())),
-                "should contain delete link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "add-item".equals(l.getRel().value())),
-                "should contain add-item link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "create-list".equals(l.getRel().value())),
-                "should contain create-list link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "public-lists".equals(l.getRel().value())),
-                "should contain public-lists link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "list-items".equals(l.getRel().value())),
-                "should contain list-items link"
+                links.stream().anyMatch(l -> l.getRel().value().equals("collection")),
+                "Expected 'collection' link to always be present"
         );
     }
 
     @Test
-    void getLinks_containsOnlySeeListLinks_whenUserCanOnlySeeLists() {
-        // Arrange
-        when(authorizationPolicy.canSeeList(user)).thenReturn(true);
-        when(authorizationPolicy.canDeleteList(user)).thenReturn(false);
-        when(authorizationPolicy.canAddItemTo(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateList(user)).thenReturn(false);
-        UserId userIdDouble = mock(UserId.class);
-        when(user.identity()).thenReturn(userIdDouble);
-        when(userIdDouble.toString()).thenReturn("user@cenas.com");
+    void getLinks_shouldAlwaysContainPublicListsLink() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(false);
 
-        // Act
-        List<Link> links = linkProvider.getLinks(user);
-
-        // Assert
-        assertFalse(links.isEmpty());
+        List<Link> links = _linkProvider.getLinks(_user);
 
         assertTrue(
-                links.stream().anyMatch(l -> "self".equals(l.getRel().value())),
-                "should contain self link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "collection".equals(l.getRel().value())),
-                "should contain collection link"
-        );
-
-        assertFalse(
-                links.stream().anyMatch(l -> "delete".equals(l.getRel().value())),
-                "should not contain delete link"
-        );
-        assertFalse(
-                links.stream().anyMatch(l -> "add-item".equals(l.getRel().value())),
-                "should not contain add-item link"
-        );
-        assertFalse(
-                links.stream().anyMatch(l -> "create-list".equals(l.getRel().value())),
-                "should not contain create-list link"
+                links.stream().anyMatch(l -> l.getRel().value().equals("public-lists")),
+                "Expected 'public-lists' link to always be present"
         );
     }
 
     @Test
-    void getLinks_containsPublicListLinks_whenUserCanOnlyAccessPublicLists() {
-        // Arrange
-        when(authorizationPolicy.canSeeList(user)).thenReturn(false);
-        when(authorizationPolicy.canDeleteList(user)).thenReturn(false);
-        when(authorizationPolicy.canAddItemTo(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateList(user)).thenReturn(false);
-        when(authorizationPolicy.canSeePublicLists(user)).thenReturn(true);
-        when(authorizationPolicy.canSeeItemsInPublicList(user)).thenReturn(true);
+    void getLinks_shouldIncludeCreateList_whenUserCanCreate() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(true);
 
-        // Act
-        List<Link> links = linkProvider.getLinks(user);
+        List<Link> links = _linkProvider.getLinks(_user);
 
-        // Assert
         assertTrue(
-                links.stream().anyMatch(l -> "public-lists".equals(l.getRel().value())),
-                "should contain public-lists link"
-        );
-        assertTrue(
-                links.stream().anyMatch(l -> "list-items".equals(l.getRel().value())),
-                "should contain list-items link"
-        );
-        assertFalse(
-                links.stream().anyMatch(l -> "self".equals(l.getRel().value())),
-                "should not contain self link"
-        );
-        assertFalse(
-                links.stream().anyMatch(l -> "collection".equals(l.getRel().value())),
-                "should not contain collection link"
+                links.stream().anyMatch(l -> l.getRel().value().equals("create-list")),
+                "Expected 'create-list' link when user can create lists"
         );
     }
 
     @Test
-    void getLinks_returnsEmpty_whenUserHasNoPermissions() {
-        // Arrange
-        when(authorizationPolicy.canSeeList(user)).thenReturn(false);
-        when(authorizationPolicy.canDeleteList(user)).thenReturn(false);
-        when(authorizationPolicy.canAddItemTo(user)).thenReturn(false);
-        when(authorizationPolicy.canCreateList(user)).thenReturn(false);
-        when(authorizationPolicy.canSeePublicLists(user)).thenReturn(false);
-        when(authorizationPolicy.canSeeItemsInPublicList(user)).thenReturn(false);
+    void getLinks_shouldNotIncludeCreateList_whenUserCannotCreate() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(false);
 
-        // Act
-        List<Link> links = linkProvider.getLinks(user);
+        List<Link> links = _linkProvider.getLinks(_user);
 
-        // Assert
-        assertTrue(links.isEmpty());
+        assertFalse(
+                links.stream().anyMatch(l -> l.getRel().value().equals("create-list")),
+                "Did not expect 'create-list' link when user cannot create lists"
+        );
+    }
+
+    @Test
+    void getLinks_shouldHaveCorrectNumberOfLinks_whenUserHasNoPermissions() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(false);
+
+        List<Link> links = _linkProvider.getLinks(_user);
+
+        assertEquals(2, links.size(), "Expected exactly 2 links: collection + public-lists");
+    }
+
+    @Test
+    void getLinks_shouldHaveCorrectNumberOfLinks_whenUserHasAllPermissions() {
+        when(_authorizationPolicy.canCreateList(_user)).thenReturn(true);
+
+        List<Link> links = _linkProvider.getLinks(_user);
+
+        assertEquals(3, links.size(), "Expected 3 links: collection + create-list + public-lists");
     }
 
 }

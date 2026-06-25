@@ -70,7 +70,7 @@ class ItemAssemblerTest {
         Item itemDouble = mock(Item.class);
         when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
         when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getCondition()).thenReturn(Condition.MINT);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getPicture()).thenReturn(null);
@@ -82,7 +82,7 @@ class ItemAssemblerTest {
         ItemDataModel result = assembler.toDataModel(itemDouble);
 
         // Assert
-        assertEquals("LIKE_NEW", result.getCondition());
+        assertEquals("MINT", result.getCondition());
     }
 
     @Test
@@ -93,7 +93,7 @@ class ItemAssemblerTest {
         Item itemDouble = mock(Item.class);
         when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
         when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getCondition()).thenReturn(Condition.MINT);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book."));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getPicture()).thenReturn(null);
@@ -116,7 +116,7 @@ class ItemAssemblerTest {
         Item itemDouble = mock(Item.class);
         when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
         when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getCondition()).thenReturn(Condition.MINT);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getPicture()).thenReturn(null);
@@ -141,7 +141,7 @@ class ItemAssemblerTest {
 
         when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
         when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getCondition()).thenReturn(Condition.MINT);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getPicture()).thenReturn(new Picture("https://example.com/image.jpg"));
@@ -164,7 +164,7 @@ class ItemAssemblerTest {
 
         when(itemDouble.identity()).thenReturn(new ItemId("ABCDEF1234"));
         when(itemDouble.getEditionId()).thenReturn(new EditionId("E-ED123456"));
-        when(itemDouble.getCondition()).thenReturn(Condition.LIKE_NEW);
+        when(itemDouble.getCondition()).thenReturn(Condition.MINT);
         when(itemDouble.getDescription()).thenReturn(new Description("Nice book"));
         when(itemDouble.getSaleStatus()).thenReturn(SaleStatus.OnAuction);
         when(itemDouble.getPicture()).thenReturn(null);

@@ -17,14 +17,14 @@ import java.time.Year;
 @Component
 public class PublicationFactory {
 
-    public Publication createPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId ) {
+    public Publication createPublication(Title title, AuthorId authorId, Year releaseYear, GenreId genreId, String synopsis ) {
 
-        return new Publication( title, authorId, releaseYear, genreId );
+        return new Publication( title, authorId, releaseYear, genreId, synopsis);
     }
 
-    public Publication createPublication(PublicationId publicationId, Title title, AuthorId authorId,  Year releaseYear, GenreId genreId ) {
+    public Publication createPublication(PublicationId publicationId, Title title, AuthorId authorId,  Year releaseYear, GenreId genreId,  String synopsis ) {
 
-        return new Publication(publicationId, title, authorId, releaseYear, genreId);
+        return new Publication(publicationId, title, authorId, releaseYear, genreId, synopsis);
     }
 
 }

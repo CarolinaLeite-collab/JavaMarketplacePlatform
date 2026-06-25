@@ -5,11 +5,11 @@ import MITELOVERS.ddd.ValueObject;
 /**
  * Represents the physical condition of a book or magazine.
  * This enum provides a standardized rating system for assessing the state
- * of publications, ranging from LIKE_NEW (best) to POOR (worst).
+ * of publications, ranging from MINT (best) to POOR (worst).
  */
 
 public enum Condition implements ValueObject {
-    LIKE_NEW("Used but in perfect condition"),
+    MINT("Used but in perfect condition"),
     GOOD("Minor imperfections"),
     FAIR("Visible imperfections but readable"),
     POOR("Damaged or incomplete");

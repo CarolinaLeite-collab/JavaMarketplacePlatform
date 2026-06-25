@@ -6,6 +6,7 @@ import MITELOVERS.domain.repository.IGenreRepo;
 import MITELOVERS.domain.repository.IItemRepo;
 import MITELOVERS.domain.repository.IListOfItemsRepo;
 import MITELOVERS.domain.valueobject.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,8 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -24,206 +24,276 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ListOfItemsServiceTest {
 
-    //SUT
+    // SUT
     @InjectMocks
-    private ListOfItemsService _service;
-
+    ListOfItemsService _service;
     @Mock
-    private IListOfItemsRepo _listOfItemsRepoDouble;
+    IListOfItemsRepo _listRepo;
     @Mock
-    private ListOfItemsFactory _factoryDouble;
+    ListOfItemsFactory _factory;
     @Mock
-    private IItemRepo _itemRepoDouble;
+    IGenreRepo _genreRepo;
     @Mock
-    private IGenreRepo _genreRepoDouble;
+    IItemRepo _itemRepo;
+    @Mock
+    private UserId _userId;
+    @Mock
+    private GenreId _genreId;
+    @Mock
+    private GenreId _genreId2;
+    @Mock
+    private ListOfItemsId _listId;
+    @Mock
+    private ItemId _itemId;
+    @Mock
+    private ItemId _itemId2;
+    @Mock
+    private Name _listName;
 
     @Test
-    void getUserListsReturnsListsByUserId() {
-        //arrange
-        ListOfItems listOfItemsDouble1 = mock(ListOfItems.class);
-        ListOfItems listOfItemsDouble2 = mock(ListOfItems.class);
-        UserId userIdDouble =  mock(UserId.class);
+    void getUserLists_shouldReturnLists() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.findListOfItemsByUserId(_userId))
+                .thenReturn(List.of(list));
 
-        when(_listOfItemsRepoDouble.findListOfItemsByUserId(any(UserId.class))).thenReturn(List.of(listOfItemsDouble1, listOfItemsDouble2));
+        List<ListOfItems> result = _service.getUserLists(_userId);
 
-        //act
-        List<ListOfItems> result = _service.getUserLists(userIdDouble);
+        assertEquals(1, result.size());
+        assertSame(list, result.get(0));
+    }
 
-        //assert
-        assertEquals(2, result.size());
-        assertEquals(listOfItemsDouble1, result.get(0));
-        assertEquals(listOfItemsDouble2, result.get(1));
+    // ------------------------------------------------------------
+    // GET LIST BY ID
+    // ------------------------------------------------------------
+
+    @Test
+    void getListById_shouldReturnList() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+
+        ListOfItems result = _service.getListById(_listId);
+
+        assertSame(list, result);
     }
 
     @Test
-    void getListReturnsListByListByIdId() {
-        //arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+    void getListById_shouldThrow_whenNotFound() {
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.empty());
 
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        //act
-        ListOfItems result = _service.getListById(listOfItemsIdDouble);
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.getListById(_listId));
+    }
 
-        //assert
-        assertEquals(listOfItemsDouble, result);
+    // ------------------------------------------------------------
+    // SAVE LIST
+    // ------------------------------------------------------------
+
+    @Test
+    void save_shouldCreateList_whenValid() {
+        when(_genreRepo.containsOfIdentity(_genreId)).thenReturn(true);
+        when(_listRepo.findListOfItemsByUserId(_userId)).thenReturn(List.of());
+
+        ListOfItems created = mock(ListOfItems.class);
+        when(_factory.createListOfItems(_userId, _listName, _genreId)).thenReturn(created);
+        when(_listRepo.save(created)).thenReturn(created);
+
+        ListOfItems result = _service.save(_userId, _listName, _genreId);
+
+        assertSame(created, result);
     }
 
     @Test
-    void saveReturnsNewlyCreatedAndSavedList() {
-        //arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        UserId userIdDouble =  mock(UserId.class);
-        Name nameDouble = mock(Name.class);
-        GenreId genreIdDouble = mock(GenreId.class);
+    void save_shouldThrow_whenGenreDoesNotExist() {
+        when(_genreRepo.containsOfIdentity(_genreId)).thenReturn(false);
 
-        when(_genreRepoDouble.containsOfIdentity(any(GenreId.class))).thenReturn(true);
-        when(_factoryDouble.createListOfItems(any(UserId.class), any(Name.class), any(GenreId.class))).thenReturn(listOfItemsDouble);
-        when(_listOfItemsRepoDouble.save(any(ListOfItems.class))).thenReturn(listOfItemsDouble);
-
-        //act
-        ListOfItems result = _service.save(userIdDouble, nameDouble, genreIdDouble);
-
-        //assert
-        assertEquals(listOfItemsDouble, result);
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.save(_userId, _listName, _genreId));
     }
 
     @Test
-    void addItemToListReturnsListWithAddedItem() {
-        //arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
-        ItemId itemIdDouble = mock(ItemId.class);
+    void save_shouldThrow_whenDuplicateName() {
+        ListOfItems existing = mock(ListOfItems.class);
+        when(existing.getName()).thenReturn(_listName);
 
-        when(_itemRepoDouble.containsOfIdentity(any(ItemId.class))).thenReturn(true);
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
+        when(_genreRepo.containsOfIdentity(_genreId)).thenReturn(true);
+        when(_listRepo.findListOfItemsByUserId(_userId)).thenReturn(List.of(existing));
 
-        //act
-        ListOfItems result = _service.addItemToList(listOfItemsIdDouble, itemIdDouble);
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.save(_userId, _listName, _genreId));
+    }
 
-        //assert
-        assertEquals(listOfItemsDouble, result);
+    // ------------------------------------------------------------
+    // ADD ITEM
+    // ------------------------------------------------------------
 
+    @Test
+    void addItemToList_shouldReturnUpdatedList() {
+        ListOfItems list = mock(ListOfItems.class);
+
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(_itemRepo.containsOfIdentity(_itemId)).thenReturn(true);
+        when(_listRepo.save(list)).thenReturn(list);
+
+        ListOfItems result = _service.addItemToList(_listId, _itemId);
+
+        assertSame(list, result);
     }
 
     @Test
-    void changeVisibilityShouldMakeListPublicIfPrivate() {
-        //arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
-        SharedDuration sharedDurationDouble = mock(SharedDuration.class);
-
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-
-        //act
-        ListOfItems result = _service.makePublic(listOfItemsIdDouble, sharedDurationDouble);
-
-        //assert
-        assertEquals(listOfItemsDouble, result);
+    void addItemToList_shouldThrow_whenItemIdNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.addItemToList(_listId, null));
     }
 
     @Test
-    void changeVisibilityShouldMakeListPrivateIfPublic() {
-        //arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+    void addItemToList_shouldThrow_whenListNotFound() {
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.empty());
 
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-
-        //act
-        ListOfItems result = _service.makePrivate(listOfItemsIdDouble);
-
-        //assert
-        assertEquals(listOfItemsDouble, result);
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.addItemToList(_listId, _itemId));
     }
 
     @Test
-    void findListsByGenreReturnsList() {
-        // arrange
-        ListOfItems listOfItemsDouble1 = mock(ListOfItems.class);
-        ListOfItems listOfItemsDouble2 = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble1 = mock(ListOfItemsId.class);
-        ListOfItemsId listOfItemsIdDouble2 = mock(ListOfItemsId.class);
+    void addItemToList_shouldThrow_whenItemDoesNotExist() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(_itemRepo.containsOfIdentity(_itemId)).thenReturn(false);
 
-        GenreId genreIdDouble = mock(GenreId.class);
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.addItemToList(_listId, _itemId));
+    }
 
-        when(listOfItemsDouble1.getGenreId()).thenReturn(genreIdDouble);
-        when(listOfItemsDouble2.getGenreId()).thenReturn(genreIdDouble);
+    // ------------------------------------------------------------
+    // MAKE PUBLIC
+    // ------------------------------------------------------------
 
-        when(_listOfItemsRepoDouble.findAll()).thenReturn(List.of(listOfItemsDouble1, listOfItemsDouble2));
+    @Test
+    void makePublic_shouldReturnList() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(_listRepo.save(list)).thenReturn(list);
 
-        // act
-        List<ListOfItems> result = _service.findByGenre(genreIdDouble);
+        SharedDuration duration = new SharedDuration(5);
 
-        // assert
-        assertEquals(2, result.size());
-        assertEquals(listOfItemsDouble1, result.get(0));
-        assertEquals(listOfItemsDouble2, result.get(1));
+        ListOfItems result = _service.makePublic(_listId, duration);
+
+        assertSame(list, result);
     }
 
     @Test
-    void getPublicListsReturnsOnlyNonPrivateLists() {
-        // arrange
-        ListOfItems publicListDouble = mock(ListOfItems.class);
-        ListOfItems privateListDouble = mock(ListOfItems.class);
-        ListOfItems secondPublicListDouble = mock(ListOfItems.class);
+    void makePublic_shouldThrow_whenListNotFound() {
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.empty());
 
-        when(publicListDouble.isPrivate()).thenReturn(false);
-        when(privateListDouble.isPrivate()).thenReturn(true);
-        when(secondPublicListDouble.isPrivate()).thenReturn(false);
-        when(_listOfItemsRepoDouble.findAll()).thenReturn(List.of(publicListDouble, privateListDouble, secondPublicListDouble));
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.makePublic(_listId, new SharedDuration(5)));
+    }
 
-        // act
+    // ------------------------------------------------------------
+    // MAKE PRIVATE
+    // ------------------------------------------------------------
+
+    @Test
+    void makePrivate_shouldReturnList() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(_listRepo.save(list)).thenReturn(list);
+
+        ListOfItems result = _service.makePrivate(_listId);
+
+        assertSame(list, result);
+    }
+
+    @Test
+    void makePrivate_shouldThrow_whenListNotFound() {
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.makePrivate(_listId));
+    }
+
+    // ------------------------------------------------------------
+    // FIND BY GENRE
+    // ------------------------------------------------------------
+
+    @Test
+    void findByGenre_shouldReturnOnlyPublicListsOfGenre() {
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+
+        when(list1.getGenreId()).thenReturn(_genreId);
+        when(list2.getGenreId()).thenReturn(_genreId2);
+
+        when(_listRepo.findAll()).thenReturn(List.of(list1, list2));
+
+        List<ListOfItems> result = _service.findByGenre(_genreId);
+
+        assertEquals(1, result.size());
+        assertSame(list1, result.get(0));
+    }
+
+    // ------------------------------------------------------------
+    // DELETE LIST
+    // ------------------------------------------------------------
+
+    @Test
+    void deleteList_shouldNotThrow() {
+        assertDoesNotThrow(() -> _service.deleteList(_listId));
+    }
+
+    // ------------------------------------------------------------
+    // GET PUBLIC LISTS
+    // ------------------------------------------------------------
+
+    @Test
+    void getPublicLists_shouldReturnOnlyPublicLists() {
+        ListOfItems list1 = mock(ListOfItems.class);
+        ListOfItems list2 = mock(ListOfItems.class);
+
+        when(list1.isPrivate()).thenReturn(false);
+        when(list2.isPrivate()).thenReturn(true);
+
+        when(_listRepo.findAll()).thenReturn(List.of(list1, list2));
+
         List<ListOfItems> result = _service.getPublicLists();
 
-        // assert
-        assertEquals(2, result.size());
-        assertEquals(publicListDouble, result.get(0));
-        assertEquals(secondPublicListDouble, result.get(1));
+        assertEquals(1, result.size());
+        assertSame(list1, result.get(0));
+    }
+
+    // ------------------------------------------------------------
+    // GET ITEMS IN PUBLIC LIST
+    // ------------------------------------------------------------
+
+    @Test
+    void getItemsInPublicList_shouldReturnItems() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(list.isPrivate()).thenReturn(false);
+
+        List<ItemId> items = List.of(_itemId, _itemId2);
+        when(list.getItemIds()).thenReturn(items);
+
+        List<ItemId> result = _service.getItemsInPublicList(_listId);
+
+        assertEquals(items, result);
     }
 
     @Test
-    void getItemsInPublicListReturnsItemIdsWhenListIsPublic() {
-        // arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
-        ItemId itemIdDouble1 = mock(ItemId.class);
-        ItemId itemIdDouble2 = mock(ItemId.class);
+    void getItemsInPublicList_shouldThrow_whenListIsPrivate() {
+        ListOfItems list = mock(ListOfItems.class);
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.of(list));
+        when(list.isPrivate()).thenReturn(true);
 
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(listOfItemsDouble.isPrivate()).thenReturn(false);
-        when(listOfItemsDouble.getItemIds()).thenReturn(List.of(itemIdDouble1, itemIdDouble2));
-
-        // act
-        List<ItemId> result = _service.getItemsInPublicList(listOfItemsIdDouble);
-
-        // assert
-        assertEquals(2, result.size());
-        assertEquals(itemIdDouble1, result.get(0));
-        assertEquals(itemIdDouble2, result.get(1));
+        assertThrows(IllegalStateException.class,
+                () -> _service.getItemsInPublicList(_listId));
     }
 
     @Test
-    void getItemsInPublicListThrowsWhenListIsPrivate() {
-        // arrange
-        ListOfItems listOfItemsDouble = mock(ListOfItems.class);
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
+    void getItemsInPublicList_shouldThrow_whenListNotFound() {
+        when(_listRepo.ofIdentity(_listId)).thenReturn(Optional.empty());
 
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.of(listOfItemsDouble));
-        when(listOfItemsDouble.isPrivate()).thenReturn(true);
-
-        // act + assert
-        assertThrows(IllegalStateException.class, () -> _service.getItemsInPublicList(listOfItemsIdDouble));
+        assertThrows(IllegalArgumentException.class,
+                () -> _service.getItemsInPublicList(_listId));
     }
 
-    @Test
-    void getItemsInPublicListThrowsWhenListDoesNotExist() {
-        // arrange
-        ListOfItemsId listOfItemsIdDouble = mock(ListOfItemsId.class);
-
-        when(_listOfItemsRepoDouble.ofIdentity(any(ListOfItemsId.class))).thenReturn(Optional.empty());
-
-        // act + assert
-        assertThrows(IllegalArgumentException.class, () -> _service.getItemsInPublicList(listOfItemsIdDouble));
-    }
 }
