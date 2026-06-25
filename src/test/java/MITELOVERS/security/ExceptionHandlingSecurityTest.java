@@ -2,6 +2,7 @@ package MITELOVERS.security;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
@@ -68,6 +69,9 @@ class ExceptionHandlingSecurityTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuthorizationPolicy _authorizationPolicy;
+
     @Test
     @DisplayName("OWASP A10 Exception Handling: domain exception with internal DDD language is propagated verbatim in the HTTP response body")
     void domainException_containingInternalLanguage_isPropagatedVerbatimInResponseBody() throws Exception {
@@ -90,7 +94,7 @@ class ExceptionHandlingSecurityTest {
         when(_userService.getUserByEmail(eq(new UserId(new Email(targetEmail)))))
                 .thenThrow(new NoSuchElementException("User not found: " + targetEmail));
 
-        _mockMvc.perform(options("/my-lists").param("email", targetEmail))
+        _mockMvc.perform(options("/my-lists").header("X-User-Id", targetEmail))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(containsString(targetEmail)));
     }
