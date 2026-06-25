@@ -932,7 +932,7 @@ public class DataInitializer {
             Item differenciasItem = itemFactory.createItem(
                     differenciasItemId,
                     editiondifferencias.identity(),
-                    Condition.LIKE_NEW,
+                    Condition.MINT,
                     new Description("A well-preserved copy of this influential work on contemporary architectural theory. Light wear to the cover."),
                     SaleStatus.OnDirectSale,
                     new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/diferencias.png")

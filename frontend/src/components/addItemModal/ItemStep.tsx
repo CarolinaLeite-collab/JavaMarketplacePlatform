@@ -34,7 +34,7 @@ export function ItemStep({
                 label="Condition"
                 placeholder="Select item condition"
                 data={[
-                    'LIKE_NEW',
+                    'MINT',
                     'GOOD',
                     'FAIR',
                     'POOR',
