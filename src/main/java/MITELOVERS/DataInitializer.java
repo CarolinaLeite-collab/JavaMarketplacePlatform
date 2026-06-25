@@ -799,7 +799,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Paperback edition of Hipocritões e Oligarcas"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/hipocritoes.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/hipocritoes.png")
 
             );
             itemRepo.save(hipocritoesItem);
@@ -811,7 +811,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Great book"),
                     SaleStatus.Sold,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/spaceSettlements.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/spaceSettlements.png")
             );
             itemRepo.save(spaceSetlementsItem);
 
@@ -844,7 +844,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Portuguese Edition of Delirious New York"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/deliriousNewYork.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/deliriousNewYork.png")
             );
             itemRepo.save(item3);
 
@@ -855,7 +855,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("First Edition"),
                     SaleStatus.OnAuction,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/patternLanguage.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/patternLanguage.png")
 
             );
             itemRepo.save(item4);
@@ -867,7 +867,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Penguin Great Ideas edition of On the Shortness of Life"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/seneca.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/seneca.png")
             );
             itemRepo.save(shortnessOfLifeItem);
 
@@ -878,7 +878,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Magazine rare First Edition"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/E1027.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/E1027.png")
 
             );
             itemRepo.save(itemE1027);
@@ -924,7 +924,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Hardcover in good condition, with clean pages and light cover wear"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/italienishReise.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/italienishReise.png")
             );
             itemRepo.save(italienishReiseItem);
 
@@ -935,7 +935,7 @@ public class DataInitializer {
                     Condition.LIKE_NEW,
                     new Description("A well-preserved copy of this influential work on contemporary architectural theory. Light wear to the cover."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/diferencias.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/diferencias.png")
             );
             itemRepo.save(differenciasItem);
 
@@ -946,7 +946,7 @@ public class DataInitializer {
                     Condition.POOR,
                     new Description("A worn copy with visible signs of use. Pages remain readable, making it a practical reading copy for children."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/horizonte.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/horizonte.png")
             );
             itemRepo.save(horizonteItem);
 
@@ -957,7 +957,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Used but in good condition. Some signs of handling are present, but the book remains fully readable and complete."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/technoFeudalism.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/technoFeudalism.png")
             );
             itemRepo.save(technoItem);
 
@@ -968,7 +968,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Pre-owned copy with light wear from previous use. Great fun to read."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/siria.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/siria.png")
             );
             itemRepo.save(agathaItem);
 
@@ -1138,7 +1138,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Sci-Fi test item"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/fundacion.png?raw=true\")\n")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/fundacion.png")
 
             );
             itemRepo.save(sfItem);
@@ -1225,7 +1225,7 @@ public class DataInitializer {
             );
 
             // Place bids while active
-            auctionWithBids.placeBid(user.identity(), new Price(11.00, Currency.EUR));
+            auctionWithBids.placeBid(userTono.identity(), new Price(11.00, Currency.EUR));
             auctionWithBids.placeBid(user2.identity(), new Price(13.00, Currency.EUR));
             auctionWithBids.placeBid(user3.identity(), new Price(15.00, Currency.EUR));
 
