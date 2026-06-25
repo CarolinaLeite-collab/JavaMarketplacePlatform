@@ -2,8 +2,8 @@ services:
 
   db:
     image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-h2:${APP_VERSION:?set APP_VERSION}
-    environment:
-      H2_OPTIONS: "-tcp -tcpAllowOthers -tcpPort 9092 -baseDir /opt/h2-data -ifNotExists"
+    env_file:
+      - .env.prod
     volumes:
       - mitelovers-data:/opt/h2-data
     restart: unless-stopped
@@ -29,12 +29,8 @@ services:
     image: vs-gate.dei.isep.ipp.pt:10684/devsecops-grupo-b/mitelovers-backend:${APP_VERSION:?set APP_VERSION}
     ports:
       - "2228:8081"
-    environment:
-      SERVER_FORWARD_HEADERS_STRATEGY: "framework"
-      SPRING_PROFILES_ACTIVE: "bootstrap,jpa"
-      CORS_ALLOWED_ORIGINS: "https://vs-gate.dei.isep.ipp.pt:10266"
-      SPRING_DATASOURCE_URL: "jdbc:h2:tcp://db:9092/miteloversdb;DB_CLOSE_ON_EXIT=FALSE"
-      JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=75.0"
+    env_file:
+      - .env.prod
     depends_on:
       db:
         condition: service_healthy

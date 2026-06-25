@@ -42,3 +42,7 @@ data/
 gitleaks-report.json
 reports/
 node_modules/
+
+# Environment files
+.env.prod
+.env
