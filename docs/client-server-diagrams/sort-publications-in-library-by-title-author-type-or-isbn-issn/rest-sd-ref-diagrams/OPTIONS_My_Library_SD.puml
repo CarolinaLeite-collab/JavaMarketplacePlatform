@@ -9,62 +9,64 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+participant "Router" as router
 participant ":LibraryRestController" as REST
-participant ":UserService" as UserService
-participant ":IUserRepo" as UserRepo
-participant ":LibraryLinkProvider" as LinkProvider
-participant ":AuthorizationPolicy" as Authorization
-participant ":Database" as Database
+participant ":UserService" as userService
+participant ":IUserRepo" as userRepo
+participant ":LibraryLinkProvider" as linkProvider
+participant ":AuthorizationPolicy" as authorizationPolicy
 
+[o-> router : OPTIONS {library href}\nX-User-Id: {email}
+activate router
+
+router -> REST : options(emailString)
 activate REST
 
-REST -> UserService : getUserByEmail(emailString)
-activate UserService
+REST -> userService : getUserByEmail(emailString)
+activate userService
 
 create "email:Email" as Email
-UserService -->> Email : new Email(emailString)
+userService -->> Email : createEmail(emailString)
 
 create "userId:UserId" as UserId
-UserService -->> UserId : new UserId(email)
+userService -->> UserId : createUserId(email)
 
-UserService -> UserRepo : ofIdentity(userId)
-activate UserRepo
-UserRepo -> Database : ofIdentity(userId)
-activate Database
-Database --> UserRepo : user
-deactivate Database
-UserRepo --> UserService : user
-deactivate UserRepo
+userService -> userRepo : ofIdentity(userId)
+activate userRepo
+userRepo ->o] : FETCH
+userRepo <--o] : DATA
+userRepo --> userService : user
+deactivate userRepo
 
-UserService --> REST : user
-deactivate UserService
+userService --> REST : user
+deactivate userService
 
 create "options:%n()RepresentationModel<?>" as Options
-REST -> Options : add self link for\nOPTIONS /my-library
+REST -> Options : add self link for\nOPTIONS {library href}
 
-REST -> LinkProvider : getLinks(user)
-activate LinkProvider
+REST -> linkProvider : getLinks(user)
+activate linkProvider
 
-LinkProvider -> Authorization : canGetLibrary(user)
-activate Authorization
-Authorization --> LinkProvider : true / false
-deactivate Authorization
+linkProvider -> authorizationPolicy : canGetLibrary(user)
+activate authorizationPolicy
+authorizationPolicy --> linkProvider : true / false
+deactivate authorizationPolicy
 
 alt user can retrieve library
-    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library"
+    linkProvider -> linkProvider : linkTo(LibraryRestController.class)\nwith rel "library"
 end
 
-LinkProvider -> Authorization : canAddToLibrary(user)
-activate Authorization
-Authorization --> LinkProvider : true / false
-deactivate Authorization
+linkProvider -> authorizationPolicy : canAddToLibrary(user)
+activate authorizationPolicy
+authorizationPolicy --> linkProvider : true / false
+deactivate authorizationPolicy
 
 alt user can add to library
-    LinkProvider -> LinkProvider : create "/my-library" link\nwith rel "library-add"
+    linkProvider -> linkProvider : linkTo(addItemToLibrary)\nwith rel "library-add"
 end
 
-LinkProvider --> REST : List<Link> authorizedLinks
-deactivate LinkProvider
+linkProvider --> REST : List<Link> authorizedLinks
+deactivate linkProvider
 
 loop for each link in authorizedLinks
     REST -> Options : add(link)
@@ -72,17 +74,17 @@ loop for each link in authorizedLinks
     deactivate Options
 end
 
+create "response:ResponseEntity<RepresentationModel<?>>" as response
+REST -->> response : build ResponseEntity\nstatus = 200 OK,\nAllow = [GET, POST, OPTIONS],\nbody = options
+
+REST --> router : response
 deactivate REST
 
-note right of REST
-Returns:
-200 OK
-Allow: GET, POST, OPTIONS
-RepresentationModel<?> + _links
-end note
+[o<-- router : 200 OK + Allow: %n()[GET, POST, OPTIONS] + _links
+deactivate router
 
-ref over REST
-[[../Process_View_Level_3_SD.puml Return to main diagram]]
+ref over router
+Process_View_Level_SD_3.puml]
 end ref
 
 @enduml
