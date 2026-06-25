@@ -1,6 +1,7 @@
 @startuml
+
 '==== Title ====
-title "As a Buyer, I want to use the Web UI to bid on an auction." - SD
+title "As a Buyer, I want to use the Web UI to place a bid on an auction." - SD
 
 '==== basic style ====
 skinparam monochrome false
@@ -15,33 +16,38 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
-' ==== Actor and participants ====
-actor Buyer as User
-participant ":Client" as CLI
-participant ":Server" as SER
-participant "DB" as DB
+actor Buyer as USER
+participant ":Frontend" as FRONTEND
+participant ":Backend" as rest
+participant ":Database" as DB
 
-User -> CLI : I would like to know %n() what I can do in %n() regard to an existing %n()auction
-activate CLI
-CLI -> SER : OPTIONS /auctions {auctionId}
-activate SER
-SER -> DB : select
-DB --> SER : data
-SER --> CLI : HTTP STATUS 200 {...}
-deactivate SER
-CLI --> User : display HATEOAS links
-deactivate CLI
+note over FRONTEND
+  Assumes the Buyer already opened an Auction via
+  GET /auctions/{auctionId}, whose response included a
+  "bids" link pointing to /auctions/{auctionId}/bids.
+  That href is what frontend follows below, not a hardcoded URL.
+end note
 
+USER -> FRONTEND : I want to place a bid on this auction with a value of x.
+activate FRONTEND
 
-User -> CLI : I want to place\n a bid on this auction
-activate CLI
-CLI -> SER : POST /auctions/auctionId {"price: 12.50€"}
-activate SER
-SER -> DB : insert
-DB --> SER : data
-SER --> CLI : HTTP STATUS 201 {...}
-deactivate SER
-CLI --> User : Success!
-deactivate CLI
+note over FRONTEND
+Currency is predetermined
+by the currency of the auction
+end note
+
+FRONTEND -> rest : POST {bids href}\n{placeBidRequestDTO}
+activate rest
+
+rest -> DB : INSERT
+activate DB
+DB --> rest : DATA
+deactivate DB
+
+rest --> FRONTEND : 201 Created + bidResponseDTO %n() + auction link + bids link
+deactivate rest
+
+FRONTEND --> USER : Bid successfully placed on auction.
+deactivate FRONTEND
 
 @enduml

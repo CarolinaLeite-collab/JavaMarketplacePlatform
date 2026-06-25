@@ -16,7 +16,7 @@ class ItemFactoryTest {
         //Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
-        Condition condition = Condition.LIKE_NEW;
+        Condition condition = Condition.MINT;
 
         //SUT
         ItemFactory factory = new ItemFactory();
@@ -38,7 +38,7 @@ class ItemFactoryTest {
         // Arrange
         EditionId editionIdDouble = mock(EditionId.class);
         Description descriptionDouble = mock(Description.class);
-        Condition condition = Condition.LIKE_NEW;
+        Condition condition = Condition.MINT;
         Picture pictureDouble = mock(Picture.class);
 
         // SUT

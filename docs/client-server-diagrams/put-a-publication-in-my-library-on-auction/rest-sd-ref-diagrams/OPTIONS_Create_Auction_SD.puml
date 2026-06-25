@@ -15,25 +15,31 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+participant "Router" as router
 participant ":AuctionRestController" as REST
 participant ":UserService" as userService
 participant ":IUserRepo" as userRepo
 participant ":AuctionLinkProvider" as link
-participant "Database" as DB
 
-REST -> userService : getUserByEmail(email)
-activate userService
+[o-> router : OPTIONS {create-auction href}
+activate router
+
+router -> REST : options(emailString)
 activate REST
 
 create "email:Email" as email
-userService -->> email : create(email)
+REST -->> email : createEmail(emailString)
+
+create "userId:UserId" as userId
+REST -->> userId : createUserId(email)
+
+REST -> userService : getUserByEmail(userId)
+activate userService
 
 userService -> userRepo : user = ofIdentity(userId)
 activate userRepo
-userRepo -> DB : user = ofIdentity(userId)
-activate DB
-DB -->> userRepo : user
-deactivate DB
+userRepo ->o] : FETCH
+userRepo <--o]: DATA
 userRepo --> userService : user
 deactivate userRepo
 
@@ -44,17 +50,33 @@ REST -> link : getAllowedMethods(user)
 activate link
 
 create "methods:List<HttpMethod>" as method
-link -->> method : create(methods)
+link -->> method : createArraylist()
 
 link -> method : add(OPTIONS)
+activate method
+deactivate method
+
+opt canViewAuction(user) == true
+    link -> method : add(GET)
+    activate method
+    deactivate method
+end
 
 opt canSell(user) == true
     link -> method : add(POST)
+    activate method
+    deactivate method
 end
 
 link --> REST : methods
+deactivate link
 
-ref over REST
+create "response: ResponseEntity<Void>" as response
+REST -->> response : build ResponseEntity<Void> \nstatus = 200 OK \nAllow = OPTIONS, GET, POST
+
+REST --> router : response (200 OK \nAllow = OPTIONS, GET, POST)
+
+ref over router
 [[../Process_View_Level_3_SD.puml Return to main diagram]]
 end ref
 

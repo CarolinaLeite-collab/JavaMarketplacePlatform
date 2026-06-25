@@ -22,7 +22,6 @@ vi.mock('../services/apiClient', () => ({
         getByHref: vi.fn(),
         getGenres: vi.fn(),
         getItemById: vi.fn(),
-        getAuctions: vi.fn(),
     },
 }));
 
@@ -40,7 +39,7 @@ const directSales = [
         itemsId: ['ITEM-001'],
         priceValue: 10,
         priceCurrency: 'EUR',
-        seller: 'pedro@aeiou.com',
+        sellerId: 'pedro@aeiou.com',
         _links: {
             self: { href: 'http://localhost:8081/directSales/DS-001' },
         },
@@ -50,7 +49,7 @@ const directSales = [
         itemsId: ['ITEM-002'],
         priceValue: 18,
         priceCurrency: 'EUR',
-        seller: 'ana@aeiou.com',
+        sellerId: 'ana@aeiou.com',
         _links: {
             self: { href: 'http://localhost:8081/directSales/DS-002' },
         },
@@ -119,6 +118,8 @@ function renderMarketplace({ appState = {} } = {}) {
                         directSalesHref: null,
                         activeDirectSalesHref: 'http://localhost:8081/marketplace/direct-sales',
                         directSalesWithoutPriceHref: null,
+                        activeAuctionsHref: 'http://localhost:8081/marketplace/auctions',
+                        auctionsWithoutPriceHref: null,
                         ...appState,
                     },
                     lists: {
@@ -152,12 +153,29 @@ describe('Marketplace', () => {
                 'direct-sales-without-price': {
                     href: 'http://localhost:8081/marketplace/public-direct-sales',
                 },
+                auctions: {
+                    href: 'http://localhost:8081/marketplace/auctions',
+                },
+                'auctions-without-price': {
+                    href: 'http://localhost:8081/marketplace/public-auctions',
+                },
             },
         });
-        vi.mocked(apiClient.getByHref).mockResolvedValue(directSales);
+
+        vi.mocked(apiClient.getByHref).mockImplementation(async (href: string) => {
+            if (href.includes('direct-sales')) {
+                return directSales;
+            }
+            if (href.includes('auctions')) {
+                return auctions;
+            }
+            return [];
+        });
+
         vi.mocked(apiClient.getGenres).mockResolvedValue(genres);
-        vi.mocked(apiClient.getItemById).mockImplementation(async (itemId: string) => itemDetails[itemId]);
-        vi.mocked(apiClient.getAuctions).mockResolvedValue(auctions);
+        vi.mocked(apiClient.getItemById).mockImplementation(
+            async (itemId: string) => itemDetails[itemId],
+        );
     });
 
     it('renders marketplace items after loading', async () => {
@@ -171,56 +189,80 @@ describe('Marketplace', () => {
     it('renders the page title and subtitle', async () => {
         renderMarketplace();
 
-        expect(screen.getByRole('heading', { name: /marketplace/i })).toBeInTheDocument();
-        expect(screen.getByText(/check all sales:/i)).toBeInTheDocument();
+        expect(
+            screen.getByRole('heading', { name: /marketplace/i }),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText(/check all sales:/i),
+        ).toBeInTheDocument();
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
 
-    it('uses the discovered active direct sales feed for logged-in users', async () => {
+    it('uses the provided marketplace feeds for logged-in users', async () => {
         renderMarketplace({
             appState: {
                 activeDirectSalesHref: 'http://localhost:8081/marketplace/direct-sales',
+                activeAuctionsHref: 'http://localhost:8081/marketplace/auctions',
             },
         });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
-        expect(apiClient.getByHref).toHaveBeenCalledWith('http://localhost:8081/marketplace/direct-sales');
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            'http://localhost:8081/marketplace/direct-sales',
+        );
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            'http://localhost:8081/marketplace/auctions',
+        );
         expect(apiClient.getRootOptions).not.toHaveBeenCalled();
-        expect(apiClient.getAuctions).toHaveBeenCalled();
         expect(apiClient.getGenres).toHaveBeenCalled();
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-001');
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-002');
         expect(apiClient.getItemById).toHaveBeenCalledWith('ITEM-003');
     });
 
-    it('discovers the active direct sales feed from root options when the app state has no link', async () => {
+    it('discovers marketplace feeds from root options when the app state has no links', async () => {
         renderMarketplace({
             appState: {
                 activeDirectSalesHref: null,
+                activeAuctionsHref: null,
             },
         });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
 
         expect(apiClient.getRootOptions).toHaveBeenCalled();
-        expect(apiClient.getByHref).toHaveBeenCalledWith('http://localhost:8081/marketplace/direct-sales');
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            'http://localhost:8081/marketplace/direct-sales',
+        );
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            'http://localhost:8081/marketplace/auctions',
+        );
     });
 
     it('shows loading state while marketplace data is being fetched', async () => {
-        let resolveDirectSales: (value: typeof directSales) => void;
+        let resolveDirectSales!: (value: typeof directSales) => void;
+        const directSalesPromise = new Promise<typeof directSales>((resolve) => {
+            resolveDirectSales = resolve;
+        });
 
-        vi.mocked(apiClient.getByHref).mockReturnValue(
-            new Promise((resolve) => {
-                resolveDirectSales = resolve;
-            }),
-        );
+        let resolveAuctions!: (value: typeof auctions) => void;
+        const auctionsPromise = new Promise<typeof auctions>((resolve) => {
+            resolveAuctions = resolve;
+        });
+
+        vi.mocked(apiClient.getByHref).mockImplementation((href: string) => {
+            if (href.includes('direct-sales')) return directSalesPromise;
+            if (href.includes('auctions')) return auctionsPromise;
+            return Promise.resolve([]);
+        });
 
         renderMarketplace();
 
         expect(screen.getByText(/loading marketplace/i)).toBeInTheDocument();
 
-        resolveDirectSales!(directSales);
+        resolveDirectSales(directSales);
+        resolveAuctions(auctions);
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
     });
@@ -242,74 +284,118 @@ describe('Marketplace', () => {
         expect(within(table).getByText('Book 2')).toBeInTheDocument();
     });
 
-    it('shows an error message when marketplace data fails to load', async () => {
-        vi.mocked(apiClient.getByHref).mockRejectedValueOnce(new Error('500'));
+    it('shows an error message when both marketplace collections fail to load', async () => {
+        vi.mocked(apiClient.getByHref)
+            .mockRejectedValueOnce(new Error('500'))
+            .mockRejectedValueOnce(new Error('500'));
+
+        vi.mocked(apiClient.getGenres).mockResolvedValueOnce([]);
 
         renderMarketplace();
 
-        expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
+        expect(
+            await screen.findByText(/could not load marketplace/i),
+        ).toBeInTheDocument();
 
         await waitFor(() => {
-            expect(screen.queryByText(/loading marketplace/i)).not.toBeInTheDocument();
+            expect(
+                screen.queryByText(/loading marketplace/i),
+            ).not.toBeInTheDocument();
         });
     });
-
     it('keeps valid items visible when one item lookup returns 404', async () => {
-        vi.mocked(apiClient.getItemById).mockImplementation(async (itemId: string) => {
-            if (itemId === 'ITEM-002') {
-                throw new Error('404');
-            }
-            return itemDetails[itemId];
-        });
+        vi.mocked(apiClient.getItemById).mockImplementation(
+            async (itemId: string) => {
+                if (itemId === 'ITEM-002') {
+                    throw new Error('404');
+                }
+                return itemDetails[itemId];
+            },
+        );
 
         renderMarketplace();
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
         const table = screen.getByRole('table');
         expect(within(table).getByText('Book 3')).toBeInTheDocument();
-        expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-        expect(screen.queryByText(/could not load marketplace/i)).not.toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 2'),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText(/could not load marketplace/i),
+        ).not.toBeInTheDocument();
     });
 
     it('shows an error message when genres fail to load', async () => {
-        vi.mocked(apiClient.getGenres).mockRejectedValueOnce(new Error('500'));
+        vi.mocked(apiClient.getByHref)
+            .mockRejectedValueOnce(new Error('500'))
+            .mockRejectedValueOnce(new Error('500'));
 
+        vi.mocked(apiClient.getGenres).mockResolvedValueOnce([]);
         renderMarketplace();
 
-        expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
+        expect(
+            await screen.findByText(/could not load marketplace/i),
+        ).toBeInTheDocument();
     });
 
     it('shows an error message when an item lookup fails with a non-404 error', async () => {
-        vi.mocked(apiClient.getItemById).mockImplementation(async (itemId: string) => {
-            if (itemId === 'ITEM-002') {
-                throw new Error('500');
-            }
-            return itemDetails[itemId];
-        });
+        vi.mocked(apiClient.getItemById).mockImplementation(
+            async (itemId: string) => {
+                if (itemId === 'ITEM-002') {
+                    throw new Error('500');
+                }
+                return itemDetails[itemId];
+            },
+        );
 
         renderMarketplace();
 
-        expect(await screen.findByText(/could not load marketplace/i)).toBeInTheDocument();
+        expect(
+            await screen.findByText(/could not load marketplace/i),
+        ).toBeInTheDocument();
     });
 
-    it('uses the guest marketplace feed and hides prices for guest users (table)', async () => {
+    it('uses the guest marketplace feeds and hides prices for guest users (table)', async () => {
+        const user = userEvent.setup();
+
         vi.mocked(useUser).mockReturnValue({
             currentUser: 'guest@aeiou.com',
             toggleUser: vi.fn(),
         });
 
+        vi.mocked(apiClient.getByHref).mockImplementation(
+            async (href: string) => {
+                if (href === '/direct-sales/public') return directSales;
+                if (href === '/auctions/public') return auctions;
+                return [];
+            },
+        );
+
         renderMarketplace({
             appState: {
                 directSalesWithoutPriceHref: '/direct-sales/public',
+                auctionsWithoutPriceHref: '/auctions/public',
             },
         });
 
         expect(await screen.findByText('Book 1')).toBeInTheDocument();
-        expect(apiClient.getByHref).toHaveBeenCalledWith('/direct-sales/public');
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            '/direct-sales/public',
+        );
+        expect(apiClient.getByHref).toHaveBeenCalledWith(
+            '/auctions/public',
+        );
         expect(apiClient.getRootOptions).not.toHaveBeenCalled();
-        expect(screen.queryByRole('columnheader', { name: /price/i })).not.toBeInTheDocument();
-        expect(screen.queryByText('10 EUR')).not.toBeInTheDocument();
-        expect(screen.queryByText('15 EUR')).not.toBeInTheDocument();
+        expect(
+            screen.queryByRole('columnheader', { name: /price/i }),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('10 EUR'),
+        ).not.toBeInTheDocument();
+        expect(
+            screen.queryByText('15 EUR'),
+        ).not.toBeInTheDocument();
     });
 
     it('opens details modal when an item is clicked', async () => {
@@ -324,7 +410,9 @@ describe('Marketplace', () => {
         expect(dialog).toHaveTextContent(/book 1/i);
         expect(dialog).toHaveTextContent(/author:\s*author 1/i);
         expect(dialog).toHaveTextContent(/genre:\s*horror/i);
-        expect(within(dialog).getByRole('button', { name: /see more/i })).toBeInTheDocument();
+        expect(
+            within(dialog).getByRole('button', { name: /see more/i }),
+        ).toBeInTheDocument();
     });
 
     it('shows price in details modal for logged-in users', async () => {
@@ -347,9 +435,18 @@ describe('Marketplace', () => {
             toggleUser: vi.fn(),
         });
 
+        vi.mocked(apiClient.getByHref).mockImplementation(
+            async (href: string) => {
+                if (href === '/direct-sales/public') return directSales;
+                if (href === '/auctions/public') return auctions;
+                return [];
+            },
+        );
+
         renderMarketplace({
             appState: {
                 directSalesWithoutPriceHref: '/direct-sales/public',
+                auctionsWithoutPriceHref: '/auctions/public',
             },
         });
 
@@ -357,7 +454,7 @@ describe('Marketplace', () => {
         await user.click(item);
 
         const dialog = await screen.findByRole('dialog');
-        expect(dialog).toHaveTextContent(/register or log in to see price/i);
+        expect(dialog).toHaveTextContent(/register or log in/i);
         expect(dialog).not.toHaveTextContent(/10 eur/i);
     });
 
@@ -370,7 +467,9 @@ describe('Marketplace', () => {
         await user.click(auctionItem);
 
         const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
+        await user.click(
+            within(dialog).getByRole('button', { name: /see more/i }),
+        );
 
         expect(mockNavigate).toHaveBeenCalledWith('/auctions/AU-001', {
             state: { selfHref: 'http://localhost:8081/auctions/AU-001' },
@@ -386,7 +485,9 @@ describe('Marketplace', () => {
         await user.click(directSaleItem);
 
         const dialog = await screen.findByRole('dialog');
-        await user.click(within(dialog).getByRole('button', { name: /see more/i }));
+        await user.click(
+            within(dialog).getByRole('button', { name: /see more/i }),
+        );
 
         expect(mockNavigate).toHaveBeenCalledWith('/directSales/DS-001', {
             state: { selfHref: 'http://localhost:8081/directSales/DS-001' },
@@ -397,30 +498,65 @@ describe('Marketplace', () => {
         it('shows only items from selected author', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All authors'));
-            await user.click(await screen.findByRole('option', { name: 'Author 2', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All authors'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Author 2',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).queryByText('Book 1')).not.toBeInTheDocument();
-            expect(within(table).getByText('Book 2')).toBeInTheDocument();
-            expect(within(table).queryByText('Book 3')).not.toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 1'),
+            ).not.toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 2'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 3'),
+            ).not.toBeInTheDocument();
         });
 
         it('shows items from multiple selected authors', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All authors'));
-            await user.click(await screen.findByRole('option', { name: 'Author 1', hidden: true }));
-            await user.click(await screen.findByRole('option', { name: 'Author 2', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All authors'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Author 1',
+                    hidden: true,
+                }),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Author 2',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).getByText('Book 1')).toBeInTheDocument();
-            expect(within(table).getByText('Book 2')).toBeInTheDocument();
-            expect(within(table).getByText('Book 3')).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 1'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 2'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 3'),
+            ).toBeInTheDocument();
         });
     });
 
@@ -428,15 +564,30 @@ describe('Marketplace', () => {
         it('shows only the selected publication', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All publications'));
-            await user.click(await screen.findByRole('option', { name: 'Book 1', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All publications'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Book 1',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).getByText('Book 1')).toBeInTheDocument();
-            expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-            expect(within(table).queryByText('Book 3')).not.toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 1'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 2'),
+            ).not.toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 3'),
+            ).not.toBeInTheDocument();
         });
     });
 
@@ -444,30 +595,65 @@ describe('Marketplace', () => {
         it('shows only items from selected publisher', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All publishers'));
-            await user.click(await screen.findByRole('option', { name: 'Publisher B', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All publishers'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Publisher B',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).queryByText('Book 1')).not.toBeInTheDocument();
-            expect(within(table).getByText('Book 2')).toBeInTheDocument();
-            expect(within(table).queryByText('Book 3')).not.toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 1'),
+            ).not.toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 2'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 3'),
+            ).not.toBeInTheDocument();
         });
 
         it('shows items from multiple selected publishers', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All publishers'));
-            await user.click(await screen.findByRole('option', { name: 'Publisher A', hidden: true }));
-            await user.click(await screen.findByRole('option', { name: 'Publisher B', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All publishers'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Publisher A',
+                    hidden: true,
+                }),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Publisher B',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).getByText('Book 1')).toBeInTheDocument();
-            expect(within(table).getByText('Book 2')).toBeInTheDocument();
-            expect(within(table).getByText('Book 3')).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 1'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 2'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 3'),
+            ).toBeInTheDocument();
         });
     });
 
@@ -475,66 +661,147 @@ describe('Marketplace', () => {
         it('shows only items of the selected genre', async () => {
             const user = userEvent.setup();
             renderMarketplace();
-            expect(await screen.findByText('Book 1')).toBeInTheDocument();
+            expect(
+                await screen.findByText('Book 1'),
+            ).toBeInTheDocument();
 
-            await user.click(screen.getByPlaceholderText('All genres'));
-            await user.click(await screen.findByRole('option', { name: 'Horror', hidden: true }));
+            await user.click(
+                screen.getByPlaceholderText('All genres'),
+            );
+            await user.click(
+                await screen.findByRole('option', {
+                    name: 'Horror',
+                    hidden: true,
+                }),
+            );
 
             const table = screen.getByRole('table');
-            expect(within(table).getByText('Book 1')).toBeInTheDocument();
-            expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-            expect(within(table).queryByText('Book 3')).not.toBeInTheDocument();
+            expect(
+                within(table).getByText('Book 1'),
+            ).toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 2'),
+            ).not.toBeInTheDocument();
+            expect(
+                within(table).queryByText('Book 3'),
+            ).not.toBeInTheDocument();
         });
     });
 
     it('combined author and publisher filters show only matching items', async () => {
         const user = userEvent.setup();
         renderMarketplace();
-        expect(await screen.findByText('Book 1')).toBeInTheDocument();
+        expect(
+            await screen.findByText('Book 1'),
+        ).toBeInTheDocument();
 
-        await user.click(screen.getByPlaceholderText('All authors'));
-        await user.click(await screen.findByRole('option', { name: 'Author 1', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All authors'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Author 1',
+                hidden: true,
+            }),
+        );
 
-        await user.click(screen.getByPlaceholderText('All publishers'));
-        await user.click(await screen.findByRole('option', { name: 'Publisher A', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All publishers'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Publisher A',
+                hidden: true,
+            }),
+        );
 
         const table = screen.getByRole('table');
-        expect(within(table).getByText('Book 1')).toBeInTheDocument();
-        expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-        expect(within(table).getByText('Book 3')).toBeInTheDocument();
+        expect(
+            within(table).getByText('Book 1'),
+        ).toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 2'),
+        ).not.toBeInTheDocument();
+        expect(
+            within(table).getByText('Book 3'),
+        ).toBeInTheDocument();
     });
 
     it('combined author and genre filters show only matching items', async () => {
         const user = userEvent.setup();
         renderMarketplace();
-        expect(await screen.findByText('Book 1')).toBeInTheDocument();
+        expect(
+            await screen.findByText('Book 1'),
+        ).toBeInTheDocument();
 
-        await user.click(screen.getByPlaceholderText('All authors'));
-        await user.click(await screen.findByRole('option', { name: 'Author 1', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All authors'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Author 1',
+                hidden: true,
+            }),
+        );
 
-        await user.click(screen.getByPlaceholderText('All genres'));
-        await user.click(await screen.findByRole('option', { name: 'Horror', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All genres'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Horror',
+                hidden: true,
+            }),
+        );
 
         const table = screen.getByRole('table');
-        expect(within(table).getByText('Book 1')).toBeInTheDocument();
-        expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-        expect(within(table).queryByText('Book 3')).not.toBeInTheDocument();
+        expect(
+            within(table).getByText('Book 1'),
+        ).toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 2'),
+        ).not.toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 3'),
+        ).not.toBeInTheDocument();
     });
 
     it('combined author and publication filters show only matching items', async () => {
         const user = userEvent.setup();
         renderMarketplace();
-        expect(await screen.findByText('Book 1')).toBeInTheDocument();
+        expect(
+            await screen.findByText('Book 1'),
+        ).toBeInTheDocument();
 
-        await user.click(screen.getByPlaceholderText('All authors'));
-        await user.click(await screen.findByRole('option', { name: 'Author 1', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All authors'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Author 1',
+                hidden: true,
+            }),
+        );
 
-        await user.click(screen.getByPlaceholderText('All publications'));
-        await user.click(await screen.findByRole('option', { name: 'Book 3', hidden: true }));
+        await user.click(
+            screen.getByPlaceholderText('All publications'),
+        );
+        await user.click(
+            await screen.findByRole('option', {
+                name: 'Book 3',
+                hidden: true,
+            }),
+        );
 
         const table = screen.getByRole('table');
-        expect(within(table).queryByText('Book 1')).not.toBeInTheDocument();
-        expect(within(table).queryByText('Book 2')).not.toBeInTheDocument();
-        expect(within(table).getByText('Book 3')).toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 1'),
+        ).not.toBeInTheDocument();
+        expect(
+            within(table).queryByText('Book 2'),
+        ).not.toBeInTheDocument();
+        expect(
+            within(table).getByText('Book 3'),
+        ).toBeInTheDocument();
     });
 });

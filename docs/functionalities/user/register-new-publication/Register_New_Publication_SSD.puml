@@ -22,7 +22,7 @@ User -> System: I want to register %n()a new publication
 activate System
 System --> User: Fill in the %n()publication's %n()information
 deactivate System
-User -> System: publicationType, %n()identifier, %n()publicationYear, %n()title, author, %n()publisher, edition, %n()genre
+User -> System: publicationType, %n()identifier, %n()publicationYear, %n()title, author, %n()publisher, edition, %n()genre, synopsis
 activate System
 System --> User: You have %n()successfully %n()registered a %n()new publication.
 deactivate System

@@ -17,6 +17,8 @@ vi.mock('../services/apiClient', () => ({
         getItemById: vi.fn(),
         getEditionById: vi.fn(),
         getPublishingCompanyById: vi.fn(),
+        getPublicationById: vi.fn(),
+        getByHref: vi.fn(),
         postByHref: vi.fn(),
     },
 }));
@@ -27,13 +29,42 @@ const mockAuction = {
     startingPrice: 20.0,
     reservePrice: 30.0,
     outrightPrice: 50.0,
+    currentPrice: 28.5,
     priceCurrency: 'EUR',
     startDate: '2026-06-01T00:00:00Z',
-    endDate: '2026-06-25T00:00:00Z',
-    bidCount: 3,
-    highestBid: 28.5,
+    endDate: '2027-06-30T00:00:00Z',
     seller: 'pedro@aeiou.com',
-    _links: { placeBid: { href: 'http://localhost:8081/auctions/test-123/bids' } },
+    _links: {
+        bids: { href: 'http://localhost:8081/auctions/test-123/bids' },
+    },
+};
+
+const mockBidsResponse = {
+    _embedded: {
+        bids: [
+            {
+                bidId: 'BID-001',
+                buyerId: 'pedro@aeiou.com',
+                bidValue: 28.5,
+                currency: 'EUR',
+                bidDate: '2026-06-22T18:39:05Z',
+            },
+            {
+                bidId: 'BID-002',
+                buyerId: 'maria@aeiou.com',
+                bidValue: 25,
+                currency: 'EUR',
+                bidDate: '2026-06-22T18:10:00Z',
+            },
+            {
+                bidId: 'BID-003',
+                buyerId: 'joao@aeiou.com',
+                bidValue: 22,
+                currency: 'EUR',
+                bidDate: '2026-06-22T17:50:00Z',
+            },
+        ],
+    },
 };
 
 const mockItem = {
@@ -56,16 +87,22 @@ const mockItem = {
 const mockEdition = {
     editionId: 'ED-001',
     publishingCompanyId: 'PC-001',
+    publicationId: 'PUB-001',
     numberOfPages: 320,
     editionNumber: 1,
     binding: 'PAPERBACK',
     weight: { value: 794, unit: 'GRAMS' },
-    dimension: { width: 17.0, height: 24.0, depth: 2.5, unit: 'CENTIMETERS' },
+    dimension: { width: 17.0, height: 24.0, thickness: 2.5, unit: 'CENTIMETERS' },
 };
 
 const mockPublisher = {
     publishingCompanyId: 'PC-001',
     publishingCompanyName: 'naiOIO Publishers',
+};
+
+const mockPublication = {
+    publicationId: 'PUB-001',
+    synopsis: 'A rigorous study of density, space, and urban form.',
 };
 
 function renderAuctionDetail({ auctionId = 'test-123' } = {}) {
@@ -93,6 +130,9 @@ describe('AuctionDetailPage', () => {
         vi.mocked(apiClient.getItemById).mockResolvedValue(mockItem);
         vi.mocked(apiClient.getEditionById).mockResolvedValue(mockEdition);
         vi.mocked(apiClient.getPublishingCompanyById).mockResolvedValue(mockPublisher);
+        vi.mocked(apiClient.getPublicationById).mockResolvedValue(mockPublication);
+        vi.mocked(apiClient.getByHref).mockResolvedValue(mockBidsResponse);
+        vi.mocked(apiClient.postByHref).mockResolvedValue({});
     });
 
     it('renders publication type and title', async () => {
@@ -102,18 +142,18 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('Spacematrix: Space, Density and Urban Form')).toBeInTheDocument();
     });
 
-    it('renders highest bid when bids exist', async () => {
+    it('renders current price when available', async () => {
         renderAuctionDetail();
 
         expect(await screen.findByText(/28.5 EUR/)).toBeInTheDocument();
     });
 
-    it('renders starting price when no bids', async () => {
+    it('renders starting price when current price is missing', async () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
-            highestBid: null,
-            bidCount: 0,
+            currentPrice: null,
         });
+        vi.mocked(apiClient.getByHref).mockResolvedValue({ _embedded: { bids: [] } });
 
         renderAuctionDetail();
 
@@ -221,19 +261,32 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('17 x 24 x 2.5 CENTIMETERS')).toBeInTheDocument();
     });
 
-    it('renders synopsis fallback', async () => {
+    it('renders synopsis from publication when available', async () => {
+        renderAuctionDetail();
+
+        expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
+        expect(screen.getByText('A rigorous study of density, space, and urban form.')).toBeInTheDocument();
+    });
+
+    it('renders synopsis fallback when publication fails to load', async () => {
+        vi.mocked(apiClient.getPublicationById).mockRejectedValue(new Error('404'));
+
         renderAuctionDetail();
 
         expect(await screen.findByText('Synopsis:')).toBeInTheDocument();
         expect(screen.getByText('N/A')).toBeInTheDocument();
     });
 
-    it('renders Place Bid button enabled for logged-in user when link exists and auction is active', async () => {
+    it('renders Place Bid button enabled for logged-in user when bids link exists and auction is active', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'ana@aeiou.com',
+            toggleUser: vi.fn()
+        });
         renderAuctionDetail();
 
         const button = await screen.findByRole('button', { name: /place bid/i });
         expect(button).toBeInTheDocument();
-        expect(button).not.toBeDisabled();
+        expect(button).toBeEnabled();
     });
 
     it('disables Place Bid for guest user', async () => {
@@ -247,7 +300,29 @@ describe('AuctionDetailPage', () => {
         expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
     });
 
-    it('disables Place Bid when placeBid link is missing', async () => {
+    it('disables Place Bid for auction owner', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'pedro@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
+    it('disables Place Bid for non-registeed user', async () => {
+        vi.mocked(useUser).mockReturnValue({
+            currentUser: 'guest@aeiou.com',
+            toggleUser: vi.fn(),
+        });
+
+        renderAuctionDetail();
+
+        expect(await screen.findByRole('button', { name: /place bid/i })).toBeDisabled();
+    });
+
+    it('disables Place Bid when bids link is missing', async () => {
         vi.mocked(apiClient.getAuctionById).mockResolvedValue({
             ...mockAuction,
             _links: {},
@@ -270,20 +345,18 @@ describe('AuctionDetailPage', () => {
         expect(screen.getByText('Ended')).toBeInTheDocument();
     });
 
-    it('renders Add to Cart without Buy Now', async () => {
+    it('shows bids count button', async () => {
         renderAuctionDetail();
 
-        expect(
-            await screen.findByRole('button', {
-                name: /add to cart/i,
-            })
-        ).toBeInTheDocument();
+        expect(await screen.findByRole('button', { name: /3 bids/i })).toBeInTheDocument();
+    });
 
-        expect(
-            screen.queryByRole('button', {
-                name: /buy now/i,
-            })
-        ).not.toBeInTheDocument();
+    it('shows error state when auction fails to load', async () => {
+        vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
+
+        renderAuctionDetail();
+
+        expect(await screen.findByText(/auction not found\./i)).toBeInTheDocument();
     });
 
     it('shows N/A for edition fields when edition fails to load', async () => {
@@ -293,13 +366,5 @@ describe('AuctionDetailPage', () => {
 
         expect(await screen.findByText('Publisher')).toBeInTheDocument();
         expect(screen.getAllByText('N/A').length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('shows not found state when auction is missing', async () => {
-        vi.mocked(apiClient.getAuctionById).mockRejectedValue(new Error('404'));
-
-        renderAuctionDetail();
-
-        expect(await screen.findByText(/auction not found/i)).toBeInTheDocument();
     });
 });

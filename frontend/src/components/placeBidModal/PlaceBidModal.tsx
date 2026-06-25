@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { Modal, Stack, Text, NumberInput, Button, ActionIcon, Group } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
 
@@ -7,7 +7,7 @@ interface PlaceBidModalProps {
     currentPrice: number | null;
     currency: string;
     onClose?: () => void;
-    onConfirm?: (bidValue: number) => void;
+    onConfirm?: (bidValue: number) => void | Promise<void>;
 }
 
 const presets = [5, 10, 20];
@@ -24,7 +24,16 @@ export function PlaceBidModal({
 
     const minBid = currentPrice ?? 0;
 
+    useEffect(() => {
+        if (!opened) {
+            setValue('');
+            setError(null);
+        }
+    }, [opened]);
+
     const handleClose = () => {
+        setValue('');
+        setError(null);
         onClose?.();
     };
 
@@ -39,7 +48,7 @@ export function PlaceBidModal({
         }
 
         setError(null);
-        onConfirm?.(value);
+        onConfirm?.(Number(value));
     };
 
     return (

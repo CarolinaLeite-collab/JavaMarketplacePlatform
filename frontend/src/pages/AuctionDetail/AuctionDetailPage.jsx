@@ -2,33 +2,34 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     Text, Group, Stack, Button, Badge, Alert,
-    Grid, Table, Image, Title, Card, SimpleGrid
+    Grid, Table, Image, Title, Card, SimpleGrid, Tooltip
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { DefaultLayout } from '../../components/layout/DefaultLayout.tsx';
 import { useUser } from '../../context/UserContext';
 import { apiClient } from '../../services/apiClient';
 import { PlaceBidModal } from '../../components/placeBidModal/PlaceBidModal.tsx';
+import {ViewBidsModal} from "../../components/viewBidsModal/ViewBidsModal.tsx";
+import {notifications} from "@mantine/notifications";
 
 /**
  * Formats an ISO end date into a short "in Xd Yh" string.
  * Returns "Ended" if the date is in the past.
  */
-function formatTimeRemaining(endDateIso) {
+function formatTimeRemaining(endDateIso, now) {
     if (!endDateIso) return 'N/A';
     const end = new Date(endDateIso);
-    const now = new Date();
     const diffMs = end - now;
     if (diffMs <= 0) return 'Ended';
 
-    const totalMinutes = Math.floor(diffMs / 60000);
-    const days = Math.floor(totalMinutes / (60 * 24));
-    const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-    const minutes = totalMinutes % 60;
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
-    if (days > 0) return `${days}d ${hours}h`;
-    if (hours > 0) return `${hours}h ${minutes}m`;
-    return `${minutes}m`;
+    const weekday = end.toLocaleDateString('en-US', { weekday: 'long' });
+
+    return `${days}d ${hours}h:${minutes}m:${seconds}s, ${weekday}`;
 }
     const detailsBackground = 'light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6))';
 
@@ -55,6 +56,7 @@ export default function AuctionDetailPage() {
     const { auctionId } = useParams();
     const { currentUser } = useUser();
     const isLoggedIn = currentUser !== 'guest@aeiou.com';
+    const canSeePrice = isLoggedIn;
 
     const [auction, setAuction] = useState(null);
     const [item, setItem] = useState(null);
@@ -64,8 +66,14 @@ export default function AuctionDetailPage() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [publisherInfo, setPublisherInfo] = useState(null);
+    const [now, setNow] = useState(new Date());
 
     const [bidModalOpened, { open: openBidModal, close: closeBidModal }] = useDisclosure(false);
+    const [viewBidsModalOpened, {open: openViewBidModal, close: closeViewBidModal}] = useDisclosure(false);
+    const [bids, setBids] = useState([]);
+    const placeBidHref =
+        auction?._links?.bids?.href ??
+        null;
 
     async function loadAuction() {
         try {
@@ -78,6 +86,7 @@ export default function AuctionDetailPage() {
             let itemData = null;
             let editionData = null;
             let publisherData = null;
+            let publicationData = null;
 
             if (itemId) {
                 try {
@@ -103,10 +112,47 @@ export default function AuctionDetailPage() {
                 }
             }
 
+            if (editionData?.publicationId) {
+                try {
+                    publicationData = await apiClient.getPublicationById(editionData.publicationId);
+                } catch (e) {
+                    console.warn('Could not load publication', e);
+                }
+            }
+
+            const bidsHref = auctionData?._links?.bids?.href;
+            let bidsData = [];
+
+            if (bidsHref) {
+                try {
+                    const bidsResponse = await apiClient.getByHref(bidsHref);
+                    bidsData =
+                        bidsResponse?._embedded
+                            ? Object.values(bidsResponse._embedded)[0] ?? []
+                            : Array.isArray(bidsResponse)
+                                ? bidsResponse
+                                : [];
+                } catch (e) {
+                    console.warn('Could not load bids history', e);
+                }
+            }
+
+            setBids(
+                (bidsData ?? []).map((bid) => ({
+                    bidId: bid.bidId,
+                    bidderId: bid.buyerId,
+                    bidValue: bid.bidValue ?? bid.offerPrice ?? bid.value ?? bid.amount ?? null,
+                    currency: bid.currency,
+                    time: bid.bidDate,
+                }))
+            );
+
             setAuction(auctionData);
             setItem(itemData);
             setEdition(editionData);
+            setPublication(editionData);
             setPublisherInfo(publisherData);
+            setPublication(publicationData);
         } catch (loadError) {
             console.error(loadError);
             setError('Could not load auction.');
@@ -119,11 +165,14 @@ export default function AuctionDetailPage() {
         loadAuction();
     }, [auctionId]);
 
+    useEffect(() => {
+        const timer = setInterval(() => setNow(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
     async function handlePlaceBid(bidAmount) {
         setError('');
         setSuccessMessage('');
-
-        const placeBidHref = auction?._links?.placeBid?.href;
         if (!placeBidHref) {
             setError('Placing bids is not available for this auction.');
             return;
@@ -135,12 +184,23 @@ export default function AuctionDetailPage() {
                 currency: auction?.priceCurrency ?? 'EUR',
             });
 
-            setSuccessMessage('Bid placed successfully.');
-            closeBidModal();
             await loadAuction();
+            notifications.show({
+                title: 'Bid placed',
+                message: 'You successfully placed a bid on this auction.',
+                color: 'green',
+                autoClose: 3000,
+            });
+            closeBidModal();
         } catch (bidError) {
             console.error(bidError);
-            setError('Could not place bid.');
+            setError('There was an issue with your bid.');
+            notifications.show({
+                title: 'Bid could not be placed',
+                message: 'There was an issue with your bid.',
+                color: 'red',
+                autoClose: 3000,
+            });
         }
     }
 
@@ -168,11 +228,11 @@ export default function AuctionDetailPage() {
     // Auction fields
     const startingPrice = auction.startingPrice;
     const priceCurrency = auction.priceCurrency ?? 'EUR';
-    const bidsCount = auction.bidCount ?? 0;
-    const highestBid = auction.highestBid ?? null;
+    const bidsCount = bids.length ?? 0;
+
+    const currentPrice = auction.currentPrice ?? startingPrice;
     const endDate       = auction.endDate;
     const status        = deriveStatus(auction.startDate, auction.endDate);
-    const placeBidHref  = auction?._links?.placeBid?.href ?? null;
 
     // Item fields
     const title           = item?.title ?? 'Auction';
@@ -190,21 +250,31 @@ export default function AuctionDetailPage() {
     const language        = item?.language ?? 'N/A';
 
     // Edition fields (from /editions/{id})
-    const publisher       = publisherInfo?.publishingCompanyName ?? 'N/A';
+    const publisher           = publisherInfo?.publishingCompanyName ?? 'N/A';
     const pages           = edition?.numberOfPages ?? 'N/A';
     const editionNumber   = edition?.editionNumber ?? 'N/A';
     const binding         = edition?.binding ?? 'N/A';
-    const weight = edition?.weight
+    const weight              = edition?.weight
         ? `${edition.weight.value} ${edition.weight.unit}`
         : 'N/A';
-    const dimensions = edition?.dimension
-        ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.depth} ${edition.dimension.unit}`
+    const dimensions          = edition?.dimension
+        ? `${edition.dimension.width} x ${edition.dimension.height} x ${edition.dimension.thickness} ${edition.dimension.unit}`
         : 'N/A';
     const seller          = sellerUsernameFromEmail(auction.seller) ?? 'Unknown';
 
-    // Edition fields (from /publications/{id})
     const synopsis        = publication?.synopsis ?? 'N/A';
 
+
+    const isOwnSale = auction.seller === currentUser;
+
+    const canBidDisabled =
+        !isLoggedIn ||
+        isOwnSale ||
+        !placeBidHref ||
+        status !== 'Active';
+
+    const canBidTooltip = isOwnSale
+        ? 'Cannot bid on own auction!' : !isLoggedIn ? 'Please register or log in to place a bid.' : null;
     return (
         <DefaultLayout title="" subtitle="">
             <Stack gap="xl">
@@ -240,26 +310,24 @@ export default function AuctionDetailPage() {
                             <Stack gap="sm">
                                 <Stack gap={1}>
                                     <Text fz={30} fw={700} c="var(--mantine-color-indigo-7)">
-                                        {highestBid != null
-                                            ? `${highestBid} ${priceCurrency}`
-                                            : `${startingPrice} ${priceCurrency}`}
+                                        {canSeePrice ? `${currentPrice} ${priceCurrency}` : null}
                                     </Text>
 
                                     <Group gap="lg" align="baseline">
                                         <Text size="sm" c="dimmed">
-                                            Starting price: {startingPrice} {priceCurrency}
+                                            {canSeePrice ? `Starting price: ${startingPrice} ${priceCurrency}` : null}
                                         </Text>
 
-                                        <Button
-                                            variant="transparent"
-                                            size="compact-sm"
-                                            c="dimmed"
-                                            td="underline"
-                                            p={0}
-                                            onClick={() => { /* TODO: open bids modal */ }}
-                                        >
-                                            {bidsCount} bids
-                                        </Button>
+                                            <Button
+                                                variant="transparent"
+                                                size="compact-sm"
+                                                c="dimmed"
+                                                td="underline"
+                                                p={0}
+                                                onClick= { openViewBidModal}
+                                                onClose={closeViewBidModal}>
+                                                {canSeePrice ? `${bidsCount} bids` : null}
+                                            </Button>
                                     </Group>
 
                                     <Text size="xs" c="dimmed">
@@ -269,7 +337,7 @@ export default function AuctionDetailPage() {
 
                                 <Group gap="lg" c="dimmed" mt="xs">
                                     <Text size="sm">
-                                        Ends in {formatTimeRemaining(endDate)}
+                                        Ends in {formatTimeRemaining(endDate, now)}
                                     </Text>
                                     <Badge color="blue" variant="light" size="sm">
                                         Auction
@@ -305,22 +373,21 @@ export default function AuctionDetailPage() {
                                     </Card>
                                 </SimpleGrid>
 
-                                <Button
-                                    onClick={openBidModal}
-                                    disabled={!isLoggedIn || !placeBidHref || status !== 'Active'}
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
+                                <Tooltip
+                                    label={canBidTooltip}
+                                    disabled={!isOwnSale && isLoggedIn}
+                                    withArrow
                                 >
-                                    Place Bid
-                                </Button>
-                                <Button
-                                    color="var(--mantine-color-indigo-7)"
-                                    fullWidth
-                                    size="md"
-                                >
-                                    Add to Cart
-                                </Button>
+                                    <Button
+                                        onClick={openBidModal}
+                                        disabled={canBidDisabled}
+                                        color="var(--mantine-color-indigo-7)"
+                                        fullWidth
+                                        size="md"
+                                    >
+                                        Place Bid
+                                    </Button>
+                                </Tooltip>
                             </Stack>
                         </Stack>
                     </Grid.Col>
@@ -371,10 +438,16 @@ export default function AuctionDetailPage() {
 
             <PlaceBidModal
                 opened={bidModalOpened}
-                currentPrice={highestBid ?? startingPrice}
+                currentPrice={currentPrice}
                 currency={priceCurrency}
                 onClose={closeBidModal}
                 onConfirm={handlePlaceBid}
+            />
+
+            <ViewBidsModal
+                opened={viewBidsModalOpened}
+                bids={bids}
+                onClose={closeViewBidModal}
             />
         </DefaultLayout>
     );

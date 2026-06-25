@@ -48,6 +48,7 @@ export default function DirectSaleDetailPage() {
     const [item, setItem] = useState(null);
     const [edition, setEdition] = useState(null);
     const [publisherInfo, setPublisherInfo] = useState(null);
+    const [publication, setPublication] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -59,6 +60,9 @@ export default function DirectSaleDetailPage() {
             setItem(null);
             setEdition(null);
             setPublisherInfo(null);
+            setPublication(null);
+
+            let publicationData = null;
 
             let directSaleData;
 
@@ -103,10 +107,17 @@ export default function DirectSaleDetailPage() {
                 );
             }
 
+            if (editionData?.publicationId) {
+                publicationData = await apiClient.getPublicationById(
+                    editionData.publicationId
+                );
+            }
+
             setDirectSale(directSaleData);
             setItem(itemData);
             setEdition(editionData);
             setPublisherInfo(publisherData);
+            setPublication(publicationData);
         } catch (loadError) {
             console.error(loadError);
             setError('Could not load Direct Sale.');
@@ -192,7 +203,7 @@ export default function DirectSaleDetailPage() {
         : 'N/A';
 
     const seller = sellerUsernameFromEmail(directSale.sellerId);
-    const synopsis = item?.synopsis ?? 'N/A';
+    const synopsis = publication?.synopsis ?? 'N/A';
 
     async function handleAddToCart() {
         if (!addToCartHref) {

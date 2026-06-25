@@ -5,21 +5,18 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.Currency;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.CreateAuctionRequestDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
+import MITELOVERS.dto.response.BidResponseDTO;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
+import MITELOVERS.mapper.AuctionNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import MITELOVERS.dto.request.PlaceBidRequestDTO;
-import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.BidResponseDTOMapper;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.auction.Bid;
 import jakarta.validation.Valid;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,10 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for managing auction- and bidding-related HTTP requests.
@@ -53,15 +46,17 @@ public class AuctionRestController {
     private final BidResponseDTOMapper _bidResponseDTOMapper;
     private final UserService _userService;
     private final AuctionLinkProvider _auctionLinkProvider;
+    private final AuctionNoPriceResponseDTOMapper _auctionNoPriceResponseDTOMapper;
 
 
     public AuctionRestController(AuctionService auctionService, AuctionResponseDTOMapper auctionMapper, BidResponseDTOMapper bidResponseDTOMapper, UserService userService,
-                                 AuctionLinkProvider auctionLinkProvider) {
+                                 AuctionLinkProvider auctionLinkProvider, AuctionNoPriceResponseDTOMapper auctionNoPriceResponseDTOMapper) {
         _auctionService = auctionService;
         _auctionMapper = auctionMapper;
         _bidResponseDTOMapper = bidResponseDTOMapper;
         _userService = userService;
         _auctionLinkProvider = auctionLinkProvider;
+        _auctionNoPriceResponseDTOMapper = auctionNoPriceResponseDTOMapper;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -78,6 +73,7 @@ public class AuctionRestController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<AuctionResponseDTO>> getAllActiveAuctions() {
+
         List<Auction> auctions = _auctionService.getAllActiveAuctions();
 
         if (auctions.isEmpty()) {
@@ -88,125 +84,128 @@ public class AuctionRestController {
                 .map(_auctionMapper::toDTO)
                 .toList();
 
-        response.forEach(dto ->
-                dto.add(linkTo(methodOn(AuctionRestController.class)
-                        .getAllActiveAuctions())
-                        .slash(dto.getAuctionId())
-                        .withSelfRel())
-        );
+        response.forEach(dto -> _auctionLinkProvider.addLinksForAuction(dto));
 
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuctionResponseDTO> createAuction (@RequestBody @Valid CreateAuctionRequestDTO request, @RequestHeader("X-User-Id") String email) {
-            List<ItemId> itemIds = request.getItemIds().stream()
-                    .map(ItemId::new)
-                    .toList();
+    public ResponseEntity<AuctionResponseDTO> createAuction (
+            @RequestBody @Valid CreateAuctionRequestDTO request,
+            @RequestHeader("X-User-Id") String email) {
+        List<ItemId> itemIds = request.getItemIds().stream()
+                .map(ItemId::new)
+                .toList();
 
-            Currency currency = Currency.valueOf(request.getPriceCurrency());
-            Price startingPrice = new Price(request.getStartingPrice(), currency);
-            Price reservePrice = new Price(request.getReservePrice(), currency);
-            Price outrightPrice = request.getOutrightPrice() != null
-                    ? new Price(request.getOutrightPrice(), currency)
-                    : null;
+        Currency currency = Currency.valueOf(request.getPriceCurrency());
+        Price startingPrice = new Price(request.getStartingPrice(), currency);
+        Price reservePrice = new Price(request.getReservePrice(), currency);
+        Price outrightPrice = request.getOutrightPrice() != null
+                ? new Price(request.getOutrightPrice(), currency)
+                : null;
 
-            ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
-            ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
+        ZonedDateTime startDate = request.getStartDate().atZone(ZoneId.of("UTC"));
+        ZonedDateTime endDate = request.getEndDate().atZone(ZoneId.of("UTC"));
 
-            UserId seller = new UserId(new Email(email));
+        User seller = _userService.getUserByEmail(new UserId(new Email(email)));
 
-            Auction auction = _auctionService.putItemOnAuction(
-                    itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller
-            );
+        Auction auction = _auctionService.putItemOnAuction(
+                itemIds, startingPrice, reservePrice, outrightPrice, startDate, endDate, seller.identity()
+        );
 
-            AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
+        AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-            dto.add(linkTo(AuctionRestController.class)
-                    .withSelfRel());
+        _auctionLinkProvider.addLinksForAuction(dto);
 
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
+
+    @GetMapping(value = "/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AuctionNoPriceResponseDTO>> getAuctionsWithoutPrice() {
+
+        List<Auction> auctions = _auctionService.getAllActiveAuctions();
+
+        if (auctions.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        List<AuctionNoPriceResponseDTO> response = auctions.stream()
+                .map(_auctionNoPriceResponseDTOMapper::toDTO)
+                .toList();
+
+        response.forEach(_auctionLinkProvider::addLinksForAuction);
+
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> optionsForSpecificAuction(
-            @PathVariable String auctionId,
+    public ResponseEntity<Void> optionsForSpecificAuction(
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
-        RepresentationModel<?> model = new RepresentationModel<>();
+        List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethodsForSpecificAuction(user);
 
-        for (Link link : _auctionLinkProvider.getLinks(user, auctionId)) {
-            model.add(link);
-        }
-
-        return ResponseEntity.ok(model);
+        return ResponseEntity.ok()
+                .allow(methods.toArray(HttpMethod[]::new))
+                .build();
     }
 
     @GetMapping(
             path = "/{auctionId}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> getAuctionById(@PathVariable String auctionId) {
+    public ResponseEntity<AuctionResponseDTO> getAuctionById(@PathVariable String auctionId) {
 
-            Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(new AuctionId(auctionId));
 
-            AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
+        AuctionResponseDTO dto = _auctionMapper.toDTO(auction);
 
-            dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .getAuctionById(auctionId))
-                            .withSelfRel()
-                    );
+        _auctionLinkProvider.addLinksForAuction(dto);
 
-            dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .getBidsForAuction(auctionId))
-                            .withRel("bid-options")
-            );
-
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
 
     }
 
     @RequestMapping(path = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
-    public ResponseEntity<RepresentationModel<?>> optionsForBids(
+    public ResponseEntity<Void> optionsForBids(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
         User user = _userService.getUserByEmail(new UserId(new Email(email)));
+        AuctionId reconstructedAuctionId = new AuctionId(auctionId);
+        Auction auction  = _auctionService.getAuctionById(reconstructedAuctionId);
 
-        RepresentationModel<?> model = new RepresentationModel<>();
+        List<HttpMethod> methods =
+                _auctionLinkProvider.getAllowedMethodsForBids(user, auction);
 
-        for (Link link : _auctionLinkProvider.getBidLinks(user, auctionId)) {
-            model.add(link);
-        }
+        ResponseEntity<Void> response = ResponseEntity.ok()
+                .allow(methods.toArray(HttpMethod[]::new))
+                .build();
 
-        return ResponseEntity.ok(model);
+        return response;
     }
 
     @GetMapping(
             path = "/{auctionId}/bids",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> getBidsForAuction(@PathVariable String auctionId) {
+    public ResponseEntity<CollectionModel<BidResponseDTO>> getBidsForAuction(@PathVariable String auctionId) {
 
-            Auction auction = _auctionService.getAuctionById(auctionId);
+        Auction auction = _auctionService.getAuctionById(new AuctionId(auctionId));
 
-            // Map each Bid to BidResponseDTO
-            List<BidResponseDTO> dtos = auction.getBids().stream()
-                    .map(bid -> _bidResponseDTOMapper.toDTO(auction, bid))
-                    .toList();
+        // Map each Bid to BidResponseDTO
+        List<BidResponseDTO> dtos = auction.getBids().stream()
+                .map(bid -> _bidResponseDTOMapper.toDTO(auction, bid))
+                .toList();
 
-            // after GETting bids, user can consult OPTIONS they have on /auctions/{auctionId}/bids again
-            dtos.forEach(dto -> dto.add(
-                    linkTo(methodOn(AuctionRestController.class)
-                            .optionsForBids(auctionId, null))
-                            .withRel("bids-options")
-            ));
+        dtos.forEach(_auctionLinkProvider::addLinksForBidInCollection);
 
-            return new ResponseEntity<>(dtos, HttpStatus.OK);
+        CollectionModel<BidResponseDTO> collectionModel =
+                _auctionLinkProvider.addLinksForBidCollection(dtos, auctionId);
+
+        return new ResponseEntity<>(collectionModel, HttpStatus.OK);
 
     }
 
@@ -215,26 +214,26 @@ public class AuctionRestController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Object> placeBid(
+    public ResponseEntity<BidResponseDTO> placeBid(
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String userIdFromHeader,
             @RequestBody @Valid PlaceBidRequestDTO request) {
 
-            Email email = new Email(userIdFromHeader);
-            UserId userId = new UserId(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(userIdFromHeader)));
+        UserId userId = user.identity();
 
-            Currency currency = Currency.valueOf(request.getCurrency());
-            Price offerPrice = new Price(request.getOfferPrice(), currency);
+        Currency currency = Currency.valueOf(request.getCurrency());
+        Price offerPrice = new Price(request.getOfferPrice(), currency);
 
-            var result = _auctionService.placeBid(auctionId, userId, offerPrice);
-            Auction auction = result.auction();
-            Bid bid = result.bid();
+        var result = _auctionService.placeBid(new AuctionId(auctionId), userId, offerPrice);
+        Auction auction = result.auction();
+        Bid bid = result.bid();
 
-            BidResponseDTO dto = _bidResponseDTOMapper.toDTO(auction, bid);
+        BidResponseDTO dto = _bidResponseDTOMapper.toDTO(auction, bid);
 
-            _auctionLinkProvider.addBidLinks(dto);
+        _auctionLinkProvider.addLinksForCreatedBid(dto);
 
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
     }
 

@@ -1,0 +1,45 @@
+@startuml
+'==== Title ====
+title OPTIONS for Buyer on /auctions/{auctionId}/bids - SD %n()
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor Buyer
+participant ":Frontend" as FE
+participant ":Backend" as BE
+participant ":db" as DB
+
+
+Buyer -> FE : Render my possible actions %n() on the bids collection of an %n()auction.
+activate FE
+
+FE -> BE : OPTIONS {bids href} %n() (auctions/{auctionId}/bids)
+activate BE
+
+ref over BE
+[[OPTIONS_On_Bids_SD.puml OPTIONS for buyer on /auctions/{auctionId}/bids]]
+end ref
+
+BE --> FE : 200 OK + Allow: [OPTIONS, GET, POST]
+deactivate BE
+
+FE --> Buyer : These are your options.
+deactivate FE
+
+ref over Buyer
+[[../Process_View_Level_3_SD.puml Back to main diagram]]
+end ref
+
+@enduml

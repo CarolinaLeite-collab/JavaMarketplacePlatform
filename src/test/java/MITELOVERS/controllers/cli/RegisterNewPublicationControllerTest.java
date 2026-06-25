@@ -49,12 +49,14 @@ class RegisterNewPublicationControllerTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         GenreId genreIdDouble = mock(GenreId.class);
         Publication publicationDouble = mock(Publication.class);
+        String synopsis = "Synopsis";
 
         when(_publicationServiceDouble.registerPublication(
                 titleDouble,
                 authorIdDouble,
                 yearDouble,
-                genreIdDouble
+                genreIdDouble,
+                synopsis
         )).thenReturn(publicationDouble);
 
         //Act
@@ -62,7 +64,8 @@ class RegisterNewPublicationControllerTest {
                 titleDouble,
                 authorIdDouble,
                 yearDouble,
-                genreIdDouble
+                genreIdDouble,
+                synopsis
         );
 
         //Assert
@@ -76,24 +79,26 @@ class RegisterNewPublicationControllerTest {
         AuthorId authorIdDouble = mock(AuthorId.class);
         Year yearDouble = mock(Year.class);
         GenreId genreIdDouble = mock(GenreId.class);
+        String synopsis = "Synopsis";
 
         when(_publicationServiceDouble.registerPublication(
                 titleDouble,
                 authorIdDouble,
                 yearDouble,
-                genreIdDouble
+                genreIdDouble,
+                synopsis
         )).thenThrow(new IllegalArgumentException("Duplicate"));
 
+        //Assert
         assertThrows(IllegalArgumentException.class, () ->
                 _controller.registerPublication(
                         titleDouble,
                         authorIdDouble,
                         yearDouble,
-                        genreIdDouble
+                        genreIdDouble,
+                        synopsis
                 )
         );
-
-        //Assert
 
     }
 
@@ -107,6 +112,7 @@ class RegisterNewPublicationControllerTest {
 
         Iterable<AuthorId> result = _controller.getAuthorsId();
 
+        //Act
         List<AuthorId> ids = new ArrayList<>();
         result.forEach(ids::add);
 
@@ -124,6 +130,7 @@ class RegisterNewPublicationControllerTest {
 
         Iterable<GenreId> result = _controller.getGenresId();
 
+        //Act
         List<GenreId> ids = new ArrayList<>();
         result.forEach(ids::add);
 

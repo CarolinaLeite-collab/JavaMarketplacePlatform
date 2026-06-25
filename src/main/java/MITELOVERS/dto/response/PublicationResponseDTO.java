@@ -20,5 +20,6 @@ public class PublicationResponseDTO extends RepresentationModel<PublicationRespo
     private String authorId;
     private int releaseYear;
     private String genreId;
+    private String synopsis;
 
 }

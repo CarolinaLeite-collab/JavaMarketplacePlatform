@@ -223,7 +223,7 @@ public class DataInitializer {
             Author saramago = authorFactory.createAuthor(new AuthorId("Saramago J.-A1B2C3"), new Name("José Saramago"));
             Author delahaye = authorFactory.createAuthor(new AuthorId("Delahaye G.-C1D2E3"), new Name("Gilbert Delahaye"));
             Author berghauserPont = authorFactory.createAuthor(new AuthorId("BerghauserPont M.-A7F2D1"), new Name("Meta Berghauser Pont"));
-            Author varoufakis = authorFactory.createAuthor(new AuthorId("Varoufakis Y.-A7D2D1"), new Name ("Agatha Christie"));
+            Author varoufakis = authorFactory.createAuthor(new AuthorId("Varoufakis Y.-A7D2D1"), new Name ("Yanis Varoufakis"));
             Author christie = authorFactory.createAuthor(new AuthorId("Christie A.-D9D2D1"), new Name ("Agatha Christie"));
             Author celas = authorFactory.createAuthor(new AuthorId("Celas C.-D9D0D0"), new Name ("Carolina Celas"));
             Author solaMolares = authorFactory.createAuthor(new AuthorId("SolaMorales I.-D9D0D0"), new Name ("Ignasi de Solà-Morales"));
@@ -248,6 +248,63 @@ public class DataInitializer {
             authorRepo.save(solaMolares);
             authorRepo.save(goethe);
 
+            log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, Rui Tavares, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Meta Berghauser Pont");
+
+            // -------------------------------------------------------
+            // Synopsis
+
+            String novaYorkDeliranteSynopsis =
+                    "An exploration of New York City's urban evolution, presenting Manhattan as a laboratory of architecture, culture, and imagination where density and chaos shaped the modern metropolis.";
+
+            String nineteenEightyFourSynopsis =
+                    "In a totalitarian regime where the State controls truth and constantly watches its citizens, Winston Smith struggles to preserve freedom of thought and his own identity.";
+
+            String foundationSeriesSynopsis =
+                    "As a galactic empire collapses, scientists use psychohistory to preserve knowledge and reduce centuries of chaos by establishing the Foundation.";
+
+            String sapiensSynopsis =
+                    "A journey through the history of humankind, from early hunter-gatherers to modern civilization, exploring how ideas, cultures, and revolutions shaped Homo sapiens.";
+
+            String patternSynopsis =
+                    "An exploration of the relationship between architecture, nature, and human behavior, showing how recurring patterns can inspire more vibrant and functional spaces.";
+
+            String shortnessOfLifeSynopsis =
+                    "Seneca reflects on the value of time and existence, arguing that life is long enough when lived with purpose, wisdom, and virtue.";
+
+            String e1027Synopsis =
+                    "A study of the iconic E-1027 house, highlighting Eileen Gray's innovative vision and the building's lasting importance in the history of modern architecture.";
+
+            String spaceSettlementsSynopsis =
+                    "A visionary proposal for human colonies in space, exploring scientific and technological solutions for living beyond Earth.";
+
+            String hipocritoesEOlhigarcasSynopsis =
+                    "A critique of political and economic elites, examining the structures of power, inequality, and influence that shape contemporary societies.";
+
+            String intermitenciasSynopsis =
+                    "When nobody dies in an entire country, society faces unexpected consequences while Death herself questions her role and the meaning of human existence.";
+
+            String anitaVasComprasSynopsis =
+                    "Anita joins her family on a shopping trip, discovering products, people, and everyday lessons through a simple and educational adventure.";
+
+            String spaceMatrixSynopsis =
+                    "A reflection on architecture and urbanism through the relationship between space, culture, and technology, proposing new ways of understanding the built environment.";
+
+            String italienischeReiseSynopsis =
+                    "A travel journal recounting Goethe’s journey through Italy, combining observations on art, culture, and nature with a personal quest for inspiration and self-discovery.";
+
+            String diferenciasSynopsis =
+                    "A reflection on contemporary architecture, highlighting the diversity of ideas, styles, and cultural influences that define the built environment today.";
+
+            String horizonteSynopsis =
+                    "A poetic illustrated book that explores the idea of the horizon through gentle storytelling and evocative artwork.";
+
+            String technoFSynopsis =
+                    "A critique of the rise of technofeudalism and the growing influence of digital platforms on the economy, politics, and democracy.";
+
+            String agathaCristieSynopsis =
+                    "A light-hearted memoir recounting Agatha Christie’s experiences on archaeological journeys in the Middle East.";
+
+
             log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Rui Tavares, José Saramago, Gilbert Delahaye, Meta Berghauser Pont, Agatha Christie, Carolina Celas, Ignasi de Solà-Morales, Johann Wolfgang von Goethe");
             // -------------------------------------------------------
             // Publications
@@ -255,117 +312,140 @@ public class DataInitializer {
                     new Title("Nova York Delirante"),
                     koolhaas.identity(),
                     Year.of(1978),
-                    genreArts.identity()
+                    genreArts.identity(),  // Arts
+                    novaYorkDeliranteSynopsis
+
             );
 
             Publication nineteenEightyFour = publicationFactory.createPublication(
                     new Title("1984"),
                     orwell.identity(),
                     Year.of(1949),
-                    genreFiction.identity()  // Fiction
+                    genreFiction.identity(),  // Fiction
+                    nineteenEightyFourSynopsis
+
+
             );
             Publication foundationSeries = publicationFactory.createPublication(
                     new Title("Foundation"),
                     asimov.identity(),
                     Year.of(1951),
-                    genreSF.identity()
+                    genreSF.identity(),  // Science Fiction
+                    foundationSeriesSynopsis
             );
             Publication sapiens = publicationFactory.createPublication(
                     new Title("Sapiens"),
                     yuval.identity(),
                     Year.of(2011),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(),  // Non-Fiction
+                    sapiensSynopsis
+
             );
 
             Publication pattern = publicationFactory.createPublication(
                     new Title("A Pattern Language"),
                     alexander.identity(),
                     Year.of(1977),
-                    genreTechnology.identity()
+                    genreTechnology.identity(),  // Non-Fiction
+                    patternSynopsis
             );
 
             Publication shortnessOfLife = publicationFactory.createPublication(
                     new Title("On the Shortness of Life"),
                     seneca.identity(),
                     Year.of(49),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(), // Non-Fiction
+                    shortnessOfLifeSynopsis
             );
 
             Publication e1027 = publicationFactory.createPublication(
                     new Title("E.1027. Maison en Bord de Mer"),
                     eg.identity(),
                     Year.of(1929),
-                    genreArts.identity()
+                    genreArts.identity(), // Arts / Architecture
+                    e1027Synopsis
             );
 
             Publication spaceSettlements = publicationFactory.createPublication(
                     new Title("Space Settlements"),
                     scharmen.identity(),
                     Year.of(2019),
-                    genreArts.identity()
+                    genreArts.identity(), // Arts / Architecture
+                    spaceSettlementsSynopsis
             );
 
             Publication hipocritoesEOlhigarcas = publicationFactory.createPublication(
                     new Title("Hipocritões e Oligarcas"),
                     ruiTavares.identity(),
                     Year.of(2025),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(), // Non-Fiction
+                    hipocritoesEOlhigarcasSynopsis
             );
 
             Publication intermitencias = publicationFactory.createPublication(
                     new Title("As Intermitências da Morte"),
                     saramago.identity(),
                     Year.of(2005),
-                    genreFiction.identity()
+                    genreFiction.identity(),  // Fiction
+                    intermitenciasSynopsis
+
             );
 
             Publication anitaVasCompras = publicationFactory.createPublication(
                     new Title("Anita vai às Compras"),
                     delahaye.identity(),
                     Year.of(1954),
-                    genreChildren.identity()
+                    genreChildren.identity(),  // Other
+                    anitaVasComprasSynopsis
             );
 
             Publication spaceMatrix = publicationFactory.createPublication(
                     new Title("Spacematrix: Space, Density and Urban Form"),
                     berghauserPont.identity(),
                     Year.of(2005),
-                    genreArts.identity()
+                    genreArts.identity(),
+                    spaceMatrixSynopsis
+
             );
 
             Publication italienischeReise = publicationFactory.createPublication(
                     new Title("Italienische Reise"),
                     goethe.identity(),
                     Year.of(1981),
-                    genreLiterature.identity()
+                    genreLiterature.identity(),
+                    italienischeReiseSynopsis
             );
 
             Publication diferenciasPub = publicationFactory.createPublication(
                     new Title("Differencias"),
                     solaMolares.identity(),
                     Year.of(1995),
-                    genreArts.identity()
+                    genreArts.identity(),
+                    diferenciasSynopsis
             );
 
             Publication horizontePub = publicationFactory.createPublication(
                     new Title("Horizonte"),
                     celas.identity(),
                     Year.of(2018),
-                    genreChildren.identity()
+                    genreChildren.identity(),
+                    horizonteSynopsis
             );
 
             Publication technoFPub = publicationFactory.createPublication(
                     new Title("Techno Feudalismo"),
                     varoufakis.identity(),
                     Year.of(2023),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(),
+                    technoFSynopsis
             );
 
             Publication agathaCristiePub = publicationFactory.createPublication(
                     new Title("Agatha Christie na Síria"),
                     christie.identity(),
                     Year.of(1946),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(),
+                    agathaCristieSynopsis
             );
 
             publicationRepo.save(shortnessOfLife);
@@ -719,7 +799,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Paperback edition of Hipocritões e Oligarcas"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/hipocritoes.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/hipocritoes.png")
 
             );
             itemRepo.save(hipocritoesItem);
@@ -731,7 +811,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Great book"),
                     SaleStatus.Sold,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/spaceSettlements.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/spaceSettlements.png")
             );
             itemRepo.save(spaceSetlementsItem);
 
@@ -764,7 +844,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Portuguese Edition of Delirious New York"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/deliriousNewYork.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/deliriousNewYork.png")
             );
             itemRepo.save(item3);
 
@@ -775,7 +855,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("First Edition"),
                     SaleStatus.OnAuction,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/patternLanguage.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/patternLanguage.png")
 
             );
             itemRepo.save(item4);
@@ -787,7 +867,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Penguin Great Ideas edition of On the Shortness of Life"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/seneca.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/seneca.png")
             );
             itemRepo.save(shortnessOfLifeItem);
 
@@ -798,7 +878,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Magazine rare First Edition"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/E1027.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/E1027.png")
 
             );
             itemRepo.save(itemE1027);
@@ -844,7 +924,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Hardcover in good condition, with clean pages and light cover wear"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/italienishReise.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/italienishReise.png")
             );
             itemRepo.save(italienishReiseItem);
 
@@ -852,10 +932,10 @@ public class DataInitializer {
             Item differenciasItem = itemFactory.createItem(
                     differenciasItemId,
                     editiondifferencias.identity(),
-                    Condition.LIKE_NEW,
+                    Condition.MINT,
                     new Description("A well-preserved copy of this influential work on contemporary architectural theory. Light wear to the cover."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/diferencias.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/diferencias.png")
             );
             itemRepo.save(differenciasItem);
 
@@ -866,7 +946,7 @@ public class DataInitializer {
                     Condition.POOR,
                     new Description("A worn copy with visible signs of use. Pages remain readable, making it a practical reading copy for children."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/horizonte.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/horizonte.png")
             );
             itemRepo.save(horizonteItem);
 
@@ -877,7 +957,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Used but in good condition. Some signs of handling are present, but the book remains fully readable and complete."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/technoFeudalism.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/technoFeudalism.png")
             );
             itemRepo.save(technoItem);
 
@@ -888,7 +968,7 @@ public class DataInitializer {
                     Condition.FAIR,
                     new Description("Pre-owned copy with light wear from previous use. Great fun to read."),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/siria.png?raw=true")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/siria.png")
             );
             itemRepo.save(agathaItem);
 
@@ -1058,7 +1138,7 @@ public class DataInitializer {
                     Condition.GOOD,
                     new Description("Sci-Fi test item"),
                     SaleStatus.OnDirectSale,
-                    new Picture("https://github.com/CarolinaLeite1251987/imagens/blob/main/images/fundacion.png?raw=true\")\n")
+                    new Picture("https://raw.githubusercontent.com/CarolinaLeite1251987/imagens/main/images/fundacion.png")
 
             );
             itemRepo.save(sfItem);
@@ -1145,7 +1225,7 @@ public class DataInitializer {
             );
 
             // Place bids while active
-            auctionWithBids.placeBid(user.identity(), new Price(11.00, Currency.EUR));
+            auctionWithBids.placeBid(userTono.identity(), new Price(11.00, Currency.EUR));
             auctionWithBids.placeBid(user2.identity(), new Price(13.00, Currency.EUR));
             auctionWithBids.placeBid(user3.identity(), new Price(15.00, Currency.EUR));
 

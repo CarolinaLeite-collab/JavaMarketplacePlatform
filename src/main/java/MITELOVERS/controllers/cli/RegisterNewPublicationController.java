@@ -41,6 +41,7 @@ public class RegisterNewPublicationController {
         _publicationService = Objects.requireNonNull(publicationService, "PublicationService is required");
         _authorService = Objects.requireNonNull(authorService, "AuthorService is required");
         _genreService = Objects.requireNonNull(genreService, "GenreService is required");
+
     }
 
     public Iterable<AuthorId> getAuthorsId() {
@@ -54,13 +55,8 @@ public class RegisterNewPublicationController {
     public Publication registerPublication(Title title,
                                            AuthorId authorId,
                                            Year releaseYear,
-                                           GenreId genreId) {
+                                           GenreId genreId, String synopsis) {
 
-        return _publicationService.registerPublication(
-                title,
-                authorId,
-                releaseYear,
-                genreId
-        );
+        return _publicationService.registerPublication(title, authorId, releaseYear, genreId, synopsis);
     }
 }

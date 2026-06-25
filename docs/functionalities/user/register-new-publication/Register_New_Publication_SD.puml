@@ -59,15 +59,15 @@ User -> UI: title, releaseYear
 activate UI
 
 ' --- Use case execution ---
-UI -> Ctl: registerPublication(title, authorId, \nreleaseYear, genreId)
+UI -> Ctl: registerPublication(title, authorId, \nreleaseYear, genreId, synopsis)
 activate Ctl
 
 
 ' --- Creation  ---
-Ctl -> PF: createPublication\n(title, authorId, releaseYear, genreId)
+Ctl -> PF: createPublication\n(title, authorId, releaseYear, genreId, synopsis)
 activate PF
 create "newPublication:Publication"
-PF -->> "newPublication:Publication": createPublication\n(title, authorId, releaseYear, genreId)
+PF -->> "newPublication:Publication": createPublication\n(title, authorId, releaseYear, genreId, synopsis)
 PF --> Ctl: newPublication
 deactivate PF
 

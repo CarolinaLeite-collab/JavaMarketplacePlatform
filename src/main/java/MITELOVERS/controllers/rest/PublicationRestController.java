@@ -78,7 +78,8 @@ public class PublicationRestController {
                     new Title(info.getTitle()),
                     new AuthorId(info.getAuthorId()),
                     Year.of(info.getReleaseYear()),
-                    new GenreId(info.getGenreId())
+                    new GenreId(info.getGenreId()),
+                    info.getSynopsis()
             );
 
             PublicationResponseDTO result = _publicationResponseDTOMapper.toModel(publication);
