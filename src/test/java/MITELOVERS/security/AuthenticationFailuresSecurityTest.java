@@ -2,6 +2,7 @@ package MITELOVERS.security;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
@@ -63,25 +64,24 @@ class AuthenticationFailuresSecurityTest {
     @MockitoBean
     private UserService _userService;
 
-    @Test
-    @DisplayName("OWASP A07 Auth Failure: X-User-Id header accepts a completely fabricated identity claim — no credential verification is performed")
-    void endpoint_acceptsArbitraryIdentityClaim_withoutCredentialVerification() throws Exception {
-        doNothing().when(_listService).deleteList(any());
+    @MockitoBean
+    private AuthorizationPolicy _authPolicy;
 
+    @Test
+    @DisplayName("OWASP A07 Auth Failure: fabricated identity claim is processed as a header value, but authorization blocks the action")
+    void endpoint_acceptsArbitraryIdentityClaim_withoutCredentialVerification() throws Exception {
         // A syntactically valid but completely fabricated identity is presented and accepted without challenge
         _mockMvc.perform(delete("/my-lists/{listId}", "LOI-1234")
                         .header("X-User-Id", "nonexistent-identity-that-has-never-been-registered@nowhere.invalid"))
-                .andExpect(status().isOk());
+                .andExpect(status().isForbidden());
     }
 
     @Test
-    @DisplayName("OWASP A07 Auth Failure: absence of the X-User-Id header does not trigger an authentication challenge (401 Unauthorized)")
+    @DisplayName("OWASP A07 Auth Failure: missing X-User-Id header yields framework-level 400 instead of an authentication challenge")
     void endpoint_withNoIdentityHeader_doesNotIssueAuthChallenge() throws Exception {
-        doNothing().when(_listService).deleteList(any());
-
         // No identity provided — a properly secured endpoint would respond 401 Unauthorized
         // Instead the server processes the request successfully, confirming there is no authentication gate
         _mockMvc.perform(delete("/my-lists/{listId}", "LOI-1234"))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 }
