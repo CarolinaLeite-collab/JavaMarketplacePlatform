@@ -13,7 +13,6 @@ import MITELOVERS.dto.request.MakeListPublicRequestDTO;
 import MITELOVERS.dto.response.ListOfItemsResponseDTO;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

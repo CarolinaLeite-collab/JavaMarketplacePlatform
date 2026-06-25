@@ -9,7 +9,6 @@ import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.BidResponseDTO;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

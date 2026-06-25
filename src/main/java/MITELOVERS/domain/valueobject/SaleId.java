@@ -3,8 +3,8 @@ package MITELOVERS.domain.valueobject;
 import MITELOVERS.ddd.DomainId;
 import MITELOVERS.domain.sale.Sale;
 
-import java.util.UUID;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Value object representing the unique identifier of a {@link Sale}.

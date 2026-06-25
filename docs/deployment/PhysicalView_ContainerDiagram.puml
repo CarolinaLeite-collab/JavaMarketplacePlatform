@@ -1,0 +1,42 @@
+@startuml
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/common.puml
+!includeurl ICONURL/devicons2/docker.puml
+
+skinparam linetype ortho
+
+node "Client" as client {
+    component "Browser" as browser {
+        component "MiteLovers UI" as UI
+    }
+}
+
+node "DEI Cloud VM\nvs266" as server {
+    rectangle "Docker Compose\n<<Network>>" as network {
+
+        DEV2_DOCKER(frontDocker, Frontend\n<<Container>>, node, #00b6ee) {
+            component "React + nginx\n<<Frontend>>" as FE
+        }
+
+        DEV2_DOCKER(backDocker, Backend\n<<Container>>, node, #00b6ee) {
+            component "Spring Boot\n<<Backend>>" as BE
+        }
+
+        DEV2_DOCKER(databaseDocker, H2\n<<Container>>, node, #00b6ee) {
+            database "H2 Database\n<<Database>>" as DB
+        }
+
+        BE -[bold]down- DB : JDBC/TCP\nPort 9092
+    }
+
+    port "Port 2226" as p2226
+    port "Port 2228" as p2228
+
+    frontDocker -[bold]down- p2226
+    backDocker -[bold]down- p2228
+}
+
+UI -[bold]right-- p2226 : HTTPS gateway\nContainer port 8080
+UI -[bold]left-- p2228 : HTTPS REST API\nContainer port 8081
+
+@enduml

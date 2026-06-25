@@ -2,6 +2,7 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.edition.Edition;
 import MITELOVERS.domain.edition.EditionFactory;
+import MITELOVERS.domain.publishingcompany.PublishingCompany;
 import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
@@ -19,8 +20,12 @@ import java.util.NoSuchElementException;
 
 
 /**
- * Application service responsible for retrieving publication information
- * and converting domain objects into response DTOs.
+ * Application service responsible for edition-related operations.
+ * Handles edition registration, validation of related domain references,
+ * retrieval of all editions, lookup of editions by publication, and
+ * retrieval of a single edition by its identifier. Coordinates edition
+ * creation through {@link EditionFactory} and persists new editions via
+ * {@link IEditionRepo}. All operations are transactional.
  */
 
 @Service
@@ -31,39 +36,33 @@ public class EditionService {
     private final IPublicationRepo _iPublicationRepo;
     private final IPublishingCompanyRepo _iPublishingCompanyRepo;
     private final IPublicationTypeRepo _iPublicationTypeRepo;
-    private final EditionRequestDTOMapper _editionRequestDTOMapper;
 
 
     public EditionService(IEditionRepo iEditionRepo, EditionFactory editionFactory,
                           IPublicationRepo iPublicationRepo, IPublishingCompanyRepo iPublishingCompanyRepo,
-                          IPublicationTypeRepo iPublicationTypeRepo, EditionRequestDTOMapper editionRequestDTOMapper) {
+                          IPublicationTypeRepo iPublicationTypeRepo) {
 
         _iEditionRepo = iEditionRepo;
         _editionFactory = editionFactory;
         _iPublicationRepo = iPublicationRepo;
         _iPublishingCompanyRepo = iPublishingCompanyRepo;
         _iPublicationTypeRepo = iPublicationTypeRepo;
-        _editionRequestDTOMapper = editionRequestDTOMapper;
 
     }
 
-
     @Transactional
-    public Edition registerEdition(String pubId, EditionRequestDTO dto) {
-
-        PublicationTypeId typeId = new PublicationTypeId(dto.getPublicationTypeId());
-        Identifier identifier = _editionRequestDTOMapper.toIdentifier(dto);
-        PublicationId publicationId = new PublicationId (pubId);
-        PublishingCompanyId publishingCompanyId = new PublishingCompanyId(dto.getPublishingCompanyId());
-        Year publishingYear = Year.of(dto.getPublishingYear());
-        Language editionLanguage = Language.valueOf(dto.getLanguage());
-
-        // optional fields
-        Dimension dimension = _editionRequestDTOMapper.toDimension(dto);
-        Weight weight = _editionRequestDTOMapper.toWeight(dto);
-        NumberOfPages numberOfPages = _editionRequestDTOMapper.toNumberOfPages(dto);
-        EditionNumber editionNumber = _editionRequestDTOMapper.toEditionNumber(dto);
-        Binding binding = _editionRequestDTOMapper.toBinding(dto);
+    public Edition registerEdition(
+            PublicationTypeId typeId,
+            Identifier identifier,
+            PublicationId publicationId,
+            PublishingCompanyId publishingCompanyId,
+            Year publishingYear,
+            Language editionLanguage,
+            Dimension dimension,
+            Weight weight,
+            NumberOfPages numberOfPages,
+            EditionNumber editionNumber,
+            Binding binding) {
 
         // doesExist attributes
         _iPublicationTypeRepo.ofIdentity(typeId)
@@ -96,12 +95,12 @@ public class EditionService {
                 if (existingEdition.getPublicationTypeId().equals(typeId) &&
                         existingEdition.getIdentifier().equals(identifier)) {
 
-                    return edition;
+                    return existingEdition;
                 }
             } else {
                 if (existingEdition.sameAs(edition)) {
 
-                    return edition;
+                    return existingEdition;
                 }
             }
         }
@@ -123,9 +122,7 @@ public class EditionService {
     }
 
     @Transactional
-    public List<Edition> getAllEditionsByPublication(String publicationId) {
-
-        PublicationId pubId = new PublicationId(publicationId);
+    public List<Edition> getAllEditionsByPublication(PublicationId pubId) {
 
         _iPublicationRepo.ofIdentity(pubId)
                 .orElseThrow(() -> new NoSuchElementException("Publication not found"));
@@ -142,11 +139,9 @@ public class EditionService {
     }
 
     @Transactional
-    public Edition getEditionById(String editionId) {
+    public Edition getEditionById(EditionId editionId) {
 
-        EditionId id = new EditionId(editionId);
-
-        return _iEditionRepo.ofIdentity(id)
+        return _iEditionRepo.ofIdentity(editionId)
                 .orElseThrow(() -> new NoSuchElementException("Edition not found"));
     }
 

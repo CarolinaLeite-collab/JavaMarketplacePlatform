@@ -2,7 +2,10 @@ package MITELOVERS.domain.shoppingcart;
 
 import MITELOVERS.ddd.DomainEntity;
 import MITELOVERS.domain.directsale.DirectSale;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
+import MITELOVERS.domain.valueobject.UserId;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

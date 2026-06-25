@@ -9,266 +9,249 @@ import MITELOVERS.domain.repository.IEditionRepo;
 import MITELOVERS.domain.repository.IPublicationRepo;
 import MITELOVERS.domain.repository.IPublicationTypeRepo;
 import MITELOVERS.domain.repository.IPublishingCompanyRepo;
-import MITELOVERS.domain.valueobject.ISBN;
-import MITELOVERS.domain.valueobject.PublicationId;
-import MITELOVERS.domain.valueobject.PublicationTypeId;
-import MITELOVERS.dto.request.EditionRequestDTO;
-import MITELOVERS.mapper.EditionRequestDTOMapper;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Year;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class EditionServiceTest {
 
-    private IEditionRepo _iEditionRepoDouble;
-    private EditionFactory _editionFactoryDouble;
-    private IPublicationRepo _iPublicationRepoDouble;
-    private IPublishingCompanyRepo _iPublishingCompanyRepoDouble;
-    private IPublicationTypeRepo _iPublicationTypeRepoDouble;
-    private EditionRequestDTOMapper _requestMapperDouble;
+    // SUT
+    @InjectMocks
+    EditionService _service;
+
+    @Mock
+    IEditionRepo _editionRepoDouble;
+
+    @Mock
+    EditionFactory _editionFactoryDouble;
+
+    @Mock
+    IPublicationRepo _publicationRepoDouble;
+
+    @Mock
+    IPublishingCompanyRepo _publishingCompanyRepoDouble;
+
+    @Mock
+    IPublicationTypeRepo _publicationTypeRepoDouble;
+
+    private PublicationTypeId _typeIdDouble;
+    private Identifier _identifierDouble;
+    private PublicationId _publicationIdDouble;
+    private PublishingCompanyId _publishingCompanyIdDouble;
+    private Year _yearDouble;
+    private Language _languageDouble;
+    private Edition _editionDouble;
+    private EditionId _editionIdDouble;
 
     @BeforeEach
     void setUp() {
-
-        _iEditionRepoDouble = mock(IEditionRepo.class);
-        _editionFactoryDouble = mock(EditionFactory.class);
-        _iPublicationRepoDouble = mock(IPublicationRepo.class);
-        _iPublishingCompanyRepoDouble = mock(IPublishingCompanyRepo.class);
-        _iPublicationTypeRepoDouble = mock(IPublicationTypeRepo.class);
-        _requestMapperDouble = mock(EditionRequestDTOMapper.class);
-
-    }
-
-    private EditionService newService() {
-        return new EditionService(
-                _iEditionRepoDouble, _editionFactoryDouble,
-                _iPublicationRepoDouble, _iPublishingCompanyRepoDouble,
-                _iPublicationTypeRepoDouble, _requestMapperDouble);
+        _typeIdDouble = mock(PublicationTypeId.class);
+        _identifierDouble = mock(Identifier.class);
+        _publicationIdDouble = mock(PublicationId.class);
+        _publishingCompanyIdDouble = mock(PublishingCompanyId.class);
+        _yearDouble = mock(Year.class);
+        _languageDouble = mock(Language.class);
+        _editionDouble = mock(Edition.class);
+        _editionIdDouble = mock(EditionId.class);
     }
 
     @Test
-    void registerEditionReturnsEdition() {
+    void registerEditionReturnsEditionWhenSuccessful() {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .identifier("9780747532743")
-                .build();
-
-        Edition editionDouble = mock(Edition.class);
-
-        when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
-        when(_iPublishingCompanyRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublishingCompany.class)));
-        when(_requestMapperDouble.toIdentifier(dto)).thenReturn(new ISBN("9780747532743"));
-        when(_requestMapperDouble.toDimension(dto)).thenReturn(null);
-        when(_requestMapperDouble.toWeight(dto)).thenReturn(null);
-        when(_requestMapperDouble.toNumberOfPages(dto)).thenReturn(null);
-        when(_requestMapperDouble.toEditionNumber(dto)).thenReturn(null);
-        when(_requestMapperDouble.toBinding(dto)).thenReturn(null);
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of());
-        when(_editionFactoryDouble.createEdition(any(), any(), any(), any(), any(), any(),
-                isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(editionDouble);
-        when(_iEditionRepoDouble.save(editionDouble)).thenReturn(editionDouble);
-
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_publishingCompanyRepoDouble.ofIdentity(_publishingCompanyIdDouble)).thenReturn(Optional.of(mock(PublishingCompany.class)));
+        when(_editionFactoryDouble.createEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null))
+                .thenReturn(_editionDouble);
+        when(_editionRepoDouble.findAll()).thenReturn(List.of());
+        when(_editionRepoDouble.save(_editionDouble)).thenReturn(_editionDouble);
 
         // Act
-        Edition result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
+        Edition result = _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null);
 
         // Assert
-        assertNotNull(result);
-        assertSame(editionDouble, result);
+        assertSame(_editionDouble, result);
     }
 
     @Test
-    void registerEditionPublicationTypeNotFoundThrowsException() {
+    void registerEditionThrowsWhenPublicationTypeNotFound() {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .build();
-
-        when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
-
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto));
+                _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null));
     }
 
     @Test
-    void registerEditionPublicationNotFoundThrowsException() {
+    void registerEditionThrowsWhenPublicationNotFound() {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .build();
-
-        when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
-
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto));
+                _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null));
     }
 
     @Test
-    void registerEditionPublishingCompanyNotFoundThrowsException() {
+    void registerEditionThrowsWhenPublishingCompanyNotFound() {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .build();
-
-        when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
-        when(_iPublishingCompanyRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
-
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_publishingCompanyRepoDouble.ofIdentity(_publishingCompanyIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto));
+                _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null));
     }
 
     @Test
-    void registerEditionDuplicateIdentifierReturnsNewlyCreatedEdition() {
+    void registerEditionReturnsExistingWhenDuplicateIdentifierFound() {
         // Arrange
-        EditionRequestDTO dto = EditionRequestDTO.builder()
-                .publicationTypeId("BOOK")
-                .publishingCompanyId("Secker and Warburg")
-                .publishingYear(2000)
-                .language("ENGLISH")
-                .identifier("9780747532743")
-                .build();
-
         Edition existingEditionDouble = mock(Edition.class);
-        Edition newEditionDouble = mock(Edition.class);
+        when(existingEditionDouble.getPublicationTypeId()).thenReturn(_typeIdDouble);
+        when(existingEditionDouble.getIdentifier()).thenReturn(_identifierDouble);
 
-        when(_iPublicationTypeRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublicationType.class)));
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
-        when(_iPublishingCompanyRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(PublishingCompany.class)));
-        when(_requestMapperDouble.toIdentifier(dto)).thenReturn(new ISBN("9780747532743"));
-        when(_requestMapperDouble.toDimension(dto)).thenReturn(null);
-        when(_requestMapperDouble.toWeight(dto)).thenReturn(null);
-        when(_requestMapperDouble.toNumberOfPages(dto)).thenReturn(null);
-        when(_requestMapperDouble.toEditionNumber(dto)).thenReturn(null);
-        when(_requestMapperDouble.toBinding(dto)).thenReturn(null);
-        when(_editionFactoryDouble.createEdition(any(), any(), any(), any(), any(), any(),
-                isNull(), isNull(), isNull(), isNull(), isNull())).thenReturn(newEditionDouble);
-        when(existingEditionDouble.getPublicationTypeId()).thenReturn(new PublicationTypeId("BOOK"));
-        when(existingEditionDouble.getIdentifier()).thenReturn(new ISBN("9780747532743"));
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of(existingEditionDouble));
-
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_publishingCompanyRepoDouble.ofIdentity(_publishingCompanyIdDouble)).thenReturn(Optional.of(mock(PublishingCompany.class)));
+        when(_editionFactoryDouble.createEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null))
+                .thenReturn(_editionDouble);
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(existingEditionDouble));
 
         // Act
-        Edition result = service.registerEdition("1984-Orwell-G--F43DD6(1949)", dto);
+        Edition result = _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null);
 
         // Assert
-        // o service devolve a edição recém-criada (não a existente) quando deteta duplicado
-        assertNotNull(result);
-        assertSame(newEditionDouble, result);
+        assertSame(existingEditionDouble, result);
+        verify(_editionRepoDouble, never()).save(any());
     }
 
     @Test
-    void getAllEditionsReturnsList() {
+    void registerEditionReturnsExistingWhenSameAsMatchFound() {
         // Arrange
-        Edition editionDouble = mock(Edition.class);
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
+        Edition existingEditionDouble = mock(Edition.class);
+        when(existingEditionDouble.getIdentifier()).thenReturn(null);
+        when(existingEditionDouble.sameAs(_editionDouble)).thenReturn(true);
 
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_publishingCompanyRepoDouble.ofIdentity(_publishingCompanyIdDouble)).thenReturn(Optional.of(mock(PublishingCompany.class)));
+        when(_editionFactoryDouble.createEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null))
+                .thenReturn(_editionDouble);
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(existingEditionDouble));
 
         // Act
-        List<Edition> result = service.getAllEditions();
+        Edition result = _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertSame(editionDouble, result.get(0));
+        assertSame(existingEditionDouble, result);
+        verify(_editionRepoDouble, never()).save(any());
     }
 
     @Test
-    void getAllEditionsEmptyReturnsEmptyList() {
+    void registerEditionSavesWhenNoExistingMatchFound() {
         // Arrange
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of());
+        Edition nonMatchingEdition = mock(Edition.class);
+        when(nonMatchingEdition.getIdentifier()).thenReturn(null);
+        when(nonMatchingEdition.sameAs(_editionDouble)).thenReturn(false);
 
-        EditionService service = newService();
+        when(_publicationTypeRepoDouble.ofIdentity(_typeIdDouble)).thenReturn(Optional.of(mock(PublicationType.class)));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_publishingCompanyRepoDouble.ofIdentity(_publishingCompanyIdDouble)).thenReturn(Optional.of(mock(PublishingCompany.class)));
+        when(_editionFactoryDouble.createEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null))
+                .thenReturn(_editionDouble);
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(nonMatchingEdition));
+        when(_editionRepoDouble.save(_editionDouble)).thenReturn(_editionDouble);
 
         // Act
-        List<Edition> result = service.getAllEditions();
+        Edition result = _service.registerEdition(_typeIdDouble, _identifierDouble, _publicationIdDouble, _publishingCompanyIdDouble, _yearDouble, _languageDouble, null, null, null, null, null);
+
+        // Assert
+        assertSame(_editionDouble, result);
+        verify(_editionRepoDouble).save(_editionDouble);
+    }
+
+    @Test
+    void getAllEditionsReturnsListOfEditions() {
+        // Arrange
+        Edition edition1 = mock(Edition.class);
+        Edition edition2 = mock(Edition.class);
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(edition1, edition2));
+
+        // Act
+        List<Edition> result = _service.getAllEditions();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertSame(edition1, result.get(0));
+        assertSame(edition2, result.get(1));
+    }
+
+    @Test
+    void getAllEditionsReturnsEmptyListWhenNoEditionsExist() {
+        // Arrange
+        when(_editionRepoDouble.findAll()).thenReturn(List.of());
+
+        // Act
+        List<Edition> result = _service.getAllEditions();
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAllEditionsByPublicationReturnsListOfEditions() {
+    void getAllEditionsByPublicationReturnsMatchingEditions() {
         // Arrange
-        String publicationId = "1984-Orwell-G--F43DD6(1949)";
-        Edition editionDouble = mock(Edition.class);
-
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(new PublicationId(publicationId));
-
-        EditionService service = newService();
+        Edition matchingEdition = mock(Edition.class);
+        Edition nonMatchingEdition = mock(Edition.class);
+        when(matchingEdition.getPublicationId()).thenReturn(_publicationIdDouble);
+        when(nonMatchingEdition.getPublicationId()).thenReturn(mock(PublicationId.class));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(matchingEdition, nonMatchingEdition));
 
         // Act
-        List<Edition> result = service.getAllEditionsByPublication(publicationId);
+        List<Edition> result = _service.getAllEditionsByPublication(_publicationIdDouble);
 
         // Assert
-        assertNotNull(result);
         assertEquals(1, result.size());
-        assertSame(editionDouble, result.get(0));
+        assertSame(matchingEdition, result.get(0));
     }
 
     @Test
-    void getAllEditionsByPublicationPublicationNotFoundThrowsException() {
+    void getAllEditionsByPublicationThrowsWhenPublicationNotFound() {
         // Arrange
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
-
-        EditionService service = newService();
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.getAllEditionsByPublication("1984-Orwell-G--F43DD6(1949)"));
+                _service.getAllEditionsByPublication(_publicationIdDouble));
     }
 
     @Test
-    void getAllEditionsByPublicationNoMatchReturnsEmptyList() {
+    void getAllEditionsByPublicationReturnsEmptyListWhenNoMatch() {
         // Arrange
-        Edition editionDouble = mock(Edition.class);
-
-        when(_iPublicationRepoDouble.ofIdentity(any())).thenReturn(Optional.of(mock(Publication.class)));
-        when(_iEditionRepoDouble.findAll()).thenReturn(List.of(editionDouble));
-        when(editionDouble.getPublicationId()).thenReturn(new PublicationId("Foundation-Asimov-I--D60AD1(1951)"));
-
-        EditionService service = newService();
+        Edition nonMatchingEdition = mock(Edition.class);
+        when(nonMatchingEdition.getPublicationId()).thenReturn(mock(PublicationId.class));
+        when(_publicationRepoDouble.ofIdentity(_publicationIdDouble)).thenReturn(Optional.of(mock(Publication.class)));
+        when(_editionRepoDouble.findAll()).thenReturn(List.of(nonMatchingEdition));
 
         // Act
-        List<Edition> result = service.getAllEditionsByPublication("1984-Orwell-G--F43DD6(1949)");
+        List<Edition> result = _service.getAllEditionsByPublication(_publicationIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -277,29 +260,22 @@ class EditionServiceTest {
     @Test
     void getEditionByIdReturnsEdition() {
         // Arrange
-        Edition editionDouble = mock(Edition.class);
-        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.of(editionDouble));
-
-        EditionService service = newService();
+        when(_editionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.of(_editionDouble));
 
         // Act
-        Edition result = service.getEditionById("E-ABC12345");
+        Edition result = _service.getEditionById(_editionIdDouble);
 
         // Assert
-        assertNotNull(result);
-        assertSame(editionDouble, result);
+        assertSame(_editionDouble, result);
     }
 
     @Test
-    void getEditionByIdNotFoundThrowsException() {
+    void getEditionByIdThrowsWhenNotFound() {
         // Arrange
-        when(_iEditionRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
-
-        EditionService service = newService();
+        when(_editionRepoDouble.ofIdentity(_editionIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.getEditionById("E-ABC12345"));
+                _service.getEditionById(_editionIdDouble));
     }
-
 }

@@ -4,7 +4,10 @@ import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.sale.Sale;
 import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.user.User;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.SaleId;
+import MITELOVERS.domain.valueobject.SaleLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.SaleLineResponseDTO;
 import MITELOVERS.dto.response.SaleResponseDTO;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,8 @@ import org.springframework.http.HttpMethod;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class SaleLinkProviderTest {

@@ -1,9 +1,7 @@
 package MITELOVERS.persistence.jpa.repository;
 
 import MITELOVERS.domain.repository.ISaleRepo;
-import MITELOVERS.domain.repository.IShoppingCartRepo;
 import MITELOVERS.domain.sale.Sale;
-import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.valueobject.SaleId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.persistence.jpa.assembler.SaleAssembler;

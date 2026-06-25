@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:8081';
+export const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
 export let USER_ID = 'pedro@aeiou.com'; // temporary until having authorization
 
 /**

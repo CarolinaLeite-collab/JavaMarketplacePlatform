@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -87,8 +86,8 @@ class AuthorizationPolicyTest {
     }
 
     @Test
-    void canGetPublishingCompaniesUserReturnsFalse() {
-        assertFalse(_authorizationPolicy.canGetAllPublishingCompanies(_userDouble));
+    void canGetPublishingCompaniesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetAllPublishingCompanies(_userDouble));
     }
 
     @Test
@@ -97,8 +96,8 @@ class AuthorizationPolicyTest {
     }
 
     @Test
-    void canGetPublishingCompanyUserReturnsFalse() {
-        assertFalse(_authorizationPolicy.canGetPublishingCompany(_userDouble));
+    void canGetPublishingCompanyUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetPublishingCompany(_userDouble));
     }
 
     // ──────────── Publication Type ────────────
