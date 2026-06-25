@@ -19,50 +19,39 @@ autonumber
 
 ' ==== Actor and participants ====
 actor "User"
-participant ":Client" as Client
-participant ":Server" as Server
-database "DB" as DB
+participant ":Frontend" as Client
+participant ":Backend" as Server
+participant ":db" as DB
 
-User -> Client : show me want I can do
-activate Client
-Client -> Server : OPTIONS /my-library {...}
-activate Server
-Server --> Client : available links
-deactivate Server
-Client --> User : here is what you can do
-deactivate Client
+note over Client
+  Assumes the user has already opened My Library.
+  GET /my-library returned item representations
+  containing the "create-auction" HATEOAS link
+  pointing to /auctions.
+  That resource was previously discovered and is
+  used by the Frontend below.
+end note
 
 User -> Client : I want to put an item %n()in my library on auction
 activate Client
-Client -> Server : GET /items/my-library {...}
+Client -> Server : OPTIONS {create-auction href}
 activate Server
-Server -> DB : select items in %n()user's library
-DB --> Server : data
-Server --> Client : 200 [ItemResponseDTO + links]
-note right of Client
-Each item includes:
-- self
-- create-auction only if item
- can be put on auction
-Client populates the dropdown only
-with items containing create-auction
-end note
+Server -> DB: SELECT
+activate DB
+DB --> Server: DATA
+deactivate DB
+Server --> Client : 200 OK + Allow: POST, GET, OPTIONS
 deactivate Server
-Client --> User : Displays auction form %n() with items NotOnSale only
-deactivate Client
 
-
-User -> Client : Submit selected itemIds, starting price, %n()reserve price, currency, %n()start date and end date
-activate Client
-Client -> Server : POST {href from rel="create-auction"}\n{ itemIds, startingPrice, %n()reservePrice, priceCurrency, %n()startDate, endDate }
-note right of Server
-Creates Auction and updates %n()Item saleStatus as OnAuction
-end note
-Server -> DB : insert auction / %n() update item
-DB --> Server : success
-Server --> Client : 201 Created
+Client -> Server :  POST {create-auction href}
+activate Server
+Server -> DB : INSERT
+activate DB
+DB --> Server :DATA
+deactivate DB
+Server --> Client :  201 Created + AuctionResponseDTO\n+self link + bids link
 deactivate Server
-Client --> User : The item was successfully %n()put on auction.
+Client --> User : The item was successfully %n()put on auction
 deactivate Client
 
 

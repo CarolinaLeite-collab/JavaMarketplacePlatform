@@ -1,0 +1,64 @@
+@startuml
+title "As a Buyer, I want to use the Web UI to list items on sale of a given publication (direct sales and auctions)." - Process_View_SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+actor "Buyer" as Buyer
+participant ":Frontend" as Frontend
+participant ":Backend" as Backend
+database ":Database" as db
+
+Buyer -> Frontend : Opens marketplace
+activate Frontend
+
+Frontend -> Backend : OPTIONS /api?email={email}
+activate Backend
+Backend --> Frontend : 200 OK%n()Root links
+deactivate Backend
+
+' --- Fetch Direct Sales ---
+Frontend -> Frontend : activeSalesHref = links["active-direct-sales"].href
+Frontend -> Backend : getByHref(activeSalesHref)
+activate Backend
+Backend -> db : find active direct sale listings
+activate db
+db --> Backend : active sales data
+deactivate db
+Backend --> Frontend : 200 OK%n()CollectionModel (Direct Sales)
+deactivate Backend
+
+' --- Fetch Auctions ---
+Frontend -> Frontend : auctionsHref = links["auctions"].href
+Frontend -> Backend : getByHref(auctionsHref)
+activate Backend
+Backend -> db : find active auction listings
+activate db
+db --> Backend : active auctions data
+deactivate db
+Backend --> Frontend : 200 OK%n()List<AuctionResponseDTO>
+deactivate Backend
+
+Frontend -> Frontend : Cache items and derive unique publication options in memory
+Frontend --> Buyer : Displays marketplace items (Sales & Auctions)
+
+Buyer -> Frontend : Selects Publication MultiSelect filter
+Frontend -> Frontend : Filter cached sales and auctions locally by publication
+Frontend --> Buyer : Displays matching active sales and auctions
+deactivate Frontend
+
+note over Frontend, Backend
+The publication filter is applied locally to both cached collections in memory.
+The Frontend does not perform new network requests when toggling publication criteria.
+end note
+
+@enduml

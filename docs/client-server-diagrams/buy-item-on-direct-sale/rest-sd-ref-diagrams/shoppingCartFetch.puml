@@ -1,0 +1,64 @@
+@startuml
+title findCartByCartId — shopping cart fetch (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":ShoppingCartService" as CartService
+participant ":IShoppingCartRepo" as Repo
+participant ":IShoppingCartSpringDataRepo" as SpringRepo
+participant ":ImplJpaRepo" as JPA
+participant ":ShoppingCartAssembler" as Assembler
+participant ":Database" as DB
+
+[o-> CartService : findCartByCartId(cartId)
+activate CartService
+
+CartService -> Repo : ofIdentity(cartId)
+activate Repo
+
+Repo -> SpringRepo : findById(cartId.toString())
+activate SpringRepo
+
+SpringRepo -> JPA : findById(cartId)
+activate JPA
+
+JPA -> DB : SELECT
+activate DB
+DB --> JPA : DATA
+deactivate DB
+
+JPA --> SpringRepo : ShoppingCartDataModel
+deactivate JPA
+
+SpringRepo --> Repo : Optional<ShoppingCartDataModel>
+deactivate SpringRepo
+
+Repo -> Assembler : toDomain(shoppingCartDM)
+activate Assembler
+
+create "shoppingCart:ShoppingCart" as Cart
+Assembler -->> Cart : <<create>>
+Assembler --> Repo : shoppingCart
+deactivate Assembler
+
+Repo --> CartService : shoppingCart
+deactivate Repo
+
+[o<-- CartService : shoppingCart
+deactivate CartService
+
+ref over CartService
+[[./secondShoppingCartRetrieval.puml Back to main diagram]]
+end ref
+
+@enduml

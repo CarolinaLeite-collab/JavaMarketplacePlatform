@@ -9,6 +9,7 @@ skinparam ActivationBackgroundColor black
 hidefootbox
 autonumber
 
+participant "Router" as router
 participant ":LibraryRestController" as REST
 participant ":LibrarySortRequestMapper" as SortMapper
 participant ":LibraryService" as Service
@@ -20,8 +21,11 @@ participant ":IPublicationTypeRepo" as PublicationTypeRepo
 participant ":IAuthorRepo" as AuthorRepo
 participant ":LibraryItemResponseDTOMapper" as DTOMapper
 participant ":LibraryLinkProvider" as LinkProvider
-participant ":Database" as Database
 
+[o-> router : GET {library href expanded with sort={sort}}\nX-User-Id: {email}
+activate router
+
+router -> REST : getMyLibrary(userIdFromHeader, sortCriterion)
 activate REST
 
 create "email2:Email" as Email2
@@ -40,7 +44,7 @@ else sortCriterion = "author"
     SortMapper --> REST : LibrarySort.AUTHOR
 else sortCriterion = "type"
     SortMapper --> REST : LibrarySort.PUBLICATION_TYPE
-else sortCriterion = "identifier"
+else sortCriterion = "identifier" / "isbn" / "issn"
     SortMapper --> REST : LibrarySort.IDENTIFIER
 else missing or unsupported
     SortMapper --> REST : LibrarySort.NONE
@@ -54,10 +58,8 @@ Service -> Service : LibraryId.fromUserId(userId)
 
 Service -> LibraryRepo : ofIdentity(libraryId)
 activate LibraryRepo
-LibraryRepo -> Database : find library
-activate Database
-Database --> LibraryRepo : library
-deactivate Database
+LibraryRepo ->o] : FETCH
+LibraryRepo <--o] : DATA
 LibraryRepo --> Service : Optional<Library>
 deactivate LibraryRepo
 
@@ -69,46 +71,36 @@ else library contains items
     loop for each itemId
         Service -> ItemRepo : ofIdentity(itemId)
         activate ItemRepo
-        ItemRepo -> Database : find item
-        activate Database
-        Database --> ItemRepo : item
-        deactivate Database
+        ItemRepo ->o] : FETCH
+        ItemRepo <--o] : DATA
         ItemRepo --> Service : item
         deactivate ItemRepo
 
         Service -> EditionRepo : ofIdentity(item.editionId)
         activate EditionRepo
-        EditionRepo -> Database : find edition
-        activate Database
-        Database --> EditionRepo : edition
-        deactivate Database
+        EditionRepo ->o] : FETCH
+        EditionRepo <--o] : DATA
         EditionRepo --> Service : edition
         deactivate EditionRepo
 
         Service -> PublicationRepo : ofIdentity(edition.publicationId)
         activate PublicationRepo
-        PublicationRepo -> Database : find publication
-        activate Database
-        Database --> PublicationRepo : publication
-        deactivate Database
+        PublicationRepo ->o] : FETCH
+        PublicationRepo <--o] : DATA
         PublicationRepo --> Service : publication
         deactivate PublicationRepo
 
         Service -> AuthorRepo : ofIdentity(publication.authorId)
         activate AuthorRepo
-        AuthorRepo -> Database : find author
-        activate Database
-        Database --> AuthorRepo : author
-        deactivate Database
+        AuthorRepo ->o] : FETCH
+        AuthorRepo <--o] : DATA
         AuthorRepo --> Service : author
         deactivate AuthorRepo
 
         Service -> PublicationTypeRepo : ofIdentity(edition.publicationTypeId)
         activate PublicationTypeRepo
-        PublicationTypeRepo -> Database : find publication type
-        activate Database
-        Database --> PublicationTypeRepo : publicationType
-        deactivate Database
+        PublicationTypeRepo ->o] : FETCH
+        PublicationTypeRepo <--o] : DATA
         PublicationTypeRepo --> Service : publicationType
         deactivate PublicationTypeRepo
     end
@@ -144,21 +136,22 @@ REST -> REST : create CollectionModel<LibraryItemResponseDTO>\nwith self link
 
 REST -> LinkProvider : getSortLink()
 activate LinkProvider
-LinkProvider -> LinkProvider : linkTo(methodOn(LibraryRestController.class)\n.getMyLibrary(null, null)).withRel("sort")LinkProvider --> REST : sortLink
+LinkProvider -> LinkProvider : create sort link\nwith rel "sort"
+LinkProvider --> REST : sortLink
 deactivate LinkProvider
 REST -> REST : add(sortLink)
 
-note right of REST
-Returns:
-200 OK
-CollectionModel<LibraryItemResponseDTO>
-+ _links
-end note
+create "response:ResponseEntity<CollectionModel<LibraryItemResponseDTO>>" as response
+REST -->> response : build ResponseEntity\nstatus = 200 OK,\nbody = collectionModel
 
+REST --> router : response
 deactivate REST
 
-ref over REST
-[[../Process_View_Level_3_SD.puml Return to main diagram]]
+[o<-- router : 200 OK + sorted LibraryItemResponseDTO list %n()+ links
+deactivate router
+
+ref over router
+Process_View_Level_SD_3.puml]
 end ref
 
 @enduml

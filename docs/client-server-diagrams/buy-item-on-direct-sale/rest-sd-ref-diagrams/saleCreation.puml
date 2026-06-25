@@ -1,0 +1,62 @@
+@startuml
+title createSaleFromCart — sale creation (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":SaleService" as Service
+participant ":SaleLineFactory" as SaleLineFactory
+participant ":SaleFactory" as SaleFactory
+participant "shoppingCartLine:ShoppingCartLine" as SCLines
+
+activate Service
+
+create "saleLines:List<SaleLine>" as SaleLines
+Service -->> SaleLines : create
+
+loop for each shoppingCartLine in cart.getCartLines()
+
+Service -> SCLines : SellerId = shoppingCartLine.getSellerId()
+activate SCLines
+deactivate SCLines
+Service -> SCLines : priceAtAddition = shoppingCartLine.getPriceAtAddition()
+activate SCLines
+deactivate SCLines
+Service -> SCLines : directSaleId = shoppingCartLine.getDirectSaleId()
+activate SCLines
+deactivate SCLines
+
+Service -> SaleLineFactory : createSaleLine(sellerId, priceAtAddition, directSaleId)
+create "saleLine:SaleLine" as SaleLine
+activate SaleLineFactory
+SaleLineFactory -->> SaleLine : <<create>>
+SaleLineFactory --> Service : saleLine
+deactivate SaleLineFactory
+
+Service -> SaleLines : add(saleLine)
+activate SaleLines
+deactivate SaleLines
+
+end loop
+
+Service -> SaleFactory : createSale(cart.getBuyerId, saleLines)
+activate SaleFactory
+create "newSale:Sale" as newSale
+SaleFactory -->> newSale : <<create>>
+SaleFactory --> Service : newSale
+deactivate SaleFactory
+
+ref over Service
+[[./POST_sale.puml Back to main diagram]]
+end ref
+
+@enduml

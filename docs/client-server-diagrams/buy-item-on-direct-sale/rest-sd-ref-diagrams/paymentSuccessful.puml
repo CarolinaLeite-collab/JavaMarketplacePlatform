@@ -1,0 +1,87 @@
+@startuml
+title createSaleFromCart — payment successful (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":SaleService" as Service
+participant ":DirectSaleService" as DSService
+participant ":ItemService" as ItemService
+participant ":ISaleRepo" as SaleRepo
+participant ":ShoppingCartService" as CartService
+participant "newSale:Sale" as newSale
+participant "directSale:DirectSale" as directSale
+participant "saleLine:SaleLine" as SaleLine
+
+activate Service
+
+loop for each saleLine in newSale
+
+Service -->> SaleLine : directSaleId = get_directSaleId()
+activate SaleLine
+deactivate SaleLine
+
+Service -> DSService : getDirectSaleById(directSaleId)
+activate DSService
+DSService ->o] : FETCH
+DSService <--o] : DATA
+DSService --> Service : directSale
+deactivate DSService
+
+Service -> directSale : getItemsId()
+activate directSale
+directSale --> Service : itemsId
+deactivate directSale
+
+loop for each itemId in itemsId
+
+Service -> ItemService : markItemAsSold(itemId)
+activate ItemService
+ItemService ->o] : SAVE
+ItemService <--o] : OK
+ItemService --> Service : item
+deactivate ItemService
+
+end loop
+
+Service -> DSService : markDirectSaleAsCompleted(directSaleId)
+activate DSService
+DSService ->o] : SAVE
+DSService <--o] : OK
+DSService --> Service : directSale
+deactivate DSService
+
+end loop
+
+Service -> newSale : markSaleAsCompleted()
+activate newSale
+deactivate newSale
+
+Service -> CartService : clearShoppingCartLines(cartId)
+activate CartService
+CartService ->o] : SAVE
+CartService <--o] : OK
+CartService --> Service : returnedShoppingCart
+deactivate CartService
+
+Service -> SaleRepo : save(newSale)
+activate SaleRepo
+SaleRepo ->o] : SAVE
+SaleRepo <--o] : OK
+SaleRepo --> Service : returnedNewSale
+deactivate SaleRepo
+
+ref over Service
+[[./POST_sale.puml Back to main diagram]]
+end ref
+
+@enduml

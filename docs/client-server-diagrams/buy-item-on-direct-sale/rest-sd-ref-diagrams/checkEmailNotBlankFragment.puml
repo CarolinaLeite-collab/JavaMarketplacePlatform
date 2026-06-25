@@ -1,0 +1,33 @@
+@startuml
+title checkEmailNotBlank — email is blank (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as router
+participant ":SaleRestController" as REST
+
+activate router
+activate REST
+
+create "emailBlankSecurityException:SecurityException" as SecExp
+REST -->> SecExp : <<create>>
+REST --> router : emailBlankSecurityException
+deactivate REST
+[o<-- router : 403 Forbidden
+deactivate router
+
+ref over router
+[[./POST_sale.puml Back to main diagram]]
+end ref
+
+@enduml

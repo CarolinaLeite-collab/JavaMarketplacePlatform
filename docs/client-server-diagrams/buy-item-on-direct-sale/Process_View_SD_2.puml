@@ -1,0 +1,165 @@
+@startuml
+
+'==== Title ====
+title "As a User, I want to use a Web UI to buy an item in a direct sale." - SD - Level 2
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+' ==== Actor and participants ====
+actor User as BUYER
+participant ":Frontend" as FRONTEND
+participant ":Backend" as SERVER
+participant ":db" as DB
+
+note over FRONTEND
+  Assumes the client already opened a DirectSale via
+  GET /direct-sales/{id}, whose response included a
+  "shopping-cart" link pointing to
+  /shopping-carts/{cartId}/shopping-cart-lines.
+  That href is what FRONTEND follows below, not a hardcoded URL.
+end note
+
+BUYER -> FRONTEND : I want to add a Direct Sale to my Shopping Cart
+activate FRONTEND
+
+FRONTEND -> SERVER : OPTIONS {shopping-cart href}
+activate SERVER
+
+SERVER -> DB : SELECT
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + Allow: [POST, OPTIONS]
+deactivate SERVER
+
+FRONTEND -> SERVER : POST {shopping-cart href} + \nbody: { addToCartCartLineRequestDTO }
+activate SERVER
+
+SERVER -> DB : INSERT
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 201 Created\n+ self link (shopping-cart-line)\n+ shopping-cart link
+deactivate SERVER
+
+FRONTEND -> BUYER : Direct Sale successfully added to cart!
+deactivate FRONTEND
+
+BUYER -> FRONTEND : I want to access my Shopping Cart
+activate FRONTEND
+
+FRONTEND -> SERVER : OPTIONS {shopping-cart link}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + Allow: [GET, PATCH, OPTIONS]
+deactivate SERVER
+
+FRONTEND -> SERVER : GET {shopping-cart link}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ shopping-cart-line links (one per line)\n+ sale link (only if cart has lines)
+deactivate SERVER
+
+loop for each shopping-cart-line href received above
+
+FRONTEND -> SERVER : OPTIONS {shopping-cart-line href}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + Allow: [GET, DELETE, OPTIONS]
+deactivate SERVER
+
+FRONTEND -> SERVER : GET {shopping-cart-line href}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ direct-sale link
+deactivate SERVER
+
+FRONTEND -> SERVER : OPTIONS {direct-sale href}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + Allow: [GET, OPTIONS]
+deactivate SERVER
+
+FRONTEND -> SERVER : GET {direct-sale href}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK\n+ {...} \n+ self link\n+ item links (one per item)\n+ shopping-cart link (if ACTIVE and not seller)
+deactivate SERVER
+
+end loop
+
+FRONTEND -> BUYER : Shopping Cart displayed!
+deactivate FRONTEND
+
+BUYER -> FRONTEND : I want to checkout my Shopping Cart
+activate FRONTEND
+
+FRONTEND -> SERVER : OPTIONS {sale link}
+activate SERVER
+
+SERVER -> DB : FETCH
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + Allow: [GET, POST, OPTIONS]
+deactivate SERVER
+
+FRONTEND -> SERVER : POST {sale link}\nbody: { shoppingCartId }
+activate SERVER
+
+SERVER -> DB : INSERT
+activate DB
+DB --> SERVER : DATA
+deactivate DB
+
+SERVER --> FRONTEND : 201 Created\n+ self link (sale)
+deactivate SERVER
+
+FRONTEND -> BUYER : Purchase completed!
+deactivate FRONTEND
+
+@enduml

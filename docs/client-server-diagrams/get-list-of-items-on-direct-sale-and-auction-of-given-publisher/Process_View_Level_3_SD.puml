@@ -1,0 +1,68 @@
+@startuml
+title "As a Buyer, I want to use the Web UI to list items on sale of a given publisher (direct sales and auctions)." - Process_View_Level_3_SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+actor "Buyer" as USER
+participant ":Frontend" as Frontend
+participant ":Backend" as Backend
+
+note over Frontend
+  This diagram focuses on Level 3 REST (HATEOAS) navigation.
+  The Frontend dynamically discovers marketplace resource links
+  via an OPTIONS call on view load, avoiding hardcoded listing URLs.
+end note
+
+USER -> Frontend : Opens marketplace view
+activate Frontend
+
+' --- Required Page-Level HATEOAS Discovery ---
+Frontend -> Backend : OPTIONS /api?email={email}
+activate Backend
+Backend --> Frontend : 200 OK%n()Root links
+deactivate Backend
+
+Frontend -> Frontend : activeSalesHref = links["active-direct-sales"].href
+Frontend -> Frontend : auctionsHref = links["auctions"].href
+
+' --- Fetch Direct Sales ---
+Frontend -> Backend : getByHref(activeSalesHref)
+activate Backend
+
+ref over Backend
+[[rest-sd-ref-diagrams/Active_Listings_Retrieval_SD.puml GET active direct sales from DB]]
+end ref
+
+Backend --> Frontend : 200 OK + CollectionModel (Direct Sales)
+deactivate Backend
+
+' --- Fetch Auctions ---
+Frontend -> Backend : getByHref(auctionsHref)
+activate Backend
+
+ref over Backend
+[[rest-sd-ref-diagrams/Active_Listings_Retrieval_SD.puml GET active auctions from DB]]
+end ref
+
+Backend --> Frontend : 200 OK + List<AuctionResponseDTO>
+deactivate Backend
+
+Frontend -> Frontend : Cache marketplace items and derive publisher options
+Frontend --> USER : Displays marketplace items (Sales & Auctions)
+
+USER -> Frontend : Selects Publisher MultiSelect filter
+Frontend -> Frontend : Filter cached sales and auctions locally by publisher
+Frontend --> USER : Displays matching active sales and auctions
+deactivate Frontend
+
+@enduml

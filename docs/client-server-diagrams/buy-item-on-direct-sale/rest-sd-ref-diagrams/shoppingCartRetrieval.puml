@@ -1,0 +1,41 @@
+@startuml
+title createSaleFromCart — shopping cart retrieval (ref SD)
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant ":SaleRestController" as REST
+participant "saleRequestDTO:SaleRequestDTO" as DTO
+participant ":ShoppingCartService" as CartService
+
+activate REST
+
+REST -> DTO : getShoppingCartId()
+activate DTO
+DTO --> REST : stringShoppingCartId
+deactivate DTO
+
+create "shoppingCartId:ShoppingCartId" as CartId
+REST -->> CartId : create(stringShoppingCartId)
+
+REST -> CartService : findCartByCartId(shoppingCartId)
+activate CartService
+CartService ->o] : FETCH
+CartService <--o] : DATA
+CartService --> REST : shoppingCart
+deactivate CartService
+
+ref over REST
+[[./POST_sale.puml Back to main diagram]]
+end ref
+
+@enduml

@@ -1,0 +1,63 @@
+@startuml
+title OPTIONS for user on /sales %n()ref SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as router
+participant ":SaleRestController" as REST
+participant ":UserService" as UserService
+participant ":SaleLinkProvider" as Link
+
+[o-> router : OPTIONS /sales
+activate router
+router -> REST : optionsForSales(email)
+activate REST
+
+create "allowedMethods:List<HttpMethod>" as METHODS
+REST -->> METHODS : List.of(HttpMethod.OPTIONS)
+
+alt !email.isBlank()
+
+create "reconstructedEmail:Email" as Email
+REST -->> Email : create(email)
+
+create "reconstructedUserId:UserId" as UserId
+REST -->> UserId : create(reconstructedEmail)
+
+REST -> UserService : getUserByEmail(reconstructedUserId)
+activate UserService
+UserService ->o] : FETCH
+UserService <--o] : DATA
+UserService --> REST : user
+deactivate UserService
+
+REST -> Link : getAllowedMethodsForSales(user)
+activate Link
+Link --> REST : allowedMethods
+deactivate Link
+
+end
+
+create "response:ResponseEntity<Void>" as Response
+REST -->> Response : ok().allow(allowedMethods.toArray(new HttpMethod[0])).build()
+REST --> router : response
+deactivate REST
+
+[o<-- router : 200 OK + Allow: [GET, POST, OPTIONS]
+deactivate router
+
+ref over router
+[[../Process_View_SD_3.puml Back To Main Diagram]]
+end ref
+
+@enduml
