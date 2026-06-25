@@ -1,0 +1,175 @@
+@startuml
+title POST (register edition) %n()ref SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as RT
+participant ":EditionRestController" as REST
+participant ":EditionRequestDTOMapper" as ReqMapper
+participant ":EditionLinkProvider" as Link
+participant ":EditionService" as Service
+participant ":IPublicationTypeRepo" as typeRepo
+participant ":IPublicationRepo" as pubRepo
+participant ":IPublishingCompanyRepo" as companyRepo
+participant ":EditionFactory" as Factory
+participant ":IEditionRepo" as editionRepo
+participant ":EditionResponseDTOMapper" as ResMapper
+
+[o-> RT : POST {editions href} + \n{editionsResponseDTO}
+
+activate RT
+
+' ===== DTO to VO conversion =====
+RT -> REST : registerEdition(pubId,\nEditionRequestDTO dto)
+
+activate REST
+create "typeId:PublicationTypeId" as typeId
+REST -->> typeId : createPublicationTypeId(dto.getPublicationTypeId())
+
+REST -> ReqMapper : toIdentifier(dto)
+activate ReqMapper
+create "identifier:Identifier" as identifier
+ReqMapper -->> identifier : <<create>>
+ReqMapper --> REST : identifier
+deactivate ReqMapper
+
+create "publicationId:PublicationId" as pubId
+REST -->> pubId : createPublicationId(pubId)
+
+create "publishingCompanyId:PublishingCompanyId" as companyId
+REST -->> companyId : createToPublishingCompanyId(dto.getPublishingCompanyId())
+
+create "publishingYear:Year" as year
+REST -->> year : Year.of(dto.getPublishingYear())
+
+create "editionLanguage:Language" as lang
+REST -->> lang : Language.valueOf(dto.getLanguage())
+
+REST -> ReqMapper : toDimension(dto)
+activate ReqMapper
+ReqMapper --> REST : dimension
+deactivate ReqMapper
+
+REST -> ReqMapper : toWeight(dto)
+activate ReqMapper
+ReqMapper --> REST : weight
+deactivate ReqMapper
+
+REST -> ReqMapper : toNumberOfPages(dto)
+activate ReqMapper
+ReqMapper --> REST : numberOfPages
+deactivate ReqMapper
+
+REST -> ReqMapper : toEditionNumber(dto)
+activate ReqMapper
+ReqMapper --> REST : editionNumber
+deactivate ReqMapper
+
+REST -> ReqMapper : toBinding(dto)
+activate ReqMapper
+ReqMapper --> REST : binding
+deactivate ReqMapper
+
+' ===== Service call =====
+
+REST -> Service : registerEdition(typeId, identifier,publicationId, publishingCompanyId,\npublishingYear, editionLanguage,dimension, weight, numberOfPages,\neditionNumber, binding)
+activate Service
+
+' --- Validate references ---
+
+Service -> typeRepo : ofIdentity(typeId)
+activate typeRepo
+typeRepo ->o] : FETCH
+typeRepo <--o] : DATA
+typeRepo --> Service : publicationType
+deactivate typeRepo
+
+Service -> pubRepo : ofIdentity(publicationId)
+activate pubRepo
+pubRepo ->o]: FETCH
+pubRepo <--o] : DATA
+pubRepo --> Service : publication
+deactivate pubRepo
+
+Service -> companyRepo : ofIdentity(publishingCompanyId)
+activate companyRepo
+companyRepo ->o] : FETCH
+companyRepo <--o] : DATA
+companyRepo --> Service : publishingCompany
+deactivate companyRepo
+
+' --- Create edition ---
+
+Service -> Factory : createEdition(typeId, identifier,publicationId, publishingCompanyId,\npublishingYear, editionLanguage,dimension, weight, numberOfPages,\neditionNumber, binding)
+activate Factory
+create "edition:Edition" as edition
+Factory -->> edition : <<create>>
+Factory --> Service : edition
+deactivate Factory
+
+' --- Check duplicates ---
+
+Service -> editionRepo : findAll()
+activate editionRepo
+editionRepo ->o] : FETCH
+editionRepo <--o] : DATA
+editionRepo --> Service : existingEditions
+deactivate editionRepo
+
+note right of Service
+Iterates existing editions:
+- If same typeId + identifier → return existing
+- If sameAs(edition) → return existing
+- Otherwise → save new edition
+end note
+
+' --- Save ---
+
+Service -> editionRepo : save(edition)
+activate editionRepo
+editionRepo ->o] : SAVE
+editionRepo <--o] : OK
+editionRepo --> Service : savedEdition
+deactivate editionRepo
+
+Service --> REST : edition
+deactivate Service
+
+' ===== Response mapping =====
+
+REST -> ResMapper : toModel(edition)
+activate ResMapper
+ResMapper --> REST : result:EditionResponseDTO
+deactivate ResMapper
+
+REST -> edition : getEditionId()
+activate edition
+edition --> REST : editionId
+deactivate edition
+REST -> Link : addLinkForEdition(result, editionId)
+
+activate Link
+Link --> REST : result with _links
+deactivate Link
+
+REST --> RT : ResponseEntity(result, 201 Created)
+deactivate REST
+
+[o<-- RT : 201 Created + EditionResponseDTO with _links
+deactivate RT
+
+ref over RT
+[[../Process_View_Level_3_SD.puml Back to main diagram]]
+end ref
+
+@enduml
