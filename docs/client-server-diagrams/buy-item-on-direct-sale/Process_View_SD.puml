@@ -133,7 +133,7 @@ FRONTEND -> SERVER : OPTIONS {sale link}
 activate SERVER
 
 ref over SERVER, DB
-[[xxx.puml OPTIONS for sales on /sales]]
+[[./rest-sd-ref-diagrams/OPTIONS_sale.puml OPTIONS for sales on /sales]]
 end ref
 
 SERVER --> FRONTEND : 200 OK + Allow: [GET, POST, OPTIONS]
