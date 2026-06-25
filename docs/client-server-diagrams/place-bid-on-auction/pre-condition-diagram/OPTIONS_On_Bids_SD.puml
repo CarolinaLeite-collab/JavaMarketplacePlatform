@@ -1,0 +1,104 @@
+@startuml
+title OPTIONS for Buyer on /auctions/{auctionId}/bids %n()ref SD
+
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+participant "Router" as router
+participant ":AuctionRestController" as REST
+participant ":UserService" as userService
+participant ":IUserRepo" as userRepo
+participant ":AuctionLinkProvider" as Link
+participant ":AuthorizationPolicy" as policy
+
+[o-> router : OPTIONS {bids href}
+activate router
+
+router -> REST : optionsForBids%n()(auctionIdString, emailString)
+activate REST
+
+note right of router
+  auctionIdString comes from @PathVariable
+  and identifies the resource, even if
+  this OPTIONS logic only depends on user.
+end note
+
+REST -> userService : getUserByEmail(emailString)
+activate userService
+
+create "email:Email" as email
+userService -->> email : createEmail(emailString)
+
+create "userId:UserId" as userId
+userService -->> userId : createUserId(email)
+
+
+userService -> userRepo : ofIdentity(userId)
+activate userRepo
+userRepo ->o] : FETCH
+userRepo <--o] : DATA
+userRepo --> userService : user
+deactivate userRepo
+
+userService --> REST : user
+deactivate userService
+
+REST -> Link : getAllowedMethodsForBids(user)
+activate Link
+
+create "listOfMethods: List<HttpMethod>" as listOfMethods
+Link -->> listOfMethods : createArrayList()
+
+Link -> listOfMethods : add(HttpMethod.OPTIONS)
+activate listOfMethods
+deactivate listOfMethods
+
+Link -> policy: canViewAuction(user)
+activate policy
+policy --> Link : true
+deactivate policy
+Link -> listOfMethods : add(HttpMethod.GET)
+activate listOfMethods
+deactivate listOfMethods
+
+Link -> policy: canBid(user)
+activate policy
+policy --> Link : true
+deactivate policy
+Link -> listOfMethods : add(HttpMethod.POST)
+activate listOfMethods
+deactivate listOfMethods
+
+Link --> REST : listOfMethods
+
+deactivate Link
+
+
+
+create "response:ResponseEntity<Void>" as response
+REST -->> response : build ResponseEntity<Void>\nstatus = 200 OK,\nAllow = listOfMethods.toArray(HttpMethod[]::new)
+
+REST --> router : response (200 OK + Allow header)
+deactivate REST
+
+[o<-- router : 200 OK + Allow: %n()[OPTIONS, GET, POST]
+deactivate router
+
+ref over router
+[[OPTIONS_Before_POST.puml Back to OPTIONS diagram]]
+end ref
+
+ref over router
+[[../Process_View_Level_3_SD.puml Back to main diagram]]
+end ref
+
+@enduml

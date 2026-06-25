@@ -20,7 +20,8 @@ public class PublicationResponseDTOMapper implements RepresentationModelAssemble
                 publication.getTitle().toString(),
                 publication.getAuthorId().toString(),
                 publication.getReleaseYear().getValue(),
-                publication.getGenreId().toString()
+                publication.getGenreId().toString(),
+                publication.getSynopsis()
         );
 
     }

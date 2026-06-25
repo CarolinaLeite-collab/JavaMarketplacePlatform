@@ -20,16 +20,11 @@ import java.util.List;
 @Generated
 @Getter
 @AllArgsConstructor
-public class AuctionResponseDTO extends RepresentationModel<AuctionResponseDTO> {
+public class AuctionNoPriceResponseDTO extends RepresentationModel<AuctionNoPriceResponseDTO> {
 
     private final String auctionId;
     private final List<String> itemIds;
-    private final double startingPrice;
-    private final double reservePrice;
-    private final Double outrightPrice;
-    private final String priceCurrency;
     private final Instant startDate;
     private final Instant endDate;
     private final String seller;
-    private final double currentPrice;
 }

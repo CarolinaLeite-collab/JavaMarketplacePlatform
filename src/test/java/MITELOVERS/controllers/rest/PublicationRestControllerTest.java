@@ -25,6 +25,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +55,9 @@ class PublicationRestControllerTest {
                 "Photomaton & Vox",
                 "HERBERTO_HELDER",
                 1979,
-                "PROSE"
+                "PROSE",
+                "synopsis"
+
         );
 
         Publication publicationDouble = mock(Publication.class);
@@ -64,7 +67,8 @@ class PublicationRestControllerTest {
                 any(Title.class),
                 any(AuthorId.class),
                 any(Year.class),
-                any(GenreId.class)
+                any(GenreId.class),
+                eq("synopsis")
         )).thenReturn(publicationDouble);
 
         when(_mapperDouble.toModel(publicationDouble)).thenReturn(responseDTODouble);

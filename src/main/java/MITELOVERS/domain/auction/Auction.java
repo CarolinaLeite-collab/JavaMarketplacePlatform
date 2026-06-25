@@ -87,6 +87,10 @@ public class Auction implements AggregateRoot<AuctionId> {
             throw new IllegalArgumentException("Items cannot be null or empty");
         }
 
+        if (seller == null) {
+            throw new IllegalArgumentException("Seller cannot be null");
+        }
+
         _itemsId = itemsId;
     }
 
@@ -128,6 +132,10 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         if (auctionEndDate == null) {
             throw new IllegalArgumentException("Auction end date cannot be null");
+        }
+
+        if (seller == null) {
+            throw new IllegalArgumentException("Seller cannot be null");
         }
 
         _auctionId = auctionId;
@@ -308,5 +316,9 @@ public class Auction implements AggregateRoot<AuctionId> {
             }
         }
         return highestBid;
+    }
+
+    public Price getCurrentPrice() {
+        return _bids.isEmpty() ? _startingPrice : getHighestBid().getOfferPrice();
     }
 }

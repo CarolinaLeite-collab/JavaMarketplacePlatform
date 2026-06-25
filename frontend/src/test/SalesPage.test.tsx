@@ -173,7 +173,7 @@ describe('SalesPage', () => {
 
         expect(await screen.findByText('Sale ID: SALE-1')).toBeInTheDocument();
         expect(screen.getByText('Completed: 2026-06-20')).toBeInTheDocument();
-        expect(screen.getByText('Total: 25 EUR')).toBeInTheDocument();
+        expect(screen.getByText('Total: 25.00 EUR')).toBeInTheDocument();
     });
 
     it('displays Completed badge when sale is completed', async () => {

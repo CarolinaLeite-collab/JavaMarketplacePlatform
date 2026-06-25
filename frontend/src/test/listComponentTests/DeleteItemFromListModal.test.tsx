@@ -14,7 +14,7 @@ vi.mock("../../context/lists/ListsActions.jsx", () => ({
 
 // --- Helpers ---
 
-const mockLinks = [{ rel: "remove-item", href: "http://localhost:8081/my-lists/1/items" }];
+const mockLinks = [{ rel: "add-item", href: "http://localhost:8081/my-lists/1" }];
 
 const mockDispatch = vi.fn();
 
@@ -73,11 +73,11 @@ describe("DeleteItemFromListModal", () => {
     it("renders Cancel and Remove buttons inside the modal", async () => {
         renderModal();
         await userEvent.click(screen.getByRole("button", { name: /remove/i }));
-        await waitFor(() => {
-            expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
-        });
-        // Two "Remove" buttons: trigger + modal confirm
-        expect(screen.getAllByRole("button", { name: /remove/i })).toHaveLength(2);
+        await waitFor(() => screen.getByRole("dialog"));
+
+        const dialog = screen.getByRole("dialog");
+        expect(within(dialog).getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+        expect(within(dialog).getByRole("button", { name: /remove/i })).toBeInTheDocument();
     });
 
     // --- Unit: close modal ---
@@ -137,4 +137,5 @@ describe("DeleteItemFromListModal", () => {
         await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
         expect(removeItemFromList).not.toHaveBeenCalled();
     });
+
 });

@@ -109,20 +109,20 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
         return links;
     }
 
-    public void addResourceLinks(DirectSaleResponseDTO dto, String email) {
-
-        User user = _userService.getUserByEmail(new UserId(new Email(email)));
-
-        addResourceLinks(dto);
-
-        if (_authorizationPolicy.canDeleteList(user)) {
-            dto.add(
-                    linkTo(methodOn(DirectSaleRestController.class)
-                            .deleteDirectSale(dto.getDirectSaleId()))
-                            .withRel("delete")
-            );
-        }
-    }
+//    public void addResourceLinks(DirectSaleResponseDTO dto, String email) {
+//
+//        User user = _userService.getUserByEmail(new UserId(new Email(email)));
+//
+//        addResourceLinks(dto);
+//
+//        if (_authorizationPolicy.canDeleteDirectSale(user)) {
+//            dto.add(
+//                    linkTo(methodOn(DirectSaleRestController.class)
+//                            .deleteDirectSale(dto.getDirectSaleId()))
+//                            .withRel("delete")
+//            );
+//        }
+//    }
 
     public void addResourceLinks(DirectSaleResponseDTO dto, User user) {
 
@@ -132,7 +132,7 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
                         .withSelfRel()
         );
 
-        if (_authorizationPolicy.canDeleteList(user)) {
+        if (_authorizationPolicy.canDeleteDirectSale(user)) {
             dto.add(
                     linkTo(methodOn(DirectSaleRestController.class)
                             .deleteDirectSale(null))
@@ -216,4 +216,5 @@ public class DirectSaleLinkProvider implements RootLinkProvider {
 
         return dto;
     }
+
 }
