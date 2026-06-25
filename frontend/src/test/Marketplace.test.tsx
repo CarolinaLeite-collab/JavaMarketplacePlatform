@@ -284,10 +284,12 @@ describe('Marketplace', () => {
         expect(within(table).getByText('Book 2')).toBeInTheDocument();
     });
 
-    it('shows an error message when marketplace data fails to load', async () => {
-        vi.mocked(apiClient.getByHref).mockRejectedValueOnce(
-            new Error('500'),
-        );
+    it('shows an error message when both marketplace collections fail to load', async () => {
+        vi.mocked(apiClient.getByHref)
+            .mockRejectedValueOnce(new Error('500'))
+            .mockRejectedValueOnce(new Error('500'));
+
+        vi.mocked(apiClient.getGenres).mockResolvedValueOnce([]);
 
         renderMarketplace();
 
@@ -301,7 +303,6 @@ describe('Marketplace', () => {
             ).not.toBeInTheDocument();
         });
     });
-
     it('keeps valid items visible when one item lookup returns 404', async () => {
         vi.mocked(apiClient.getItemById).mockImplementation(
             async (itemId: string) => {
@@ -326,10 +327,11 @@ describe('Marketplace', () => {
     });
 
     it('shows an error message when genres fail to load', async () => {
-        vi.mocked(apiClient.getGenres).mockRejectedValueOnce(
-            new Error('500'),
-        );
+        vi.mocked(apiClient.getByHref)
+            .mockRejectedValueOnce(new Error('500'))
+            .mockRejectedValueOnce(new Error('500'));
 
+        vi.mocked(apiClient.getGenres).mockResolvedValueOnce([]);
         renderMarketplace();
 
         expect(

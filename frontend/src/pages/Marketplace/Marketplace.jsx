@@ -100,7 +100,7 @@ function buildAuctionItems(auctions, itemDetailsMap, genreNameToId, canSeePrice)
                 price: canSeePrice
                     ? formatPrice(auction.currentPrice ?? auction.startingPrice, auction.priceCurrency)
                     : null,
-                priceValue: Number(auction.startingPrice),
+                priceValue: Number(auction.currentPrice ?? auction.startingPrice),
 
                 author: itemDetails?.authorName ?? 'unknown',
                 publication: itemDetails?.title ?? 'unknown',
@@ -181,11 +181,27 @@ export default function Marketplace() {
                     throw new Error(`Missing ${auctionRelation} link`);
                 }
 
-                const [directSalesResponse, auctionsResponse, genresResponse] = await Promise.all([
+                const [directSalesResult, auctionsResult, genresResult] = await Promise.allSettled([
                     apiClient.getByHref(discoveredDirectSalesHref),
                     apiClient.getByHref(discoveredAuctionsHref),
                     apiClient.getGenres(),
                 ]);
+
+                const directSalesResponse =
+                    directSalesResult.status === 'fulfilled' ? directSalesResult.value : null;
+
+                const auctionsResponse =
+                    auctionsResult.status === 'fulfilled' ? auctionsResult.value : null;
+
+                const genresResponse =
+                    genresResult.status === 'fulfilled' ? genresResult.value : [];
+
+                if (
+                    directSalesResult.status === 'rejected' &&
+                    auctionsResult.status === 'rejected'
+                ) {
+                    throw new Error('Could not load marketplace');
+                }
 
                 const directSales = directSalesResponse?._embedded
                     ? Object.values(directSalesResponse._embedded)[0] ?? []
