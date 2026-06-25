@@ -2,8 +2,10 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.EditionService;
 import MITELOVERS.domain.edition.Edition;
-import MITELOVERS.dto.request.EditionRequestDTO;
+import MITELOVERS.domain.valueobject.*;
 import org.springframework.stereotype.Controller;
+
+import java.time.Year;
 
 /**
  * CLI controller responsible for creating new editions in the system.
@@ -22,7 +24,21 @@ public class AddEditionController {
         _editionService = editionService;
     }
 
-    public Edition addEdition(String publicationId, EditionRequestDTO dto) {
-        return _editionService.registerEdition(publicationId, dto);
+    public Edition addEdition(PublicationTypeId typeId,
+                              Identifier identifier,
+                              PublicationId publicationId,
+                              PublishingCompanyId publishingCompanyId,
+                              Year publishingYear,
+                              Language language,
+                              Dimension dimension,
+                              Weight weight,
+                              NumberOfPages numberOfPages,
+                              EditionNumber editionNumber,
+                              Binding binding) {
+
+        return _editionService.registerEdition(
+                typeId, identifier, publicationId, publishingCompanyId,
+                publishingYear, language, dimension, weight,
+                numberOfPages, editionNumber, binding);
     }
 }
