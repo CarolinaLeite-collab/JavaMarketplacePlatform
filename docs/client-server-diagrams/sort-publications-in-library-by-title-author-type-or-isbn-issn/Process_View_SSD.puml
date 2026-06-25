@@ -21,11 +21,6 @@ title "As a User, in the Web UI, I want to be able to sort the list \nof publica
 actor User
 participant ":Mitelovers" as mite
 
-User -> mite : I want to access "My Library"
-activate mite
-mite --> User : Items of your library
-deactivate mite
-
 User -> mite : I want to sort the list of items in library by \nby title/ author/ type/ ISBN/ISSN
 activate mite
 mite --> User : Sorted items of your library
