@@ -126,6 +126,39 @@ class AuctionTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenSellerIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(
+                        _itemsId,
+                        _startingPriceDouble,
+                        _reservePriceDouble,
+                        _auctionStart,
+                        _auctionEnd,
+                        null
+                ));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSellerIsNullInReconstructionConstructor() {
+        // Arrange
+        AuctionId auctionIdDouble = mock(AuctionId.class);
+        assertThrows(IllegalArgumentException.class,
+                () -> new Auction(
+                        auctionIdDouble,
+                        _itemsId,
+                        _startingPriceDouble,
+                        _reservePriceDouble,
+                        _outrightPriceDouble,
+                        _auctionStart,
+                        _auctionEnd,
+                        _seller,
+                        null,
+                        new ArrayList<>(),
+                        null
+                ));
+    }
+
+    @Test
     void identityShouldReturnAuctionId() {
         // Arrange
         Auction auction = new Auction(_itemsId, _startingPriceDouble, _reservePriceDouble, _start, _end, _seller);
