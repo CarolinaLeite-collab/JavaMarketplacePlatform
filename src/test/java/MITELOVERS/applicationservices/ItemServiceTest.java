@@ -65,10 +65,6 @@ class ItemServiceTest {
         );
     }
 
-    // ----------------------------------------------------------------
-    // Constructor null checks
-    // ----------------------------------------------------------------
-
     @Test
     void constructorWithNullItemRepoThrowsNullPointerException() {
         assertThrows(NullPointerException.class, () ->
@@ -117,10 +113,6 @@ class ItemServiceTest {
                 new ItemService(itemRepoDouble, itemFactoryDouble, editionRepoDouble,
                         publicationRepoDouble, authorRepoDouble, genreRepoDouble, null));
     }
-
-    // ----------------------------------------------------------------
-    // registerItem
-    // ----------------------------------------------------------------
 
     @Test
     void registerItemEditionNotFoundThrowsNoSuchElementException() {
@@ -188,10 +180,6 @@ class ItemServiceTest {
         assertSame(existingItemDouble, result);
     }
 
-    // ----------------------------------------------------------------
-    // getAllItems
-    // ----------------------------------------------------------------
-
     @Test
     void getAllItemsEmptyReturnsEmptyList() {
         when(itemRepoDouble.findAll()).thenReturn(List.of());
@@ -213,10 +201,6 @@ class ItemServiceTest {
         assertSame(itemDouble, result.get(0));
     }
 
-    // ----------------------------------------------------------------
-    // getItemById
-    // ----------------------------------------------------------------
-
     @Test
     void getItemByIdItemNotFoundThrowsNoSuchElementException() {
         when(itemRepoDouble.ofIdentity(any())).thenReturn(Optional.empty());
@@ -236,10 +220,6 @@ class ItemServiceTest {
 
         assertSame(itemDouble, result);
     }
-
-    // ----------------------------------------------------------------
-    // resolveRelated
-    // ----------------------------------------------------------------
 
     @Test
     void resolveRelatedReturnsAllRelatedEntities() {
@@ -362,5 +342,36 @@ class ItemServiceTest {
                 () -> itemService.resolveRelated(item));
 
         assertEquals(PUBLISHER_NOT_FOUND, ex.getMessage());
+    }
+
+    @Test
+    void markItemAsSoldReturnsSavedItem() {
+        // Arrange
+        Item itemDouble = mock(Item.class);
+        Item savedItemDouble = mock(Item.class);
+        ItemId itemIdDouble = mock(ItemId.class);
+
+        when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.of(itemDouble));
+        when(itemRepoDouble.save(itemDouble)).thenReturn(savedItemDouble);
+
+        // Act
+        Item result = itemService.markItemAsSold(itemIdDouble);
+
+        // Assert
+        assertSame(savedItemDouble, result);
+    }
+
+    @Test
+    void markItemAsSoldThrowsWhenItemNotFound() {
+        // Arrange
+        ItemId itemIdDouble = mock(ItemId.class);
+
+        when(itemRepoDouble.ofIdentity(itemIdDouble)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        NoSuchElementException ex = assertThrows(NoSuchElementException.class,
+                () -> itemService.markItemAsSold(itemIdDouble));
+
+        assertEquals(ITEM_NOT_FOUND, ex.getMessage());
     }
 }

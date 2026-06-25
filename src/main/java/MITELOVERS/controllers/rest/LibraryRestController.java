@@ -60,7 +60,7 @@ public class LibraryRestController {
     public ResponseEntity<RepresentationModel<?>> options(
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

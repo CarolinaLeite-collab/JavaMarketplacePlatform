@@ -2,6 +2,8 @@ package MITELOVERS.controllers.rest.root;
 
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +51,7 @@ public class RootController {
     @RequestMapping(method = RequestMethod.OPTIONS, produces = MediaTypes.HAL_JSON_VALUE)
     public RepresentationModel<?> root(@RequestParam String email){
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> root = new RepresentationModel<>();
 

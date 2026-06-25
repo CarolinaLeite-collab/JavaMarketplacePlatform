@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.GenreLinkProvider;
 import MITELOVERS.domain.genre.Genre;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.GenreRequestDTO;
 import MITELOVERS.dto.response.GenreResponseDTO;
 import MITELOVERS.mapper.GenreResponseDTOMapper;
@@ -44,7 +46,7 @@ public class GenreRestController {
 
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         RepresentationModel<?> model = new RepresentationModel<>();
         _genreLinkProvider.getLinks(user).forEach(model::add);
         return ResponseEntity.ok(model);

@@ -5,6 +5,8 @@ import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.CountryLinkProvider;
 import MITELOVERS.domain.country.Country;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.request.CountryRequestDTO;
 import MITELOVERS.dto.response.CountryResponseDTO;
 import MITELOVERS.mapper.CountryResponseDTOMapper;
@@ -55,7 +57,7 @@ public class CountryRestController {
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<RepresentationModel<?>> options(@RequestParam("email") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

@@ -17,107 +17,122 @@ hidefootbox
 autonumber
 
 ' ==== Actor and participants ====
-actor User as USER
 participant ":apiClient" as FRONTEND
-participant ":ShoppingCartRESTController" as CTL
-participant ":SalesRESTController" as SALESCTL
+participant ":Server" as SERVER
 participant ":Database" as DB
 
 note over FRONTEND
-  Assumes the user already opened a DirectSale via
+  Assumes the client already opened a DirectSale via
   GET /direct-sales/{id}, whose response included an
   "add-to-cart" link pointing to /shoppingCarts/shoppingCartLines.
   That href is what FRONTEND follows below, not a hardcoded URL.
 end note
 
-USER -> FRONTEND : I want to add a Direct Sale to my Shopping Cart
+ [-> FRONTEND : I want to add a Direct Sale to my Shopping Cart
 activate FRONTEND
 
-FRONTEND -> CTL : OPTIONS {add-to-cart href}
-activate CTL
+FRONTEND -> SERVER : OPTIONS {shopping-cart href}
+activate SERVER
 
-CTL --> FRONTEND : 200 OK + [GET, POST]
-deactivate CTL
+SERVER --> FRONTEND : 200 OK + [GET, POST]
+deactivate SERVER
 
-FRONTEND -> CTL : POST {add-to-cart href}
-activate CTL
+FRONTEND -> SERVER : POST {... + shopping-cart href}
+activate SERVER
 
-CTL -> DB : select
+SERVER -> DB : select
 activate DB
-DB --> CTL : data
+DB -> SERVER : data
 deactivate DB
 
-CTL --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (new shoppingCartLine)
-deactivate CTL
+SERVER --> FRONTEND : 201 Created + self link (shoppingCart) \n+ self link (shoppingCartLine)
+deactivate SERVER
 
-FRONTEND --> USER : Direct Sale successfully added to cart!
+FRONTEND ->x[ : Direct Sale successfully added to cart!
 deactivate FRONTEND
 
-USER -> FRONTEND : I want to access my Shopping Cart
+[-> FRONTEND : I want to access my Shopping Cart
 activate FRONTEND
 
-FRONTEND -> CTL : OPTIONS {shoppingCart self link}
-activate CTL
+FRONTEND -> SERVER : OPTIONS {shopping-cart self link}
+activate SERVER
 
-CTL --> FRONTEND : 200 OK + [GET, DELETE]
-deactivate CTL
+SERVER --> FRONTEND : 200 OK + [GET, PATCH]
+deactivate SERVER
 
-FRONTEND -> CTL : GET {shoppingCart self link}
-activate CTL
+FRONTEND -> SERVER : GET {shopping-cart self link}
+activate SERVER
 
-CTL -> DB : select
+SERVER -> DB : select
 activate DB
-DB --> CTL : data
+DB -> SERVER : data
 deactivate DB
 
-CTL --> FRONTEND : 200 OK + self link \n+ links to each shoppingCartLine \n+ checkout link (if cartLines is not empty)
-deactivate CTL
+SERVER --> FRONTEND : 200 OK + self link (shopping-cart) \n+ {...} + links to each shopping-cart-line \n+ sales link (if shopping-cart-lines is not empty)
+deactivate SERVER
 
 loop for each shoppingCartLine href received above
 
-FRONTEND -> CTL : OPTIONS {shoppingCartLine href}
-activate CTL
+FRONTEND -> SERVER : OPTIONS {shopping-cart-line href}
+activate SERVER
 
-CTL --> FRONTEND : 200 OK + [GET, DELETE]
-deactivate CTL
+SERVER --> FRONTEND : 200 OK + [GET, DELETE]
+deactivate SERVER
 
-FRONTEND -> CTL : GET {shoppingCartLine href}
-activate CTL
+FRONTEND -> SERVER : GET {shoppingCartLine href}
+activate SERVER
 
-CTL -> DB : select
+SERVER -> DB : select
 activate DB
-DB --> CTL : data
+DB -> SERVER : data
 deactivate DB
 
-CTL --> FRONTEND : 200 OK + self link \n+ delete link
-deactivate CTL
+SERVER --> FRONTEND : 200 OK + {...} + self link +\n + direct-sale link
+deactivate SERVER
+
+FRONTEND -> SERVER : OPTIONS {direct-sale href}
+activate SERVER
+
+SERVER --> FRONTEND : 200 OK + [GET]
+deactivate SERVER
+
+FRONTEND -> SERVER : GET {direct-sale href}
+activate SERVER
+
+SERVER -> DB : select
+activate DB
+DB -> SERVER : data
+deactivate DB
+
+SERVER --> FRONTEND : 200 OK + {...} + self link \n+ links to each item
+deactivate SERVER
 
 end loop
 
-FRONTEND --> USER : Shopping Cart displayed!
+FRONTEND ->x[ : Shopping Cart displayed!
 deactivate FRONTEND
 
-USER -> FRONTEND : I want to checkout my ShoppingCart
+[-> FRONTEND : I want to checkout my ShoppingCart
 activate FRONTEND
 
-FRONTEND -> SALESCTL : OPTIONS {checkout link}
-activate SALESCTL
+FRONTEND -> SERVER : OPTIONS {sales link}
+activate SERVER
 
-SALESCTL --> FRONTEND : 200 OK + [GET, POST]
-deactivate SALESCTL
+SERVER --> FRONTEND : 200 OK + [GET, POST]
+deactivate SERVER
 
-FRONTEND -> SALESCTL : POST {checkout link}
-activate SALESCTL
+FRONTEND -> SERVER : POST {... + sales link}
+activate SERVER
 
-SALESCTL -> DB : select
+SERVER -> DB : select
 activate DB
-DB --> SALESCTL : data
+DB -> SERVER : data
 deactivate DB
 
-SALESCTL --> FRONTEND : 201 Created + self link (sale)
-deactivate SALESCTL
+SERVER --> FRONTEND : 201 Created + self link (sale)
+deactivate SERVER
 
-FRONTEND --> USER : Purchase completed!
+FRONTEND ->x[ : Purchase completed!
 deactivate FRONTEND
 
 @enduml

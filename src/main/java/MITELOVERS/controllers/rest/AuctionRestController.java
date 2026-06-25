@@ -68,7 +68,7 @@ public class AuctionRestController {
     public ResponseEntity<Void> options(
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
         List<HttpMethod> methods = _auctionLinkProvider.getAllowedMethods(user);
 
         return ResponseEntity.ok()
@@ -133,7 +133,7 @@ public class AuctionRestController {
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 
@@ -175,7 +175,7 @@ public class AuctionRestController {
             @PathVariable String auctionId,
             @RequestHeader("X-User-Id") String email) {
 
-        User user = _userService.getUserByEmail(email);
+        User user = _userService.getUserByEmail(new UserId(new Email(email)));
 
         RepresentationModel<?> model = new RepresentationModel<>();
 

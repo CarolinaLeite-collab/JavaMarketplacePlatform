@@ -2,6 +2,7 @@ package MITELOVERS.applicationservices;
 
 import MITELOVERS.domain.repository.IUserRepo;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.Email;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import MITELOVERS.domain.valueobject.UserId;
 
 class UserServiceTest {
 
@@ -32,7 +34,7 @@ class UserServiceTest {
         UserService service = new UserService(_userRepoDouble);
 
         // Act
-        User result = service.getUserByEmail("pedro@aeiou.com");
+        User result = service.getUserByEmail(new UserId(new Email("pedro@aeiou.com")));
 
         // Assert
         assertNotNull(result);
@@ -48,7 +50,7 @@ class UserServiceTest {
 
         // Act & Assert
         assertThrows(NoSuchElementException.class, () ->
-                service.getUserByEmail("unknown@aeiou.com"));
+                service.getUserByEmail(new UserId(new Email("unknown@aeiou.com"))));
     }
 
     @Test

@@ -184,6 +184,7 @@ class ShoppingCartAssemblerTest {
         // Act
         ShoppingCartDataModel result = assembler.toDataModel(shoppingCartDouble);
 
+
         // Assert
         assertNotNull(result);
         assertEquals("SC-A1B2C3D4", result.getShoppingCartId());
