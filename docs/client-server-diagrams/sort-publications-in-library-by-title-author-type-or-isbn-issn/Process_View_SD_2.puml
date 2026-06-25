@@ -1,0 +1,58 @@
+@startuml
+
+'==== Title ====
+title "As a User, I want to use the Web UI to sort the list of publications in my library by title, author, type or ISBN/ISSN." - SD Level 2
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor CornSilk
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+hidefootbox
+autonumber
+
+actor User as USER
+participant ":Frontend" as FRONTEND
+participant ":Backend" as rest
+participant ":Database" as DB
+
+note over FRONTEND
+  Assumes the User already opened or accessed My Library,
+  and that the frontend discovered the available library actions
+  through OPTIONS /my-library.
+
+  The frontend follows the library href and applies
+  the selected sort criterion instead of using a hardcoded URL.
+end note
+
+USER -> FRONTEND : I want to sort the publications in my library by title, author, type or ISBN/ISSN.
+activate FRONTEND
+
+note over FRONTEND
+Supported sort criteria:
+- title
+- author
+- type
+- identifier (ISBN/ISSN)
+end note
+
+FRONTEND -> rest : GET {library href expanded with sort={field}}\nX-User-Id: {email}
+activate rest
+
+rest -> DB : FETCH library item details
+activate DB
+DB --> rest : DATA
+deactivate DB
+
+rest --> FRONTEND : 200 OK + LibraryItemResponseDTO list\n+ links
+deactivate rest
+
+FRONTEND --> USER : Display sorted publications in my library.
+deactivate FRONTEND
+
+@enduml
