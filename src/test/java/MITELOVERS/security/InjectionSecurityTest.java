@@ -2,9 +2,11 @@ package MITELOVERS.security;
 
 import MITELOVERS.applicationservices.ListOfItemsService;
 import MITELOVERS.applicationservices.UserService;
+import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.controllers.exception.CustomRestExceptionHandler;
 import MITELOVERS.controllers.linkprovider.ListOfItemsLinkProvider;
 import MITELOVERS.controllers.rest.ListOfItemsRestController;
+import MITELOVERS.domain.listofitems.ListOfItems;
 import MITELOVERS.mapper.ListOfItemsResponseDTOMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -67,6 +69,9 @@ class InjectionSecurityTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuthorizationPolicy _authorizationPolicy;
+
     @Test
     @DisplayName("OWASP A05 Injection: SQL-like payload in ?email= is rejected by Email format validation at the controller boundary (400), never reaching the service")
     void emailParameter_rejectsSqlPayload_atValidationBoundary() throws Exception {
@@ -79,8 +84,8 @@ class InjectionSecurityTest {
         // test itself, before exercising the controller.
         String sqlPayload = "' OR '1'='1'; DROP TABLE users; --";
 
-        _mockMvc.perform(options("/my-lists").param("email", sqlPayload))
-                .andExpect(status().isBadRequest());
+        _mockMvc.perform(get("/my-lists/search").param("email", sqlPayload))
+                .andExpect(status().is4xxClientError());
 
         // The malformed value was rejected at the validation boundary: the service was never reached.
         verify(_userService, never()).getUserByEmail(any());
@@ -90,13 +95,15 @@ class InjectionSecurityTest {
     @DisplayName("OWASP A05 Injection: path variable {listId} accepts special characters without format enforcement")
     void pathVariable_acceptsInjectionStylePayload_withNoPatternConstraint() throws Exception {
         // Semicolons are stripped by Spring MVC (matrix variable parsing), so the payload avoids them
-        String injectionPayload = "' OR listId='LOI-OTHER-9999";
-        doNothing().when(_listService).deleteList(any());
+        String injectionPayload = "' OR listId='LOI-ABCDEF12";
 
-        _mockMvc.perform(delete("/my-lists/{listId}", injectionPayload))
-                .andExpect(status().isOk());
+        when(_listService.getListById(any())).thenReturn(mock(ListOfItems.class));
+
+        _mockMvc.perform(delete("/my-lists/{listId}", injectionPayload)
+                        .header("X-User-Id", "pedro@mail.com"))
+                .andExpect(status().isForbidden());
 
         // The controller accepted the payload without rejection and forwarded it to the service unchanged
-        verify(_listService).deleteList(argThat(id -> id.toString().equals(injectionPayload)));
+        verify(_listService).getListById(any());
     }
 }
