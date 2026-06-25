@@ -1,6 +1,9 @@
 package MITELOVERS.domain.shoppingcart;
 
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

@@ -5,7 +5,6 @@ import MITELOVERS.domain.directsale.DirectSaleFactory;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.persistence.jpa.datamodel.DirectSaleDataModel;
 import MITELOVERS.persistence.jpa.datamodel.PriceDataModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;

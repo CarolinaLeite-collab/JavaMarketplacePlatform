@@ -30,7 +30,6 @@ import MITELOVERS.domain.repository.*;
 import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
 import MITELOVERS.domain.shoppingcart.ShoppingCartLineFactory;
-import MITELOVERS.domain.shoppingcart.ShoppingCartLine;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.*;

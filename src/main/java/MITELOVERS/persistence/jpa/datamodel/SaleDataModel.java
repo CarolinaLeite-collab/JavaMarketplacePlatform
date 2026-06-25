@@ -1,7 +1,6 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
 import MITELOVERS.domain.sale.Sale;
-import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.valueobject.SaleSaleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

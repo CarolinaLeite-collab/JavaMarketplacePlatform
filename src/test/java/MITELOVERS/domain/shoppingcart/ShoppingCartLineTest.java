@@ -1,6 +1,9 @@
 package MITELOVERS.domain.shoppingcart;
 
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

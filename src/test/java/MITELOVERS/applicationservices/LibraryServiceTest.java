@@ -8,24 +8,14 @@ import MITELOVERS.domain.library.LibraryFactory;
 import MITELOVERS.domain.publication.Publication;
 import MITELOVERS.domain.publicationtype.PublicationType;
 import MITELOVERS.domain.repository.*;
-import MITELOVERS.domain.valueobject.Email;
-import MITELOVERS.domain.valueobject.ItemId;
-import MITELOVERS.domain.valueobject.LibrarySort;
-import MITELOVERS.domain.valueobject.Name;
-import MITELOVERS.domain.valueobject.NoIdentifier;
-import MITELOVERS.domain.valueobject.Title;
-import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.domain.valueobject.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

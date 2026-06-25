@@ -1,14 +1,16 @@
 package MITELOVERS.domain.shoppingcart;
 
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.DirectSaleId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.ShoppingCartLineId;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 

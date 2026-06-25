@@ -1,6 +1,9 @@
 package MITELOVERS.controllers.cli;
 
+import MITELOVERS.domain.repository.IShoppingCartRepo;
 import MITELOVERS.domain.repository.IUserRepo;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
+import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.user.UserFactory;
 import MITELOVERS.domain.valueobject.Address;
@@ -8,9 +11,6 @@ import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.Name;
 import MITELOVERS.domain.valueobject.Phone;
 import org.springframework.stereotype.Controller;
-import MITELOVERS.domain.repository.IShoppingCartRepo;
-import MITELOVERS.domain.shoppingcart.ShoppingCart;
-import MITELOVERS.domain.shoppingcart.ShoppingCartFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

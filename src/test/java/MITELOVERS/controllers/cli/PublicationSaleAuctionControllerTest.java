@@ -2,7 +2,9 @@ package MITELOVERS.controllers.cli;
 
 import MITELOVERS.applicationservices.AuctionService;
 import MITELOVERS.domain.auction.Auction;
-import MITELOVERS.domain.valueobject.*;
+import MITELOVERS.domain.valueobject.ItemId;
+import MITELOVERS.domain.valueobject.Price;
+import MITELOVERS.domain.valueobject.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.ZonedDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
