@@ -1,8 +1,9 @@
-import { Modal, Button, Stack, Text, Group } from "@mantine/core";
+import {Modal, Button, Stack, Text, Group, ActionIcon} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useContext } from "react";
 import AppContext from "../../context/AppContext.tsx";
 import { removeItemFromList } from "../../context/lists/ListsActions.jsx";
+import {IconX} from "@tabler/icons-react";
 
 interface DeleteItemFromListModalProps {
     itemName: string;
@@ -21,9 +22,9 @@ export function DeleteItemFromListModal({ itemName, itemId, links }: DeleteItemF
 
     return (
         <>
-            <Button color="red" variant="subtle" onClick={open}>
-                Remove
-            </Button>
+            <ActionIcon color="red" variant="outline" radius="md" onClick={open} aria-label="Remove">
+                <IconX size={16} />
+            </ActionIcon>
 
             <Modal
                 opened={opened}

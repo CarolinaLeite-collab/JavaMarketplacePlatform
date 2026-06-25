@@ -7,6 +7,7 @@ import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.DirectSaleId;
 import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.domain.valueobject.Email;
 import MITELOVERS.domain.valueobject.ItemId;
 import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.domain.valueobject.GenreId;
@@ -53,9 +54,7 @@ class DirectSaleRestControllerTest {
     void options_shouldReturnHateoasLinks() {
         String userId = "john@example.com";
         User user = mock(User.class);
-        when(_userService.getUserByEmail(
-                new MITELOVERS.domain.valueobject.UserId(
-                        new MITELOVERS.domain.valueobject.Email(userId))))
+        when(_userService.getUserByEmail(new UserId(new Email(userId))))
                 .thenReturn(user);
 
         Link link1 = Link.of("/direct-sales").withRel("direct-sales");
@@ -87,7 +86,8 @@ class DirectSaleRestControllerTest {
         when(request.getTimeLimitSeconds()).thenReturn(3600L);
 
         DirectSale domain = mock(DirectSale.class);
-        String email = "email@email.com";
+        String email = "user@aeiou.com";
+        User userDouble = mock(User.class);
 
         DirectSaleResponseDTO response = new DirectSaleResponseDTO(
                 "DS-A1B2C3D4",
@@ -103,12 +103,13 @@ class DirectSaleRestControllerTest {
 
         when(_service.createDirectSale(anyList(), any(), any(), any())).thenReturn(domain);
         when(_responseMapper.toResponseDTO(domain)).thenReturn(response);
+        when(_userService.getUserByEmail(new UserId(new Email(email)))).thenReturn(userDouble);
 
         ResponseEntity<DirectSaleResponseDTO> result = _controller.createDirectSale(email, request);
 
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertSame(response, result.getBody());
-        verify(_linkProvider).addResourceLinks(response);
+        verify(_linkProvider).addResourceLinks(response, userDouble);
     }
 
     @Test
@@ -134,6 +135,7 @@ class DirectSaleRestControllerTest {
 
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, result.getBody().size());
+        verify(_linkProvider).addResourceLinks(dto);
     }
 
     @Test
@@ -162,9 +164,12 @@ class DirectSaleRestControllerTest {
         );
 
         String userId = "user@email.com";
+        User userDouble = mock(User.class);
 
         when(_service.getAllActiveDirectSales()).thenReturn(List.of(domain));
         when(_responseMapper.toResponseDTO(domain)).thenReturn(dto);
+        when(_userService.getUserByEmail(new UserId(new Email(userId))))
+                .thenReturn(userDouble);
 
         ResponseEntity<CollectionModel<DirectSaleResponseDTO>> result =
                 _controller.getAllActiveDirectSales(userId);
@@ -172,7 +177,7 @@ class DirectSaleRestControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertEquals(1, new ArrayList<>(result.getBody().getContent()).size());
         assertSame(dto, new ArrayList<>(result.getBody().getContent()).get(0));
-        verify(_linkProvider).addResourceLinks(dto, userId);
+        verify(_linkProvider).addResourceLinks(dto, userDouble);
         verify(_linkProvider).addCollectionLinks(result.getBody(), userId);
     }
 

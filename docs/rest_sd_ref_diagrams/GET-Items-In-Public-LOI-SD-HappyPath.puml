@@ -1,0 +1,89 @@
+@startuml
+
+' ==== Title ====
+title GET - items on a publicly shared list - SD - HappyPath
+
+'==== basic style ====
+skinparam monochrome false
+skinparam shadowing false
+skinparam defaultFontName Futura
+skinparam objectFontSize 20
+skinparam backgroundColor White
+skinparam objectBackgroundColor WhiteSmoke
+skinparam noteBackgroundColor #FFFFE0
+skinparam ArrowFontColor #3B4953
+skinparam ActivationBackgroundColor black
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+hidefootbox
+autonumber
+
+actor "Client" as Client
+
+Client -> Controller : GET /my-lists/{listId}/items
+activate Controller
+
+== Value Object Construction ==
+note over Controller: Instantiates \nListOfItemsId(listId)
+
+Controller -> Service : getItemsInPublicList(recListId)
+activate Service
+
+== Database Fetching ==
+Service -> JpaRepo : ofIdentity(recListId)
+activate JpaRepo
+
+JpaRepo -> SpringDataRepo : findById(id.toString())
+activate SpringDataRepo
+SpringDataRepo --> JpaRepo : Optional.of(ListOfItemsDataModel)
+deactivate SpringDataRepo
+
+== Domain Reconstruction (Assembler) ==
+JpaRepo -> Assembler : toDomain(dm)
+activate Assembler
+
+Assembler -> Factory : createListOfItems\n(listOfItemsId, userId, name, \ngenreId, isPrivate, sharedUntil)
+activate Factory
+create DomainEntity
+Factory -> DomainEntity : new ListOfItems(...)
+Factory --> Assembler : list
+deactivate Factory
+
+loop for each itemId string in dm.getItemIds()
+    note over Assembler: Instantiates \nItemId(string)
+    Assembler -> DomainEntity : addItem(itemId)
+    activate DomainEntity
+    deactivate DomainEntity
+end
+
+Assembler --> JpaRepo : list
+deactivate Assembler
+
+JpaRepo --> Service : Optional.of(list)
+deactivate JpaRepo
+
+== Domain Guardrails Validation ==
+Service -> DomainEntity : isPrivate()
+activate DomainEntity
+DomainEntity --> Service : false (List is Public)
+deactivate DomainEntity
+
+Service -> DomainEntity : getItemIds()
+activate DomainEntity
+DomainEntity --> Service : List.copyOf(_itemIds)
+deactivate DomainEntity
+
+Service --> Controller : List<ItemId>
+deactivate Service
+
+== Response Mapping ==
+loop for each ItemId in list
+    Controller -> Controller : ItemId::toString
+end
+
+Controller --> Client : ResponseEntity\n(itemIds, HttpStatus.OK)
+deactivate Controller
+
+@endum
