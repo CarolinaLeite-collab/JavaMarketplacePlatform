@@ -20,8 +20,11 @@ activate Service
 
 Service -> CartService : findCartByCartId(shoppingCartId)
 activate CartService
-CartService ->o] : FETCH
-CartService <--o] : DATA
+
+ref over CartService
+[[./shoppingCartFetch.puml Shopping Cart Fetching]]
+end ref
+
 CartService --> Service : cart
 deactivate CartService
 
