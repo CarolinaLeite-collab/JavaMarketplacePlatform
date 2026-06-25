@@ -80,13 +80,13 @@ deactivate Payment
 alt isPaymentSuccessful
 
 ref over Service
-    [[paymentSuccessful.puml createSaleFromCart — payment successful]]
+    [[paymentSuccessful.puml payment successful]]
 end ref
 
 else !isPaymentSuccessful
 
 ref over Service
-    [[paymentFailed.puml createSaleFromCart — payment failed]]
+    [[paymentFailed.puml payment failed]]
 end ref
 
 end
@@ -95,7 +95,7 @@ Service --> REST : returnedNewSale
 deactivate Service
 
 ref over REST
-    [[addLinksAndResponse.puml createSaleFromCart — add links and response]]
+    [[addLinksAndResponse.puml add links and response]]
 end ref
 REST --> router : response
 deactivate REST
