@@ -396,35 +396,40 @@ public class DataInitializer {
                     new Title("Italienische Reise"),
                     goethe.identity(),
                     Year.of(1981),
-                    genreLiterature.identity()
+                    genreLiterature.identity(),
+                    "synopsis"
             );
 
             Publication diferenciasPub = publicationFactory.createPublication(
                     new Title("Differencias"),
                     solaMolares.identity(),
                     Year.of(1995),
-                    genreArts.identity()
+                    genreArts.identity(),
+                    "synopsis"
             );
 
             Publication horizontePub = publicationFactory.createPublication(
                     new Title("Horizonte"),
                     celas.identity(),
                     Year.of(2018),
-                    genreChildren.identity()
+                    genreChildren.identity(),
+                    "synopsis"
             );
 
             Publication technoFPub = publicationFactory.createPublication(
                     new Title("Techno Feudalismo"),
                     varoufakis.identity(),
                     Year.of(2023),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(),
+                    "synopsis"
             );
 
             Publication agathaCristiePub = publicationFactory.createPublication(
                     new Title("Agatha Christie na Síria"),
                     christie.identity(),
                     Year.of(1946),
-                    genreNonFiction.identity()
+                    genreNonFiction.identity(),
+                    "synopsis"
             );
 
             publicationRepo.save(shortnessOfLife);
