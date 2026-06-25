@@ -223,7 +223,7 @@ public class DataInitializer {
             Author saramago = authorFactory.createAuthor(new AuthorId("Saramago J.-A1B2C3"), new Name("José Saramago"));
             Author delahaye = authorFactory.createAuthor(new AuthorId("Delahaye G.-C1D2E3"), new Name("Gilbert Delahaye"));
             Author berghauserPont = authorFactory.createAuthor(new AuthorId("BerghauserPont M.-A7F2D1"), new Name("Meta Berghauser Pont"));
-            Author varoufakis = authorFactory.createAuthor(new AuthorId("Varoufakis Y.-A7D2D1"), new Name ("Agatha Christie"));
+            Author varoufakis = authorFactory.createAuthor(new AuthorId("Varoufakis Y.-A7D2D1"), new Name ("Yanis Varoufakis"));
             Author christie = authorFactory.createAuthor(new AuthorId("Christie A.-D9D2D1"), new Name ("Agatha Christie"));
             Author celas = authorFactory.createAuthor(new AuthorId("Celas C.-D9D0D0"), new Name ("Carolina Celas"));
             Author solaMolares = authorFactory.createAuthor(new AuthorId("SolaMorales I.-D9D0D0"), new Name ("Ignasi de Solà-Morales"));
@@ -288,6 +288,22 @@ public class DataInitializer {
 
             String spaceMatrixSynopsis =
                     "A reflection on architecture and urbanism through the relationship between space, culture, and technology, proposing new ways of understanding the built environment.";
+
+            String italienischeReiseSynopsis =
+                    "A travel journal recounting Goethe’s journey through Italy, combining observations on art, culture, and nature with a personal quest for inspiration and self-discovery.";
+
+            String diferenciasSynopsis =
+                    "A reflection on contemporary architecture, highlighting the diversity of ideas, styles, and cultural influences that define the built environment today.";
+
+            String horizonteSynopsis =
+                    "A poetic illustrated book that explores the idea of the horizon through gentle storytelling and evocative artwork.";
+
+            String technoFSynopsis =
+                    "A critique of the rise of technofeudalism and the growing influence of digital platforms on the economy, politics, and democracy.";
+
+            String agathaCristieSynopsis =
+                    "A light-hearted memoir recounting Agatha Christie’s experiences on archaeological journeys in the Middle East.";
+
 
             log.info("Authors saved: Cristopher Alexander, Isaac Asimov, Eileen Gray, Yuval Noah Harari, Helberto Helder, Rem Koolhaas, George Orwell, Fred Scharmen, Lucius Annaeus Seneca, Rui Tavares, José Saramago, Gilbert Delahaye, Meta Berghauser Pont, Agatha Christie, Carolina Celas, Ignasi de Solà-Morales, Johann Wolfgang von Goethe");
             // -------------------------------------------------------
@@ -397,7 +413,7 @@ public class DataInitializer {
                     goethe.identity(),
                     Year.of(1981),
                     genreLiterature.identity(),
-                    "synopsis"
+                    italienischeReiseSynopsis
             );
 
             Publication diferenciasPub = publicationFactory.createPublication(
@@ -405,7 +421,7 @@ public class DataInitializer {
                     solaMolares.identity(),
                     Year.of(1995),
                     genreArts.identity(),
-                    "synopsis"
+                    diferenciasSynopsis
             );
 
             Publication horizontePub = publicationFactory.createPublication(
@@ -413,7 +429,7 @@ public class DataInitializer {
                     celas.identity(),
                     Year.of(2018),
                     genreChildren.identity(),
-                    "synopsis"
+                    horizonteSynopsis
             );
 
             Publication technoFPub = publicationFactory.createPublication(
@@ -421,7 +437,7 @@ public class DataInitializer {
                     varoufakis.identity(),
                     Year.of(2023),
                     genreNonFiction.identity(),
-                    "synopsis"
+                    technoFSynopsis
             );
 
             Publication agathaCristiePub = publicationFactory.createPublication(
@@ -429,7 +445,7 @@ public class DataInitializer {
                     christie.identity(),
                     Year.of(1946),
                     genreNonFiction.identity(),
-                    "synopsis"
+                    agathaCristieSynopsis
             );
 
             publicationRepo.save(shortnessOfLife);
