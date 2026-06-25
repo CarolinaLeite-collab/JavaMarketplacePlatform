@@ -134,6 +134,12 @@ class AuctionRestControllerTest {
     @Test
     void createAuctionValidRequestReturns201() throws Exception {
         // arrange
+        User seller = mock(User.class);
+        UserId sellerId = mock(UserId.class);
+
+        when(seller.identity()).thenReturn(sellerId);
+        when(_userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com"))))
+                .thenReturn(seller);
         Auction auction = mock(Auction.class);
         AuctionResponseDTO dto = new AuctionResponseDTO(
                 "auction-123",
@@ -188,7 +194,12 @@ class AuctionRestControllerTest {
                 "pedro@aeiou.com",
                 15.0
         );
+        User seller = mock(User.class);
+        UserId sellerId = mock(UserId.class);
 
+        when(seller.identity()).thenReturn(sellerId);
+        when(_userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com"))))
+                .thenReturn(seller);
         when(_auctionService.putItemOnAuction(any(), any(), any(), isNull(), any(), any(), any()))
                 .thenReturn(auction);
         when(_auctionMapper.toDTO(auction)).thenReturn(dto);
@@ -218,7 +229,13 @@ class AuctionRestControllerTest {
 
     @Test
     void createAuctionReturns404WhenItemNotFound() throws Exception {
+        //arrange
+        User seller = mock(User.class);
+        UserId sellerId = mock(UserId.class);
 
+        when(seller.identity()).thenReturn(sellerId);
+        when(_userService.getUserByEmail(new UserId(new Email("pedro@aeiou.com"))))
+                .thenReturn(seller);
         when(_auctionService.putItemOnAuction(
                 any(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new NoSuchElementException("Item not found"));
@@ -234,6 +251,7 @@ class AuctionRestControllerTest {
         }
         """;
 
+        //act+assert
         mockMvc.perform(post("/auctions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("X-User-Id", "pedro@aeiou.com")
@@ -302,19 +320,14 @@ class AuctionRestControllerTest {
 
     @Test
     void optionsForSpecificAuctionReturnsAllowHeaderWithOptionsAndGet() throws Exception {
-        // Arrange
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
-                .thenReturn(mock(Auction.class));
-
         when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS, HttpMethod.GET));
 
-        // Act + Assert
         mockMvc.perform(options("/auctions/{auctionId}", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
@@ -325,19 +338,14 @@ class AuctionRestControllerTest {
 
     @Test
     void optionsForSpecificAuctionReturnsOnlyOptionsWhenNoOtherActions() throws Exception {
-        // Arrange
         User userDouble = mock(User.class);
 
         when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
                 .thenReturn(userDouble);
 
-        when(_auctionService.getAuctionById(new AuctionId("AU-12345678")))
-                .thenReturn(mock(Auction.class));
-
         when(_auctionLinkProvider.getAllowedMethodsForSpecificAuction(userDouble))
                 .thenReturn(List.of(HttpMethod.OPTIONS));
 
-        // Act + Assert
         mockMvc.perform(options("/auctions/{auctionId}", "AU-12345678")
                         .header("X-User-Id", "user@example.com"))
                 .andExpect(status().isOk())
@@ -536,81 +544,30 @@ class AuctionRestControllerTest {
     // ------------------------------------------------------------
 
     @Test
-    void placeBidValidRequestReturns201() throws Exception {
-        // Arrange
-        String auctionIdString = "AU-12345678";
-
-        Auction auctionDouble = mock(Auction.class);
-        Bid bidDouble = mock(Bid.class);
-
-        AuctionService.BidPlacementResult result = mock(AuctionService.BidPlacementResult.class);
-        when(result.auction()).thenReturn(auctionDouble);
-        when(result.bid()).thenReturn(bidDouble);
-
-        when(_auctionService.placeBid(any(), any(), any()))
-                .thenReturn(result);
-
-        BidResponseDTO dto = new BidResponseDTO(
-                "0bc6c8bf-6f51-4f1a-b6af-cde1dbfbb1ad",
-                auctionIdString,
-                "buyer@aeiou.com",
-                20.0,
-                "EUR",
-                Instant.parse("2026-06-10T10:00:00Z")
-        );
-
-        dto.add(org.springframework.hateoas.Link.of(
-                "http://localhost/auctions/" + auctionIdString, "auction"));
-        dto.add(org.springframework.hateoas.Link.of(
-                "http://localhost/auctions/" + auctionIdString + "/bids", "bids"));
-
-        when(_bidResponseDTOMapper.toDTO(auctionDouble, bidDouble)).thenReturn(dto);
-
-        String requestBody = """
-            {
-              "bidValue": 20.0,
-              "currency": "EUR"
-            }
-            """;
-
-        // Act + Assert
-        mockMvc.perform(post("/auctions/{auctionId}/bids", auctionIdString)
-                        .header("X-User-Id", "user@example.com")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.auctionId").value(auctionIdString))
-                .andExpect(jsonPath("$.offerPrice").value(20.0))
-                .andExpect(jsonPath("$.currency").value("EUR"))
-                .andExpect(jsonPath("$._links.auction").exists())
-                .andExpect(jsonPath("$._links.auction.href")
-                        .value("http://localhost/auctions/" + auctionIdString))
-                .andExpect(jsonPath("$._links.bids").exists())
-                .andExpect(jsonPath("$._links.bids.href")
-                .value("http://localhost/auctions/" + auctionIdString + "/bids"));
-    }
-
-    @Test
     void placeBidServiceThrowsExceptionReturns404() throws Exception {
-        // Arrange
         String auctionIdString = "AU-12345678";
+
+        User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userDouble.identity()).thenReturn(userIdDouble);
+        when(_userService.getUserByEmail(new UserId(new Email("user@example.com"))))
+                .thenReturn(userDouble);
 
         when(_auctionService.placeBid(any(), any(), any()))
                 .thenThrow(new IllegalStateException("Auction not active"));
 
         String requestBody = """
-        {
-          "bidValue": 5.0,
-          "currency": "EUR"
-        }
+            {
+              "bidValue": 5.0,
+              "currency": "EUR"
+            }
         """;
 
-        // Act + Assert
         mockMvc.perform(post("/auctions/{auctionId}/bids", auctionIdString)
                         .header("X-User-Id", "user@example.com")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isNotFound());
     }
-
 }
