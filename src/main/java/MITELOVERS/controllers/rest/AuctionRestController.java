@@ -4,14 +4,14 @@ import MITELOVERS.applicationservices.AuctionService;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.controllers.linkprovider.AuctionLinkProvider;
 import MITELOVERS.domain.auction.Auction;
+import MITELOVERS.domain.directsale.DirectSale;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.*;
 import MITELOVERS.dto.request.CreateAuctionRequestDTO;
-import MITELOVERS.dto.response.AuctionResponseDTO;
-import MITELOVERS.dto.response.ListOfItemsResponseDTO;
+import MITELOVERS.dto.response.*;
+import MITELOVERS.mapper.AuctionNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import MITELOVERS.dto.request.PlaceBidRequestDTO;
-import MITELOVERS.dto.response.BidResponseDTO;
 import MITELOVERS.mapper.BidResponseDTOMapper;
 import MITELOVERS.domain.auction.Bid;
 import jakarta.validation.Valid;
@@ -46,15 +46,17 @@ public class AuctionRestController {
     private final BidResponseDTOMapper _bidResponseDTOMapper;
     private final UserService _userService;
     private final AuctionLinkProvider _auctionLinkProvider;
+    private final AuctionNoPriceResponseDTOMapper _auctionNoPriceResponseDTOMapper;
 
 
     public AuctionRestController(AuctionService auctionService, AuctionResponseDTOMapper auctionMapper, BidResponseDTOMapper bidResponseDTOMapper, UserService userService,
-                                 AuctionLinkProvider auctionLinkProvider) {
+                                 AuctionLinkProvider auctionLinkProvider, AuctionNoPriceResponseDTOMapper auctionNoPriceResponseDTOMapper) {
         _auctionService = auctionService;
         _auctionMapper = auctionMapper;
         _bidResponseDTOMapper = bidResponseDTOMapper;
         _userService = userService;
         _auctionLinkProvider = auctionLinkProvider;
+        _auctionNoPriceResponseDTOMapper = auctionNoPriceResponseDTOMapper;
     }
 
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -114,6 +116,25 @@ public class AuctionRestController {
         _auctionLinkProvider.addLinksForAuction(dto);
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
+    }
+
+
+    @GetMapping(value = "/without-price", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AuctionNoPriceResponseDTO>> getAuctionsWithoutPrice() {
+
+        List<Auction> auctions = _auctionService.getAllActiveAuctions();
+
+        if (auctions.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        List<AuctionNoPriceResponseDTO> response = auctions.stream()
+                .map(_auctionNoPriceResponseDTOMapper::toDTO)
+                .toList();
+
+        response.forEach(_auctionLinkProvider::addLinksForAuction);
+
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping(path = "/{auctionId}", method = RequestMethod.OPTIONS)

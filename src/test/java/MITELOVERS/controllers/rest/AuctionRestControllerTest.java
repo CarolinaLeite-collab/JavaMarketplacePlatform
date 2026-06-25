@@ -8,8 +8,10 @@ import MITELOVERS.domain.auction.Bid;
 import MITELOVERS.domain.user.User;
 import MITELOVERS.domain.valueobject.AuctionId;
 import MITELOVERS.domain.valueobject.UserId;
+import MITELOVERS.dto.response.AuctionNoPriceResponseDTO;
 import MITELOVERS.dto.response.AuctionResponseDTO;
 import MITELOVERS.dto.response.BidResponseDTO;
+import MITELOVERS.mapper.AuctionNoPriceResponseDTOMapper;
 import MITELOVERS.mapper.AuctionResponseDTOMapper;
 import MITELOVERS.mapper.BidResponseDTOMapper;
 import org.junit.jupiter.api.Test;
@@ -53,6 +55,9 @@ class AuctionRestControllerTest {
     @MockitoBean
     private UserService _userService;
 
+    @MockitoBean
+    private AuctionNoPriceResponseDTOMapper _auctionNoPriceMapper;
+
     @Test
     void getAllActiveAuctionsShouldReturnOk() throws Exception {
         // arrange
@@ -83,6 +88,40 @@ class AuctionRestControllerTest {
 
         // act + assert
         mockMvc.perform(get("/auctions"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void getAuctionsWithoutPriceShouldReturnOk() throws Exception {
+        // arrange
+        Auction auction = mock(Auction.class);
+
+        AuctionNoPriceResponseDTO dto = new AuctionNoPriceResponseDTO(
+                "AU-12345678",
+                List.of("ABCDEF1234"),
+                Instant.parse("2026-06-10T10:00:00Z"),
+                Instant.parse("2099-01-01T10:00:00Z"),
+                "pedro@aeiou.com"
+        );
+
+        when(_auctionService.getAllActiveAuctions()).thenReturn(List.of(auction));
+        when(_auctionNoPriceMapper.toDTO(auction)).thenReturn(dto);
+
+        // act + assert
+        mockMvc.perform(get("/auctions/without-price"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].auctionId").value("AU-12345678"))
+                .andExpect(jsonPath("$[0].itemIds[0]").value("ABCDEF1234"))
+                .andExpect(jsonPath("$[0].seller").value("pedro@aeiou.com"));
+    }
+
+    @Test
+    void getAuctionsWithoutPriceShouldReturnNoContentWhenEmpty() throws Exception {
+        // arrange
+        when(_auctionService.getAllActiveAuctions()).thenReturn(List.of());
+
+        // act + assert
+        mockMvc.perform(get("/auctions/without-price"))
                 .andExpect(status().isNoContent());
     }
 
