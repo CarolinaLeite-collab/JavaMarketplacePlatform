@@ -4,6 +4,7 @@ import {
     Center,
     Checkbox,
     Group,
+    Image,
     MultiSelect,
     ScrollArea,
     Stack,
@@ -61,9 +62,9 @@ function filterItems(items, selectedGenres, selectedAuthors, selectedPublication
         if (!matchesFilters) return false;
         if (!query) return true;
 
-        return ['item', 'genreName', 'type', 'price'].some((key) =>
-            String(item[key]).toLowerCase().includes(query)
-        );
+        return String(item.item)
+            .toLowerCase()
+            .includes(query);
     });
 }
 
@@ -72,7 +73,13 @@ function sortItems(items, { sortBy, reversed, search, selectedGenres, selectedAu
 
     if (!sortBy) return filteredItems;
 
-    return [...filteredItems].sort((a, b) => {
+    const sorted = [...filteredItems].sort((a, b) => {
+        if (sortBy === 'price') {
+            return reversed
+                ? b.priceValue - a.priceValue
+                : a.priceValue - b.priceValue;
+        }
+
         const aValue = String(a[sortBy] ?? '');
         const bValue = String(b[sortBy] ?? '');
 
@@ -80,7 +87,10 @@ function sortItems(items, { sortBy, reversed, search, selectedGenres, selectedAu
             ? bValue.localeCompare(aValue)
             : aValue.localeCompare(bValue);
     });
+
+    return sorted;
 }
+
 
 function uniqueOptions(items, field) {
     return [...new Set(items.map((i) => i[field]).filter(Boolean))]
@@ -137,7 +147,20 @@ export function MarketPlaceTable({
             className={classes.row}
             style={{ cursor: 'pointer' }}
         >
-            <Table.Td>{item.item}</Table.Td>
+            <Table.Td>
+                <Group wrap="nowrap" gap="sm">
+                    <Image
+                        src={item.cover}
+                        alt={`Cover of ${item.item}`}
+                        fallbackSrc="https://placehold.co/60x80?text=No+Image"
+                        w={45}
+                        h={60}
+                        radius="sm"
+                        fit="cover"
+                    />
+                    <Text lineClamp={2}>{item.item}</Text>
+                </Group>
+            </Table.Td>
             <Table.Td>{item.genreName}</Table.Td>
             <Table.Td>{item.type}</Table.Td>
             {canSeePrice && <Table.Td>{item.price}</Table.Td>}
@@ -200,14 +223,14 @@ export function MarketPlaceTable({
 
             <ScrollArea>
                 <TextInput
-                    placeholder="Search by item, genre, type or price"
+                    placeholder="Search by item name"
                     mb="md"
                     leftSection={<IconSearch size={16} stroke={1.5} />}
                     value={search}
                     onChange={(event) => setSearch(event.currentTarget.value)}
                 />
 
-                <Table horizontalSpacing="md" verticalSpacing="xs" miw={900} layout="fixed">
+                <Table horizontalSpacing="md" verticalSpacing="sm" miw={900} layout="fixed">
                     <Table.Thead>
                         <Table.Tr>
                             <Th

@@ -473,6 +473,51 @@ class AuthorizationPolicyTest {
         assertFalse(_authorizationPolicy.canDeleteShoppingCartLine(_guestDouble));
     }
 
+    @Test
+    void canGetSalesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetSales(_userDouble));
+    }
+
+    @Test
+    void canGetSalesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetSales(_adminDouble));
+    }
+
+    @Test
+    void canGetSalesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetSales(_guestDouble));
+    }
+
+    @Test
+    void canPostSalesUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPostSales(_userDouble));
+    }
+
+    @Test
+    void canPostSalesAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canPostSales(_adminDouble));
+    }
+
+    @Test
+    void canPostSalesGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canPostSales(_guestDouble));
+    }
+
+    @Test
+    void canGetSaleUserReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetSale(_userDouble));
+    }
+
+    @Test
+    void canGetSaleAdminReturnsTrue() {
+        assertTrue(_authorizationPolicy.canGetSale(_adminDouble));
+    }
+
+    @Test
+    void canGetSaleGuestReturnsFalse() {
+        assertFalse(_authorizationPolicy.canGetSale(_guestDouble));
+    }
+
     // ──────────── Lists ───────────
 
     @Test

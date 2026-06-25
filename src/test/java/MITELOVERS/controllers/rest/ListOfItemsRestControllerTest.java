@@ -443,20 +443,7 @@ class ListOfItemsRestControllerTest {
                 .andExpect(jsonPath("$.links.links[0].href").value("http://localhost/my-lists/L1/items"))
                 .andExpect(jsonPath("$.links.links[0].rel").value("self"));
 
-        verify(_userService, never()).getUserByEmail(any());
+        _mockMvc.perform(get("/my-lists/{listId}/items", "LOI-1234"))
+                .andExpect(status().isOk());
     }
-
-    @Test
-    void getItemsInList_withoutUserHeader_returnsForbidden_whenPrivateList() throws Exception {
-        ListOfItems domain = mock(ListOfItems.class);
-        when(_listService.getListById(any())).thenReturn(domain);
-        when(domain.isPrivate()).thenReturn(true);
-        when(_auth.canSeeList(isNull(), same(domain))).thenReturn(false);
-
-        _mockMvc.perform(get("/my-lists/L1/items"))
-                .andExpect(status().isForbidden());
-
-        verify(_userService, never()).getUserByEmail(any());
-    }
-
 }

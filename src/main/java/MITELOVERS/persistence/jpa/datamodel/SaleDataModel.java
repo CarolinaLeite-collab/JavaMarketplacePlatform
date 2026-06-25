@@ -1,5 +1,7 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
+import MITELOVERS.domain.sale.Sale;
+import MITELOVERS.domain.sale.SaleLine;
 import MITELOVERS.domain.valueobject.SaleSaleStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +12,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * Data model object representing {@link Sale} information,
+ * allowing its persistence in a database.
+ */
 
 @Generated
 @Getter

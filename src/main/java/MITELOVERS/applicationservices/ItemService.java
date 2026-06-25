@@ -59,7 +59,6 @@ public class ItemService {
         _iPublishingCompanyRepo = Objects.requireNonNull(iPublishingCompanyRepo, "PublishingCompanyRepo is required");
     }
 
-
     @Transactional
     public Item registerItem(EditionId editionId,
                              Condition condition,
@@ -81,20 +80,27 @@ public class ItemService {
         }
     }
 
-
+    @Transactional
     public List<Item> getAllItems() {
         List<Item> result = new ArrayList<>();
         _iItemRepo.findAll().forEach(result::add);
         return result;
     }
 
-
+    @Transactional
     public Item getItemById(String itemId) {
         return _iItemRepo.ofIdentity(new ItemId(itemId))
                 .orElseThrow(() -> new NoSuchElementException(
                         "Item does not exist in the repository"));
     }
 
+    @Transactional
+    public Item markItemAsSold(ItemId itemId) {
+        Item item = _iItemRepo.ofIdentity(itemId)
+                .orElseThrow(() -> new NoSuchElementException("Item does not exist in the repository"));
+        item.markAsSold();
+        return _iItemRepo.save(item);
+    }
 
     public ItemRelated resolveRelated(Item item) {
 

@@ -13,12 +13,16 @@ const createFetchResponse = ({
                                  ok = true,
                                  status = 200,
                                  json = null,
-                                 text = null
+                                 text = null,
+                                 headers = {
+                                     get: vi.fn().mockReturnValue(null)
+                                 }
                              }) => ({
     ok,
     status,
     json: vi.fn().mockResolvedValue(json),
-    text: vi.fn().mockResolvedValue(text)
+    text: vi.fn().mockResolvedValue(text),
+    headers
 });
 
 beforeEach(() => {
@@ -634,5 +638,74 @@ describe('apiClient', () => {
             ).rejects.toThrow('500');
         });
 
+    });
+
+    describe('allowed methods', () => {
+        it('gets allowed methods for Sales', async () => {
+            const getHeader = vi.fn().mockReturnValue('GET, POST, OPTIONS');
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    headers: { get: getHeader }
+                })
+            );
+
+            const result = await apiClient.getSalesAllowedMethods();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/sales?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: { 'X-User-Id': USER_ID }
+                }
+            );
+            expect(getHeader).toHaveBeenCalledWith('Allow');
+            expect(result).toEqual(['GET', 'POST', 'OPTIONS']);
+        });
+
+        it('gets allowed methods for Shopping Cart', async () => {
+            const getHeader = vi.fn().mockReturnValue('GET, OPTIONS');
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    headers: { get: getHeader }
+                })
+            );
+
+            const result = await apiClient.getShoppingCartAllowedMethods();
+
+            expect(mockFetch).toHaveBeenCalledWith(
+                `${BASE_URL}/shopping-carts?email=${USER_ID}`,
+                {
+                    method: 'OPTIONS',
+                    headers: { 'X-User-Id': USER_ID }
+                }
+            );
+            expect(result).toEqual(['GET', 'OPTIONS']);
+        });
+
+        it('gets allowed methods from a HATEOAS href', async () => {
+            const href = `${BASE_URL}/shopping-carts/CART-1`;
+            const getHeader = vi.fn().mockReturnValue('GET, PATCH, OPTIONS');
+            mockFetch.mockReturnValueOnce(
+                createFetchResponse({
+                    headers: { get: getHeader }
+                })
+            );
+
+            const result = await apiClient.getAllowedMethodsByHref(href);
+
+            expect(mockFetch).toHaveBeenCalledWith(href, {
+                method: 'OPTIONS',
+                headers: { 'X-User-Id': USER_ID }
+            });
+            expect(result).toEqual(['GET', 'PATCH', 'OPTIONS']);
+        });
+
+        it('returns an empty array when the Allow header is unavailable', async () => {
+            mockFetch.mockReturnValueOnce(createFetchResponse({}));
+
+            const result = await apiClient.getSalesAllowedMethods();
+
+            expect(result).toEqual([]);
+        });
     });
 });

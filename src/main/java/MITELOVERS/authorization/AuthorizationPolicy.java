@@ -161,22 +161,32 @@ public class AuthorizationPolicy {
 
     /** Any authenticated user may place bids on auctions. */
     public boolean canBid(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
     /** Any authenticated user may view a ShoppingCart. */
     public boolean canGetShoppingCart(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may edit a ShoppingCart. */
     public boolean canPatchShoppingCart(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
-    /** Any authenticated user may get a ShoppingCartLine. */
+    /** Any authenticated user may get a ShoppingCartLine link. */
     public boolean canGetShoppingCartLines(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
-    /** Any authenticated user may get a ShoppingCartLine. */
+    /** Any authenticated user may post a ShoppingCartLine. */
     public boolean canPostShoppingCartLines(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
     /** Any authenticated user may get a ShoppingCartLine. */
     public boolean canGetShoppingCartLine(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
-    /** Any authenticated user may get a ShoppingCartLine. */
+    /** Any authenticated user may delete a ShoppingCartLine. */
     public boolean canDeleteShoppingCartLine(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get own Sales. */
+    public boolean canGetSales(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may post Sales. */
+    public boolean canPostSales(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
+
+    /** Any authenticated user may get a specific Sale. */
+    public boolean canGetSale(User user) { return user.hasRole(Role.USER) || user.hasRole(Role.ADMIN);}
 
 }

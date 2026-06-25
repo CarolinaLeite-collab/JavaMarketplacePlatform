@@ -1,10 +1,17 @@
 package MITELOVERS.persistence.jpa.datamodel;
 
+import MITELOVERS.domain.sale.SaleLine;
+import MITELOVERS.domain.shoppingcart.ShoppingCart;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Generated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+/**
+ * Data model object representing {@link SaleLine} information,
+ * allowing its persistence in a database.
+ */
 
 @Generated
 @Getter

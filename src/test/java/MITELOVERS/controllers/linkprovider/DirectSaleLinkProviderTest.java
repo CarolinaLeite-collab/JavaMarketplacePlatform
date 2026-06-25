@@ -3,6 +3,9 @@ package MITELOVERS.controllers.linkprovider;
 import MITELOVERS.applicationservices.UserService;
 import MITELOVERS.authorization.AuthorizationPolicy;
 import MITELOVERS.domain.user.User;
+import MITELOVERS.domain.valueobject.DirectSaleStatus;
+import MITELOVERS.domain.valueobject.Email;
+import MITELOVERS.domain.valueobject.UserId;
 import MITELOVERS.dto.response.DSFilteredItemsResponseDTO;
 import MITELOVERS.dto.response.DirectSaleNoPriceResponseDTO;
 import MITELOVERS.dto.response.DirectSaleResponseDTO;
@@ -38,7 +41,6 @@ class DirectSaleLinkProviderTest {
 
     @Test
     void shouldIncludeListDirectSalesLinkWhenAuthorized() {
-
         // Arrange
         when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(true);
         when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
@@ -54,7 +56,6 @@ class DirectSaleLinkProviderTest {
 
     @Test
     void shouldIncludeListActiveDirectSalesLinkWhenAuthorized() {
-
         // Arrange
         when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
         when(authorizationPolicyDouble.canListActiveDirectSales(userDouble)).thenReturn(true);
@@ -71,7 +72,6 @@ class DirectSaleLinkProviderTest {
 
     @Test
     void shouldNotIncludeListDirectSalesLinkWhenUnauthorized() {
-
         // Arrange
         when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
         when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
@@ -86,7 +86,6 @@ class DirectSaleLinkProviderTest {
 
     @Test
     void shouldIncludeCreateDirectSaleLinkWhenAuthorized() {
-
         // Arrange
         when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
         when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(true);
@@ -102,7 +101,6 @@ class DirectSaleLinkProviderTest {
 
     @Test
     void shouldNotIncludeCreateDirectSaleLinkWhenUnauthorized() {
-
         // Arrange
         when(authorizationPolicyDouble.canListDirectSales(userDouble)).thenReturn(false);
         when(authorizationPolicyDouble.canCreateDirectSale(userDouble)).thenReturn(false);
@@ -162,8 +160,8 @@ class DirectSaleLinkProviderTest {
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-direct-sale")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sales-by-genre")));
-        assertEquals(4, links.size());
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("direct-sale")));
+        assertEquals(4, links.size());
     }
 
     @Test
@@ -204,16 +202,14 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
-        String email = "user@email.com";
-
-        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
-        when(authorizationPolicyDouble.canDeleteDirectSale(userDouble)).thenReturn(false);
-
         // Act
-        provider.addResourceLinks(dto, email);
+        provider.addResourceLinks(dto);
 
         // Assert
         assertTrue(dto.hasLink("self"));
@@ -230,40 +226,36 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
-        String email = "admin@email.com";
+        provider.addResourceLinks(dto);
 
-        when(userServiceDouble.getUserByEmail(email)).thenReturn(userDouble);
-        when(authorizationPolicyDouble.canDeleteDirectSale(userDouble)).thenReturn(true);
-
-        // Act
-        provider.addResourceLinks(dto, email);
-
-        // Assert
         assertTrue(dto.hasLink("self"));
-        assertTrue(dto.hasLink("delete"));
     }
 
     @Test
     void addCollectionLinks_shouldAddSelfLink() {
-
-        // Arrange
-        String email = "user@email.com";
+        //Arrange
         DirectSaleResponseDTO dto = new DirectSaleResponseDTO(
                 "DS-ABCDEF12",
                 List.of("ABC123DEF0"),
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         CollectionModel<DirectSaleResponseDTO> dtos = CollectionModel.of(List.of(dto));
 
-        // Act
-        provider.addCollectionLinks(dtos, email);
+        //Act
+        provider.addCollectionLinks(dtos, "user@email.com");
 
         // Assert
         assertTrue(dtos.hasLink("self"));
@@ -279,7 +271,10 @@ class DirectSaleLinkProviderTest {
                 10.0,
                 "EUR",
                 3600L,
-                Instant.parse("2024-01-01T10:00:00Z")
+                Instant.parse("2024-01-01T10:00:00Z"),
+                null,
+                DirectSaleStatus.ACTIVE,
+                "pedro@aeiou.com"
         );
 
         // Act
@@ -326,5 +321,4 @@ class DirectSaleLinkProviderTest {
         assertTrue(dto.getDirectSales().get(0).hasLink("self"));
         assertTrue(dto.getDirectSales().get(1).hasLink("self"));
     }
-
 }

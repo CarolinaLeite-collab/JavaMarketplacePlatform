@@ -63,7 +63,7 @@ public class ListOfItemsRestController {
         RepresentationModel<?> model = new RepresentationModel<>();
 
         if (userId != null) {
-            User user = _userService.getUserByEmail(userId);
+            User user = _userService.getUserByEmail(new UserId(new Email(userId)));
             _listOfItemsLinkProvider.getLinks(user).forEach(model::add);
 
         } else {
@@ -84,7 +84,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = userId == null ? null : _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         RepresentationModel<?> model = new RepresentationModel<>();
@@ -123,7 +123,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = userId == null ? null : _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         RepresentationModel<?> model = new RepresentationModel<>();
@@ -143,7 +143,7 @@ public class ListOfItemsRestController {
 
         Email email = new Email(userId);
         UserId recUserId = new UserId(email);
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
 
         List<ListOfItems> listOfLists = _listService.getUserLists(recUserId);
 
@@ -200,7 +200,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = userId == null ? null : _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItemsId recListId = new ListOfItemsId(listId);
         ListOfItems list = _listService.getListById(recListId);
 
@@ -282,7 +282,7 @@ public class ListOfItemsRestController {
             @RequestBody AddItemRequestDTO itemId,
             @RequestHeader("X-User-Id") String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         if (!_auth.canAddItemTo(user, list)) {
@@ -331,7 +331,7 @@ public class ListOfItemsRestController {
             @RequestBody MakeListPublicRequestDTO durationDays,
             @RequestHeader("X-User-Id") String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         if (!_auth.canChangeVisibility(user, list)) {
@@ -378,7 +378,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader("X-User-Id") String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         if (!_auth.canChangeVisibility(user, list)) {
@@ -425,7 +425,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader("X-User-Id") String userId) {
 
-        User user = _userService.getUserByEmail(userId);
+        User user = _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         if (!_auth.canDeleteList(user, list)) {
@@ -475,7 +475,7 @@ public class ListOfItemsRestController {
             @PathVariable String listId,
             @RequestHeader(value = "X-User-Id", required = false) String userId) {
 
-        User user = userId == null ? null : _userService.getUserByEmail(userId);
+        User user = userId == null ? null : _userService.getUserByEmail(new UserId(new Email(userId)));
         ListOfItems list = _listService.getListById(new ListOfItemsId(listId));
 
         // Authorization check
